@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-12-02T20:30:00.000000",
+  "verification_type": "zero_loss_analysis",
+  "results": {
+    "original_file_count": 1194,
+    "current_file_count": 1194,
+    "original_unique_normalized": 1194,
+    "current_unique_normalized": 1194,
+    "missing_files": [],
+    "added_files": [],
+    "preserved_files": 1194,
+    "zero_loss_status": "PASS",
+    "expansion_status": "IDENTICAL",
+    "depth_analysis": {
+      "original_max_depth": 7,
+      "current_max_depth": 6,
+      "original_avg_depth": 6.6457286432160805,
+      "current_avg_depth": 6.0,
+      "depth_reduction": 1
+    }
+  },
+  "sample_missing_files": [],
+  "sample_added_files": []
+}
