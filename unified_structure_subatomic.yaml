@@ -1,3 +1,4 @@
+# unified_structure_subatomic.yaml
 agentic_core:
   L1_cognition:
     P1_retrieve:
@@ -3075,3 +3076,72 @@ tests:
       __init__.py: null
     __init__.py: null
   __init__.py: null
+
+# unified_structure_subatomic_meta.yaml
+structure_version: "1.0"
+description: "Single Source of Truth for Agentic Workflow Architecture"
+
+domains:
+  agentic_core: "Core reasoning, decision making, and autonomous logic engine."
+  apps_rg: "Resume Generation Application specific logic."
+  apps_lic: "LinkedIn Outreach Application specific logic."
+  shared: "Cross-domain shared utilities, base classes, and common logic."
+  config: "Configuration management, registry settings, and environment variables."
+  data: "Data persistence, retrieval, storage management, and database connectors."
+  observability: "System monitoring, logging, metrics collection, and diagnostics."
+  prompt_governance: "Management of prompt templates, versioning, and safety checks."
+  runtime: "Runtime execution environment, job scheduling, and process management."
+  schemas: "Data validation schemas, type definitions, and contract enforcement."
+  scripts: "Maintenance scripts, automation tools, and deployment helpers."
+  tests: "Test suites, integration tests, and validation frameworks."
+
+layers:
+  L1_cognition: "High-level understanding, planning, and intent recognition."
+  L2_execution: "Concrete action execution, tool invocation, and operational tasks."
+  L3_orchestration: "Workflow coordination, error handling, and cross-component routing."
+  L4_memory: "State management, context retrieval, and history tracking."
+  L5_safety: "Guardrails, compliance checks, cost management, and ethical boundaries."
+
+phases:
+  P1_retrieve: "Gathering context, understanding requests, and fetching necessary data."
+  P2_inspect: "Analyzing data, vetting quality, embedding content, and converting formats."
+  P3_aggregate: "Refining results, executing tools, updating state, and compiling outputs."
+  P4_safety: "Final safety validation, cost accounting, and policy enforcement."
+
+intents:
+  - get_info
+  - check_rules
+  - use_tools
+  - update_state
+  - manage_costs
+  - find_problems
+  - vectorize_resume
+  - sjob_fit
+  - check_resume_format
+  - pick_resume_content
+  - vectorize_message
+  - sperson
+  - pick_message
+  - update_outreach
+  - convert_content
+  - check_structure
+  - get_prompt_info
+  - check_prompt_rules
+  - use_prompt_tools
+  - update_prompt_state
+  - manage_prompt_costs
+  - get_schema_info
+  - check_schema_rules
+  - use_schema_tools
+  - update_schema_state
+  - manage_schema_costs
+
+axes:
+  - utility
+  - policy
+  - semantic
+  - embedding
+  - routing
+  - refinement
+  - update_memory
+  - understand_request
