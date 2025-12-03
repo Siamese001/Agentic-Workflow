@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "55b79136b94ac0caa8abb40e8238c5acd72d5166de3d897a4b58565d215a3344",
-    "scan_timestamp": "2025-12-03T06:51:45.234046"
+    "scan_timestamp": "2025-12-03T07:26:03.756295"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------\n# Helper: detect fields for RAG correctness\n# ---------------------------------------------------------------\ndef _extract_rag_block(out):\n    # RAG block may be top-level or inside resume\n    return (\n        out.get(\"rag\")\n        or out.get(\"resume\", {}).get(\"rag\")\n        or {}\n    )\n\n\n# ---------------------------------------------------------------\n# 1. RAG output must...",
-  "creation_timestamp": "2025-12-03T06:51:57.453136",
+  "creation_timestamp": "2025-12-03T07:26:18.913560",
   "version": "1.0"
 }

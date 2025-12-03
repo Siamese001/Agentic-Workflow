@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "39fd16cd1f3b25c58b86cc58b88c60795e2e905c0c77207bb4e57af67ffb576b",
-  "content_hash": "ebf10cd84c83c0a36339026cc310f36ee80e47837be79b2b015d57cb5c60caad",
+  "hash": "39fd16cd1f3b25c58b86cc58b88c60795e2e905c0c77207bb4e57af67ffb576b",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
+  "archive_name": "Agentic-Workflow-10_9",
+  "relative_path": ".gitignore",
   "file_size": 1597,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
-    "archive_name": "Agentic-Workflow-10_9",
-    "relative_path": ".gitignore",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\.gitignore",
-    "file_size": 1597,
-    "file_extension": "",
-    "is_eligible": false,
-    "sha256_hash": "39fd16cd1f3b25c58b86cc58b88c60795e2e905c0c77207bb4e57af67ffb576b",
-    "scan_timestamp": "2025-12-03T06:51:45.171755"
-  },
-  "verification_timestamp": "2025-12-03T06:52:16.805918",
-  "checksums": {
-    "sha256": "ebf10cd84c83c0a36339026cc310f36ee80e47837be79b2b015d57cb5c60caad",
-    "md5": "25077ed0385a2bd708ad285b7e0d0e14"
-  }
+  "file_extension": "",
+  "is_eligible": false,
+  "scan_timestamp": "2025-12-03T07:26:03.688202",
+  "integrity_timestamp": "2025-12-03T07:26:04.262121"
 }

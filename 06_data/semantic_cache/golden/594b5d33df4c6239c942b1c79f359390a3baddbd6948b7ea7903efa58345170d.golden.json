@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-    "scan_timestamp": "2025-12-03T06:51:45.339230"
+    "scan_timestamp": "2025-12-03T07:10:17.568765"
   },
   "content_preview": "# File: intelligence_service_LIC.py\n# Description: Persistent Intelligence Service (\"The Librarian\") - v13.0\n# Runs offline/async to pre-compute deep research and store in vector database\n\n__version__ = \"13.0\"\n\nimport asyncio\nimport json\nimport os\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Any, Optional, Tuple\nfrom pathlib import Path\n\n# PDF parsing\ntry:\n    import fitz  # PyMuPDF\n    PDF_SUPPORT = True\nexcept ImportError:\n    PDF_SUPPORT = False\n    print(\"WARNING: ...",
-  "creation_timestamp": "2025-12-03T06:52:08.868159",
+  "creation_timestamp": "2025-12-03T07:10:52.337095",
   "version": "1.0"
 }

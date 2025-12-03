@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "84bbb3f913852d356047ecc269412fe4b46e6f11b0036c6d774b86c9adcb04d9",
-    "scan_timestamp": "2025-12-03T06:51:45.026640"
+    "scan_timestamp": "2025-12-03T07:26:03.534874"
   },
   "content_preview": "from typing import Any, List, Dict, Optional\n\ntry:\n    from graph_store_neo4j import Neo4jGraphStore\n    _graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()\n    _NEO4J_AVAILABLE = True\nexcept ImportError:\n    _graph = None\n    _NEO4J_AVAILABLE = False\n\ndef graph_query(cypher: str, params: Dict[str, Any] | None = None) -> List[Any]:\n    \"\"\"\n    Executes Cypher queries against Neo4j for resume data retrieval.\n\n    Ensures resume generation system can efficiently access and process\n    structured...",
-  "creation_timestamp": "2025-12-03T06:51:46.263734",
+  "creation_timestamp": "2025-12-03T07:26:04.881216",
   "version": "1.0"
 }

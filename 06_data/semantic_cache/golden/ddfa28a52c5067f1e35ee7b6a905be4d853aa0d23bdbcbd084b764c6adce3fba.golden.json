@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
-    "scan_timestamp": "2025-12-03T06:51:45.042540"
+    "scan_timestamp": "2025-12-03T07:26:03.552044"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom infra.sandbox.microvm import MicroVM, create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest, ToolCallResult\n\n\ndef run_in_ephemeral_vm(request: ToolCallRequest, resource_limits: Dict[str, Any] | None = None) -> ToolCallResult:\n    \"\"\"Convenience helper to run a single tool call in an ephemeral VM.\n\n    This creates a VM, executes the request, and tears the VM down,\n    ensuring cleanup even on err...",
-  "creation_timestamp": "2025-12-03T06:51:46.631095",
+  "creation_timestamp": "2025-12-03T07:26:05.303757",
   "version": "1.0"
 }

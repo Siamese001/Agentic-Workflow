@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "5c8229074383a3134de048fe9163f0276df012f4a8ccacd45b4b9c3a0cb4d822",
-    "scan_timestamp": "2025-12-03T06:51:45.113883"
+    "scan_timestamp": "2025-12-03T07:26:03.628205"
   },
   "content_preview": "{\n  \"version\": \"1.0\",\n  \"trace_id\": \"trace_001\",\n  \"workflow_id\": \"wf_001\",\n  \"spans\": [\n    {\n      \"span_id\": \"span_001\",\n      \"name\": \"analyze_job\",\n      \"start_time\": 1700000000,\n      \"end_time\": 1700000100,\n      \"status\": \"success\"\n    },\n    {\n      \"span_id\": \"span_002\",\n      \"name\": \"plan_strategy\",\n      \"start_time\": 1700000100,\n      \"end_time\": 1700000200,\n      \"status\": \"success\"\n    }\n  ]\n}\n",
-  "creation_timestamp": "2025-12-03T06:51:50.272091",
+  "creation_timestamp": "2025-12-03T07:26:09.540636",
   "version": "1.0"
 }

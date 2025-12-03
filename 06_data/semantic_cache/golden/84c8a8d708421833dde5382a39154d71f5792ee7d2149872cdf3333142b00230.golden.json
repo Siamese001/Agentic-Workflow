@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "84c8a8d708421833dde5382a39154d71f5792ee7d2149872cdf3333142b00230",
-    "scan_timestamp": "2025-12-03T06:51:45.033159"
+    "scan_timestamp": "2025-12-03T07:26:03.541666"
   },
   "content_preview": "# graph_query.py\n# L2-safe stub module to satisfy Neo4j import tests.\n\ntry:\n    from neo4j import GraphDatabase\n    _NEO4J_AVAILABLE = True\nexcept Exception:\n    GraphDatabase = None\n    _NEO4J_AVAILABLE = False\n\ndef graph_query(*args, **kwargs):\n    \"\"\"\n    Stubbed query function to satisfy import tests.\n    Does not execute Neo4j operations.\n    \"\"\"\n    if not _NEO4J_AVAILABLE:\n        raise ImportError(\"Neo4j driver not installed\")\n    return {\n        \"status\": \"neo4j_unavailable\",\n        \"...",
-  "creation_timestamp": "2025-12-03T06:51:46.395313",
+  "creation_timestamp": "2025-12-03T07:26:05.034870",
   "version": "1.0"
 }

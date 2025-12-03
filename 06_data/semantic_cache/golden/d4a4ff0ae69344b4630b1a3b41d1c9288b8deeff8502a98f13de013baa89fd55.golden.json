@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
-    "scan_timestamp": "2025-12-03T06:51:45.041649"
+    "scan_timestamp": "2025-12-03T07:26:03.550945"
   },
   "content_preview": "from __future__ import annotations\n\nimport time\nimport uuid\nfrom dataclasses import dataclass\nfrom typing import Any, Dict\n\nfrom observability import record_event\n\nfrom infra.sandbox.models import ToolCallRequest, ToolCallResult\nfrom infra.sandbox.sandbox_errors import SandboxTimeoutError\n\n\n@dataclass\nclass MicroVM:\n    \"\"\"Lightweight handle representing a sandboxed microVM instance.\n\n    This is a deterministic stub; no real virtualization is performed.\n    \"\"\"\n\n    id: str\n    resource_limits:...",
-  "creation_timestamp": "2025-12-03T06:51:46.608152",
+  "creation_timestamp": "2025-12-03T07:26:05.272230",
   "version": "1.0"
 }

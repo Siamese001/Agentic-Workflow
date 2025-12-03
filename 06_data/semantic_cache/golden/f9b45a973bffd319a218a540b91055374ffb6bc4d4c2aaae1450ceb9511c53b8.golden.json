@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f9b45a973bffd319a218a540b91055374ffb6bc4d4c2aaae1450ceb9511c53b8",
-    "scan_timestamp": "2025-12-03T06:51:45.070492"
+    "scan_timestamp": "2025-12-03T07:26:03.582629"
   },
   "content_preview": "\"\"\"Redis-backed caching utilities (v10_10 \u00b7 META cache layer).\n\nThis module encapsulates all direct interactions with Redis so that\ncore layers and agents remain pure. It is safe to import even if the\n`redis` package is not installed: imports are performed lazily inside\nhelper functions and surfaced as explicit errors.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport os\nfrom typing import Any, Optional\n\n\nclass RedisNotConfiguredError(RuntimeError):\n    \"\"\"Raised when Redis usage is re...",
-  "creation_timestamp": "2025-12-03T06:51:48.721374",
+  "creation_timestamp": "2025-12-03T07:26:07.629921",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "90f813f6632bd21f2dd36aba89d42dde99db6df187d2b70c7fa435aff7a96c78",
-    "scan_timestamp": "2025-12-03T06:51:45.235265"
+    "scan_timestamp": "2025-12-03T07:26:03.758003"
   },
   "content_preview": "import pytest\n\nfrom stacks_v10_8.bullet_execution import BulletExecutionStack\n\n\n@pytest.mark.asyncio\nasync def test_generate_from_state_async_builds_expected_patch(workflow_context):\n    state = {\n        \"metadata\": {\"workflow_id\": \"wf-bullets\"},\n        \"prompts\": {\"prompts\": {\"bullet_generation_prompt\": \"Write impact bullets.\"}},\n        \"strategy\": {\n            \"strategy_plan\": {\n                \"strategy_name\": \"default\",\n                \"focus_areas\": [\"impact\"],\n                \"key_achi...",
-  "creation_timestamp": "2025-12-03T06:51:57.503602",
+  "creation_timestamp": "2025-12-03T07:26:18.975433",
   "version": "1.0"
 }

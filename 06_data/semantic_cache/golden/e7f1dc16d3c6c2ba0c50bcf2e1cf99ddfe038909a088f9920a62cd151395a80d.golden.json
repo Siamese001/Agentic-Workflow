@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "e7f1dc16d3c6c2ba0c50bcf2e1cf99ddfe038909a088f9920a62cd151395a80d",
-    "scan_timestamp": "2025-12-03T06:51:45.443970"
+    "scan_timestamp": "2025-12-03T07:10:17.695744"
   },
   "content_preview": "{\n  \"tests\": [\n    {\n      \"name\": \"About optional gate present\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Rerank audit block exists\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"HyDE section added\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Self-RAG triggers added\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Runtime toggles merged\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Metadata version updated\",\n      \"pass\": true\n    }\n  ]\n}",
-  "creation_timestamp": "2025-12-03T06:52:14.880844",
+  "creation_timestamp": "2025-12-03T07:10:59.809278",
   "version": "1.0"
 }

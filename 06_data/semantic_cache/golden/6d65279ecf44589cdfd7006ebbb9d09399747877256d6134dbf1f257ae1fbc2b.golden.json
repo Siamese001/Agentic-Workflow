@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "6d65279ecf44589cdfd7006ebbb9d09399747877256d6134dbf1f257ae1fbc2b",
-    "scan_timestamp": "2025-12-03T06:51:45.405787"
+    "scan_timestamp": "2025-12-03T07:10:17.648261"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.10\",\n    \"base_version\": \"v9.22\",\n    \"previous_version\": \"v10.00\",\n    \"patch_version\": \"v10.00.1\",\n    \"release_date\": \"2025-10-14\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Production-ready release with 41 critical gap remediations. Maintains v9.22 architecture while adding boot validation, enhanced RAG pipeline, deterministic classification, complete QA rule c...",
-  "creation_timestamp": "2025-12-03T06:52:11.884176",
+  "creation_timestamp": "2025-12-03T07:10:56.169840",
   "version": "1.0"
 }

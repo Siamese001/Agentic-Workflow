@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ab8cf69bc1258842a0df54cfa216a9a389a5c993e8ac14cd75f19c454aaa86ea",
-    "scan_timestamp": "2025-12-03T06:51:45.050765"
+    "scan_timestamp": "2025-12-03T07:26:03.561035"
   },
   "content_preview": "\"\"\"\nPrompt Registry & Governance for resume generation system.\n\nSingle source of truth for all prompts to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel\n\nfrom core.models.models import PromptDefinition, PromptVersion\n\n\n# ============================================================================\n# ACTOR ROLES & ACL\n# ===============================...",
-  "creation_timestamp": "2025-12-03T06:51:47.121652",
+  "creation_timestamp": "2025-12-03T07:26:05.814105",
   "version": "1.0"
 }

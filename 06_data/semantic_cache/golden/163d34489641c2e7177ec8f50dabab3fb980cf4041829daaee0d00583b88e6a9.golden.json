@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "163d34489641c2e7177ec8f50dabab3fb980cf4041829daaee0d00583b88e6a9",
-    "scan_timestamp": "2025-12-03T06:51:45.256701"
+    "scan_timestamp": "2025-12-03T07:26:03.779148"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------------\n# Helper: normalize QA issues\n# ---------------------------------------------------------------------\ndef _issues(out):\n    qa = (\n        out.get(\"qa\")\n        or out.get(\"resume\", {}).get(\"qa\")\n        or {}\n    )\n    return qa.get(\"issues\", [])\n\n\n# ---------------------------------------------------------------------\n# 1. Confidence score must be present and numeric...",
-  "creation_timestamp": "2025-12-03T06:51:58.344793",
+  "creation_timestamp": "2025-12-03T07:26:20.127031",
   "version": "1.0"
 }

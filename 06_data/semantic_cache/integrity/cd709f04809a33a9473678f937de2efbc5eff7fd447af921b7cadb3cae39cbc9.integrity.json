@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
-  "content_hash": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
+  "hash": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+  "archive_name": "v2",
+  "relative_path": "interpreter_RES_v2.py",
   "file_size": 5084,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
-    "archive_name": "v2",
-    "relative_path": "interpreter_RES_v2.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\interpreter_RES_v2.py",
-    "file_size": 5084,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
-    "scan_timestamp": "2025-12-03T06:51:45.288114"
-  },
-  "verification_timestamp": "2025-12-03T06:52:02.424164",
-  "checksums": {
-    "sha256": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
-    "md5": "302526f599e7279cee6a64d94449f1e3"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:03.813628",
+  "integrity_timestamp": "2025-12-03T07:26:04.406647"
 }

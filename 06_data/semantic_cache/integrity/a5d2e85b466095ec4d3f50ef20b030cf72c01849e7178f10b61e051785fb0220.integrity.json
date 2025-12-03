@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
-  "content_hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
+  "hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
+  "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+  "archive_name": "Agentic-LIC",
+  "relative_path": "tests\\unit\\test_policy_controller_bounds.py",
   "file_size": 2579,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_policy_controller_bounds.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_policy_controller_bounds.py",
-    "file_size": 2579,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
-    "scan_timestamp": "2025-12-03T06:51:45.334863"
-  },
-  "verification_timestamp": "2025-12-03T06:52:08.557322",
-  "checksums": {
-    "sha256": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
-    "md5": "010126610e0b032df782f9532d0b5daf"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:03.860374",
+  "integrity_timestamp": "2025-12-03T07:26:04.451400"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
-    "scan_timestamp": "2025-12-03T06:51:45.475766"
+    "scan_timestamp": "2025-12-03T07:10:17.728898"
   },
   "content_preview": "{\n  \"sender_profile\": {\n    \"name\": \"Amit\",\n    \"title\": \"Chief AI Officer\",\n    \"company\": \"AI Innovations Inc\",\n    \"linkedin_url\": \"https://linkedin.com/in/amit\",\n    \"about_section\": \"Chief AI Officer specializing in Enterprise Generative AI Platforms and Technical Success & Adoption Leadership.\",\n    \"teams\": [\"AI Platform\", \"GenAI R&D\"]\n  },\n  \"recipient_profile\": {\n    \"name\": \"Sarah Johnson\",\n    \"title\": \"VP of Engineering\",\n    \"company\": \"Tech Giants Corp\",\n    \"linkedin_url\": \"https:...",
-  "creation_timestamp": "2025-12-03T06:52:15.824324",
+  "creation_timestamp": "2025-12-03T07:11:00.906308",
   "version": "1.0"
 }

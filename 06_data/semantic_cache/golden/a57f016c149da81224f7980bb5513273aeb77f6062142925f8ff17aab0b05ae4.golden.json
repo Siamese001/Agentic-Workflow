@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
-    "scan_timestamp": "2025-12-03T06:51:45.030756"
+    "scan_timestamp": "2025-12-03T07:26:03.538925"
   },
   "content_preview": "from __future__ import annotations\n\n\"\"\"Implements simple failure-detection helpers that turn raw telemetry into health signals so recurring problems can be fixed before they degrade resume quality.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass FailureSignal:\n    \"\"\"Represents a coarse failure signal used by health policies to judge how serious repeated issues are for resume runs.\"\"\"\n\n    code: str\n    message: str\n    severity: str\n    metadata: Dict...",
-  "creation_timestamp": "2025-12-03T06:51:46.350186",
+  "creation_timestamp": "2025-12-03T07:26:04.984623",
   "version": "1.0"
 }

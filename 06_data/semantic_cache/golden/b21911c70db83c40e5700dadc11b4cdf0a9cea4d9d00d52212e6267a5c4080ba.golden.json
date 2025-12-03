@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b21911c70db83c40e5700dadc11b4cdf0a9cea4d9d00d52212e6267a5c4080ba",
-    "scan_timestamp": "2025-12-03T06:51:45.210109"
+    "scan_timestamp": "2025-12-03T07:26:03.728843"
   },
   "content_preview": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: run_learning_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context call updated to v10_7.\n# - REFACTORED (Fix #14, #17, #19, #20, #24): All async agents\n#   (Summarizer, PatternFinder, Hyp...",
-  "creation_timestamp": "2025-12-03T06:51:56.205185",
+  "creation_timestamp": "2025-12-03T07:26:17.203245",
   "version": "1.0"
 }

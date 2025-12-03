@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8999f5f32ef640afb4f1cc04aaeb38c43ee6656259f594f6edf6543f5fb59475",
-    "scan_timestamp": "2025-12-03T06:51:45.136508"
+    "scan_timestamp": "2025-12-03T07:26:03.651201"
   },
   "content_preview": "from meta.metacognition.models import Hypothesis\nfrom meta.metacognition.refinement import refine_low_confidence\n\n\ndef test_refine_marks_very_low_confidence_as_discarded():\n    hs = [\n        Hypothesis(id=\"h1\", agent_id=\"a1\", content=\"c1\", confidence=0.1),\n        Hypothesis(id=\"h2\", agent_id=\"a1\", content=\"c2\", confidence=0.5),\n    ]\n\n    refined = refine_low_confidence(hs, threshold=0.4)\n    assert refined[0].content.startswith(\"[DISCARDED_CANDIDATE]\")\n    assert \"needs further evidence\" in r...",
-  "creation_timestamp": "2025-12-03T06:51:50.822343",
+  "creation_timestamp": "2025-12-03T07:26:10.188876",
   "version": "1.0"
 }

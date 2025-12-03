@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
-  "content_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+  "hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+  "archive_name": "v2",
+  "relative_path": "gemini_service.py",
   "file_size": 24330,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
-    "archive_name": "v2",
-    "relative_path": "gemini_service.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\gemini_service.py",
-    "file_size": 24330,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
-    "scan_timestamp": "2025-12-03T06:51:45.287424"
-  },
-  "verification_timestamp": "2025-12-03T06:52:02.308413",
-  "checksums": {
-    "sha256": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
-    "md5": "e0936fc825c4d331597b904678cbe9f5"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:03.812864",
+  "integrity_timestamp": "2025-12-03T07:26:04.405690"
 }

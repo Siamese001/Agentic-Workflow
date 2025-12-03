@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2fb9d78cff3bcb42fab77b1b411cdcc9625ca1140d5fa72266666b0961088250",
-    "scan_timestamp": "2025-12-03T06:51:45.107436"
+    "scan_timestamp": "2025-12-03T07:26:03.620827"
   },
   "content_preview": "\"\"\"E2E Multi-Agent Scenario Tests.\"\"\"\n\nclass TestE2EMultiAgent:\n    \"\"\"E2E tests for multi-agent scenarios.\"\"\"\n    \n    def test_planner_executor_reviewer_chain(self):\n        \"\"\"Test planner-executor-reviewer agent chain.\"\"\"\n        agents = [\"planner\", \"executor\", \"reviewer\"]\n        results = []\n        for agent in agents:\n            results.append({\"agent\": agent, \"status\": \"complete\"})\n        assert len(results) == 3\n    \n    def test_parallel_agent_coordination(self):\n        \"\"\"Test pa...",
-  "creation_timestamp": "2025-12-03T06:51:49.984173",
+  "creation_timestamp": "2025-12-03T07:26:09.172038",
   "version": "1.0"
 }

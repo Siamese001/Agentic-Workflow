@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36",
-    "scan_timestamp": "2025-12-03T06:51:45.442882"
+    "scan_timestamp": "2025-12-03T07:10:17.694550"
   },
   "content_preview": "# LIC v11.1 - COMPREHENSIVE TEST EXECUTION REPORT\n\n**Date:** October 29, 2025  \n**System:** LIC-AGENTIC-v11.1 (LinkedIn InMail Cold Outreach)  \n**Test Framework:** pytest 8.4.2 with pytest-asyncio  \n**Python Version:** 3.12.3\n\n---\n\n## EXECUTIVE SUMMARY\n\n| Metric | Count | Percentage |\n|--------|-------|------------|\n| **Total Tests** | 43 | 100% |\n| **Passed** | 38 | 88.4% |\n| **Failed** | 5 | 11.6% |\n| **Skipped** | 0 | 0% |\n| **Errors** | 0 | 0% |\n\n**Pass Rate:** 88.4%  \n**Overall Status:** \u26a0\ufe0f...",
-  "creation_timestamp": "2025-12-03T06:52:14.855785",
+  "creation_timestamp": "2025-12-03T07:10:59.778911",
   "version": "1.0"
 }

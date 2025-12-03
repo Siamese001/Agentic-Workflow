@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "850cf1eb86cfd7a17c0ad87ae14965b34c9a9326e5b5e671c456fbc1e8f9dc35",
-    "scan_timestamp": "2025-12-03T06:51:45.338434"
+    "scan_timestamp": "2025-12-03T07:10:17.567858"
   },
   "content_preview": ".\n                              +-------------------------------------------------------------------------+\n                              | \ud83d\udcda \"THE LIBRARIAN\" (Offline Nightly Agent)                              |\n                              |   Class: `IntelligenceLibrarian`                                        |\n                              |   File: `intelligence_service_LIC.py`                                   |\n                              |                                            ...",
-  "creation_timestamp": "2025-12-03T06:52:08.767041",
+  "creation_timestamp": "2025-12-03T07:10:52.204009",
   "version": "1.0"
 }

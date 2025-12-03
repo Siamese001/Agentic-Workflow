@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8a48f8a2ec000ac04d35e18eb1ee0d6a903ac2ae10d1fa7aef26d56d70e3ffbb",
-    "scan_timestamp": "2025-12-03T06:51:45.266722"
+    "scan_timestamp": "2025-12-03T07:26:03.789347"
   },
   "content_preview": "import pytest\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState, WorkflowPhase\n\n\n@pytest.mark.state\ndef test_legal_transition_succeeds():\n    adapter = StateAdapterStack(context=None)\n    state = MainGraphState()\n\n    updated = adapter.set_phase(state, WorkflowPhase.SAFETY)\n\n    assert updated.phase is WorkflowPhase.SAFETY\n\n\n@pytest.mark.state\ndef test_illegal_transition_raises():\n    adapter = StateAdapterStack(context=None)\n    state = ...",
-  "creation_timestamp": "2025-12-03T06:51:58.627176",
+  "creation_timestamp": "2025-12-03T07:26:20.435674",
   "version": "1.0"
 }

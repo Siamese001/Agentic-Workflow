@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "88faf1632cec521b73598b1051d2c8c0d102242477029002d5ccb001c603e2ba",
-    "scan_timestamp": "2025-12-03T06:51:45.164208"
+    "scan_timestamp": "2025-12-03T07:26:03.681057"
   },
   "content_preview": "# FILE: 10_10/config_profiles_v10_10.py\n\"\"\"\nExecution Profiles (v10_10 \u00b7 Phase 3)\n=====================================\n\nThis module defines the **deterministic, hard execution profiles**\nused by the v10_10 stack.\n\nProfiles drive:\n\n    \u2022 Reasoning strategy (CoT, ToT, ReAct)\n    \u2022 RAG retrieval strategy (BM25, Hybrid, Dense) + HYDE + RRF\n    \u2022 Safety tier (strict, standard, debug)\n    \u2022 Context budgets\n    \u2022 Model tier selection (cheap / balanced / premium)\n    \u2022 Drafting depth / QA depth\n    \u2022 A...",
-  "creation_timestamp": "2025-12-03T06:51:52.083001",
+  "creation_timestamp": "2025-12-03T07:26:11.998678",
   "version": "1.0"
 }

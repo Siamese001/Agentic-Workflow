@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8dc024024bdc7c3641cbbe8e9f2728b13e7417804ec75bacb1cbb59ca08c9157",
-    "scan_timestamp": "2025-12-03T06:51:45.024431"
+    "scan_timestamp": "2025-12-03T07:26:03.532442"
   },
   "content_preview": "\"\"\"Dependency Injection Container\n\nProvides centralized dependency injection for all layers to enforce\nstrict L1-L5 atomicity and prevent direct service imports.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional, TypeVar, Protocol, runtime_checkable\nfrom dataclasses import dataclass, field\nimport logging\n\nfrom l4.pinecone_adapter import PineconeAdapter\nfrom l4.manager import StateManager\nfrom l5.policy import SafetyEngine\n\nlogger = logging.getLogger(__name__)\n\nT = T...",
-  "creation_timestamp": "2025-12-03T06:51:46.096530",
+  "creation_timestamp": "2025-12-03T07:26:04.684794",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cbff61d6f71ff06efe902d5bf148dd2324f89054b132330c433d53bb5003820d",
-    "scan_timestamp": "2025-12-03T06:51:45.286951"
+    "scan_timestamp": "2025-12-03T07:10:17.506678"
   },
   "content_preview": "# File: validation/external.py\n# External Validators Module - V18 Architecture\n# Version: 18.00\n# Contains validation classes that are external-facing or have side effects.\n# Refactored from validator_RES_v2.py\n\nimport logging\nimport re\nimport json\nimport hashlib\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Any\nfrom models_RES import JDEnforcementRule, JDEnforcementResult\nfrom config_RES_v2 import CONFIG\n\n# Mock indicators (from monolithic file)\nmock_indicators = {\n    ...",
-  "creation_timestamp": "2025-12-03T06:52:02.237476",
+  "creation_timestamp": "2025-12-03T07:10:43.058678",
   "version": "1.0"
 }

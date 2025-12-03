@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "af4d61748805b1a7ed5ffd429769e9b1fdaed37ae53fdd1b39b5036dfa0b34ec",
-    "scan_timestamp": "2025-12-03T06:51:45.276961"
+    "scan_timestamp": "2025-12-03T07:26:03.802135"
   },
   "content_preview": "# hops/hop_8_qa_report.py\n\"\"\"\nHop 8: QA Report Generation - HIGH-SIGNAL OVERWRITE\n\nThis is a comprehensive diagnostic report generator.\n1. It reads outputs from HOP-0, 1, 3, 4, 5, 6, and 7 to build\n   a complete picture of the pipeline run.\n2. It generates an Executive Summary with the final gate decision,\n   RAG signal quality, and final thematic alignment score.\n3. It includes a \"RAG Deep Dive\" that surfaces the agentic\n   evidence_log and critique_history from HOP-0.\n4. It shows the \"Content ...",
-  "creation_timestamp": "2025-12-03T06:51:59.312052",
+  "creation_timestamp": "2025-12-03T07:26:21.353965",
   "version": "1.0"
 }

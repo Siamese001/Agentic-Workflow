@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df",
-    "scan_timestamp": "2025-12-03T06:51:45.065101"
+    "scan_timestamp": "2025-12-03T07:26:03.577437"
   },
   "content_preview": "\"\"\"\nL4 state validation for resume job alignment workflows.\n\nPrevents injection attacks for safe resume enhancement processing.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\nfrom typing import Any, Callable, List, Optional\nfrom dataclasses import dataclass, is_dataclass\nfrom enum import Enum\nimport logging\n\nfrom .types import StateValidationError\n\nlogger = logging.getLogger(__name__)\n\n\nclass ValidationLevel(str, Enum):\n    \"\"\"\n    Security validation levels for resume workflow state data.\n ...",
-  "creation_timestamp": "2025-12-03T06:51:48.191497",
+  "creation_timestamp": "2025-12-03T07:26:06.974030",
   "version": "1.0"
 }

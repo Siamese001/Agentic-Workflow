@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "498fc3d3cf8e75dcb4db0848d0b294b62bc73fbfd74e2cb4fd44c7346fd6458f",
-    "scan_timestamp": "2025-12-03T06:51:45.441279"
+    "scan_timestamp": "2025-12-03T07:10:17.692654"
   },
   "content_preview": "{\n  \"patch_bundle\": \"LIC_PATCH_C023_C024_v1.0\",\n  \"updated_file\": \"LIC_10-03-2025_v7.1.json\",\n  \"changes\": [\n    {\n      \"path\": \"3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/C_LEVEL/date_cta_enabled\",\n      \"change\": \"ADDED\"\n    },\n    {\n      \"path\": \"3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/C_LEVEL/date_cta_template\",\n      \"change\": \"ADDED\"\n    },\n    {\n      \"path\": \"3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/C...",
-  "creation_timestamp": "2025-12-03T06:52:14.798948",
+  "creation_timestamp": "2025-12-03T07:10:59.729279",
   "version": "1.0"
 }

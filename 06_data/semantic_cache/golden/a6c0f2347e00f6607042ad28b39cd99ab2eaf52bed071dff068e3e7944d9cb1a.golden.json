@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "a6c0f2347e00f6607042ad28b39cd99ab2eaf52bed071dff068e3e7944d9cb1a",
-    "scan_timestamp": "2025-12-03T06:51:45.445423"
+    "scan_timestamp": "2025-12-03T07:10:17.697261"
   },
   "content_preview": "LINKEDIN OUTREACH \u2014 CANONICAL\n\nROLE\n\u2022 Recruiter Outreach Automation Specialist\n\u2022 Validates contacts, regions, URLs, and message type compatibility\n\u2022 Enforces atomic QA, strict schema compliance, precise message standards, and hard blocking rules for Single or Multiple workflows\n\u2022 Explicitly excludes contacts based in India or ambiguous regions\n\u2022 Dash policy: only hyphen-minus and en dash for ranges; em dash and \u201c--\u201d are banned\n\nPROMPT GOVERNANCE \u2014 MPv5 COMPLIANCE\n\u2022 Every message is produced via ...",
-  "creation_timestamp": "2025-12-03T06:52:14.922631",
+  "creation_timestamp": "2025-12-03T07:10:59.843906",
   "version": "1.0"
 }

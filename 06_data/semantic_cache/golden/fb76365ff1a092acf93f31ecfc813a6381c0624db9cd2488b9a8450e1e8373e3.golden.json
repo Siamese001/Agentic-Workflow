@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fb76365ff1a092acf93f31ecfc813a6381c0624db9cd2488b9a8450e1e8373e3",
-    "scan_timestamp": "2025-12-03T06:51:45.035744"
+    "scan_timestamp": "2025-12-03T07:26:03.544340"
   },
   "content_preview": "\"\"\"\nJudge engine for r\u00e9sum\u00e9 processing safety verdict generation.\n\nProvides deterministic safety evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import Any, Dict\n\nfrom .decisions import JudgeVerdict, RulesEngineResult\nfrom .models import SafetyContext\n\n\ndef evaluate_with_guard_model(\n    context: SafetyContext,\n    rules_result: RulesEngineResult,\n) -> JudgeVerdict:\n    \"\"\"\n    Evaluates r\u00e9sum\u00e9 processing safety with deterministic guard model.\n\n    Provides structured...",
-  "creation_timestamp": "2025-12-03T06:51:46.445722",
+  "creation_timestamp": "2025-12-03T07:26:05.087432",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".txt",
     "is_eligible": true,
     "sha256_hash": "a722dbf5f37071ddf4a88f75a514166968fc2474f55d7193bbf57de18d9ec5e9",
-    "scan_timestamp": "2025-12-03T06:51:45.360094"
+    "scan_timestamp": "2025-12-03T07:10:17.596597"
   },
   "content_preview": "--- LIC_10-02-2025_v6.5.json\n+++ LIC_10-03-2025_v6.6.json\n@@ -2,7 +2,7 @@\n   \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n   \"version\": \"LIC_10-01-2025_v4\",\n   \"metadata\": {\n-    \"version\": \"LIC_10-02-2025_v6.5\",\n+    \"version\": \"LIC_10-03-2025_v6.6\",\n     \"patches\": [\n       \"C001\",\n       \"C002\",\n@@ -14,7 +14,8 @@\n       \"C008\",\n       \"C009\",\n       \"C010\",\n-      \"C011\"\n+      \"C011\",\n+      \"C012\"\n     ],\n     \"changelog\": \"external://CHANGELOG.md\",\n     \"sha256\": \"70c43bc1a22ab5185e...",
-  "creation_timestamp": "2025-12-03T06:52:10.255202",
+  "creation_timestamp": "2025-12-03T07:10:54.134972",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
-    "scan_timestamp": "2025-12-03T06:51:45.029449"
+    "scan_timestamp": "2025-12-03T07:26:03.537777"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import List\n\nfrom core.models.models import ExecutionProfile\n\nfrom eval.golden_state.datasets import load_golden_inputs, load_golden_cases\nfrom eval.golden_state.evaluator import evaluate_case_output\nfrom eval.golden_state.judge import evaluate_output\nfrom eval.golden_state.models import EvalResult, GoldenOutput\n\n\ndef _mock_agent_output(input_text: str) -> str:\n    \"\"\"Acts as a deterministic stand-in for the real pipeline so golden tests can measur...",
-  "creation_timestamp": "2025-12-03T06:51:46.330896",
+  "creation_timestamp": "2025-12-03T07:26:04.959112",
   "version": "1.0"
 }

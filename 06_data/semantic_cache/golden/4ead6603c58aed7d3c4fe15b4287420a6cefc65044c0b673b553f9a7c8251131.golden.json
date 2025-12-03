@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4ead6603c58aed7d3c4fe15b4287420a6cefc65044c0b673b553f9a7c8251131",
-    "scan_timestamp": "2025-12-03T06:51:45.157864"
+    "scan_timestamp": "2025-12-03T07:26:03.675059"
   },
   "content_preview": "#!/usr/bin/env python3\n\"\"\"\nMaps import paths to maintain clean resume generation architecture.\n\nEnsures code organization supports efficient resume generation\nand easier maintenance for future enhancements.\n\"\"\"\n\n# Import mapping for canonical structure enforcement\nIMPORT_MAPPINGS = {\n    # Infrastructure merge\n    \"infrastructure\": \"infra\",\n    \n    # Agents decomposition\n    \"agents.planning\": \"l1\",\n    \"agents.execution\": \"l2\", \n    \"agents.meta\": \"meta\",\n    \n    # Layer migrations\n    \"state...",
-  "creation_timestamp": "2025-12-03T06:51:51.719610",
+  "creation_timestamp": "2025-12-03T07:26:11.400599",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
-    "scan_timestamp": "2025-12-03T06:51:45.116353"
+    "scan_timestamp": "2025-12-03T07:26:03.630291"
   },
   "content_preview": "from eval.golden_state.models import JudgeVerdict\nfrom eval.golden_state.scorer import aggregate_scores\n\n\ndef test_aggregate_scores_basic():\n    verdicts = [\n        JudgeVerdict(score=1.0, rating=\"pass\", explanation=\"\"),\n        JudgeVerdict(score=0.0, rating=\"fail\", explanation=\"\"),\n    ]\n\n    agg = aggregate_scores(verdicts)\n\n    assert agg[\"avg_score\"] == 0.5\n    assert agg[\"pass_count\"] == 1.0\n    assert agg[\"fail_count\"] == 1.0\n    assert agg[\"total\"] == 2.0\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:51:50.306085",
+  "creation_timestamp": "2025-12-03T07:26:09.577809",
   "version": "1.0"
 }

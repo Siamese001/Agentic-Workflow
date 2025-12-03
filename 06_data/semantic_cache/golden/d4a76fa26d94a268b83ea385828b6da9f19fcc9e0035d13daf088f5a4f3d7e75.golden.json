@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75",
-    "scan_timestamp": "2025-12-03T06:51:45.071373"
+    "scan_timestamp": "2025-12-03T07:26:03.583563"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef generate_initial_hypotheses(task: str, rag_result: Any, agent_card: Any) -> List[Hypothesis]:\n    \"\"\"Generate a small set of coarse hypotheses from task + RAG.\n\n    This implementation is deterministic and uses only cheap heuristics:\n    - if there is any evidence, we create 1\u20133 simple hypotheses whose\n      confidence is proportional to the number of evidence items.\n    - if ...",
-  "creation_timestamp": "2025-12-03T06:51:48.740382",
+  "creation_timestamp": "2025-12-03T07:26:07.648873",
   "version": "1.0"
 }

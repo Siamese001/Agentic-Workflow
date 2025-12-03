@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "daf61b844b0e6fc829549cce8adede9636c5274cf0cfdbf0121d639e46467ced",
-    "scan_timestamp": "2025-12-03T06:51:45.193315"
+    "scan_timestamp": "2025-12-03T07:26:03.710505"
   },
   "content_preview": "\"\"\"Local stub shim for the chromadb package used in tests.\"\"\"\n\nfrom vendor.chromadb_stub import (\n    Client,\n    Collection,\n    HttpClient,\n    PersistentClient,\n    embedding_functions as _embedding_functions,\n)\n\n__all__ = [\n    \"Client\",\n    \"Collection\",\n    \"HttpClient\",\n    \"PersistentClient\",\n    \"embedding_functions\",\n]\n\n\nclass utils:  # pragma: no cover - namespace compatibility\n    embedding_functions = _embedding_functions\n\n\nembedding_functions = _embedding_functions\n",
-  "creation_timestamp": "2025-12-03T06:51:54.734047",
+  "creation_timestamp": "2025-12-03T07:26:15.272815",
   "version": "1.0"
 }

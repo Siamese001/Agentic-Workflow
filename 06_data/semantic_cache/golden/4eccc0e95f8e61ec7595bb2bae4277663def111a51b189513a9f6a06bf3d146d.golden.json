@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "4eccc0e95f8e61ec7595bb2bae4277663def111a51b189513a9f6a06bf3d146d",
-    "scan_timestamp": "2025-12-03T06:51:45.234299"
+    "scan_timestamp": "2025-12-03T07:26:03.756643"
   },
   "content_preview": "# Flattened test view\n\n`tests_flat/` is the production test surface. Every file in this directory is\nautomatically generated from the canonical sources in `tests/` by running\n`python tools/flatten_tests.py`. The generator embeds each source module\nverbatim so pytest can execute the flattened copies without mutating the\noriginal hierarchy.\n\nKey guarantees:\n- The canonical suite under `tests/` remains untouched and authoritative.\n- Each flattened file contains an embedded copy of its source plus a...",
-  "creation_timestamp": "2025-12-03T06:51:57.465318",
+  "creation_timestamp": "2025-12-03T07:26:18.927795",
   "version": "1.0"
 }

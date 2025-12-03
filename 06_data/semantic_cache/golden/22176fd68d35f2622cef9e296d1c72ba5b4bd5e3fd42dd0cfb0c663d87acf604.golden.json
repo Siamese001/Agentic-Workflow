@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
-    "scan_timestamp": "2025-12-03T06:51:45.329958"
+    "scan_timestamp": "2025-12-03T07:10:17.559317"
   },
   "content_preview": "from src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs\n\n\nclass _Inputs:\n    prompt = \"Hello\"\n    company_id = \"ACME\"\n    contact_id = \"C1\"\n\n\ndef test_safe_route_equivalence():\n    stack = OutreachStack(ReasoningToggles())\n    out = stack.run(StackInputs(prompt=\"Hello\", company_id=\"ACME\", contact_id=\"C1\"))\n    assert \"draft\" in out\n    assert out[\"verdict\"].passed\n",
-  "creation_timestamp": "2025-12-03T06:52:08.418750",
+  "creation_timestamp": "2025-12-03T07:10:51.700268",
   "version": "1.0"
 }

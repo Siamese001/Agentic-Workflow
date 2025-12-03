@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
-    "scan_timestamp": "2025-12-03T06:51:45.334043"
+    "scan_timestamp": "2025-12-03T07:10:17.563834"
   },
   "content_preview": "\"\"\"Unit tests covering MessageArchitect planning and composition.\"\"\"\nfrom types import SimpleNamespace\nfrom unittest.mock import patch\n\nfrom src.lic_agentic.agents.k3_message_architect import DraftPackage, MessageArchitect\nfrom src.lic_agentic.rag.content_store import ContentStore\nfrom src.lic_agentic.rag.retrieval_planner import RetrievalJob\nfrom src.lic_agentic.rag.tool_registry import BaseTool, ToolRegistry, ToolResult\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\nclass Sta...",
-  "creation_timestamp": "2025-12-03T06:52:08.527350",
+  "creation_timestamp": "2025-12-03T07:10:51.896254",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
-    "scan_timestamp": "2025-12-03T06:51:45.287424"
+    "scan_timestamp": "2025-12-03T07:10:17.507182"
   },
   "content_preview": "# File: gemini_service.py\n# Version: 2.0.2 (Patched) - Production Ready (Config-Managed Constants)\n# Unified Gemini API Service - Hardened for Production\n# Centralizes all Gemini API call logic for the Resume Generation Engine\n\nimport json\nimport logging\nimport os\nimport re\nimport time\nimport hashlib\nfrom typing import Any, Dict, List, Optional, Tuple\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n# Robust import handling for google-generativeai\ntry:\n    import google.generativeai as g...",
-  "creation_timestamp": "2025-12-03T06:52:02.308360",
+  "creation_timestamp": "2025-12-03T07:10:43.147524",
   "version": "1.0"
 }

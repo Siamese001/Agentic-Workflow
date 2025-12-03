@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
-    "scan_timestamp": "2025-12-03T06:51:45.054938"
+    "scan_timestamp": "2025-12-03T07:26:03.565908"
   },
   "content_preview": "\"\"\"\nV6 Prompt Integration for resume generation system.\n\nIntegrates instructional prompts with planners to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom .instructional_injection_v6 import (\n    InstructionalPrompt,\n    InstructionalLayer,\n    InstructionalExtension,\n    LayerContent,\n    ExtensionContent,\n    create_l1_planner_prompt,\n    create_l2_executor_prompt,\n    add_rag_extension,\n    add...",
-  "creation_timestamp": "2025-12-03T06:51:47.384358",
+  "creation_timestamp": "2025-12-03T07:26:06.084353",
   "version": "1.0"
 }

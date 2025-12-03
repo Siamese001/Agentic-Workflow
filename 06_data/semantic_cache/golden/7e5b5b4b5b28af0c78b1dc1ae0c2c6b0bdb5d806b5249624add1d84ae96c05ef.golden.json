@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
-    "scan_timestamp": "2025-12-03T06:51:45.036226"
+    "scan_timestamp": "2025-12-03T07:26:03.544798"
   },
   "content_preview": "\"\"\"\nControl plane routing for r\u00e9sum\u00e9 processing safety policy selection.\n\nProvides deterministic rule resolution for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import List\n\nfrom .models import PolicyRule, SafetyContext\n\n\ndef default_rules_for(agent_id: str | None, task_type: str | None) -> List[PolicyRule]:\n    \"\"\"\n    Returns default safety rules for r\u00e9sum\u00e9 processing agent and task combinations.\n\n    Ensures appropriate policy enforcement for comprehensive r\u00e9sum\u00e9 enhancement ...",
-  "creation_timestamp": "2025-12-03T06:51:46.460953",
+  "creation_timestamp": "2025-12-03T07:26:05.102411",
   "version": "1.0"
 }

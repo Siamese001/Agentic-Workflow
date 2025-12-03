@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c11e8b4a3a8f62bf073ea841ce7165e99f958810c31ddc2b99f7b63f39f58693",
-    "scan_timestamp": "2025-12-03T06:51:45.170620"
+    "scan_timestamp": "2025-12-03T07:26:03.687003"
   },
   "content_preview": "# FILE: 10_10/simulation.py\n\"\"\"\nPhase-3 Simulation Harness (v10_10) \u2014 Batch D (Testing & Simulation)\n====================================================================\n\nThis module provides a meta-level simulation system for the v10_10 stack.\n\nIt focuses on:\n\n  \u2022 Exercising the Phase-3 knobs across multiple scenarios:\n        - HYDE enabled vs disabled\n        - RRF strategies\n        - QA council size\n        - Correction-loop depth\n        - Telemetry routing modes\n\n  \u2022 Using the real entryp...",
-  "creation_timestamp": "2025-12-03T06:51:52.734198",
+  "creation_timestamp": "2025-12-03T07:26:12.804676",
   "version": "1.0"
 }

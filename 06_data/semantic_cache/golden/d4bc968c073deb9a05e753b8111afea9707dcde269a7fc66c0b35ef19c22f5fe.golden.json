@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d4bc968c073deb9a05e753b8111afea9707dcde269a7fc66c0b35ef19c22f5fe",
-    "scan_timestamp": "2025-12-03T06:51:45.195925"
+    "scan_timestamp": "2025-12-03T07:26:03.713050"
   },
   "content_preview": "\"\"\"Agent base classes for v10.7.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport os\nfrom datetime import datetime\nfrom typing import TYPE_CHECKING, Any, Dict, Optional\n\nfrom .constants import legacy_model_alias\nfrom .services import track_metrics\n\nif TYPE_CHECKING:  # pragma: no cover\n    from .clients import AsyncBaseModelClient\n    from .context import WorkflowContext\n\nlogger = logging.getLogger(\"core_v10_7\")\n\n\n# =======================================================...",
-  "creation_timestamp": "2025-12-03T06:51:54.966810",
+  "creation_timestamp": "2025-12-03T07:26:15.609249",
   "version": "1.0"
 }

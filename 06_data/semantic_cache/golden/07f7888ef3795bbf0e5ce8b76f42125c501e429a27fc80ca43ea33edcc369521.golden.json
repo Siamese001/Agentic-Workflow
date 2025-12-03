@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
-    "scan_timestamp": "2025-12-03T06:51:45.315226"
+    "scan_timestamp": "2025-12-03T07:10:17.539790"
   },
   "content_preview": "\"\"\"Validator agent for outreach drafts.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Mapping\n\nfrom ..qa import MetricsTracker, QAResult, QAValidator\n\n\n@dataclass(frozen=True)\nclass ValidationResult:\n    \"\"\"Outcome of validator execution.\"\"\"\n\n    passed: bool\n    reasons: tuple[str, ...]\n    final_draft: str\n    attempts: int\n    qa_result: QAResult\n\n\nArtifactMap = Mapping[str, str]\n\n\nclass ValidatorAgent:\n    \"\"\"Apply QA rules and perform limi...",
-  "creation_timestamp": "2025-12-03T06:52:07.787656",
+  "creation_timestamp": "2025-12-03T07:10:50.764261",
   "version": "1.0"
 }

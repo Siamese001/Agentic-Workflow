@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "40819043f010194dea6cb523550847c47acadb9c39da5fd3619cc06ec5f9069d",
-    "scan_timestamp": "2025-12-03T06:51:45.176464"
+    "scan_timestamp": "2025-12-03T07:26:03.693958"
   },
   "content_preview": "# \ud83d\ude80 Agentic Workflow \u2014 v10.8 Core Architecture (Flat L1\u2013L5 Design)\n### Clean, Modern, Deterministic Agentic AI Architecture\n\nThis branch (`10_8_core`) contains the next-generation **v10.8 agentic architecture**, built cleanly from the ground up with **strict L1\u2013L5 layering**, a **flat file structure**, and **zero legacy contamination** from v10.7.\n\nThis structure is optimized for:\n- modularity  \n- testability  \n- safety  \n- state determinism  \n- ChatGPT/Codex ingestion  \n- flat repo portability ...",
-  "creation_timestamp": "2025-12-03T06:51:53.414022",
+  "creation_timestamp": "2025-12-03T07:26:13.630555",
   "version": "1.0"
 }

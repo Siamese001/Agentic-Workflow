@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "add7f2129adc7f6239bc956d5015c8c661aa87db22f97837cc1835dbf0298fdf",
-    "scan_timestamp": "2025-12-03T06:51:45.407566"
+    "scan_timestamp": "2025-12-03T07:10:17.650506"
   },
   "content_preview": "LinkedInCanonical \u2014 2025-09-12 v3.1 (FULL, ZLO \u2014 Lifecycle Gating Fixes and Archetype Flow Corrections). v3.1 is a zero-loss overwrite of v3.00 that corrects lifecycle gating errors identified in Nuclear RCA. Source baseline: LinkedInCanonical \u2014 2025-09-11 v3.00.\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ, run canonical QA sequences, compute scoring, and emit Auto NDP. You can...",
-  "creation_timestamp": "2025-12-03T06:52:11.919832",
+  "creation_timestamp": "2025-12-03T07:10:56.227609",
   "version": "1.0"
 }

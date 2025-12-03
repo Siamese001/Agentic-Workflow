@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "57b2c5b9299fcc5b3273e79fa0d08ec6ce228c3f475918fee93541a55ab20d78",
-    "scan_timestamp": "2025-12-03T06:51:45.392169"
+    "scan_timestamp": "2025-12-03T07:10:17.632900"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.3\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.3\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.3: Replaced toggle table truncation logic with multi-table chunking to display all 7 K-nodes. Builds on v8.5.2 K.3 Grounding Hardening.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.5.3\",\n        \"date\": \"2025-10-07\",\n        \"author\"...",
-  "creation_timestamp": "2025-12-03T06:52:11.425733",
+  "creation_timestamp": "2025-12-03T07:10:55.576884",
   "version": "1.0"
 }

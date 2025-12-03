@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "aaaf900d2cf1d5d27c0fd14512b4b7cd561fd40954d2dcd05f388fc9104a880d",
-    "scan_timestamp": "2025-12-03T06:51:45.073218"
+    "scan_timestamp": "2025-12-03T07:26:03.585560"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom core.models.models import CouncilVote, Evidence, RAGResult, RetrievalConfig\n\n\ndef _apply_council_weights(evidence: Sequence[Evidence], council: Optional[CouncilVote]) -> List[Evidence]:\n    \"\"\"Apply QA-council post-fusion weighting to Evidence scores.\n\n    Selected id receives a small boost; all others are slightly demoted.\n    This mirrors the behavior previously implemented in retrieval...",
-  "creation_timestamp": "2025-12-03T06:51:48.864861",
+  "creation_timestamp": "2025-12-03T07:26:07.789279",
   "version": "1.0"
 }

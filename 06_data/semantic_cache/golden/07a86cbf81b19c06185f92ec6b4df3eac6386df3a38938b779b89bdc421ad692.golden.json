@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "07a86cbf81b19c06185f92ec6b4df3eac6386df3a38938b779b89bdc421ad692",
-    "scan_timestamp": "2025-12-03T06:51:45.264626"
+    "scan_timestamp": "2025-12-03T07:26:03.787218"
   },
   "content_preview": "import copy\n\nimport pytest\n\nfrom core_v10_7 import BulletPlan, DraftPlan, RAGPlan\nfrom stacks_v10_8 import BulletPlanningStack, DraftPlanningStack, RAGPlanningStack\n\n\n@pytest.fixture()\ndef planning_state() -> dict:\n    return {\n        \"metadata\": {\"workflow_id\": \"wf-plan\"},\n        \"job\": {\n            \"job_title\": \"Senior Data Scientist\",\n            \"company\": \"Acme Robotics\",\n            \"summary\": \"Build decision systems that power autonomous fulfillment\",\n            \"top_requirements\": [\"...",
-  "creation_timestamp": "2025-12-03T06:51:58.570151",
+  "creation_timestamp": "2025-12-03T07:26:20.369619",
   "version": "1.0"
 }

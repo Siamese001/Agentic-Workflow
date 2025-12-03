@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-  "content_hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
+  "hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
+  "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
+  "archive_name": "deprecated in v13",
+  "relative_path": "validation_LIC.py",
   "file_size": 22331,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
-    "archive_name": "deprecated in v13",
-    "relative_path": "validation_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\validation_LIC.py",
-    "file_size": 22331,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-    "scan_timestamp": "2025-12-03T06:51:45.481001"
-  },
-  "verification_timestamp": "2025-12-03T06:52:16.642549",
-  "checksums": {
-    "sha256": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-    "md5": "01176dafeb04894a7777a3b180f3bf75"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:04.032941",
+  "integrity_timestamp": "2025-12-03T07:26:04.566192"
 }

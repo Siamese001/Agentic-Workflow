@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "48d58d28174846723f63506fc8cf44963b471cf61f9a467a915919c4b723f215",
-    "scan_timestamp": "2025-12-03T06:51:45.229448"
+    "scan_timestamp": "2025-12-03T07:26:03.750501"
   },
   "content_preview": "import asyncio\nimport pytest\n\nfrom core_v10_7 import (\n    CacheManager,\n    CircuitBreaker,\n    CircuitBreakerOpenError,\n    ModelAPIError,\n    exponential_backoff_retry,\n)\n\n# ---- CircuitBreaker matrix (threshold x pattern) \u2192 12 tests\n@pytest.mark.parametrize(\"threshold,failures,opens\", [\n    (1, 1, True), (1, 0, False),\n    (2, 1, False), (2, 2, True),\n    (3, 2, False), (3, 3, True),\n])\ndef test_circuit_breaker_opening_behavior(threshold, failures, opens):\n    cb = CircuitBreaker(failure_thr...",
-  "creation_timestamp": "2025-12-03T06:51:57.292809",
+  "creation_timestamp": "2025-12-03T07:26:18.732781",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
-    "scan_timestamp": "2025-12-03T06:51:45.092018"
+    "scan_timestamp": "2025-12-03T07:26:03.605169"
   },
   "content_preview": "# Pinecone Vector Database Integration\n\n## Overview\n\nThe Agentic-Workflow-10_10 system now includes full Pinecone vector database integration for semantic search and retrieval operations. The integration follows the strict L1/L2/L3 layering architecture.\n\n## Architecture\n\n### Layer Separation\n\n- **L1 (Planning)**: `l1/vector_search_planning.py`\n  - Pure planning functions that generate typed plans\n  - No actual vector operations or SDK calls\n  - Functions: `plan_vector_search()`, `plan_vector_up...",
-  "creation_timestamp": "2025-12-03T06:51:49.648579",
+  "creation_timestamp": "2025-12-03T07:26:08.769544",
   "version": "1.0"
 }

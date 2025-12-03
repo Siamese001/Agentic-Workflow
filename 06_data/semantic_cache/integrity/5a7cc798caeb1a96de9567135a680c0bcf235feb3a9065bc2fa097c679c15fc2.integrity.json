@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "5a7cc798caeb1a96de9567135a680c0bcf235feb3a9065bc2fa097c679c15fc2",
-  "content_hash": "5a7cc798caeb1a96de9567135a680c0bcf235feb3a9065bc2fa097c679c15fc2",
+  "hash": "5a7cc798caeb1a96de9567135a680c0bcf235feb3a9065bc2fa097c679c15fc2",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative_path": "pytest.ini",
   "file_size": 1098,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
-    "archive_name": "Agentic-Workflow-10_7_main",
-    "relative_path": "pytest.ini",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\pytest.ini",
-    "file_size": 1098,
-    "file_extension": ".ini",
-    "is_eligible": false,
-    "sha256_hash": "5a7cc798caeb1a96de9567135a680c0bcf235feb3a9065bc2fa097c679c15fc2",
-    "scan_timestamp": "2025-12-03T06:51:45.206516"
-  },
-  "verification_timestamp": "2025-12-03T06:52:16.829516",
-  "checksums": {
-    "sha256": "5a7cc798caeb1a96de9567135a680c0bcf235feb3a9065bc2fa097c679c15fc2",
-    "md5": "4cea87c04bb52ef7bbe49f907e0f3927"
-  }
+  "file_extension": ".ini",
+  "is_eligible": false,
+  "scan_timestamp": "2025-12-03T07:26:03.723280",
+  "integrity_timestamp": "2025-12-03T07:26:04.307588"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a0b21e181c1345215555fc36ba882ff5e1c570b8a29e9bb598284b21a0fd5bcd",
-    "scan_timestamp": "2025-12-03T06:51:45.333235"
+    "scan_timestamp": "2025-12-03T07:10:17.562991"
   },
   "content_preview": "\"\"\"EvidenceRegistry behavior tests.\"\"\"\nfrom src.lic_agentic.rag.evidence_registry import EvidenceRegistry\n\n\ndef test_evidence_registry_list_filters_scope():\n    registry = EvidenceRegistry()\n    a1 = registry.upsert(\n        \"company\",\n        \"ACME\",\n        \"http://example.com/a\",\n        \"Summary A\",\n        \"2025-01-01\",\n        0.9,\n        \"value_wedge\",\n    )\n    _ = registry.upsert(\n        \"contact\",\n        \"ACME\",\n        \"http://example.com/b\",\n        \"Summary B\",\n        \"2025-01-0...",
-  "creation_timestamp": "2025-12-03T06:52:08.483540",
+  "creation_timestamp": "2025-12-03T07:10:51.840371",
   "version": "1.0"
 }

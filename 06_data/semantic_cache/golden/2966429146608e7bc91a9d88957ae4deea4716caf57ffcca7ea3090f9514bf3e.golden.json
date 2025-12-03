@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
-    "scan_timestamp": "2025-12-03T06:51:45.028552"
+    "scan_timestamp": "2025-12-03T07:26:03.537249"
   },
   "content_preview": "from __future__ import annotations\n\nfrom eval.golden_state.models import GoldenStateTestCase, JudgeVerdict\n\n\ndef evaluate_output(test_case: GoldenStateTestCase, agent_output: str) -> JudgeVerdict:\n    \"\"\"Deterministic judge over agent output for a given test case.\n\n    This initial implementation is intentionally simple and does not\n    call any language models. It uses string heuristics to produce a\n    coarse score in [0.0, 1.0].\n    \"\"\"\n\n    text = (agent_output or \"\").strip().lower()\n    if ...",
-  "creation_timestamp": "2025-12-03T06:51:46.317172",
+  "creation_timestamp": "2025-12-03T07:26:04.944109",
   "version": "1.0"
 }

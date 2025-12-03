@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "57602cfadfde381e2201f4099def31c078743a8cc6bb473afe1e1885b0479c71",
-    "scan_timestamp": "2025-12-03T06:51:45.235981"
+    "scan_timestamp": "2025-12-03T07:26:03.758782"
   },
   "content_preview": "import pytest\n\nfrom stacks_v10_8.rag_execution import RAGExecutionStack\n\n\n@pytest.mark.asyncio\nasync def test_run_from_state_async_returns_patch(monkeypatch, workflow_context):\n    state = {\"metadata\": {\"workflow_id\": \"wf-rag\"}}\n    stack = RAGExecutionStack(workflow_context)\n\n    async def fake_run_async(state_arg, workflow_id_arg):\n        assert workflow_id_arg == \"wf-rag\"\n        assert state_arg is state\n        return {\"resume\": {\"experience_bullets\": [\"x\"]}, \"rag\": {\"plan\": {}, \"metadata\"...",
-  "creation_timestamp": "2025-12-03T06:51:57.530468",
+  "creation_timestamp": "2025-12-03T07:26:19.016800",
   "version": "1.0"
 }

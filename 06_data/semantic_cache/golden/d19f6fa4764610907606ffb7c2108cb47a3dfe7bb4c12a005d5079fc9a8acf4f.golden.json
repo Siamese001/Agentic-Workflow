@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
-    "scan_timestamp": "2025-12-03T06:51:45.152660"
+    "scan_timestamp": "2025-12-03T07:26:03.668560"
   },
   "content_preview": "from orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole  # normalized import\n\n\ndef test_agent_registry_register_and_lookup():\n    registry = AgentRegistry()\n\n    a1 = AgentCard(agent_id=\"planner-1\", role=AgentRole.PLANNER)\n    a2 = AgentCard(agent_id=\"qa-1\", role=AgentRole.QA)\n\n    registry.register_agent(a1)\n    registry.register_agent(a2)\n\n    assert registry.get_agent(\"planner-1\") is a1\n    assert registry.get_...",
-  "creation_timestamp": "2025-12-03T06:51:51.300217",
+  "creation_timestamp": "2025-12-03T07:26:10.863147",
   "version": "1.0"
 }

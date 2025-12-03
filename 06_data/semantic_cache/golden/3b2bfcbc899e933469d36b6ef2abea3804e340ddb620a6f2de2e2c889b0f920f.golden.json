@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "3b2bfcbc899e933469d36b6ef2abea3804e340ddb620a6f2de2e2c889b0f920f",
-    "scan_timestamp": "2025-12-03T06:51:45.464418"
+    "scan_timestamp": "2025-12-03T07:10:17.716628"
   },
   "content_preview": "# LinkedInCanonical - 2025-09-08 v2.5 (ZLO from v2.3 with Transparent Scoring and Iterative Regeneration)\n\n## 1) ROLE\nYou are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance gates defined here.\n\nYou must:\n- Run the Entrance Gate operator sequence 1-3G in order and fail-closed on any miss.\n- Enforce formatting (URL, Subject, Body, Signature), structure (Capability Frame, Insights, Bridge, Bullets, CTA), archetype rules, sector framing, and ...",
-  "creation_timestamp": "2025-12-03T06:52:15.461206",
+  "creation_timestamp": "2025-12-03T07:11:00.459122",
   "version": "1.0"
 }

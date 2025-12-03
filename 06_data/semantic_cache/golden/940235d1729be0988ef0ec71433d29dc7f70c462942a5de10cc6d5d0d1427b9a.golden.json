@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "940235d1729be0988ef0ec71433d29dc7f70c462942a5de10cc6d5d0d1427b9a",
-    "scan_timestamp": "2025-12-03T06:51:45.166210"
+    "scan_timestamp": "2025-12-03T07:26:03.682217"
   },
   "content_preview": "# FILE: 10_10/l3.py\n\"\"\"\nL3 Orchestration Layer (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n==================================================\n\nResponsibilities (strict L3-only):\n\n    \u2022 Orchestrate the end-to-end workflow at the L3 layer.\n    \u2022 Delegate all DAG execution and correction-loop logic to workflow_graph.\n    \u2022 Wrap orchestration in deterministic spans and node-level telemetry.\n    \u2022 Coordinate with L2 (execution) and L4/L5 (state, safety) through typed\n      result bundles only.\n\nThis module MUST NOT:\n...",
-  "creation_timestamp": "2025-12-03T06:51:52.306984",
+  "creation_timestamp": "2025-12-03T07:26:12.282179",
   "version": "1.0"
 }

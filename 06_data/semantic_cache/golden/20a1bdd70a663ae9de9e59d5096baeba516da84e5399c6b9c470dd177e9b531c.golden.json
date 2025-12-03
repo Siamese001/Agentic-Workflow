@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "20a1bdd70a663ae9de9e59d5096baeba516da84e5399c6b9c470dd177e9b531c",
-    "scan_timestamp": "2025-12-03T06:51:45.171291"
+    "scan_timestamp": "2025-12-03T07:26:03.687709"
   },
   "content_preview": "# FILE: workflow_graph.py\n# PHASE 3 \u2014 FULL ORCHESTRATION GRAPH RESTORE (WITH CORRECTION LOOP)\n#\n# Strict L3 orchestration only:\n#   \u2022 No LLM calls\n#   \u2022 No retrieval logic\n#   \u2022 No ranking logic\n#   \u2022 No prompting\n#   \u2022 No state mutation\n#   \u2022 No safety evaluation\n#\n# Responsibilities:\n#   \u2022 DAG construction\n#   \u2022 Concurrency rules\n#   \u2022 Typed node definitions\n#   \u2022 Retrieval parallelization\n#   \u2022 Bounded correction loop orchestration\n#\n# This module wires together the L2 execution primitives in...",
-  "creation_timestamp": "2025-12-03T06:51:52.777621",
+  "creation_timestamp": "2025-12-03T07:26:12.859624",
   "version": "1.0"
 }

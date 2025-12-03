@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "6484dab73e940bcbbefad3f983d25736789cd9133096603373307e33c3783a48",
-    "scan_timestamp": "2025-12-03T06:51:45.427735"
+    "scan_timestamp": "2025-12-03T07:10:17.674377"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"version\": \"v6.0\",\n    \"patched_from\": \"v4.0\",\n    \"patched_at\": \"2025-09-25T16:09:35.624797\",\n    \"governance_alignment\": \"[REMOVED_LEGACY_REFERENCE]\",\n    \"smoke_test_pass\": true,\n    \"smoke_test_failures\": [],\n    \"patch_notes\": [\n      \"ensured six-section shell\",\n      \"role standards expanded\",\n      \"task success criteria hardened\",\n      \"context retrieval and toggles set\",\n      \"reasoning hybrid, QA, and mirror keys added\",\n      \"output mirroring and hygiene guar...",
-  "creation_timestamp": "2025-12-03T06:52:12.503843",
+  "creation_timestamp": "2025-12-03T07:10:57.008216",
   "version": "1.0"
 }

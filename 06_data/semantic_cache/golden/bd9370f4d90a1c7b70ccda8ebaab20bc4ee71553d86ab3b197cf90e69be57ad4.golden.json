@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "bd9370f4d90a1c7b70ccda8ebaab20bc4ee71553d86ab3b197cf90e69be57ad4",
-    "scan_timestamp": "2025-12-03T06:51:45.478122"
+    "scan_timestamp": "2025-12-03T07:10:17.731411"
   },
   "content_preview": "# File: validation.py\n# Description: Validation agents, rules, and utilities for the LIC workflow.\n# REFACTOR: v12.0 - Added Strategic Alignment validation and Voice Profile validation\n\n__version__ = \"12.0\"\n\nimport re\nimport json\nimport os\nfrom typing import Dict, List, Any, Tuple, Optional\nfrom pathlib import Path\nimport numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nfrom models_LIC import (\n    ValidationSeverity,...",
-  "creation_timestamp": "2025-12-03T06:52:16.222741",
+  "creation_timestamp": "2025-12-03T07:11:01.372165",
   "version": "1.0"
 }

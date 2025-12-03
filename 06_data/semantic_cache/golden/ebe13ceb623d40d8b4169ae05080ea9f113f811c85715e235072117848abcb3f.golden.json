@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "ebe13ceb623d40d8b4169ae05080ea9f113f811c85715e235072117848abcb3f",
-    "scan_timestamp": "2025-12-03T06:51:45.441912"
+    "scan_timestamp": "2025-12-03T07:10:17.693536"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"patch_series\": \"v10.21\",\n    \"base_version\": \"v10.20\",\n    \"target_version\": \"v10.21\",\n    \"release_date\": \"2025-10-15\",\n    \"patch_count\": 3,\n    \"severity\": \"ARCHITECTURAL_REFACTORING\",\n    \"breaking_changes\": false,\n    \"rollback_compatible\": true,\n    \"description\": \"Architectural refactoring to centralize message length constraints, consolidate routes, and migrate archetype configurations to reference global constraints. Zero functional changes to output.\",\n    \"total...",
-  "creation_timestamp": "2025-12-03T06:52:14.820693",
+  "creation_timestamp": "2025-12-03T07:10:59.753149",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c58e4dc3c2da80e54a56e47308fc82b2405ea3226b6ef8129ce7f30f0ef045de",
-    "scan_timestamp": "2025-12-03T06:51:45.134015"
+    "scan_timestamp": "2025-12-03T07:26:03.648517"
   },
   "content_preview": "\"\"\"L5 Safety Policy Integration Tests.\"\"\"\n\nclass TestL5SafetyPolicyIntegration:\n    \"\"\"Integration tests for L5 safety policy layer.\"\"\"\n    \n    def test_policy_enforcement_flow(self):\n        \"\"\"Test policy enforcement flow.\"\"\"\n        content = \"resume content\"\n        policies = [\"pii\", \"bias\", \"injection\"]\n        results = {p: \"pass\" for p in policies}\n        assert all(v == \"pass\" for v in results.values())\n    \n    def test_safety_validation_chain(self):\n        \"\"\"Test safety validation...",
-  "creation_timestamp": "2025-12-03T06:51:50.701361",
+  "creation_timestamp": "2025-12-03T07:26:10.053184",
   "version": "1.0"
 }

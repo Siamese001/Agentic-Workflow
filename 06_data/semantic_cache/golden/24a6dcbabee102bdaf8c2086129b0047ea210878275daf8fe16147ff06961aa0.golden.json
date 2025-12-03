@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "24a6dcbabee102bdaf8c2086129b0047ea210878275daf8fe16147ff06961aa0",
-    "scan_timestamp": "2025-12-03T06:51:45.186827"
+    "scan_timestamp": "2025-12-03T07:26:03.704026"
   },
   "content_preview": "\"\"\"Agentic workflow package for conceptual DAG specifications.\"\"\"\n\n__all__ = []\n",
-  "creation_timestamp": "2025-12-03T06:51:54.166003",
+  "creation_timestamp": "2025-12-03T07:26:14.541469",
   "version": "1.0"
 }

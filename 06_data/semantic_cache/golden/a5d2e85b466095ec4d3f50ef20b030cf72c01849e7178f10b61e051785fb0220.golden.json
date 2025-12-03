@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
-    "scan_timestamp": "2025-12-03T06:51:45.334863"
+    "scan_timestamp": "2025-12-03T07:10:17.564573"
   },
   "content_preview": "\"\"\"PolicyController behavioral tests covering bound enforcement.\"\"\"\nfrom src.lic_agentic.telemetry.policy_controller import PolicyController\n\n\ndef test_policy_controller_enforces_bounds_and_quarantine():\n    controller = PolicyController()\n    controller.register_tool(\"beta\", quarantined=True)\n    controller.register_tool(\"gamma\", quarantined=False)\n\n    update = controller.update(latency_p95_ms=5000, qa_pass_rate=0.8, token_drift=0.2)\n    assert 0.7 <= update.budget_multiplier <= 1.3\n    assert...",
-  "creation_timestamp": "2025-12-03T06:52:08.557310",
+  "creation_timestamp": "2025-12-03T07:10:51.928297",
   "version": "1.0"
 }

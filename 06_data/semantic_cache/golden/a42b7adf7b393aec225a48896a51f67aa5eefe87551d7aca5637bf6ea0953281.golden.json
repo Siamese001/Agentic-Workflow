@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
-    "scan_timestamp": "2025-12-03T06:51:45.338688"
+    "scan_timestamp": "2025-12-03T07:10:17.568121"
   },
   "content_preview": "{\n  \"schema_version\": \"13.0\",\n  \"description\": \"Externalized agent operational parameters for LIC v13.0 - All agent-specific configurations, thresholds, and behaviors\",\n  \n  \"circuit_breaker\": {\n    \"failure_threshold\": 3,\n    \"timeout_seconds\": 60,\n    \"_comment\": \"Circuit breaker prevents cascade failures by blocking requests after consecutive failures\"\n  },\n  \n  \"context_manager\": {\n    \"section_priorities\": {\n      \"job_description\": 100,\n      \"recipient_profile\": 90,\n      \"company_context...",
-  "creation_timestamp": "2025-12-03T06:52:08.774126",
+  "creation_timestamp": "2025-12-03T07:10:52.213387",
   "version": "1.0"
 }

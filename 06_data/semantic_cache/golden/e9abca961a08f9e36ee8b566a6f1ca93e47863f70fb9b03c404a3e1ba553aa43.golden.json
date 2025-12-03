@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43",
-    "scan_timestamp": "2025-12-03T06:51:45.290397"
+    "scan_timestamp": "2025-12-03T07:10:17.510482"
   },
   "content_preview": "# File: rag_RES_v2.py\n# Version: 17.01 (Patched)\n# RAG (Retrieval-Augmented Generation) module for Resume Workflow\n# Contains classes for web search, circuit breakers, phase execution,\n# Librarian persistent memory agent, and job description analysis (HOP-0).\n#\n# V2 INTEGRATION:\n# - EnhancedJobDescriptionAnalyzer: Used in HOP-0 (initial state load)\n# - LibrarianAgent: Called by workflow for deep RAG with persistent memory\n# - RAGMission: Core data structure for thematic analysis\n# - WebSearchToo...",
-  "creation_timestamp": "2025-12-03T06:52:02.672393",
+  "creation_timestamp": "2025-12-03T07:10:43.754516",
   "version": "1.0"
 }

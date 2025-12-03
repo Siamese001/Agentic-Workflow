@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ba5211f7dfa43c99b259396b99c7a4ed0ec5a221603ca3dfd1d6b584dfb44289",
-    "scan_timestamp": "2025-12-03T06:51:45.173221"
+    "scan_timestamp": "2025-12-03T07:26:03.689795"
   },
   "content_preview": "# FILE: l3.py\n\"\"\"\nUnified L3 Orchestration Layer (v10_9) \u2014 PURE CONTROL FLOW (META-AWARE, RESTORED)\n\nThis module provides the complete orchestration logic for the v10_9\nagentic architecture. It restores orchestration capabilities from v10_8:\n\n    \u2022 Dynamic DAGs with well-typed nodes.\n    \u2022 Parallel node execution with simple retry logic.\n    \u2022 Fallback-friendly orchestration.\n    \u2022 NodeResult metadata (status, timings, payload refs).\n    \u2022 Route trace logging and correction journal surfaces.\n\nwh...",
-  "creation_timestamp": "2025-12-03T06:51:53.005446",
+  "creation_timestamp": "2025-12-03T07:26:13.140260",
   "version": "1.0"
 }

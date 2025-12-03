@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "40a7d909b3faee28f450eece387c251ba9c5b94ea56737d48e9e6fce7297ae2c",
-    "scan_timestamp": "2025-12-03T06:51:45.159465"
+    "scan_timestamp": "2025-12-03T07:26:03.677021"
   },
   "content_preview": "#!/usr/bin/env python3\n\"\"\"\nUpdates import paths after reorganization for clean architecture.\n\nEnsures resume generation system maintains proper structure\n for improved code organization and easier maintenance.\n\"\"\"\n\nfrom pathlib import Path\n\n# Define the root directory\nROOT = Path(__file__).parent\n\n# Define import mappings (old -> new) for the reorganized structure\nIMPORT_MAPPINGS = {\n    # L1 -> agents/planning\n    \"from l1.\": \"from l1.\",\n    \"import l1.\": \"import l1.\",\n    \"from workflow_planni...",
-  "creation_timestamp": "2025-12-03T06:51:51.952157",
+  "creation_timestamp": "2025-12-03T07:26:11.821034",
   "version": "1.0"
 }

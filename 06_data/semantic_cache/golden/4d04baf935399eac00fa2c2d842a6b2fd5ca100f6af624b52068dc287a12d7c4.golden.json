@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "4d04baf935399eac00fa2c2d842a6b2fd5ca100f6af624b52068dc287a12d7c4",
-    "scan_timestamp": "2025-12-03T06:51:45.347965"
+    "scan_timestamp": "2025-12-03T07:10:17.577872"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v4\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-10-01T22:00:00Z\",\n    \"sources\": \"v1 complete + Steve Benedetti chat comprehensive parameters + Kristy Amaro K.3-K.4 regeneration + JW v18.8 output patterns\",\n    \"notes\": \"Production version: Complete parameter tables by message type, enhanced regeneration, simplified reasoning output\",\n    \"sha256\": \"pending_calculation\",\n    \"changelog_v1_to_v2\": [\n      \"Added...",
-  "creation_timestamp": "2025-12-03T06:52:09.715940",
+  "creation_timestamp": "2025-12-03T07:10:53.422045",
   "version": "1.0"
 }

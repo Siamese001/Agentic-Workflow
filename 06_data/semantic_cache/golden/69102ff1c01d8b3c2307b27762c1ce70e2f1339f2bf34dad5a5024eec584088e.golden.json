@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "69102ff1c01d8b3c2307b27762c1ce70e2f1339f2bf34dad5a5024eec584088e",
-    "scan_timestamp": "2025-12-03T06:51:45.439384"
+    "scan_timestamp": "2025-12-03T07:10:17.688941"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.21\",\n    \"base_version\": \"v10.20\",\n    \"previous_version\": \"v10.20\",\n    \"release_date\": \"2025-10-15\",\n    \"architecture\": \"Clerk, then Artist (Hardened + Centralized Constraints)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Architectural refactoring to centralize message length constraints, consolidate routes from 5 to 3, and migrate archetype configurations to reference global constraints. Zero functional changes to...",
-  "creation_timestamp": "2025-12-03T06:52:14.736168",
+  "creation_timestamp": "2025-12-03T07:10:59.659087",
   "version": "1.0"
 }

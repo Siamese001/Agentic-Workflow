@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a11c012de48aabca2397ffdefcce3563e96aa3d8b2ce13e65d7879968cc57698",
-    "scan_timestamp": "2025-12-03T06:51:45.069543"
+    "scan_timestamp": "2025-12-03T07:26:03.581576"
   },
   "content_preview": "\"\"\"\nL5 safety validation for resume job alignment workflows.\n\nCentralizes safety constraints and ethical guidelines for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Dict, List, Optional, Callable\nfrom enum import Enum\nimport logging\n\nfrom l5.interfaces import (\n    SafetyConstraint,\n    SafetyPolicy,\n    SafetyViolation,\n    PolicyDecision,\n    PolicyEvaluationError,\n    Severity,\n    Verdict,\n    ExecutionContext,\n    SafetyResult,\n    SafetyFinding\n)\nfrom l5....",
-  "creation_timestamp": "2025-12-03T06:51:48.663023",
+  "creation_timestamp": "2025-12-03T07:26:07.573400",
   "version": "1.0"
 }

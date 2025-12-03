@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9f6dac40bbb1dacd3452eaed370a062410179f9b9ed690a96fb719f2d193dd52",
-    "scan_timestamp": "2025-12-03T06:51:45.260582"
+    "scan_timestamp": "2025-12-03T07:26:03.783015"
   },
   "content_preview": "import pytest\n\nfrom models import MainGraphState\n\ntry:  # Optional depending on build exposure\n    from agent_orchestration_v10_7 import build_workflow\n\n    HAS_WORKFLOW = True\nexcept ImportError:  # pragma: no cover - guard until workflow factory is available\n    HAS_WORKFLOW = False\n\n\n@pytest.mark.skipif(not HAS_WORKFLOW, reason=\"Workflow builder not available\")\ndef test_safety_fields_populate_in_simple_run():\n    initial = MainGraphState()\n    workflow = build_workflow(debug_mode=False)\n\n    ...",
-  "creation_timestamp": "2025-12-03T06:51:58.462003",
+  "creation_timestamp": "2025-12-03T07:26:20.254579",
   "version": "1.0"
 }

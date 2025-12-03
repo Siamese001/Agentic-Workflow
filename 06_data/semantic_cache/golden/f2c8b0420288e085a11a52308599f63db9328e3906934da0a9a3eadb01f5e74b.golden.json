@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f2c8b0420288e085a11a52308599f63db9328e3906934da0a9a3eadb01f5e74b",
-    "scan_timestamp": "2025-12-03T06:51:45.153372"
+    "scan_timestamp": "2025-12-03T07:26:03.669462"
   },
   "content_preview": "\"\"\"Tests for Instructional Injection v6 Prompts and Many-Shot Examples\n\nThis module validates:\n- v6 prompt structure and completeness\n- Many-shot example quality\n- Prompt integration with agents\n- Layer and extension functionality\n\"\"\"\n\nimport pytest\nfrom l1.instructional_injection_v6 import (\n    InstructionalPrompt,\n    InstructionalLayer,\n    InstructionalExtension,\n    LayerContent,\n    ExtensionContent,\n    create_l1_planner_prompt,\n    create_l2_executor_prompt,\n    add_rag_extension,\n    a...",
-  "creation_timestamp": "2025-12-03T06:51:51.333833",
+  "creation_timestamp": "2025-12-03T07:26:10.907247",
   "version": "1.0"
 }

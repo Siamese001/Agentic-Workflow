@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "91946d770cb6d27c62ed533d9b1e06f4cc9e20b70e382a5f8a810e68984ae548",
-    "scan_timestamp": "2025-12-03T06:51:45.388649"
+    "scan_timestamp": "2025-12-03T07:10:17.629298"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-06-2025_v8.3.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-06-2025_v8.3.0\",\n    \"last_updated\": \"2025-10-06\",\n    \"description\": \"v8.3.0: Applied patch C099 to restructure reasoning visualization controls.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.2.0\",\n        \"date\": \"2025-10-06\",\n        \"author\": \"LIC Engineering Team\",\n        \"description\": \"Applied PATCH v...",
-  "creation_timestamp": "2025-12-03T06:52:11.311270",
+  "creation_timestamp": "2025-12-03T07:10:55.432397",
   "version": "1.0"
 }

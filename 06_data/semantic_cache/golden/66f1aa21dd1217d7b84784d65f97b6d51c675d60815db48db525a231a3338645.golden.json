@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645",
-    "scan_timestamp": "2025-12-03T06:51:45.115103"
+    "scan_timestamp": "2025-12-03T07:26:03.629245"
   },
   "content_preview": "from eval.golden_state.datasets import load_golden_cases\nfrom eval.golden_state.evaluator import evaluate_case_output\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\n\n\ndef test_evaluate_case_output_basic():\n    cases = load_golden_cases()\n    assert cases\n\n    case = cases[0]\n    output = GoldenOutput(\n        case_id=case.id,\n        produced_keypoints=list(case.expected_keypoints),\n        correctness_map={},\n        safety_decisions={},\n        metacognition_summary={},\n        ...",
-  "creation_timestamp": "2025-12-03T06:51:50.282046",
+  "creation_timestamp": "2025-12-03T07:26:09.555033",
   "version": "1.0"
 }

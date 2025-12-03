@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "ea41e36d1d6a8497e231cab0b5b853b3a885fbd20f23f7885f85f465d1f4a38e",
-    "scan_timestamp": "2025-12-03T06:51:45.097114"
+    "scan_timestamp": "2025-12-03T07:26:03.611387"
   },
   "content_preview": "# Baseline Test Results - Pre-Restructuring\n\n**Date:** 2025-11-25  \n**Command:** `python -m pytest tests/ -v --tb=short`  \n**Results:** 15 failed, 183 passed, 4 skipped, 62 warnings\n\n## Failed Tests (Baseline)\n\n### ExecutionContext Field Errors (7 tests)\n\n- test_e2e_full_pipeline\n- test_e2e_correction_signals_and_ais_snapshot  \n- test_e2e_safety_flow\n- test_e2e_correction_loop\n- test_regression_state_patch_against_golden\n- test_multi_scenario_e2e[scenario0]\n- test_multi_scenario_e2e[scenario1]\n-...",
-  "creation_timestamp": "2025-12-03T06:51:49.703656",
+  "creation_timestamp": "2025-12-03T07:26:08.833026",
   "version": "1.0"
 }

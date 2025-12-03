@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2",
-    "scan_timestamp": "2025-12-03T06:51:45.045843"
+    "scan_timestamp": "2025-12-03T07:26:03.555096"
   },
   "content_preview": "\"\"\"\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass StoredPrompt:\n    \"\"\"\n    Represents a stored resume generation prompt with metadata.\n\n    Ensures prompt storage supports consistent resume improvement.\n    \"\"\"\n    id: str\n    content: str\n    template: ...",
-  "creation_timestamp": "2025-12-03T06:51:46.753698",
+  "creation_timestamp": "2025-12-03T07:26:05.432208",
   "version": "1.0"
 }

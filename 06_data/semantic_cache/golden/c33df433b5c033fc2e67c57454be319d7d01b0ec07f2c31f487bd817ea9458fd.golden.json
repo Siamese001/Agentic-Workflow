@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-    "scan_timestamp": "2025-12-03T06:51:45.043119"
+    "scan_timestamp": "2025-12-03T07:26:03.552628"
   },
   "content_preview": "\"\"\"\nProvides Redis caching for r\u00e9sum\u00e9 analysis results to improve processing speed and reduce costs.\n\nImproves r\u00e9sum\u00e9 processing efficiency by storing LLM outputs and analysis results for fast retrieval across similar job queries.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Optional\n\n\nclass RedisNotConfiguredError(RuntimeError):\n    \"\"\"\n    Indicates r\u00e9sum\u00e9 caching is unavailable so analysis can continue without performance optimization.\n\n    Improves r\u00e9sum\u00e9 proc...",
-  "creation_timestamp": "2025-12-03T06:51:46.637304",
+  "creation_timestamp": "2025-12-03T07:26:05.311545",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "147d22e30226674c8e9ad2bb11979433da24e71a8966440526f4a53f47f37ed7",
-    "scan_timestamp": "2025-12-03T06:51:45.043339"
+    "scan_timestamp": "2025-12-03T07:26:03.552862"
   },
   "content_preview": "\"\"\"Top-level retrieval facade module.\n\nRe-exports META retrieval orchestration entrypoints so that callers can import\nfrom the project root directly. All retrieval logic is centralized in\n``meta.retrieval.retrieval`` following L2 execution-layer conventions.\n\"\"\"\nfrom __future__ import annotations\n\nfrom meta.retrieval.retrieval import orchestrate_retrieval  # noqa: F401\nfrom meta.retrieval.retrieval import run_rag_retrieval  # noqa: F401\n\n__all__ = [\"orchestrate_retrieval\", \"run_rag_retrieval\"]\n",
-  "creation_timestamp": "2025-12-03T06:51:46.643783",
+  "creation_timestamp": "2025-12-03T07:26:05.320197",
   "version": "1.0"
 }

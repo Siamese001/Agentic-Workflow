@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ebd3aef6667e38a664392ace6235ef3773b5eda53bfea4c463a133e80b126f31",
-    "scan_timestamp": "2025-12-03T06:51:45.309130"
+    "scan_timestamp": "2025-12-03T07:10:17.533569"
   },
   "content_preview": "# File: main_v10_7.py  \n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context call updated to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #9): run_workflow_async refactored to use\n#   `app.astream_events` to listen for `on_chat_model_stream` events.\n#   This now prints real-time streaming tokens (thoughts, partial JSON)\n#   from the ReAct conductors.\n# - IMPLEMENTED (Fix #30): Checks for 'failed_constitution' ...",
-  "creation_timestamp": "2025-12-03T06:52:07.546515",
+  "creation_timestamp": "2025-12-03T07:10:50.398581",
   "version": "1.0"
 }

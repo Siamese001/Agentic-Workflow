@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-  "content_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+  "hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+  "archive_root": "C:\\Git\\Reachout Engine Archive\\Monolithic",
+  "archive_name": "Monolithic",
+  "relative_path": "test_lic_v11_10.py",
   "file_size": 45899,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Monolithic",
-    "archive_name": "Monolithic",
-    "relative_path": "test_lic_v11_10.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Monolithic\\test_lic_v11_10.py",
-    "file_size": 45899,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-    "scan_timestamp": "2025-12-03T06:51:45.344374"
-  },
-  "verification_timestamp": "2025-12-03T06:52:09.546995",
-  "checksums": {
-    "sha256": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-    "md5": "e49f3ff7d5c8faef7940ac11bc8d2b3e"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:03.870155",
+  "integrity_timestamp": "2025-12-03T07:26:04.463703"
 }

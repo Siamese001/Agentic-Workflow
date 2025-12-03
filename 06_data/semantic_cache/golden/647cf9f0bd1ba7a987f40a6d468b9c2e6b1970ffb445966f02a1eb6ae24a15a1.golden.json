@@ -3,17 +3,17 @@
   "file_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
   "content_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
   "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
-    "archive_name": "v6.0",
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
     "relative_path": "master_resume.json",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\master_resume.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\master_resume.json",
     "file_size": 14603,
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
-    "scan_timestamp": "2025-12-03T06:51:45.297052"
+    "scan_timestamp": "2025-12-03T07:26:03.720217"
   },
   "content_preview": "{\n  \"schema_version\": \"master_resume_v2.15\",\n  \"owner\": {\n    \"name\": \"Amit Ayer\",\n    \"contact\": {\n      \"phone\": \"+1-917-239-3830\",\n      \"email\": \"amitayer1@gmail.com\",\n      \"linkedin\": \"https://www.linkedin.com/in/amitayer1\"\n    }\n  },\n  \"professional_experience\": [\n    {\n      \"company\": \"Unify Consulting\",\n      \"location\": \"Boca Raton, FL\",\n      \"title\": \"Chief AI Officer\",\n      \"dates\": {\n        \"start\": \"February 2023\",\n        \"end\": \"Present\"\n      },\n      \"bullet_pool\": [\n      ...",
-  "creation_timestamp": "2025-12-03T06:52:03.325538",
+  "creation_timestamp": "2025-12-03T07:26:16.688199",
   "version": "1.0"
 }

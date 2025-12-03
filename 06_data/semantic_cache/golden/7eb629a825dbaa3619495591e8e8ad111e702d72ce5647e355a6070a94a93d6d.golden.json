@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d",
-    "scan_timestamp": "2025-12-03T06:51:45.064251"
+    "scan_timestamp": "2025-12-03T07:26:03.576642"
   },
   "content_preview": "\"\"\"\nL4 state manager for resume job alignment workflows.\n\nImplements core state management for resume enhancement coordination.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, Generic, List, Optional, TypeVar, Callable, Type, cast\nfrom dataclasses import dataclass, field, asdict\nfrom datetime import datetime, UTC, timedelta\nimport uuid\nimport json\nimport logging\nfrom pathlib import Path\n\nfrom .types import (\n    StateOperation,\n    StateEventType,\n    StatePath,\n    StateTra...",
-  "creation_timestamp": "2025-12-03T06:51:48.102850",
+  "creation_timestamp": "2025-12-03T07:26:06.877250",
   "version": "1.0"
 }

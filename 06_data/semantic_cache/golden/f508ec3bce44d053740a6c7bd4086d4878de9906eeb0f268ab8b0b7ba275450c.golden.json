@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f508ec3bce44d053740a6c7bd4086d4878de9906eeb0f268ab8b0b7ba275450c",
-    "scan_timestamp": "2025-12-03T06:51:45.206771"
+    "scan_timestamp": "2025-12-03T07:26:03.723588"
   },
   "content_preview": "\"\"\"Layer-5 QA validation stack for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom agent_tools_v10_7 import (\n    QAAdversarialReviewerTool,\n    QABiasDetectorTool,\n    QAClaimValidatorTool,\n    QAJDSkillsValidatorTool,\n    QAMissedOpportunityTool,\n    QANarrativeThreadTool,\n    QAThematicAlignmentTool,\n    QAToneValidatorTool,\n    QATenureValidatorTool,\n    QASemanticEntailmentTool,\n    QASignalScoreValidat...",
-  "creation_timestamp": "2025-12-03T06:51:55.933648",
+  "creation_timestamp": "2025-12-03T07:26:16.855431",
   "version": "1.0"
 }

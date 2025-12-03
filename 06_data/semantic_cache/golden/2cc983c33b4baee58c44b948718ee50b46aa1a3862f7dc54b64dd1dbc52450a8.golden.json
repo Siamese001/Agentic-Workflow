@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2cc983c33b4baee58c44b948718ee50b46aa1a3862f7dc54b64dd1dbc52450a8",
-    "scan_timestamp": "2025-12-03T06:51:45.165334"
+    "scan_timestamp": "2025-12-03T07:26:03.681704"
   },
   "content_preview": "# FILE: 10_10/l1.py\n\"\"\"\nUnified L1 Planning Layer (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n====================================================\n\nResponsibilities (L1 only):\n\n    \u2022 Interpret workflow inputs (job, resume, workflow config).\n    \u2022 Look up the active execution profile (G1\u2013G3) using the meta-profile.\n    \u2022 Choose complexity and reasoning mode hints for downstream layers.\n    \u2022 Construct typed plans:\n\n        \u2013 StrategyPlan\n        \u2013 RAGPlan\n        \u2013 DraftingPlan\n        \u2013 QAPlan\n        \u2013 SafetyPl...",
-  "creation_timestamp": "2025-12-03T06:51:52.240512",
+  "creation_timestamp": "2025-12-03T07:26:12.206108",
   "version": "1.0"
 }

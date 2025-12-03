@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed",
-    "scan_timestamp": "2025-12-03T06:51:45.228435"
+    "scan_timestamp": "2025-12-03T07:26:03.748680"
   },
   "content_preview": "import pytest\n\nfrom agent_orchestration_v10_7 import (\n    check_hil_reentry_allowed,\n    run_prepare_hil_drafting_reentry,\n    run_prepare_hil_strategy_reentry,\n    unwrap_node_result,\n)\n\n\n@pytest.mark.asyncio\nasync def test_hil_strategy_reentry_respects_loop_budget(workflow_context):\n    workflow_context.config.hil_config.max_reentry_loops = 1\n    state = {\"metadata\": {\"workflow_id\": \"wf-hil\"}}\n\n    state = unwrap_node_result(await run_prepare_hil_strategy_reentry(state, workflow_context))\n   ...",
-  "creation_timestamp": "2025-12-03T06:51:57.259841",
+  "creation_timestamp": "2025-12-03T07:26:18.697196",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "488c5080363fb9da8cdd65966eae6f8f2f3be517b67704b40b9aee2d36af4a85",
-    "scan_timestamp": "2025-12-03T06:51:45.075981"
+    "scan_timestamp": "2025-12-03T07:26:03.588481"
   },
   "content_preview": "\"\"\"\nProvides observability compatibility shim for resume generation system.\n\nEnsures runtime monitoring and tracking capabilities for improved\nresume generation quality and debugging.\n\"\"\"\n\n# FILE: observability.py\n\nfrom __future__ import annotations\n\nfrom runtime.observability.spans import *  # noqa: F401,F403\nfrom runtime.observability.events import *  # noqa: F401,F403\nfrom runtime.observability.emitters import *  # noqa: F401,F403\nfrom runtime.observability.collectors import (  # noqa: F401\n ...",
-  "creation_timestamp": "2025-12-03T06:51:48.996131",
+  "creation_timestamp": "2025-12-03T07:26:07.942003",
   "version": "1.0"
 }

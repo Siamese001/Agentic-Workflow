@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "13abd1c22955f087936bddae337337160da7a39c1587809ceca489659a3e5763",
-    "scan_timestamp": "2025-12-03T06:51:45.262221"
+    "scan_timestamp": "2025-12-03T07:26:03.785199"
   },
   "content_preview": "import asyncio\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7 import PromptEnvelope\nfrom stacks_v10_8.prompt_renderer_stack import PromptRendererStack\n\n\nclass _StubDecision:\n    def __init__(self, payload):\n        self._payload = payload\n\n    def dict(self):  # pragma: no cover - simple passthrough\n        return dict(self._payload)\n\n\nclass DummyContext:\n    def __init__(self):\n        config = SimpleNamespace()\n        prompt_manager = SimpleNamespace()\n        response_vali...",
-  "creation_timestamp": "2025-12-03T06:51:58.505266",
+  "creation_timestamp": "2025-12-03T07:26:20.300209",
   "version": "1.0"
 }

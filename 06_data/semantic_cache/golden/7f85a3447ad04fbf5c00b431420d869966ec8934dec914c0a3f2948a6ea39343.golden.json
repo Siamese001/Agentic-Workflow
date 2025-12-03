@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7f85a3447ad04fbf5c00b431420d869966ec8934dec914c0a3f2948a6ea39343",
-    "scan_timestamp": "2025-12-03T06:51:45.145620"
+    "scan_timestamp": "2025-12-03T07:26:03.662245"
   },
   "content_preview": "\"\"\"Shared Test Fixtures.\"\"\"\nimport pytest\n\n@pytest.fixture\ndef mock_execution_context():\n    \"\"\"Shared fixture for mock execution context.\"\"\"\n    return {\n        \"user_id\": \"test_user\",\n        \"session_id\": \"test_session\",\n        \"profile_name\": \"default\",\n    }\n\n@pytest.fixture\ndef mock_config():\n    \"\"\"Shared fixture for mock configuration.\"\"\"\n    return {\n        \"profile_id\": \"test_profile\",\n        \"enable_rag\": True,\n        \"enable_qa\": True,\n    }\n",
-  "creation_timestamp": "2025-12-03T06:51:51.114742",
+  "creation_timestamp": "2025-12-03T07:26:10.593152",
   "version": "1.0"
 }

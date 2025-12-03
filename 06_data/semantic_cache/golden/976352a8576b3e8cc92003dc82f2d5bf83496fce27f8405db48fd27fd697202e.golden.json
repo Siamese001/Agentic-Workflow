@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "976352a8576b3e8cc92003dc82f2d5bf83496fce27f8405db48fd27fd697202e",
-    "scan_timestamp": "2025-12-03T06:51:45.150621"
+    "scan_timestamp": "2025-12-03T07:26:03.666180"
   },
   "content_preview": "\"\"\"Stress Tests for Parallel Agents.\"\"\"\n\nclass TestStressParallelAgents:\n    \"\"\"Stress tests for parallel agent execution.\"\"\"\n    \n    def test_many_parallel_agents(self):\n        \"\"\"Test many parallel agents.\"\"\"\n        agent_count = 50\n        results = [{\"agent\": f\"agent_{i}\", \"done\": True} for i in range(agent_count)]\n        assert len(results) == 50\n        assert all(r[\"done\"] for r in results)\n    \n    def test_parallel_agent_resource_usage(self):\n        \"\"\"Test parallel agent resource ...",
-  "creation_timestamp": "2025-12-03T06:51:51.213508",
+  "creation_timestamp": "2025-12-03T07:26:10.710043",
   "version": "1.0"
 }

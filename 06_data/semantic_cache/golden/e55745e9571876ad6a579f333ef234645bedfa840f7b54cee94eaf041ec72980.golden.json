@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e55745e9571876ad6a579f333ef234645bedfa840f7b54cee94eaf041ec72980",
-    "scan_timestamp": "2025-12-03T06:51:45.138616"
+    "scan_timestamp": "2025-12-03T07:26:03.653553"
   },
   "content_preview": "from pathlib import Path\nimport re\n\nimport pytest\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef test_only_providers_contain_provider_sdks() -> None:\n    \"\"\"Verify that only providers/ directory contains external SDK imports.\n    \n    This enforces architectural separation where concrete SDK dependencies\n    (openai, anthropic, redis, chromadb, pinecone, etc.) are isolated\n    to the providers layer only.\n    \"\"\"\n    \n    # External SDKs that should be isolated to providers/ only\n   ...",
-  "creation_timestamp": "2025-12-03T06:51:50.892632",
+  "creation_timestamp": "2025-12-03T07:26:10.318822",
   "version": "1.0"
 }

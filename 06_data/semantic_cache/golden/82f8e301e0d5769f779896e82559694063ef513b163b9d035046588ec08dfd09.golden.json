@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
-    "scan_timestamp": "2025-12-03T06:51:45.135364"
+    "scan_timestamp": "2025-12-03T07:26:03.649808"
   },
   "content_preview": "from meta.metacognition.evaluator import evaluate_hypotheses\nfrom meta.metacognition.models import Hypothesis\n\n\ndef test_evaluate_penalizes_no_evidence():\n    h = Hypothesis(\n        id=\"h1\",\n        agent_id=\"a1\",\n        content=\"short\",\n        confidence=1.0,\n        evidence_ids=[],\n    )\n\n    evaluated = evaluate_hypotheses([h])[0]\n    assert evaluated.confidence < 1.0\n\n\ndef test_evaluate_clamps_confidence_range():\n    h = Hypothesis(\n        id=\"h1\",\n        agent_id=\"a1\",\n        content...",
-  "creation_timestamp": "2025-12-03T06:51:50.749037",
+  "creation_timestamp": "2025-12-03T07:26:10.109483",
   "version": "1.0"
 }

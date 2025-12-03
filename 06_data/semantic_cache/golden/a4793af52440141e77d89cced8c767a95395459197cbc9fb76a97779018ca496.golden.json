@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496",
-    "scan_timestamp": "2025-12-03T06:51:45.110523"
+    "scan_timestamp": "2025-12-03T07:26:03.623903"
   },
   "content_preview": "\"\"\"\nGolden Datasets - Resume-Job Matching Scenarios\n\nDefines golden datasets with known expected outcomes for resume-job matching evaluation.\nThese datasets serve as ground truth for LM-as-judge scoring and system validation.\n\"\"\"\n\nimport pytest\nfrom typing import Dict, Any, List\nfrom dataclasses import dataclass, field\nfrom enum import Enum\n\n# Mark all tests in this module as golden evaluation tests\npytestmark = [pytest.mark.golden, pytest.mark.evaluation]\n\n\nclass ScenarioDifficulty(Enum):\n    \"...",
-  "creation_timestamp": "2025-12-03T06:51:50.102698",
+  "creation_timestamp": "2025-12-03T07:26:09.338438",
   "version": "1.0"
 }

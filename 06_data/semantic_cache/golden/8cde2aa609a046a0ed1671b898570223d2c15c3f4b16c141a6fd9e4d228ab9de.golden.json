@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8cde2aa609a046a0ed1671b898570223d2c15c3f4b16c141a6fd9e4d228ab9de",
-    "scan_timestamp": "2025-12-03T06:51:45.101146"
+    "scan_timestamp": "2025-12-03T07:26:03.614628"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom core.models.models import TelemetryEvent\n\n\n_telemetry_buffer: List[TelemetryEvent] = []\n_span_stack: List[Dict[str, Any]] = []\n\n\ndef append_event(evt: TelemetryEvent) -> None:\n    \"\"\"Append a telemetry event to the in-memory buffer.\"\"\"\n\n    _telemetry_buffer.append(evt)\n\n\ndef get_events() -> List[TelemetryEvent]:\n    \"\"\"Return a shallow copy of the telemetry buffer.\"\"\"\n\n    return list(_telemetry_buffer)\n\n\ndef clear_eve...",
-  "creation_timestamp": "2025-12-03T06:51:49.763689",
+  "creation_timestamp": "2025-12-03T07:26:08.900382",
   "version": "1.0"
 }

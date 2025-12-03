@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "42ba3e4160346cb142e43dc7afd26dc8a6944d38300e94bea3a96c8bde2653cb",
-    "scan_timestamp": "2025-12-03T06:51:45.406563"
+    "scan_timestamp": "2025-12-03T07:10:17.649316"
   },
   "content_preview": "LinkedInCanonical \u2014 2025-09-12 v2.93 (FULL, ZLO-Consolidated). v2.93 is a zero-loss overwrite of v2.92 that hardens transition enforcement, preserves capability frame placement, enforces strict operator sequencing, validates QA integrity, and adds optional Framing and standalone DRQ support while preserving all prior invariants and Prompt Shell v1 structure.\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. ...",
-  "creation_timestamp": "2025-12-03T06:52:11.900664",
+  "creation_timestamp": "2025-12-03T07:10:56.194734",
   "version": "1.0"
 }

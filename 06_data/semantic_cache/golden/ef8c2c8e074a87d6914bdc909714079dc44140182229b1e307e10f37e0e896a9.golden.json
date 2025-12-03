@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ef8c2c8e074a87d6914bdc909714079dc44140182229b1e307e10f37e0e896a9",
-    "scan_timestamp": "2025-12-03T06:51:45.281961"
+    "scan_timestamp": "2025-12-03T07:10:17.500462"
   },
   "content_preview": "\"\"\"\nComprehensive Pytest Suite for Resume Workflow v16_00 Refactoring\nTests all three specification implementations:\n1. Spec 1: Dormant Retry Logic (Pre-flight + Failure Classification)\n2. Spec 2: Agentic RAG Feature Activation\n3. Spec 3: Code Cleanup Refactoring\n\"\"\"\n\nimport pytest\nimport json\nimport os\nimport sys\nfrom unittest.mock import Mock, MagicMock, patch, call\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom typing import Dict, List, Any\n\n# Add the module to path\nsy...",
-  "creation_timestamp": "2025-12-03T06:52:01.478640",
+  "creation_timestamp": "2025-12-03T07:10:41.990395",
   "version": "1.0"
 }

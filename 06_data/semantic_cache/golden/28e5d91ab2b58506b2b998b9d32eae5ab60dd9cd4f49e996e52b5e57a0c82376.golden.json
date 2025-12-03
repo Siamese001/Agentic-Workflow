@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "28e5d91ab2b58506b2b998b9d32eae5ab60dd9cd4f49e996e52b5e57a0c82376",
-    "scan_timestamp": "2025-12-03T06:51:45.447081"
+    "scan_timestamp": "2025-12-03T07:10:17.698714"
   },
   "content_preview": "================================================================================\nLINKEDIN OUTREACH \u2013 CANONICAL (Zero-Loss Overwrite \u2014 Reorganized & Hardened)\nVersion: 2025-09-02 (ND Patch applied, RAG directives relocated)\n================================================================================\n\n# SUMMARY (TL;DR)\n- This file enforces single-line minimal prompts for runner execution, strict validation, two mandatory QA artifacts (LinkedIn Canonical QA Grid + AI Filter table), storage/audi...",
-  "creation_timestamp": "2025-12-03T06:52:14.963130",
+  "creation_timestamp": "2025-12-03T07:10:59.883796",
   "version": "1.0"
 }

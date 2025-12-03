@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5c6db4bb061d452d1da68090f3ae24ca82c5c7933e5ca20b1c399e9eaf38772e",
-    "scan_timestamp": "2025-12-03T06:51:45.071823"
+    "scan_timestamp": "2025-12-03T07:26:03.584098"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef refine_low_confidence(hypotheses: List[Hypothesis], threshold: float = 0.4) -> List[Hypothesis]:\n    \"\"\"Refine hypotheses below a confidence threshold.\n\n    Rules:\n    - if confidence < threshold / 2, mark hypothesis as effectively discarded\n      by prepending a cautionary prefix.\n    - elif confidence < 1.0, append a cautious qualifier asking for more\n      evidence before acting...",
-  "creation_timestamp": "2025-12-03T06:51:48.752295",
+  "creation_timestamp": "2025-12-03T07:26:07.661129",
   "version": "1.0"
 }

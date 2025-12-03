@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "df914bc805359dca42648d923018e39018525900db3940c6f8b4324023454ef2",
-    "scan_timestamp": "2025-12-03T06:51:45.269403"
+    "scan_timestamp": "2025-12-03T07:26:03.792876"
   },
   "content_preview": "\"\"\"\ngoogle_generativeai_stub \u2013 safe, offline stub for google.generativeai.\n\nThis stub:\n - does NOT shadow the real google-generativeai package\n - matches the structure expected by GeminiAsyncClient in v10.7\n - supports both result.text and result.candidates[*].content.parts[*].text\n - provides fake usage + safety fields\n\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\n\n\n# ---------------------------------------...",
-  "creation_timestamp": "2025-12-03T06:51:58.715298",
+  "creation_timestamp": "2025-12-03T07:26:20.568430",
   "version": "1.0"
 }

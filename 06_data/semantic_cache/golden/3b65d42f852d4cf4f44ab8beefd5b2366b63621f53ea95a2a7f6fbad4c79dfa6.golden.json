@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3b65d42f852d4cf4f44ab8beefd5b2366b63621f53ea95a2a7f6fbad4c79dfa6",
-    "scan_timestamp": "2025-12-03T06:51:45.029728"
+    "scan_timestamp": "2025-12-03T07:26:03.538042"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Dict, Iterable\n\nfrom eval.golden_state.models import JudgeVerdict\n\n\ndef aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:\n    \"\"\"Aggregate judge verdicts into simple metrics.\n\n    Returns a dict with:\n        - avg_score\n        - pass_count\n        - fail_count\n        - total\n    \"\"\"\n\n    vs = list(verdicts)\n    total = len(vs)\n    if not total:\n        return {\"avg_score\": 0.0, \"pass_count\": 0.0, \"fail_count\": 0.0, \"...",
-  "creation_timestamp": "2025-12-03T06:51:46.337900",
+  "creation_timestamp": "2025-12-03T07:26:04.968542",
   "version": "1.0"
 }

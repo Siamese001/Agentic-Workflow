@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
-  "content_hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
+  "hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
+  "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+  "archive_name": "Old LIC",
+  "relative_path": "run_workflow.py",
   "file_size": 3542,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "run_workflow.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\run_workflow.py",
-    "file_size": 3542,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
-    "scan_timestamp": "2025-12-03T06:51:45.477280"
-  },
-  "verification_timestamp": "2025-12-03T06:52:16.116900",
-  "checksums": {
-    "sha256": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
-    "md5": "65aecc295fe90e87f25186be9dac49f1"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:04.025674",
+  "integrity_timestamp": "2025-12-03T07:26:04.562538"
 }

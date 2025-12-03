@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
-    "scan_timestamp": "2025-12-03T06:51:45.136043"
+    "scan_timestamp": "2025-12-03T07:26:03.650605"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores\nfrom core.models.models import Evidence\n\n\ndef _make_item(text: str) -> Dict[str, Any]:\n    return {\"text\": text}\n\n\ndef test_bm25_score_prefers_important_tokens() -> None:\n    low = bm25_score(_make_item(\"foo bar\"))\n    high = bm25_score(_make_item(\"llm resume experience\"))\n    assert high >= low\n\n\ndef test_dense_score_is_deterministic() -> None:\n    a...",
-  "creation_timestamp": "2025-12-03T06:51:50.778408",
+  "creation_timestamp": "2025-12-03T07:26:10.140121",
   "version": "1.0"
 }

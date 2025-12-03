@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "4abc4b334edc7f7ee4d0ccf19cc54bac5a93423c38af205884445870278e9656",
-    "scan_timestamp": "2025-12-03T06:51:45.463801"
+    "scan_timestamp": "2025-12-03T07:10:17.716129"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-08 v2.2 (Versioned Zero-Loss Overwrite)\n\n**Origin:** v2.1 (Zero-loss parity overwrite from v2 + clarifications).\n**This v2.2 integrates three clarifications with zero loss of functionality:**\n\n1. No em-dashes (global enforcement).\n2. Subject line must be plain text only (no \u201cSubject:\u201d prefix).\n3. Mandatory RAG enrichment for LinkedIn \u201cAbout\u201d section.\n\n---\n\n## ROLE\n\nYou are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all ...",
-  "creation_timestamp": "2025-12-03T06:52:15.446810",
+  "creation_timestamp": "2025-12-03T07:11:00.447791",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060",
-    "scan_timestamp": "2025-12-03T06:51:45.028077"
+    "scan_timestamp": "2025-12-03T07:26:03.536708"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any\n\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\n\n\ndef evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> GoldenOutput:\n    \"\"\"Compares expected keypoints to what the system produced so tests can see whether resumes captured the most important ideas or missed critical content.\"\"\"\n\n    produced_set = {k.strip().lower() for k in output.produced_keypoints}\n    correctness_map: dict[str, bool] = {}\n\n    for key in ...",
-  "creation_timestamp": "2025-12-03T06:51:46.300543",
+  "creation_timestamp": "2025-12-03T07:26:04.929842",
   "version": "1.0"
 }

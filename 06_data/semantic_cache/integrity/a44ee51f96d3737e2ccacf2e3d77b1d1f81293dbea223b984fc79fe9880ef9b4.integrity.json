@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a44ee51f96d3737e2ccacf2e3d77b1d1f81293dbea223b984fc79fe9880ef9b4",
-  "content_hash": "a44ee51f96d3737e2ccacf2e3d77b1d1f81293dbea223b984fc79fe9880ef9b4",
+  "hash": "a44ee51f96d3737e2ccacf2e3d77b1d1f81293dbea223b984fc79fe9880ef9b4",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative_path": ".ruff.toml",
   "file_size": 1126,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
-    "archive_name": "Agentic-Workflow-10_7_main",
-    "relative_path": ".ruff.toml",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\.ruff.toml",
-    "file_size": 1126,
-    "file_extension": ".toml",
-    "is_eligible": false,
-    "sha256_hash": "a44ee51f96d3737e2ccacf2e3d77b1d1f81293dbea223b984fc79fe9880ef9b4",
-    "scan_timestamp": "2025-12-03T06:51:45.183408"
-  },
-  "verification_timestamp": "2025-12-03T06:52:16.814816",
-  "checksums": {
-    "sha256": "a44ee51f96d3737e2ccacf2e3d77b1d1f81293dbea223b984fc79fe9880ef9b4",
-    "md5": "1745139be7a86f03ba630763d61f0263"
-  }
+  "file_extension": ".toml",
+  "is_eligible": false,
+  "scan_timestamp": "2025-12-03T07:26:03.700587",
+  "integrity_timestamp": "2025-12-03T07:26:04.279106"
 }

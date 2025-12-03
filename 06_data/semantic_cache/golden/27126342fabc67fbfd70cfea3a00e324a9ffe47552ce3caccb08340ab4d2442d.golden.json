@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
-    "scan_timestamp": "2025-12-03T06:51:45.061292"
+    "scan_timestamp": "2025-12-03T07:26:03.573050"
   },
   "content_preview": "\"\"\"\nL3 safety orchestrator for resume job alignment workflows.\n\nCoordinates safety planning and execution for resume enhancement.\n\"\"\"\n\nfrom typing import Any\nfrom l1.safety_planning import plan_safety\nfrom l2.safety_executor import SafetyExecutor\nfrom runtime.observability import record_event\n\nclass SafetyOrchestrator:\n    \"\"\"Pure orchestration for resume safety job alignment workflows.\"\"\"\n    \n    def __init__(self, safety_executor: SafetyExecutor):\n        self.safety_executor = safety_executo...",
-  "creation_timestamp": "2025-12-03T06:51:47.858810",
+  "creation_timestamp": "2025-12-03T07:26:06.621059",
   "version": "1.0"
 }

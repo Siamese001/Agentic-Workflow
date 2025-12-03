@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "01e8035cdbd57a57fd450597a80779c5c72c5cb37a44096167191ba77fd52afa",
-    "scan_timestamp": "2025-12-03T06:51:45.071596"
+    "scan_timestamp": "2025-12-03T07:26:03.583813"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass Hypothesis(BaseModel):\n    \"\"\"Lightweight hypothesis used by the metacognition layer.\"\"\"\n\n    id: str\n    agent_id: str\n    content: str\n    confidence: float = 0.0\n    evidence_ids: List[str] = Field(default_factory=list)\n    rationale: Optional[str] = None\n\n\nclass MetacognitionReport(BaseModel):\n    \"\"\"Aggregate view over a set of hypotheses and signals.\"\"\"\n\n    hypotheses: List...",
-  "creation_timestamp": "2025-12-03T06:51:48.746522",
+  "creation_timestamp": "2025-12-03T07:26:07.655654",
   "version": "1.0"
 }

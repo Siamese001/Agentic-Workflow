@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "38e43de6bef9cb8c4f4b7e62e7a90ccc0e497aa46824768173c0947d626f76de",
-    "scan_timestamp": "2025-12-03T06:51:45.469347"
+    "scan_timestamp": "2025-12-03T07:10:17.721864"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-10 v2.87 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> v2.86 -> **v2.87**\n\nv2.87 is a versioned zero-loss overwrite that adds explicit **CXO** routing to the C Level archetype and clarifies DRQ scope. All v2.86 hardenings and restorations remain intact.\n\nZLO Method: Versioned Zero-Loss Overwrite per Steps 1\u20135 (identify, direct edit, diff QA, canonical QA, explicit changelog).\n\n-------------------...",
-  "creation_timestamp": "2025-12-03T06:52:15.583068",
+  "creation_timestamp": "2025-12-03T07:11:00.609458",
   "version": "1.0"
 }

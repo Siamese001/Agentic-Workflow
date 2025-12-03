@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "32dd99624ed360db5dc1d2fc0456c46b58350c1f4e2c1efda69bf3547c2524e2",
-    "scan_timestamp": "2025-12-03T06:51:45.083059"
+    "scan_timestamp": "2025-12-03T07:26:03.595892"
   },
   "content_preview": "\"\"\"Workflow context for managing state and safety across L3, L4, and L5.\"\"\"\nfrom __future__ import annotations\n\nimport asyncio\nfrom dataclasses import dataclass\nfrom datetime import datetime, UTC\nfrom typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar, Generic\n\nfrom l4.manager import StateManager\nfrom l4.types import StateSnapshot\nfrom l5 import SafetySystem\nfrom l5.types import PolicyDecision, SafetyContext, Verdict\n\nfrom .errors import (\n    ErrorSeverity,\n    NodeExecutionE...",
-  "creation_timestamp": "2025-12-03T06:51:49.422777",
+  "creation_timestamp": "2025-12-03T07:26:08.499730",
   "version": "1.0"
 }

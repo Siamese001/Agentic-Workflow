@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
-  "content_hash": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
+  "hash": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+  "archive_name": "v2",
+  "relative_path": "prompts_RES_v2.py",
   "file_size": 42814,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
-    "archive_name": "v2",
-    "relative_path": "prompts_RES_v2.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\prompts_RES_v2.py",
-    "file_size": 42814,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
-    "scan_timestamp": "2025-12-03T06:51:45.289347"
-  },
-  "verification_timestamp": "2025-12-03T06:52:02.521780",
-  "checksums": {
-    "sha256": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
-    "md5": "de8677d27cb97b87ff46aaa50154c664"
-  }
+  "file_extension": ".py",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:03.815064",
+  "integrity_timestamp": "2025-12-03T07:26:04.408338"
 }

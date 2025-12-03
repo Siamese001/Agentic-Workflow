@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "90b55c52afe24ac32a876f400a0c37f408965595dc17efa3a2bab5978ac1f018",
-    "scan_timestamp": "2025-12-03T06:51:45.105023"
+    "scan_timestamp": "2025-12-03T07:26:03.618335"
   },
   "content_preview": "from orchestration.control_plane import SafetyContext, PolicyRule, evaluate_rules\n\n\ndef test_rules_engine_detects_pii_email():\n    ctx = SafetyContext(input_text=\"Contact me at user@example.com\")\n    rules = [\n        PolicyRule(\n            id=\"custom_email\",\n            description=\"Email PII\",\n            category=\"pii\",\n            severity=\"medium\",\n            pattern=r\"@example\\.com\",\n            is_pii_rule=True,\n        )\n    ]\n\n    result = evaluate_rules(ctx, rules)\n\n    assert result...",
-  "creation_timestamp": "2025-12-03T06:51:49.905907",
+  "creation_timestamp": "2025-12-03T07:26:09.083003",
   "version": "1.0"
 }

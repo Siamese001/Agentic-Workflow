@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b02f855a4074864baa1b0157285e1c1716513be994a46cc84523305611987fb7",
-    "scan_timestamp": "2025-12-03T06:51:45.219250"
+    "scan_timestamp": "2025-12-03T07:26:03.736437"
   },
   "content_preview": "\"\"\"Strategy stack shim for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.components.strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\n\n\nclass StrategyStackV10_8:\n    \"\"\"Layer-pure facade around the v10.7 strategy agents.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._complexity_classifier = QueryCo...",
-  "creation_timestamp": "2025-12-03T06:51:56.934195",
+  "creation_timestamp": "2025-12-03T07:26:18.285271",
   "version": "1.0"
 }

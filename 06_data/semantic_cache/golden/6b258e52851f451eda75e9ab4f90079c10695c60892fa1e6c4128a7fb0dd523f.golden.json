@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6b258e52851f451eda75e9ab4f90079c10695c60892fa1e6c4128a7fb0dd523f",
-    "scan_timestamp": "2025-12-03T06:51:45.182748"
+    "scan_timestamp": "2025-12-03T07:26:03.699877"
   },
   "content_preview": "\"\"\"\nV10.8 Consolidated Module: Utils Helpers\nMerged from 15 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass, field\nfrom model_invocation import invoke_model\nfrom typing import Any, Dict\nfrom typing import Any, Dict, Iterable, List\nfrom typing import Any, Dict, List\nfrom typing import Dict, Any\nimport copy\nimport time\n\n\n# ============================================================\n# From v10_8_errors_controlflow.py\n# =================...",
-  "creation_timestamp": "2025-12-03T06:51:53.832289",
+  "creation_timestamp": "2025-12-03T07:26:14.117060",
   "version": "1.0"
 }

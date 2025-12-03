@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "f2530ea918a3b5aa66626eb11d5cfdc641c339c5d54f6c9fe1a8a3aba1bec903",
-    "scan_timestamp": "2025-12-03T06:51:45.416784"
+    "scan_timestamp": "2025-12-03T07:10:17.661427"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v16\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v14 COMPLETE with Priority 1-3 agentic RAG enhancements (zero-loss overwrite)\",\n    \"notes\": \"Added: K.3 5-retriever 3-hop RAG (highest ROI), K.2 conditional RAG for executives, K.1 signal quality filters, rag_quality_enforcement gates, multi-hop planning templates. ALL v14 content preserved in full.\",\n    \"sha256\": \"pending_calcu...",
-  "creation_timestamp": "2025-12-03T06:52:12.139131",
+  "creation_timestamp": "2025-12-03T07:10:56.543753",
   "version": "1.0"
 }

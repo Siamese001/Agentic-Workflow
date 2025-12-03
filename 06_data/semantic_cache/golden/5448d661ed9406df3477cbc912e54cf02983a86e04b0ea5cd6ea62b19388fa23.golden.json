@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23",
-    "scan_timestamp": "2025-12-03T06:51:45.093376"
+    "scan_timestamp": "2025-12-03T07:26:03.606994"
   },
   "content_preview": "# Refactoring Files Merged to Project Root \u2014 Complete\n\n**Date**: November 24, 2025  \n**Status**: All workflow files successfully merged\n\n## Files Merged from Refactoring Folder\n\n### Phase A: L1 Planning Layer\n\n**Test Files** \u2192 `./tests/`\n- \u2705 `test_l1_phase_a.py` \u2014 Merged to `tests/test_l1_phase_a.py`\n- \u2705 `verify_phase_a.py` \u2014 Merged to `tests/verify_phase_a.py`\n\n### Phase B: Atomic Agents\n\n**Core Files** \u2192 `./` (project root)\n- \u2705 `cognitive_agents.py` \u2014 Merged to `./cognitive_agents.py`\n- \u2705 `l2....",
-  "creation_timestamp": "2025-12-03T06:51:49.658913",
+  "creation_timestamp": "2025-12-03T07:26:08.782719",
   "version": "1.0"
 }

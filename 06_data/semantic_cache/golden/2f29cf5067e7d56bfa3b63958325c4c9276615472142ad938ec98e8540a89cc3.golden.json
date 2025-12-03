@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
-    "scan_timestamp": "2025-12-03T06:51:45.480176"
+    "scan_timestamp": "2025-12-03T07:10:17.733583"
   },
   "content_preview": "{\n  \"manual_recipient_data\": [\n    {\n      \"source_type\": \"RECIPIENT_LINKEDIN_ABOUT\",\n      \"text\": \"Paste the recipient's LinkedIn 'About' summary here.\"\n    },\n    {\n      \"source_type\": \"RECIPIENT_RECENT_POST\",\n      \"text\": \"Paste a relevant recent LinkedIn post from the recipient here.\"\n    },\n    {\n      \"source_type\": \"RECIPIENT_LINKEDIN_ABOUT\",\n      \"text\": \"Optional: Add more LinkedIn profile sections (Experience, Education, etc.)\"\n    },\n    {\n      \"source_type\": \"COMPANY_BLOG_ANNOUN...",
-  "creation_timestamp": "2025-12-03T06:52:16.581544",
+  "creation_timestamp": "2025-12-03T07:11:01.788716",
   "version": "1.0"
 }

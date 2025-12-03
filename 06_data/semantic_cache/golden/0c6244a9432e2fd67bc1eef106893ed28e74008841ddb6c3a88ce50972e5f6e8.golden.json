@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
-    "scan_timestamp": "2025-12-03T06:51:45.152435"
+    "scan_timestamp": "2025-12-03T07:26:03.668285"
   },
   "content_preview": "from __future__ import annotations\n\nimport pytest\n\nfrom l2.agents import (\n    StrategyLLMAgent,\n    DraftingGuild,\n    SemanticQAAgent,\n    ConstitutionalSafetyAgent,\n    HYDEQueryAgent,\n    QACouncilAgent,\n)\nfrom core.models.models import AgentCard, AgentRole  # normalized import\nfrom core.routing import RoutingPolicy\nfrom tools.runtime_utils import SandboxConfig\n\n\ndef _make_agent(agent_cls, card: AgentCard | None = None):\n    routing = RoutingPolicy()\n    sandbox = SandboxConfig()\n    if card...",
-  "creation_timestamp": "2025-12-03T06:51:51.293100",
+  "creation_timestamp": "2025-12-03T07:26:10.849500",
   "version": "1.0"
 }

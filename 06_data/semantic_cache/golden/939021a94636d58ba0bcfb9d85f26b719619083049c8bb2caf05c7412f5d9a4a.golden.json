@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "939021a94636d58ba0bcfb9d85f26b719619083049c8bb2caf05c7412f5d9a4a",
-    "scan_timestamp": "2025-12-03T06:51:45.093972"
+    "scan_timestamp": "2025-12-03T07:26:03.607772"
   },
   "content_preview": "# Phase A: L1 Planning Layer Refactoring\n\n**Date:** November 24, 2025  \n**Status:** \u2705 Complete  \n**Verification:** All tests passing (15/15)\n\n---\n\n## Overview\n\nThis refactoring established the L1 planning layer with strict separation between planning and execution.\n\n## Key Changes\n\n### 1. L1 Planning Layer Structure\n- Created/verified `l1/` package with pure planning modules\n- All planning logic extracted from `cognitive_agents.py` and `l2.py`\n- 8 planning functions, 8 immutable plan dataclasses...",
-  "creation_timestamp": "2025-12-03T06:51:49.666564",
+  "creation_timestamp": "2025-12-03T07:26:08.795343",
   "version": "1.0"
 }

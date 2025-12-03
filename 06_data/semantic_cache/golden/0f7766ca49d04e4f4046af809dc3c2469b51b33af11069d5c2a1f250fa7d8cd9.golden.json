@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0f7766ca49d04e4f4046af809dc3c2469b51b33af11069d5c2a1f250fa7d8cd9",
-    "scan_timestamp": "2025-12-03T06:51:45.056596"
+    "scan_timestamp": "2025-12-03T07:26:03.567807"
   },
   "content_preview": "\"\"\"\nL2 execution layer for resume improvement tasks.\n\nExecutes cognitive agents for strategy, drafting, QA, and safety\nimprovements to enhance resume job alignment.\n\"\"\"\n\n# FILE: l2.py\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Any, List, Optional, Sequence, Tuple\n\nfrom core.models.models import (\n    ExecutionContext,\n    WorkflowPlanBundle,\n    StrategyResult,\n    StrategyBranch,\n    Evidence,\n    RAGResult,\n    DraftingResult,\n    DraftSection,\n    QAResult,\n    Saf...",
-  "creation_timestamp": "2025-12-03T06:51:47.510481",
+  "creation_timestamp": "2025-12-03T07:26:06.240886",
   "version": "1.0"
 }

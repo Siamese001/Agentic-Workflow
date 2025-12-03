@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
-    "scan_timestamp": "2025-12-03T06:51:45.081663"
+    "scan_timestamp": "2025-12-03T07:26:03.595031"
   },
   "content_preview": "# FILE: 10_10/routing.py\n\"\"\"\nRouting Policy for Agentic Workflow v10_10\n=========================================\n\nThis is the v10_10 refactor of the v10_9 routing layer.\n\nIt removes:\n    - PlanObject-dependent logic\n    - L5.ModelRouter\n    - PromptEnvelope construction\n    - META-only routing criteria classes\n    - direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)\n    - simulated model invocation stubs\n\nand replaces them with a **minimal, deterministic RoutingPolicy** t...",
-  "creation_timestamp": "2025-12-03T06:51:49.308732",
+  "creation_timestamp": "2025-12-03T07:26:08.360619",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8cf640e8e75fb5fdd2518dc10ea70f212f91738a45c290d32798615aa46c0f31",
-    "scan_timestamp": "2025-12-03T06:51:45.339725"
+    "scan_timestamp": "2025-12-03T07:10:17.569409"
   },
   "content_preview": "# File: llm_clients.py\n# Description: Centralized LLM client for all generative AI calls\n\n__version__ = \"12.0\"\n\nimport google.generativeai as genai\nimport os\nfrom utils_LIC import CircuitBreaker, CircuitBreakerOpenError\n\nclass GeminiLLMClient:\n    \"\"\"\n    Centralized client for all Gemini API calls with circuit breaker protection\n    \"\"\"\n    \n    def __init__(self, circuit_breaker: CircuitBreaker):\n        self.api_key = os.environ.get(\"GEMINI_API_KEY\")\n        if not self.api_key:\n            r...",
-  "creation_timestamp": "2025-12-03T06:52:08.912889",
+  "creation_timestamp": "2025-12-03T07:10:52.391462",
   "version": "1.0"
 }

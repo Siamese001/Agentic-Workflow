@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8",
-    "scan_timestamp": "2025-12-03T06:51:45.219478"
+    "scan_timestamp": "2025-12-03T07:26:03.736659"
   },
   "content_preview": "\"\"\"\nTelemetry helpers for v10.7.\n\nThis module provides a unified event envelope for:\n - LLM metrics\n - tool execution metrics\n - cache events (exact + semantic)\n - agent routing decisions\n - pruning outcomes\n - MCP-integrated telemetry streams\n\nAll telemetry events are emitted via MCP (if present) and mirrored to local logs.\nExisting calls to log_event(...) continue to work unchanged.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom datetime import datetime\nfrom typing import Any, Di...",
-  "creation_timestamp": "2025-12-03T06:51:56.940960",
+  "creation_timestamp": "2025-12-03T07:26:18.295912",
   "version": "1.0"
 }

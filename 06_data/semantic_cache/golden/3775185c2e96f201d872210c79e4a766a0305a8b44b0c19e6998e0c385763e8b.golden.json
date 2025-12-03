@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3775185c2e96f201d872210c79e4a766a0305a8b44b0c19e6998e0c385763e8b",
-    "scan_timestamp": "2025-12-03T06:51:45.263158"
+    "scan_timestamp": "2025-12-03T07:26:03.785889"
   },
   "content_preview": "\"\"\"Tests for draft simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.draft_sim import DraftSimulator\nfrom simulations.models import DraftSimRequest\n\n\n@pytest.mark.asyncio\nasync def test_draft_simulator_returns_result():\n    simulator = DraftSimulator()\n    request = DraftSimRequest(\n        simulation_id=\"sim-draft\",\n        payload={},\n        draft_sections={\"intro\": \"text\", \"body\": \"details\"},\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0....",
-  "creation_timestamp": "2025-12-03T06:51:58.519263",
+  "creation_timestamp": "2025-12-03T07:26:20.317921",
   "version": "1.0"
 }

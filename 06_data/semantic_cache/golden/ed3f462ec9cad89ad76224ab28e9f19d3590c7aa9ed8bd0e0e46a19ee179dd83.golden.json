@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ed3f462ec9cad89ad76224ab28e9f19d3590c7aa9ed8bd0e0e46a19ee179dd83",
-    "scan_timestamp": "2025-12-03T06:51:45.114733"
+    "scan_timestamp": "2025-12-03T07:26:03.628975"
   },
   "content_preview": "from eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts\n\n\ndef test_load_golden_inputs_minimum_cases():\n    cases = load_golden_inputs()\n    assert len(cases) >= 2\n    ids = {c.id for c in cases}\n    assert \"gs_basic_1\" in ids\n    assert \"gs_safety_1\" in ids\n\n\ndef test_load_baselines_and_exemplars_present():\n    baselines = load_baseline_scores()\n    exemplars = load_exemplar_prompts()\n\n    assert \"avg_score\" in baselines\n    assert \"gs_basic_1\" in e...",
-  "creation_timestamp": "2025-12-03T06:51:50.277831",
+  "creation_timestamp": "2025-12-03T07:26:09.547997",
   "version": "1.0"
 }

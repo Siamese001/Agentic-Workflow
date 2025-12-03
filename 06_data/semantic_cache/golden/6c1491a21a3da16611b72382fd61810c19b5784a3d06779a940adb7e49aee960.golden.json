@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "6c1491a21a3da16611b72382fd61810c19b5784a3d06779a940adb7e49aee960",
-    "scan_timestamp": "2025-12-03T06:51:45.468419"
+    "scan_timestamp": "2025-12-03T07:10:17.720607"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-09 v2.84a (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a\nv2.84a is a zero-loss overwrite of v2.84 that restores the full Executive and C-Suite Approved Prompt bodies and the Short (NEW) rubric that were present in v2.83, while retaining all 2.84 hardenings: Senior TA now requires mandatory profile/About RAG (exactly two insights), JD-only fallback is forbidden, TA routing requires operator confirm, and new QA...",
-  "creation_timestamp": "2025-12-03T06:52:15.555074",
+  "creation_timestamp": "2025-12-03T07:11:00.579132",
   "version": "1.0"
 }

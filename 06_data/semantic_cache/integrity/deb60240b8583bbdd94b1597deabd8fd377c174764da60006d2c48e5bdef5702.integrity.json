@@ -4,17 +4,17 @@
   "content_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
   "file_size": 750,
   "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
     "relative_path": "mcp.manifest.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\mcp.manifest.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\mcp.manifest.json",
     "file_size": 750,
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-    "scan_timestamp": "2025-12-03T06:51:45.310213"
+    "scan_timestamp": "2025-12-03T07:26:03.720794"
   },
-  "verification_timestamp": "2025-12-03T06:52:07.595755",
+  "verification_timestamp": "2025-12-03T07:26:16.713708",
   "checksums": {
     "sha256": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
     "md5": "7adf08a1bfd952c5e23e8c9658960066"

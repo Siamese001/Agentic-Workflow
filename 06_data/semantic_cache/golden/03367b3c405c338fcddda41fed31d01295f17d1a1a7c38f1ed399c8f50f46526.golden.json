@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "03367b3c405c338fcddda41fed31d01295f17d1a1a7c38f1ed399c8f50f46526",
-    "scan_timestamp": "2025-12-03T06:51:45.141790"
+    "scan_timestamp": "2025-12-03T07:26:03.657291"
   },
   "content_preview": "# Testing Framework Restoration Progress\n\n## Successfully Restored Working Tests\n\n### L4 Memory/State Layer \u2705\n- **20/20 tests passing** in `tests/unit/l4_state/test_triplet_store.py`\n- Complete coverage: TripletStore operations, EntityResolution, validation\n- Extracted from working legacy tests in `_deprecated/`\n\n### L1 Planning Layer \u2705  \n- **5/5 tests passing** in `tests/unit/l1_planning/test_kg_retrieval_planning.py`\n- KG retrieval planning: entity_retrieval, neighborhood_query, templates\n- Ba...",
-  "creation_timestamp": "2025-12-03T06:51:51.042054",
+  "creation_timestamp": "2025-12-03T07:26:10.503725",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "01f63e32681da7d647b88aceb8a76eec92f9fb584e639498cf1e95424c2916e8",
-    "scan_timestamp": "2025-12-03T06:51:45.452405"
+    "scan_timestamp": "2025-12-03T07:10:17.704531"
   },
   "content_preview": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-05 v1.8.2\n===============================================================================\n\n# SUMMARY\n- Corrected routing with **seniority-only** inference (titles/scope), never based on messaging mechanics.\n- **Signature enforcement**: exact spacing/structure; one blank line after \u201cRegards,\u201d and no blanks between signature ...",
-  "creation_timestamp": "2025-12-03T06:52:15.073633",
+  "creation_timestamp": "2025-12-03T07:11:00.022643",
   "version": "1.0"
 }

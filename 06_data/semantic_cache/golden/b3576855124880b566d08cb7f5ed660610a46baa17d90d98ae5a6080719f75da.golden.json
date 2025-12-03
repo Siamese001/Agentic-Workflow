@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
-    "scan_timestamp": "2025-12-03T06:51:45.341755"
+    "scan_timestamp": "2025-12-03T07:10:17.571729"
   },
   "content_preview": "{\n  \"persona\": \"Strategic AI Leader & Technical Advisor\",\n  \"style_attributes\": [\n    \"Direct and confident\",\n    \"Peer-to-peer (not subservient)\",\n    \"Data-driven with quantifiable results\",\n    \"Technical depth without jargon overload\",\n    \"Executive-level strategic thinking\",\n    \"Focus on measurable business outcomes\"\n  ],\n  \"preferred_phrases\": [\n    \"strategic alignment\",\n    \"measurable business outcomes\",\n    \"operational transformation\",\n    \"enterprise-grade\",\n    \"production-ready\",...",
-  "creation_timestamp": "2025-12-03T06:52:08.995541",
+  "creation_timestamp": "2025-12-03T07:10:52.497908",
   "version": "1.0"
 }

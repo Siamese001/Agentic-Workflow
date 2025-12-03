@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a",
-    "scan_timestamp": "2025-12-03T06:51:45.049555"
+    "scan_timestamp": "2025-12-03T07:26:03.559826"
   },
   "content_preview": "\"\"\"\nMany-Shot Examples for resume generation workflow guidance.\n\nProvides high-quality examples for L1 planners and executors\nto improve resume quality and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List\nfrom enum import Enum\n\n\nclass ExampleType(str, Enum):\n    \"\"\"\n    Type of example for resume generation workflow.\n\n    Defines example categories for improved resume quality guidance.\n    \"\"\"\n    \n    L1_STRATEGY...",
-  "creation_timestamp": "2025-12-03T06:51:47.055657",
+  "creation_timestamp": "2025-12-03T07:26:05.742057",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
-    "scan_timestamp": "2025-12-03T06:51:45.309991"
+    "scan_timestamp": "2025-12-03T07:10:17.534481"
   },
   "content_preview": "\"\"\"Minimal MCP compatibility layer for local testing.\"\"\"\n\nfrom __future__ import annotations\n\nimport importlib\nimport json\nimport logging\nfrom pathlib import Path\nfrom types import SimpleNamespace\nfrom typing import Any, Callable, Dict\n\nlogger = logging.getLogger(\"mcp\")\n\n_ROOT = Path(__file__).resolve().parent.parent\n_TOOL_CACHE: Dict[str, Any] = {}\n_SCHEMA_CACHE: Dict[str, Any] = {}\n_AGENT_CACHE: Dict[str, Any] = {}\n_CONTEXT_STATE: Dict[str, Any] = {}\n\n_AGENT_SPECS: Dict[str, tuple[str, str]] =...",
-  "creation_timestamp": "2025-12-03T06:52:07.583850",
+  "creation_timestamp": "2025-12-03T07:10:50.441717",
   "version": "1.0"
 }

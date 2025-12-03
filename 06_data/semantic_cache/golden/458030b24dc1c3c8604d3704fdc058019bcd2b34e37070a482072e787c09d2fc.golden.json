@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
-    "scan_timestamp": "2025-12-03T06:51:45.088759"
+    "scan_timestamp": "2025-12-03T07:26:03.601593"
   },
   "content_preview": "\"\"\"BM25-based lexical retriever (v10_10 \u00b7 META layer).\n\nThis module wraps the ``rank-bm25`` library behind a simple function\nthat can be used by the retrieval layer. It is safe to import even if\n``rank_bm25`` is not installed: imports are performed lazily and\nexposed as explicit errors.\n\nResponsibilities:\n    \u2022 Provide a BM25Okapi-backed search over an in-memory corpus.\n    \u2022 Return results as simple dicts suitable for adaptation into\n      Evidence objects or other downstream structures.\n\nNon-r...",
-  "creation_timestamp": "2025-12-03T06:51:49.590497",
+  "creation_timestamp": "2025-12-03T07:26:08.709114",
   "version": "1.0"
 }

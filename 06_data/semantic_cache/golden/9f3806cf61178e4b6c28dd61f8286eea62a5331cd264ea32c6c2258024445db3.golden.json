@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9f3806cf61178e4b6c28dd61f8286eea62a5331cd264ea32c6c2258024445db3",
-    "scan_timestamp": "2025-12-03T06:51:45.233582"
+    "scan_timestamp": "2025-12-03T07:26:03.755882"
   },
   "content_preview": "import logging\nfrom types import MethodType, SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.services import PolicyAutoTuner, PredictiveCacheManager, TuningProfile\nfrom agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator\nfrom agent_stacks_v10_8.components.prompting import PromptEngineerAgent\nfrom agent_stacks_v10_8.components.rag import RAG_SearchAgent\n\n\nclass DummyMetricsCollector:\n    def __init__(self):\n        self.records = []\n        self.predictive_cache_manager = None\n...",
-  "creation_timestamp": "2025-12-03T06:51:57.432418",
+  "creation_timestamp": "2025-12-03T07:26:18.892155",
   "version": "1.0"
 }

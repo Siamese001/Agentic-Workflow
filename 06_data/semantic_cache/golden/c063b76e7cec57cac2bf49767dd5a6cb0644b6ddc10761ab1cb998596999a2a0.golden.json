@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-    "scan_timestamp": "2025-12-03T06:51:45.480432"
+    "scan_timestamp": "2025-12-03T07:10:17.734153"
   },
   "content_preview": "# File: prompts_LIC.py\n# Description: Prompt templates for the LIC workflow.\n# v12.0 NOTE: CTA templates still used by workflow_LIC.py fallback, but main\n#             generation now uses strategic alignment prompt from workflow_LIC.py\n\n__version__ = \"12.0\"\n\nfrom models_LIC import Route, Archetype\n\n# ============================================================================\n# CONTEXT-AWARE CTA TEMPLATES (v11.9)\n# ============================================================================\n\nCTA...",
-  "creation_timestamp": "2025-12-03T06:52:16.585884",
+  "creation_timestamp": "2025-12-03T07:11:01.792823",
   "version": "1.0"
 }

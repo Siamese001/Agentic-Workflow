@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "68d7a61c6f8c07009ea40a8edc6323e4a2ae1317ddfa7195cb54cbc828e5d476",
-    "scan_timestamp": "2025-12-03T06:51:45.135822"
+    "scan_timestamp": "2025-12-03T07:26:03.650329"
   },
   "content_preview": "from __future__ import annotations\n\nfrom meta.retrieval.hybrid_ranker import fuse_and_rank\nfrom core.models.models import CouncilVote, Evidence, RetrievalConfig\n\n\ndef _make_ev(text: str, score: float, source: str) -> Evidence:\n    return Evidence(text=text, score=score, source=source, metadata={})\n\n\ndef test_fuse_and_rank_rrf_with_uniform_weights() -> None:\n    cfg = RetrievalConfig(max_hits=10)\n\n    lex = [\n        _make_ev(text=\"doc1\", score=0.0, source=\"bm25\"),\n        _make_ev(text=\"doc2\", s...",
-  "creation_timestamp": "2025-12-03T06:51:50.766085",
+  "creation_timestamp": "2025-12-03T07:26:10.127706",
   "version": "1.0"
 }

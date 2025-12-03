@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6e21ead8b9476c0b2e647be2452ae3eda6f96ac8ba8a7f36a93272da31b18b6c",
-    "scan_timestamp": "2025-12-03T06:51:45.265679"
+    "scan_timestamp": "2025-12-03T07:26:03.788296"
   },
   "content_preview": "import copy\n\nimport pytest\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState, StrategyPlan\n\n\n@pytest.fixture\ndef base_state() -> dict:\n    state = MainGraphState()\n    state.metadata.workflow_id = \"wf-demo\"\n    state.resume.master_resume = {\"summary\": \"Original summary\"}\n    state.draft.sections = {\n        \"summary\": {\"draft\": \"v1\", \"tone\": \"Warm\"},\n        \"experience\": {\"entries\": [{\"company\": \"Acme\"}]},\n    }\n    return state.to_dict(...",
-  "creation_timestamp": "2025-12-03T06:51:58.599232",
+  "creation_timestamp": "2025-12-03T07:26:20.403152",
   "version": "1.0"
 }

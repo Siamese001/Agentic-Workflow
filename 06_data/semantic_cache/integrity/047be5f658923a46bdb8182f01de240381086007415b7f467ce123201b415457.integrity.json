@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457",
-  "content_hash": "61a74030ea5aa8f248bce2aa349ec906a2f4df2612cc1ce6555b2c6187835655",
+  "hash": "047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457",
+  "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+  "archive_name": "v2",
+  "relative_path": "hyphenation_rules.json",
   "file_size": 1342,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
-    "archive_name": "v2",
-    "relative_path": "hyphenation_rules.json",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\hyphenation_rules.json",
-    "file_size": 1342,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457",
-    "scan_timestamp": "2025-12-03T06:51:45.287908"
-  },
-  "verification_timestamp": "2025-12-03T06:52:02.418877",
-  "checksums": {
-    "sha256": "61a74030ea5aa8f248bce2aa349ec906a2f4df2612cc1ce6555b2c6187835655",
-    "md5": "7b46a870ac6ed74b1eb58cc9f06e34a8"
-  }
+  "file_extension": ".json",
+  "is_eligible": true,
+  "scan_timestamp": "2025-12-03T07:26:03.813388",
+  "integrity_timestamp": "2025-12-03T07:26:04.406340"
 }

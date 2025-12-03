@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "717123193253ee65851c374a5ac25d94ac452a48cc2f1685e21f596120c8cb36",
-    "scan_timestamp": "2025-12-03T06:51:45.318330"
+    "scan_timestamp": "2025-12-03T07:10:17.544030"
   },
   "content_preview": "\"\"\"Content-addressable store with TTL tracking.\"\"\"\nfrom __future__ import annotations\n\nimport hashlib\nimport json\nimport time\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, Optional, Tuple\n\n\n@dataclass(frozen=True)\nclass ContentMetadata:\n    \"\"\"Metadata persisted with cached retrieval artifacts.\"\"\"\n\n    tool: str\n    ts: float\n    extra: Dict[str, Any]\n\n\ndef make_key(**components: Any) -> str:\n    \"\"\"Return a stable cache key for retrieval artifacts.\"\"\"\n\n    normalized = json.du...",
-  "creation_timestamp": "2025-12-03T06:52:07.884699",
+  "creation_timestamp": "2025-12-03T07:10:50.898662",
   "version": "1.0"
 }

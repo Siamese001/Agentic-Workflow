@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b640671e8512b50971b33f17f652dbb8e9346de18ea6366f70845c4ea4b024b8",
-    "scan_timestamp": "2025-12-03T06:51:45.285998"
+    "scan_timestamp": "2025-12-03T07:10:17.505652"
   },
   "content_preview": "# File: validation/context.py\n# Validation Context Module - V18 Architecture\n# Version: 18.00\n# Contains the ValidationContext class and all its lazy-loading calculation methods.\n# Refactored from validator_RES_v2.py\n\nimport logging\nimport re\nfrom typing import Dict, List, Optional, Any, Tuple, Callable\nfrom models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection\nfrom config_RES_v2 import COVER_LETTER_SIGNATURE_TEMPLATE\nfrom utils_RES_v2 import text_utils, calculate_signal_scor...",
-  "creation_timestamp": "2025-12-03T06:52:02.144021",
+  "creation_timestamp": "2025-12-03T07:10:42.919761",
   "version": "1.0"
 }

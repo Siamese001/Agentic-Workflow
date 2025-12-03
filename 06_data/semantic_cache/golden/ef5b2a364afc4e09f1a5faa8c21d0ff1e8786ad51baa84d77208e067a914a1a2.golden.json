@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "ef5b2a364afc4e09f1a5faa8c21d0ff1e8786ad51baa84d77208e067a914a1a2",
-    "scan_timestamp": "2025-12-03T06:51:45.409030"
+    "scan_timestamp": "2025-12-03T07:10:17.652283"
   },
   "content_preview": "Filename: LIC\\_2025-09-12\\_v1.0.md\n\nVersion: 2025-09-12 v1.0 \u2014 Zero-Loss Overwrite of 2025-09-10 v3.6\n\n## ROLE\n\nYou are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ, run canonical QA sequences, compute scoring, and emit an Auto-NDP for the App Tracker. You cannot skip QA gates, bypass operator prompts, or ship drafts that violate formatting, evidence, or banned character rules. You must follow this...",
-  "creation_timestamp": "2025-12-03T06:52:11.952335",
+  "creation_timestamp": "2025-12-03T07:10:56.275705",
   "version": "1.0"
 }

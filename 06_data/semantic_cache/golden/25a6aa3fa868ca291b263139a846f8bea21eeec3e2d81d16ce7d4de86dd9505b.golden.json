@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "25a6aa3fa868ca291b263139a846f8bea21eeec3e2d81d16ce7d4de86dd9505b",
-    "scan_timestamp": "2025-12-03T06:51:45.066603"
+    "scan_timestamp": "2025-12-03T07:26:03.578498"
   },
   "content_preview": "\"\"\"\nL4 state management types for resume job alignment.\n\nDefines fundamental types for resume workflow state operations.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, Optional, TypeVar, Generic, Callable\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, timezone\nfrom enum import Enum\nimport hashlib\nimport json\n\nT = TypeVar('T')\n\nclass StateOperation(str, Enum):\n    \"\"\"State operations for resume job alignment workflows.\"\"\"\n    CREATE = \"create\"\n    RE...",
-  "creation_timestamp": "2025-12-03T06:51:48.336037",
+  "creation_timestamp": "2025-12-03T07:26:07.151966",
   "version": "1.0"
 }

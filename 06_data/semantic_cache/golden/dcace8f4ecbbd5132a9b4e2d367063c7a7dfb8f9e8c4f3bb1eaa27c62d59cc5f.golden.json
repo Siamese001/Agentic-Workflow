@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "dcace8f4ecbbd5132a9b4e2d367063c7a7dfb8f9e8c4f3bb1eaa27c62d59cc5f",
-    "scan_timestamp": "2025-12-03T06:51:45.232332"
+    "scan_timestamp": "2025-12-03T07:26:03.754855"
   },
   "content_preview": "import json\nfrom types import SimpleNamespace\n\nimport json\n\nimport pytest\n\nfrom core_v10_7 import ConfigV10_7\nfrom run_learning_v10_7 import (\n    AsyncToolCritiqueAgent,\n    AsyncToolGeneratorAgent,\n    HotReloadRuleManager,\n    _read_log_tail,\n    run_meta_learning,\n)\n\n\nclass StubLLMClient:\n    def __init__(self, payload: dict):\n        self.payload = payload\n\n    async def chat_completion_async(self, *_, **__):\n        return {\"content\": json.dumps(self.payload)}\n\n\n@pytest.mark.asyncio\nasync ...",
-  "creation_timestamp": "2025-12-03T06:51:57.404846",
+  "creation_timestamp": "2025-12-03T07:26:18.862347",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c7ea402be4d44888ec79f4329463d2c4048da71831a826ef4daf2ad63bebd912",
-    "scan_timestamp": "2025-12-03T06:51:45.142573"
+    "scan_timestamp": "2025-12-03T07:26:03.658261"
   },
   "content_preview": "from infra.sandbox.models import ToolCallRequest, ToolCallResult, SandboxEvent\n\n\ndef test_tool_call_request_defaults():\n    req = ToolCallRequest(tool_name=\"echo\")\n    assert req.tool_name == \"echo\"\n    assert req.args == []\n    assert isinstance(req.env, dict)\n    assert req.timeout_s > 0\n\n\ndef test_tool_call_result_defaults():\n    res = ToolCallResult(success=True)\n    assert res.success is True\n    assert res.exit_code == 0\n\n\ndef test_sandbox_event_structure():\n    evt = SandboxEvent(name=\"sa...",
-  "creation_timestamp": "2025-12-03T06:51:51.054669",
+  "creation_timestamp": "2025-12-03T07:26:10.517948",
   "version": "1.0"
 }

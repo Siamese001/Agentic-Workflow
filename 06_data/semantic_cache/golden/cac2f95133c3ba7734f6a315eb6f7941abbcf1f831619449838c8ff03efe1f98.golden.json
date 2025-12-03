@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cac2f95133c3ba7734f6a315eb6f7941abbcf1f831619449838c8ff03efe1f98",
-    "scan_timestamp": "2025-12-03T06:51:45.268573"
+    "scan_timestamp": "2025-12-03T07:26:03.792020"
   },
   "content_preview": "\"\"\"\nanthropic_stub \u2013 safe, minimal test stub for Anthropic.\n\nThis DOES NOT override the real SDK in runtime.\nIt ONLY serves as an optional testing fallback.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\n\n\n# ---------------------------------------------------------------------\n# Utility: fake usage stats\n# ---------------------------------------------------------------------\ndef _fake_usage() -> Dict[str, int...",
-  "creation_timestamp": "2025-12-03T06:51:58.688353",
+  "creation_timestamp": "2025-12-03T07:26:20.528866",
   "version": "1.0"
 }
