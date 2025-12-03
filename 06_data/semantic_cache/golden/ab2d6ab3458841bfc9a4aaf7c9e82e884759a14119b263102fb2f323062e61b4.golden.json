@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
-    "scan_timestamp": "2025-12-03T06:21:11.293692"
+    "scan_timestamp": "2025-12-03T06:51:45.097681"
   },
   "content_preview": "# MCP SERVER INSTALLATION GUIDE\n## Agentic-Workflow-10_10 Architecture\n\nThis document provides complete installation and validation instructions for all MCP servers required by the Agentic-Workflow-10_10 system.\n\n---\n\n## RECOMMENDED MCP SERVERS\n\nBased on the SDK vs MCP analysis, the following MCP servers should be installed:\n\n### 1. **Filesystem MCP Server** (REQUIRED)\n- **Purpose**: Agent-visible file operations for L2 execution layer\n- **Use Cases**: Prompt CMS, journal persistence, golden dat...",
-  "creation_timestamp": "2025-12-03T06:21:16.032060",
+  "creation_timestamp": "2025-12-03T06:51:49.712377",
   "version": "1.0"
 }

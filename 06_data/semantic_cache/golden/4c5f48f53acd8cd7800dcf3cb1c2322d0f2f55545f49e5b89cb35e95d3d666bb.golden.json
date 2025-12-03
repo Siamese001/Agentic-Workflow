@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4c5f48f53acd8cd7800dcf3cb1c2322d0f2f55545f49e5b89cb35e95d3d666bb",
-    "scan_timestamp": "2025-12-03T06:21:11.356087"
+    "scan_timestamp": "2025-12-03T06:51:45.167491"
   },
   "content_preview": "# FILE: 10_10/meta_profile.py\n\"\"\"\nMeta Profile & Adaptive Biases (v10_10 \u00b7 Phase 3) \u2014 META LAYER ONLY\n===================================================================\n\nThis module defines the *meta-layer* profile for the agentic system.\n\nIt is **NOT** part of L1\u2013L5. It provides SOFT BIASES and historical\nsignals that L1, L2, routing, and self-correction may consult:\n\n    \u2022 Model routing preferences (prefer fast vs robust).\n    \u2022 Planning preferences (conservative vs exploratory).\n    \u2022 QA-rel...",
-  "creation_timestamp": "2025-12-03T06:21:18.751538",
+  "creation_timestamp": "2025-12-03T06:51:52.383357",
   "version": "1.0"
 }

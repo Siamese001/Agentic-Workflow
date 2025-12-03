@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2e05773ee9611ba76f647f6031ffc1bba9f98b14ca3045a39bf804ae41f860c1",
-    "scan_timestamp": "2025-12-03T06:21:11.454494"
+    "scan_timestamp": "2025-12-03T06:51:45.267297"
   },
   "content_preview": "\"\"\"Unit tests for the v10.8 QAValidationStack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom agent_stacks_v10_8.qa_validation_stack import QAValidationStack\n\n\nclass _DummyTool:\n    def __init__(self, payload: dict) -> None:\n        self.payload = payload\n        self.invocations = 0\n\n    async def run_async(self, tool_input: dict, workflow_id: str) -> dict:  # pragma: no cover - simple stub\n        self.invocations += 1\n        assert \"draft_text\"...",
-  "creation_timestamp": "2025-12-03T06:21:25.035902",
+  "creation_timestamp": "2025-12-03T06:51:58.642728",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "db76d2144e730936e24680a60306ddc93897b7a6eae422c6b44b539f25741c75",
-    "scan_timestamp": "2025-12-03T06:21:11.493576"
+    "scan_timestamp": "2025-12-03T06:51:45.307942"
   },
   "content_preview": "# File: core_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context() helper to handle circular\n#   dependencies (e.g., ContextBudgetManager needing a client getter).\n# - ADDED: MCP client registry and wrap_mcp helper to thread MCP\n#   integrations through orchestration layers.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #10): Added A2AMessage and A2AContext to MainGraphState\n#   to support agent-to-agent mes...",
-  "creation_timestamp": "2025-12-03T06:21:33.873768",
+  "creation_timestamp": "2025-12-03T06:52:07.331713",
   "version": "1.0"
 }

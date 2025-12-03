@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
-    "scan_timestamp": "2025-12-03T06:21:11.240360"
+    "scan_timestamp": "2025-12-03T06:51:45.038994"
   },
   "content_preview": "\"\"\"\nInfrastructure dependency injection for r\u00e9sum\u00e9 processing workflows.\n\nProvides service management and dependency resolution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, TypeVar, Callable, Optional\nimport functools\n\nT = TypeVar('T')\n\n# Simple service registry for atomic architecture\n_services: Dict[str, Any] = {}\n\nclass SimpleDIContainer:\n    \"\"\"\n    Manages dependency injection services for r\u00e9sum\u00e9 processing architecture.\n\n    Ensures proper service res...",
-  "creation_timestamp": "2025-12-03T06:21:12.800260",
+  "creation_timestamp": "2025-12-03T06:51:46.534974",
   "version": "1.0"
 }

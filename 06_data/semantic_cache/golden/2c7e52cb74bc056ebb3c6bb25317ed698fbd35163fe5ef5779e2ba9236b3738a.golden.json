@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2c7e52cb74bc056ebb3c6bb25317ed698fbd35163fe5ef5779e2ba9236b3738a",
-    "scan_timestamp": "2025-12-03T06:21:11.612996"
+    "scan_timestamp": "2025-12-03T06:51:45.434677"
   },
   "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.3\n====================================================\n\nCHANGELOG v11.3:\n---------------\nPriority 1: Constraint Failure Classification & Adaptive Temperature Retry\n- Added ConstraintFailureType enum (MECHANICAL, CREATIVE, SEMANTIC, CONFLICT)\n- Added ConstraintFailureClassifier for intelligent failure analysis\n- Enhanced progressive temperature with adaptive retry strategies\n- Section-specific temperature optimization based on failure pattern...",
-  "creation_timestamp": "2025-12-03T06:21:39.977941",
+  "creation_timestamp": "2025-12-03T06:52:13.263110",
   "version": "1.0"
 }

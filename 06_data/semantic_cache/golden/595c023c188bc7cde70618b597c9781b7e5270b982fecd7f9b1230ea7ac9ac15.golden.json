@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "595c023c188bc7cde70618b597c9781b7e5270b982fecd7f9b1230ea7ac9ac15",
-    "scan_timestamp": "2025-12-03T06:21:11.301748"
+    "scan_timestamp": "2025-12-03T06:51:45.106552"
   },
   "content_preview": "\"\"\"E2E Full Agent Workflow Tests.\"\"\"\n\nclass TestE2EFullWorkflows:\n    \"\"\"E2E tests for full agent workflows.\"\"\"\n    \n    def test_resume_improvement_e2e(self):\n        \"\"\"Test complete resume improvement workflow.\"\"\"\n        stages = [\"analyze\", \"plan\", \"draft\", \"review\", \"finalize\"]\n        completed = [True for _ in stages]\n        assert all(completed)\n        assert len(stages) == 5\n    \n    def test_job_matching_e2e(self):\n        \"\"\"Test complete job matching workflow.\"\"\"\n        steps = [...",
-  "creation_timestamp": "2025-12-03T06:21:16.254292",
+  "creation_timestamp": "2025-12-03T06:51:49.935776",
   "version": "1.0"
 }

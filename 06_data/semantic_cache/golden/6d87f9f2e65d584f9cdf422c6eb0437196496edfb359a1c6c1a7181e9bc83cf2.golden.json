@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "6d87f9f2e65d584f9cdf422c6eb0437196496edfb359a1c6c1a7181e9bc83cf2",
-    "scan_timestamp": "2025-12-03T06:21:11.622808"
+    "scan_timestamp": "2025-12-03T06:51:45.443766"
   },
   "content_preview": "{\n  \"base_file\": \"LIC_10-03-2025_v7.1.json\",\n  \"target_file\": \"LIC_10-03-2025_v7.4.json\",\n  \"generated_at\": \"2025-10-03T12:57:16.268870Z\",\n  \"summary\": {\n    \"added_keys\": 30,\n    \"modified_keys\": 1,\n    \"unchanged_keys\": 14\n  },\n  \"added_keys\": [\n    \"3.context.intelligence_source_hierarchy\",\n    \"3.context.linkedin_input_collection\",\n    \"4.reasoning.K1.hyde_enrichment\",\n    \"4.reasoning.K3.execution_flow.self_rag_steps\",\n    \"4.reasoning.K3.execution_flow.step_3_stage_2_rerank\",\n    \"4.reason...",
-  "creation_timestamp": "2025-12-03T06:21:41.495478",
+  "creation_timestamp": "2025-12-03T06:52:14.875288",
   "version": "1.0"
 }

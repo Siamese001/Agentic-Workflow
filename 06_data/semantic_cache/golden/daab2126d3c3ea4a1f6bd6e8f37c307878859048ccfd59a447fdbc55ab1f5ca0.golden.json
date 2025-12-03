@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0",
-    "scan_timestamp": "2025-12-03T06:21:11.352367"
+    "scan_timestamp": "2025-12-03T06:51:45.161525"
   },
   "content_preview": "# /windsurf_rules/05_tooling_mcp_observability.md\n## Tooling, MCP, SDK, and Observability Rules (Condensed)\n\n### 1. L2 Tooling Rules\n- Only L2 may execute tools.\n- Tools require explicit schemas (input/output).\n- Must implement retries, backoff, timeouts, circuit breakers.\n- No tool logic allowed in L1, L3, L4, or L5.\n\n### 2. MCP vs SDK\n- MCP MUST be used when available.\n- SDK allowed only when MCP unavailable.\n- SDK usage must remain in L2 and be sandboxed.\n\n### 3. Execution Sandbox\n- Tools mus...",
-  "creation_timestamp": "2025-12-03T06:21:18.380967",
+  "creation_timestamp": "2025-12-03T06:51:52.013774",
   "version": "1.0"
 }

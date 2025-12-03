@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f9b01bd0c51db913a50efa62673f258a697500b3a000411d02d8fd9341b3f5e4",
-    "scan_timestamp": "2025-12-03T06:21:11.402717"
+    "scan_timestamp": "2025-12-03T06:51:45.215436"
   },
   "content_preview": "\"\"\"Render PromptEnvelope into a final prompt string with L5 safety signals.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom core_v10_7 import BaseAgent, PromptEnvelope\n\n\nclass PromptRendererStack(BaseAgent):\n    \"\"\"L2 stack responsible for rendering prompts from a PromptEnvelope.\"\"\"\n\n    async def run_async(\n        self, state: Dict[str, Any], workflow_id: Optional[str] = None\n    ) -> Dict[str, Any]:\n        env = PromptEnvelope.model_validate(state[\"prompt...",
-  "creation_timestamp": "2025-12-03T06:21:23.082251",
+  "creation_timestamp": "2025-12-03T06:51:56.706458",
   "version": "1.0"
 }

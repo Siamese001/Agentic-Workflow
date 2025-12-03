@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "819b0bf3cc518a69cccc454c80ed163818648be9878b4abb9403a40406d63125",
-    "scan_timestamp": "2025-12-03T06:21:11.604260"
+    "scan_timestamp": "2025-12-03T06:51:45.425141"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"version\": \"v4.0-v17\",\n    \"patched_from\": \"v3.1-MZLO\",\n    \"patched_at\": \"2025-09-23T22:19:27.553463+00:00\",\n    \"governance_alignment\": \"[REMOVED_LEGACY_REFERENCE]\",\n    \"smoke_test_pass\": true,\n    \"smoke_test_failures\": [],\n    \"patch_notes\": [\n      \"ensured six-section shell\",\n      \"role standards expanded\",\n      \"task success criteria hardened\",\n      \"context retrieval and toggles set\",\n      \"reasoning hybrid, QA, and mirror keys added\",\n      \"output mirroring a...",
-  "creation_timestamp": "2025-12-03T06:21:39.067644",
+  "creation_timestamp": "2025-12-03T06:52:12.411377",
   "version": "1.0"
 }

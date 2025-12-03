@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "107314a993d6225db09563795fad385c87899ee369140300199f420a492e51af",
-    "scan_timestamp": "2025-12-03T06:21:11.472088"
+    "scan_timestamp": "2025-12-03T06:51:45.285336"
   },
   "content_preview": "# File: config_RES_v2.py\n# Version: 19.0.0 (High Priority Consolidation)\n# Centralized configuration for Resume Generation Engine V2\n# ALL CONSTANTS CONSOLIDATED - NO MAGIC NUMBERS IN CODE\n\nimport os\nimport json\nimport logging\nfrom pathlib import Path\nfrom typing import Dict, List, Optional, Set, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nfrom models_RES import ReasoningConfig\n\n# Configure logging\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__...",
-  "creation_timestamp": "2025-12-03T06:21:28.665615",
+  "creation_timestamp": "2025-12-03T06:52:02.091894",
   "version": "1.0"
 }

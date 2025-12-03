@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "09e7fb704d059b9ee801097ca8bbedfdd7450178c480ac9d2fbc6b0117a13129",
-    "scan_timestamp": "2025-12-03T06:21:11.291294"
+    "scan_timestamp": "2025-12-03T06:51:45.094546"
   },
   "content_preview": "# Phase B: Atomic Cognitive Agents Refactoring\n\n**Date**: 2025-11-24\n\n## Overview\n\nPhase B refactors all cognitive agents to be pure L1\u2192L2 shims following OpenAI agentic layering principles.\n\n## Files Modified\n\n### Root Level\n- `cognitive_agents.py` - Refactored all agents to delegate to L1/L2\n- `l2.py` - Updated imports from `l1` to `l1_planning`\n- `core/__init__.py` - Updated documentation\n- `core/cognitive_agents.py` - Created re-export wrapper\n\n### New Module\n- `l1_planning/` - Created as re...",
-  "creation_timestamp": "2025-12-03T06:21:15.994596",
+  "creation_timestamp": "2025-12-03T06:51:49.673542",
   "version": "1.0"
 }

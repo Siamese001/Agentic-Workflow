@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "13a0b9182178bee7888ae05a9c02c843bbc493daf098d43f73c81e3ce86b4e7a",
-    "scan_timestamp": "2025-12-03T06:21:11.482832"
+    "scan_timestamp": "2025-12-03T06:51:45.295679"
   },
   "content_preview": "# File: core.py\n# Zero-Loss Consolidation - The Foundation\n# Merges: models_RES.py \u2192 config_RES.py \u2192 utils_RES.py \u2192 prompts_RES.py\n# Version: 6.0 (Telemetry, Circuit Breaker, Cost Tracking, Structured I/O)\n# v6.0 CHANGES:\n# - Added CircuitBreakerOpenError exception handling\n# - Enhanced Configuration for telemetry and cost tracking\n# - Added meta_loop_config and cost_config sections\n# - Ready for JSON structured logging\n\n# =========================================================================...",
-  "creation_timestamp": "2025-12-03T06:21:29.775304",
+  "creation_timestamp": "2025-12-03T06:52:03.196444",
   "version": "1.0"
 }

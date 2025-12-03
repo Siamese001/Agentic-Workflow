@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
-    "scan_timestamp": "2025-12-03T06:21:11.242025"
+    "scan_timestamp": "2025-12-03T06:51:45.040785"
   },
   "content_preview": "\"\"\"\nReflexion self-critique framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides deterministic output evaluation and revision for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n\n\n@dataclass\nclass Critique:\n    \"\"\"\n    Represents critique result for r\u00e9sum\u00e9 processing output evaluation.\n\n    Enables systematic quality assessment for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    message: str\n    severity: str  # e.g. \"info\", \"warning\", \"error\"\n\n\n...",
-  "creation_timestamp": "2025-12-03T06:21:12.867584",
+  "creation_timestamp": "2025-12-03T06:51:46.589688",
   "version": "1.0"
 }

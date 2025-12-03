@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "67e228d8664de05a40e8b21cf3421dd53b0518dcaf55aaa726cb68f23b4a4791",
-    "scan_timestamp": "2025-12-03T06:21:11.505810"
+    "scan_timestamp": "2025-12-03T06:51:45.321719"
   },
   "content_preview": "\"\"\"Prompt injection detection heuristics for the outreach stack.\"\"\"  # pragma: no cover\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Iterable\n\n_HIGH_RISK_KEYWORDS: Iterable[str] = (\n    \"ignore previous instructions\",  # pragma: no cover\n    \"exfiltrate\",  # pragma: no cover\n    \"password\",  # pragma: no cover\n    \"disable safety\",  # pragma: no cover\n    \"run shell\",  # pragma: no cover\n)\n_MEDIUM_RISK_KEYWORDS: Iterable[str] = (\"bypass\", \"override\", \"...",
-  "creation_timestamp": "2025-12-03T06:21:34.504760",
+  "creation_timestamp": "2025-12-03T06:52:07.993568",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "79ac04ef6cc1be7b9f59d617bff9d9f94bf006a717c5e11e5e5cee4675e7d486",
-    "scan_timestamp": "2025-12-03T06:21:11.366286"
+    "scan_timestamp": "2025-12-03T06:51:45.176130"
   },
   "content_preview": "# FILE: ranking.py\n\"\"\"\nRanking Utilities (v10_9) \u2014 PURE META-LAYER MODULE\n\nThis module provides deterministic ranking functions for use by:\n\n    \u2022 L2 RAGExecutor\n    \u2022 retrieval.py\n    \u2022 routing/meta layers\n    \u2022 simulation harness\n    \u2022 observability\n\nIt must remain strictly *META* and never call:\n    \u2022 L1 planners\n    \u2022 L2 executors directly\n    \u2022 L3 orchestration\n    \u2022 L4 StateAdapter\n    \u2022 L5 Safety/Policy engines\n    \u2022 Provider/LLM/DB/Network code\n\nAll ranking here is deterministic and side...",
-  "creation_timestamp": "2025-12-03T06:21:19.773318",
+  "creation_timestamp": "2025-12-03T06:51:53.402582",
   "version": "1.0"
 }

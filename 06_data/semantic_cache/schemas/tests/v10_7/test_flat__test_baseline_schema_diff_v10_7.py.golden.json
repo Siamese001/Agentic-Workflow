@@ -4,6 +4,6 @@
   "canonical_relative": "tests\\v10_7\\test_flat__test_baseline_schema_diff_v10_7.py",
   "global_hash": "b196346862088099fb6f481d2fcd0918f2fa02eafb162cfdd8c2c7003d0bfc27",
   "global_path": "06_data/semantic_cache/golden/b196346862088099fb6f481d2fcd0918f2fa02eafb162cfdd8c2c7003d0bfc27.golden.json",
-  "created_timestamp": "2025-12-03T06:21:43.556026",
+  "created_timestamp": "2025-12-03T06:52:16.872852",
   "pointer_version": "1.0"
 }

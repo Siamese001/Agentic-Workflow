@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c38bc68941f7b3e3e9bfa6f579c0bbd893a8c576e0404163ba2662b85ee52911",
-    "scan_timestamp": "2025-12-03T06:21:11.364043"
+    "scan_timestamp": "2025-12-03T06:51:45.174532"
   },
   "content_preview": "# FILE: models.py\n\"\"\"\nUnified Runtime Models (v10_9) \u2014 FULL AGENTIC IMPLEMENTATION (REFINED)\n\nThis module defines all canonical data structures used across the\nv10_9 agentic architecture. It is intentionally *data-only* and\ncontains:\n\n    \u2022 PlanObject               \u2014 L1 \u2192 L2/L3 planning contract\n    \u2022 Typed payloads           \u2014 per-domain L2 execution outputs\n    \u2022 ExecutionResult          \u2014 L2 \u2192 L3 contract\n    \u2022 WorkflowState            \u2014 L3 \u2192 external API contract\n    \u2022 StatePatch            ...",
-  "creation_timestamp": "2025-12-03T06:21:19.616216",
+  "creation_timestamp": "2025-12-03T06:51:53.248788",
   "version": "1.0"
 }

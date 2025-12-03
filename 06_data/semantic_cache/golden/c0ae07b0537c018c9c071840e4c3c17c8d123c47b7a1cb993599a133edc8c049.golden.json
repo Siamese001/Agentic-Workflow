@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c0ae07b0537c018c9c071840e4c3c17c8d123c47b7a1cb993599a133edc8c049",
-    "scan_timestamp": "2025-12-03T06:21:11.386603"
+    "scan_timestamp": "2025-12-03T06:51:45.197893"
   },
   "content_preview": "\"\"\"\nPydantic models shared across the v10.7 workflow (corrected + aligned).\n\nThis version:\n - Adds uniform model_config to allow extra fields\n - Adds helper .dump() and .load() backing for MainGraphState hydration\n - Normalizes QA tool outputs\n - Expands GeneratedPrompts to match PromptStack outputs\n - Adds descriptive defaults for safety and HIL models\n - Ensures compatibility with ResponseValidator + Pydantic v2\n - Preserves ALL correct semantics from the original models\n\"\"\"\n\nfrom __future__ i...",
-  "creation_timestamp": "2025-12-03T06:21:21.582688",
+  "creation_timestamp": "2025-12-03T06:51:55.166622",
   "version": "1.0"
 }

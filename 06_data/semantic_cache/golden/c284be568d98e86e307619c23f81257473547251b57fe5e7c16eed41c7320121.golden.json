@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-    "scan_timestamp": "2025-12-03T06:21:11.656391"
+    "scan_timestamp": "2025-12-03T06:51:45.477497"
   },
   "content_preview": "# File: utils.py\n# Description: General-purpose utilities for the LIC workflow.\n\n__version__ = \"11.10\"\n\nimport re\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Optional, Any, Callable, Tuple\nfrom collections import defaultdict\n\nfrom models import CircuitState, Archetype, CircuitBreakerOpenError\n\n# ============================================================================\n# NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)\n# =====================================================...",
-  "creation_timestamp": "2025-12-03T06:21:42.676543",
+  "creation_timestamp": "2025-12-03T06:52:16.133083",
   "version": "1.0"
 }

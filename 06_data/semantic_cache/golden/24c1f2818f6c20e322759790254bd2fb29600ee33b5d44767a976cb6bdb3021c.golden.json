@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c",
-    "scan_timestamp": "2025-12-03T06:21:11.457326"
+    "scan_timestamp": "2025-12-03T06:51:45.270288"
   },
   "content_preview": "# Minimal offline LangGraph stub for Codex v10.7 workflows\n\nclass StateGraph:\n    def __init__(self, state_type):\n        self.nodes = {}\n        self.edges = {}\n        self.entry = None\n\n    def add_node(self, name, func):\n        self.nodes[name] = func\n\n    def set_entry_point(self, name):\n        self.entry = name\n\n    def add_edge(self, source, destination):\n        self.edges.setdefault(source, []).append(destination)\n\n    def add_conditional_edges(self, source, selector, mapping):\n      ...",
-  "creation_timestamp": "2025-12-03T06:21:25.126857",
+  "creation_timestamp": "2025-12-03T06:51:58.729809",
   "version": "1.0"
 }

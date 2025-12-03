@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "55f92942d8cbaeac8166ee68fea79b5a9f57b105811c188c206173eeb62bab21",
-    "scan_timestamp": "2025-12-03T06:21:11.581573"
+    "scan_timestamp": "2025-12-03T06:51:45.401758"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.85\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.85\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P885. Centralized all configuration and parameters into single 'central_config' section. Eliminated parameter drift by establishing single source of truth. All sections now reference central_config via $ref pointers. Applied P884. Enhanced...",
-  "creation_timestamp": "2025-12-03T06:21:38.306958",
+  "creation_timestamp": "2025-12-03T06:52:11.725076",
   "version": "1.0"
 }

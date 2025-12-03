@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
-    "scan_timestamp": "2025-12-03T06:21:11.232707"
+    "scan_timestamp": "2025-12-03T06:51:45.030463"
   },
   "content_preview": "\"\"\"Transforms low-level observability events into a simple format so health checks can spot patterns that might harm resume quality or reliability.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom observability import get_all_events\n\n\ndef collect_error_events() -> List[Dict[str, Any]]:\n    \"\"\"Collects error-like events from the global stream so health detectors can flag recurring issues before they impact resume runs.\"\"\"\n\n    events: List[Dict[str, Any]] = []\n    ...",
-  "creation_timestamp": "2025-12-03T06:21:12.603785",
+  "creation_timestamp": "2025-12-03T06:51:46.343766",
   "version": "1.0"
 }

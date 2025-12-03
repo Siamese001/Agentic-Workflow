@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463",
-    "scan_timestamp": "2025-12-03T06:21:11.466167"
+    "scan_timestamp": "2025-12-03T06:51:45.278676"
   },
   "content_preview": "{\n  \"name\": \"resume_generation_pipeline\",\n  \"version\": \"16.0-winner\",\n  \"hops\": [\n    {\n      \"id\": \"hop_0_rag\",\n      \"script\": \"hop_0_rag_v1_2.py\",\n      \"description\": \"Job Description Analysis & RAG.\",\n      \"inputs\": [\n        { \"arg_name\": \"jd\", \"artifact_id\": \"static_jd\" },\n        { \"arg_name\": \"master-resume-path\", \"artifact_id\": \"static_master_resume\" }\n      ],\n      \"outputs\": [\n        { \"arg_name\": \"thematic-analysis\", \"artifact_id\": \"hop_0_thematic_analysis\" }\n      ],\n      \"retr...",
-  "creation_timestamp": "2025-12-03T06:21:26.126934",
+  "creation_timestamp": "2025-12-03T06:51:59.635457",
   "version": "1.0"
 }

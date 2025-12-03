@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
-    "scan_timestamp": "2025-12-03T06:21:11.225704"
+    "scan_timestamp": "2025-12-03T06:51:45.023490"
   },
   "content_preview": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyProfile(BaseModel):\n    \"\"\"Safety configuration profile used by execution profiles.\n\n    This is intentionally string/primitive based to avoid cycles and\n    mirrors the SafetyTier + policy toggles used in ExecutionProfileSpec.\n    \"\"\"\n\n    safety_tier: str = Field(default=\"standard\", description=\"Safety tier: standard | strict | relaxed | debug\")\n    pii_detection_enabled: bool = True\n    policy_engine_enabl...",
-  "creation_timestamp": "2025-12-03T06:21:12.274170",
+  "creation_timestamp": "2025-12-03T06:51:46.081550",
   "version": "1.0"
 }

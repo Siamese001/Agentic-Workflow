@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "3967ccc84899373f214f0e2e92f307f76b1b7a5f110c86531ef1b23ec74e1415",
-    "scan_timestamp": "2025-12-03T06:21:11.570525"
+    "scan_timestamp": "2025-12-03T06:51:45.389985"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.0\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.0: Hardened the L-Series trace generation logic and K.1 toggle table validation. Implemented stricter schema adherence and clarified template handling policies.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.5.0\",\n        \"date\": \"2025...",
-  "creation_timestamp": "2025-12-03T06:21:37.893156",
+  "creation_timestamp": "2025-12-03T06:52:11.351464",
   "version": "1.0"
 }

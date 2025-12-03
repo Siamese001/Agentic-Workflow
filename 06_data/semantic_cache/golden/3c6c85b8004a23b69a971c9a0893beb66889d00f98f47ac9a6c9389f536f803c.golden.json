@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3c6c85b8004a23b69a971c9a0893beb66889d00f98f47ac9a6c9389f536f803c",
-    "scan_timestamp": "2025-12-03T06:21:11.243372"
+    "scan_timestamp": "2025-12-03T06:51:45.042324"
   },
   "content_preview": "from __future__ import annotations\n\n\nclass SandboxError(RuntimeError):\n    \"\"\"Base class for sandbox-related errors.\"\"\"\n\n\nclass SandboxTimeoutError(SandboxError):\n    \"\"\"Raised when a tool call exceeds its allowed timeout inside the VM.\"\"\"\n\n\nclass SandboxExecutionError(SandboxError):\n    \"\"\"Raised when a tool execution fails inside the VM.\"\"\"\n\n\nclass SandboxIsolationError(SandboxError):\n    \"\"\"Raised when an isolation invariant appears to be violated.\"\"\"\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:21:12.917795",
+  "creation_timestamp": "2025-12-03T06:51:46.627203",
   "version": "1.0"
 }

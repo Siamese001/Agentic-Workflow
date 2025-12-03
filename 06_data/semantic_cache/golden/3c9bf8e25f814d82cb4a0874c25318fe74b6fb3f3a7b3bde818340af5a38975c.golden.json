@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3c9bf8e25f814d82cb4a0874c25318fe74b6fb3f3a7b3bde818340af5a38975c",
-    "scan_timestamp": "2025-12-03T06:21:11.402958"
+    "scan_timestamp": "2025-12-03T06:51:45.215907"
   },
   "content_preview": "\"\"\"Pure action implementation of the v10.8 RAG execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport json\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom agent_tools_v10_7 import BM25SearchTool, ChromaDBSearchTool, HyDETool\nfrom core_v10_7 import BaseAgent, PydanticSchemaError, RAGPlan, _format_prompt_with_defaults\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\n\n\nclass RAGExecutionStack(BaseAgent):\n    \"\"\"Runs determini...",
-  "creation_timestamp": "2025-12-03T06:21:23.104276",
+  "creation_timestamp": "2025-12-03T06:51:56.729332",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6df1948bc1cd80929f9f218f6e9beef9188a40bc2aff350c7f9f00f87d1b7a50",
-    "scan_timestamp": "2025-12-03T06:21:11.354445"
+    "scan_timestamp": "2025-12-03T06:51:45.164738"
   },
   "content_preview": "# FILE: 10_10/golden_eval.py\n\"\"\"\nGolden State Evaluator (v10_10 \u00b7 Phase 3 \u2014 Batch D)\n===================================================\n\nThis module provides a deterministic evaluation harness for the v10_10\nagentic workflow.\n\nIt is deliberately *pure*:\n\n    \u2022 No LLM calls.\n    \u2022 No orchestration, execution, or planning.\n    \u2022 Only consumes already\u2011materialised runtime artefacts\n      (typically the final L4 state patch exported as JSON).\n\nThe main responsibilities are:\n\n    1. Define *golden* ...",
-  "creation_timestamp": "2025-12-03T06:21:18.507006",
+  "creation_timestamp": "2025-12-03T06:51:52.141275",
   "version": "1.0"
 }

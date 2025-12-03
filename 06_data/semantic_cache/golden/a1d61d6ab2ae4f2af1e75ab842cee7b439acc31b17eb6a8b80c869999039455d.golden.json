@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a1d61d6ab2ae4f2af1e75ab842cee7b439acc31b17eb6a8b80c869999039455d",
-    "scan_timestamp": "2025-12-03T06:21:11.593738"
+    "scan_timestamp": "2025-12-03T06:51:45.414528"
   },
   "content_preview": "{\n  \"prompt_shell\": {\n    \"version\": \"3.5-MZLO\",\n    \"name\": \"Six-Section Canonical Prompt Shell\",\n    \"purpose\": \"Define authority, scope, enforceable rules, and non-negotiables for converting any prompt into the canonical six-section structure.\",\n    \"sections_required\": [\n      \"1.role\",\n      \"2.task\",\n      \"3.context\",\n      \"4.reasoning\",\n      \"5.output\",\n      \"6.conditions\"\n    ],\n    \"enforcement\": {\n      \"reject_out_of_order_emission\": true,\n      \"block_output_on_reasoning_qa_fail\"...",
-  "creation_timestamp": "2025-12-03T06:21:38.700978",
+  "creation_timestamp": "2025-12-03T06:52:12.071205",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "30d84df2b712599a4d28d671bd9e2227b6f0d20dcb58945be17029edb241312a",
-    "scan_timestamp": "2025-12-03T06:21:11.642445"
+    "scan_timestamp": "2025-12-03T06:51:45.463137"
   },
   "content_preview": "```markdown\n# MASTER PROMPTS v5 \u2014 SIX-SECTION SHELL\n# Artifact: LinkedIn Canonical Operational Runbook \u2192 Executable Prompt\n# Canonical Spec: LinkedInCanonical_2025-09-08_v1 (authoritative)\n\nROLE:\n- You are the LinkedIn Outreach Orchestrator.\n- Your job is to generate Short (NEW) or Full messages and enforce all governance gates from the canonical spec (v2.9.2).\n- You must:\n  - Route via the Entrance Gate decision tree.\n  - Enforce formatting (URL/Subject/Body/Signature), structure (CapFrame, Ins...",
-  "creation_timestamp": "2025-12-03T06:21:41.981510",
+  "creation_timestamp": "2025-12-03T06:52:15.431443",
   "version": "1.0"
 }

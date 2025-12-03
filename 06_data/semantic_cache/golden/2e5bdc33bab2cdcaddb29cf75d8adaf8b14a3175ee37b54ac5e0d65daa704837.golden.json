@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2e5bdc33bab2cdcaddb29cf75d8adaf8b14a3175ee37b54ac5e0d65daa704837",
-    "scan_timestamp": "2025-12-03T06:21:11.353858"
+    "scan_timestamp": "2025-12-03T06:51:45.163793"
   },
   "content_preview": "# FILE: 10_10/cognitive_agents.py\n\"\"\"\nUnified Cognitive Agents (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n===================================================\n\nThis module implements ALL LLM-based cognition for the v10_10 workflow.\n\nL2 is the only layer allowed to call these agents.\n\nAgents (L2 cognition only):\n    \u2022 StrategyLLMAgent            \u2013 strategy reasoning\n    \u2022 DraftingGuild              \u2013 resume drafting\n    \u2022 SemanticQAAgent            \u2013 QA reasoning + RAG reasoning\n    \u2022 ConstitutionalSafetyAgent  \u2013...",
-  "creation_timestamp": "2025-12-03T06:21:18.405984",
+  "creation_timestamp": "2025-12-03T06:51:52.042290",
   "version": "1.0"
 }

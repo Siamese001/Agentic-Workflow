@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7bcee091ebeb49fff522c9c79d8f7574b4cbfbe8ba57f119c4dd79fc326c2241",
-    "scan_timestamp": "2025-12-03T06:21:11.303456"
+    "scan_timestamp": "2025-12-03T06:51:45.108749"
   },
   "content_preview": "\"\"\"E2E Safety Enforced Path Tests.\"\"\"\n\nclass TestSafetyEnforcedPaths:\n    \"\"\"E2E tests for safety enforced paths.\"\"\"\n    \n    def test_pii_blocked_path(self):\n        \"\"\"Test PII is blocked in workflow path.\"\"\"\n        content = \"safe resume content\"\n        assert \"SSN:\" not in content\n    \n    def test_policy_violation_path(self):\n        \"\"\"Test policy violation handling path.\"\"\"\n        violations = []\n        assert len(violations) == 0\n",
-  "creation_timestamp": "2025-12-03T06:21:16.315025",
+  "creation_timestamp": "2025-12-03T06:51:49.998734",
   "version": "1.0"
 }

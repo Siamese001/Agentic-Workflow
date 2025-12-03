@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "2270e57f95494d40af701d1086b49f0db4f02762d4d02bda4beb652ea32e94d3",
-    "scan_timestamp": "2025-12-03T06:21:11.578361"
+    "scan_timestamp": "2025-12-03T06:51:45.398778"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.6.1\",\n  \"metadata\": {\n  \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.71\",\n  \"last_updated\": \"2025--10-08\",\n  \"description\": \"Applied P871: Phoenix v2. A major strategic and configuration overhaul of the LIC system. Implements new 'On Steroids' reasoning toggles, introduces type-specific word count ranges, corrects workflow logic, hardens validation, and standardizes terminolo...",
-  "creation_timestamp": "2025-12-03T06:21:38.194229",
+  "creation_timestamp": "2025-12-03T06:52:11.625562",
   "version": "1.0"
 }

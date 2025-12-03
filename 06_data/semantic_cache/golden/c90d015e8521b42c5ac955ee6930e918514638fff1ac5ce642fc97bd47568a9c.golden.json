@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c90d015e8521b42c5ac955ee6930e918514638fff1ac5ce642fc97bd47568a9c",
-    "scan_timestamp": "2025-12-03T06:21:11.322229"
+    "scan_timestamp": "2025-12-03T06:51:45.129792"
   },
   "content_preview": "\"\"\"L4 Temporal KG Invalidation Tests.\"\"\"\n\nclass TestL4KGInvalidation:\n    \"\"\"Tests for L4 KG invalidation.\"\"\"\n    \n    def test_age_based_invalidation(self):\n        \"\"\"Test age-based invalidation.\"\"\"\n        entry = {\"created\": 1000, \"max_age\": 500}\n        current_time = 1600\n        is_expired = (current_time - entry[\"created\"]) > entry[\"max_age\"]\n        assert is_expired is True\n    \n    def test_explicit_invalidation(self):\n        \"\"\"Test explicit invalidation.\"\"\"\n        entry = {\"id\": \"...",
-  "creation_timestamp": "2025-12-03T06:21:16.960122",
+  "creation_timestamp": "2025-12-03T06:51:50.612620",
   "version": "1.0"
 }

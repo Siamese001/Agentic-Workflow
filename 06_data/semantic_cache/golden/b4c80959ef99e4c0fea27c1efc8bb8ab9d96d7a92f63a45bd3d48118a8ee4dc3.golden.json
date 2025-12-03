@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b4c80959ef99e4c0fea27c1efc8bb8ab9d96d7a92f63a45bd3d48118a8ee4dc3",
-    "scan_timestamp": "2025-12-03T06:21:11.451516"
+    "scan_timestamp": "2025-12-03T06:51:45.265219"
   },
   "content_preview": "import pathlib\nfrom models import MainGraphState\n\ndef test_safety_fields_merge():\n    base = MainGraphState()\n    patch = {\n        \"safety_report\": {\"is_safe\": True, \"findings\": []},\n        \"policy_decision\": {\"allowed\": True, \"reason\": None},\n        \"constitutional_review\": {\"passed\": True, \"violations\": []},\n    }\n\n    # simulate adapter logic\n    from state_adapter_stack import StateAdapterStack\n    adapter = StateAdapterStack(context=None, debug_mode=False)\n\n    new_state = adapter.apply_...",
-  "creation_timestamp": "2025-12-03T06:21:24.975091",
+  "creation_timestamp": "2025-12-03T06:51:58.586409",
   "version": "1.0"
 }

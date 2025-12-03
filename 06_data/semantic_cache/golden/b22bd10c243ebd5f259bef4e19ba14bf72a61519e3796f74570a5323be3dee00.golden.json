@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-    "scan_timestamp": "2025-12-03T06:21:11.617840"
+    "scan_timestamp": "2025-12-03T06:51:45.438341"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"analysis_id\": \"LIC-ENFORCEMENT-QA-GATE-MAPPING-v1.0\",\n    \"template_analyzed\": \"LIC_FULL_v10_23_1_COMPLETE.json\",\n    \"analysis_date\": \"2025-10-15\",\n    \"purpose\": \"Map every enforcement point to corresponding QA validation gate and identify gaps\",\n    \"methodology\": \"Granular line-by-line analysis of all constraints, requirements, rules, and enforcement points\",\n    \"findings_summary\": {\n      \"total_enforcement_points\": 89,\n      \"mapped_to_qa_gates\": 47,\n      \"missing_...",
-  "creation_timestamp": "2025-12-03T06:21:41.346015",
+  "creation_timestamp": "2025-12-03T06:52:14.698048",
   "version": "1.0"
 }

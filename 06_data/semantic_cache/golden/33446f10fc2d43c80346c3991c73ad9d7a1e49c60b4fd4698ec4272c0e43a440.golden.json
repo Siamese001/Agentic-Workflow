@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "33446f10fc2d43c80346c3991c73ad9d7a1e49c60b4fd4698ec4272c0e43a440",
-    "scan_timestamp": "2025-12-03T06:21:11.342657"
+    "scan_timestamp": "2025-12-03T06:51:45.153124"
   },
   "content_preview": "\"\"\"End-to-End Workflow Tests\n\nTests complete workflows from job input to final output,\nintegrating all layers and components.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch\nfrom datetime import datetime\n\nfrom core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig\n\n\nclass TestEndToEndWorkflow:\n    \"\"\"Test complete end-to-end workflow execution.\"\"\"\n    \n    def test_full_workflow_with_all_components(self):\n        \"\"\"Test complete workflow with strategy, RAG, d...",
-  "creation_timestamp": "2025-12-03T06:21:17.704282",
+  "creation_timestamp": "2025-12-03T06:51:51.314970",
   "version": "1.0"
 }

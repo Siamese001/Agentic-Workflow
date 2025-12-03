@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d3934191a53c5668e8a14595cf914ea9fed17084dfb996cb82f040209f7a80d6",
-    "scan_timestamp": "2025-12-03T06:21:11.523491"
+    "scan_timestamp": "2025-12-03T06:51:45.340775"
   },
   "content_preview": "# File: models_LIC.py\n# Description: Data models, enumerations, and custom exceptions for the LIC workflow.\n# REFACTOR: v13.0 - Slimmed down to support HOP-based architecture.\n# - Removed RAGCritique, MessageClaim (logic moved to tools/agents).\n# - Kept core enums, mission objects, and FactualGapError.\n\n__version__ = \"13.0\"\n\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum\nfrom typing import Dict, List, Optional, Any, Set, Tuple, Callable\n\n# ==========...",
-  "creation_timestamp": "2025-12-03T06:21:35.433149",
+  "creation_timestamp": "2025-12-03T06:52:08.966998",
   "version": "1.0"
 }

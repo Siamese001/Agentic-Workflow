@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
-    "scan_timestamp": "2025-12-03T06:21:11.365277"
+    "scan_timestamp": "2025-12-03T06:51:45.175387"
   },
   "content_preview": "{\n  \"company_name\": \"NEO4j\",\n  \"job_title\": \"Vice President, Growth & Strategic Partnerships\",\n  \"jd_url\": \"https://job-boards.greenhouse.io/neo4j/jobs/4613197006?gh_jid=4613197006&gh_src=6fa805c96us\",\n  \"job_description\": \"Vice President, Growth & Strategic Partnerships\\nRemote: United States\\nAbout Neo4j:\\nNeo4j is the leader in Graph Database & Analytics, helping organizations uncover hidden patterns and relationships across billions of data connections deeply, easily, and quickly. Customers ...",
-  "creation_timestamp": "2025-12-03T06:21:19.719779",
+  "creation_timestamp": "2025-12-03T06:51:53.350127",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4",
-    "scan_timestamp": "2025-12-03T06:21:11.293473"
+    "scan_timestamp": "2025-12-03T06:51:45.097402"
   },
   "content_preview": "# FINAL SDK vs MCP ANALYSIS + INSTALLATION + VALIDATION REPORT\n## Agentic-Workflow-10_10 Complete Analysis\n\n**Date**: 2025-01-24  \n**Project**: Agentic-Workflow-10_10  \n**Status**: \u2705 COMPLETE - All SDKs Installed & Validated\n\n---\n\n## EXECUTIVE SUMMARY\n\nThis document provides the complete SDK vs MCP analysis, installation results, and validation outcomes for the Agentic-Workflow-10_10 system. All required Python packages have been successfully installed and validated. MCP server installation inst...",
-  "creation_timestamp": "2025-12-03T06:21:16.028420",
+  "creation_timestamp": "2025-12-03T06:51:49.708687",
   "version": "1.0"
 }

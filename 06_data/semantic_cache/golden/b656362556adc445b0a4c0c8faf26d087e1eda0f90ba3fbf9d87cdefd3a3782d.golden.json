@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
-    "scan_timestamp": "2025-12-03T06:21:11.298071"
+    "scan_timestamp": "2025-12-03T06:51:45.102904"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom runtime.observability.collectors import get_events\n\n\ndef get_routing_trace() -> List[Dict[str, Any]]:\n    \"\"\"Return a structured trace of routing decisions from telemetry.\n\n    This mirrors the real runtime.trace.trace_reconstruction helper but lives\n    inside the Agentic-Workflow-10_10 snapshot so that\n    ``from runtime.trace.trace_reconstruction import get_routing_trace`` works\n    when tests are run with rootdir=Ag...",
-  "creation_timestamp": "2025-12-03T06:21:16.130869",
+  "creation_timestamp": "2025-12-03T06:51:49.811184",
   "version": "1.0"
 }

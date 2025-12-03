@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "26a04819eedb45a8a0e05274cef740a8d103673258662ed131dd88d294ce776c",
-    "scan_timestamp": "2025-12-03T06:21:11.450195"
+    "scan_timestamp": "2025-12-03T06:51:45.264378"
   },
   "content_preview": "import copy\nimport json\nimport pytest\n\nfrom stacks_v10_8 import (\n    BulletExecutionStack,\n    BulletPlanningStack,\n    DraftPlanningStack,\n    DraftingExecutionStack,\n    RAGExecutionStack,\n    RAGPlanningStack,\n)\n\n\nclass DummyLLMClient:\n    def __init__(self) -> None:\n        self.goal_state = \"\"\n        self.top_failures = \"\"\n        self.budget_manager = None\n        self.latency_task_name = \"\"\n        self.workflow_id = \"\"\n        self.agent_name = \"\"\n\n    async def chat_completion_async(s...",
-  "creation_timestamp": "2025-12-03T06:21:24.939335",
+  "creation_timestamp": "2025-12-03T06:51:58.550673",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004",
-    "scan_timestamp": "2025-12-03T06:21:11.226816"
+    "scan_timestamp": "2025-12-03T06:51:45.024660"
   },
   "content_preview": "\"\"\"\nError hierarchy and utilities for workflow execution.\n\"\"\"\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom typing import Any, Dict, Optional, Type, TypeVar\n\n\nT = TypeVar(\"T\")\n\n\nclass ErrorSeverity(str, Enum):\n    \"\"\"Severity levels for workflow errors.\"\"\"\n\n    INFO = \"info\"\n    WARNING = \"warning\"\n    ERROR = \"error\"\n    CRITICAL = \"critical\"\n\n\nclass WorkflowErrorCode(str, Enum):\n    \"\"\"Standard error codes for workflow execution.\"\"\"\n\n    # General errors\n    UNKNOWN_ERROR = \"unk...",
-  "creation_timestamp": "2025-12-03T06:21:12.306930",
+  "creation_timestamp": "2025-12-03T06:51:46.110457",
   "version": "1.0"
 }

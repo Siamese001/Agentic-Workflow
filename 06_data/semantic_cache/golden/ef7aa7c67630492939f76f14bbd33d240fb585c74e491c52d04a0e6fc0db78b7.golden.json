@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
-    "scan_timestamp": "2025-12-03T06:21:11.295794"
+    "scan_timestamp": "2025-12-03T06:51:45.100346"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyEvent(BaseModel):\n    \"\"\"Observability event capturing safety-related activity.\n\n    This is intentionally lightweight and does not depend on higher-level\n    orchestration types; callers pass identifiers and structured payloads.\n    \"\"\"\n\n    name: str = \"safety_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    stage: Opt...",
-  "creation_timestamp": "2025-12-03T06:21:16.066178",
+  "creation_timestamp": "2025-12-03T06:51:49.751505",
   "version": "1.0"
 }

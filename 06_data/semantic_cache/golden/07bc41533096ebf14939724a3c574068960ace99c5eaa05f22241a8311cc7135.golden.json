@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "07bc41533096ebf14939724a3c574068960ace99c5eaa05f22241a8311cc7135",
-    "scan_timestamp": "2025-12-03T06:21:11.513123"
+    "scan_timestamp": "2025-12-03T06:51:45.329693"
   },
   "content_preview": "from src.lic_agentic.agents.k7_validator_agent import ValidatorAgent\n\n\ndef test_retry_brings_to_pass():\n    agent = ValidatorAgent(max_retries=1)\n    initial_draft = \"\"\"Subject: Hello\\n\\nHello there\\nBest regards,\\nLIC Outreach Bot\"\"\"\n    artifacts = {\"aid\": \"Grounded insight\"}\n    verdict = agent.check(\n        initial_draft,\n        route_decision=None,\n        pii_map={},\n        artifacts=artifacts,\n    )\n    assert verdict.passed\n    assert \"CTA:\" in verdict.final_draft\n    assert \"[artifac...",
-  "creation_timestamp": "2025-12-03T06:21:34.900761",
+  "creation_timestamp": "2025-12-03T06:52:08.414561",
   "version": "1.0"
 }

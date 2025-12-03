@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a62d16c380af42c16fe2988acc3e7b5b182bdd88d239e71b97b3b3c96da4bb88",
-    "scan_timestamp": "2025-12-03T06:21:11.579821"
+    "scan_timestamp": "2025-12-03T06:51:45.400275"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.83\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.83\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P880: Phoenix v2. A major strategic and configuration overhaul of the LIC system. Implements the Just-in-Time file ingestion model, codifies all persona-aligned message strategies, and corrects all identified content generation and formatt...",
-  "creation_timestamp": "2025-12-03T06:21:38.248015",
+  "creation_timestamp": "2025-12-03T06:52:11.672148",
   "version": "1.0"
 }

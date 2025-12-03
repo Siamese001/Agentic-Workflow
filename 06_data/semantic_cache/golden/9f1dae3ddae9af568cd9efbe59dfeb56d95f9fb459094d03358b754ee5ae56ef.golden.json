@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9f1dae3ddae9af568cd9efbe59dfeb56d95f9fb459094d03358b754ee5ae56ef",
-    "scan_timestamp": "2025-12-03T06:21:11.456079"
+    "scan_timestamp": "2025-12-03T06:51:45.269037"
   },
   "content_preview": "\"\"\"\nchromadb_stub \u2013 safe in-memory stub for ChromaDB.\n\nThis DOES NOT shadow the real 'chromadb' unless you explicitly enable vendor stubs.\nIt is used only for offline tests (USE_VENDOR_STUBS=1).\n\nImplements:\n - Client\n - PersistentClient\n - HttpClient\n - Collection with add/query/delete\n - embedding_functions.EmbeddingFunction\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\n\n\n# ----------------------------------------...",
-  "creation_timestamp": "2025-12-03T06:21:25.096401",
+  "creation_timestamp": "2025-12-03T06:51:58.700516",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb",
-    "scan_timestamp": "2025-12-03T06:21:11.230574"
+    "scan_timestamp": "2025-12-03T06:51:45.027848"
   },
   "content_preview": "from __future__ import annotations\n\nimport json\nfrom pathlib import Path\nfrom typing import Any, Dict, List\n\nfrom eval.golden_state.models import GoldenStateTestCase, GoldenCase\n\n\n_BASE_DIR = Path(__file__).resolve().parent\n_BASELINES_DIR = _BASE_DIR / \"baselines\"\n\n\ndef _load_json(name: str) -> Any:\n    path = _BASELINES_DIR / name\n    if not path.exists():\n        return None\n    with path.open(\"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n\n\ndef load_golden_inputs() -> List[GoldenSta...",
-  "creation_timestamp": "2025-12-03T06:21:12.533392",
+  "creation_timestamp": "2025-12-03T06:51:46.290475",
   "version": "1.0"
 }

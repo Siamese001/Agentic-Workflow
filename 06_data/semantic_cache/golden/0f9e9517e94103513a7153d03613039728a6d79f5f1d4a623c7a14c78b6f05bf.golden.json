@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0f9e9517e94103513a7153d03613039728a6d79f5f1d4a623c7a14c78b6f05bf",
-    "scan_timestamp": "2025-12-03T06:21:11.417654"
+    "scan_timestamp": "2025-12-03T06:51:45.231523"
   },
   "content_preview": "import asyncio\nimport asyncio\nimport sys\nimport types\nfrom typing import Any, Dict\n\nimport pytest\n\nfrom core_v10_7 import (\n    BaseTool,\n    MCPClientInitializationError,\n    MCPClientSpec,\n    MCPClientStub,\n    WorkflowContext,\n    instantiate_mcp_client,\n    parse_mcp_client_specs,\n    wrap_mcp,\n)\nfrom agent_orchestration_v10_7 import load_dynamic_tools\nfrom agent_tools_v10_7 import resolve_mcp_client\n\ndef make_broken_module(class_name: str = \"BrokenClient\") -> str:\n    module_name = f\"mod_{...",
-  "creation_timestamp": "2025-12-03T06:21:23.728738",
+  "creation_timestamp": "2025-12-03T06:51:57.364920",
   "version": "1.0"
 }

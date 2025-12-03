@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "eacc391f3053fe4d28e64712f691973ba4fa52959a264090c32f12699c9c7a55",
-    "scan_timestamp": "2025-12-03T06:21:11.256420"
+    "scan_timestamp": "2025-12-03T06:51:45.056085"
   },
   "content_preview": "\"\"\"\nLegacy agents wrapper for resume processing workflow execution.\n\nProvides backward compatibility by delegating operations to atomic\nL1-L5 architecture for resume enhancement and job alignment.\n\"\"\"\n\nfrom typing import Any, Optional, TYPE_CHECKING\nfrom core.models.models import (\n    AgentCard,\n    AgentRole,\n)\nfrom core.routing import RoutingPolicy\nfrom runtime.runtime_utils import SandboxConfig\nfrom config.meta_profile import MetaProfileSnapshot\n\n# Placeholder for missing record_event functi...",
-  "creation_timestamp": "2025-12-03T06:21:13.777627",
+  "creation_timestamp": "2025-12-03T06:51:47.475319",
   "version": "1.0"
 }

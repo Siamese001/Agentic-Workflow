@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "40fd435174cc5a6bd22189396cfc64c8479b3c9a72c121fdd839780f9c19e374",
-    "scan_timestamp": "2025-12-03T06:21:11.274673"
+    "scan_timestamp": "2025-12-03T06:51:45.075735"
   },
   "content_preview": "\"\"\"META layer package (v10_10).\n\nProvides retrieval, metacognition, and other META-only utilities.\n\"\"\"\n\n# Re-export public META modules for convenience.\nfrom .retrieval import retrieval  # noqa: F401\nfrom . import metacognition as metacognition  # noqa: F401\n\n__all__ = [\"retrieval\", \"metacognition\"]\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:21:15.297843",
+  "creation_timestamp": "2025-12-03T06:51:48.992414",
   "version": "1.0"
 }

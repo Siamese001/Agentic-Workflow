@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8",
-    "scan_timestamp": "2025-12-03T06:21:11.284272"
+    "scan_timestamp": "2025-12-03T06:51:45.087157"
   },
   "content_preview": "# Provider Layer - External SDK Isolation\n\nThis directory enforces strict architectural separation between the application layers (L1-L5) and external SDK dependencies.\n\n## \ud83c\udfd7\ufe0f Architecture Principle\n\n**External SDKs MUST only be imported in the `providers/` directory.**\n\nAll other layers (L1-L5, infra, meta, core) should delegate to provider clients instead of importing SDKs directly.\n\n## \ud83d\udce6 Available Providers\n\n### Redis Client (`redis_client.py`)\n\n- **Purpose**: Redis caching operations\n- **Usa...",
-  "creation_timestamp": "2025-12-03T06:21:15.875225",
+  "creation_timestamp": "2025-12-03T06:51:49.560060",
   "version": "1.0"
 }

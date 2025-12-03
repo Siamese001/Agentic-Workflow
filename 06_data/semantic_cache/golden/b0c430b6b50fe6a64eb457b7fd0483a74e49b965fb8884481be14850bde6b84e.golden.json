@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b0c430b6b50fe6a64eb457b7fd0483a74e49b965fb8884481be14850bde6b84e",
-    "scan_timestamp": "2025-12-03T06:21:11.402065"
+    "scan_timestamp": "2025-12-03T06:51:45.214633"
   },
   "content_preview": "\"\"\"Layer-3 orchestration for bullet + draft generation.\"\"\"\n\nfrom __future__ import annotations\n\nimport copy\nfrom datetime import datetime\nfrom typing import Any, Dict, Optional, Tuple\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import BaseAgent\n\nfrom .bullet_execution import BulletExecutionStack\nfrom .bullet_planning import BulletPlanningStack\nfrom .draft_planning import DraftPlanningStack\nfrom .drafting_execution import DraftingExecutionStack\n\n\nclass Dr...",
-  "creation_timestamp": "2025-12-03T06:21:23.016622",
+  "creation_timestamp": "2025-12-03T06:51:56.642188",
   "version": "1.0"
 }

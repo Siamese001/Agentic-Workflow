@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4",
-    "scan_timestamp": "2025-12-03T06:21:11.224883"
+    "scan_timestamp": "2025-12-03T06:51:45.022614"
   },
   "content_preview": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ContextBudget\n\n\nclass ContextProfile(BaseModel):\n    \"\"\"Profile capturing context budget hints used by planning and routing.\"\"\"\n\n    context_budget: ContextBudget = Field(default_factory=ContextBudget)\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:21:12.244631",
+  "creation_timestamp": "2025-12-03T06:51:46.050419",
   "version": "1.0"
 }

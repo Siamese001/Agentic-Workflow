@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a533b3f435d24717816916ad9129e72c93e83c1f26050d182c90e29349cef193",
-    "scan_timestamp": "2025-12-03T06:21:11.308813"
+    "scan_timestamp": "2025-12-03T06:51:45.116761"
   },
   "content_preview": "\"\"\"Unit Tests for Dependency Injection System\n\nTests DI container functionality and proper service injection\nacross all layers to maintain L1-L5 atomicity.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch\n\nfrom infra.di_container import (\n    SimpleDIContainer,\n    get_container,\n    register_service,\n    get_service,\n    initialize_default_services,\n    inject_dependencies\n)\nfrom l4.pinecone_adapter import PineconeAdapter, PineconeConfig\nfrom l5.policy import SafetyEngine\n\n\nclass TestSi...",
-  "creation_timestamp": "2025-12-03T06:21:16.649766",
+  "creation_timestamp": "2025-12-03T06:51:50.319453",
   "version": "1.0"
 }

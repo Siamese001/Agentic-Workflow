@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fd632cfbd3be07ec8dcd561e87a333678c9cc1e3884f222883ad978d7dda8edb",
-    "scan_timestamp": "2025-12-03T06:21:11.241084"
+    "scan_timestamp": "2025-12-03T06:51:45.039777"
   },
   "content_preview": "\"\"\"\nModel routing policies for r\u00e9sum\u00e9 processing workflows.\n\nProvides intelligent model selection and budget enforcement for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom typing import Optional\n\nfrom core.models.models import ExecutionProfile\n\nfrom .models import ModelChoice, RoutingContext\n\n\ndef _infer_provider_from_model(model: str) -> str:\n    \"\"\"\n    Infers provider from model name for r\u00e9sum\u00e9 processing workflows.\n\n    Ensures proper provider identification for optimal r\u00e9sum\u00e9 improvement...",
-  "creation_timestamp": "2025-12-03T06:21:12.836090",
+  "creation_timestamp": "2025-12-03T06:51:46.559910",
   "version": "1.0"
 }

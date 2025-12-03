@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a13e2f274c781d043cbebf9bb88a6127504334c12dda5688349c3f0b0a31361f",
-    "scan_timestamp": "2025-12-03T06:21:11.368615"
+    "scan_timestamp": "2025-12-03T06:51:45.178220"
   },
   "content_preview": "# FILE: simulation.py\n\"\"\"\nUnified Simulation System (v10_9) \u2014 PURE META LAYER / CI HARNESS (REFINED)\n\nThis module provides a deterministic simulation harness for the v10_9\nagentic workflow.\n\nAll logic here is META-ONLY and therefore:\n\n    \u2022 NO planning (L1)\n    \u2022 NO execution (L2)\n    \u2022 NO orchestration (L3)\n    \u2022 NO state mutation (L4)\n    \u2022 NO safety decisions (L5)\n    \u2022 NO provider calls (Anthropic/Gemini/OpenAI/etc.)\n\nIt ONLY calls:\n    \u2022 main_v10_9.run_workflow_v10_9()\n    \u2022 constructs synt...",
-  "creation_timestamp": "2025-12-03T06:21:19.955571",
+  "creation_timestamp": "2025-12-03T06:51:53.589093",
   "version": "1.0"
 }

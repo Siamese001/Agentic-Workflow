@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "ac90e02d9ef82baae4775503f154fd483cf5e7a7136c7821249d7cc1a6a1c205",
-    "scan_timestamp": "2025-12-03T06:21:11.306311"
+    "scan_timestamp": "2025-12-03T06:51:45.112558"
   },
   "content_preview": "{\n  \"version\": \"1.0\",\n  \"snapshot_id\": \"snapshot_002\",\n  \"workflow_id\": \"wf_002\",\n  \"timestamp\": 1700001000,\n  \"state\": {\n    \"phase\": \"completed\",\n    \"completed_steps\": [\"analyze\", \"plan\", \"draft\", \"review\"],\n    \"pending_steps\": [],\n    \"context\": {\n      \"job_id\": \"job_002\",\n      \"resume_id\": \"resume_002\"\n    },\n    \"result\": {\n      \"quality_score\": 0.92,\n      \"sections_generated\": 4\n    }\n  }\n}\n",
-  "creation_timestamp": "2025-12-03T06:21:16.473692",
+  "creation_timestamp": "2025-12-03T06:51:50.150004",
   "version": "1.0"
 }

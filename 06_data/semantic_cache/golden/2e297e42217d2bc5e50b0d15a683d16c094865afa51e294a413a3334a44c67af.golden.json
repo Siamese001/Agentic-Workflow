@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2e297e42217d2bc5e50b0d15a683d16c094865afa51e294a413a3334a44c67af",
-    "scan_timestamp": "2025-12-03T06:21:11.461984"
+    "scan_timestamp": "2025-12-03T06:51:45.274900"
   },
   "content_preview": "# hops/hop_1_clerk.py\n\"\"\"\nHop 1: Master Resume Pre-processing (Clerk).\nReads the master resume JSON, extracts all sections, and pre-processes\nexperience bullets by extracting action verbs, metrics, and generating\nembeddings for future semantic analysis.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Tuple, List\n\nimport numpy as np # Import numpy for embedd...",
-  "creation_timestamp": "2025-12-03T06:21:25.489338",
+  "creation_timestamp": "2025-12-03T06:51:59.077268",
   "version": "1.0"
 }

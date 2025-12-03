@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3",
-    "scan_timestamp": "2025-12-03T06:21:11.465655"
+    "scan_timestamp": "2025-12-03T06:51:45.278160"
   },
   "content_preview": "# hops/hop_0_rag_v1.1.py\n\"\"\"\nHop 0: Job Description Analysis & RAG. (v1.1 Agentic Orchestrator)\nReads job description text, performs agentic, multi-phase RAG analysis,\nand writes the resulting ThematicAnalysis object as JSON.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport os\nimport sys\nfrom dataclasses import asdict, dataclass, field\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Tuple, List\n\n# Imports for new enhan...",
-  "creation_timestamp": "2025-12-03T06:21:25.960017",
+  "creation_timestamp": "2025-12-03T06:51:59.488252",
   "version": "1.0"
 }

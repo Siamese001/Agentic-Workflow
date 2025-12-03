@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "fd8b8f4db5073f9162a680aa6709737393ddcb7f98a86ef8bb34611db5506050",
-    "scan_timestamp": "2025-12-03T06:21:11.594161"
+    "scan_timestamp": "2025-12-03T06:51:45.415142"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v11\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v10 with K.4 logical consistency fix\",\n    \"notes\": \"Fixed K.4: Changed CoT from OFF to ON to maintain Hybrid_COT_TOT internal consistency. K.4 now uses CoT spine (Slides 1-3) with ToT branches for attachment exploration.\",\n    \"sha256\": \"pending_calculation\"\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 ...",
-  "creation_timestamp": "2025-12-03T06:21:38.717950",
+  "creation_timestamp": "2025-12-03T06:52:12.086401",
   "version": "1.0"
 }

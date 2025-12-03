@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5c0a233c2522af46aaefb98c196b544e4763c70c06ad635e6ed1dfbbafaae23b",
-    "scan_timestamp": "2025-12-03T06:21:11.500759"
+    "scan_timestamp": "2025-12-03T06:51:45.315970"
   },
   "content_preview": "\n\"\"\"Simple MCP registry client used for discovery and invocation stubs.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Sequence\n\n\n_TRUST_ORDER = {\"low\": 0, \"medium\": 1, \"high\": 2}\n\n\n@dataclass(frozen=True)\nclass ToolSpec:\n    \"\"\"Metadata describing a discoverable MCP tool.\"\"\"\n\n    id: str\n    name: str\n    capabilities: Sequence[str]\n    cost: float\n    trust_tier: str\n    latency_ms: int\n    description: str = \"\"\n\n    def trust_...",
-  "creation_timestamp": "2025-12-03T06:21:34.323676",
+  "creation_timestamp": "2025-12-03T06:52:07.805899",
   "version": "1.0"
 }

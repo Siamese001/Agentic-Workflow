@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
-    "scan_timestamp": "2025-12-03T06:21:11.239709"
+    "scan_timestamp": "2025-12-03T06:51:45.038296"
   },
   "content_preview": "\"\"\"\nDAG engine models for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides minimal typed surface for constructing directed acyclic graphs in r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Awaitable, Callable, Dict, List\n\n\nNodeFn = Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]\n\n\n@dataclass\nclass Node:\n    \"\"\"\n    Represents single DAG node for r\u00e9sum\u00e9 processing workflows.\n\n    Defines executable units within r\u00e9sum\u00e9 improvement orche...",
-  "creation_timestamp": "2025-12-03T06:21:12.779291",
+  "creation_timestamp": "2025-12-03T06:51:46.516118",
   "version": "1.0"
 }

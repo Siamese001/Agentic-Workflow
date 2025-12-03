@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2",
-    "scan_timestamp": "2025-12-03T06:21:11.618301"
+    "scan_timestamp": "2025-12-03T06:51:45.438854"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.20\",\n    \"base_version\": \"v10.10\",\n    \"previous_version\": \"v10.10\",\n    \"release_date\": \"2025-10-14\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Comprehensive quality and edge case hardening patch based on 30-test validation suite. Addresses 11 critical gaps in boot validation, confidence scoring, metric validation, and error handling on top of v10.10's 41 remediat...",
-  "creation_timestamp": "2025-12-03T06:21:41.362319",
+  "creation_timestamp": "2025-12-03T06:52:14.718270",
   "version": "1.0"
 }

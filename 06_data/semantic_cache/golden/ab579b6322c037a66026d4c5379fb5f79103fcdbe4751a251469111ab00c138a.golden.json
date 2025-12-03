@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ab579b6322c037a66026d4c5379fb5f79103fcdbe4751a251469111ab00c138a",
-    "scan_timestamp": "2025-12-03T06:21:11.309831"
+    "scan_timestamp": "2025-12-03T06:51:45.118044"
   },
   "content_preview": "\"\"\"L1 Planning Integration Tests.\"\"\"\n\nclass TestL1PlanningIntegration:\n    \"\"\"Integration tests for L1 planning layer.\"\"\"\n    \n    def test_workflow_to_strategy_integration(self):\n        \"\"\"Test workflow to strategy planning integration.\"\"\"\n        workflow = {\"id\": \"wf1\", \"steps\": [\"plan\", \"execute\"]}\n        strategy = {\"workflow_id\": workflow[\"id\"], \"mode\": \"cot\"}\n        assert strategy[\"workflow_id\"] == \"wf1\"\n    \n    def test_strategy_to_drafting_integration(self):\n        \"\"\"Test strateg...",
-  "creation_timestamp": "2025-12-03T06:21:16.673903",
+  "creation_timestamp": "2025-12-03T06:51:50.345496",
   "version": "1.0"
 }

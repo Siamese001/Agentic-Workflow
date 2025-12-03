@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "218a788f1fdd74f5d3e6b3e1866b133d1976077a2efc7fefafab6b7c33886f59",
-    "scan_timestamp": "2025-12-03T06:21:11.358702"
+    "scan_timestamp": "2025-12-03T06:51:45.170348"
   },
   "content_preview": "# FILE: 10_10/self_correction.py\n\"\"\"\nSelf-Correction Surfaces (v10_10)\n=================================\n\nv10_10 refactor of the v10_9 self_correction module.\n\nThis version:\n\n    \u2022 NO longer operates on raw state dicts.\n    \u2022 NO longer uses SelfCorrectionSurface enums or SafetyIssue types.\n    \u2022 Operates directly on typed L2 results:\n        - StrategyResult\n        - RAGResult\n        - DraftingResult\n        - QAResult\n        - SafetyResult\n\n    \u2022 Provides:\n        - evaluate_all_surfaces(......",
-  "creation_timestamp": "2025-12-03T06:21:19.082439",
+  "creation_timestamp": "2025-12-03T06:51:52.702913",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "aa5ee7712ddb126cb6700ba51c4b9b4d0013a5b343db0ccb1786106c06bc57e0",
-    "scan_timestamp": "2025-12-03T06:21:11.241286"
+    "scan_timestamp": "2025-12-03T06:51:45.039996"
   },
   "content_preview": "\"\"\"\nModel selection orchestration for r\u00e9sum\u00e9 processing workflows.\n\nCoordinates policy evaluation and caching for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom typing import Optional\n\nfrom core.models.models import ExecutionProfile\n\nfrom .cache import get_cached_choice, set_cached_choice\nfrom .models import ModelChoice, RoutingContext\nfrom .policies import choose_provider_and_model, enforce_budget\n\n\ndef select_model(\n    ctx: RoutingContext,\n    *,\n    requested_model: Optional[str] = None,\n...",
-  "creation_timestamp": "2025-12-03T06:21:12.847033",
+  "creation_timestamp": "2025-12-03T06:51:46.571058",
   "version": "1.0"
 }

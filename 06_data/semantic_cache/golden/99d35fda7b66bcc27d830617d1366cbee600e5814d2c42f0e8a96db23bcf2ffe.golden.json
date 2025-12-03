@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
-    "scan_timestamp": "2025-12-03T06:21:11.233463"
+    "scan_timestamp": "2025-12-03T06:51:45.031368"
   },
   "content_preview": "from __future__ import annotations\n\n\"\"\"AIS repair / mitigation policies.\n\nPolicies consume FailureSignal-like inputs and propose coarse-grained\nrepair actions (retry, downgrade, replan, escalate).\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\nfrom .failure_detector import FailureSignal\n\n\n@dataclass\nclass RepairAction:\n    \"\"\"Single AIS repair action recommendation.\"\"\"\n\n    kind: str  # e.g. \"retry\", \"downgrade\", \"replan\", \"escalate\"\n    reason: str\n    metadata: Dict...",
-  "creation_timestamp": "2025-12-03T06:21:12.623722",
+  "creation_timestamp": "2025-12-03T06:51:46.364141",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
-    "scan_timestamp": "2025-12-03T06:21:11.352871"
+    "scan_timestamp": "2025-12-03T06:51:45.162428"
   },
   "content_preview": "# /windsurf_rules/07_concurrency_parallelism.md\n## Concurrency, Parallel DAG Execution, and Shared Resource Governance\n\n### 1. Parallel Execution Isolation\n- Each DAG run must be fully isolated.\n- No DAG run may share global mutable state.\n\n### 2. Concurrency Limits\n- Maximum parallel DAGs = min(CPU_CORES, CONFIG_LIMIT).\n- No unbounded async spawning.\n- L2 tools must declare concurrency and rate limits.\n\n### 3. Shared Resource Governance\n- Vector-store writes must be serialized.\n- Reads may be p...",
-  "creation_timestamp": "2025-12-03T06:21:18.386322",
+  "creation_timestamp": "2025-12-03T06:51:52.019109",
   "version": "1.0"
 }

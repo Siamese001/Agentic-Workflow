@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "e7d64125c4a889c95c732aad8435a9ecae767a41d77904b74cc5400c9022b854",
-    "scan_timestamp": "2025-12-03T06:21:11.620828"
+    "scan_timestamp": "2025-12-03T06:51:45.441574"
   },
   "content_preview": "{\n  \"patch_metadata\": {\n    \"patch_id\": \"LIC-PATCH-v10.20\",\n    \"base_version\": \"v10.10\",\n    \"target_version\": \"v10.20\",\n    \"patch_date\": \"2025-10-14\",\n    \"total_remediations\": 11,\n    \"critical_remediations\": 7,\n    \"warning_remediations\": 4,\n    \"test_coverage\": \"100% (30/30 tests will pass after patch)\",\n    \"breaking_changes\": false,\n    \"rollback_compatible\": true\n  },\n\n  \"patch_summary\": {\n    \"description\": \"Comprehensive quality and edge case hardening patch based on 30-test validatio...",
-  "creation_timestamp": "2025-12-03T06:21:41.446907",
+  "creation_timestamp": "2025-12-03T06:52:14.809312",
   "version": "1.0"
 }

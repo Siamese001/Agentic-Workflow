@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4",
-    "scan_timestamp": "2025-12-03T06:21:11.284474"
+    "scan_timestamp": "2025-12-03T06:51:45.087383"
   },
   "content_preview": "\"\"\"\nRedis client provider for caching operations.\n\nIsolates Redis SDK dependencies to the providers layer\nand provides a clean interface for cache operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Optional\n\ntry:\n    import redis  # type: ignore\nexcept ImportError as exc:\n    raise ImportError(\"redis package not installed. Install with: pip install redis\") from exc\n\n\nclass RedisClient:\n    \"\"\"Provider client for Redis operations.\"\"\"\n    \n    def __init__(self, host: str = \"l...",
-  "creation_timestamp": "2025-12-03T06:21:15.880261",
+  "creation_timestamp": "2025-12-03T06:51:49.564502",
   "version": "1.0"
 }

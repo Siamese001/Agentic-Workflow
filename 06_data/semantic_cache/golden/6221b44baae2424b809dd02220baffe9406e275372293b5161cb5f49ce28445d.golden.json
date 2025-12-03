@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
-    "scan_timestamp": "2025-12-03T06:21:11.341787"
+    "scan_timestamp": "2025-12-03T06:51:45.152209"
   },
   "content_preview": "from orchestration.agent_bus import AgentBus\nfrom core.models.models import AgentMessage  # normalized import\n\n\ndef test_agent_bus_send_and_get():\n    bus = AgentBus()\n\n    msg = AgentMessage(\n        message_id=\"m1\",\n        source_agent_id=\"planner-1\",\n        target_agent_id=\"qa-1\",\n        channel=\"test\",\n        payload_type=\"request\",\n        content={\"x\": 1},\n    )\n\n    bus.send(msg)\n\n    inbox = bus.get_for(\"qa-1\")\n    assert msg in inbox\n\n    bus.clear()\n    assert bus.get_for(\"qa-1\") =...",
-  "creation_timestamp": "2025-12-03T06:21:17.674840",
+  "creation_timestamp": "2025-12-03T06:51:51.287088",
   "version": "1.0"
 }

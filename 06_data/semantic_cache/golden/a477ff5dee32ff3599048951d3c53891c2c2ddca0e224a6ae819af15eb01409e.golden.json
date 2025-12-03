@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a477ff5dee32ff3599048951d3c53891c2c2ddca0e224a6ae819af15eb01409e",
-    "scan_timestamp": "2025-12-03T06:21:11.573426"
+    "scan_timestamp": "2025-12-03T06:51:45.392931"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.4\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.4\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.4: Fixed L1 transformer output rendering when detailed reasoning enabled. Decoupled high_signal_event flag requirement from L1 baseline generation. L1 now renders baseline narrative unconditionally with optional dynamic content inclusion ba...",
-  "creation_timestamp": "2025-12-03T06:21:37.997135",
+  "creation_timestamp": "2025-12-03T06:52:11.452028",
   "version": "1.0"
 }

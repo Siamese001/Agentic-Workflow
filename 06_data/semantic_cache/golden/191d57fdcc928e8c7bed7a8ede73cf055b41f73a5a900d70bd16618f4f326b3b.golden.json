@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "191d57fdcc928e8c7bed7a8ede73cf055b41f73a5a900d70bd16618f4f326b3b",
-    "scan_timestamp": "2025-12-03T06:21:11.385938"
+    "scan_timestamp": "2025-12-03T06:51:45.197051"
   },
   "content_preview": "\"\"\"Workflow context, states, and helpers for v10.7.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport os\nfrom dataclasses import asdict, dataclass, field\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any, Dict, List, Optional\n\nfrom chromadb.utils import embedding_functions\nfrom mcp import get_tool\n\ntry:  # pragma: no cover - optional runtime deps\n    from redis import Redis as RedisType\n    from chromadb import Client as ChromaClientType\nexcept...",
-  "creation_timestamp": "2025-12-03T06:21:21.486510",
+  "creation_timestamp": "2025-12-03T06:51:55.068796",
   "version": "1.0"
 }

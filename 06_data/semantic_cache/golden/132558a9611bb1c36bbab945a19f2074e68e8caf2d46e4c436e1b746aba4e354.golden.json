@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "132558a9611bb1c36bbab945a19f2074e68e8caf2d46e4c436e1b746aba4e354",
-    "scan_timestamp": "2025-12-03T06:21:11.357018"
+    "scan_timestamp": "2025-12-03T06:51:45.168565"
   },
   "content_preview": "# FILE: 10_10/prompt_system_v10_10.py\n\"\"\"\nPrompt Registry & Governance (v10_10 \u00b7 Phase 3)\n===============================================\n\nSingle source of truth for all prompts in v10_10.\n\nProvides:\n    \u2022 PromptVersion & PromptDefinition registry.\n    \u2022 Prompt ACL governance via PromptACL + PromptActorRole.\n    \u2022 Envelope-style templates with deterministic anchors:\n          \"## CONTEXT\", \"## INSTRUCTIONS\", \"## OUTPUT_FORMAT\"\n    \u2022 Metadata-based ACL structure (layers / agents / model_tiers).\n\n...",
-  "creation_timestamp": "2025-12-03T06:21:18.859027",
+  "creation_timestamp": "2025-12-03T06:51:52.488909",
   "version": "1.0"
 }

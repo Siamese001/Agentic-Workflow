@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "30c80010a26f01cc3221de530133f8529b1cba609bac71226a1c821d9ff5c060",
-    "scan_timestamp": "2025-12-03T06:21:11.370511"
+    "scan_timestamp": "2025-12-03T06:51:45.180588"
   },
   "content_preview": "\"\"\"\nV10.8 Consolidated Module: L1 L2 L3 Core\nMerged from 17 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom abc import ABC, abstractmethod\nfrom dataclasses import dataclass, field\nfrom errors_controlflow import DAGValidationError\nfrom injection_profiles import DEFAULT_FRAMING_PROFILE\nfrom l4_memory import get_evidence_view\nfrom meta_profile import META_PROFILE\nfrom node_result import NodeResult\nfrom retrieval import RetrievalConfig\nfrom typing import Any, Callabl...",
-  "creation_timestamp": "2025-12-03T06:21:20.032176",
+  "creation_timestamp": "2025-12-03T06:51:53.660165",
   "version": "1.0"
 }

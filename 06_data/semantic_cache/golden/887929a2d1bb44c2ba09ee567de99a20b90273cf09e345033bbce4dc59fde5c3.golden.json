@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "887929a2d1bb44c2ba09ee567de99a20b90273cf09e345033bbce4dc59fde5c3",
-    "scan_timestamp": "2025-12-03T06:21:11.276282"
+    "scan_timestamp": "2025-12-03T06:51:45.077589"
   },
   "content_preview": "from __future__ import annotations\n\n\"\"\"Facade for DAG engine primitives used by orchestration layers.\n\nThis package re-exports the existing infra.dag_engine models and\nexecutor so that callers can import from\n``orchestration.dag_engine`` without changing the underlying\nimplementation.\n\"\"\"\n\nfrom infra.dag_engine.models import Graph, Node, Edge  # noqa: F401\nfrom infra.dag_engine.executor import DAGExecutor  # noqa: F401\n\n__all__ = [\n    \"Graph\",\n    \"Node\",\n    \"Edge\",\n    \"DAGExecutor\",\n]\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:21:15.332452",
+  "creation_timestamp": "2025-12-03T06:51:49.028130",
   "version": "1.0"
 }

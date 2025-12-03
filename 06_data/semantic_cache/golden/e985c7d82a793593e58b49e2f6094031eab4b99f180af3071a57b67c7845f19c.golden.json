@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e985c7d82a793593e58b49e2f6094031eab4b99f180af3071a57b67c7845f19c",
-    "scan_timestamp": "2025-12-03T06:21:11.395619"
+    "scan_timestamp": "2025-12-03T06:51:45.208186"
   },
   "content_preview": "\"\"\"Synthetic RAG simulator.\"\"\"\n\nimport random\nfrom typing import List\n\nfrom simulations.models.rag_simulation import (\n    RAGSimMetrics,\n    RAGSimRequest,\n    RAGSimResult,\n)\nfrom simulations.utils import model_to_payload\n\n\nclass RAGSimulator:\n    \"\"\"Runs retrieval quality simulations.\"\"\"\n\n    async def run(self, request: RAGSimRequest) -> RAGSimResult:\n        doc_count = len(request.documents)\n        diversity_bonus = min(doc_count / 10.0, 0.3)\n        recall = round(min(1.0, 0.4 + diversit...",
-  "creation_timestamp": "2025-12-03T06:21:22.462534",
+  "creation_timestamp": "2025-12-03T06:51:56.088564",
   "version": "1.0"
 }

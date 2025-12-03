@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "fcd2116e2289e317f0f3278191a352f7369bc1857caca8313fb16f695030eb22",
-    "scan_timestamp": "2025-12-03T06:21:11.493916"
+    "scan_timestamp": "2025-12-03T06:51:45.308313"
   },
   "content_preview": "# Phase Status\n\n## Phase 1 \u2014 Agentic Core & Safety\n\nPhase 1 of the LIC agentic rollout is complete and the exit criteria are satisfied:\n\n- **Safety defenses**: High-risk prompt injections are blocked by the outreach stack via `detect_injection`, as exercised in the regression suite.\n- **Reasoning toggles**: `ReasoningToggles` enforces bounded CoT/ToT/reflexion settings with deterministic normalization and validation.\n- **End-to-end orchestration**: `OutreachStack` composes the router, architect,...",
-  "creation_timestamp": "2025-12-03T06:21:34.051418",
+  "creation_timestamp": "2025-12-03T06:52:07.524249",
   "version": "1.0"
 }

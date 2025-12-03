@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9cfdd1937689d24cad6d7001279e2c59e55d720f103b8bdda8b9c77f39e0cfc6",
-    "scan_timestamp": "2025-12-03T06:21:11.387919"
+    "scan_timestamp": "2025-12-03T06:51:45.199635"
   },
   "content_preview": "\"\"\"Drafting guild stack with specialist agents.\"\"\"\n\nimport copy\nimport json\nfrom typing import Any, Dict, List, Optional, Tuple\n\nfrom core_v10_7 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics\nfrom agent_tools_v10_7 import (\n    EvidenceBriefAssemblerTool,\n    EvidenceClarificationTool,\n)\n\nfrom .models import (\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n    EvidenceBriefRecord,\n    EvidenceClarificationRecord,\n    EvidenceLiaisonPacket,\n    SpecialistDraftPacket,\n)\n\n\nclas...",
-  "creation_timestamp": "2025-12-03T06:21:21.906264",
+  "creation_timestamp": "2025-12-03T06:51:55.476939",
   "version": "1.0"
 }

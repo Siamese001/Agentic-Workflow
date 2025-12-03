@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9277be11ec53c86ee287caac0e74012f9074787c93527aa96dc520aa369e38c0",
-    "scan_timestamp": "2025-12-03T06:21:11.234167"
+    "scan_timestamp": "2025-12-03T06:51:45.032082"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom pydantic import BaseModel\n\n\nclass SimScenario(BaseModel):\n    id: str\n    description: str\n    initial_context: Dict[str, Any]\n    execution_profile_name: str\n    run_count: int\n\n\nclass SimOutcome(BaseModel):\n    scenario_id: str\n    average_scores: Dict[str, float]\n    safety_incidents: int\n    agent_conflict_count: int\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:21:12.640522",
+  "creation_timestamp": "2025-12-03T06:51:46.379599",
   "version": "1.0"
 }

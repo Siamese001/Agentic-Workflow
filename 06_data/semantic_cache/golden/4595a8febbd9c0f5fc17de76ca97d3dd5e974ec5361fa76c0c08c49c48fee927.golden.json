@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927",
-    "scan_timestamp": "2025-12-03T06:21:11.523940"
+    "scan_timestamp": "2025-12-03T06:51:45.341313"
   },
   "content_preview": "# File: retrieval_clients.py\n# Description: Centralized retrieval client for all Google Search API calls\n\n__version__ = \"12.0\"\n\nimport os\nfrom googleapiclient.discovery import build\nfrom utils_LIC import CircuitBreaker, CircuitBreakerOpenError\n\nclass GoogleSearchClient:\n    \"\"\"\n    Centralized client for all Google Custom Search API calls with circuit breaker protection\n    \"\"\"\n    \n    def __init__(self, circuit_breaker: CircuitBreaker):\n        self.api_key = os.environ.get(\"GOOGLE_API_KEY\")\n ...",
-  "creation_timestamp": "2025-12-03T06:21:35.452523",
+  "creation_timestamp": "2025-12-03T06:52:08.985187",
   "version": "1.0"
 }

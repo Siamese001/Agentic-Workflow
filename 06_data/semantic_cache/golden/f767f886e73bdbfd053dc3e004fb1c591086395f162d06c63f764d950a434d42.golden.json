@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f767f886e73bdbfd053dc3e004fb1c591086395f162d06c63f764d950a434d42",
-    "scan_timestamp": "2025-12-03T06:21:11.503650"
+    "scan_timestamp": "2025-12-03T06:51:45.319304"
   },
   "content_preview": "\"\"\"Tool registry and built-in retrieval tools.\"\"\"\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Sequence\n\nfrom .content_store import make_key\n\n\n@dataclass(frozen=True)\nclass ToolResult:\n    \"\"\"Response payload returned from tool invocations.\"\"\"\n\n    content: str\n    sources: List[str]\n    latency_ms: int\n    confidence: float\n\n\nclass BaseTool:\n    \"\"\"Base class for retrieval tools.\"\"\"\n\n    name: str = \"base\"\n    cost...",
-  "creation_timestamp": "2025-12-03T06:21:34.451726",
+  "creation_timestamp": "2025-12-03T06:52:07.938804",
   "version": "1.0"
 }

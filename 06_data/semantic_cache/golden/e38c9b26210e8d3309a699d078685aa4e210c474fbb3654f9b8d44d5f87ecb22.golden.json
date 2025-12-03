@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-    "scan_timestamp": "2025-12-03T06:21:11.621756"
+    "scan_timestamp": "2025-12-03T06:51:45.442626"
   },
   "content_preview": "# LIC WORKFLOW v11.10 - COMPREHENSIVE SIGNAL CAPTURE ANALYSIS\n## Complete Signal Gap Analysis & External JSON Architecture\n\n**Date:** 2025-10-31  \n**Version:** 11.10_LIVE_COMPLETE  \n**Purpose:** Maximize signal quality for LIC message generation through strategic data enrichment\n\n---\n\n## EXECUTIVE SUMMARY\n\n**Current Signal Score:** ~0.72 baseline (threshold: 0.70)  \n**Target Signal Score:** 0.88+ (22% improvement)  \n**Critical Finding:** Current RAG pipeline is **Google Search-dependent** with *...",
-  "creation_timestamp": "2025-12-03T06:21:41.475138",
+  "creation_timestamp": "2025-12-03T06:52:14.847220",
   "version": "1.0"
 }

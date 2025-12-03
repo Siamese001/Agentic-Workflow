@@ -11,9 +11,9 @@
     "file_extension": ".txt",
     "is_eligible": true,
     "sha256_hash": "9f4a9fcb81bd1fd3306c63492d071292c6fc45894e5c8a106ad6a6eae9e4bd53",
-    "scan_timestamp": "2025-12-03T06:21:11.366896"
+    "scan_timestamp": "2025-12-03T06:51:45.176688"
   },
   "content_preview": "anthropic\ngoogle-generativeai\nopenai\npydantic\nredis\nchromadb\nrank-bm25\npython-dotenv\nhttpx\naiohttp\ntiktoken\nnumpy\n",
-  "creation_timestamp": "2025-12-03T06:21:19.787040",
+  "creation_timestamp": "2025-12-03T06:51:53.417237",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "65cead06c95a1021b7e4b90170fe98ab5c400493956c2bbf2dd507a26d357b79",
-    "scan_timestamp": "2025-12-03T06:21:11.422125"
+    "scan_timestamp": "2025-12-03T06:51:45.236826"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\nimport copy\n\n\n# ----------------------------------------------------------------------\n# Helper: remove volatile fields (timestamps, uuids, cost tokens)\n# ----------------------------------------------------------------------\nVOLATILE_KEYS = {\"timestamp\", \"uuid\", \"usage\", \"cost\", \"trace_id\"}\n\n\ndef _sanitize_state(state: dict):\n    \"\"\"\n    Removes volatile fields that are allowed to differ run-run.\n    Ensures stable comparison for determinis...",
-  "creation_timestamp": "2025-12-03T06:21:23.934707",
+  "creation_timestamp": "2025-12-03T06:51:57.571558",
   "version": "1.0"
 }

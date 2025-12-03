@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "827612251718a8af90201cc7a6637111e787a752271560993553ede595be76d9",
-    "scan_timestamp": "2025-12-03T06:21:11.250999"
+    "scan_timestamp": "2025-12-03T06:51:45.050138"
   },
   "content_preview": "\"\"\"\nL1 Prompt Builder for resume generation prompt construction.\n\nCreates structured prompts for consistent resume improvement\nand optimal job alignment.\n\"\"\"\n\nfrom typing import Any\n\nclass PromptBuilder:\n    \"\"\"\n    Builds prompts for resume generation without execution logic.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    \n    @staticmethod\n    def build_strategy_prompt(strategy_plan: Any, job: Any, resume: Any, config: Any) -> str:\n     ...",
-  "creation_timestamp": "2025-12-03T06:21:13.390808",
+  "creation_timestamp": "2025-12-03T06:51:47.082516",
   "version": "1.0"
 }

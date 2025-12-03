@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c71342531d47aae880bd8e05162ccf1b0b970049e10bb07616dd17fee19af2e5",
-    "scan_timestamp": "2025-12-03T06:21:11.396173"
+    "scan_timestamp": "2025-12-03T06:51:45.208642"
   },
   "content_preview": "\"\"\"Simulation registry to look up simulator instances.\"\"\"\n\nfrom simulations.engines import (\n    DraftSimulator,\n    RAGSimulator,\n    SafetySimulator,\n    StrategySimulator,\n)\n\nSIMULATION_REGISTRY = {\n    \"strategy\": StrategySimulator(),\n    \"rag\": RAGSimulator(),\n    \"draft\": DraftSimulator(),\n    \"safety\": SafetySimulator(),\n}\n\n\ndef get_simulator(name: str):\n    \"\"\"Return a simulator instance by name.\"\"\"\n\n    return SIMULATION_REGISTRY.get(name)\n",
-  "creation_timestamp": "2025-12-03T06:21:22.473078",
+  "creation_timestamp": "2025-12-03T06:51:56.100472",
   "version": "1.0"
 }

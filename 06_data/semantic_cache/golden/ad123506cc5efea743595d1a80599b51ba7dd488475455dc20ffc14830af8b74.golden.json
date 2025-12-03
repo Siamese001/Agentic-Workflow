@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ad123506cc5efea743595d1a80599b51ba7dd488475455dc20ffc14830af8b74",
-    "scan_timestamp": "2025-12-03T06:21:11.410719"
+    "scan_timestamp": "2025-12-03T06:51:45.225889"
   },
   "content_preview": "from core_v10_7 import CostTracker\n\n\ndef test_cost_tracker_records_calls_and_sums():\n    tracker = CostTracker()\n    tracker.record_call(\"wf1\", \"google\", \"gemini-2.5-pro\", input_tokens=1000, output_tokens=500)\n    summary = tracker.get_cost_summary(\"wf1\")\n    assert abs(summary[\"total_workflow_cost\"] - 0.005) < 1e-9\n    assert summary[\"calls\"]\n\n\ndef test_unknown_provider_no_cost():\n    tracker = CostTracker()\n    tracker.record_call(\"wf2\", \"unknown\", \"mystery-model\", input_tokens=1000, output_to...",
-  "creation_timestamp": "2025-12-03T06:21:23.536242",
+  "creation_timestamp": "2025-12-03T06:51:57.160638",
   "version": "1.0"
 }

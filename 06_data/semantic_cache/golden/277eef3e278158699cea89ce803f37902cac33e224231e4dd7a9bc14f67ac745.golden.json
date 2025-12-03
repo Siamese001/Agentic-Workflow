@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-    "scan_timestamp": "2025-12-03T06:21:11.509836"
+    "scan_timestamp": "2025-12-03T06:51:45.326083"
   },
   "content_preview": "\"\"\"Stack-specific agent implementations for v10.7.\"\"\"\n\nfrom .models import (\n    SpecialistDraftPacket,\n    EvidenceClarificationRecord,\n    EvidenceBriefRecord,\n    EvidenceLiaisonPacket,\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n)\n\nfrom .safety import (\n    PIISanitizerAgent,\n    BiasDetectorAgent,\n    PromptInjectionDetectorAgent,\n    ConstitutionalReviewerAgent,\n)\n\nfrom .strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\n\nfrom .prompting import PromptEnginee...",
-  "creation_timestamp": "2025-12-03T06:21:34.793687",
+  "creation_timestamp": "2025-12-03T06:52:08.306633",
   "version": "1.0"
 }

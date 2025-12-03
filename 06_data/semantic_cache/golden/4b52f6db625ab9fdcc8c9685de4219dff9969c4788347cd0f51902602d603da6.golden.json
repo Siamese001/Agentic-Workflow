@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4b52f6db625ab9fdcc8c9685de4219dff9969c4788347cd0f51902602d603da6",
-    "scan_timestamp": "2025-12-03T06:21:11.515983"
+    "scan_timestamp": "2025-12-03T06:51:45.332998"
   },
   "content_preview": "from src.lic_agentic.rag.content_store import ContentStore, make_key\n\n\ndef test_put_get_freshness():\n    store = ContentStore()\n    key = make_key(scope=\"company\", query=\"ACME\")\n    store.put(key, {\"payload\": 1}, {\"tool\": \"web_search\"})\n    blob, meta, fresh = store.get(key, ttl_s=3600)\n    assert fresh\n    assert blob[\"payload\"] == 1\n    assert meta.tool == \"web_search\"\n\n\ndef test_get_returns_none_when_missing():\n    store = ContentStore()\n    assert store.get(\"missing\", ttl_s=60) is None\n\n\ndef...",
-  "creation_timestamp": "2025-12-03T06:21:34.967308",
+  "creation_timestamp": "2025-12-03T06:52:08.477172",
   "version": "1.0"
 }

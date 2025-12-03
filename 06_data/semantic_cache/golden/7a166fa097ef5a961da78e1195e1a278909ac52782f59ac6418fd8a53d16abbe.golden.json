@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "7a166fa097ef5a961da78e1195e1a278909ac52782f59ac6418fd8a53d16abbe",
-    "scan_timestamp": "2025-12-03T06:21:11.305230"
+    "scan_timestamp": "2025-12-03T06:51:45.111214"
   },
   "content_preview": "{\n  \"version\": \"1.0\",\n  \"description\": \"Expected outputs for golden dataset samples\",\n  \"outputs\": [\n    {\n      \"sample_id\": \"sample_001\",\n      \"expected_summary_keywords\": [\"software\", \"engineer\", \"experience\"],\n      \"expected_skill_count\": 5,\n      \"expected_quality_score\": 0.85\n    },\n    {\n      \"sample_id\": \"sample_002\",\n      \"expected_summary_keywords\": [\"data\", \"scientist\", \"machine learning\"],\n      \"expected_skill_count\": 7,\n      \"expected_quality_score\": 0.90\n    }\n  ]\n}\n",
-  "creation_timestamp": "2025-12-03T06:21:16.454995",
+  "creation_timestamp": "2025-12-03T06:51:50.133308",
   "version": "1.0"
 }

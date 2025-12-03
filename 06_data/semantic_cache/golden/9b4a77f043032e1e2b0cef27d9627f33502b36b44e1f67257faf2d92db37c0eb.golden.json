@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9b4a77f043032e1e2b0cef27d9627f33502b36b44e1f67257faf2d92db37c0eb",
-    "scan_timestamp": "2025-12-03T06:21:11.452678"
+    "scan_timestamp": "2025-12-03T06:51:45.266022"
   },
   "content_preview": "from context_budget_v10_8 import ContextBudgetConfig, ContextBudgetManager\n\n\ndef test_strict_pruning_applies_at_thresholds():\n    config = ContextBudgetConfig(\n        max_episodic_messages=3, max_rag_documents=2, max_summary_chars=10\n    )\n    manager = ContextBudgetManager(config)\n\n    state = {\n        \"memory\": {\n            \"episodic\": {\n                \"conversation\": [\n                    {\"role\": \"user\", \"content\": \"1\"},\n                    {\"role\": \"assistant\", \"content\": \"2\"},\n        ...",
-  "creation_timestamp": "2025-12-03T06:21:24.999466",
+  "creation_timestamp": "2025-12-03T06:51:58.608771",
   "version": "1.0"
 }

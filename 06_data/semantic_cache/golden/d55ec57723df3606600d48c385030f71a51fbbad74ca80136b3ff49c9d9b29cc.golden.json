@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
-    "scan_timestamp": "2025-12-03T06:21:11.512572"
+    "scan_timestamp": "2025-12-03T06:51:45.329100"
   },
   "content_preview": "\"\"\"Integration tests for the async conductor.\"\"\"\nfrom __future__ import annotations\n\nfrom src.lic_agentic.orchestration import Conductor\n\n\ndef test_conductor_preserves_order_under_concurrency():\n    conductor = Conductor(concurrency=2, seed=11)\n    factories = [\n        conductor.wrap_tool_call(i, lambda value=value, index=i: (value * 2, 25 + index * 5))\n        for i, value in enumerate((2, 3, 5))\n    ]\n    results = conductor.run(factories)\n    assert results == [(0, 4), (1, 6), (2, 10)]\n\n\ndef...",
-  "creation_timestamp": "2025-12-03T06:21:34.889017",
+  "creation_timestamp": "2025-12-03T06:52:08.403629",
   "version": "1.0"
 }

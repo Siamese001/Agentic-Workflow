@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "540707788e4c32fa942909046d53cd74788a8f061980a77e00fe8fd38559eb82",
-    "scan_timestamp": "2025-12-03T06:21:11.580693"
+    "scan_timestamp": "2025-12-03T06:51:45.401033"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.84\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.84\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P884. Enhanced L-series trace generation with real-time execution data capture, accurate reasoning path reflection, and interactive pause cycle management with user confirmation tracking.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8...",
-  "creation_timestamp": "2025-12-03T06:21:38.276994",
+  "creation_timestamp": "2025-12-03T06:52:11.698439",
   "version": "1.0"
 }

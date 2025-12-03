@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "89b908c4178eb86fc7dc3af73df3fe958ebcc65fcd05460ccafca514526c32c6",
-    "scan_timestamp": "2025-12-03T06:21:11.332576"
+    "scan_timestamp": "2025-12-03T06:51:45.140785"
   },
   "content_preview": "\"\"\"Observability Tracing Tests.\"\"\"\n\nclass TestObservabilityTracing:\n    \"\"\"Tests for observability tracing.\"\"\"\n    \n    def test_span_creation(self):\n        \"\"\"Test trace span creation.\"\"\"\n        span = {\n            \"id\": \"span_001\",\n            \"name\": \"test_operation\",\n            \"start_time\": 1000,\n            \"end_time\": 1100,\n            \"duration_ms\": 100\n        }\n        assert span[\"duration_ms\"] == 100\n        assert span[\"end_time\"] > span[\"start_time\"]\n",
-  "creation_timestamp": "2025-12-03T06:21:17.382855",
+  "creation_timestamp": "2025-12-03T06:51:51.026917",
   "version": "1.0"
 }

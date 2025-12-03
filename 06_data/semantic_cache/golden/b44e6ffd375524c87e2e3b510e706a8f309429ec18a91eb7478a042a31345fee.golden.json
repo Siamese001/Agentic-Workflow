@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b44e6ffd375524c87e2e3b510e706a8f309429ec18a91eb7478a042a31345fee",
-    "scan_timestamp": "2025-12-03T06:21:11.454025"
+    "scan_timestamp": "2025-12-03T06:51:45.266958"
   },
   "content_preview": "import copy\n\nimport pytest\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState\n\n\n@pytest.fixture\ndef base_state_dict() -> dict:\n    state = MainGraphState()\n    state.resume.master_resume = {\"summary\": \"base\"}\n    state.resume.highlights = [\"impact\", \"quality\"]\n    state.memory.episodic.conversation = [\n        {\"role\": \"user\", \"content\": \"hello\"},\n        {\"role\": \"assistant\", \"content\": \"hi\"},\n    ]\n    return state.to_dict()\n\n\n@pytest.ma...",
-  "creation_timestamp": "2025-12-03T06:21:25.025310",
+  "creation_timestamp": "2025-12-03T06:51:58.633915",
   "version": "1.0"
 }

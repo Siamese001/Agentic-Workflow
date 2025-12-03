@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
-    "scan_timestamp": "2025-12-03T06:21:11.283240"
+    "scan_timestamp": "2025-12-03T06:51:45.086118"
   },
   "content_preview": "\"\"\"Google Generative AI (Gemini) client adapter for v10_10.\n\nThis module is the ONLY place where google.generativeai is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any\n\n\ndef run_llm_google(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run a Gemini generate_content call and return the response text.\"\"\"\n\n    try:\n        impor...",
-  "creation_timestamp": "2025-12-03T06:21:15.844358",
+  "creation_timestamp": "2025-12-03T06:51:49.531891",
   "version": "1.0"
 }

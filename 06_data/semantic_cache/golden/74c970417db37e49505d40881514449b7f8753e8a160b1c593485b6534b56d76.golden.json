@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "74c970417db37e49505d40881514449b7f8753e8a160b1c593485b6534b56d76",
-    "scan_timestamp": "2025-12-03T06:21:11.471624"
+    "scan_timestamp": "2025-12-03T06:51:45.284731"
   },
   "content_preview": "{\n  \"$schema_version\": \"artist_specs_v2.1_V2_Clean\",\n  \"$description\": \"Configuration-driven Artist specifications for V2 Governor. This file defines *what* to generate. The *how* (prompts, logic) is handled by the ContextRelayLayer (prompts_RES_v2.py) and the Governor (workflow_RES_v2.py).\",\n  \n  \"K0_NAME\": {\n    \"generation_method\": \"_copy_from_master\",\n    \"master_data_key\": \"owner.name\",\n    \"description\": \"Candidate's full name from master resume\",\n    \"complexity\": \"LOW\"\n  },\n  \n  \"K0_CONT...",
-  "creation_timestamp": "2025-12-03T06:21:28.636576",
+  "creation_timestamp": "2025-12-03T06:52:02.062361",
   "version": "1.0"
 }

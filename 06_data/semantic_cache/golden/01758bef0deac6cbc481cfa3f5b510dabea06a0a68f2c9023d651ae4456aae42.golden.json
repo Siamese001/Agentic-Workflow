@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "01758bef0deac6cbc481cfa3f5b510dabea06a0a68f2c9023d651ae4456aae42",
-    "scan_timestamp": "2025-12-03T06:21:11.239459"
+    "scan_timestamp": "2025-12-03T06:51:45.038075"
   },
   "content_preview": "\"\"\"\nDAG executor for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides minimal async execution engine for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, Iterable, Optional, Set, List\n\nfrom orchestration.agent_registry import AgentRegistry\nfrom .models import Graph\n\n\nclass DAGExecutor:\n    \"\"\"\n    Executes directed acyclic graphs for r\u00e9sum\u00e9 processing workflows.\n\n    Orchestrates node execution with proper dependency resolution for r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n\n ...",
-  "creation_timestamp": "2025-12-03T06:21:12.768208",
+  "creation_timestamp": "2025-12-03T06:51:46.503840",
   "version": "1.0"
 }

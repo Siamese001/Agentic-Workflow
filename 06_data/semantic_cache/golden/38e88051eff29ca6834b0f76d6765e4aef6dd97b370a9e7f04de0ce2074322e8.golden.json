@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "38e88051eff29ca6834b0f76d6765e4aef6dd97b370a9e7f04de0ce2074322e8",
-    "scan_timestamp": "2025-12-03T06:21:11.404710"
+    "scan_timestamp": "2025-12-03T06:51:45.219022"
   },
   "content_preview": "\"\"\"Strategy simulation models.\"\"\"\n\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel, Field\n\nfrom .simulation_base import SimulationInput, SimulationResult\n\n\nclass StrategySimRequest(SimulationInput):\n    \"\"\"Input payload for strategy simulation.\"\"\"\n\n    job_title: str\n    company: str\n    strategy_plan: Dict[str, Any]\n\n\nclass StrategySimMetrics(BaseModel):\n    \"\"\"Metrics produced by a strategy simulation.\"\"\"\n\n    clarity_score: float\n    alignment_score: float\n    risk_score: f...",
-  "creation_timestamp": "2025-12-03T06:21:23.305836",
+  "creation_timestamp": "2025-12-03T06:51:56.928882",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2fa1d708664c07f4497c635645ebfc31d285ee6db42ff1918291a5c8361dd2bf",
-    "scan_timestamp": "2025-12-03T06:21:11.363695"
+    "scan_timestamp": "2025-12-03T06:51:45.174259"
   },
   "content_preview": "# FILE: meta_profile.py\n\"\"\"\nMeta Profile & Adaptive Biases (v10_9) \u2014 META LAYER ONLY (REFINED)\n\nThis module defines the global meta-profile for the v10_9 agentic\narchitecture. It captures *soft preferences* and *learned biases* that\nare NOT part of the core L1\u2013L5 logic, but are used by:\n\n    \u2022 Model routing (e.g., \"prefer_fast\" when planning dominates cost).\n    \u2022 L1 planners (e.g., \"conservative\" when QA repeatedly fails).\n    \u2022 Self-correction (e.g., bias toward replan vs retry vs escalate).\n ...",
-  "creation_timestamp": "2025-12-03T06:21:19.579635",
+  "creation_timestamp": "2025-12-03T06:51:53.213403",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "85b91550916bd3c440d4abdb89797712789e6592d3ed0eb459961e54746cddb1",
-    "scan_timestamp": "2025-12-03T06:21:11.260457"
+    "scan_timestamp": "2025-12-03T06:51:45.060379"
   },
   "content_preview": "\"\"\"\nL3 adapter for resume workflow orchestration interface compatibility.\n\nWraps orchestrator to enforce resume job alignment interface contracts.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\nfrom l3.interfaces import (\n    L3OrchestratorInterface,\n    L3DAGExecutorInterface,\n    L3OrchestrationRequest,\n    L3OrchestrationResult,\n    ExecutionMode,\n)\nfrom l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrato...",
-  "creation_timestamp": "2025-12-03T06:21:14.127322",
+  "creation_timestamp": "2025-12-03T06:51:47.822132",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
-    "scan_timestamp": "2025-12-03T06:21:11.334891"
+    "scan_timestamp": "2025-12-03T06:51:45.143254"
   },
   "content_preview": "import pytest\n\nfrom infra.sandbox.models import ToolCallRequest\nfrom infra.sandbox.vm_manager import run_in_ephemeral_vm\nfrom infra.sandbox.sandbox_errors import SandboxTimeoutError\n\n\ndef test_timeout_error_when_timeout_non_positive():\n    req = ToolCallRequest(tool_name=\"echo\", args=[], timeout_s=0.0)\n    with pytest.raises(SandboxTimeoutError):\n        run_in_ephemeral_vm(req, resource_limits={})\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T06:21:17.431391",
+  "creation_timestamp": "2025-12-03T06:51:51.069851",
   "version": "1.0"
 }

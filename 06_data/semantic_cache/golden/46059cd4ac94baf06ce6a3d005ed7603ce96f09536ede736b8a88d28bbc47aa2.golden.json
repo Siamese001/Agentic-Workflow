@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
-    "scan_timestamp": "2025-12-03T06:21:11.659252"
+    "scan_timestamp": "2025-12-03T06:51:45.480732"
   },
   "content_preview": "# File: run_workflow_LIC.py\n# Description: Main executable for the LIC agentic workflow.\n\n__version__ = \"12.0\"\n\nimport asyncio\nimport json\nimport sys\nimport os\nfrom uuid import uuid4\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any\n\nfrom models_LIC import OutreachMission\n\n__version__ = \"12.0\"\n\ndef load_mission_input(filename: str = \"mission_input_LIC.json\") -> Dict[str, Any]:\n    \"\"\"\n    Loads the mission input JSON file.\n    \n    Args:\n        filename: Path t...",
-  "creation_timestamp": "2025-12-03T06:21:43.204105",
+  "creation_timestamp": "2025-12-03T06:52:16.599419",
   "version": "1.0"
 }

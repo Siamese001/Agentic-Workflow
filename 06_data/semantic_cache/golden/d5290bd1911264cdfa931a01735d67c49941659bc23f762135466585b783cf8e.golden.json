@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e",
-    "scan_timestamp": "2025-12-03T06:21:11.345907"
+    "scan_timestamp": "2025-12-03T06:51:45.156250"
   },
   "content_preview": "{\n  \"summary\": {\n    \"total_modules\": 273,\n    \"total_dependencies\": 473,\n    \"circular_dependencies\": 0\n  },\n  \"modules\": {\n    \"atomic_integration_bridge\": {\n      \"filepath\": \"C:\\\\Users\\\\amita\\\\Documents\\\\Work\\\\AI Job Search\\\\AI\\\\ML\\\\DL\\\\GenAI\\\\LLM 101\\\\LLM Pipelines\\\\Resume Gen\\\\Git\\\\Agentic-Workflow-10_10\\\\atomic_integration_bridge.py\",\n      \"imports\": [\n        \"config.meta_profile\",\n        \"core.routing\",\n        \"l3.unified_workflow_orchestrator\",\n        \"l4.state_manager\",\n        \"l...",
-  "creation_timestamp": "2025-12-03T06:21:17.919455",
+  "creation_timestamp": "2025-12-03T06:51:51.546226",
   "version": "1.0"
 }

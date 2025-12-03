@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
-    "scan_timestamp": "2025-12-03T06:21:11.658615"
+    "scan_timestamp": "2025-12-03T06:51:45.479874"
   },
   "content_preview": "# File: config_LIC.py\n# Description: Configuration registry for the LIC workflow.\n\n__version__ = \"12.0\"\n# Holds all static configs for routes, archetypes, RAG, and reasoning.\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Any, Optional\n\nfrom models_LIC import Route, Archetype\n\n# ============================================================================\n# PRIORITY 2: GLOBAL CONSTRAINTS SSOT WITH API ACCESS LAYER\n# =======================================================...",
-  "creation_timestamp": "2025-12-03T06:21:43.152313",
+  "creation_timestamp": "2025-12-03T06:52:16.564899",
   "version": "1.0"
 }

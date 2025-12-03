@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-    "scan_timestamp": "2025-12-03T06:21:11.231098"
+    "scan_timestamp": "2025-12-03T06:51:45.028296"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Dict\n\n\ndef gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:\n    \"\"\"Return True if the experiment meets or exceeds baseline.\n\n    For now we only enforce that avg_score is not worse and that\n    pass_count is not lower when both metrics are present.\n    \"\"\"\n\n    if not baseline_scores:\n        # No baseline recorded yet \u2192 allow by default.\n        return True\n\n    new_avg = float(new_scores.get(\"avg_sc...",
-  "creation_timestamp": "2025-12-03T06:21:12.555961",
+  "creation_timestamp": "2025-12-03T06:51:46.309635",
   "version": "1.0"
 }

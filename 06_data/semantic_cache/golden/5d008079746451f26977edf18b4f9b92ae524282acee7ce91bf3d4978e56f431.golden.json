@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5d008079746451f26977edf18b4f9b92ae524282acee7ce91bf3d4978e56f431",
-    "scan_timestamp": "2025-12-03T06:21:11.343599"
+    "scan_timestamp": "2025-12-03T06:51:45.154097"
   },
   "content_preview": "from l1.cms.schemas import PromptSchema\nfrom l1.cms.compiler import compile_prompt\n\n\ndef test_compile_prompt_produces_string():\n    schema = PromptSchema(\n        id=\"test.prompt\",\n        role=\"system\",\n        objective=\"Test objective\",\n        instructions=\"Do the thing.\",\n        examples=[{\"input\": \"x\", \"output\": \"y\"}],\n        safety_tags=[\"safety\"],\n        allowed_tools=[\"tool1\"],\n        version=\"1.0.0\",\n    )\n\n    rendered = compile_prompt(schema, {\"layer\": \"L2\"})\n    assert isinstanc...",
-  "creation_timestamp": "2025-12-03T06:21:17.793637",
+  "creation_timestamp": "2025-12-03T06:51:51.400856",
   "version": "1.0"
 }

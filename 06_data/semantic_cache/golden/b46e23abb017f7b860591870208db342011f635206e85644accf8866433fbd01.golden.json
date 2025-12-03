@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b46e23abb017f7b860591870208db342011f635206e85644accf8866433fbd01",
-    "scan_timestamp": "2025-12-03T06:21:11.401317"
+    "scan_timestamp": "2025-12-03T06:51:45.213827"
   },
   "content_preview": "\"\"\"Pure action implementation of the v10.8 bullet execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import BaseAgent, BulletPlan, StrategyPlan\nfrom agent_stacks_v10_8.components.bullet import (\n    AsyncBulletCritiqueAgent,\n    AsyncBulletGeneratorAgent,\n    BulletCoordinatorAgent,\n)\n\n\nclass BulletExecutionStack(BaseAgent):\n    \"\"\"Generates deterministic bullets by applying a BulletPlan to resume data.\"\"\"\n\n    def __init__(self...",
-  "creation_timestamp": "2025-12-03T06:21:22.936437",
+  "creation_timestamp": "2025-12-03T06:51:56.564651",
   "version": "1.0"
 }

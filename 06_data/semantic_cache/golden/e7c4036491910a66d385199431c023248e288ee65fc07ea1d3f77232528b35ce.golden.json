@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
-    "scan_timestamp": "2025-12-03T06:21:11.267090"
+    "scan_timestamp": "2025-12-03T06:51:45.067768"
   },
   "content_preview": "\"\"\"\nL5 adapter for resume job alignment workflows.\n\nWraps safety validator to enforce interface contracts for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional, Union\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom enum import Enum\n\nfrom l5.interfaces import (\n    L5PolicyEnforcerInterface,\n    L5SafetyCheckerInterface,\n    L5RiskAssessmentInterface,\n    L5ComplianceCheckerInterface,\n    L5HitLInterface,\n    L5ResourceG...",
-  "creation_timestamp": "2025-12-03T06:21:14.735613",
+  "creation_timestamp": "2025-12-03T06:51:48.432465",
   "version": "1.0"
 }

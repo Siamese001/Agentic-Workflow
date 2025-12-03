@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9881969da7afd4f37ad758bd721e35c3c346e87c9a37eec2b5271bade3b2c721",
-    "scan_timestamp": "2025-12-03T06:21:11.240862"
+    "scan_timestamp": "2025-12-03T06:51:45.039545"
   },
   "content_preview": "\"\"\"\nModel routing data structures for r\u00e9sum\u00e9 processing workflows.\n\nDefines lightweight model selection and routing context for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Optional\n\nfrom core.models.models import ExecutionProfile\n\n\n@dataclass\nclass ModelChoice:\n    \"\"\"\n    Represents model selection choice for r\u00e9sum\u00e9 processing workflows.\n\n    Enables lightweight provider-agnostic model routing for comprehensive r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n\n ...",
-  "creation_timestamp": "2025-12-03T06:21:12.825584",
+  "creation_timestamp": "2025-12-03T06:51:46.552442",
   "version": "1.0"
 }

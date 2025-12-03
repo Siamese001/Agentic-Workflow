@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5cdfcbaa62612382c16c85923eb765914164521e8e1397cdf956e50983660247",
-    "scan_timestamp": "2025-12-03T06:21:11.462910"
+    "scan_timestamp": "2025-12-03T06:51:45.275682"
   },
   "content_preview": "# hops/03_hop_artist.py\n\"\"\"\nHop 3: Content Generation (Artist) with Configuration Integration\n\nThis Artist implements:\n1. ReasoningConfig integration for section-specific generation parameters\n2. ContentConstraintsConfig integration for word count boundaries\n3. Enhanced system prompts with reasoning directives\n4. Semantic bullet selection and synthesis\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport sys\nimport time\nfrom datetime import datetime\nfrom path...",
-  "creation_timestamp": "2025-12-03T06:21:25.573544",
+  "creation_timestamp": "2025-12-03T06:51:59.152970",
   "version": "1.0"
 }

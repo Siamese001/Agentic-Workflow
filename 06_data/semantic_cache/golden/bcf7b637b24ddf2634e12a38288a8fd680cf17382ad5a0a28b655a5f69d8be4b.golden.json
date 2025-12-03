@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "bcf7b637b24ddf2634e12a38288a8fd680cf17382ad5a0a28b655a5f69d8be4b",
-    "scan_timestamp": "2025-12-03T06:21:11.442046"
+    "scan_timestamp": "2025-12-03T06:51:45.258095"
   },
   "content_preview": "from __future__ import annotations\n\nfrom asyncio import TimeoutError as NativeTimeoutError\n\nimport core_v10_7\n\n\ndef _module_union() -> set[str]:\n    \"\"\"Return the union of all declared module exports plus AsyncTimeoutError.\"\"\"\n\n    modules = [\n        core_v10_7.agents,\n        core_v10_7.clients,\n        core_v10_7.config,\n        core_v10_7.constants,\n        core_v10_7.context,\n        core_v10_7.exceptions,\n        core_v10_7.mcp,\n        core_v10_7.models,\n        core_v10_7.resilience,\n   ...",
-  "creation_timestamp": "2025-12-03T06:21:24.773096",
+  "creation_timestamp": "2025-12-03T06:51:58.397144",
   "version": "1.0"
 }

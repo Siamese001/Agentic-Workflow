@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b596e3728ece697407284bcbe37befcc1fbca1be87dfe1991548f24905e4a835",
-    "scan_timestamp": "2025-12-03T06:21:11.253692"
+    "scan_timestamp": "2025-12-03T06:51:45.053251"
   },
   "content_preview": "\"\"\"\nSelf-Correction Injection for resume generation quality improvement.\n\nProvides self-correction loops and mechanisms for continuous\nresume enhancement and error recovery.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict, List, Optional, Tuple, Callable\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\n\nfrom l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent\n\n\nclass CorrectionType(str, Enum):\n    \"\"\"\n    Ty...",
-  "creation_timestamp": "2025-12-03T06:21:13.550500",
+  "creation_timestamp": "2025-12-03T06:51:47.252637",
   "version": "1.0"
 }

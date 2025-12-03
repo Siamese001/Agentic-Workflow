@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
-    "scan_timestamp": "2025-12-03T06:21:11.326978"
+    "scan_timestamp": "2025-12-03T06:51:45.135593"
   },
   "content_preview": "from meta.metacognition.hypothesis import generate_initial_hypotheses\nfrom meta.metacognition.models import Hypothesis\n\n\nclass DummyRAG:\n    def __init__(self, evidence_count: int) -> None:\n        self.evidence = [object() for _ in range(evidence_count)]\n\n\nclass DummyAgentCard:\n    def __init__(self, agent_id: str) -> None:\n        self.agent_id = agent_id\n\n\ndef test_generate_initial_hypotheses_with_evidence():\n    rag = DummyRAG(evidence_count=3)\n    agent = DummyAgentCard(\"planner_1\")\n\n    hs...",
-  "creation_timestamp": "2025-12-03T06:21:17.110484",
+  "creation_timestamp": "2025-12-03T06:51:50.756808",
   "version": "1.0"
 }

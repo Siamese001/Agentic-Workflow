@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
-    "scan_timestamp": "2025-12-03T06:21:11.466671"
+    "scan_timestamp": "2025-12-03T06:51:45.279398"
   },
   "content_preview": "# OFFICIAL DEPRECATION APPROVAL\n## resume_workflow_v16_20.py \u2192 Modular Components\n\n**Date:** October 30, 2025  \n**Status:** \u2705 APPROVED FOR DEPRECATION  \n**Confidence:** 100%\n\n---\n\n## VERIFICATION RESULTS\n\n### Test Suite 1: ValidationRule Fix Verification\n**Status:** \u2705 PASSED (5/5 tests)\n\n```\n\u2713 Plain Dict (passing)\n\u2713 Plain Dict (failing) \n\u2713 Plain Dict with error_details\n\u2713 Callable error message\n\u2713 Exception handling\n```\n\n**Result:** Fixed ValidationRule now accepts both Dict and ValidationContext,...",
-  "creation_timestamp": "2025-12-03T06:21:26.133902",
+  "creation_timestamp": "2025-12-03T06:51:59.639179",
   "version": "1.0"
 }

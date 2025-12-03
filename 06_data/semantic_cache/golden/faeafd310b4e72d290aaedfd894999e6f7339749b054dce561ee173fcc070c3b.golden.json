@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
-    "scan_timestamp": "2025-12-03T06:21:11.273587"
+    "scan_timestamp": "2025-12-03T06:51:45.074537"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional, Sequence\n\nfrom infra.storage.vector_store_chroma import (\n    chroma_hybrid_search as _core_chroma_hybrid_search,\n    chroma_semantic_cache_lookup as _core_chroma_semantic_cache_lookup,\n    chroma_semantic_cache_upsert as _core_chroma_semantic_cache_upsert,\n)\n\n\ndef chroma_hybrid_search(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, Any]:\n    \"\"\"META wrapper for Chroma hybrid search.\n\n    Delegates t...",
-  "creation_timestamp": "2025-12-03T06:21:15.223599",
+  "creation_timestamp": "2025-12-03T06:51:48.911992",
   "version": "1.0"
 }

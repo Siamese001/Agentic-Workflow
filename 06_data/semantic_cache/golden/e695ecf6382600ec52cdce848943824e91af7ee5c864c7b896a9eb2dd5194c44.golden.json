@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "e695ecf6382600ec52cdce848943824e91af7ee5c864c7b896a9eb2dd5194c44",
-    "scan_timestamp": "2025-12-03T06:21:11.287973"
+    "scan_timestamp": "2025-12-03T06:51:45.090984"
   },
   "content_preview": "# FOLDER_MAP.md  \n# Agentic-Workflow-10_10  \nA learnability-first map of every meaningful folder in the project, explaining  \nwhat each folder does, how it fits into the OpenAI L1\u2013L5 agentic architecture,  \nand where documentation for each layer must live.\n\nThis version includes the rule:  \n**Each major folder must contain a `docs/` subfolder where ALL local documentation, READMEs, reports, and summaries for that folder must go.**  \nNo documentation is permitted at the repo root.\n\n---\n\n# =======...",
-  "creation_timestamp": "2025-12-03T06:21:15.951329",
+  "creation_timestamp": "2025-12-03T06:51:49.633935",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce",
-    "scan_timestamp": "2025-12-03T06:21:11.496273"
+    "scan_timestamp": "2025-12-03T06:51:45.310880"
   },
   "content_preview": "class ValidationError(Exception):\n    pass\n\n\ndef Field(default=..., **kwargs):  # pragma: no cover - stub\n    return default\n\n\nclass BaseModel:\n    \"\"\"Minimal stand-in for pydantic.BaseModel used in tests.\"\"\"\n\n    def __init__(self, **data):\n        annotations = getattr(self, \"__annotations__\", {})\n        for name, annotation in annotations.items():\n            if name in data:\n                value = data[name]\n            elif hasattr(self, name):\n                value = getattr(self, name)\n...",
-  "creation_timestamp": "2025-12-03T06:21:34.129526",
+  "creation_timestamp": "2025-12-03T06:52:07.602818",
   "version": "1.0"
 }

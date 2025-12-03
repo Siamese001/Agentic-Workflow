@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
-    "scan_timestamp": "2025-12-03T06:21:11.505368"
+    "scan_timestamp": "2025-12-03T06:51:45.321246"
   },
   "content_preview": "\"\"\"Minimal bias auditor stub used for safety-aware routing.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict\n\n\n@dataclass(frozen=True)\nclass BiasAssessment:\n    score: float\n    notes: str\n\n\ndef audit_bias(inputs) -> BiasAssessment:\n    \"\"\"Return a light-weight bias score for *inputs*.\"\"\"\n\n    prompt = getattr(inputs, \"prompt\", getattr(inputs, \"prompt\", \"\"))\n    if not prompt:\n        return BiasAssessment(0.0, \"Empty prompt, no bias risk\")\n    sco...",
-  "creation_timestamp": "2025-12-03T06:21:34.490748",
+  "creation_timestamp": "2025-12-03T06:52:07.979166",
   "version": "1.0"
 }

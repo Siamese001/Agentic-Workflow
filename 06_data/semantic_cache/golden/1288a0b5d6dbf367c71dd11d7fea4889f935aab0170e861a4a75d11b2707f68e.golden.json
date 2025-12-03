@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
-    "scan_timestamp": "2025-12-03T06:21:11.299414"
+    "scan_timestamp": "2025-12-03T06:51:45.104190"
   },
   "content_preview": "# FILE: tests/contracts/test_typed_contracts.py\n\nfrom __future__ import annotations\n\nfrom pydantic import BaseModel\n\nfrom meta.schema_validation import validate_schema_version\nfrom core.models.models import (\n    StrategyPlan,\n    StrategyResult,\n    DraftingPlan,\n    DraftingResult,\n    QAPlan,\n    QAResult,\n    SafetyPlan,\n    SafetyResult,\n    WorkflowPlanBundle,\n    RAGPlan,\n    RAGResult,\n    L2ResultBundle,\n)\n\n\ndef test_core_models_have_v1_schema_version_defaults():\n    # Simple models wit...",
-  "creation_timestamp": "2025-12-03T06:21:16.206848",
+  "creation_timestamp": "2025-12-03T06:51:49.889338",
   "version": "1.0"
 }

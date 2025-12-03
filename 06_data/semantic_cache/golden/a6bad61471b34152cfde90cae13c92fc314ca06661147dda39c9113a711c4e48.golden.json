@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a6bad61471b34152cfde90cae13c92fc314ca06661147dda39c9113a711c4e48",
-    "scan_timestamp": "2025-12-03T06:21:11.390200"
+    "scan_timestamp": "2025-12-03T06:51:45.202367"
   },
   "content_preview": "\"\"\"Human-in-the-loop stack shim for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import PersonaConsensus, StrategyPlan\nfrom agent_stacks_v10_8.components.hil import (\n    HILAmbiguityDetectorAgent,\n    HILFeedbackRouterAgent,\n    HILFeedbackSummarizerAgent,\n    HILReconciliationAgent,\n    VirtualReviewerCouncilAgent,\n)\n\n\nclass HILStackV10_8:\n    \"\"\"Wrapper that exposes the HIL-only capabilities.\"\"\"\n\n    def __init__(self, context: A...",
-  "creation_timestamp": "2025-12-03T06:21:22.116684",
+  "creation_timestamp": "2025-12-03T06:51:55.704425",
   "version": "1.0"
 }

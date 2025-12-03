@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
-    "scan_timestamp": "2025-12-03T06:21:11.332255"
+    "scan_timestamp": "2025-12-03T06:51:45.140452"
   },
   "content_preview": "\"\"\"\nTelemetry Collection for Observability Testing\n\nCollects metrics, performance data, and quality trends from existing test suite.\nWraps unit/integration/E2E/golden tests to track execution patterns and quality over time.\n\"\"\"\n\nimport pytest\nimport time\nimport json\nfrom typing import Dict, Any, List, Optional\nfrom dataclasses import dataclass, field, asdict\nfrom enum import Enum\nfrom datetime import datetime\nimport threading\n\n# Mark all tests as observability tests\npytestmark = [pytest.mark.obs...",
-  "creation_timestamp": "2025-12-03T06:21:17.314535",
+  "creation_timestamp": "2025-12-03T06:51:50.958668",
   "version": "1.0"
 }

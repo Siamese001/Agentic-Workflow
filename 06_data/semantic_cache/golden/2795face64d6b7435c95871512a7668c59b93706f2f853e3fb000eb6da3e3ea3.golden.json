@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2795face64d6b7435c95871512a7668c59b93706f2f853e3fb000eb6da3e3ea3",
-    "scan_timestamp": "2025-12-03T06:21:11.321502"
+    "scan_timestamp": "2025-12-03T06:51:45.128822"
   },
   "content_preview": "\"\"\"L4 RAG (Retrieval Augmented Generation) Tests.\"\"\"\n\nclass TestL4RAG:\n    \"\"\"Tests for L4 RAG functionality.\"\"\"\n    \n    def test_retrieval_query(self):\n        \"\"\"Test retrieval query construction.\"\"\"\n        query = {\"text\": \"python developer\", \"top_k\": 10}\n        assert query[\"top_k\"] == 10\n    \n    def test_context_augmentation(self):\n        \"\"\"Test context augmentation logic.\"\"\"\n        docs = [\"doc1 content\", \"doc2 content\"]\n        augmented = \" \".join(docs)\n        assert \"doc1\" in au...",
-  "creation_timestamp": "2025-12-03T06:21:16.949030",
+  "creation_timestamp": "2025-12-03T06:51:50.600595",
   "version": "1.0"
 }

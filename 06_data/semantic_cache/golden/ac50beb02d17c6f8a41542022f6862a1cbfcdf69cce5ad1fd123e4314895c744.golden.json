@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ac50beb02d17c6f8a41542022f6862a1cbfcdf69cce5ad1fd123e4314895c744",
-    "scan_timestamp": "2025-12-03T06:21:11.510078"
+    "scan_timestamp": "2025-12-03T06:51:45.326355"
   },
   "content_preview": "\"\"\"Specialist planner ensemble and coordinator for v10.7 strategies.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import TYPE_CHECKING, Any, Dict, List, Optional\n\nfrom core_v10_7 import (\n    BaseAgent,\n    StrategyPlan,\n    PlannerAssessment,\n    ScenarioSimulationResult,\n)\n\nif TYPE_CHECKING:\n    from core_v10_7 import WorkflowContext\n\n\ndef _truncate(text: str, limit: int = 160) -> str:\n    if len(text) <= limit:\n        return text\n    return text[: limit - 3] + \"...\"\n\n\nc...",
-  "creation_timestamp": "2025-12-03T06:21:34.809422",
+  "creation_timestamp": "2025-12-03T06:52:08.323174",
   "version": "1.0"
 }

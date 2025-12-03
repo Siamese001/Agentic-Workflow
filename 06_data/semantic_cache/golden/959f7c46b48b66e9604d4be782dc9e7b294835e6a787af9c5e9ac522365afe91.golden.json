@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "959f7c46b48b66e9604d4be782dc9e7b294835e6a787af9c5e9ac522365afe91",
-    "scan_timestamp": "2025-12-03T06:21:11.417991"
+    "scan_timestamp": "2025-12-03T06:51:45.231874"
   },
   "content_preview": "from types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.models import StrategyPlan\nfrom core_v10_7.services import EpisodicMemory\nfrom agent_stacks_v10_8.components.bullet import AsyncBulletGeneratorAgent\n\n\nclass FakeRedis:\n    def __init__(self):\n        self.store = {}\n\n    def get(self, key):\n        return self.store.get(key)\n\n    def setex(self, key, ttl, value):\n        self.store[key] = value\n\n\nclass DummyMetrics:\n    def get_average_latency(self, **_kwargs):\n        return None...",
-  "creation_timestamp": "2025-12-03T06:21:23.755086",
+  "creation_timestamp": "2025-12-03T06:51:57.390731",
   "version": "1.0"
 }

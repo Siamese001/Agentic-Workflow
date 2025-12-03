@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "71cbfa621795aeba4abfcfa11255fe99f06c3647790b3bb12951f23b585f1f5c",
-    "scan_timestamp": "2025-12-03T06:21:11.657188"
+    "scan_timestamp": "2025-12-03T06:51:45.478404"
   },
   "content_preview": "# File: workflow.py\n# Description: Core workflow orchestration for the LIC agentic system.\n\n__version__ = \"11.10\"\n\nimport asyncio\nimport hashlib\nfrom collections import defaultdict\nfrom dataclasses import asdict\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Any, Tuple, Set\n\n# Local module imports\nfrom models import (\n    OutreachMission, ProfileAnalysis, Archetype, AgentStatus, ResearchContext,\n    Route, MessageScaffold, GeneratedMessage, ValidationResult, QAReport,\n  ...",
-  "creation_timestamp": "2025-12-03T06:21:42.878268",
+  "creation_timestamp": "2025-12-03T06:52:16.318413",
   "version": "1.0"
 }

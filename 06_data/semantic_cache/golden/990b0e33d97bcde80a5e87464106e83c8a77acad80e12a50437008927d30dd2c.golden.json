@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "990b0e33d97bcde80a5e87464106e83c8a77acad80e12a50437008927d30dd2c",
-    "scan_timestamp": "2025-12-03T06:21:11.303764"
+    "scan_timestamp": "2025-12-03T06:51:45.109196"
   },
   "content_preview": "\"\"\"\nCritical Path E2E Workflow Tests\n\nTests the essential L1\u2192L2\u2192L3 workflow: planning \u2192 execution \u2192 orchestration.\nUses working mocks from unit test foundation to validate layer contracts.\n\"\"\"\n\nimport pytest\nfrom typing import Dict, Any, List, Optional\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom unittest.mock import Mock\nimport time\n\n# Mark all tests as E2E workflow tests\npytestmark = [pytest.mark.end_to_end, pytest.mark.integration, pytest.mark.l1, pytest.mark.l2, pytest.mark.l...",
-  "creation_timestamp": "2025-12-03T06:21:16.343335",
+  "creation_timestamp": "2025-12-03T06:51:50.027670",
   "version": "1.0"
 }

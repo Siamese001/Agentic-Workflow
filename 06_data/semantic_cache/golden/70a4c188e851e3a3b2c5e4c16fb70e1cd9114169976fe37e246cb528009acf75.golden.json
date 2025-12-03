@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75",
-    "scan_timestamp": "2025-12-03T06:21:11.626665"
+    "scan_timestamp": "2025-12-03T06:51:45.447359"
   },
   "content_preview": "================================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-02 v1.5.1\n================================================================================\n\n# SUMMARY\n- Full functionality with the New vs Existing decision router and Single or Multiple batching.\n- All prompt sections use the Six Sections Prompt Shell v1 format: Role, Task, Context, Retrieval Plan, Reasoning, Output (stri...",
-  "creation_timestamp": "2025-12-03T06:21:41.567582",
+  "creation_timestamp": "2025-12-03T06:52:14.970182",
   "version": "1.0"
 }

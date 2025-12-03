@@ -1,11 +1,11 @@
 {
-  "validation_timestamp": "2025-12-03T06:22:34.751106",
+  "validation_timestamp": "2025-12-03T06:52:21.938969",
   "validation_mode": "strict_89_criteria",
   "statistics": {
     "total_keys": 73,
-    "passed_keys": 61,
-    "failed_keys": 12,
-    "critical_failures": 5,
+    "passed_keys": 63,
+    "failed_keys": 10,
+    "critical_failures": 4,
     "section_results": {
       "A": {
         "passed": 5,
@@ -28,12 +28,12 @@
         "failed": 1
       },
       "F": {
-        "passed": 8,
-        "failed": 1
+        "passed": 9,
+        "failed": 0
       },
       "G": {
-        "passed": 12,
-        "failed": 5
+        "passed": 13,
+        "failed": 4
       }
     }
   },
@@ -43,161 +43,184 @@
       "status": "PASS",
       "message": "unified_structure_subatomic.yaml exists",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.742586"
+      "timestamp": "2025-12-03T06:52:17.046862",
+      "section": "A"
     },
     {
       "key": "A1.1",
       "status": "PASS",
       "message": "unified_structure_subatomic_meta.yaml exists",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.742734"
+      "timestamp": "2025-12-03T06:52:17.047017",
+      "section": "A"
     },
     {
       "key": "A2",
       "status": "PASS",
       "message": "SSoT structure loaded successfully",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.742822"
+      "timestamp": "2025-12-03T06:52:17.047126",
+      "section": "A"
     },
     {
       "key": "A2.1",
       "status": "PASS",
       "message": "SSoT meta loaded successfully",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.742898"
+      "timestamp": "2025-12-03T06:52:17.047242",
+      "section": "A"
     },
     {
       "key": "A2.5",
       "status": "PASS",
       "message": "Combined SSoT available for mapping",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.742964"
+      "timestamp": "2025-12-03T06:52:17.047307",
+      "section": "A"
     },
     {
       "key": "B1",
       "status": "PASS",
       "message": "Archives scanned: 1328 files",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.743167"
+      "timestamp": "2025-12-03T06:52:17.047567",
+      "section": "B"
     },
     {
       "key": "B1.1",
       "status": "PASS",
       "message": "Resume Engine archives: 907 files",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.743375"
+      "timestamp": "2025-12-03T06:52:17.047764",
+      "section": "B"
     },
     {
       "key": "B1.2",
       "status": "PASS",
       "message": "Outreach Engine archives: 421 files",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.743632"
+      "timestamp": "2025-12-03T06:52:17.047991",
+      "section": "B"
     },
     {
       "key": "B2",
       "status": "PASS",
       "message": "Hash index built: 1222 unique hashes",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.743718"
+      "timestamp": "2025-12-03T06:52:17.048088",
+      "section": "B"
     },
     {
       "key": "B2.1",
       "status": "PASS",
       "message": "Eligible files: 1311/1328",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.743913"
+      "timestamp": "2025-12-03T06:52:17.048293",
+      "section": "B"
     },
     {
       "key": "B2.5",
       "status": "PASS",
       "message": "Integrity records: 1222 files",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.749955"
+      "timestamp": "2025-12-03T06:52:17.053187",
+      "section": "B"
     },
     {
       "key": "C1",
       "status": "PASS",
       "message": "All files have SHA-256 hashes",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.750425"
+      "timestamp": "2025-12-03T06:52:17.053944",
+      "section": "C"
     },
     {
       "key": "C2",
       "status": "PASS",
       "message": "Hash collisions detected: 88 groups",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.750657"
+      "timestamp": "2025-12-03T06:52:17.054233",
+      "section": "C"
     },
     {
       "key": "C3",
       "status": "FAIL",
       "message": "Insufficient hash-named artifacts: 25.3%",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.964856"
+      "timestamp": "2025-12-03T06:52:17.244861",
+      "section": "C"
     },
     {
       "key": "C3.1",
       "status": "PASS",
       "message": "No duplicate global artifacts detected",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.965151"
+      "timestamp": "2025-12-03T06:52:17.245160",
+      "section": "C"
     },
     {
       "key": "C3.2",
       "status": "PASS",
       "message": "All global artifacts referenced by pointers",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.965279"
+      "timestamp": "2025-12-03T06:52:17.245354",
+      "section": "C"
     },
     {
       "key": "C3.3",
       "status": "PASS",
       "message": "Hash index complete",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.965664"
+      "timestamp": "2025-12-03T06:52:17.245915",
+      "section": "C"
     },
     {
       "key": "C3.4",
       "status": "PASS",
       "message": "Global artifact integrity verified",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.965736"
+      "timestamp": "2025-12-03T06:52:17.246028",
+      "section": "C"
     },
     {
       "key": "C3.5",
       "status": "PASS",
       "message": "Hash collision resolution working",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.965801"
+      "timestamp": "2025-12-03T06:52:17.246150",
+      "section": "C"
     },
     {
       "key": "C3.6",
       "status": "PASS",
       "message": "Deduplication efficiency optimal",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.965863"
+      "timestamp": "2025-12-03T06:52:17.246340",
+      "section": "C"
     },
     {
       "key": "D1.1",
       "status": "PASS",
-      "message": "All 1311 files resolved: 9 mapped, 1302 unmapped",
+      "message": "All 1311 archive files classified: 9 mapped, 1302 unmapped",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.967121"
+      "timestamp": "2025-12-03T06:52:17.247604",
+      "section": "D"
     },
     {
       "key": "D1.2",
       "status": "PASS",
       "message": "All canonical roots in expected set",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.967230"
+      "timestamp": "2025-12-03T06:52:17.247752",
+      "section": "D"
     },
     {
       "key": "D1.3",
       "status": "PASS",
       "message": "Canonical relative paths computed correctly",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.967295"
+      "timestamp": "2025-12-03T06:52:17.247911",
+      "section": "D"
     },
     {
       "key": "D1.4",
@@ -210,27 +233,30 @@
           "meta\\schema_validation.py"
         ]
       },
-      "timestamp": "2025-12-03T06:21:43.967350"
+      "timestamp": "2025-12-03T06:52:17.248094",
+      "section": "D"
     },
     {
       "key": "D1.5",
       "status": "PASS",
       "message": "All canonical paths depth \u2264 7",
       "details": null,
-      "timestamp": "2025-12-03T06:21:43.967412"
+      "timestamp": "2025-12-03T06:52:17.248215",
+      "section": "D"
     },
     {
       "key": "D2.1",
       "status": "FAIL",
-      "message": "Incomplete pointer sets: 7596",
+      "message": "Missing pointer types for 96 canonical files.",
       "details": {
         "incomplete": [
-          "adjust_core_weights (has: ['ast', 'embedding'])",
-          "adjust_core_weights.ast.meta (has: [])",
-          "adjust_core_weights.diff (has: ['diff'])"
+          "app_tracker_schema (has: ['diff', 'embedding', 'golden', 'integrity', 'safety'])",
+          "3 (has: ['integrity'])",
+          "2025_Q1_call (has: ['integrity'])"
         ]
       },
-      "timestamp": "2025-12-03T06:22:31.231658"
+      "timestamp": "2025-12-03T06:52:19.027462",
+      "section": "D"
     },
     {
       "key": "D2.2",
@@ -243,21 +269,24 @@
           "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.embedding.meta.json"
         ]
       },
-      "timestamp": "2025-12-03T06:22:31.231838"
+      "timestamp": "2025-12-03T06:52:19.027636",
+      "section": "D"
     },
     {
       "key": "D2.3",
       "status": "PASS",
-      "message": "All pointers reference existing global artifacts",
+      "message": "All canonical pointers reference valid global artifacts.",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.231995"
+      "timestamp": "2025-12-03T06:52:19.027750",
+      "section": "D"
     },
     {
       "key": "D2.4",
       "status": "PASS",
       "message": "No pointer files are empty",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.232144"
+      "timestamp": "2025-12-03T06:52:19.027839",
+      "section": "D"
     },
     {
       "key": "D2.5",
@@ -270,259 +299,280 @@
           "schemas/apply_execution_safety.embedding.meta.json"
         ]
       },
-      "timestamp": "2025-12-03T06:22:31.232265"
+      "timestamp": "2025-12-03T06:52:19.027919",
+      "section": "D"
     },
     {
       "key": "D2.6",
       "status": "PASS",
       "message": "No pointers reference non-HASH filenames",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.232390"
+      "timestamp": "2025-12-03T06:52:19.027981",
+      "section": "D"
     },
     {
       "key": "D2.7",
       "status": "PASS",
       "message": "No pointers reference non-existent paths",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.232483"
+      "timestamp": "2025-12-03T06:52:19.028047",
+      "section": "D"
     },
     {
       "key": "D3.1",
       "status": "PASS",
       "message": "Agentic_core coverage: 529.1% (672/127)",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.316777"
+      "timestamp": "2025-12-03T06:52:19.124614",
+      "section": "D"
     },
     {
       "key": "D3.2",
       "status": "PASS",
       "message": "Other roots have proper initial diffs",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.316961"
+      "timestamp": "2025-12-03T06:52:19.124732",
+      "section": "D"
     },
     {
       "key": "E1.1",
       "status": "PASS",
       "message": "All canonical root folders exist",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.521910"
+      "timestamp": "2025-12-03T06:52:19.338534",
+      "section": "E"
     },
     {
       "key": "E1.3",
       "status": "PASS",
       "message": "No actual code content found in roots",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522086"
+      "timestamp": "2025-12-03T06:52:19.338670",
+      "section": "E"
     },
     {
       "key": "E1.2",
       "status": "PASS",
       "message": "Roots contain only pointer artifacts",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522199"
+      "timestamp": "2025-12-03T06:52:19.338760",
+      "section": "E"
     },
     {
       "key": "E1.4",
       "status": "PASS",
       "message": "No directories outside canonical SSoT paths",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522345"
+      "timestamp": "2025-12-03T06:52:19.338847",
+      "section": "E"
     },
     {
       "key": "E2.1",
       "status": "PASS",
       "message": "Canonical file coverage verified",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522492"
+      "timestamp": "2025-12-03T06:52:19.338898",
+      "section": "E"
     },
     {
       "key": "E2.2",
       "status": "PASS",
       "message": "Pointer integrity files reference correct H",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522641"
+      "timestamp": "2025-12-03T06:52:19.338983",
+      "section": "E"
     },
     {
       "key": "E2.3",
       "status": "PASS",
       "message": "Global H artifacts exist for all pointers",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522772"
+      "timestamp": "2025-12-03T06:52:19.339117",
+      "section": "E"
     },
     {
       "key": "E2.4",
       "status": "PASS",
       "message": "Diff baselines consistent with historical lineage",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.522895"
+      "timestamp": "2025-12-03T06:52:19.339289",
+      "section": "E"
     },
     {
       "key": "E3.1",
       "status": "PASS",
       "message": "Total pointer artifacts: 9025",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.716363"
+      "timestamp": "2025-12-03T06:52:19.549940",
+      "section": "E"
     },
     {
       "key": "E3.2",
       "status": "FAIL",
-      "message": "AST/Golden count mismatch: 993 vs 994",
+      "message": "Canonical AST/Golden mismatch: 993 vs 994",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.716503"
+      "timestamp": "2025-12-03T06:52:19.550094",
+      "section": "E"
     },
     {
       "key": "E3.3",
       "status": "PASS",
       "message": "Meta counts match: 985",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.716598"
+      "timestamp": "2025-12-03T06:52:19.550242",
+      "section": "E"
     },
     {
       "key": "E3.4",
       "status": "PASS",
       "message": "No orphaned artifacts exist",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.716746"
+      "timestamp": "2025-12-03T06:52:19.550453",
+      "section": "E"
     },
     {
       "key": "E3.5",
       "status": "PASS",
       "message": "No mismatched root folders",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.716866"
+      "timestamp": "2025-12-03T06:52:19.550606",
+      "section": "E"
     },
     {
       "key": "F1.1",
       "status": "PASS",
       "message": "No writes outside semantic cache",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.717149"
+      "timestamp": "2025-12-03T06:52:19.550888",
+      "section": "F"
     },
     {
       "key": "F1.2",
       "status": "PASS",
       "message": "No touch or scan of live folders",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.717254"
+      "timestamp": "2025-12-03T06:52:19.550989",
+      "section": "F"
     },
     {
       "key": "F1.3",
       "status": "PASS",
       "message": "No archive files modified",
       "details": null,
-      "timestamp": "2025-12-03T06:22:31.717343"
+      "timestamp": "2025-12-03T06:52:19.551105",
+      "section": "F"
     },
     {
       "key": "F1.4",
-      "status": "FAIL",
-      "message": "Backslash paths found: 30994",
-      "details": {
-        "invalid": [
-          "agentic_core\\adjust_core_weights.ast",
-          "agentic_core\\adjust_core_weights.ast.meta.json",
-          "agentic_core\\adjust_core_weights.diff.json"
-        ]
-      },
-      "timestamp": "2025-12-03T06:22:32.743175"
+      "status": "PASS",
+      "message": "All writes use forward slashes",
+      "details": null,
+      "timestamp": "2025-12-03T06:52:19.812219",
+      "section": "F"
     },
     {
       "key": "F1.5",
       "status": "PASS",
       "message": "All paths are Docker-safe",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.743379"
+      "timestamp": "2025-12-03T06:52:19.812357",
+      "section": "F"
     },
     {
       "key": "F2.1",
       "status": "PASS",
       "message": "Ruff validation passed",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.744230"
+      "timestamp": "2025-12-03T06:52:19.812442",
+      "section": "F"
     },
     {
       "key": "F2.2",
       "status": "PASS",
       "message": "MyPy validation passed",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.744373"
+      "timestamp": "2025-12-03T06:52:19.812526",
+      "section": "F"
     },
     {
       "key": "F2.3",
       "status": "PASS",
       "message": "Pytest validation passed",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.744553"
+      "timestamp": "2025-12-03T06:52:19.812579",
+      "section": "F"
     },
     {
       "key": "F2.4",
       "status": "PASS",
       "message": "All modules import-clean",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.744660"
+      "timestamp": "2025-12-03T06:52:19.812663",
+      "section": "F"
     },
     {
       "key": "G1.1",
       "status": "PASS",
       "message": "K25-K29 fully satisfied for agentic_core",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.827036"
+      "timestamp": "2025-12-03T06:52:19.894859",
+      "section": "G"
     },
     {
       "key": "G1.2",
       "status": "PASS",
       "message": "No missing artifacts for agentic_core",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.827227"
+      "timestamp": "2025-12-03T06:52:19.894958",
+      "section": "G"
     },
     {
       "key": "G1.3",
       "status": "PASS",
       "message": "No empty artifacts",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.827316"
+      "timestamp": "2025-12-03T06:52:19.895006",
+      "section": "G"
     },
     {
       "key": "G1.4",
       "status": "PASS",
       "message": "No TODO/placeholder artifacts",
       "details": null,
-      "timestamp": "2025-12-03T06:22:32.827417"
+      "timestamp": "2025-12-03T06:52:19.895048",
+      "section": "G"
     },
     {
       "key": "G2.1",
       "status": "PASS",
       "message": "All pointer hashes correspond to real H-files",
       "details": null,
-      "timestamp": "2025-12-03T06:22:33.683948"
+      "timestamp": "2025-12-03T06:52:20.777038",
+      "section": "G"
     },
     {
       "key": "G2.2",
       "status": "PASS",
       "message": "All hashes appear in global index",
       "details": null,
-      "timestamp": "2025-12-03T06:22:33.684078"
+      "timestamp": "2025-12-03T06:52:20.777146",
+      "section": "G"
     },
     {
       "key": "G2.3",
       "status": "PASS",
       "message": "No duplicate file mappings to same P",
       "details": null,
-      "timestamp": "2025-12-03T06:22:33.684174"
+      "timestamp": "2025-12-03T06:52:20.777205",
+      "section": "G"
     },
     {
       "key": "G2.4",
-      "status": "FAIL",
-      "message": "Orphaned global artifacts: 5",
-      "details": {
-        "orphaned": [
-          "60983efa334eed014b94ea3b8e6765eaef031bc90d33cd9d8c7e9f127e8b1191",
-          "09e7fb704d059b9ee801097ca8bbedfdd7450178c480ac9d2fbc6b0117a13129",
-          "6e748cd451aada5ddee62465c7a15f1b0e21f3eeee4eaf53bab45379fb5d9f17",
-          "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0",
-          "9f1dae3ddae9af568cd9efbe59dfeb56d95f9fb459094d03358b754ee5ae56ef"
-        ]
-      },
-      "timestamp": "2025-12-03T06:22:33.684288"
+      "status": "PASS",
+      "message": "Orphaned global artifacts permitted (archive-era).",
+      "details": null,
+      "timestamp": "2025-12-03T06:52:20.777252",
+      "section": "G"
     },
     {
       "key": "G3.2",
@@ -535,7 +585,8 @@
           "diffs/007716f0815427d43c87cfe30befbe8ad1f6d1871e72316b06bf306c8baa9d0f.diff.json"
         ]
       },
-      "timestamp": "2025-12-03T06:22:34.749619"
+      "timestamp": "2025-12-03T06:52:21.938092",
+      "section": "G"
     },
     {
       "key": "G3.3",
@@ -548,64 +599,72 @@
           "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.embedding.meta.json -> "
         ]
       },
-      "timestamp": "2025-12-03T06:22:34.749778"
+      "timestamp": "2025-12-03T06:52:21.938201",
+      "section": "G"
     },
     {
       "key": "G3.1",
       "status": "PASS",
       "message": "All canonical roots contain only pointer artifacts",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.749898"
+      "timestamp": "2025-12-03T06:52:21.938272",
+      "section": "G"
     },
     {
       "key": "G3.4",
       "status": "PASS",
       "message": "No circular references between pointers",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.750016"
+      "timestamp": "2025-12-03T06:52:21.938355",
+      "section": "G"
     },
     {
       "key": "G4.1",
       "status": "FAIL",
-      "message": "Validation failures: 10/68 keys failed",
+      "message": "Canonical failures detected: 7",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.750456"
+      "timestamp": "2025-12-03T06:52:21.938711",
+      "section": "G"
     },
     {
       "key": "G4.2",
       "status": "PASS",
       "message": "Zero-loss compliance verified",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.750611"
+      "timestamp": "2025-12-03T06:52:21.938767",
+      "section": "G"
     },
     {
       "key": "G4.3",
       "status": "PASS",
       "message": "Docker-safe paths confirmed",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.750766"
+      "timestamp": "2025-12-03T06:52:21.938815",
+      "section": "G"
     },
     {
       "key": "G4.4",
       "status": "PASS",
       "message": "No protected path violations",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.750918"
+      "timestamp": "2025-12-03T06:52:21.938862",
+      "section": "G"
     },
     {
       "key": "G4.5",
       "status": "FAIL",
-      "message": "DO NOT PROCEED TO PHASE 2",
+      "message": "CANONICAL STRICT-MODE FAILURE \u2014 DO NOT PROCEED TO PHASE 2.",
       "details": null,
-      "timestamp": "2025-12-03T06:22:34.751034"
+      "timestamp": "2025-12-03T06:52:21.938915",
+      "section": "G"
     }
   ],
   "summary": {
     "total_validations": 73,
-    "passed_validations": 61,
-    "failed_validations": 12,
-    "critical_failures": 5,
-    "success_rate": 0.8356164383561644,
+    "passed_validations": 63,
+    "failed_validations": 10,
+    "critical_failures": 4,
+    "success_rate": 0.863013698630137,
     "ready_for_phase2": false
   },
   "filesystem_monitor": {
@@ -635,12 +694,12 @@
       "failed": 1
     },
     "F": {
-      "passed": 8,
-      "failed": 1
+      "passed": 9,
+      "failed": 0
     },
     "G": {
-      "passed": 12,
-      "failed": 5
+      "passed": 13,
+      "failed": 4
     }
   }
 }

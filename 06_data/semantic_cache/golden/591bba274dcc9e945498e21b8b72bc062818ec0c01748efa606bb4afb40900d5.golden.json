@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "591bba274dcc9e945498e21b8b72bc062818ec0c01748efa606bb4afb40900d5",
-    "scan_timestamp": "2025-12-03T06:21:11.274478"
+    "scan_timestamp": "2025-12-03T06:51:45.075518"
   },
   "content_preview": "\"\"\"Self-Correction - Meta Layer\n\nThis module provides self-correction surface evaluation.\n\nLayer: Meta\nResponsibilities:\n- Evaluate L2 results for quality issues\n- Detect correction opportunities\n- Emit CorrectionSignal objects\n- Deterministic, side-effect-free analysis\n\nNon-responsibilities:\n- LLM calls\n- Tool execution\n- State mutation\n- Correction application (L3 decides)\n\"\"\"\n\n# FILE: self_correction.py\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import ...",
-  "creation_timestamp": "2025-12-03T06:21:15.284488",
+  "creation_timestamp": "2025-12-03T06:51:48.976931",
   "version": "1.0"
 }

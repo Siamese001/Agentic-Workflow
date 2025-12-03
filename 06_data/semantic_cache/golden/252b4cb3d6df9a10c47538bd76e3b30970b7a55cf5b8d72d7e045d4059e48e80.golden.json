@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "252b4cb3d6df9a10c47538bd76e3b30970b7a55cf5b8d72d7e045d4059e48e80",
-    "scan_timestamp": "2025-12-03T06:21:11.371108"
+    "scan_timestamp": "2025-12-03T06:51:45.181416"
   },
   "content_preview": "\"\"\"\nV10.8 Consolidated Module: Multi Agent System\nMerged from 5 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom multi_agent import AgentGraph, summarize_graph, COUNCIL_OF_QA\nfrom multi_agent import AgentMessage, route_to_specialist\nfrom multi_agent import AgentRole\nfrom multi_agent import delegation_metadata\nfrom multi_agent import deterministic_vote\nfrom typing import Dict, Any\nfrom typing import List, Dict...",
-  "creation_timestamp": "2025-12-03T06:21:20.060087",
+  "creation_timestamp": "2025-12-03T06:51:53.684523",
   "version": "1.0"
 }

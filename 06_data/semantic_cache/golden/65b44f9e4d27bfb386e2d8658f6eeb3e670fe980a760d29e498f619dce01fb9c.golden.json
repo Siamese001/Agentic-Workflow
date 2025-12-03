@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "65b44f9e4d27bfb386e2d8658f6eeb3e670fe980a760d29e498f619dce01fb9c",
-    "scan_timestamp": "2025-12-03T06:21:11.519871"
+    "scan_timestamp": "2025-12-03T06:51:45.337018"
   },
   "content_preview": "\"\"\"ValidatorAgent behavior tests.\"\"\"\nfrom src.lic_agentic.agents.k7_validator_agent import ValidationResult, ValidatorAgent\nfrom src.lic_agentic.qa import QAResult\n\n\nclass StubQAValidator:\n    def __init__(self, responses):\n        self._responses = iter(responses)\n\n    def validate(self, draft, artifacts, pii_placeholders):\n        return next(self._responses)\n\n\ndef test_validator_passes_with_subject_and_artifact():\n    draft = \"\"\"Subject: Hello\\n\\nHello there,\\nBody with [artifact_id:123] toke...",
-  "creation_timestamp": "2025-12-03T06:21:35.102686",
+  "creation_timestamp": "2025-12-03T06:52:08.616747",
   "version": "1.0"
 }

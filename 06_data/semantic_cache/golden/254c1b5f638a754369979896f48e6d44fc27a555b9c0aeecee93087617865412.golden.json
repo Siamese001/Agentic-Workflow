@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "254c1b5f638a754369979896f48e6d44fc27a555b9c0aeecee93087617865412",
-    "scan_timestamp": "2025-12-03T06:21:11.394427"
+    "scan_timestamp": "2025-12-03T06:51:45.207001"
   },
   "content_preview": "\"\"\"Agentic RAG shim that delegates to the v10.8 execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List\nfrom types import SimpleNamespace\n\nfrom core_v10_7.agents import BaseAgent\ndef _build_execution_stack(context: Any, debug_mode: bool = False):\n    from agent_stacks_v10_8 import RAGExecutionStack as RAGExecutionStackV10_8\n\n    return RAGExecutionStackV10_8(context, debug_mode)\n\n\nclass RAG_SearchAgent(BaseAgent):\n    \"\"\"Compatibility wrapper preserving the v1...",
-  "creation_timestamp": "2025-12-03T06:21:22.335167",
+  "creation_timestamp": "2025-12-03T06:51:55.965207",
   "version": "1.0"
 }

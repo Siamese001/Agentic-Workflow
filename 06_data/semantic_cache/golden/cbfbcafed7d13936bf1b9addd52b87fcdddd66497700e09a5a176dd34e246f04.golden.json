@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cbfbcafed7d13936bf1b9addd52b87fcdddd66497700e09a5a176dd34e246f04",
-    "scan_timestamp": "2025-12-03T06:21:11.519020"
+    "scan_timestamp": "2025-12-03T06:51:45.336106"
   },
   "content_preview": "from src.lic_agentic.reasoning import cot, reflexion\n\n\ndef test_cot_expand_guarantees_minimum_step():\n    steps = cot.expand(\"Consider options\", steps=0)\n    assert steps == [\"Step 1: Consider options\"]\n\n\ndef test_cot_expand_respects_requested_steps():\n    steps = cot.expand(\"Consider options\", steps=2)\n    assert len(steps) == 2\n\n\ndef test_reflexion_apply_feedback_appends_insight():\n    updated = reflexion.apply_feedback(\"Draft body\", \"Focus on product value\")\n    assert \"Reflexion:\" in updated...",
-  "creation_timestamp": "2025-12-03T06:21:35.078459",
+  "creation_timestamp": "2025-12-03T06:52:08.589069",
   "version": "1.0"
 }

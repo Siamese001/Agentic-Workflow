@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6d4bf1d1c24ee2185376ca7c63de3769585e3fe475b2d2201b0811e4d346bdad",
-    "scan_timestamp": "2025-12-03T06:21:11.392973"
+    "scan_timestamp": "2025-12-03T06:51:45.205398"
   },
   "content_preview": "\"\"\"Prompt building stack for v10.8 that wraps the legacy prompt engineer.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.components.prompting import PromptEngineerAgent\n\n\nclass PromptBuilderStack:\n    \"\"\"Layer-isolated facade for prompt engineering.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._prompt_agent = PromptEngineerAgent(...",
-  "creation_timestamp": "2025-12-03T06:21:22.277439",
+  "creation_timestamp": "2025-12-03T06:51:55.904081",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6c52b78d96c83a4987cbac5348dca0ecfb738d70039820130162df95d6c67a16",
-    "scan_timestamp": "2025-12-03T06:21:11.414901"
+    "scan_timestamp": "2025-12-03T06:51:45.229027"
   },
   "content_preview": "import asyncio\n\nimport pytest\n\nfrom core_v10_7 import CacheManager\n\n@pytest.mark.parametrize(\n    \"provider,model,temps\",\n    [\n        (\"openai\", \"gpt-test\", [0.0, 0.1, 0.2]),\n        (\"anthropic\", \"claude-3\", [0.0, 0.3]),\n        (\"gemini\", \"1.5-pro\", [0.2, 0.5]),\n    ],\n)\ndef test_cache_roundtrip_variants(\n    cache_manager: CacheManager, provider, model, temps\n):\n    for temp in temps:\n        key = f\"{provider}-{model}-{temp}\"\n        asyncio.run(\n            cache_manager.set_llm_cache(\n  ...",
-  "creation_timestamp": "2025-12-03T06:21:23.648293",
+  "creation_timestamp": "2025-12-03T06:51:57.283448",
   "version": "1.0"
 }

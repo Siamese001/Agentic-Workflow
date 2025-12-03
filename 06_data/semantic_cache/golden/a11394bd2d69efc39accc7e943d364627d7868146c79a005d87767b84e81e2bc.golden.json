@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
-    "scan_timestamp": "2025-12-03T06:21:11.524150"
+    "scan_timestamp": "2025-12-03T06:51:45.341545"
   },
   "content_preview": "{\n  \"company_name\": \"Unify Consulting\",\n  \"core_value_propositions\": [\n    \"We deploy agentic API frameworks using chain-of-thought prompting to automate complex workflows\",\n    \"Our context-engineering frameworks with retrieval-augmented pipelines improve generative AI accuracy\",\n    \"We architect LLM deployment pipelines with embedding stores and vector databases on cloud infrastructure\",\n    \"We build senior engineering teams focused on transformer models and low-latency inference optimizatio...",
-  "creation_timestamp": "2025-12-03T06:21:35.459585",
+  "creation_timestamp": "2025-12-03T06:52:08.992455",
   "version": "1.0"
 }

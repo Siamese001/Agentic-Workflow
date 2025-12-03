@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "91f83ce023ebe110fc041480e84d38b75b7aea736a9d8a5079f24e8f2ef46864",
-    "scan_timestamp": "2025-12-03T06:21:11.358208"
+    "scan_timestamp": "2025-12-03T06:51:45.169813"
   },
   "content_preview": "# FILE: 10_10/runtime_utils.py\n\"\"\"\nUnified Runtime Utilities (v10_10) \u2014 INFRASTRUCTURE LAYER\n=========================================================\n\nThis module is the v10_10 runtime utility layer.\n\nResponsibilities:\n    1. Exception hierarchy for runtime surfaces.\n    2. SandboxConfig + get_sandbox() for logical isolation.\n    3. PredictiveCacheManager for in-memory predictive/semantic caching.\n    4. invoke_model() unified LLM gateway (OpenAI + Anthropic).\n\nDesign constraints:\n    \u2022 No plan...",
-  "creation_timestamp": "2025-12-03T06:21:18.996310",
+  "creation_timestamp": "2025-12-03T06:51:52.616525",
   "version": "1.0"
 }

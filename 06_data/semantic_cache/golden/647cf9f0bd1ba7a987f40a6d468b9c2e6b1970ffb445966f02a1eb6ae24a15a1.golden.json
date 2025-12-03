@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
-    "scan_timestamp": "2025-12-03T06:21:11.484125"
+    "scan_timestamp": "2025-12-03T06:51:45.297052"
   },
   "content_preview": "{\n  \"schema_version\": \"master_resume_v2.15\",\n  \"owner\": {\n    \"name\": \"Amit Ayer\",\n    \"contact\": {\n      \"phone\": \"+1-917-239-3830\",\n      \"email\": \"amitayer1@gmail.com\",\n      \"linkedin\": \"https://www.linkedin.com/in/amitayer1\"\n    }\n  },\n  \"professional_experience\": [\n    {\n      \"company\": \"Unify Consulting\",\n      \"location\": \"Boca Raton, FL\",\n      \"title\": \"Chief AI Officer\",\n      \"dates\": {\n        \"start\": \"February 2023\",\n        \"end\": \"Present\"\n      },\n      \"bullet_pool\": [\n      ...",
-  "creation_timestamp": "2025-12-03T06:21:29.907797",
+  "creation_timestamp": "2025-12-03T06:52:03.325538",
   "version": "1.0"
 }

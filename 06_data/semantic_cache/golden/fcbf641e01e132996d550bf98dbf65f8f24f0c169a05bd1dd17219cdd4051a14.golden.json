@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fcbf641e01e132996d550bf98dbf65f8f24f0c169a05bd1dd17219cdd4051a14",
-    "scan_timestamp": "2025-12-03T06:21:11.397072"
+    "scan_timestamp": "2025-12-03T06:51:45.209312"
   },
   "content_preview": "\"\"\"Layer-5 resilience stack that centralizes retry logic.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport random\nfrom typing import Any, Awaitable, Callable, Dict, Optional\n\n\nclass RobustnessStack:\n    \"\"\"Implements workflow-wide retry and backoff heuristics.\"\"\"\n\n    def __init__(\n        self,\n        context: Any,\n        debug_mode: bool = False,\n        *,\n        max_retries: Optional[int] = None,\n        base_backoff: Optional[float] = None,\n        max_backoff: Optional[floa...",
-  "creation_timestamp": "2025-12-03T06:21:22.502817",
+  "creation_timestamp": "2025-12-03T06:51:56.130766",
   "version": "1.0"
 }

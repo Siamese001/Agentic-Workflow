@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "08ce44a737afdefc66f5e278cd051f0f7181ac0d4fe1e18c0e6599b8788f107b",
-    "scan_timestamp": "2025-12-03T06:21:11.356783"
+    "scan_timestamp": "2025-12-03T06:51:45.168314"
   },
   "content_preview": "# FILE: 10_10/prompt_builder.py\n\"\"\"\nPrompt Builder Layer (v10_10 \u00b7 Phase 3)\n=======================================\n\nThis module builds PromptInstance objects for all major agents:\n\n    \u2022 Strategy reasoning\n    \u2022 Retrieval evidence / RAG reasoning\n    \u2022 HYDE query expansion\n    \u2022 Drafting\n    \u2022 QA\n    \u2022 Safety\n\nIt:\n\n    \u2022 Enforces prompt ACL metadata (layer / agent / model tier).\n    \u2022 Routes all prompt construction through the central prompt registry\n      defined in ``prompt_system_v10_10.py``...",
-  "creation_timestamp": "2025-12-03T06:21:18.824320",
+  "creation_timestamp": "2025-12-03T06:51:52.453530",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a4923b087375daba7bea578a3eef8e6ead1ef9f6a28aa7fe09badd03ba63e84b",
-    "scan_timestamp": "2025-12-03T06:21:11.415484"
+    "scan_timestamp": "2025-12-03T06:51:45.229727"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"resume,jd,expect_keys\", [\n    (\"Jane Doe\",\"Chief AI Officer\", [\"summary\"]),\n    (\"John Smith\",\"Director, AI\", [\"summary\"]),\n    (\"LowConf\",\"Analyst\", [\"events\"]),\n    (\"Ambiguous\",\"Unknown\", [\"events\"]),\n])\ndef test_full_run_variants(resume,jd,expect_keys):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\": resume, \"jd\": jd})\n    for k in expect_keys: assert k in out\n\n@pytest.mark.parametrize(\"scenario\", [\"b...",
-  "creation_timestamp": "2025-12-03T06:21:23.668895",
+  "creation_timestamp": "2025-12-03T06:51:57.304735",
   "version": "1.0"
 }
