@@ -1,3147 +1,2654 @@
-# unified_structure_subatomic.yaml
 agentic_core:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          check_registry_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
         __init__.py: null
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_registry_context.py: null
-            build_filters.py: null
-            __init__.py: null
-          __init__.py: null
         understand_request:
+          __init__.py: null
           build_core_query.py: null
-          parse_registry_intent.py: null
           extract_layer_parameters.py: null
-          __init__.py: null
-          retrieve_core_context.py: null
-          query_core_store.py: null
           fetch_core_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-            __init__.py: null
+          parse_registry_intent.py: null
+          query_core_store.py: null
+          retrieve_core_context.py: null
+        utility_prepare_information:
           __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_registry_policy.py: null
-            enforce_boundaries.py: null
-            __init__.py: null
+          build_filters.py: null
+          format_registry_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
           __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-            __init__.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
       check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-            __init__.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-            __init__.py: null
-          __init__.py: null
         __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          __init__.py: null
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          __init__.py: null
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          __init__.py: null
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
       find_problems:
         __init__.py: null
         update_memory:
-          inspect_core_state.py: null
-          capture_core_diagnostics.py: null
-          log_core_inspection.py: null
           __init__.py: null
+          capture_core_diagnostics.py: null
+          inspect_core_state.py: null
+          log_core_inspection.py: null
     P3_aggregate:
+      __init__.py: null
       pick_best_result:
         __init__.py: null
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-            __init__.py: null
-          __init__.py: null
         understand_request:
-          rank_core_components.py: null
-          apply_core_algorithm.py: null
-          sort_core_results.py: null
           __init__.py: null
-      __init__.py: null
+          apply_core_algorithm.py: null
+          rank_core_components.py: null
+          sort_core_results.py: null
+        refinement_adjust_scores:
+          __init__.py: null
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          __init__.py: null
+          aggregate_core_state.py: null
+          consolidate_core_updates.py: null
+          merge_core_contexts.py: null
+        utility_prepare_information:
+          __init__.py: null
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
         __init__.py: null
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-            __init__.py: null
-          __init__.py: null
         use_a_tool:
+          __init__.py: null
           execute_core_action.py: null
           invoke_core_service.py: null
           process_core_response.py: null
+        routing_retry_task:
           __init__.py: null
-      update_state:
-        __init__.py: null
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-            __init__.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_core_state.py: null
-          merge_core_contexts.py: null
-          consolidate_core_updates.py: null
-          __init__.py: null
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-            __init__.py: null
-          __init__.py: null
         __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
       manage_costs:
         __init__.py: null
         update_memory:
-          update_core_budget.py: null
-          track_core_usage.py: null
-          enforce_core_limits.py: null
           __init__.py: null
+          enforce_core_limits.py: null
+          track_core_usage.py: null
+          update_core_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
       __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          __init__.py: null
+          execute_core_execution.py: null
+          invoke_core_tool.py: null
+          perform_core_operation.py: null
+        utility_prepare_information:
+          __init__.py: null
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
         __init__.py: null
         understand_request:
-          orchestrate_core_planning.py: null
+          __init__.py: null
           coordinate_core_queries.py: null
           manage_core_context.py: null
-          __init__.py: null
-      __init__.py: null
+          orchestrate_core_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
         __init__.py: null
-        routing:
-          retry_task:
-            retry_orchestration_operations.py: null
-            handle_orchestration_failures.py: null
-            implement_orchestration_fallback.py: null
-            __init__.py: null
-          __init__.py: null
         use_a_tool:
+          __init__.py: null
+          call_orchestration_api.py: null
           dispatch_orchestration_tools.py: null
           invoke_orchestration_service.py: null
-          call_orchestration_api.py: null
+        routing_retry_task:
           __init__.py: null
-      __init__.py: null
+          handle_orchestration_failures.py: null
+          implement_orchestration_fallback.py: null
+          retry_orchestration_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-            __init__.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        __init__.py: null
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-            __init__.py: null
+        policy_check_safety:
           __init__.py: null
-        use_a_tool:
-          execute_core_execution.py: null
-          perform_core_operation.py: null
-          invoke_core_tool.py: null
-          __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
         __init__.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-            __init__.py: null
-          __init__.py: null
         understand_request:
-          retrieve_core_memory.py: null
-          query_core_state.py: null
+          __init__.py: null
           fetch_core_history.py: null
+          query_core_state.py: null
+          retrieve_core_memory.py: null
+        embedding_compare_meaning:
           __init__.py: null
-      __init__.py: null
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-            __init__.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-            __init__.py: null
-          __init__.py: null
         __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          __init__.py: null
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
       manage_costs:
         __init__.py: null
         update_memory:
+          __init__.py: null
+          enforce_safety_budget.py: null
           track_safety_cost.py: null
           update_safety_usage.py: null
-          enforce_safety_budget.py: null
-          __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  __init__.py: null
-apps_rg:
-  L1_cognition:
-    P1_retrieve:
-      get_info:
-        utility:
-          prepare_information:
-            prepare_resume_context.py: null
-            format_metadata.py: null
-            build_search_filters.py: null
-          __init__.py: null
-        understand_request:
-          parse_job_description.py: null
-          extract_resume_requirements.py: null
-          build_skill_query.py: null
-          retrieve_resume_history.py: null
-          query_past_generations.py: null
-          fetch_user_preferences.py: null
-        embedding:
-          compare_meaning:
-            search_similar_resumes.py: null
-            match_job_patterns.py: null
-            find_relevant_templates.py: null
-          __init__.py: null
-        __init__.py: null
-      check_resume_rules:
-        policy:
-          check_safety:
-            validate_resume_constraints.py: null
-            check_resume_policy.py: null
-            enforce_resume_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      vectorize_resume:
-        embedding:
-          compare_meaning:
-            embed_job_description.py: null
-            embed_resume_sections.py: null
-            compute_skill_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_skill_scores.py: null
-            weight_experience_match.py: null
-            calibrate_fit_score.py: null
-          __init__.py: null
-        __init__.py: null
-      sjob_fit:
-        understand_request:
-          rank_resume_sections.py: null
-          prioritize_achievements.py: null
-          order_skills_by_relevance.py: null
-        __init__.py: null
-      check_resume_format:
-        policy:
-          check_safety:
-            validate_generated_content.py: null
-            check_output_quality.py: null
-            enforce_length_limits.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_content_relevance.py: null
-            evaluate_writing_quality.py: null
-            sresume_effectiveness.py: null
-          __init__.py: null
-        __init__.py: null
-      find_resume_problems:
-        update_memory:
-          inspect_resume_quality.py: null
-          diagnose_generation_issues.py: null
-          log_orchestration_metrics.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      pick_resume_content:
-        refinement:
-          adjust_scores:
-            refine_resume_ranking.py: null
-            adjust_section_weights.py: null
-            optimize_content_order.py: null
-          __init__.py: null
-        __init__.py: null
-      check_resume_format:
-        policy:
-          check_safety:
-            validate_resume_schema.py: null
-            check_resume_compliance.py: null
-            enforce_resume_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      use_tools:
-        routing:
-          retry_task:
-            retry_generation_failures.py: null
-            handle_api_timeouts.py: null
-            implement_fallback_strategy.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_resume_generation.py: null
-          generate_summary_section.py: null
-          create_experience_bullets.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            snapshot_resume_state.py: null
-            serialize_generation_context.py: null
-            format_data.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_resume_state.py: null
-          merge_generation_history.py: null
-          update_user_profile.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_resume_rules:
-        policy:
-          check_safety:
-            apply_resume_safety_policy.py: null
-            filter_inappropriate_content.py: null
-            validate_ethical_standards.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_content_risk.py: null
-            compute_safety_score.py: null
-            evaluate_compliance_level.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_resume_costs:
-        update_memory:
-          track_resume_generation_cost.py: null
-          update_token_usage.py: null
-          enforce_budget_limits.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L3_orchestration:
-    P1_retrieve:
-      get_info:
-        understand_request:
-          orchestrate_resume_planning.py: null
-          coordinate_section_generation.py: null
-          manage_content_workflow.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      use_tools:
-        routing:
-          retry_task:
-            retry_generation_failures.py: null
-            handle_service_errors.py: null
-            implement_fallback_templates.py: null
-          __init__.py: null
-        use_a_tool:
-          dispatch_resume_tools.py: null
-          invoke_generation_service.py: null
-          call_formatting_api.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      find_resume_problems:
-        update_memory:
-          inspect_resume_quality.py: null
-          diagnose_personalization_issues.py: null
-          log_orchestration_metrics.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_resume_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P1_retrieve:
-      get_info:
-        understand_request:
-          orchestrate_execution_planning.py: null
-          coordinate_execution_queries.py: null
-          manage_execution_context.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_generation_payload.py: null
-            format_llm_prompt.py: null
-            serialize_data.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_resume_generation.py: null
-          generate_summary_section.py: null
-          create_experience_bullets.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_resume_format:
-        policy:
-          check_safety:
-            validate_generated_content.py: null
-            check_output_quality.py: null
-            enforce_length_limits.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_content_relevance.py: null
-            evaluate_writing_quality.py: null
-            sresume_effectiveness.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_resume_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L4_memory:
-    P1_retrieve:
-      get_info:
-        embedding:
-          compare_meaning:
-            search_similar_resumes.py: null
-            match_job_patterns.py: null
-            find_relevant_templates.py: null
-          __init__.py: null
-        understand_request:
-          retrieve_resume_history.py: null
-          query_past_generations.py: null
-          fetch_user_preferences.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_resume_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L5_safety:
-    P4_safety:
-      check_resume_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_resume_costs:
-        update_memory:
-          track_safety_cost.py: null
-          update_safety_usage.py: null
-          enforce_safety_budget.py: null
-        __init__.py: null
-      __init__.py: null
     __init__.py: null
   __init__.py: null
 apps_lic:
   L1_cognition:
     P1_retrieve:
-      get_info:
-        utility:
-          prepare_information:
-            prepare_outreach_context.py: null
-            format_metadata.py: null
-            build_message_filters.py: null
-          __init__.py: null
-        understand_request:
-          parse_outreach_target.py: null
-          extract_contact_info.py: null
-          build_personalization_query.py: null
-          retrieve_outreach_history.py: null
-          query_past_campaigns.py: null
-          fetch_recipient_interactions.py: null
-        embedding:
-          compare_meaning:
-            search_similar_messages.py: null
-            match_recipient_patterns.py: null
-            find_effective_templates.py: null
-          __init__.py: null
-        __init__.py: null
+      __init__.py: null
       check_outreach_rules:
-        policy:
-          check_safety:
-            validate_outreach_constraints.py: null
-            check_outreach_policy.py: null
-            enforce_outreach_boundaries.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      vectorize_message:
-        embedding:
-          compare_meaning:
-            embed_recipient_profile.py: null
-            embed_message_template.py: null
-            compute_personalization_match.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_relevance_scores.py: null
-            weight_personalization_factors.py: null
-            calibrate_engagement_score.py: null
-          __init__.py: null
+        policy_check_safety:
+          check_outreach_policy.py: null
+          enforce_outreach_boundaries.py: null
+          validate_outreach_constraints.py: null
+      get_info:
         __init__.py: null
-      sperson:
         understand_request:
-          rank_message_variants.py: null
-          prioritize_talking_points.py: null
-          order_call_to_actions.py: null
-        __init__.py: null
-      check_message_format:
-        policy:
-          check_safety:
-            validate_generated_message.py: null
-            check_message_quality.py: null
-            enforce_tone_guidelines.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_message_relevance.py: null
-            evaluate_personalization_quality.py: null
-            sengagement_potential.py: null
-          __init__.py: null
-        __init__.py: null
-      find_msg_problems:
-        update_memory:
-          inspect_message_quality.py: null
-          diagnose_personalization_issues.py: null
-          log_campaign_metrics.py: null
-        __init__.py: null
+          build_personalization_query.py: null
+          extract_contact_info.py: null
+          fetch_recipient_interactions.py: null
+          parse_outreach_target.py: null
+          query_past_campaigns.py: null
+          retrieve_outreach_history.py: null
+        utility_prepare_information:
+          build_message_filters.py: null
+          format_metadata.py: null
+          prepare_outreach_context.py: null
+        embedding_compare_meaning:
+          find_effective_templates.py: null
+          match_recipient_patterns.py: null
+          search_similar_messages.py: null
+    P2_inspect:
       __init__.py: null
-    P3_aggregate:
-      pick_message:
-        refinement:
-          adjust_scores:
-            refine_message_ranking.py: null
-            adjust_tone_weights.py: null
-            optimize_message_structure.py: null
-          __init__.py: null
-        __init__.py: null
       check_message_format:
-        policy:
-          check_safety:
-            validate_message_schema.py: null
-            check_message_compliance.py: null
-            enforce_message_contracts.py: null
-          __init__.py: null
         __init__.py: null
-      use_tools:
-        routing:
-          retry_task:
-            retry_generation_failures.py: null
-            handle_service_errors.py: null
-            implement_fallback_templates.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_message_generation.py: null
-          generate_subject_line.py: null
-          create_message_body.py: null
+        policy_check_safety:
+          check_message_quality.py: null
+          enforce_tone_guidelines.py: null
+          validate_generated_message.py: null
+        semantic_adjust_scores:
+          assess_message_relevance.py: null
+          evaluate_personalization_quality.py: null
+          sengagement_potential.py: null
+      find_msg_problems:
         __init__.py: null
+        update_memory:
+          diagnose_personalization_issues.py: null
+          inspect_message_quality.py: null
+          log_campaign_metrics.py: null
+      sperson:
+        __init__.py: null
+        understand_request:
+          order_call_to_actions.py: null
+          prioritize_talking_points.py: null
+          rank_message_variants.py: null
+      vectorize_message:
+        __init__.py: null
+        embedding_compare_meaning:
+          compute_personalization_match.py: null
+          embed_message_template.py: null
+          embed_recipient_profile.py: null
+        semantic_adjust_scores:
+          calibrate_engagement_score.py: null
+          normalize_relevance_scores.py: null
+          weight_personalization_factors.py: null
+    P3_aggregate:
+      __init__.py: null
+      check_message_format:
+        __init__.py: null
+        policy_check_safety:
+          check_message_compliance.py: null
+          enforce_message_contracts.py: null
+          validate_message_schema.py: null
+      pick_message:
+        __init__.py: null
+        refinement_adjust_scores:
+          adjust_tone_weights.py: null
+          optimize_message_structure.py: null
+          refine_message_ranking.py: null
       update_outreach:
-        utility:
-          prepare_information:
-            snapshot_campaign_state.py: null
-            serialize_outreach_context.py: null
-            format_data.py: null
-          __init__.py: null
+        __init__.py: null
         update_memory:
           aggregate_campaign_state.py: null
           merge_outreach_history.py: null
           update_recipient_profiles.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_outreach_rules:
-        policy:
-          check_safety:
-            apply_outreach_safety_policy.py: null
-            filter_inappropriate_content.py: null
-            validate_ethical_standards.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_content_risk.py: null
-            compute_safety_score.py: null
-            evaluate_compliance_level.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_outreach_costs:
-        update_memory:
-          track_outreach_generation_cost.py: null
-          update_token_usage.py: null
-          enforce_budget_limits.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L3_orchestration:
-    P1_retrieve:
-      get_info:
-        understand_request:
-          orchestrate_outreach_planning.py: null
-          coordinate_message_generation.py: null
-          manage_campaign_workflow.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
+        utility_prepare_information:
+          format_data.py: null
+          serialize_outreach_context.py: null
+          snapshot_campaign_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_generation_failures.py: null
-            handle_service_errors.py: null
-            implement_fallback_templates.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
-          dispatch_outreach_tools.py: null
-          invoke_message_service.py: null
-          call_personalization_api.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      find_msg_problems:
-        update_memory:
-          inspect_message_quality.py: null
-          diagnose_personalization_issues.py: null
-          log_campaign_metrics.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_outreach_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P1_retrieve:
-      get_info:
-        understand_request:
-          orchestrate_execution_planning.py: null
-          coordinate_execution_queries.py: null
-          manage_execution_context.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_message_payload.py: null
-            format_personalization_prompt.py: null
-            serialize_data.py: null
-          __init__.py: null
-        use_a_tool:
+          create_message_body.py: null
           execute_message_generation.py: null
           generate_subject_line.py: null
-          create_message_body.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_message_format:
-        policy:
-          check_safety:
-            validate_generated_message.py: null
-            check_message_quality.py: null
-            enforce_tone_guidelines.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_message_relevance.py: null
-            evaluate_personalization_quality.py: null
-            sengagement_potential.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_service_errors.py: null
+          implement_fallback_templates.py: null
+          retry_generation_failures.py: null
     P4_safety:
-      check_outreach_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
-    __init__.py: null
-  L4_memory:
-    P1_retrieve:
-      get_info:
-        embedding:
-          compare_meaning:
-            search_similar_messages.py: null
-            match_recipient_patterns.py: null
-            find_effective_templates.py: null
-          __init__.py: null
-        understand_request:
-          retrieve_outreach_history.py: null
-          query_past_campaigns.py: null
-          fetch_recipient_interactions.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
       check_outreach_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L5_safety:
-    P4_safety:
-      check_outreach_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        __init__.py: null
+        policy_check_safety:
+          apply_outreach_safety_policy.py: null
+          filter_inappropriate_content.py: null
+          validate_ethical_standards.py: null
+        semantic_adjust_scores:
+          assess_content_risk.py: null
+          compute_safety_score.py: null
+          evaluate_compliance_level.py: null
       manage_outreach_costs:
+        __init__.py: null
         update_memory:
-          track_safety_cost.py: null
-          update_safety_usage.py: null
-          enforce_safety_budget.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  __init__.py: null
-shared:
-  L1_cognition:
-    P1_retrieve:
-      get_info:
-        utility:
-          prepare_information:
-            prepare_context.py: null
-            format_metadata.py: null
-            build_generic_filters.py: null
-          __init__.py: null
-        understand_request:
-          parse_generic_query.py: null
-          extract_intent_parameters.py: null
-          build_universal_search.py: null
-          retrieve_shared_memory.py: null
-          query_common_state.py: null
-          fetch_universal_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_generic_patterns.py: null
-            find_universal_context.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      convert:
-        embedding:
-          compare_meaning:
-            embed_generic_content.py: null
-            compute_universal_similarity.py: null
-            calculate_scores.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_generic_scores.py: null
-            apply_universal_weights.py: null
-            calibrate_metrics.py: null
-          __init__.py: null
-        __init__.py: null
-      pick_best_result:
-        understand_request:
-          rank_generic_components.py: null
-          prioritize_shared_elements.py: null
-          order_universal_results.py: null
-        __init__.py: null
-      check_format:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_generic_quality.py: null
-            evaluate_universal_output.py: null
-            seffectiveness.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_shared_state.py: null
-          diagnose_common_issues.py: null
-          log_universal_metrics.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_generic_ranking.py: null
-            adjust_universal_weights.py: null
-            optimize_results.py: null
-          __init__.py: null
-        __init__.py: null
-      check_format:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_common_failures.py: null
-            implement_universal_fallback.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_shared_action.py: null
-          perform_generic_operation.py: null
-          invoke_universal_tool.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            snapshot_state.py: null
-            serialize_common_context.py: null
-            format_data.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_shared_state.py: null
-          merge_common_contexts.py: null
-          update_universal_profile.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            filter_universal_content.py: null
-            validate_common_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_risk.py: null
-            compute_universal_safety_score.py: null
-            evaluate_common_compliance.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          track_shared_cost.py: null
-          update_universal_usage.py: null
-          enforce_shared_budget.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L3_orchestration:
-    P1_retrieve:
-      get_info:
-        understand_request:
-          orchestrate_shared_planning.py: null
-          coordinate_generic_workflow.py: null
-          manage_universal_context.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_common_failures.py: null
-            implement_universal_fallback.py: null
-          __init__.py: null
-        use_a_tool:
-          dispatch_shared_tools.py: null
-          invoke_common_services.py: null
-          call_universal_apis.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          enforce_budget_limits.py: null
+          track_outreach_generation_cost.py: null
+          update_token_usage.py: null
     __init__.py: null
   L2_execution:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_execution_planning.py: null
           coordinate_execution_queries.py: null
           manage_execution_context.py: null
-        __init__.py: null
-      __init__.py: null
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_shared_action.py: null
-          perform_generic_operation.py: null
-          invoke_universal_tool.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_execution_planning.py: null
     P2_inspect:
-      check_format:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_generic_quality.py: null
-            evaluate_universal_output.py: null
-            seffectiveness.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_message_format:
+        __init__.py: null
+        policy_check_safety:
+          check_message_quality.py: null
+          enforce_tone_guidelines.py: null
+          validate_generated_message.py: null
+        semantic_adjust_scores:
+          assess_message_relevance.py: null
+          evaluate_personalization_quality.py: null
+          sengagement_potential.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          create_message_body.py: null
+          execute_message_generation.py: null
+          generate_subject_line.py: null
+        utility_prepare_information:
+          format_personalization_prompt.py: null
+          prepare_message_payload.py: null
+          serialize_data.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_outreach_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
+    __init__.py: null
+  L3_orchestration:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          coordinate_message_generation.py: null
+          manage_campaign_workflow.py: null
+          orchestrate_outreach_planning.py: null
+    P2_inspect:
+      __init__.py: null
+      find_msg_problems:
+        __init__.py: null
+        update_memory:
+          diagnose_personalization_issues.py: null
+          inspect_message_quality.py: null
+          log_campaign_metrics.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          call_personalization_api.py: null
+          dispatch_outreach_tools.py: null
+          invoke_message_service.py: null
+        routing_retry_task:
+          handle_service_errors.py: null
+          implement_fallback_templates.py: null
+          retry_generation_failures.py: null
+    P4_safety:
+      __init__.py: null
+      check_outreach_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_generic_patterns.py: null
-            find_universal_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_shared_memory.py: null
-          query_common_state.py: null
-          fetch_universal_history.py: null
-        __init__.py: null
-      __init__.py: null
+          fetch_recipient_interactions.py: null
+          query_past_campaigns.py: null
+          retrieve_outreach_history.py: null
+        embedding_compare_meaning:
+          find_effective_templates.py: null
+          match_recipient_patterns.py: null
+          search_similar_messages.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_outreach_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
+      __init__.py: null
+      check_outreach_rules:
         __init__.py: null
-      manage_costs:
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+      manage_outreach_costs:
+        __init__.py: null
         update_memory:
+          enforce_safety_budget.py: null
           track_safety_cost.py: null
           update_safety_usage.py: null
-          enforce_safety_budget.py: null
-        __init__.py: null
+    __init__.py: null
+  __init__.py: null
+apps_rg:
+  L1_cognition:
+    P1_retrieve:
       __init__.py: null
+      check_resume_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_resume_policy.py: null
+          enforce_resume_boundaries.py: null
+          validate_resume_constraints.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          build_skill_query.py: null
+          extract_resume_requirements.py: null
+          fetch_user_preferences.py: null
+          parse_job_description.py: null
+          query_past_generations.py: null
+          retrieve_resume_history.py: null
+        utility_prepare_information:
+          build_search_filters.py: null
+          format_metadata.py: null
+          prepare_resume_context.py: null
+        embedding_compare_meaning:
+          find_relevant_templates.py: null
+          match_job_patterns.py: null
+          search_similar_resumes.py: null
+    P2_inspect:
+      __init__.py: null
+      check_resume_format:
+        __init__.py: null
+        policy_check_safety:
+          check_output_quality.py: null
+          enforce_length_limits.py: null
+          validate_generated_content.py: null
+        semantic_adjust_scores:
+          assess_content_relevance.py: null
+          evaluate_writing_quality.py: null
+          sresume_effectiveness.py: null
+      find_resume_problems:
+        __init__.py: null
+        update_memory:
+          diagnose_generation_issues.py: null
+          inspect_resume_quality.py: null
+          log_orchestration_metrics.py: null
+      sjob_fit:
+        __init__.py: null
+        understand_request:
+          order_skills_by_relevance.py: null
+          prioritize_achievements.py: null
+          rank_resume_sections.py: null
+      vectorize_resume:
+        __init__.py: null
+        embedding_compare_meaning:
+          compute_skill_similarity.py: null
+          embed_job_description.py: null
+          embed_resume_sections.py: null
+        semantic_adjust_scores:
+          calibrate_fit_score.py: null
+          normalize_skill_scores.py: null
+          weight_experience_match.py: null
+    P3_aggregate:
+      __init__.py: null
+      check_resume_format:
+        __init__.py: null
+        policy_check_safety:
+          check_resume_compliance.py: null
+          enforce_resume_contracts.py: null
+          validate_resume_schema.py: null
+      pick_resume_content:
+        __init__.py: null
+        refinement_adjust_scores:
+          adjust_section_weights.py: null
+          optimize_content_order.py: null
+          refine_resume_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_resume_state.py: null
+          merge_generation_history.py: null
+          update_user_profile.py: null
+        utility_prepare_information:
+          format_data.py: null
+          serialize_generation_context.py: null
+          snapshot_resume_state.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          create_experience_bullets.py: null
+          execute_resume_generation.py: null
+          generate_summary_section.py: null
+        routing_retry_task:
+          handle_api_timeouts.py: null
+          implement_fallback_strategy.py: null
+          retry_generation_failures.py: null
+    P4_safety:
+      __init__.py: null
+      check_resume_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_resume_safety_policy.py: null
+          filter_inappropriate_content.py: null
+          validate_ethical_standards.py: null
+        semantic_adjust_scores:
+          assess_content_risk.py: null
+          compute_safety_score.py: null
+          evaluate_compliance_level.py: null
+      manage_resume_costs:
+        __init__.py: null
+        update_memory:
+          enforce_budget_limits.py: null
+          track_resume_generation_cost.py: null
+          update_token_usage.py: null
+    __init__.py: null
+  L2_execution:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          coordinate_execution_queries.py: null
+          manage_execution_context.py: null
+          orchestrate_execution_planning.py: null
+    P2_inspect:
+      __init__.py: null
+      check_resume_format:
+        __init__.py: null
+        policy_check_safety:
+          check_output_quality.py: null
+          enforce_length_limits.py: null
+          validate_generated_content.py: null
+        semantic_adjust_scores:
+          assess_content_relevance.py: null
+          evaluate_writing_quality.py: null
+          sresume_effectiveness.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          create_experience_bullets.py: null
+          execute_resume_generation.py: null
+          generate_summary_section.py: null
+        utility_prepare_information:
+          format_llm_prompt.py: null
+          prepare_generation_payload.py: null
+          serialize_data.py: null
+    P4_safety:
+      __init__.py: null
+      check_resume_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
+    __init__.py: null
+  L3_orchestration:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          coordinate_section_generation.py: null
+          manage_content_workflow.py: null
+          orchestrate_resume_planning.py: null
+    P2_inspect:
+      __init__.py: null
+      find_resume_problems:
+        __init__.py: null
+        update_memory:
+          diagnose_personalization_issues.py: null
+          inspect_resume_quality.py: null
+          log_orchestration_metrics.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          call_formatting_api.py: null
+          dispatch_resume_tools.py: null
+          invoke_generation_service.py: null
+        routing_retry_task:
+          handle_service_errors.py: null
+          implement_fallback_templates.py: null
+          retry_generation_failures.py: null
+    P4_safety:
+      __init__.py: null
+      check_resume_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
+    __init__.py: null
+  L4_memory:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          fetch_user_preferences.py: null
+          query_past_generations.py: null
+          retrieve_resume_history.py: null
+        embedding_compare_meaning:
+          find_relevant_templates.py: null
+          match_job_patterns.py: null
+          search_similar_resumes.py: null
+    P4_safety:
+      __init__.py: null
+      check_resume_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
+    __init__.py: null
+  L5_safety:
+    P4_safety:
+      __init__.py: null
+      check_resume_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+      manage_resume_costs:
+        __init__.py: null
+        update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 config:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_registry_context.py: null
-            build_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_layer_parameters.py: null
+          fetch_history.py: null
           load_planning.py: null
           parse_registry_settings.py: null
-          extract_layer_parameters.py: null
-          retrieve_context.py: null
           query_store.py: null
-          fetch_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_context.py: null
+        utility_prepare_information:
+          build_filters.py: null
+          format_registry_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+      check_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          capture_diagnostics.py: null
+          inspect_state.py: null
+          log_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_algorithm.py: null
+          rank_components.py: null
+          sort_results.py: null
+        refinement_adjust_scores:
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          update_config_budget.py: null
-          track_config_usage.py: null
-          enforce_config_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_config_limits.py: null
+          track_config_usage.py: null
+          update_config_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_config_execution.py: null
+          invoke_config_tool.py: null
+          perform_config_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_config_planning.py: null
           coordinate_config_queries.py: null
           manage_config_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_config_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_failures.py: null
-            implement_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_config_api.py: null
           dispatch_config_tools.py: null
           invoke_service.py: null
-          call_config_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_failures.py: null
+          implement_fallback.py: null
+          retry_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_config_execution.py: null
-          perform_config_operation.py: null
-          invoke_config_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_config_memory.py: null
-          query_config_state.py: null
           fetch_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_config_state.py: null
+          retrieve_config_memory.py: null
+        embedding_compare_meaning:
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_config_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_config_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 data:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_context.py: null
-            build_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_parameters.py: null
+          fetch_history.py: null
           load_planning.py: null
           parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
           query_store.py: null
-          fetch_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_context.py: null
+        utility_prepare_information:
+          build_filters.py: null
+          format_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+      check_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          capture_diagnostics.py: null
+          inspect_state.py: null
+          log_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_algorithm.py: null
+          rank_components.py: null
+          sort_results.py: null
+        refinement_adjust_scores:
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          update_data_budget.py: null
-          track_data_usage.py: null
-          enforce_data_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_data_limits.py: null
+          track_data_usage.py: null
+          update_data_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_data_execution.py: null
+          invoke_data_tool.py: null
+          perform_data_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_data_planning.py: null
           coordinate_data_queries.py: null
           manage_data_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_data_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_failures.py: null
-            implement_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_data_api.py: null
           dispatch_data_tools.py: null
           invoke_service.py: null
-          call_data_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_failures.py: null
+          implement_fallback.py: null
+          retry_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_data_execution.py: null
-          perform_data_operation.py: null
-          invoke_data_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_data_memory.py: null
-          query_data_state.py: null
           fetch_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_data_state.py: null
+          retrieve_data_memory.py: null
+        embedding_compare_meaning:
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_data_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_data_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 observability:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_context.py: null
-            build_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_parameters.py: null
+          fetch_history.py: null
           load_planning.py: null
           parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
           query_store.py: null
-          fetch_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_context.py: null
+        utility_prepare_information:
+          build_filters.py: null
+          format_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+      check_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          capture_diagnostics.py: null
+          inspect_state.py: null
+          log_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_algorithm.py: null
+          rank_components.py: null
+          sort_results.py: null
+        refinement_adjust_scores:
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          update_observability_budget.py: null
-          track_observability_usage.py: null
-          enforce_observability_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_observability_limits.py: null
+          track_observability_usage.py: null
+          update_observability_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_observability_execution.py: null
+          invoke_observability_tool.py: null
+          perform_observability_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_observability_planning.py: null
           coordinate_observability_queries.py: null
           manage_observability_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_observability_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_failures.py: null
-            implement_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_observability_api.py: null
           dispatch_observability_tools.py: null
           invoke_service.py: null
-          call_observability_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_failures.py: null
+          implement_fallback.py: null
+          retry_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_observability_execution.py: null
-          perform_observability_operation.py: null
-          invoke_observability_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_observability_memory.py: null
-          query_observability_state.py: null
           fetch_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_observability_state.py: null
+          retrieve_observability_memory.py: null
+        embedding_compare_meaning:
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_observability_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_observability_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 prompt_governance:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_prompt_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_prompt_policy.py: null
+          enforce_prompt_boundaries.py: null
+          validate_prompt_constraints.py: null
       get_prompt_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_prompt_context.py: null
-            build_prompt_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_prompt_parameters.py: null
+          fetch_prompt_history.py: null
           load_prompt_planning.py: null
           parse_prompt_settings.py: null
-          extract_prompt_parameters.py: null
-          retrieve_prompt_context.py: null
           query_prompt_store.py: null
-          fetch_prompt_history.py: null
-        embedding:
-          compare_meaning:
-            search_prompt_vectors.py: null
-            match_prompt_context.py: null
-            retrieve_prompt_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_prompt_rules:
-        policy:
-          check_safety:
-            validate_prompt_constraints.py: null
-            check_prompt_policy.py: null
-            enforce_prompt_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_prompt_context.py: null
+        utility_prepare_information:
+          build_prompt_filters.py: null
+          format_prompt_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_prompt_context.py: null
+          retrieve_prompt_similarity.py: null
+          search_prompt_vectors.py: null
     P2_inspect:
-      convert_prompt_content:
-        embedding:
-          compare_meaning:
-            compute_prompt_embeddings.py: null
-            normalize_prompt_vectors.py: null
-            calculate_prompt_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_prompt_scores.py: null
-            apply_prompt_weights.py: null
-            compute_prompt_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_prompt_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_prompt_quality.py: null
-            assess_prompt_confidence.py: null
-            compute_prompt_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_prompt_problems:
-        update_memory:
-          inspect_prompt_state.py: null
-          capture_prompt_diagnostics.py: null
-          log_prompt_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_prompt_ranking.py: null
-            adjust_prompt_weights.py: null
-            optimize_prompt_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_prompt_components.py: null
-          apply_prompt_algorithm.py: null
-          sort_prompt_results.py: null
+      check_prompt_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_prompt_confidence.py: null
+          compute_prompt_validation.py: null
+          validate_prompt_quality.py: null
+      convert_prompt_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_prompt_similarity.py: null
+          compute_prompt_embeddings.py: null
+          normalize_prompt_vectors.py: null
+        semantic_adjust_scores:
+          apply_prompt_weights.py: null
+          compute_prompt_confidence.py: null
+          normalize_prompt_scores.py: null
+      find_prompt_problems:
+        __init__.py: null
+        update_memory:
+          capture_prompt_diagnostics.py: null
+          inspect_prompt_state.py: null
+          log_prompt_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_prompt_algorithm.py: null
+          rank_prompt_components.py: null
+          sort_prompt_results.py: null
+        refinement_adjust_scores:
+          adjust_prompt_weights.py: null
+          optimize_prompt_order.py: null
+          refine_prompt_ranking.py: null
+      update_prompt_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_prompt_tools:
-        routing:
-          retry_task:
-            implement_prompt_retry.py: null
-            apply_prompt_backoff.py: null
-            handle_prompt_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_prompt_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_prompt_backoff.py: null
+          handle_prompt_failures.py: null
+          implement_prompt_retry.py: null
     P4_safety:
-      check_prompt_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_prompt_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_prompt_costs:
-        update_memory:
-          update_prompt_budget.py: null
-          track_prompt_usage.py: null
-          enforce_prompt_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_prompt_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_prompt_filters.py: null
+          validate_ethics.py: null
+      manage_prompt_costs:
+        __init__.py: null
+        update_memory:
+          enforce_prompt_limits.py: null
+          track_prompt_usage.py: null
+          update_prompt_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_prompt_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_prompt_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_prompt_execution.py: null
+          invoke_prompt_tool.py: null
+          perform_prompt_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_prompt_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_prompt_info:
+        __init__.py: null
         understand_request:
-          orchestrate_prompt_planning.py: null
           coordinate_prompt_queries.py: null
           manage_prompt_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_prompt_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_prompt_tools:
-        routing:
-          retry_task:
-            retry_prompt_operations.py: null
-            handle_prompt_failures.py: null
-            implement_prompt_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_prompt_api.py: null
           dispatch_prompt_tools.py: null
           invoke_service.py: null
-          call_prompt_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_prompt_failures.py: null
+          implement_prompt_fallback.py: null
+          retry_prompt_operations.py: null
     P4_safety:
+      __init__.py: null
       check_prompt_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_prompt_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_prompt_execution.py: null
-          perform_prompt_operation.py: null
-          invoke_prompt_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_prompt_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_prompt_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_prompt_info:
-        embedding:
-          compare_meaning:
-            search_prompt_vectors.py: null
-            match_prompt_patterns.py: null
-            find_prompt_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_prompt_memory.py: null
-          query_prompt_state.py: null
           fetch_prompt_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_prompt_state.py: null
+          retrieve_prompt_memory.py: null
+        embedding_compare_meaning:
+          find_prompt_context.py: null
+          match_prompt_patterns.py: null
+          search_prompt_vectors.py: null
     P4_safety:
-      check_prompt_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_prompt_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_prompt_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_prompt_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_prompt_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_prompt_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 runtime:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_context.py: null
-            build_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_parameters.py: null
+          fetch_history.py: null
           load_planning.py: null
           parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
           query_store.py: null
-          fetch_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_context.py: null
+        utility_prepare_information:
+          build_filters.py: null
+          format_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+      check_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          capture_diagnostics.py: null
+          inspect_state.py: null
+          log_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_algorithm.py: null
+          rank_components.py: null
+          sort_results.py: null
+        refinement_adjust_scores:
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          update_runtime_budget.py: null
-          track_runtime_usage.py: null
-          enforce_runtime_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_runtime_limits.py: null
+          track_runtime_usage.py: null
+          update_runtime_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_runtime_execution.py: null
+          invoke_runtime_tool.py: null
+          perform_runtime_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_runtime_planning.py: null
           coordinate_runtime_queries.py: null
           manage_runtime_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_runtime_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_failures.py: null
-            implement_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_runtime_api.py: null
           dispatch_runtime_tools.py: null
           invoke_service.py: null
-          call_runtime_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_failures.py: null
+          implement_fallback.py: null
+          retry_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_runtime_execution.py: null
-          perform_runtime_operation.py: null
-          invoke_runtime_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_runtime_memory.py: null
-          query_runtime_state.py: null
           fetch_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_runtime_state.py: null
+          retrieve_runtime_memory.py: null
+        embedding_compare_meaning:
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_runtime_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_runtime_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 schemas:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_schema_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_schema_policy.py: null
+          enforce_schema_boundaries.py: null
+          validate_schema_constraints.py: null
       get_schema_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_schema_context.py: null
-            build_schema_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_schema_parameters.py: null
+          fetch_schema_history.py: null
           load_schema_planning.py: null
           parse_schema_settings.py: null
-          extract_schema_parameters.py: null
-          retrieve_schema_context.py: null
           query_schema_store.py: null
-          fetch_schema_history.py: null
-        embedding:
-          compare_meaning:
-            search_schema_vectors.py: null
-            match_schema_context.py: null
-            retrieve_schema_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_schema_rules:
-        policy:
-          check_safety:
-            validate_schema_constraints.py: null
-            check_schema_policy.py: null
-            enforce_schema_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_schema_context.py: null
+        utility_prepare_information:
+          build_schema_filters.py: null
+          format_schema_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_schema_context.py: null
+          retrieve_schema_similarity.py: null
+          search_schema_vectors.py: null
     P2_inspect:
-      convert_schema_content:
-        embedding:
-          compare_meaning:
-            compute_schema_embeddings.py: null
-            normalize_schema_vectors.py: null
-            calculate_schema_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_schema_scores.py: null
-            apply_schema_weights.py: null
-            compute_schema_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_schema_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_schema_quality.py: null
-            assess_schema_confidence.py: null
-            compute_schema_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_schema_problems:
-        update_memory:
-          inspect_schema_state.py: null
-          capture_schema_diagnostics.py: null
-          log_schema_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_schema_ranking.py: null
-            adjust_schema_weights.py: null
-            optimize_schema_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_schema_components.py: null
-          apply_schema_algorithm.py: null
-          sort_schema_results.py: null
+      check_schema_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_schema_confidence.py: null
+          compute_schema_validation.py: null
+          validate_schema_quality.py: null
+      convert_schema_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_schema_similarity.py: null
+          compute_schema_embeddings.py: null
+          normalize_schema_vectors.py: null
+        semantic_adjust_scores:
+          apply_schema_weights.py: null
+          compute_schema_confidence.py: null
+          normalize_schema_scores.py: null
+      find_schema_problems:
+        __init__.py: null
+        update_memory:
+          capture_schema_diagnostics.py: null
+          inspect_schema_state.py: null
+          log_schema_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_schema_algorithm.py: null
+          rank_schema_components.py: null
+          sort_schema_results.py: null
+        refinement_adjust_scores:
+          adjust_schema_weights.py: null
+          optimize_schema_order.py: null
+          refine_schema_ranking.py: null
+      update_schema_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_schema_tools:
-        routing:
-          retry_task:
-            implement_schema_retry.py: null
-            apply_schema_backoff.py: null
-            handle_schema_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_schema_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_schema_backoff.py: null
+          handle_schema_failures.py: null
+          implement_schema_retry.py: null
     P4_safety:
-      check_schema_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_schema_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_schema_costs:
-        update_memory:
-          update_schema_budget.py: null
-          track_schema_usage.py: null
-          enforce_schema_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_schema_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_schema_filters.py: null
+          validate_ethics.py: null
+      manage_schema_costs:
+        __init__.py: null
+        update_memory:
+          enforce_schema_limits.py: null
+          track_schema_usage.py: null
+          update_schema_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_schema_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_schema_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_schema_execution.py: null
+          invoke_schema_tool.py: null
+          perform_schema_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_schema_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_schema_info:
+        __init__.py: null
         understand_request:
-          orchestrate_schema_planning.py: null
           coordinate_schema_queries.py: null
           manage_schema_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_schema_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_schema_tools:
-        routing:
-          retry_task:
-            retry_schema_operations.py: null
-            handle_schema_failures.py: null
-            implement_schema_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_schema_api.py: null
           dispatch_schema_tools.py: null
           invoke_service.py: null
-          call_schema_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_schema_failures.py: null
+          implement_schema_fallback.py: null
+          retry_schema_operations.py: null
     P4_safety:
+      __init__.py: null
       check_schema_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_schema_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_schema_execution.py: null
-          perform_schema_operation.py: null
-          invoke_schema_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_schema_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_schema_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_schema_info:
-        embedding:
-          compare_meaning:
-            search_schema_vectors.py: null
-            match_schema_patterns.py: null
-            find_schema_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_schema_memory.py: null
-          query_schema_state.py: null
           fetch_schema_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_schema_state.py: null
+          retrieve_schema_memory.py: null
+        embedding_compare_meaning:
+          find_schema_context.py: null
+          match_schema_patterns.py: null
+          search_schema_vectors.py: null
     P4_safety:
-      check_schema_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_schema_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_schema_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_schema_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_schema_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_schema_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 scripts:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_context.py: null
-            build_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_parameters.py: null
+          fetch_history.py: null
           load_planning.py: null
           parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
           query_store.py: null
-          fetch_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_context.py: null
+        utility_prepare_information:
+          build_filters.py: null
+          format_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+      check_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          capture_diagnostics.py: null
+          inspect_state.py: null
+          log_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_algorithm.py: null
+          rank_components.py: null
+          sort_results.py: null
+        refinement_adjust_scores:
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          update_scripts_budget.py: null
-          track_scripts_usage.py: null
-          enforce_scripts_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_scripts_limits.py: null
+          track_scripts_usage.py: null
+          update_scripts_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_scripts_execution.py: null
+          invoke_scripts_tool.py: null
+          perform_scripts_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_scripts_planning.py: null
           coordinate_scripts_queries.py: null
           manage_scripts_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_scripts_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_failures.py: null
-            implement_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_scripts_api.py: null
           dispatch_scripts_tools.py: null
           invoke_service.py: null
-          call_scripts_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_failures.py: null
+          implement_fallback.py: null
+          retry_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_scripts_execution.py: null
-          perform_scripts_operation.py: null
-          invoke_scripts_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_scripts_memory.py: null
-          query_scripts_state.py: null
           fetch_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_scripts_state.py: null
+          retrieve_scripts_memory.py: null
+        embedding_compare_meaning:
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_scripts_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_scripts_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
+    __init__.py: null
+  __init__.py: null
+shared:
+  L1_cognition:
+    P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          build_universal_search.py: null
+          extract_intent_parameters.py: null
+          fetch_universal_history.py: null
+          parse_generic_query.py: null
+          query_common_state.py: null
+          retrieve_shared_memory.py: null
+        utility_prepare_information:
+          build_generic_filters.py: null
+          format_metadata.py: null
+          prepare_context.py: null
+        embedding_compare_meaning:
+          find_universal_context.py: null
+          match_generic_patterns.py: null
+          search_vectors.py: null
+    P2_inspect:
+      __init__.py: null
+      check_format:
+        __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_generic_quality.py: null
+          evaluate_universal_output.py: null
+          seffectiveness.py: null
+      convert:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_scores.py: null
+          compute_universal_similarity.py: null
+          embed_generic_content.py: null
+        semantic_adjust_scores:
+          apply_universal_weights.py: null
+          calibrate_metrics.py: null
+          normalize_generic_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          diagnose_common_issues.py: null
+          inspect_shared_state.py: null
+          log_universal_metrics.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          order_universal_results.py: null
+          prioritize_shared_elements.py: null
+          rank_generic_components.py: null
+    P3_aggregate:
+      __init__.py: null
+      check_format:
+        __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+      pick_best_result:
+        __init__.py: null
+        refinement_adjust_scores:
+          adjust_universal_weights.py: null
+          optimize_results.py: null
+          refine_generic_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_shared_state.py: null
+          merge_common_contexts.py: null
+          update_universal_profile.py: null
+        utility_prepare_information:
+          format_data.py: null
+          serialize_common_context.py: null
+          snapshot_state.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_shared_action.py: null
+          invoke_universal_tool.py: null
+          perform_generic_operation.py: null
+        routing_retry_task:
+          handle_common_failures.py: null
+          implement_universal_fallback.py: null
+          retry_operations.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          filter_universal_content.py: null
+          validate_common_ethics.py: null
+        semantic_adjust_scores:
+          assess_risk.py: null
+          compute_universal_safety_score.py: null
+          evaluate_common_compliance.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_shared_budget.py: null
+          track_shared_cost.py: null
+          update_universal_usage.py: null
+    __init__.py: null
+  L2_execution:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          coordinate_execution_queries.py: null
+          manage_execution_context.py: null
+          orchestrate_execution_planning.py: null
+    P2_inspect:
+      __init__.py: null
+      check_format:
+        __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_generic_quality.py: null
+          evaluate_universal_output.py: null
+          seffectiveness.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_shared_action.py: null
+          invoke_universal_tool.py: null
+          perform_generic_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
+    __init__.py: null
+  L3_orchestration:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          coordinate_generic_workflow.py: null
+          manage_universal_context.py: null
+          orchestrate_shared_planning.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          call_universal_apis.py: null
+          dispatch_shared_tools.py: null
+          invoke_common_services.py: null
+        routing_retry_task:
+          handle_common_failures.py: null
+          implement_universal_fallback.py: null
+          retry_operations.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
+    __init__.py: null
+  L4_memory:
+    P1_retrieve:
+      __init__.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          fetch_universal_history.py: null
+          query_common_state.py: null
+          retrieve_shared_memory.py: null
+        embedding_compare_meaning:
+          find_universal_context.py: null
+          match_generic_patterns.py: null
+          search_vectors.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
+    __init__.py: null
+  L5_safety:
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 tests:
   L1_cognition:
     P1_retrieve:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          check_policy.py: null
+          enforce_boundaries.py: null
+          validate_constraints.py: null
       get_info:
-        utility:
-          prepare_information:
-            prepare_payload.py: null
-            format_context.py: null
-            build_filters.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
+          extract_parameters.py: null
+          fetch_history.py: null
           load_planning.py: null
           parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
           query_store.py: null
-          fetch_history.py: null
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_context.py: null
-            retrieve_similarity.py: null
-          __init__.py: null
-        __init__.py: null
-      check_rules:
-        policy:
-          check_safety:
-            validate_constraints.py: null
-            check_policy.py: null
-            enforce_boundaries.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+          retrieve_context.py: null
+        utility_prepare_information:
+          build_filters.py: null
+          format_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
     P2_inspect:
-      convert_content:
-        embedding:
-          compare_meaning:
-            compute_embeddings.py: null
-            normalize_vectors.py: null
-            calculate_similarity.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            normalize_scores.py: null
-            apply_weights.py: null
-            compute_confidence.py: null
-          __init__.py: null
-        __init__.py: null
-      check_structure:
-        policy:
-          check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            validate_quality.py: null
-            assess_confidence.py: null
-            compute_validation.py: null
-          __init__.py: null
-        __init__.py: null
-      find_problems:
-        update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
-        __init__.py: null
       __init__.py: null
-    P3_aggregate:
-      pick_best_result:
-        refinement:
-          adjust_scores:
-            refine_ranking.py: null
-            adjust_weights.py: null
-            optimize_order.py: null
-          __init__.py: null
-        understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+      check_structure:
         __init__.py: null
+        policy_check_safety:
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          assess_confidence.py: null
+          compute_validation.py: null
+          validate_quality.py: null
+      convert_content:
+        __init__.py: null
+        embedding_compare_meaning:
+          calculate_similarity.py: null
+          compute_embeddings.py: null
+          normalize_vectors.py: null
+        semantic_adjust_scores:
+          apply_weights.py: null
+          compute_confidence.py: null
+          normalize_scores.py: null
+      find_problems:
+        __init__.py: null
+        update_memory:
+          capture_diagnostics.py: null
+          inspect_state.py: null
+          log_inspection.py: null
+    P3_aggregate:
+      __init__.py: null
+      pick_best_result:
+        __init__.py: null
+        understand_request:
+          apply_algorithm.py: null
+          rank_components.py: null
+          sort_results.py: null
+        refinement_adjust_scores:
+          adjust_weights.py: null
+          optimize_order.py: null
+          refine_ranking.py: null
+      update_state:
+        __init__.py: null
+        update_memory:
+          aggregate_state.py: null
+          consolidate_updates.py: null
+          merge_contexts.py: null
+        utility_prepare_information:
+          format_payload.py: null
+          prepare_snapshot.py: null
+          serialize_state.py: null
       use_tools:
-        routing:
-          retry_task:
-            implement_retry.py: null
-            apply_backoff.py: null
-            handle_failures.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
           execute_action.py: null
           invoke_service.py: null
           process_response.py: null
-        __init__.py: null
-      update_state:
-        utility:
-          prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
-          __init__.py: null
-        update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          apply_backoff.py: null
+          handle_failures.py: null
+          implement_retry.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety.py: null
-            enforce_filters.py: null
-            validate_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      manage_costs:
-        update_memory:
-          update_tests_budget.py: null
-          track_tests_usage.py: null
-          enforce_tests_limits.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety.py: null
+          enforce_filters.py: null
+          validate_ethics.py: null
+      manage_costs:
+        __init__.py: null
+        update_memory:
+          enforce_tests_limits.py: null
+          track_tests_usage.py: null
+          update_tests_budget.py: null
+    __init__.py: null
+  L2_execution:
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          check_execution_compliance.py: null
+          enforce_execution_contracts.py: null
+          validate_execution_schema.py: null
+    P3_aggregate:
+      __init__.py: null
+      use_tools:
+        __init__.py: null
+        use_a_tool:
+          execute_tests_execution.py: null
+          invoke_tests_tool.py: null
+          perform_tests_operation.py: null
+        utility_prepare_information:
+          format_execution_request.py: null
+          prepare_execution_payload.py: null
+          serialize_execution_params.py: null
+    P4_safety:
+      __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_execution_safety.py: null
+          enforce_execution_policy.py: null
+          validate_execution_ethics.py: null
     __init__.py: null
   L3_orchestration:
     P1_retrieve:
+      __init__.py: null
       get_info:
+        __init__.py: null
         understand_request:
-          orchestrate_tests_planning.py: null
           coordinate_tests_queries.py: null
           manage_tests_context.py: null
-        __init__.py: null
-      __init__.py: null
+          orchestrate_tests_planning.py: null
     P3_aggregate:
+      __init__.py: null
       use_tools:
-        routing:
-          retry_task:
-            retry_operations.py: null
-            handle_failures.py: null
-            implement_fallback.py: null
-          __init__.py: null
+        __init__.py: null
         use_a_tool:
+          call_tests_api.py: null
           dispatch_tests_tools.py: null
           invoke_service.py: null
-          call_tests_api.py: null
-        __init__.py: null
-      __init__.py: null
+        routing_retry_task:
+          handle_failures.py: null
+          implement_fallback.py: null
+          retry_operations.py: null
     P4_safety:
+      __init__.py: null
       check_rules:
-        policy:
-          check_safety:
-            apply_orchestration_safety.py: null
-            enforce_orchestration_policy.py: null
-            validate_orchestration_ethics.py: null
-          __init__.py: null
         __init__.py: null
-      __init__.py: null
-    __init__.py: null
-  L2_execution:
-    P3_aggregate:
-      use_tools:
-        utility:
-          prepare_information:
-            prepare_execution_payload.py: null
-            format_execution_request.py: null
-            serialize_execution_params.py: null
-          __init__.py: null
-        use_a_tool:
-          execute_tests_execution.py: null
-          perform_tests_operation.py: null
-          invoke_tests_tool.py: null
-        __init__.py: null
-      __init__.py: null
-    P2_inspect:
-      check_structure:
-        policy:
-          check_safety:
-            validate_execution_schema.py: null
-            check_execution_compliance.py: null
-            enforce_execution_contracts.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_execution_safety.py: null
-            enforce_execution_policy.py: null
-            validate_execution_ethics.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
+        policy_check_safety:
+          apply_orchestration_safety.py: null
+          enforce_orchestration_policy.py: null
+          validate_orchestration_ethics.py: null
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      __init__.py: null
       get_info:
-        embedding:
-          compare_meaning:
-            search_vectors.py: null
-            match_patterns.py: null
-            find_context.py: null
-          __init__.py: null
+        __init__.py: null
         understand_request:
-          retrieve_tests_memory.py: null
-          query_tests_state.py: null
           fetch_history.py: null
-        __init__.py: null
-      __init__.py: null
+          query_tests_state.py: null
+          retrieve_tests_memory.py: null
+        embedding_compare_meaning:
+          find_context.py: null
+          match_patterns.py: null
+          search_vectors.py: null
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_memory_safety.py: null
-            enforce_memory_policy.py: null
-            validate_memory_ethics.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_memory_safety.py: null
+          enforce_memory_policy.py: null
+          validate_memory_ethics.py: null
     __init__.py: null
   L5_safety:
     P4_safety:
-      check_rules:
-        policy:
-          check_safety:
-            apply_safety_policy.py: null
-            enforce_safety_filters.py: null
-            validate_safety_ethics.py: null
-          __init__.py: null
-        semantic:
-          adjust_scores:
-            assess_safety_risk.py: null
-            compute_safety_score.py: null
-            evaluate_safety_compliance.py: null
-          __init__.py: null
-        manage_tests_costs:
-          update_memory:
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-            enforce_safety_budget.py: null
-          __init__.py: null
-        __init__.py: null
       __init__.py: null
+      check_rules:
+        __init__.py: null
+        policy_check_safety:
+          apply_safety_policy.py: null
+          enforce_safety_filters.py: null
+          validate_safety_ethics.py: null
+        semantic_adjust_scores:
+          assess_safety_risk.py: null
+          compute_safety_score.py: null
+          evaluate_safety_compliance.py: null
+        manage_tests_costs_update_memory:
+          enforce_safety_budget.py: null
+          track_safety_cost.py: null
+          update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
 # unified_structure_subatomic_meta.yaml
-structure_version: "1.0"
-description: "Single Source of Truth for Agentic Workflow Architecture"
-
+structure_version: '1.0'
+description: Single Source of Truth for Agentic Workflow Architecture
 domains:
-  agentic_core: "Core reasoning, decision making, and autonomous logic engine."
-  apps_rg: "Resume Generation Application specific logic."
-  apps_lic: "LinkedIn Outreach Application specific logic."
-  shared: "Cross-domain shared utilities, base classes, and common logic."
-  config: "Configuration management, registry settings, and environment variables."
-  data: "Data persistence, retrieval, storage management, and database connectors."
-  observability: "System monitoring, logging, metrics collection, and diagnostics."
-  prompt_governance: "Management of prompt templates, versioning, and safety checks."
-  runtime: "Runtime execution environment, job scheduling, and process management."
-  schemas: "Data validation schemas, type definitions, and contract enforcement."
-  scripts: "Maintenance scripts, automation tools, and deployment helpers."
-  tests: "Test suites, integration tests, and validation frameworks."
-
+  agentic_core: Core reasoning, decision making, and autonomous logic engine.
+  apps_rg: Resume Generation Application specific logic.
+  apps_lic: LinkedIn Outreach Application specific logic.
+  shared: Cross-domain shared utilities, base classes, and common logic.
+  config: Configuration management, registry settings, and environment variables.
+  data: Data persistence, retrieval, storage management, and database connectors.
+  observability: System monitoring, logging, metrics collection, and diagnostics.
+  prompt_governance: Management of prompt templates, versioning, and safety checks.
+  runtime: Runtime execution environment, job scheduling, and process management.
+  schemas: Data validation schemas, type definitions, and contract enforcement.
+  scripts: Maintenance scripts, automation tools, and deployment helpers.
+  tests: Test suites, integration tests, and validation frameworks.
 layers:
-  L1_cognition: "High-level understanding, planning, and intent recognition."
-  L2_execution: "Concrete action execution, tool invocation, and operational tasks."
-  L3_orchestration: "Workflow coordination, error handling, and cross-component routing."
-  L4_memory: "State management, context retrieval, and history tracking."
-  L5_safety: "Guardrails, compliance checks, cost management, and ethical boundaries."
-
+  L1_cognition: High-level understanding, planning, and intent recognition.
+  L2_execution: Concrete action execution, tool invocation, and operational tasks.
+  L3_orchestration: Workflow coordination, error handling, and cross-component routing.
+  L4_memory: State management, context retrieval, and history tracking.
+  L5_safety: Guardrails, compliance checks, cost management, and ethical boundaries.
 phases:
-  P1_retrieve: "Gathering context, understanding requests, and fetching necessary data."
-  P2_inspect: "Analyzing data, vetting quality, embedding content, and converting formats."
-  P3_aggregate: "Refining results, executing tools, updating state, and compiling outputs."
-  P4_safety: "Final safety validation, cost accounting, and policy enforcement."
-
+  P1_retrieve: Gathering context, understanding requests, and fetching necessary data.
+  P2_inspect: Analyzing data, vetting quality, embedding content, and converting formats.
+  P3_aggregate: Refining results, executing tools, updating state, and compiling outputs.
+  P4_safety: Final safety validation, cost accounting, and policy enforcement.
 intents:
-  - get_info
-  - check_rules
-  - use_tools
-  - update_state
-  - manage_costs
-  - find_problems
-  - vectorize_resume
-  - sjob_fit
-  - check_resume_format
-  - pick_resume_content
-  - vectorize_message
-  - sperson
-  - pick_message
-  - update_outreach
-  - convert_content
-  - check_structure
-  - get_prompt_info
-  - check_prompt_rules
-  - use_prompt_tools
-  - update_prompt_state
-  - manage_prompt_costs
-  - get_schema_info
-  - check_schema_rules
-  - use_schema_tools
-  - update_schema_state
-  - manage_schema_costs
-
+- check_format
+- check_message_format
+- check_outreach_rules
+- check_prompt_rules
+- check_prompt_structure
+- check_resume_format
+- check_resume_rules
+- check_rules
+- check_schema_rules
+- check_schema_structure
+- check_structure
+- convert
+- convert_content
+- convert_prompt_content
+- convert_schema_content
+- find_msg_problems
+- find_problems
+- find_prompt_problems
+- find_resume_problems
+- find_schema_problems
+- get_info
+- get_prompt_info
+- get_schema_info
+- manage_costs
+- manage_outreach_costs
+- manage_prompt_costs
+- manage_resume_costs
+- manage_schema_costs
+- pick_best_result
+- pick_message
+- pick_resume_content
+- sjob_fit
+- sperson
+- update_outreach
+- update_prompt_state
+- update_schema_state
+- update_state
+- use_prompt_tools
+- use_schema_tools
+- use_tools
+- vectorize_message
+- vectorize_resume
 axes:
-  - utility
-  - policy
-  - semantic
-  - embedding
-  - routing
-  - refinement
-  - update_memory
+  - embedding_compare_meaning
+  - manage_config_costs_update_memory
+  - manage_data_costs_update_memory
+  - manage_observability_costs_update_memory
+  - manage_prompt_costs_update_memory
+  - manage_runtime_costs_update_memory
+  - manage_schema_costs_update_memory
+  - manage_scripts_costs_update_memory
+  - manage_tests_costs_update_memory
+  - policy_check_safety
+  - refinement_adjust_scores
+  - routing_retry_task
+  - semantic_adjust_scores
   - understand_request
+  - update_memory
+  - use_a_tool
+  - utility_prepare_information
+
+verb_groups: []
