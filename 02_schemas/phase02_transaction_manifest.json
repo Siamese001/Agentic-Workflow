@@ -1,0 +1,67 @@
+{
+  "pipeline_id": "phase02_20251203_085007_ae135114",
+  "start_time": "2025-12-03T08:50:07.330987",
+  "status": "RUNNING",
+  "dry_run": false,
+  "target_root": "01_agentic_core",
+  "steps": [
+    {
+      "step_id": "SSOT_LOAD",
+      "step_name": "SSOT_LOAD",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T08:50:07.331255",
+      "end_time": "2025-12-03T08:50:07.623775",
+      "error_message": null,
+      "validation_results": []
+    },
+    {
+      "step_id": "CACHE_LOAD",
+      "step_name": "CACHE_LOAD",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T08:50:07.624688",
+      "end_time": "2025-12-03T08:50:08.731537",
+      "error_message": null,
+      "validation_results": []
+    },
+    {
+      "step_id": "STRUCTURAL_DIFF",
+      "step_name": "STRUCTURAL_DIFF",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T08:50:08.732925",
+      "end_time": "2025-12-03T08:50:08.972271",
+      "error_message": null,
+      "validation_results": []
+    },
+    {
+      "step_id": "SEMANTIC_DIFF",
+      "step_name": "SEMANTIC_DIFF",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T08:50:08.974157",
+      "end_time": "2025-12-03T08:50:08.978750",
+      "error_message": null,
+      "validation_results": []
+    },
+    {
+      "step_id": "INTENT_GENERATION",
+      "step_name": "INTENT_GENERATION",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T08:50:08.979831",
+      "end_time": "2025-12-03T08:50:08.987328",
+      "error_message": null,
+      "validation_results": []
+    },
+    {
+      "step_id": "PLAN_GENERATION",
+      "step_name": "PLAN_GENERATION",
+      "status": "FAILED",
+      "start_time": "2025-12-03T08:50:08.988521",
+      "end_time": "2025-12-03T08:50:09.016091",
+      "error_message": null,
+      "validation_results": []
+    }
+  ],
+  "current_step": 6,
+  "total_files_processed": 199,
+  "semantic_artifacts_loaded": 3634,
+  "operations_generated": 0
+}

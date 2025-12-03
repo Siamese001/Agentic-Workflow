@@ -1,0 +1,59 @@
+{
+  "total_keys": 6,
+  "passed": 6,
+  "failed": 0,
+  "success_rate": 1.0,
+  "results": [
+    {
+      "key": "K11",
+      "status": "PASS",
+      "message": "Semantic cache loaded read-only",
+      "details": null,
+      "timestamp": "2025-12-03T08:50:07.625217"
+    },
+    {
+      "key": "K12",
+      "status": "PASS",
+      "message": "Semantic cache for target root loaded",
+      "details": null,
+      "timestamp": "2025-12-03T08:50:07.625445"
+    },
+    {
+      "key": "K13",
+      "status": "PASS",
+      "message": "Global semantic objects loaded",
+      "details": null,
+      "timestamp": "2025-12-03T08:50:07.625632"
+    },
+    {
+      "key": "K14",
+      "status": "PASS",
+      "message": "Semantic cache paths normalized",
+      "details": null,
+      "timestamp": "2025-12-03T08:50:08.729859"
+    },
+    {
+      "key": "K15",
+      "status": "PASS",
+      "message": "FS and cache paths share canonical relative prefix",
+      "details": null,
+      "timestamp": "2025-12-03T08:50:08.729938"
+    },
+    {
+      "key": "K16",
+      "status": "PASS",
+      "message": "No system directories included",
+      "details": null,
+      "timestamp": "2025-12-03T08:50:08.730013"
+    }
+  ],
+  "cache_state_loaded": true,
+  "artifacts_loaded": {
+    "ast": 0,
+    "embeddings": 0,
+    "diffs": 1206,
+    "golden": 1206,
+    "integrity": 1222,
+    "path_mappings": 1
+  }
+}

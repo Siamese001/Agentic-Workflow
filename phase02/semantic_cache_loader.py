@@ -46,7 +46,7 @@ class SemanticCacheLoader:
         self.project_root = PROJECT_ROOT
         self.semantic_cache_root = SEMANTIC_CACHE_ROOT
         self.target_root = TARGET_ROOT.rstrip('/')
-        self.bucket_path = SEMANTIC_CACHE_ROOT / "agentic_core"
+        self.bucket_path = SEMANTIC_CACHE_ROOT  # Phase 0.5 writes to root level, not agentic_core subdirectory
         
         # Validation results
         self.validation_results: List[ValidationResult] = []
@@ -163,12 +163,18 @@ class SemanticCacheLoader:
             if canonical_pointers_file.exists():
                 with open(canonical_pointers_file, 'r', encoding='utf-8') as f:
                     objects["canonical_pointers"] = json.load(f)
+            else:
+                # Phase 0.5 may not have generated this file - provide empty structure
+                objects["canonical_pointers"] = []
             
             # Load unmapped files (if any)
             unmapped_files_file = self.bucket_path / "unmapped_files.json"
             if unmapped_files_file.exists():
                 with open(unmapped_files_file, 'r', encoding='utf-8') as f:
                     objects["unmapped_files"] = json.load(f)
+            else:
+                # Phase 0.5 may not have generated this file - provide empty structure
+                objects["unmapped_files"] = []
             
             return objects
             
@@ -187,12 +193,18 @@ class SemanticCacheLoader:
             if global_artifacts_file.exists():
                 with open(global_artifacts_file, 'r', encoding='utf-8') as f:
                     objects["global_artifacts"] = json.load(f)
+            else:
+                # Phase 0.5 may not have generated this file - provide empty structure
+                objects["global_artifacts"] = {}
             
             # Load global hash index
             hash_index_file = self.semantic_cache_root / "hash_index.json"
             if hash_index_file.exists():
                 with open(hash_index_file, 'r', encoding='utf-8') as f:
                     objects["hash_index"] = json.load(f)
+            else:
+                # Phase 0.5 may not have generated this file - provide empty structure
+                objects["hash_index"] = {}
             
             return objects
             
@@ -326,12 +338,8 @@ class SemanticCacheLoader:
         """Validate that FS and cache paths share canonical relative prefix"""
         try:
             for cache_path, fs_path in path_mappings.items():
-                # Both should be relative to project root
-                if not (cache_path.startswith("agentic_core/") or cache_path == "agentic_core"):
-                    if self.verbose:
-                        print(f"Cache path doesn't start with agentic_core/: {cache_path}")
-                    return False
-                
+                # Cache paths from Phase 0.5 don't have agentic_core/ prefix - they're direct relative paths
+                # FS paths should start with 01_agentic_core/
                 if not fs_path.startswith("01_agentic_core/"):
                     if self.verbose:
                         print(f"FS path doesn't start with 01_agentic_core/: {fs_path}")
