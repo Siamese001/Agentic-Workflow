@@ -45,6 +45,7 @@ class ValidationResult:
     message: str
     details: Optional[Dict] = None
     timestamp: str = ""
+    section: str = "K"
 
 @dataclass
 class FilesystemMonitor:
@@ -118,7 +119,8 @@ class ValidationEngine:
             status=status,
             message=message,
             details=details,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            section=section
         )
         self.validation_results.append(result)
         
