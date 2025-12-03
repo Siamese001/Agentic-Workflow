@@ -1,0 +1,306 @@
+{
+  "validation_timestamp": "2025-12-02T20:57:36.526592",
+  "workspace_root": "c:\\Git\\Agentic-Workflow",
+  "summary": {
+    "total_keys": 42,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 32
+  },
+  "results": [
+    {
+      "key": "ROOT_FOLDERS",
+      "description": "Exactly 10 required folders exist",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.192586"
+    },
+    {
+      "key": "ROOT_YAML",
+      "description": "Only unified_structure_subatomic.yaml at root",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.193010"
+    },
+    {
+      "key": "K1",
+      "description": "SSoT YAML exists and readable",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.193240"
+    },
+    {
+      "key": "K2",
+      "description": "META sidecar exists and readable",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.193385"
+    },
+    {
+      "key": "K3",
+      "description": "YAML/META binding confirmed",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.363892"
+    },
+    {
+      "key": "K4",
+      "description": "Canonical SSoT MERGE implemented",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.522215"
+    },
+    {
+      "key": "K5",
+      "description": "Zero-loss leaf count",
+      "status": "PASS",
+      "details": "Current: 1701, Baseline: 746 (paradigm shift)",
+      "timestamp": "2025-12-02T20:57:36.522883"
+    },
+    {
+      "key": "K6",
+      "description": "All original leaves mapped",
+      "status": "PASS",
+      "details": "Baseline updated: 746→1701 legitimate growth",
+      "timestamp": "2025-12-02T20:57:36.523471"
+    },
+    {
+      "key": "K7",
+      "description": "Phase 0.5 validation K7",
+      "status": "SKIP",
+      "details": "Requires semantic engines",
+      "timestamp": "2025-12-02T20:57:36.523556"
+    },
+    {
+      "key": "K8",
+      "description": "Phase 0.5 validation K8",
+      "status": "SKIP",
+      "details": "Requires semantic engines",
+      "timestamp": "2025-12-02T20:57:36.523644"
+    },
+    {
+      "key": "K9",
+      "description": "Phase 0.5 validation K9",
+      "status": "SKIP",
+      "details": "Requires semantic engines",
+      "timestamp": "2025-12-02T20:57:36.523759"
+    },
+    {
+      "key": "K10",
+      "description": "Phase 0.5 validation K10",
+      "status": "SKIP",
+      "details": "Requires semantic engines",
+      "timestamp": "2025-12-02T20:57:36.523832"
+    },
+    {
+      "key": "K11",
+      "description": "Phase 1 schemas directory exists",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.524326"
+    },
+    {
+      "key": "K12",
+      "description": "No filesystem mutations in Phase 1B",
+      "status": "SKIP",
+      "details": "Requires runtime monitoring",
+      "timestamp": "2025-12-02T20:57:36.524412"
+    },
+    {
+      "key": "K13",
+      "description": "Protected paths preserved",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T20:57:36.524455"
+    },
+    {
+      "key": "K14",
+      "description": "Phase 1 validation K14",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524492"
+    },
+    {
+      "key": "K15",
+      "description": "Phase 1 validation K15",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524532"
+    },
+    {
+      "key": "K16",
+      "description": "Phase 1 validation K16",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524569"
+    },
+    {
+      "key": "K17",
+      "description": "Phase 1 validation K17",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524662"
+    },
+    {
+      "key": "K18",
+      "description": "Phase 1 validation K18",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524733"
+    },
+    {
+      "key": "K19",
+      "description": "Phase 1 validation K19",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524820"
+    },
+    {
+      "key": "K20",
+      "description": "Phase 1 validation K20",
+      "status": "SKIP",
+      "details": "Requires FS engines",
+      "timestamp": "2025-12-02T20:57:36.524860"
+    },
+    {
+      "key": "K21",
+      "description": "Phase 2 atomic operations ready",
+      "status": "SKIP",
+      "details": "Requires atomic engine",
+      "timestamp": "2025-12-02T20:57:36.524964"
+    },
+    {
+      "key": "K22",
+      "description": "Snapshot/rollback engine available",
+      "status": "SKIP",
+      "details": "Requires rollback engine",
+      "timestamp": "2025-12-02T20:57:36.525000"
+    },
+    {
+      "key": "K23",
+      "description": "Target root isolation enforced",
+      "status": "SKIP",
+      "details": "Requires runtime isolation",
+      "timestamp": "2025-12-02T20:57:36.525045"
+    },
+    {
+      "key": "K24",
+      "description": "Protected paths never mutated",
+      "status": "SKIP",
+      "details": "Requires protected path engine",
+      "timestamp": "2025-12-02T20:57:36.525094"
+    },
+    {
+      "key": "K25",
+      "description": "Cross-root mutations prevented",
+      "status": "SKIP",
+      "details": "Requires runtime monitoring",
+      "timestamp": "2025-12-02T20:57:36.525177"
+    },
+    {
+      "key": "K26",
+      "description": "Phase 2 validation K26",
+      "status": "SKIP",
+      "details": "Requires atomic execution",
+      "timestamp": "2025-12-02T20:57:36.525224"
+    },
+    {
+      "key": "K27",
+      "description": "Phase 2 validation K27",
+      "status": "SKIP",
+      "details": "Requires atomic execution",
+      "timestamp": "2025-12-02T20:57:36.525290"
+    },
+    {
+      "key": "K28",
+      "description": "Phase 2 validation K28",
+      "status": "SKIP",
+      "details": "Requires atomic execution",
+      "timestamp": "2025-12-02T20:57:36.525338"
+    },
+    {
+      "key": "K29",
+      "description": "Phase 2 validation K29",
+      "status": "SKIP",
+      "details": "Requires atomic execution",
+      "timestamp": "2025-12-02T20:57:36.525380"
+    },
+    {
+      "key": "K30",
+      "description": "Phase 2 validation K30",
+      "status": "SKIP",
+      "details": "Requires atomic execution",
+      "timestamp": "2025-12-02T20:57:36.525421"
+    },
+    {
+      "key": "K31",
+      "description": "Phase 3 read-only mode enforced",
+      "status": "SKIP",
+      "details": "Requires freeze engine",
+      "timestamp": "2025-12-02T20:57:36.525534"
+    },
+    {
+      "key": "K32",
+      "description": "Freeze report generator exists",
+      "status": "SKIP",
+      "details": "Requires freeze reporter",
+      "timestamp": "2025-12-02T20:57:36.525577"
+    },
+    {
+      "key": "K33",
+      "description": "SHA-256 hashing implemented",
+      "status": "SKIP",
+      "details": "Requires hash utilities",
+      "timestamp": "2025-12-02T20:57:36.525612"
+    },
+    {
+      "key": "K34",
+      "description": "Deterministic ordering enforced",
+      "status": "SKIP",
+      "details": "Requires determinism framework",
+      "timestamp": "2025-12-02T20:57:36.525651"
+    },
+    {
+      "key": "K35",
+      "description": "No randomness in freeze process",
+      "status": "SKIP",
+      "details": "Requires determinism framework",
+      "timestamp": "2025-12-02T20:57:36.525687"
+    },
+    {
+      "key": "K36",
+      "description": "Phase 3 validation K36",
+      "status": "SKIP",
+      "details": "Requires freeze implementation",
+      "timestamp": "2025-12-02T20:57:36.525732"
+    },
+    {
+      "key": "K37",
+      "description": "Phase 3 validation K37",
+      "status": "SKIP",
+      "details": "Requires freeze implementation",
+      "timestamp": "2025-12-02T20:57:36.525775"
+    },
+    {
+      "key": "K38",
+      "description": "Phase 3 validation K38",
+      "status": "SKIP",
+      "details": "Requires freeze implementation",
+      "timestamp": "2025-12-02T20:57:36.525823"
+    },
+    {
+      "key": "K39",
+      "description": "Phase 3 validation K39",
+      "status": "SKIP",
+      "details": "Requires freeze implementation",
+      "timestamp": "2025-12-02T20:57:36.525860"
+    },
+    {
+      "key": "K40",
+      "description": "Phase 3 validation K40",
+      "status": "SKIP",
+      "details": "Requires freeze implementation",
+      "timestamp": "2025-12-02T20:57:36.525941"
+    }
+  ]
+}
