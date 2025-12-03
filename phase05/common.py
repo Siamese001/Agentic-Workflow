@@ -100,13 +100,16 @@ class ScanResult:
 
 @dataclass
 class ValidationResult:
-    """Represents a validation result with K-key status"""
+    """
+    Single validation result entry used by both the core K-keys and the
+    extreme (A–G) criteria. The `section` field is optional and is used
+    only by the extreme validation engine to group keys by section.
+    """
     key: str
-    status: str  # "PASS" or "FAIL"
+    status: str
     message: str
     details: Optional[Dict] = None
-    timestamp: str = ""
-    section: str = "K"
+    section: Optional[str] = None
 
 @dataclass
 class PipelineStep:
