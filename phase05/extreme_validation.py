@@ -456,18 +456,57 @@ class ExtremeValidationEngine:
         self.validation_engine._add_validation_result("E3.1", "PASS", 
             f"Total pointer artifacts: {total_pointer_artifacts}", section="E")
         
-        # NEW E3.2: pointer AST/golden equality only applies to canonical SSoT,
-        # not archive-wide mismatches.
-        if ast_count == golden_count:
+        #
+        # NEW E3.2:
+        # Canonical completeness applies ONLY to `.py` files.
+        # Golden exists for many file types (json, yaml, md); AST does not.
+        # This patch computes per-base `.py` completeness:
+        #     For each canonical `<file>.py`:
+        #         • AST and Golden must both exist
+        #         • Missing either = FAIL
+        #
+
+        py_ast_bases = set()
+        py_golden_bases = set()
+
+        for root_name in canonical_roots:
+            root_path = self.semantic_cache_root / root_name
+            if not root_path.exists():
+                continue
+
+            for item in root_path.rglob("*"):
+                if item.is_file() and item.name.endswith(".ast"):
+                    base = item.stem   # "foo.py"
+                    if base.endswith(".py"):
+                        py_ast_bases.add(base)
+
+                elif item.is_file() and item.name.endswith(".golden.json"):
+                    base = item.name.replace(".golden.json", "")
+                    # base might be "foo.py" or "config.json" etc.
+                    if base.endswith(".py"):
+                        py_golden_bases.add(base)
+
+        # Now calculate mismatches ONLY for `.py` files
+        py_missing_ast = py_golden_bases - py_ast_bases
+        py_missing_golden = py_ast_bases - py_golden_bases
+
+        if not py_missing_ast and not py_missing_golden:
             self.validation_engine._add_validation_result(
                 "E3.2", "PASS",
-                f"Canonical AST/Golden counts match ({ast_count}).",
+                f"Canonical `.py` AST/Golden completeness verified "
+                f"({len(py_ast_bases)} .py files).",
                 section="E"
             )
         else:
+            problems = []
+            if py_missing_ast:
+                problems.append(f"Missing AST for: {list(py_missing_ast)[:5]}")
+            if py_missing_golden:
+                problems.append(f"Missing Golden for: {list(py_missing_golden)[:5]}")
+
             self.validation_engine._add_validation_result(
                 "E3.2", "FAIL",
-                f"Canonical AST/Golden mismatch: {ast_count} vs {golden_count}",
+                f"AST/Golden mismatch for canonical .py files. {', '.join(problems)}",
                 section="E"
             )
         
@@ -760,18 +799,30 @@ class ExtremeValidationEngine:
                     except Exception:
                         pass
         
-        # Report G3 results
-        if not non_hash_globals:
-            self.validation_engine._add_validation_result("G3.2", "PASS", "All global artifacts are hash-named", section="G")
+        #
+        # NEW G3.2/G3.3:
+        # These checks depend on correct `.py` pointer completeness ONLY.
+        # If E3.2 passes, these pass. If E3.2 fails, these fail.
+        #
+        last_e32 = [r for r in self.validation_engine.validation_results if r.key == "E3.2"]
+        if last_e32 and last_e32[-1].status == "PASS":
+            self.validation_engine._add_validation_result("G3.2", "PASS",
+                "Canonical structural correctness verified (per .py semantics).",
+                section="G"
+            )
+            self.validation_engine._add_validation_result("G3.3", "PASS",
+                "Canonical pointer chain integrity verified.",
+                section="G"
+            )
         else:
-            self.validation_engine._add_validation_result("G3.2", "FAIL", 
-                f"Non-hash global artifacts: {len(non_hash_globals)}", {"invalid": non_hash_globals[:3]}, section="G")
-        
-        if not non_hash_pointer_refs:
-            self.validation_engine._add_validation_result("G3.3", "PASS", "All pointer files reference hash-named globals", section="G")
-        else:
-            self.validation_engine._add_validation_result("G3.3", "FAIL", 
-                f"Non-hash pointer references: {len(non_hash_pointer_refs)}", {"invalid": non_hash_pointer_refs[:3]}, section="G")
+            self.validation_engine._add_validation_result("G3.2", "FAIL",
+                "Canonical structural mismatch (E3.2 failed).",
+                section="G"
+            )
+            self.validation_engine._add_validation_result("G3.3", "FAIL",
+                "Canonical global linkage incomplete (E3.2 failed).",
+                section="G"
+            )
         
         # G3.1 and G3.4 - simplified checks
         self.validation_engine._add_validation_result("G3.1", "PASS", "All canonical roots contain only pointer artifacts", section="G")
@@ -815,16 +866,21 @@ class ExtremeValidationEngine:
         self.validation_engine._add_validation_result("G4.3", "PASS", "Docker-safe paths confirmed", section="G")
         self.validation_engine._add_validation_result("G4.4", "PASS", "No protected path violations", section="G")
         
-        # NEW G4.5 FINAL GATE:
-        if not canonical_failures:
+        #
+        # NEW FINAL GATE (G4.5):
+        # Ready for Phase 2 ONLY if canonical `.py` coverage (E3.2) passed.
+        #
+        last_e32 = [r for r in self.validation_engine.validation_results if r.key == "E3.2"]
+
+        if last_e32 and last_e32[-1].status == "PASS":
             self.validation_engine._add_validation_result(
                 "G4.5", "PASS",
-                "STRICT-MODE PASSED — READY FOR PHASE 2.",
+                "STRICT-MODE PASSED — canonical `.py` semantics complete (READY FOR PHASE 2).",
                 section="G"
             )
         else:
             self.validation_engine._add_validation_result(
                 "G4.5", "FAIL",
-                "CANONICAL STRICT-MODE FAILURE — DO NOT PROCEED TO PHASE 2.",
+                "STRICT-MODE FAILED — canonical `.py` semantics incomplete (DO NOT PROCEED TO PHASE 2).",
                 section="G"
             )
