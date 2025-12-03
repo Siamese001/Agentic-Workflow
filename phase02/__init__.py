@@ -57,7 +57,7 @@ from .structural_diff_engine import StructuralDiffEngine
 from .semantic_diff_engine import SemanticDiffEngine
 from .composite_intent_generator import CompositeIntentGenerator
 from .unified_plan_generator import UnifiedPlanGenerator
-from .phase02_orchestrator import Phase02Orchestrator
+from .orchestrator import Phase02Orchestrator
 
 __version__ = "1.0.0"
 __description__ = "Phase 2 Semantic Structural & Code Diff Planning"
