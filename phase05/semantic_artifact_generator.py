@@ -129,6 +129,12 @@ class SemanticArtifactGenerator:
             return ast_data
             
         except SyntaxError as e:
+            # ================================================================
+            # NEW: explicit AST parse failure logging for debugging
+            # ================================================================
+            rel = file_info.relative_path.replace("\\", "/")
+            print(f"AST_PARSE_FAIL: {rel} (hash={file_info.sha256_hash}) error={e}")
+            
             # Handle syntax errors gracefully
             return {
                 "ast_version": "python_3.8+",
@@ -138,6 +144,12 @@ class SemanticArtifactGenerator:
                 "parse_failed": True
             }
         except Exception as e:
+            # ================================================================
+            # NEW: explicit AST parse failure logging for debugging
+            # ================================================================
+            rel = file_info.relative_path.replace("\\", "/")
+            print(f"AST_PARSE_FAIL: {rel} (hash={file_info.sha256_hash}) error={e}")
+            
             return {
                 "ast_version": "python_3.8+", 
                 "error": f"Parse error: {str(e)}",
