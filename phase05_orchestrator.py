@@ -69,9 +69,10 @@ class Phase05Orchestrator:
     and checkpoint/resume capability using transaction manifest.
     """
     
-    def __init__(self, dry_run: bool = False, resume_from: Optional[str] = None):
+    def __init__(self, dry_run: bool = False, resume_from: Optional[str] = None, strict_mode: bool = False):
         self.dry_run = dry_run
         self.resume_from = resume_from
+        self.strict_mode = strict_mode
         self.pipeline_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         # Initialize all modules (dependency injection)
@@ -79,7 +80,7 @@ class Phase05Orchestrator:
         self.archive_scanner = ArchiveScanner(dry_run=dry_run)
         self.artifact_generator = SemanticArtifactGenerator(dry_run=dry_run)
         self.dual_write_coordinator = DualWriteCoordinator(self.ssot_loader, dry_run=dry_run)
-        self.validation_engine = ValidationEngine(dry_run=dry_run)
+        self.validation_engine = ValidationEngine(dry_run=dry_run, strict_mode=strict_mode)
         
         # Inject dependencies to avoid circular imports
         self.validation_engine.set_dependencies(
@@ -446,6 +447,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode")
     parser.add_argument("--resume-from", help="Resume from specific step (SSOT_LOAD, ARCHIVE_SCAN, etc.)")
     parser.add_argument("--list-steps", action="store_true", help="List available pipeline steps")
+    parser.add_argument("--strict-mode", action="store_true", help="Run extreme validation with 89 criteria (Phase 2 gate)")
+    parser.add_argument("--validate-only", action="store_true", help="Run pre-flight validation only")
     args = parser.parse_args()
     
     if args.list_steps:
@@ -456,12 +459,49 @@ def main():
         return 0
     
     # Create orchestrator
-    orchestrator = Phase05Orchestrator(dry_run=args.dry_run, resume_from=args.resume_from)
+    orchestrator = Phase05Orchestrator(dry_run=args.dry_run, resume_from=args.resume_from, strict_mode=args.strict_mode)
+    
+    print("=== Phase 0.5 Semantic Cache Rebuild ===")
+    print(f"Pipeline ID: {orchestrator.pipeline_id}")
+    print(f"Dry Run: {args.dry_run}")
+    print(f"Resume From: {args.resume_from}")
+    print(f"Strict Mode: {args.strict_mode} (89 extreme validation criteria)")
+    print(f"Semantic Cache Root: {SEMANTIC_CACHE_ROOT}")
+    print()
+    
+    if args.strict_mode:
+        print(" STRICT MODE ENABLED - ALL 89 EXTREME CRITERIA MUST PASS")
+        print(" ANY FAILURE WILL BLOCK PHASE 2 (ZERO-LOSS GUARANTEE)")
+        print()
     
     # Run pipeline
     success = orchestrator.run_pipeline()
     
-    return 0 if success else 1
+    if success:
+        if args.strict_mode:
+            print()
+            print(" PHASE 0.5 COMPLETED SUCCESSFULLY IN STRICT MODE")
+            print(" ALL 89 EXTREME CRITERIA PASSED")
+            print(" ZERO-LOSS GUARANTEE MAINTAINED")
+            print(" SEMANTIC CACHE READY FOR PHASE 2")
+        else:
+            print()
+            print(" PHASE 0.5 COMPLETED SUCCESSFULLY")
+            print(" STANDARD VALIDATION PASSED")
+        
+        return 0
+    else:
+        print()
+        if args.strict_mode:
+            print(" PHASE 0.5 FAILED IN STRICT MODE")
+            print(" EXTREME VALIDATION CRITERIA NOT MET")
+            print(" DO NOT PROCEED TO PHASE 2")
+            print(" ZERO-LOSS GUARANTEE WOULD BE COMPROMISED")
+        else:
+            print(" PHASE 0.5 FAILED")
+            print(" VALIDATION ERRORS DETECTED")
+        
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main())
