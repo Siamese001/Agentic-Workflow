@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "120a04677936aecee86312cb73ada5f1768a1102254ce815c4f5271c8b158e6a",
-    "scan_timestamp": "2025-12-03T07:10:17.573075"
+    "scan_timestamp": "2025-12-03T07:26:03.868864"
   },
   "content_preview": "# File: workflow_LIC.py\n# Description: Complete workflow orchestration v13.0 - Pure Agentic Architecture\n# REFACTOR: All v12.0 agents replaced with HOP-based state architecture\n\n__version__ = \"13.0\"\n\nimport asyncio\nimport json\nimport os\nfrom datetime import datetime\nfrom typing import Dict, List, Any, Optional\nfrom pathlib import Path\n\n# Core infrastructure\nfrom state_manager_LIC import StateManager, StateValidator\nfrom memory_LIC import VectorMemoryStore\nfrom llm_clients import GeminiLLMClient\n...",
-  "creation_timestamp": "2025-12-03T07:10:52.716466",
+  "creation_timestamp": "2025-12-03T07:26:33.120747",
   "version": "1.0"
 }

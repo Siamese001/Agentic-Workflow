@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30",
-    "scan_timestamp": "2025-12-03T07:10:17.691213"
+    "scan_timestamp": "2025-12-03T07:26:03.973574"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"template_id\": \"LIC-FULL-v10.23.1\",\n    \"template_name\": \"LinkedIn InMail Cold Outreach - Complete with Staging Buffer & Scope Isolation\",\n    \"version\": \"10.23.1\",\n    \"base_version\": \"10.22\",\n    \"patches_applied\": [\n      \"v10.23: Staging Buffer Integration\",\n      \"v10.23.1: Scope Isolation Fix\"\n    ],\n    \"created_date\": \"2025-10-15\",\n    \"status\": \"PRODUCTION_READY\",\n    \"changelog\": {\n      \"v10.22\": \"Baseline - metadata-based validation\",\n      \"v10.23\": \"Added stag...",
-  "creation_timestamp": "2025-12-03T07:10:59.698514",
+  "creation_timestamp": "2025-12-03T07:26:38.928863",
   "version": "1.0"
 }

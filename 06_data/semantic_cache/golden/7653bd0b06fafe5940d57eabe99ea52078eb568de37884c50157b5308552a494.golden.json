@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
-    "scan_timestamp": "2025-12-03T07:10:17.565243"
+    "scan_timestamp": "2025-12-03T07:26:03.861040"
   },
   "content_preview": "from src.lic_agentic.qa import QAValidator\n\n\ndef test_missing_subject_fails():\n    validator = QAValidator()\n    draft = \"Hello\\n\\nBody without subject\"\n    result = validator.validate(draft, {\"123\": \"summary\"})\n    assert not result.ok\n    assert \"subject\" in \" \".join(result.missing_sections)\n\n\ndef test_complete_message_passes():\n    validator = QAValidator()\n    draft = (\n        \"Subject: Update\\n\\nHello there\\n[artifact_id:123] summary\\nCTA: Can we connect?\\nBest regards,\\nLIC Outreach Bot\"\n...",
-  "creation_timestamp": "2025-12-03T07:10:51.952727",
+  "creation_timestamp": "2025-12-03T07:26:32.396080",
   "version": "1.0"
 }

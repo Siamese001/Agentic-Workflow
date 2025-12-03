@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "9b2e487b1597a10e3f2b4a5b93488694a8beed125231a8791e97a324006e96bb",
-    "scan_timestamp": "2025-12-03T07:10:17.632117"
+    "scan_timestamp": "2025-12-03T07:26:03.918181"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.2\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.2\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.2: Applied K.3 Comprehensive Grounding Hardening. Added 4 validation layers to prevent metric misuse, team characterization drift, and unmapped claims. Builds on v8.5.1 Quality Control Triad.\",\n    \"changelog\": [\n      {\n        \"version\": ...",
-  "creation_timestamp": "2025-12-03T07:10:55.542807",
+  "creation_timestamp": "2025-12-03T07:26:35.556820",
   "version": "1.0"
 }

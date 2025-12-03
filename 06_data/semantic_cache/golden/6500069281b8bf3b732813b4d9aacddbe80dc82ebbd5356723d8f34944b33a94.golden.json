@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "6500069281b8bf3b732813b4d9aacddbe80dc82ebbd5356723d8f34944b33a94",
-    "scan_timestamp": "2025-12-03T07:10:17.625504"
+    "scan_timestamp": "2025-12-03T07:26:03.912115"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-03-2025_v7.5\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-04-2025_v7.13.25_C087\",\n    \"last_updated\": \"2025-10-04\",\n    \"description\": \"Orchestration system for LinkedIn outreach with unified RAG, claim verification, job application linkage, Unicode filtering, enhanced reasoning toggles\",\n    \"changelog\": [\n      {\n        \"version\": \"v7.13.25_C087\",\n        \"date\": \"2025-1...",
-  "creation_timestamp": "2025-12-03T07:10:55.279219",
+  "creation_timestamp": "2025-12-03T07:26:35.351907",
   "version": "1.0"
 }

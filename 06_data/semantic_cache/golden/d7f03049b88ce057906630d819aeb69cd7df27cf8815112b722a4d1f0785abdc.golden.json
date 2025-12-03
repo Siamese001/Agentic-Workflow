@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d7f03049b88ce057906630d819aeb69cd7df27cf8815112b722a4d1f0785abdc",
-    "scan_timestamp": "2025-12-03T07:10:17.543142"
+    "scan_timestamp": "2025-12-03T07:26:03.842071"
   },
   "content_preview": "\"\"\"Schema and evidence validation for outreach drafts.\"\"\"  # pragma: no cover\nfrom __future__ import annotations\n\nimport re\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, Sequence, Tuple\n\n\n@dataclass(frozen=True)\nclass QAResult:\n    \"\"\"Outcome of a QA validation pass.\"\"\"  # pragma: no cover\n\n    ok: bool\n    reasons: Tuple[str, ...]\n    missing_sections: Tuple[str, ...] = ()\n    missing_artifacts: Tuple[str, ...] = ()\n\n    def __bool__(self) -> bool:  # pragma: no cover - c...",
-  "creation_timestamp": "2025-12-03T07:10:50.867793",
+  "creation_timestamp": "2025-12-03T07:26:31.631231",
   "version": "1.0"
 }

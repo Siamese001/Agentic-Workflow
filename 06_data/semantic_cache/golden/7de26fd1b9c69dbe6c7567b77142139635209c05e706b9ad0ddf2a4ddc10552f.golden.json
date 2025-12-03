@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "7de26fd1b9c69dbe6c7567b77142139635209c05e706b9ad0ddf2a4ddc10552f",
-    "scan_timestamp": "2025-12-03T07:10:17.655146"
+    "scan_timestamp": "2025-12-03T07:26:03.939809"
   },
   "content_preview": "Version: LIC v3.4 (Functional-Parity Overwrite of v3.3; Prompt Shell v1.4\u2013compliant)\n\n## ROLE\n\nGovernance toggles:\n* This edition pins reasoning visibility ON by default (Reasoning-ON build).\n* METRICS_OVERLAY -> enforce overlay and BLOCK JSON on breach.\n* APP_TRACKER_MODE -> enforce App Tracker Hardened QA Spec R1\u2013R23.\n* SHOW_REASONING (default true) -> expose CoT and ToT in OUTPUT when true.\n* TRACE_TRANSFORMER (default true) -> add labeled transformer-phase notes when true.\n\nAllowed tools: we...",
-  "creation_timestamp": "2025-12-03T07:10:56.346904",
+  "creation_timestamp": "2025-12-03T07:26:36.145870",
   "version": "1.0"
 }

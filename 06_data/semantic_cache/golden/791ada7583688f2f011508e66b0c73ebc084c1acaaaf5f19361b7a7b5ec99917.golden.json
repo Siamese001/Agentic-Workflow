@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-    "scan_timestamp": "2025-12-03T07:10:17.560688"
+    "scan_timestamp": "2025-12-03T07:26:03.856939"
   },
   "content_preview": "\"\"\"Regression test enforcing retrieval latency SLO.\"\"\"\nfrom __future__ import annotations\n\nimport math\n\nfrom src.lic_agentic.agents.k3_message_architect import MessageArchitect\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef percentile(values: list[int], pct: float) -> float:\n    if not values:\n        raise ValueError(\"values must not be empty\")\n    ordered = sorted(values)\n    k = (len(ordered) - 1) * pct\n    f = math.floor(k)\n    c = math.ceil(k)\n    if f == c:\n        re...",
-  "creation_timestamp": "2025-12-03T07:10:51.742138",
+  "creation_timestamp": "2025-12-03T07:26:32.235275",
   "version": "1.0"
 }

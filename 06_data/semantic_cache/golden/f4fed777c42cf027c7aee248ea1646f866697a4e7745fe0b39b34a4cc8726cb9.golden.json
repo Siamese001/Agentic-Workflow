@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "f4fed777c42cf027c7aee248ea1646f866697a4e7745fe0b39b34a4cc8726cb9",
-    "scan_timestamp": "2025-12-03T07:10:17.634483"
+    "scan_timestamp": "2025-12-03T07:26:03.920574"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.5\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.5\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"Applied P855. Modified CONNECTION_REQ route to enable a targeted RAG strategy by default for non-job-specific messages, improving baseline personalization and reducing user friction.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.5.5\",\n    ...",
-  "creation_timestamp": "2025-12-03T07:10:55.645908",
+  "creation_timestamp": "2025-12-03T07:26:35.635690",
   "version": "1.0"
 }

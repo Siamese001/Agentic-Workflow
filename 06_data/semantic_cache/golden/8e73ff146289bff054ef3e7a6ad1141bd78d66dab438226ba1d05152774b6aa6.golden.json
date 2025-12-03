@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6",
-    "scan_timestamp": "2025-12-03T07:10:17.512873"
+    "scan_timestamp": "2025-12-03T07:26:03.818712"
   },
   "content_preview": "# File: validator_RES_v2.py\n# Core Validator Orchestrator Module - V18 Architecture (Refactored)\n# Version: 18.00 (Split into validation/ package)\n# This file contains only the PreFlightValidator, which orchestrates\n# the engine, context, and rules from its sub-modules.\n\nimport re\nimport json\nimport logging\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable\nfrom collections import defaultdict\nfrom functools import partial\n\n# Import dependencie...",
-  "creation_timestamp": "2025-12-03T07:10:44.185893",
+  "creation_timestamp": "2025-12-03T07:26:26.226737",
   "version": "1.0"
 }

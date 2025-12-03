@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9368537f3676b323020de0e99d8741c386f06cb9252c0c2e04a14d1b2c237b59",
-    "scan_timestamp": "2025-12-03T07:10:17.518569"
+    "scan_timestamp": "2025-12-03T07:26:03.823063"
   },
   "content_preview": "# File: validation_stack.py\n# Version: 5.9 (Batch Harness)\n# Zero-Loss Consolidation - The V18 Engine with MoE Architecture\n# Merges: validation_context.py \u2192 validation_rules.py \u2192 validation_engine.py \u2192 validator_RES.py\n# REFACTORED: Removed all hard-coded agent maps, fallback constraints, magic numbers, and rule lists.\n# All configuration is now read from the central CONFIG object.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n...",
-  "creation_timestamp": "2025-12-03T07:10:44.789627",
+  "creation_timestamp": "2025-12-03T07:26:26.741694",
   "version": "1.0"
 }

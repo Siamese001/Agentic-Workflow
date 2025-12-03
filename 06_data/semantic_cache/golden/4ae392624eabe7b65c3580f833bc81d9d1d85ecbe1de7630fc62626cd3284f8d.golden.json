@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "4ae392624eabe7b65c3580f833bc81d9d1d85ecbe1de7630fc62626cd3284f8d",
-    "scan_timestamp": "2025-12-03T07:10:17.628634"
+    "scan_timestamp": "2025-12-03T07:26:03.914695"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-06-2025_v8.2.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-06-2025_v8.2.0\",\n    \"last_updated\": \"2025-10-06\",\n    \"description\": \"v8.2: Comprehensive bug fix for Reasoning Visualization System and template enforcement.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.2.0\",\n        \"date\": \"2025-10-06\",\n        \"author\": \"LIC Engineering Team\",\n        \"description\": \"Ap...",
-  "creation_timestamp": "2025-12-03T07:10:55.404155",
+  "creation_timestamp": "2025-12-03T07:26:35.436156",
   "version": "1.0"
 }

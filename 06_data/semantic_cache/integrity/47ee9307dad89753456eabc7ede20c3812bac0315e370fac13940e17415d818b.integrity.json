@@ -1,11 +1,22 @@
 {
-  "hash": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
-  "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
-  "archive_name": "Monolith",
-  "relative_path": "TEST_FINDINGS_REPORT.md",
+  "integrity_type": "content_verification",
+  "file_hash": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
+  "content_hash": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
   "file_size": 8836,
-  "file_extension": ".md",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:03.806912",
-  "integrity_timestamp": "2025-12-03T07:26:04.399416"
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
+    "archive_name": "Monolith",
+    "relative_path": "TEST_FINDINGS_REPORT.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolith\\TEST_FINDINGS_REPORT.md",
+    "file_size": 8836,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
+    "scan_timestamp": "2025-12-03T07:26:03.806912"
+  },
+  "verification_timestamp": "2025-12-03T07:26:24.135345",
+  "checksums": {
+    "sha256": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
+    "md5": "9d3d2d9303a08f8541112bab8f765c83"
+  }
 }

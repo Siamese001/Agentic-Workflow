@@ -1,11 +1,22 @@
 {
-  "hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
-  "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-  "archive_name": "Agentic-LIC",
-  "relative_path": "src\\lic_agentic\\agents\\k7_validator_agent.py",
+  "integrity_type": "content_verification",
+  "file_hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
+  "content_hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
   "file_size": 4727,
-  "file_extension": ".py",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:03.839602",
-  "integrity_timestamp": "2025-12-03T07:26:04.427974"
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\agents\\k7_validator_agent.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k7_validator_agent.py",
+    "file_size": 4727,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
+    "scan_timestamp": "2025-12-03T07:26:03.839602"
+  },
+  "verification_timestamp": "2025-12-03T07:26:31.526431",
+  "checksums": {
+    "sha256": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
+    "md5": "daac5b359eb612c9de2cb80c5681d984"
+  }
 }

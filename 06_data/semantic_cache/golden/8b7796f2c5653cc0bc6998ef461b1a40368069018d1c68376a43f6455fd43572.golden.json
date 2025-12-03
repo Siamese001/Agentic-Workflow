@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "8b7796f2c5653cc0bc6998ef461b1a40368069018d1c68376a43f6455fd43572",
-    "scan_timestamp": "2025-12-03T07:10:17.655404"
+    "scan_timestamp": "2025-12-03T07:26:03.940130"
   },
   "content_preview": "LIC 2025-09-15 v1.0 (Functional-Parity Overwrite of v3.4; Prompt Shell v1.9\u2013compliant)\n\n## ROLE\n\nGovernance toggles (default ON per MSC):\n* METRICS_OVERLAY = true \u2014 enforce 3-line overlay, thresholds, and **BLOCK on breach**.\n* APP_TRACKER_MODE = true \u2014 enforce App Tracker QA Spec v4 (R1\u2013R23).\n* SHOW_REASONING = true \u2014 **mandate** intermediary Chain-of-Thought and Tree-of-Thought summaries for every subsection.\n* TRACE_TRANSFORMER = true \u2014 record entropy, mean logprob, and 3\u20137 attention peaks wh...",
-  "creation_timestamp": "2025-12-03T07:10:56.352545",
+  "creation_timestamp": "2025-12-03T07:26:36.150821",
   "version": "1.0"
 }

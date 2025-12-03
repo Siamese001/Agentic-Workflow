@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d3e1093af87483f21141c1b9ae51af4d396c83511e8ddcec11c706bb4408a62a",
-    "scan_timestamp": "2025-12-03T07:10:17.572498"
+    "scan_timestamp": "2025-12-03T07:26:03.868287"
   },
   "content_preview": "# File: utils_LIC.py\n# Description: General-purpose utilities for the LIC workflow.\n# REFACTOR: v13.0 - This file has been slimmed down.\n# - AdaptiveTemperatureController: Removed. Logic moved to agent_specs_LIC.json and HOPOrchestrator.\n# - ContextManager: Removed. No longer needed in v13.0 HOP architecture.\n# - ValidationHelper: Removed. Replaced by tools_LIC.py (ValidationToolkit).\n\n__version__ = \"13.0\"\n\nimport re\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Optiona...",
-  "creation_timestamp": "2025-12-03T07:10:52.621188",
+  "creation_timestamp": "2025-12-03T07:26:33.045266",
   "version": "1.0"
 }

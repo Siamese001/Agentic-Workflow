@@ -1,11 +1,22 @@
 {
-  "hash": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
-  "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
-  "archive_name": "v2",
-  "relative_path": "rules.py",
+  "integrity_type": "content_verification",
+  "file_hash": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
+  "content_hash": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
   "file_size": 41535,
-  "file_extension": ".py",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:03.816706",
-  "integrity_timestamp": "2025-12-03T07:26:04.409993"
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "rules.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\rules.py",
+    "file_size": 41535,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
+    "scan_timestamp": "2025-12-03T07:26:03.816706"
+  },
+  "verification_timestamp": "2025-12-03T07:26:26.021743",
+  "checksums": {
+    "sha256": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
+    "md5": "a1d55b3c2f7cc43f86f5f79bbf80b22c"
+  }
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
-    "scan_timestamp": "2025-12-03T07:10:17.682185"
+    "scan_timestamp": "2025-12-03T07:26:03.967298"
   },
   "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.4\n====================================================\n\nCHANGELOG v11.4 (CRITICAL - Decision Tree from v10.24):\n--------------------------------------------------------\n\u2728 NEW: Proper Decision Tree Implementation from LIC v10.24\n- Added FOLLOW_UP route for continuing conversations\n- Added connection_status field (\"not_connected\" | \"connected\")\n- Added prior_message_count field for follow-up tracking\n- Implemented v10.24 routing logic:\n  1. IF...",
-  "creation_timestamp": "2025-12-03T07:10:58.336809",
+  "creation_timestamp": "2025-12-03T07:26:37.730767",
   "version": "1.0"
 }

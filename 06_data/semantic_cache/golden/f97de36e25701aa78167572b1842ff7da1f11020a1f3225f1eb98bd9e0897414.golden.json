@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f97de36e25701aa78167572b1842ff7da1f11020a1f3225f1eb98bd9e0897414",
-    "scan_timestamp": "2025-12-03T07:10:17.536932"
+    "scan_timestamp": "2025-12-03T07:26:03.837091"
   },
   "content_preview": "# File: run_batch_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7 (e.g., core_v10_7, ConfigV10_7).\n# - UPDATED: create_workflow_context call updated to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #25): Added backpressure check. The batch\n#   will not run if the number of files in BATCH_QUEUE_DIR\n#   exceeds config.batch_config.max_batch_queue_size.\n# - FIXED: All v10_5 imports and class names updated to v10_7.\n\nimport os\nimport csv\n...",
-  "creation_timestamp": "2025-12-03T07:10:50.538514",
+  "creation_timestamp": "2025-12-03T07:26:31.319197",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "efa3aa1b1be8376f64e5e554911ba9cfbecd3de5cd4883f84c8839a065d2aedd",
-    "scan_timestamp": "2025-12-03T07:10:17.721071"
+    "scan_timestamp": "2025-12-03T07:26:04.012417"
   },
   "content_preview": "Below is a **full, zero-loss v2.85** that is a strict superset of v2.84a with the Nuclear RCA remediation applied. I validated that Executive, C-Suite, and Senior TA approved prompts, the Short (NEW) rubric, CharCounter v2.1.1, all QA grids, Auto-NDP (with append-only dates), and new v2.85 blockers are present. &#x20;\n\n````markdown\n# LinkedInCanonical \u2014 2025-09-09 v2.85 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> **v2.85**\n\nv2.85 is...",
-  "creation_timestamp": "2025-12-03T07:11:00.591781",
+  "creation_timestamp": "2025-12-03T07:26:39.707786",
   "version": "1.0"
 }

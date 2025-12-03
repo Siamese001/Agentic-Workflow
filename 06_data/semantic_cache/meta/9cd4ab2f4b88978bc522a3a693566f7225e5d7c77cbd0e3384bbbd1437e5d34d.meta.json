@@ -2,15 +2,15 @@
   "meta_type": "artifact_manifest",
   "file_hash": "9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d",
   "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
-    "archive_name": "Agentic-Workflow-10_7_main",
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
     "relative_path": "agentic_design_v10_7.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agentic_design_v10_7.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agentic_design_v10_7.md",
     "file_size": 160910,
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d",
-    "scan_timestamp": "2025-12-03T07:26:03.703340"
+    "scan_timestamp": "2025-12-03T07:26:03.830551"
   },
   "artifacts": {
     "ast": "ast/9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d.ast",
@@ -20,6 +20,6 @@
     "golden": "golden/9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d.golden.json",
     "integrity": "integrity/9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d.integrity.json"
   },
-  "generation_timestamp": "2025-12-03T07:26:14.531482",
+  "generation_timestamp": "2025-12-03T07:26:30.683384",
   "artifact_count": 5
 }

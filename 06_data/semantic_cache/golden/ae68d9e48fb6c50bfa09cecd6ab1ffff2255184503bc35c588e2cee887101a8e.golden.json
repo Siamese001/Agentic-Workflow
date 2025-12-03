@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ae68d9e48fb6c50bfa09cecd6ab1ffff2255184503bc35c588e2cee887101a8e",
-    "scan_timestamp": "2025-12-03T07:10:17.684802"
+    "scan_timestamp": "2025-12-03T07:26:03.969847"
   },
   "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.8\n====================================================\n\nCHANGELOG v11.8 (FEATURE - Sender Grounding & Context-Aware CTAs):\n---------------------------------------------------------\n\u2728 NEW: S2_ExtractSenderGrounding - Extract whitelisted team members, products, case studies from RAG (SPEC 1)\n\u2728 NEW: S4_GenerateSenderGroundingConstraints - Inject \"my team\" \u2192 names mapping as generation rules (SPEC 2)\n\u2728 NEW: S4_GenerateContextAwareCTA - Route-spe...",
-  "creation_timestamp": "2025-12-03T07:10:59.583617",
+  "creation_timestamp": "2025-12-03T07:26:38.821290",
   "version": "1.0"
 }

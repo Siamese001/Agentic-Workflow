@@ -30,29 +30,36 @@
     {
       "step_id": "ARTIFACT_GENERATION",
       "step_name": "Generate semantic artifacts",
-      "status": "RUNNING",
+      "status": "COMPLETED",
       "start_time": "2025-12-03T07:26:04.594542",
-      "end_time": null,
+      "end_time": "2025-12-03T07:26:40.869037",
       "error_message": null,
-      "artifacts_created": []
+      "artifacts_created": [
+        "semantic_artifacts_1296.json"
+      ]
     },
     {
       "step_id": "DUAL_WRITE",
       "step_name": "Create global artifacts and canonical pointers",
-      "status": "PENDING",
-      "start_time": null,
-      "end_time": null,
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T07:26:40.870122",
+      "end_time": "2025-12-03T07:26:41.257670",
       "error_message": null,
-      "artifacts_created": []
+      "artifacts_created": [
+        "dual_write_report.json",
+        "unmapped_files.json"
+      ]
     },
     {
       "step_id": "VALIDATION",
       "step_name": "Run comprehensive validation",
-      "status": "PENDING",
-      "start_time": null,
-      "end_time": null,
-      "error_message": null,
-      "artifacts_created": []
+      "status": "FAILED",
+      "start_time": "2025-12-03T07:26:41.258728",
+      "end_time": "2025-12-03T07:26:46.894446",
+      "error_message": "Step Run comprehensive validation failed",
+      "artifacts_created": [
+        "validation_report.json"
+      ]
     },
     {
       "step_id": "CLEANUP",
@@ -64,7 +71,7 @@
       "artifacts_created": []
     }
   ],
-  "current_step": 2,
+  "current_step": 4,
   "total_files_processed": 0,
   "artifacts_generated": 0
 }

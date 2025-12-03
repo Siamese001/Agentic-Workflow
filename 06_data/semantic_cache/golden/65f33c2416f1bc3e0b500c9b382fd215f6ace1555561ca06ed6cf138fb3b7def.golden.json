@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
-    "scan_timestamp": "2025-12-03T07:10:17.563261"
+    "scan_timestamp": "2025-12-03T07:26:03.859145"
   },
   "content_preview": "\"\"\"MCPClient discovery and invocation tests.\"\"\"\nimport pytest\n\nfrom src.lic_agentic.mcp import MCPClient, ToolSpec\n\n\ndef test_discover_filters_by_capability_and_trust():\n    client = MCPClient(\n        tools=[\n            ToolSpec(\n                id=\"alpha\",\n                name=\"Alpha\",\n                capabilities=(\"profile_lookup\",),\n                cost=0.2,\n                trust_tier=\"high\",\n                latency_ms=200,\n            ),\n            ToolSpec(\n                id=\"beta\",\n   ...",
-  "creation_timestamp": "2025-12-03T07:10:51.850240",
+  "creation_timestamp": "2025-12-03T07:26:32.299439",
   "version": "1.0"
 }

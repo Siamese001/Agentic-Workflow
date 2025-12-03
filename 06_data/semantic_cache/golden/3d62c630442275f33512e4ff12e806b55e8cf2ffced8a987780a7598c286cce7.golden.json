@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3d62c630442275f33512e4ff12e806b55e8cf2ffced8a987780a7598c286cce7",
-    "scan_timestamp": "2025-12-03T07:10:17.537348"
+    "scan_timestamp": "2025-12-03T07:26:03.837461"
   },
   "content_preview": "# File: run_learning_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context call updated to v10_7.\n# - REFACTORED (Fix #14, #17, #19, #20, #24): All async agents\n#   (Summarizer, PatternFinder, Hypothesis, etc.) now use the new\n#   async `_format_prompt_with_defaults` from core. This injects\n#   Cognitive Modes, Goal State, Failure Warnings, and Reflection steps\n#   into all meta-learning LLM calls.\n#\n# v10.7 M...",
-  "creation_timestamp": "2025-12-03T07:10:50.600830",
+  "creation_timestamp": "2025-12-03T07:26:31.374318",
   "version": "1.0"
 }

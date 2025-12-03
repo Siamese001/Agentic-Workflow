@@ -1,11 +1,22 @@
 {
-  "hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-  "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-  "archive_name": "Old LIC",
-  "relative_path": "utils.py",
+  "integrity_type": "content_verification",
+  "file_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
+  "content_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
   "file_size": 6456,
-  "file_extension": ".py",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:04.026336",
-  "integrity_timestamp": "2025-12-03T07:26:04.562839"
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "utils.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\utils.py",
+    "file_size": 6456,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
+    "scan_timestamp": "2025-12-03T07:26:04.026336"
+  },
+  "verification_timestamp": "2025-12-03T07:26:40.297487",
+  "checksums": {
+    "sha256": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
+    "md5": "9e97d245cdf1d1f6b7c9b3b809348264"
+  }
 }

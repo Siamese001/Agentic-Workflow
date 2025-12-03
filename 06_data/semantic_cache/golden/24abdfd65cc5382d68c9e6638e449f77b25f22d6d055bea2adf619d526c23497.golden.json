@@ -3,17 +3,17 @@
   "file_hash": "24abdfd65cc5382d68c9e6638e449f77b25f22d6d055bea2adf619d526c23497",
   "content_hash": "24abdfd65cc5382d68c9e6638e449f77b25f22d6d055bea2adf619d526c23497",
   "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
-    "archive_name": "Agentic-Workflow-10_7_main",
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
     "relative_path": "job_input.json",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\job_input.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\job_input.json",
     "file_size": 6193,
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "24abdfd65cc5382d68c9e6638e449f77b25f22d6d055bea2adf619d526c23497",
-    "scan_timestamp": "2025-12-03T07:26:03.719113"
+    "scan_timestamp": "2025-12-03T07:26:03.833520"
   },
   "content_preview": "{\n  \"company_name\": \"NEO4j\",\n  \"job_title\": \"Vice President, Growth & Strategic Partnerships\",\n  \"jd_url\": \"https://job-boards.greenhouse.io/neo4j/jobs/4613197006?gh_jid=4613197006&gh_src=6fa805c96us\",\n  \"job_description\": \"Vice President, Growth & Strategic Partnerships\\nRemote: United States\\nAbout Neo4j:\\nNeo4j is the leader in Graph Database & Analytics, helping organizations uncover hidden patterns and relationships across billions of data connections deeply, easily, and quickly. Customers ...",
-  "creation_timestamp": "2025-12-03T07:26:16.631805",
+  "creation_timestamp": "2025-12-03T07:26:31.207626",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "66375fccf65bcf69740b9f002712e77831cb5b29e6644cfde52d079092194f42",
-    "scan_timestamp": "2025-12-03T07:10:17.646940"
+    "scan_timestamp": "2025-12-03T07:26:03.932531"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v9.21\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"description\": \"Implemented Enhanced Exploration config for C-Level archetype by doubling CoT, ToT, and Self-Consistency parameters.\"\n  },\n  \"1.role\": {\n    \"description\": \"Defines the AI's role under the new, hardened architecture.\",\n    \"persona\": \"LIC (Lifecycle Integration Catalyst)\",\n    \"objective\": \"To first act as a deterministic 'Clerk' to extract and scaffold...",
-  "creation_timestamp": "2025-12-03T07:10:56.111605",
+  "creation_timestamp": "2025-12-03T07:26:35.986020",
   "version": "1.0"
 }

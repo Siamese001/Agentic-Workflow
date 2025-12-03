@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "5bf810e70f4e7bd3d54a239e7453943ed5c3e0a04f0e25aeb5720ed93c63a97f",
-    "scan_timestamp": "2025-12-03T07:10:17.646342"
+    "scan_timestamp": "2025-12-03T07:26:03.931995"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v9.0\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"description\": \"A complete, from-scratch re-architecture of the LIC workflow based on the successful 'Clerk, then Artist' model. This version replaces the brittle state machine and monolithic config with a flexible, modular, and philosophically-driven design.\"\n  },\n  \"1.role\": {\n    \"description\": \"Defines the AI's role under the new, hardened architecture.\",\n    \"perso...",
-  "creation_timestamp": "2025-12-03T07:10:56.083487",
+  "creation_timestamp": "2025-12-03T07:26:35.975689",
   "version": "1.0"
 }

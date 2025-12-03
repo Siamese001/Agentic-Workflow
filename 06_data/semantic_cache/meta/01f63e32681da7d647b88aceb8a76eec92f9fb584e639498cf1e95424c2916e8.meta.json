@@ -10,7 +10,7 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "01f63e32681da7d647b88aceb8a76eec92f9fb584e639498cf1e95424c2916e8",
-    "scan_timestamp": "2025-12-03T07:10:17.704531"
+    "scan_timestamp": "2025-12-03T07:26:03.986835"
   },
   "artifacts": {
     "ast": "ast/01f63e32681da7d647b88aceb8a76eec92f9fb584e639498cf1e95424c2916e8.ast",
@@ -20,6 +20,6 @@
     "golden": "golden/01f63e32681da7d647b88aceb8a76eec92f9fb584e639498cf1e95424c2916e8.golden.json",
     "integrity": "integrity/01f63e32681da7d647b88aceb8a76eec92f9fb584e639498cf1e95424c2916e8.integrity.json"
   },
-  "generation_timestamp": "2025-12-03T07:11:00.022779",
+  "generation_timestamp": "2025-12-03T07:26:39.212026",
   "artifact_count": 5
 }

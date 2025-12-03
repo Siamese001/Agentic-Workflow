@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a6576d4e6469926d59230af6fd34d4be99714755a05572a46087291761a255ab",
-    "scan_timestamp": "2025-12-03T07:10:17.657595"
+    "scan_timestamp": "2025-12-03T07:26:03.942914"
   },
   "content_preview": "{\n  \"prompt_shell\": {\n    \"version\": \"3.5-MZLO-LIC-v1.0\",\n    \"name\": \"LIC 4.0 - LinkedIn Outreach Canonical (v2025-09-23)\",\n    \"purpose\": \"Define authority, scope, enforceable rules, and non-negotiables for converting any prompt into the canonical six-section structure.\",\n    \"sections_required\": [\n      \"1.role\",\n      \"2.task\",\n      \"3.context\",\n      \"4.reasoning\",\n      \"5.output\",\n      \"6.conditions\"\n    ],\n    \"enforcement\": {\n      \"reject_out_of_order_emission\": true,\n      \"block_ou...",
-  "creation_timestamp": "2025-12-03T07:10:56.403908",
+  "creation_timestamp": "2025-12-03T07:26:36.188126",
   "version": "1.0"
 }

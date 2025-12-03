@@ -1,5 +1,5 @@
 {
-  "validation_timestamp": "2025-12-03T07:11:08.613927",
+  "validation_timestamp": "2025-12-03T07:26:46.891863",
   "validation_mode": "strict_89_criteria",
   "statistics": {
     "total_keys": 73,
@@ -366,7 +366,7 @@
     {
       "key": "E3.2",
       "status": "FAIL",
-      "message": "Canonical AST/Golden mismatch: 993 vs 994",
+      "message": "AST/Golden mismatch for canonical .py files. Missing AST for: ['app_tracker_schema.py']",
       "details": null,
       "section": "E"
     },
@@ -513,27 +513,15 @@
     {
       "key": "G3.2",
       "status": "FAIL",
-      "message": "Non-hash global artifacts: 6053",
-      "details": {
-        "invalid": [
-          "diffs/005653e7868b7f5d51d8f34f94c89c38fa6de5e64f45d4ae628710652af0c773.diff.json",
-          "diffs/0070647eb044e1afb2174bc8771c626dd051a6baddc0f7819bc723b08b944cf1.diff.json",
-          "diffs/007716f0815427d43c87cfe30befbe8ad1f6d1871e72316b06bf306c8baa9d0f.diff.json"
-        ]
-      },
+      "message": "Canonical structural mismatch (E3.2 failed).",
+      "details": null,
       "section": "G"
     },
     {
       "key": "G3.3",
       "status": "FAIL",
-      "message": "Non-hash pointer references: 7002",
-      "details": {
-        "invalid": [
-          "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.ast.meta.json -> ",
-          "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.diff.json -> ",
-          "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.embedding.meta.json -> "
-        ]
-      },
+      "message": "Canonical global linkage incomplete (E3.2 failed).",
+      "details": null,
       "section": "G"
     },
     {
@@ -581,7 +569,7 @@
     {
       "key": "G4.5",
       "status": "FAIL",
-      "message": "CANONICAL STRICT-MODE FAILURE \u2014 DO NOT PROCEED TO PHASE 2.",
+      "message": "STRICT-MODE FAILED \u2014 canonical `.py` semantics incomplete (DO NOT PROCEED TO PHASE 2).",
       "details": null,
       "section": "G"
     }

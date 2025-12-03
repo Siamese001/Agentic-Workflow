@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c",
-    "scan_timestamp": "2025-12-03T07:10:17.538761"
+    "scan_timestamp": "2025-12-03T07:26:03.838853"
   },
   "content_preview": "\"\"\"Compose outreach drafts using reasoning toggles and retrieval evidence.\"\"\"\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom typing import Dict, Iterable, List, Sequence, Tuple\n\nfrom ..rag import ContentStore, EvidenceRegistry, RetrievalPlan\nfrom ..rag.tool_registry import ToolRegistry, ToolResult\nfrom ..reasoning import cot, reflexion, tot\nfrom ..reasoning.toggles import ReasoningToggles\n\n_ANCHOR_WINDOW_S = 60 * 60 * 24 * ...",
-  "creation_timestamp": "2025-12-03T07:10:50.690702",
+  "creation_timestamp": "2025-12-03T07:26:31.469356",
   "version": "1.0"
 }

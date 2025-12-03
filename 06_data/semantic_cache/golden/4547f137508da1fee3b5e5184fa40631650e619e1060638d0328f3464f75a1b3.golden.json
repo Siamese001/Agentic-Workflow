@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "4547f137508da1fee3b5e5184fa40631650e619e1060638d0328f3464f75a1b3",
-    "scan_timestamp": "2025-12-03T07:10:17.728255"
+    "scan_timestamp": "2025-12-03T07:26:04.022386"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-10 v2.88 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> v2.86 -> v2.87 -> **v2.88**\n\nv2.88 is a versioned zero-loss overwrite that adds explicit operator archetype notification and DRQ toolbar engagement prompt for C-Level archetypes. All v2.87 hardenings and restorations remain intact.\n\n-------------------------------------------------------------------------------\n## 1) ROLE\nYou are the LinkedIn...",
-  "creation_timestamp": "2025-12-03T07:11:00.889657",
+  "creation_timestamp": "2025-12-03T07:26:39.960762",
   "version": "1.0"
 }

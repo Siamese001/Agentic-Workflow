@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "66a2de91fd93f1751ee091e4b37db8fb5a81f1b6e33a9d46ba73d9a8e375b5f3",
-    "scan_timestamp": "2025-12-03T07:10:17.729435"
+    "scan_timestamp": "2025-12-03T07:26:04.023631"
   },
   "content_preview": "# File: prompts.py\n# Description: Prompt templates for the LIC workflow.\n\n__version__ = \"11.10\"\n\nfrom models import Route, Archetype\n\n# NEW v11.9: Context-Aware CTA Templates\nCTA_TEMPLATES = {\n    Route.CONNECTION_REQ: {\n        \"default\": None  # CONNECTION_REQ has no CTA per SPEC 3\n    },\n    Route.INMAIL: {\n        Archetype.C_LEVEL: \"Would you be open to a brief conversation about how [TOPIC] might align with your strategic priorities?\",\n        Archetype.EXECUTIVE: \"I'd welcome the chance t...",
-  "creation_timestamp": "2025-12-03T07:11:00.938954",
+  "creation_timestamp": "2025-12-03T07:26:39.998387",
   "version": "1.0"
 }

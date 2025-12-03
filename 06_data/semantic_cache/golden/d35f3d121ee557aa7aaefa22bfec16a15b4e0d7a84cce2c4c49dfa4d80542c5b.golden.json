@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "d35f3d121ee557aa7aaefa22bfec16a15b4e0d7a84cce2c4c49dfa4d80542c5b",
-    "scan_timestamp": "2025-12-03T07:10:17.627833"
+    "scan_timestamp": "2025-12-03T07:26:03.914034"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-06-2025_v8.0.1\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-06-2025_v8.0.1\",\n    \"last_updated\": \"2025-10-06\",\n    \"description\": \"PATCH: Auto-display toggle table after K.1 + auto-scan tracker in Section 3\",\n    \"changelog\": [],\n    \"patches\": [\n      {\n        \"patch_id\": \"PATCH_C096\",\n        \"date\": \"2025-10-06\",\n        \"description\": \"K.1 confirmation gate: auto-displ...",
-  "creation_timestamp": "2025-12-03T07:10:55.377814",
+  "creation_timestamp": "2025-12-03T07:26:35.417465",
   "version": "1.0"
 }

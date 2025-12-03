@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457",
-    "scan_timestamp": "2025-12-03T07:10:17.507802"
+    "scan_timestamp": "2025-12-03T07:26:03.813388"
   },
   "content_preview": "{\n  \"description\": \"A comprehensive suite of rules for style enforcement, including hyphenation and advanced AI text sanitization inspired by principles from leading language models.\",\n  \"style_version\": \"v2.1-Comprehensive\",\n  \"rules\": {\n    \"unnatural_hyphens_remove\": [\n      {\"from\": \"AI-powered\", \"to\": \"AI powered\"},\n      {\"from\": \"PS-centric\", \"to\": \"professional services\"},\n      {\"from\": \"high-velocity\", \"to\": \"high velocity\"},\n      {\"from\": \"automation-first\", \"to\": \"automation\"},\n    ...",
-  "creation_timestamp": "2025-12-03T07:10:43.332613",
+  "creation_timestamp": "2025-12-03T07:26:25.532503",
   "version": "1.0"
 }

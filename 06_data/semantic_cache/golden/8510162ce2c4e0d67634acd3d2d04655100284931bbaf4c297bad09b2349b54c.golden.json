@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8510162ce2c4e0d67634acd3d2d04655100284931bbaf4c297bad09b2349b54c",
-    "scan_timestamp": "2025-12-03T07:10:17.549846"
+    "scan_timestamp": "2025-12-03T07:26:03.847385"
   },
   "content_preview": "\"\"\"Telemetry policy controller for adaptive tuning.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Mapping\n\n\ndef _clamp(value: float, minimum: float, maximum: float) -> float:\n    return max(minimum, min(value, maximum))\n\n\n@dataclass(frozen=True)\nclass PolicyUpdate:\n    \"\"\"Return value describing the latest policy adjustments.\"\"\"\n\n    budget_multiplier: float\n    temperature_cap: float\n    tot_branches: int\n    tool_weights: Dict[str, float]\n\n\nc...",
-  "creation_timestamp": "2025-12-03T07:10:51.103534",
+  "creation_timestamp": "2025-12-03T07:26:31.787173",
   "version": "1.0"
 }

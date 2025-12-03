@@ -1,11 +1,22 @@
 {
-  "hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
-  "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
-  "archive_name": "v2",
-  "relative_path": "constraints.json",
+  "integrity_type": "content_verification",
+  "file_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
+  "content_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
   "file_size": 1811,
-  "file_extension": ".json",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:03.811133",
-  "integrity_timestamp": "2025-12-03T07:26:04.403022"
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "constraints.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\constraints.json",
+    "file_size": 1811,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
+    "scan_timestamp": "2025-12-03T07:26:03.811133"
+  },
+  "verification_timestamp": "2025-12-03T07:26:25.146890",
+  "checksums": {
+    "sha256": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
+    "md5": "ee4e0eea7002e695618aea4793c573e4"
+  }
 }

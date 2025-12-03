@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
-    "scan_timestamp": "2025-12-03T07:10:17.509651"
+    "scan_timestamp": "2025-12-03T07:26:03.815064"
   },
   "content_preview": "# File: prompts_RES.py\n# Version: 17.00 - V2 Agentic Architecture Compatible\n# Prompt Templates module for Resume Workflow\n# Contains all *logic* for loading and formatting prompts from prompts.json\n# V2 UPDATE: Enhanced with CRL integration helpers and v2-specific prompt builders\n\nimport re\nimport json\nimport logging\nimport os\nfrom typing import Dict, List, Tuple, Optional, Any\nfrom collections import defaultdict\n\n# --- REFACTOR: Import global CONFIG ---\nfrom config_RES_v2 import CONFIG\n# --- E...",
-  "creation_timestamp": "2025-12-03T07:10:43.488209",
+  "creation_timestamp": "2025-12-03T07:26:25.663529",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d9baa0347089c88b6f93fe8ae49bac5064a05f283f63e84cd182641e2321b0e3",
-    "scan_timestamp": "2025-12-03T07:10:17.729817"
+    "scan_timestamp": "2025-12-03T07:26:04.024114"
   },
   "content_preview": "# File: rag.py\n# Description: RAG (Retrieval-Augmented Generation) agents and utilities\n\n__version__ = \"11.10\"\n# for the LIC workflow.\n\nimport asyncio\nimport re\nfrom collections import defaultdict\nfrom typing import Dict, List, Any, Tuple\n\nimport numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nfrom models import (\n    RAGResult, ResearchContext, ProfileAnalysis, Archetype, RAGCritique, \n    MessageClaim, OutreachMiss...",
-  "creation_timestamp": "2025-12-03T07:11:00.970599",
+  "creation_timestamp": "2025-12-03T07:26:40.022433",
   "version": "1.0"
 }

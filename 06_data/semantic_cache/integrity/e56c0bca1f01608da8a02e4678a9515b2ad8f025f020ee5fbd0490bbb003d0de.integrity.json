@@ -1,11 +1,22 @@
 {
-  "hash": "e56c0bca1f01608da8a02e4678a9515b2ad8f025f020ee5fbd0490bbb003d0de",
-  "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-  "archive_name": "Old LIC",
-  "relative_path": "rag_LIC v11_10.py",
+  "integrity_type": "content_verification",
+  "file_hash": "e56c0bca1f01608da8a02e4678a9515b2ad8f025f020ee5fbd0490bbb003d0de",
+  "content_hash": "f96ed02eb5515121b8dd62c1a6935b0b7a466c22ede6b2c033bc07dc0317ed20",
   "file_size": 25503,
-  "file_extension": ".py",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:04.024552",
-  "integrity_timestamp": "2025-12-03T07:26:04.561909"
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "rag_LIC v11_10.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\rag_LIC v11_10.py",
+    "file_size": 25503,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e56c0bca1f01608da8a02e4678a9515b2ad8f025f020ee5fbd0490bbb003d0de",
+    "scan_timestamp": "2025-12-03T07:26:04.024552"
+  },
+  "verification_timestamp": "2025-12-03T07:26:40.092704",
+  "checksums": {
+    "sha256": "f96ed02eb5515121b8dd62c1a6935b0b7a466c22ede6b2c033bc07dc0317ed20",
+    "md5": "52f4298162e1d486ece944c9115ec168"
+  }
 }

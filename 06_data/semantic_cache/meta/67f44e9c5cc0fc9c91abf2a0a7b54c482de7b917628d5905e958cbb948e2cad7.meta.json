@@ -2,15 +2,15 @@
   "meta_type": "artifact_manifest",
   "file_hash": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7",
   "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolithic",
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Monolithic",
     "archive_name": "Monolithic",
     "relative_path": "LIC_AGENTIC_v11_10.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolithic\\LIC_AGENTIC_v11_10.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Monolithic\\LIC_AGENTIC_v11_10.py",
     "file_size": 117101,
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7",
-    "scan_timestamp": "2025-12-03T07:26:03.808448"
+    "scan_timestamp": "2025-12-03T07:26:03.869817"
   },
   "artifacts": {
     "ast": "ast/67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7.ast",
@@ -20,6 +20,6 @@
     "golden": "golden/67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7.golden.json",
     "integrity": "integrity/67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7.integrity.json"
   },
-  "generation_timestamp": "2025-12-03T07:26:24.314526",
+  "generation_timestamp": "2025-12-03T07:26:33.340548",
   "artifact_count": 6
 }

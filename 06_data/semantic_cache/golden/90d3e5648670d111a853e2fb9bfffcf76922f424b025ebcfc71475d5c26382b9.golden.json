@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "90d3e5648670d111a853e2fb9bfffcf76922f424b025ebcfc71475d5c26382b9",
-    "scan_timestamp": "2025-12-03T07:10:17.553533"
+    "scan_timestamp": "2025-12-03T07:26:03.850438"
   },
   "content_preview": "\"\"\"Strategy stack agents.\"\"\"\n\nimport asyncio\nimport json\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel\n\nfrom core_v10_7 import (\n    BaseAgent,\n    StrategyPlan,\n    ValidationError,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\n\n\nclass QueryComplexityClassifier(BaseAgent):\n    \"\"\"Classifies query complexity for dynamic routing.\"\"\"\n\n    class ComplexityOutput(BaseModel):\n        complexity: str\n        reason: str\n\n    @track_metrics(\"run_complexity_classifier\")\n   ...",
-  "creation_timestamp": "2025-12-03T07:10:51.526307",
+  "creation_timestamp": "2025-12-03T07:26:32.062567",
   "version": "1.0"
 }

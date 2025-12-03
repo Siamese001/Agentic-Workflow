@@ -4,17 +4,17 @@
   "content_hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
   "file_size": 475,
   "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
-    "archive_name": "Agentic-Workflow-10_7_main",
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
     "relative_path": "config\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\config\\__init__.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\config\\__init__.py",
     "file_size": 475,
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
-    "scan_timestamp": "2025-12-03T07:26:03.711132"
+    "scan_timestamp": "2025-12-03T07:26:03.832459"
   },
-  "verification_timestamp": "2025-12-03T07:26:15.319570",
+  "verification_timestamp": "2025-12-03T07:26:30.880426",
   "checksums": {
     "sha256": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
     "md5": "a0aeb3606bdaf2b4e587e5b099532e1f"

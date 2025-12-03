@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
-    "scan_timestamp": "2025-12-03T07:10:17.683222"
+    "scan_timestamp": "2025-12-03T07:26:03.968250"
   },
   "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.6\n====================================================\n\nCHANGELOG v11.6 (CRITICAL - Full Implementation of v10.22 Gaps & v16.20 Features):\n---------------------------------------------------------\n\u2728 NEW: S1 - Hardened Archetype Classification\n- Implemented v10.22 4-archetype static classification logic (C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER).\n- Modified Archetype enum to match v10.22 standard (removed HIRING_MANAGER, PEER; added SENIOR_TA...",
-  "creation_timestamp": "2025-12-03T07:10:58.876068",
+  "creation_timestamp": "2025-12-03T07:26:38.235828",
   "version": "1.0"
 }

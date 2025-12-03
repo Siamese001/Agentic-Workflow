@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275",
-    "scan_timestamp": "2025-12-03T07:10:17.530377"
+    "scan_timestamp": "2025-12-03T07:26:03.831124"
   },
   "content_preview": "\"\"\"Compatibility layer that re-exports stack agents for v10.7.\"\"\"\n\nfrom stacks_v10_7 import *  # noqa: F401,F403\nfrom stacks_v10_7 import __all__ as _STACK_EXPORTS\n\nfrom core_v10_7 import wrap_mcp\n\n__all__ = list(_STACK_EXPORTS) + [\"wrap_mcp\"]\n",
-  "creation_timestamp": "2025-12-03T07:10:49.837232",
+  "creation_timestamp": "2025-12-03T07:26:30.802734",
   "version": "1.0"
 }

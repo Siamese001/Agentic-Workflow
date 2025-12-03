@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "6f73e086b40aea4b5993e6c1f3516e38ec4ef96c9bb1847cd6666a508112e03c",
-    "scan_timestamp": "2025-12-03T07:10:17.695303"
+    "scan_timestamp": "2025-12-03T07:26:03.977349"
   },
   "content_preview": "### v6.6\n- Add 4.reasoning.rag_execution_enforcement with pre-execution tooling check and audit trail contract\n- Ensure LIC-QA-024..030 rules present (RAG enforcement)\n- Harden K.7 validation to BLOCK on audit missing\n\n### v6.7\n- Add 4.reasoning.about_section_policy; tag About as STATIC_PROFILE\n- Add LIC-QA-060 (About Section Contamination Check)\n- Add 3.context.current_role_verification with non-blocking WARN flow\n\n### v6.8\n- Add 4.reasoning.validation_architecture_v2 (3-layer model) and execut...",
-  "creation_timestamp": "2025-12-03T07:10:59.795075",
+  "creation_timestamp": "2025-12-03T07:26:39.011435",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "c52dcfb931b6bc66358bd196961239a024ff847570090f6d4944a55a356c016b",
-    "scan_timestamp": "2025-12-03T07:10:17.660692"
+    "scan_timestamp": "2025-12-03T07:26:03.945201"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v14\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v13 with SHOW_DETAILED_REASONING toggle\",\n    \"notes\": \"Added user-controllable toggle to show/hide detailed transformer visualization. When OFF, K-nodes skip ASCII tree and slide-by-slide output, showing only final results. Reasoning still executes for quality.\",\n    \"sha256\": \"pending_calculation\"\n  },\n  \"instructions\": [\n    \"D...",
-  "creation_timestamp": "2025-12-03T07:10:56.515748",
+  "creation_timestamp": "2025-12-03T07:26:36.267716",
   "version": "1.0"
 }

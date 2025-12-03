@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "2a2adf1bacca7b63005476b034a4f94cda903c7cc2965a5a7b18ae0eddca5215",
-    "scan_timestamp": "2025-12-03T07:10:17.639344"
+    "scan_timestamp": "2025-12-03T07:26:03.924883"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.6.1\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.6.1\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"Applied P859. Fixed L1 trace inaccuracy by adding a critical validation rule (CFG-L1-HONESTY-001) that ensures the trace honestly reflects the K-node's enforced reasoning configuration.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.6.1\",\n ...",
-  "creation_timestamp": "2025-12-03T07:10:55.787103",
+  "creation_timestamp": "2025-12-03T07:26:35.751738",
   "version": "1.0"
 }

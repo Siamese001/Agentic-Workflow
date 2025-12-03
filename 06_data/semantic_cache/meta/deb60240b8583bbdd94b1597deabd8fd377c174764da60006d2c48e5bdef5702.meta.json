@@ -2,15 +2,15 @@
   "meta_type": "artifact_manifest",
   "file_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
   "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
-    "archive_name": "Agentic-Workflow-10_7_main",
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
     "relative_path": "mcp.manifest.json",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\mcp.manifest.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\mcp.manifest.json",
     "file_size": 750,
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-    "scan_timestamp": "2025-12-03T07:26:03.720794"
+    "scan_timestamp": "2025-12-03T07:26:03.835064"
   },
   "artifacts": {
     "ast": "ast/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.ast",
@@ -20,6 +20,6 @@
     "golden": "golden/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.golden.json",
     "integrity": "integrity/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.integrity.json"
   },
-  "generation_timestamp": "2025-12-03T07:26:16.713727",
+  "generation_timestamp": "2025-12-03T07:26:31.278105",
   "artifact_count": 5
 }

@@ -1,11 +1,22 @@
 {
-  "hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
-  "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-  "archive_name": "Agentic-LIC",
-  "relative_path": "tests\\regression\\test_safety_regression.py",
+  "integrity_type": "content_verification",
+  "file_hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
+  "content_hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
   "file_size": 350,
-  "file_extension": ".py",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T07:26:03.857190",
-  "integrity_timestamp": "2025-12-03T07:26:04.446807"
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\regression\\test_safety_regression.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_safety_regression.py",
+    "file_size": 350,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
+    "scan_timestamp": "2025-12-03T07:26:03.857190"
+  },
+  "verification_timestamp": "2025-12-03T07:26:32.245040",
+  "checksums": {
+    "sha256": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
+    "md5": "5d3ced377dd6a08854b661e2ce8ab2c5"
+  }
 }
