@@ -1,509 +1,402 @@
+
+---
+
+# ✅ **PHASE 0.5 — SEMANTIC CACHE REBUILD v5 (FULL CLEAN OVERWRITE)**
+
+### **(FINAL, CANONICAL, ZERO-LOSS, STRICT-MODE COMPLIANT)**
+
+```markdown
+# =====================================================================
+# PHASE 0.5 — SEMANTIC CACHE REBUILD v5
+# ARCHIVE-ONLY INPUTS → HASH GLOBAL ARTIFACTS → CANONICAL POINTERS
+# STRICT-MODE READY (ALL 89 EXTREME CRITERIA)
 # =====================================================================
 
-# WINDSURF_RULE_LOADER_ACTIVATE
+## PURPOSE
+Phase 0.5 rebuilds the **semantic cache** used by Phase 2 and Phase 3 by:
+
+1. Scanning **historical RG and LIC archives** (ONLY these — never live folders)
+2. Generating **global semantic artifacts** for every unique file hash
+3. Mapping each archived file onto the **canonical SSoT structure** (L1–L5 / P1–P4)
+4. Writing **pointer artifacts** in the 10 canonical semantic buckets matching
+   the live tree:
+   - agentic_core
+   - schemas
+   - runtime
+   - prompt_governance
+   - config
+   - data_source
+   - observability
+   - scripts
+   - apps
+   - tests
+5. Ensuring all output uses **POSIX path rules, forward slashes, and no backslashes**
+6. Guaranteeing **zero-loss**, **idempotency**, and **full strict-mode validation**
+
+This version fixes all previously observed defects:
+- Windows backslashes in filenames  
+- Incorrect directory names (embedding → embeddings)  
+- Missing directory creation  
+- Global artifacts written to wrong paths  
+- Pointer filenames containing nested paths  
+- canonical_relative not normalized  
+- Mapping failures (D1.x, D2.x, E3.x, G-series)  
+- Archive zip UTF-8 decode errors  
+- Inconsistent global/pointer artifact counts  
+
+---
 
 # =====================================================================
-
-# WORKFLOW:
-
-#    Agentic-Workflow — PHASE 0.5 (Semantic Lineage Cache Rebuild v3-LITE)
-#
-
-# GLOBAL OBJECTIVE (ZERO-LOSS):
-
-#    Build a COMPLETE semantic cache for:
-#
-
-#    (A) HISTORICAL ENGINES ONLY
-
-#         1. Resume Engine Archive (RG)
-
-#         2. Outreach Engine Archive (LIC)
-#
-
-#    (B) SEMANTIC BUCKETS FOR ALL 10 CANONICAL LIVE REPO FOLDERS:
-
-#         01_agentic_core          → agentic_core
-
-#         02_schemas               → schemas
-
-#         03_runtime               → runtime
-
-#         04_prompt_governance     → prompt_governance
-
-#         05_config                → config
-
-#         06_data                  → data_source (SOURCE CODE ONLY)
-
-#         07_observability         → observability
-
-#         08_scripts               → scripts
-
-#         09_apps                  → apps
-
-#         10_tests                 → tests
-#
-
-#    CRITICAL: Phase 0.5 DOES NOT scan the live 10 folders.
-
-#              It ONLY reads the archives and maps semantics into
-
-#              the 10 buckets using the SSoT YAML.
-#
-
-#    ALL semantic artifacts MUST be written ONLY to:
-#
-
-#           06_data/semantic_cache/
-#
-
-#    ABSOLUTELY NOTHING MAY BE WRITTEN ANYWHERE ELSE.
-
+# 0. GLOBAL NON-NEGOTIABLE RULES
 # =====================================================================
 
-# =====================================================================
+### H1 — **Do NOT scan live folders** (01–10)
+All semantic lineage must come ONLY from historical archives.
 
-# 0. PROJECT ROOT + REQUIRED OUTPUT STRUCTURE (MANDATORY)
-
-# =====================================================================
-
-C:\Git\Agentic-Workflow\
-    01_agentic_core\
-    02_schemas\
-    03_runtime\
-    04_prompt_governance\
-    05_config\
-    06_data\
-    07_observability\
-    08_scripts\
-    09_apps\
-    10_tests\
-    unified_structure_subatomic.yaml
-    ...
-
-# PHASE 0.5 OUTPUT ROOT:
+### H2 — **Rebuild semantic_cache/ clean each run**
+Delete the entire folder before execution:
+```
 
 06_data/semantic_cache/
 
-# REQUIRED SUBDIRECTORIES (MUST EXIST):
+```
 
-06_data/semantic_cache/
-    ast/
-    diffs/
-    embeddings/
-    golden/
-    integrity/
-    meta/
-    safety/
+### H3 — **All filesystem writes MUST use forward slashes**
+No Windows backslashes in:
+- filenames
+- directories
+- canonical paths
+- pointer filenames
+- global artifact paths
 
-    resume_engine/       # archive semantics (RG)
-    outreach_engine/     # archive semantics (LIC)
+### H4 — **All artifact directories must be created before writes**
+No attempted writes to missing folders.
 
-    agentic_core/        # semantic buckets mapped from archives via SSoT
-    schemas/
-    runtime/
-    prompt_governance/
-    config/
-    data_source/
-    observability/
-    scripts/
-    apps/
-    tests/
+### H5 — **canonical_relative must be normalized BEFORE writing**
+Correct:
+```
 
-# NOTE:
+canonical_relative = canonical_relative.replace("\", "/")
 
-#   Folders MUST exist, but they are NOT required to be non-empty on
+```
 
-#   first run. No dummy artifacts should be written just to satisfy
+### H6 — **Pointer filenames must NOT include directory separators**
+Correct pattern:
+```
 
-#   "non-empty" conditions.
+<canonical_dir>/<file_stem>.<artifact_type>
 
-# =====================================================================
+```
 
-# =====================================================================
+### H7 — **Global directories MUST use PLURAL names**
+```
 
-# 0.1 FILE ELIGIBILITY RULES + RECURSION DEPTH
+ast/
+embeddings/
+diffs/
+golden/
+safety/
+integrity/
+meta/
 
-# =====================================================================
+```
+Any mismatch → FAIL.
 
-# MAX DEPTH:
+### H8 — **Each pointer artifact must contain a valid JSON object**
+```
 
-#   Recurse each ARCHIVE input root up to depth = 7.
+{
+"hash": "<H>",
+"type": "<artifact_type>",
+"global": "06_data/semantic_cache/<bucket>/<H>.<ext>"
+}
 
-# ELIGIBLE FILE TYPES:
+```
 
-#   .py
+### H9 — **All artifacts must be non-empty**
+No stub files, placeholders, or incomplete writes.
 
-#   .json
+### H10 — **ALL 89 extreme validation criteria must pass**
+This is the final readiness gate before Phase 2.
 
-#   .yaml, .yml
-
-#   .md
-
-#   .txt
-
-# EXCLUDED DIRECTORIES:
-
-#   __pycache__, .pytest_cache, .mypy_cache, .ruff_cache,
-
-#   .git, .venv, .idea, .vscode
-
-# EXCLUDED / NON-SEMANTIC FILE TYPES:
-
-#   *.pyc, *.pyo, *.pyd, *.db, *.sqlite, *.log, binaries, images
-
-# RULE FOR NON-ELIGIBLE FILES:
-
-#   - Do NOT generate AST/embedding/diff/golden/safety.
-
-#   - MUST generate an integrity record:
-
-#           <ROOT>/<relative>.integrity.json
-
-#           06_data/semantic_cache/integrity/<HASH>.integrity.json
+---
 
 # =====================================================================
-
+# 1. PROJECT DIRECTORY EXPECTATION
 # =====================================================================
 
-# 1. HISTORICAL RESUME ENGINE INPUT ROOTS (RG) — PRUNED
+```
+
+Agentic-Workflow/
+phase05/
+**init**.py
+orchestrator.py
+ssot_loader.py
+archive_scanner.py
+semantic_artifact_generator.py
+dual_write_coordinator.py
+validation_engine.py
+extreme_validation.py
+common.py
+
+```
+01_agentic_core/
+02_schemas/
+...
+06_data/semantic_cache/   (recreated each run)
+...
+unified_structure_subatomic.yaml
+unified_structure_subatomic_meta.yaml
+```
+
+```
+
+---
 
 # =====================================================================
-
-# Phase 0.5 scans ONLY these RG archive roots:
-
-C:\Git\Resume Engine Archive\Agentic-Workflow-10_11\
-C:\Git\Resume Engine Archive\Agentic_Workflow-10_10\
-C:\Git\Resume Engine Archive\Agentic-Workflow-10_9\
-C:\Git\Resume Engine Archive\Agentic-Workflow-10_8_core\
-C:\Git\Resume Engine Archive\Agentic-Workflow-10_7_main\
-C:\Git\Resume Engine Archive\Microservices Model\
-C:\Git\Resume Engine Archive\Monolith\
-C:\Git\Resume Engine Archive\Monolithic\
-C:\Git\Resume Engine Archive\v2\
-C:\Git\Resume Engine Archive\v6.0\
-
-# DO NOT SCAN (REMOVED VERSIONS):
-
-#   C:\Git\Resume Engine Archive\v7.0\
-
-#   C:\Git\Resume Engine Archive\v8.0\
-
-#   C:\Git\Resume Engine Archive\v9.0\
-
-#   C:\Git\Resume Engine Archive\v10.7\
-
-# SPECIAL CASE: Old Resume Gen Python
-
-#   Only these 4 files are scanned:
-
-C:\Git\Resume Engine Archive\Old Resume Gen Python\Resume_Generation_v14_19.py
-C:\Git\Resume Engine Archive\Old Resume Gen Python\Resume_Generation_v11.40.py
-C:\Git\Resume Engine Archive\Old Resume Gen Python\Resume_Generation_v9_82.py
-C:\Git\Resume Engine Archive\Old Resume Gen Python\Resume_Generation_v5_44.py
-
-#   Every other file under "Old Resume Gen Python" is ignored.
-
-# PER-FILE OUTPUT (RESUME ENGINE, ROOT-LOCAL):
-
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.ast
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.ast.meta.json
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.embedding
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.embedding.meta.json
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.diff.json
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.golden.json
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.safety.json
-06_data/semantic_cache/resume_engine/<archive_name>/<relative>.integrity.json
-
+# 2. ARCHIVE INPUT ROOTS (SCANNED)
 # =====================================================================
 
-# =====================================================================
+### Historical Resume Engine (RG):
+- Agentic-Workflow-10_11  
+- Agentic_Workflow-10_10  
+- Agentic-Workflow-10_9  
+- Agentic-Workflow-10_8_core  
+- Agentic-Workflow-10_7_main  
+- Microservices Model  
+- Monolith  
+- Monolithic  
+- v2  
+- v6.0  
 
-# 2. HISTORICAL OUTREACH ENGINE INPUT ROOTS (LIC)
+### Historical Outreach Engine (LIC):
+- Agentic-LIC  
+- Agentic LIC  
+- Monolithic  
+- Old LIC  
+- deprecated in v13  
 
-# =====================================================================
+### Special-case:
+Only 4 files scanned in “Old Resume Gen Python”.
 
-# LIC archives are scanned fully:
+### Explicitly NOT scanned:
+- All ZIP files  
+- All non-UTF-8 binary formats  
+- All live folders (01–10)  
 
-C:\Git\Reachout Engine Archive\Agentic-LIC\
-C:\Git\Reachout Engine Archive\Agentic LIC\
-C:\Git\Reachout Engine Archive\Monolithic\
-C:\Git\Reachout Engine Archive\Old LIC\
-C:\Git\Reachout Engine Archive\deprecated in v13\
+If UTF-8 decode fails:
+- **Skip file**, generate integrity-only artifact, DO NOT crash.
 
-# PER-FILE OUTPUT (OUTREACH ENGINE, ROOT-LOCAL):
-
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.ast
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.ast.meta.json
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.embedding
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.embedding.meta.json
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.diff.json
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.golden.json
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.safety.json
-06_data/semantic_cache/outreach_engine/<archive_name>/<relative>.integrity.json
-
-# =====================================================================
-
-# =====================================================================
-
-# 3. LIVE 10-FOLDER SEMANTIC BUCKETS (TARGETS — DO NOT SCAN)
-
-# =====================================================================
-
-# Phase 0.5 MUST NOT scan these folders:
-#
-
-#   C:\Git\Agentic-Workflow\01_agentic_core\
-
-#   C:\Git\Agentic-Workflow\02_schemas\
-
-#   C:\Git\Agentic-Workflow\03_runtime\
-
-#   C:\Git\Agentic-Workflow\04_prompt_governance\
-
-#   C:\Git\Agentic-Workflow\05_config\
-
-#   C:\Git\Agentic-Workflow\06_data\
-
-#   C:\Git\Agentic-Workflow\07_observability\
-
-#   C:\Git\Agentic-Workflow\08_scripts\
-
-#   C:\Git\Agentic-Workflow\09_apps\
-
-#   C:\Git\Agentic-Workflow\10_tests\
-#
-
-# Instead, Phase 0.5 MUST:
-
-#   - Read unified_structure_subatomic.yaml (SSoT)
-
-#   - For each archived file F, determine its canonical destination
-
-#     live-folder + relative path in the new architecture
-
-#   - Create semantic artifacts under:
-#
-
-#      06_data/semantic_cache/<target_root>/<relative_mapped>.*
-#
-
-# where <target_root> is one of:
-#
-
-#   agentic_core/
-
-#   schemas/
-
-#   runtime/
-
-#   prompt_governance/
-
-#   config/
-
-#   data_source/
-
-#   observability/
-
-#   scripts/
-
-#   apps/
-
-#   tests/
-#
-
-# NOTE: These buckets are “semantic targets,” NOT scan inputs.
+---
 
 # =====================================================================
-
+# 3. ARCHIVE SCANNING BEHAVIOR
 # =====================================================================
 
-# 4. GLOBAL HASH-ADDRESSED ARTIFACTS (MANDATORY, DEDUPED)
+### Eligibility:
+✓ .py  
+✓ .json  
+✓ .yaml / .yml  
+✓ .md  
+✓ .txt  
+
+### Ineligible:
+✗ binaries  
+✗ images  
+✗ *.zip / *.tar / *.7z  
+✗ *.pyc / *.pyo / *.pyd  
+✗ *.db / *.sqlite  
+
+### Required behavior:
+- Depth ≤ 7  
+- Path normalization (replace backslashes)  
+- Generate integrity artifact for ANY skipped or unreadable file  
+- For eligible files:
+  - read raw bytes  
+  - hash = SHA256(bytes)  
+  - record hash + metadata  
+
+---
 
 # =====================================================================
-
-# Compute SHA256 hash H for each file’s RAW TEXT CONTENT (archives only).
-
-GLOBAL TARGETS (ONE PER HASH VALUE H):
-06_data/semantic_cache/ast/<H>.ast
-06_data/semantic_cache/ast/<H>.ast.meta.json
-
-06_data/semantic_cache/embeddings/<H>.embedding
-06_data/semantic_cache/embeddings/<H>.embedding.meta.json
-
-06_data/semantic_cache/diffs/<H>.diff.json
-06_data/semantic_cache/golden/<H>.golden.json
-06_data/semantic_cache/safety/<H>.safety.json
-06_data/semantic_cache/meta/<H>.meta.json
-06_data/semantic_cache/integrity/<H>.integrity.json
-
-# DEDUP RULE:
-
-#   - If <H> already exists globally, DO NOT re-write the global artifacts.
-
-#   - Local (per-root / per-target) artifacts are allowed to be pointers
-
-#     (small JSON references) to the global H artifacts instead of copies.
-
+# 4. GLOBAL ARTIFACT GENERATION (HASH-DEDUPED)
 # =====================================================================
 
-# =====================================================================
+For each unique hash H:
 
-# 5. REQUIRED ARTIFACT SET (8 FILES PER ELIGIBLE FILE, LOGICAL)
+Generate (if missing):
+```
 
-# =====================================================================
+ast/<H>.ast
+ast/<H>.ast.meta.json
+embeddings/<H>.embedding
+embeddings/<H>.embedding.meta.json
+diffs/<H>.diff.json
+golden/<H>.golden.json
+safety/<H>.safety.json
+integrity/<H>.integrity.json
+meta/<H>.meta.json
 
-For every ELIGIBLE archived file F, Phase 0.5 MUST logically produce:
+```
 
-1. F.ast
-2. F.ast.meta.json
-3. F.embedding
-4. F.embedding.meta.json
-5. F.diff.json
-6. F.safety.json
-7. F.golden.json
-8. F.integrity.json
+### Requirements:
+- Create directories FIRST
+- File write must be atomic
+- No empty content
+- No corruption allowed
+- Pointer creation MUST come after global creation
 
-AND ensure that:
-- There is a corresponding hash-addressed GLOBAL set for H(F),
-  created once and reused.
-
-NO missing files for eligible F.
-NO empty files.
-NO “TODO” stubs.
-
-For NON-ELIGIBLE FILES:
-    Only integrity records are generated (local + global).
+---
 
 # =====================================================================
-
+# 5. CANONICAL MAPPING ENGINE (CRITICAL)
 # =====================================================================
 
-# 6. DIFF BASELINE LOGIC (OPTION A)
+### Steps for each archive file F with hash H:
+
+#### **5.1 Compute canonical root**
+Use SSoT + META to map archive path → one of:
+
+```
+
+agentic_core
+schemas
+runtime
+prompt_governance
+config
+data_source
+observability
+scripts
+apps
+tests
+
+```
+
+#### **5.2 Compute canonical_relative**
+Must follow SSoT grammar:
+
+```
+
+<LAYER>/<PHASE>/<VERB_GROUP>/<DOMAIN>/<FILE>
+
+```
+
+#### **5.3 Normalize canonical_relative**
+MANDATORY:
+
+```
+
+canonical_relative = canonical_relative.replace("\", "/")
+
+```
+
+#### **5.4 Build directory path**
+```
+
+parts = canonical_relative.split("/")
+canonical_dir = semantic_cache/<root>/Path(*parts[:-1])
+file_stem = parts[-1].split(".")[0]
+
+```
+
+#### **5.5 Create directories**
+```
+
+canonical_dir.mkdir(parents=True, exist_ok=True)
+
+```
+
+#### **5.6 Write pointer artifacts**
+For each artifact type T ∈:
+```
+
+["ast","ast.meta","embedding","embedding.meta","diff","golden","safety","integrity"]
+
+```
+
+Write:
+```
+
+<canonical_dir>/<file_stem>.<ext>
+
+```
+
+#### **5.7 Pointer JSON structure**
+```
+
+{
+"hash": "<H>",
+"type": "<artifact_type>",
+"global": "06_data/semantic_cache/<bucket>/<H>.<ext>"
+}
+
+```
+
+### Pointer filenames MUST NOT contain `/` or `\`.
+
+If mapping fails → mark “unmapped” and write only integrity.json.
+
+---
 
 # =====================================================================
-
-# HISTORICAL ENGINE DIFFS (RG + LIC):
-
-#     baseline = earlier version of same logical file in archive lineage
-
-#     if first appearance: baseline = empty
-
-# LIVE FOLDER BUCKET DIFFS:
-
-#     baseline = previous Phase 0.5 semantic cache snapshot
-
-#     if file has no previous semantic cache → baseline = empty AND mark:
-
-#         "initial_diff": true
-
+# 6. PER-ROOT COMPLETENESS CHECK
 # =====================================================================
 
-# =====================================================================
+Each canonical root must satisfy:
 
-# 7. ZERO-LOSS VALIDATION PER ROOT
+- Pointer artifacts exist for every mapped file  
+- Count(pointer.ast) = count(pointer.golden)  
+- All pointers reference existing global H files  
+- No pointer directory contains backslashes  
+- All path components POSIX-only  
+- No orphan directories  
 
-# =====================================================================
-
-For each semantic root:
-
-resume_engine/
-outreach_engine/
-agentic_core/
-schemas/
-runtime/
-prompt_governance/
-config/
-data_source/
-observability/
-scripts/
-apps/
-tests/
-
-Each MUST satisfy:
-
-K17: ROOT_FILECOUNT == ROOT_ARTIFACT_COUNT_FOR_ELIGIBLE_FILES
-K18: NO_ARTIFACTS_MISSING == TRUE
-K19: NO_EXTRA_ARTIFACTS == TRUE
-K20: ROOT_INDEX_WRITTEN == TRUE   # index listing input files and their artifacts
-
-# (No longer require "ROOT_FOLDER_NOT_EMPTY" just to avoid empty dirs.)
+---
 
 # =====================================================================
-
+# 7. EXTREME VALIDATION (89 CRITERIA)
 # =====================================================================
 
-# 8. GLOBAL ZERO-LOSS VALIDATION
+**ALL** sections must pass:
+
+- **A-series**: SSoT + META validity  
+- **B-series**: Archive ingest health  
+- **C-series**: Hash integrity & global artifacts  
+- **D-series**: Canonical mapping correctness  
+- **E-series**: Per-root completeness  
+- **F-series**: Sandbox + path safety (F1.4 = NO BACKSLASH ANYWHERE)  
+- **G-series**: Phase 2 readiness gate  
+
+Any failure → Phase 0.5 terminates → Phase 2 MUST NOT run.
+
+---
 
 # =====================================================================
-
-K1: UNIFIED_STRUCTURE_SUBATOMIC_YAML_EXISTS == TRUE
-K1b: UNIFIED_STRUCTURE_SUBATOMIC_META_YAML_EXISTS == TRUE
-K1c: UNIFIED_STRUCTURE_SUBATOMIC_META_YAML_PARSED == TRUE
-K1d: SSoT_CANONICAL = MERGE(SSoT_YAML, META_YAML) == TRUE
-
-KX: CANONICAL_SSoT_PATH_GRAMMAR_VALIDATED == TRUE
-KX: META_INTENTS_AXES_VERB_GROUPS_VALIDATED == TRUE
-KX: META_DRIVES_CANONICAL_PATH_MAPPING == TRUE
-
-K21: GLOBAL_AST_COUNT       == TOTAL_ELIGIBLE_INPUT_FILE_COUNT
-K22: GLOBAL_EMBEDDING_COUNT == TOTAL_ELIGIBLE_INPUT_FILE_COUNT
-K23: GLOBAL_META_COUNT      == TOTAL_ELIGIBLE_INPUT_FILE_COUNT
-K24: GLOBAL_DIFF_COUNT      == TOTAL_ELIGIBLE_INPUT_FILE_COUNT
-K25: GLOBAL_GOLDEN_COUNT    == TOTAL_ELIGIBLE_INPUT_FILE_COUNT
-K26: GLOBAL_SAFETY_COUNT    == TOTAL_ELIGIBLE_INPUT_FILE_COUNT
-K27: GLOBAL_INTEGRITY_COUNT >= TOTAL_INPUT_FILE_COUNT  # includes non-eligible files
-
-K28: NO_HASH_COLLISIONS == TRUE
-K29: GLOBAL_INDEX_BUILT == TRUE   # H(F) → all roots mapping
-
-# NOTE: We DO NOT require “ALL_GLOBAL_BUCKETS_NONEMPTY” anymore. Buckets
-
-# may be empty if no files of that type exist yet; no dummy writes.
-
+# 8. COMPLETION CONDITION (PHASE 2 READINESS)
 # =====================================================================
 
-# =====================================================================
+PHASE 0.5 is COMPLETE ONLY IF:
 
-# 9. SANDBOX / SAFETY GUARANTEES
+```
 
-# =====================================================================
+ALL 89 EXTREME VALIDATION CRITERIA PASS
+NO WINDOWS BACKSLASHES EXIST ANYWHERE
+GLOBAL ARTIFACTS ARE COMPLETE
+POINTER ARTIFACTS ARE COMPLETE
+ALL DIRECTORIES ARE CORRECT (plural)
+CANONICAL MAPPING SUCCEEDED FOR ALL MAPPABLE FILES
+NO PLACEHOLDERS OR EMPTY FILES
+STRICT-MODE EXIT CODE == 0
 
-K30: NO_WRITES_OUTSIDE("06_data/semantic_cache/") == TRUE
-K31: NO_ARCHIVE_FILES_MODIFIED == TRUE
-K32: NO_REPO_SOURCE_MODIFIED   == TRUE
-K33: NO_RUNTIME_EXECUTION_OF_TARGET_CODE == TRUE
-K34: NO_NETWORK_CALLS == TRUE
+```
 
-# =====================================================================
+If ANY condition fails:
+- Zero-loss guarantee is violated  
+- Phase 2 must NOT begin  
 
-# =====================================================================
-
-# 10. QUALITY GATES
-
-# =====================================================================
-
-K35: RUFF_CLEAN   == TRUE
-K36: MYPY_CLEAN   == TRUE
-K37: PYTEST_PASS  == TRUE
-K38: IMPORT_HEALTH_PASS == TRUE
+---
 
 # =====================================================================
-
+# END — PHASE 0.5 (v5 FINAL, STRICT-MODE SAFE)
 # =====================================================================
-
-# 11. COMPLETION GATE (ALL KEYS MUST PASS)
-
-# =====================================================================
-
-K39: ALL_KEYS_K1_TO_K38_PASS == TRUE
-K40: SEMANTIC_CACHE_READY_FOR_PHASE_2 == TRUE
-
-# No K42/K43 “non-empty” hard requirements that force garbage artifacts.
-
-# =====================================================================
-
-# END PHASE 0.5 — ZERO-LOSS OVERWRITE (ARCHIVE-ONLY, SSoT-MAPPED)
-
-# =====================================================================
-
+```
