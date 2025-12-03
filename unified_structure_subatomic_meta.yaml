@@ -1,5 +1,13 @@
 structure_version: '1.0'
 description: Single Source of Truth for Agentic Workflow Architecture
+binds_to: unified_structure_subatomic.yaml
+canonical_role: "Defines vocab constraints: domains, layers, phases, intents, axes, verb_groups, protected_paths"
+
+# Add protected path rules if missing
+protected_paths:
+  - "**/__init__.py"
+  - "**/*.md"
+
 domains:
   agentic_core: Core reasoning, decision making, and autonomous logic engine.
   apps_rg: Resume Generation Application specific logic.
