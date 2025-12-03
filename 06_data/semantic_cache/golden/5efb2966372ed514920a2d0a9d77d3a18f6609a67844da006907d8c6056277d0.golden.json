@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+  "content_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
+    "archive_name": "deprecated in v13",
+    "relative_path": "config_LIC.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\config_LIC.py",
+    "file_size": 8253,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+    "scan_timestamp": "2025-12-03T06:21:11.658615"
+  },
+  "content_preview": "# File: config_LIC.py\n# Description: Configuration registry for the LIC workflow.\n\n__version__ = \"12.0\"\n# Holds all static configs for routes, archetypes, RAG, and reasoning.\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Any, Optional\n\nfrom models_LIC import Route, Archetype\n\n# ============================================================================\n# PRIORITY 2: GLOBAL CONSTRAINTS SSOT WITH API ACCESS LAYER\n# =======================================================...",
+  "creation_timestamp": "2025-12-03T06:21:43.152313",
+  "version": "1.0"
+}

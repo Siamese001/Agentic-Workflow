@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "42f8559d3560aa61b65b67c32585977ce595f2f6b83cbc09ae64ca2a40ba6579",
+  "content_hash": "42f8559d3560aa61b65b67c32585977ce595f2f6b83cbc09ae64ca2a40ba6579",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_2025-09-19_v1.0.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-19_v1.0.md",
+    "file_size": 14261,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "42f8559d3560aa61b65b67c32585977ce595f2f6b83cbc09ae64ca2a40ba6579",
+    "scan_timestamp": "2025-12-03T06:21:11.592415"
+  },
+  "content_preview": "\nLIC 3.0  LinkedIn Outreach Canonical\nFunctional Parity Overwrite of 2.0 with E1 through E9 fixes\nPrompt Shell v1.9 aligned  AI Filter v10  App Schema v4  LLM Metrics v4\n\n# ROLE\n\n* Governance toggles default ON\n  * METRICS_OVERLAY true  enforce three line overlay  thresholds  block on breach\n  * APP_TRACKER_MODE true  enforce App Tracker QA Spec v5 R1 through R23 when tracker steps are present\n  * SHOW_REASONING true  require Hybrid CoT and ToT traces per subsection\n  * TRACE_TRANSFORMER true  r...",
+  "creation_timestamp": "2025-12-03T06:21:38.653837",
+  "version": "1.0"
+}

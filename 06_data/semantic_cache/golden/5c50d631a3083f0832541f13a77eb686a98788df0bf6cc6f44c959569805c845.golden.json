@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5c50d631a3083f0832541f13a77eb686a98788df0bf6cc6f44c959569805c845",
+  "content_hash": "5c50d631a3083f0832541f13a77eb686a98788df0bf6cc6f44c959569805c845",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\contracts\\test_contract_schemas_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\contracts\\test_contract_schemas_v10_7.py",
+    "file_size": 597,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5c50d631a3083f0832541f13a77eb686a98788df0bf6cc6f44c959569805c845",
+    "scan_timestamp": "2025-12-03T06:21:11.409919"
+  },
+  "content_preview": "import pytest\nfrom workflow.runner import run_workflow\nfrom schema import ResumeOutputSchema\n\n@pytest.mark.parametrize(\"jd\", [\"AWS\",\"Anthropic\",\"Databricks\",\"CoreWeave\",\"Citi\"])\ndef test_resume_schema_compliance(jd):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\":\"AI Exec\", \"jd\": jd})\n    ResumeOutputSchema(**out[\"resume\"])  # raises if invalid\n\n@pytest.mark.parametrize(\"repeat\", [1,2,3,4,5])\ndef test_idempotency(repeat):\n    ctx={\"compat_mode\": \"v10_7\", \"resume\":\"repeatable\",\"jd\":\"sam...",
+  "creation_timestamp": "2025-12-03T06:21:23.505649",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c48ec07ee29ef5cc7447f7dccdb99765b49065c2d00dd9c958d441389187a9c8",
+  "content_hash": "c48ec07ee29ef5cc7447f7dccdb99765b49065c2d00dd9c958d441389187a9c8",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_9-30-2025.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9-30-2025.json",
+    "file_size": 32497,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "c48ec07ee29ef5cc7447f7dccdb99765b49065c2d00dd9c958d441389187a9c8",
+    "scan_timestamp": "2025-12-03T06:21:11.600600"
+  },
+  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"v9.23-overwrite\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-29T22:40:49Z\",\n    \"sources\":\n    \"notes\": \n    \"sha256\": \"7902fdba75aae9da7c721873fb15f5085ff76e452cb8109be9b4aebef82b5ab2\"\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3 (Context) once and pause.\",\n    \"Run all of Section 4 and pause.\",\n    \"Run all of Section 5 and pause.\",\n    \"Do not bat...",
+  "creation_timestamp": "2025-12-03T06:21:38.925645",
+  "version": "1.0"
+}

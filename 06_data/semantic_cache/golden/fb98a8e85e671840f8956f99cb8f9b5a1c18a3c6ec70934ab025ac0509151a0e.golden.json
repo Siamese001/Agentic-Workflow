@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "content_hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\regression\\test_call_count_drift.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_call_count_drift.py",
+    "file_size": 387,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+    "scan_timestamp": "2025-12-03T06:21:11.514238"
+  },
+  "content_preview": "from src.lic_agentic.agents.k3_message_architect import MessageArchitect\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef test_call_count_stable(snapshot=None):\n    architect = MessageArchitect(ReasoningToggles())\n    plan = architect._build_plan([\"ACME latest milestones\"], type(\"S\", (), {\"company_id\": \"ACME\", \"contact_id\": \"C1\"})())\n    assert len(plan.jobs) <= 6\n",
+  "creation_timestamp": "2025-12-03T06:21:34.923099",
+  "version": "1.0"
+}

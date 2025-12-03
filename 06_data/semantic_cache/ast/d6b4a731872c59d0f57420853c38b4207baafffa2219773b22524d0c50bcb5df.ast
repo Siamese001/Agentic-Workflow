@@ -1,0 +1,525 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "infra.sandbox.networking",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "default_network_policy",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 37
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "is_destination_allowed",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 61
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_default_network_policy_denies_all",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "policy",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 5,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "default_network_policy",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 5,
+                        "_col_offset": 13
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 5,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Call",
+                        "_fields": {
+                          "func": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "is_destination_allowed",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 6,
+                            "_col_offset": 11
+                          },
+                          "args": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "policy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 6,
+                              "_col_offset": 34
+                            },
+                            {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "example.com",
+                                "kind": "None"
+                              },
+                              "_lineno": 6,
+                              "_col_offset": 42
+                            }
+                          ],
+                          "keywords": []
+                        },
+                        "_lineno": 6,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Is",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "False",
+                            "kind": "None"
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 60
+                        }
+                      ]
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_allowlist_allows_specific_host",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "policy",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 10,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "default_network_policy",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 10,
+                        "_col_offset": 13
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 10,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Subscript",
+                      "_fields": {
+                        "value": {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "policy",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 11,
+                          "_col_offset": 4
+                        },
+                        "slice": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "allow_network",
+                            "kind": "None"
+                          },
+                          "_lineno": 11,
+                          "_col_offset": 11
+                        },
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 11,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "True",
+                      "kind": "None"
+                    },
+                    "_lineno": 11,
+                    "_col_offset": 30
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Subscript",
+                      "_fields": {
+                        "value": {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "policy",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 4
+                        },
+                        "slice": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "allowlist",
+                            "kind": "None"
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 11
+                        },
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 12,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "List",
+                    "_fields": {
+                      "elts": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "example.com",
+                            "kind": "None"
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 27
+                        }
+                      ],
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 12,
+                    "_col_offset": 26
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Call",
+                        "_fields": {
+                          "func": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "is_destination_allowed",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 14,
+                            "_col_offset": 11
+                          },
+                          "args": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "policy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 14,
+                              "_col_offset": 34
+                            },
+                            {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "example.com",
+                                "kind": "None"
+                              },
+                              "_lineno": 14,
+                              "_col_offset": 42
+                            }
+                          ],
+                          "keywords": []
+                        },
+                        "_lineno": 14,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Is",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "True",
+                            "kind": "None"
+                          },
+                          "_lineno": 14,
+                          "_col_offset": 60
+                        }
+                      ]
+                    },
+                    "_lineno": 14,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Call",
+                        "_fields": {
+                          "func": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "is_destination_allowed",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 15,
+                            "_col_offset": 11
+                          },
+                          "args": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "policy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 15,
+                              "_col_offset": 34
+                            },
+                            {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "other.com",
+                                "kind": "None"
+                              },
+                              "_lineno": 15,
+                              "_col_offset": 42
+                            }
+                          ],
+                          "keywords": []
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Is",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "False",
+                            "kind": "None"
+                          },
+                          "_lineno": 15,
+                          "_col_offset": 58
+                        }
+                      ]
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 66,
+    "function_count": 2,
+    "class_count": 0,
+    "import_count": 1
+  }
+}

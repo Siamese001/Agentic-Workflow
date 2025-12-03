@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_10-01-2025_v3.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-01-2025_v3.json",
+    "file_size": 155605,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf",
+    "scan_timestamp": "2025-12-03T06:21:11.529633"
+  },
+  "artifacts": {
+    "ast": "ast/1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf.ast",
+    "embedding": "embeddings/1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf.embedding",
+    "diff": "diffs/1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf.diff.json",
+    "safety": "safety/1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf.safety.json",
+    "golden": "golden/1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf.golden.json",
+    "integrity": "integrity/1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:36.194549",
+  "artifact_count": 5
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "src/lic_agentic/reasoning/tot.py",
+  "diff_content": "\"\"\"Simplified tree-of-thought reasoning utilities.\"\"\"\nfrom __future__ import annotations\n\nfrom typing import List\n\n\ndef branch(prompt: str, branches: int = 2) -> List[str]:\n    return [f\"Branch {idx+1}: considering {prompt}\" for idx in range(max(1, branches))]\n",
+  "statistics": {
+    "lines_added": 8,
+    "lines_removed": 0,
+    "lines_changed": 8
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5c8229074383a3134de048fe9163f0276df012f4a8ccacd45b4b9c3a0cb4d822",
+  "content_hash": "c3e8f698b279cfb0da997d6f330a6cfc791a37bcbd0408090c3d9b7ad59478c7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden\\traces\\workflow_trace_001.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\traces\\workflow_trace_001.json",
+    "file_size": 435,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "5c8229074383a3134de048fe9163f0276df012f4a8ccacd45b4b9c3a0cb4d822",
+    "scan_timestamp": "2025-12-03T06:21:11.306916"
+  },
+  "content_preview": "{\n  \"version\": \"1.0\",\n  \"trace_id\": \"trace_001\",\n  \"workflow_id\": \"wf_001\",\n  \"spans\": [\n    {\n      \"span_id\": \"span_001\",\n      \"name\": \"analyze_job\",\n      \"start_time\": 1700000000,\n      \"end_time\": 1700000100,\n      \"status\": \"success\"\n    },\n    {\n      \"span_id\": \"span_002\",\n      \"name\": \"plan_strategy\",\n      \"start_time\": 1700000100,\n      \"end_time\": 1700000200,\n      \"status\": \"success\"\n    }\n  ]\n}\n",
+  "creation_timestamp": "2025-12-03T06:21:16.590801",
+  "version": "1.0"
+}

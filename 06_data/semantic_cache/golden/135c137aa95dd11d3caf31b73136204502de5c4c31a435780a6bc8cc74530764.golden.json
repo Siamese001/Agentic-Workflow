@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764",
+  "content_hash": "fe510e962b072333a425e0aed668351d39589205b7c420979b5fa01c0d24b9d5",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\model_routing\\test_budget_enforcement.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\model_routing\\test_budget_enforcement.py",
+    "file_size": 738,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764",
+    "scan_timestamp": "2025-12-03T06:21:11.328416"
+  },
+  "content_preview": "from core.models.models import ExecutionProfile, RetrievalConfig\nfrom orchestration.model_routing import ModelChoice, enforce_budget\n\n\ndef test_budget_enforcement_downgrades_cost_tier():\n    choice = ModelChoice(\n        provider=\"openai\",\n        model_name=\"gpt-5.1-codex\",\n        cost_tier=\"high\",\n        estimated_cost=0.004,\n        latency_ms=1200,\n    )\n\n    profile = ExecutionProfile(\n        name=\"test_profile\",\n        description=\"test\",\n        retrieval=RetrievalConfig(),\n        me...",
+  "creation_timestamp": "2025-12-03T06:21:17.186938",
+  "version": "1.0"
+}

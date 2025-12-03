@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a7b6358e90c103fbb87be1937b0996ea4cfd203c7eb04bf90f37a207bd3f8ed3",
+  "content_hash": "abd86454d9b87c1a48cd867d075fc85d837696bcc10995d43b231f774a6f1f98",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\observability\\cost_budget\\test_cost_budget.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\cost_budget\\test_cost_budget.py",
+    "file_size": 373,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a7b6358e90c103fbb87be1937b0996ea4cfd203c7eb04bf90f37a207bd3f8ed3",
+    "scan_timestamp": "2025-12-03T06:21:11.331103"
+  },
+  "content_preview": "\"\"\"Observability Cost Budget Tests.\"\"\"\n\nclass TestCostBudget:\n    \"\"\"Tests for cost budget tracking.\"\"\"\n    \n    def test_budget_tracking(self):\n        \"\"\"Test budget tracking logic.\"\"\"\n        budget = {\"max_usd\": 1.0, \"spent_usd\": 0.25}\n        remaining = budget[\"max_usd\"] - budget[\"spent_usd\"]\n        assert remaining == 0.75\n        assert remaining > 0\n",
+  "creation_timestamp": "2025-12-03T06:21:17.262850",
+  "version": "1.0"
+}

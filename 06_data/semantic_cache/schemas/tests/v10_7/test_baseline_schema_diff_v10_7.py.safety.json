@@ -1,0 +1,9 @@
+{
+  "pointer_type": "safety",
+  "target_root": "schemas",
+  "canonical_relative": "tests\\v10_7\\test_baseline_schema_diff_v10_7.py",
+  "global_hash": "50f046422e897e740f4380a3d23404420e619ade77695179bf53924e10e7d4de",
+  "global_path": "06_data/semantic_cache/safety/50f046422e897e740f4380a3d23404420e619ade77695179bf53924e10e7d4de.safety.json",
+  "created_timestamp": "2025-12-03T06:21:43.534388",
+  "pointer_version": "1.0"
+}

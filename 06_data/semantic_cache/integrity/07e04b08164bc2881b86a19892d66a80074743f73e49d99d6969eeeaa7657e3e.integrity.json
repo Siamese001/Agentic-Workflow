@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+  "content_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+  "file_size": 33854,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "governor.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\governor.py",
+    "file_size": 33854,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+    "scan_timestamp": "2025-12-03T06:21:11.474227"
+  },
+  "verification_timestamp": "2025-12-03T06:21:28.948322",
+  "checksums": {
+    "sha256": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+    "md5": "7d05fa800249020125bea06c5ed51a6e"
+  }
+}

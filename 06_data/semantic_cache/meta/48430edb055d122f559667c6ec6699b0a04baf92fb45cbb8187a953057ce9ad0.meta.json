@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\integration\\NEO4J_INTEGRATION_README.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\integration\\NEO4J_INTEGRATION_README.md",
+    "file_size": 6608,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+    "scan_timestamp": "2025-12-03T06:21:11.288726"
+  },
+  "artifacts": {
+    "ast": "ast/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.ast",
+    "embedding": "embeddings/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.embedding",
+    "diff": "diffs/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.diff.json",
+    "safety": "safety/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.safety.json",
+    "golden": "golden/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.golden.json",
+    "integrity": "integrity/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:15.964078",
+  "artifact_count": 5
+}

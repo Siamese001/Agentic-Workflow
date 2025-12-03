@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L4_memory_state/unit/test_l4_unit_core.py",
+  "diff_content": "\"\"\"L4 Memory State Unit Tests - Core.\"\"\"\n\nclass TestL4MemoryStateUnitCore:\n    \"\"\"Core unit tests for L4 memory state layer.\"\"\"\n    \n    def test_state_store_initialization(self):\n        \"\"\"Test state store initialization.\"\"\"\n        store = {\"entries\": [], \"initialized\": True}\n        assert store[\"initialized\"] is True\n    \n    def test_memory_entry_creation(self):\n        \"\"\"Test memory entry creation.\"\"\"\n        entry = {\"id\": \"e1\", \"content\": \"data\", \"timestamp\": 1000}\n        assert entry[\"id\"] == \"e1\"\n    \n    def test_state_serialization(self):\n        \"\"\"Test state serialization.\"\"\"\n        state = {\"key\": \"value\"}\n        serialized = str(state)\n        assert \"key\" in serialized\n    \n    def test_state_deserialization(self):\n        \"\"\"Test state deserialization.\"\"\"\n        data = '{\"key\": \"value\"}'\n        assert \"key\" in data\n    \n    def test_memory_indexing(self):\n        \"\"\"Test memory indexing.\"\"\"\n        index = {\"term1\": [0, 1], \"term2\": [2]}\n        assert len(index[\"term1\"]) == 2\n",
+  "statistics": {
+    "lines_added": 30,
+    "lines_removed": 0,
+    "lines_changed": 30
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

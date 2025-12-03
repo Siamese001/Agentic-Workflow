@@ -1,0 +1,291 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nProvides observability compatibility shim for resume generation system.\n\nEnsures runtime monitoring and tracking capabilities for improved\nresume generation quality and debugging.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "runtime.observability.spans",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "*",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 40
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "runtime.observability.events",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "*",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 41
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 13,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "runtime.observability.emitters",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "*",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 43
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 14,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "runtime.observability.collectors",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "get_events",
+                  "asname": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "clear_events",
+                  "asname": "_clear_events_impl"
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 15,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "get_all_events",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Retrieves all observability events for resume generation monitoring.\n\n    Ensures comprehensive tracking of resume generation processes\n    for quality assurance and debugging.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "get_events",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 27,
+                        "_col_offset": 11
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 27,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 21,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "clear_events",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Clears observability events to maintain clean monitoring state.\n\n    Ensures resume generation tracking remains organized and\n    manageable for quality control purposes.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 31,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "_clear_events_impl",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 36,
+                        "_col_offset": 4
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 36,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 36,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "None",
+                "kind": "None"
+              },
+              "_lineno": 30,
+              "_col_offset": 22
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 30,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 31,
+    "function_count": 2,
+    "class_count": 0,
+    "import_count": 5
+  }
+}

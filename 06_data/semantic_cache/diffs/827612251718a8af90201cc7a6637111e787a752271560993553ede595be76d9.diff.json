@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l1/prompt_builder.py",
+  "diff_content": "\"\"\"\nL1 Prompt Builder for resume generation prompt construction.\n\nCreates structured prompts for consistent resume improvement\nand optimal job alignment.\n\"\"\"\n\nfrom typing import Any\n\nclass PromptBuilder:\n    \"\"\"\n    Builds prompts for resume generation without execution logic.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    \n    @staticmethod\n    def build_strategy_prompt(strategy_plan: Any, job: Any, resume: Any, config: Any) -> str:\n        \"\"\"Builds strategy prompt for resume improvement planning.\n\n        Creates structured approach for optimal resume job alignment.\n        \"\"\"\n        return f\"Strategy planning for job: {job}, resume: {resume}\"\n    \n    @staticmethod\n    def build_draft_prompt(draft_plan: Any, job: Any, resume: Any, config: Any) -> str:\n        \"\"\"Builds draft prompt for resume content creation.\n\n        Structures approach for professional resume enhancement.\n        \"\"\"\n        return f\"Draft planning for sections: {draft_plan.sections}\"\n    \n    @staticmethod\n    def build_qa_prompt(qa_plan: Any, draft: Any, job: Any, resume: Any) -> str:\n        \"\"\"Builds QA prompt for resume quality validation.\n\n        Ensures thorough evaluation for resume accuracy.\n        \"\"\"\n        return f\"QA analysis for draft: {draft}\"\n    \n    @staticmethod\n    def build_safety_prompt(safety_plan: Any, draft: Any, job: Any, resume: Any) -> str:\n        \"\"\"Builds safety prompt for resume compliance checking.\n\n        Ensures professional standards in resume content.\n        \"\"\"\n        return f\"Safety review for content: {draft}\"\n",
+  "statistics": {
+    "lines_added": 48,
+    "lines_removed": 0,
+    "lines_changed": 48
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

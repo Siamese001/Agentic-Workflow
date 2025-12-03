@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/_deprecated/test_agent_registry_basic.py",
+  "diff_content": "from orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole  # normalized import\n\n\ndef test_agent_registry_register_and_lookup():\n    registry = AgentRegistry()\n\n    a1 = AgentCard(agent_id=\"planner-1\", role=AgentRole.PLANNER)\n    a2 = AgentCard(agent_id=\"qa-1\", role=AgentRole.QA)\n\n    registry.register_agent(a1)\n    registry.register_agent(a2)\n\n    assert registry.get_agent(\"planner-1\") is a1\n    assert registry.get_agent(\"qa-1\") is a2\n\n    planners = registry.find_agents_by_type(\"planner\")\n    assert a1 in planners\n\n\ndef test_agent_registry_find_by_capability():\n    registry = AgentRegistry()\n\n    a1 = AgentCard(agent_id=\"agent-a\", role=AgentRole.EXECUTION, capabilities=[\"write\"], agent_type=\"drafter\")\n    a2 = AgentCard(agent_id=\"agent-b\", role=AgentRole.EXECUTION, capabilities=[\"review\"], agent_type=\"qa\")\n\n    registry.register_agent(a1)\n    registry.register_agent(a2)\n\n    writers = registry.find_agents_by_capability(\"write\")\n    assert a1 in writers\n\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 39,
+    "lines_removed": 0,
+    "lines_changed": 39
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

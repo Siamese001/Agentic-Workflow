@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "meta/retrieval/vector_store_chroma.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional, Sequence\n\nfrom infra.storage.vector_store_chroma import (\n    chroma_hybrid_search as _core_chroma_hybrid_search,\n    chroma_semantic_cache_lookup as _core_chroma_semantic_cache_lookup,\n    chroma_semantic_cache_upsert as _core_chroma_semantic_cache_upsert,\n)\n\n\ndef chroma_hybrid_search(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, Any]:\n    \"\"\"META wrapper for Chroma hybrid search.\n\n    Delegates to the core vector_store_chroma implementation.\n    \"\"\"\n\n    return _core_chroma_hybrid_search(collection, query_texts=query_texts, n_results=n_results)\n\n\ndef chroma_semantic_cache_lookup(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, Any]:\n    \"\"\"META wrapper for Chroma-based semantic cache lookup.\"\"\"\n\n    return _core_chroma_semantic_cache_lookup(collection, query_texts=query_texts, n_results=n_results)\n\n\ndef chroma_semantic_cache_upsert(\n    collection,\n    ids: Sequence[str],\n    documents: Sequence[str],\n    metadatas: Optional[Sequence[Dict[str, Any]]] = None,\n) -> None:\n    \"\"\"META wrapper for Chroma-based semantic cache upsert.\"\"\"\n\n    _core_chroma_semantic_cache_upsert(\n        collection,\n        ids=ids,\n        documents=documents,\n        metadatas=metadatas,\n    )\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 44,
+    "lines_removed": 0,
+    "lines_changed": 44
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

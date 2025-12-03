@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
+  "content_hash": "3910a46f292b7d1c9edf930a6ae21f2990cdd4925a44b92e0c7dc03b31c098bf",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\reasoning\\reflexion.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\reflexion.py",
+    "file_size": 1618,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
+    "scan_timestamp": "2025-12-03T06:21:11.242025"
+  },
+  "content_preview": "\"\"\"\nReflexion self-critique framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides deterministic output evaluation and revision for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n\n\n@dataclass\nclass Critique:\n    \"\"\"\n    Represents critique result for r\u00e9sum\u00e9 processing output evaluation.\n\n    Enables systematic quality assessment for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    message: str\n    severity: str  # e.g. \"info\", \"warning\", \"error\"\n\n\n...",
+  "creation_timestamp": "2025-12-03T06:21:12.867584",
+  "version": "1.0"
+}

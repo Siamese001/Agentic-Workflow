@@ -1,0 +1,628 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Smoke-tests for the v10.8 stack scaffolding.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Import",
+          "_fields": {
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest",
+                  "asname": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 7
+              }
+            ]
+          },
+          "_lineno": 5,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "agent_stacks_v10_8",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "BulletExecutionStack",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "DraftingExecutionStack",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "HILStackV10_8",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "QAValidationStack",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RAGExecutionStack",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "SafetyStackV10_8",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "StateAdapterStack",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "StrategyStackV10_8",
+                  "asname": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RobustnessStack",
+                  "asname": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_stack_instantiation",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "stack_cls",
+                      "annotation": "None",
+                      "type_comment": "None"
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 29
+                  },
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "mock_workflow_context",
+                      "annotation": "None",
+                      "type_comment": "None"
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 40
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "stack",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 34,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "stack_cls",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 12
+                      },
+                      "args": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "mock_workflow_context",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 34,
+                          "_col_offset": 22
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 12
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 34,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "stack",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 35,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "IsNot",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 35,
+                          "_col_offset": 24
+                        }
+                      ]
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 35,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Call",
+                "_fields": {
+                  "func": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "pytest",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 20,
+                            "_col_offset": 1
+                          },
+                          "attr": "mark",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 20,
+                        "_col_offset": 1
+                      },
+                      "attr": "parametrize",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 1
+                  },
+                  "args": [
+                    {
+                      "_type": "Constant",
+                      "_fields": {
+                        "value": "stack_cls",
+                        "kind": "None"
+                      },
+                      "_lineno": 21,
+                      "_col_offset": 4
+                    },
+                    {
+                      "_type": "List",
+                      "_fields": {
+                        "elts": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "RAGExecutionStack",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 23,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "QAValidationStack",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 24,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "DraftingExecutionStack",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 25,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "BulletExecutionStack",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 26,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "StrategyStackV10_8",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 27,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "SafetyStackV10_8",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 28,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "HILStackV10_8",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 29,
+                            "_col_offset": 8
+                          },
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "RobustnessStack",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 30,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 22,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "keywords": []
+                },
+                "_lineno": 20,
+                "_col_offset": 1
+              }
+            ],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 33,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_state_adapter_stack_instantiation",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "mock_workflow_context",
+                      "annotation": "None",
+                      "type_comment": "None"
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 43
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "adapter",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 39,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "StateAdapterStack",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 39,
+                        "_col_offset": 14
+                      },
+                      "args": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "mock_workflow_context",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 39,
+                          "_col_offset": 32
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 39,
+                    "_col_offset": 14
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 39,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "adapter",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 40,
+                            "_col_offset": 11
+                          },
+                          "attr": "context",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 40,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Is",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "mock_workflow_context",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 40,
+                          "_col_offset": 30
+                        }
+                      ]
+                    },
+                    "_lineno": 40,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 40,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 38,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 81,
+    "function_count": 2,
+    "class_count": 0,
+    "import_count": 3
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "pointer_type": "golden",
+  "target_root": "schemas",
+  "canonical_relative": "meta\\schema_validation.py",
+  "global_hash": "c4139b46aec4fa94a683806ee17e5d681716b2b96090459eb6e95b7441ff8205",
+  "global_path": "06_data/semantic_cache/golden/c4139b46aec4fa94a683806ee17e5d681716b2b96090459eb6e95b7441ff8205.golden.json",
+  "created_timestamp": "2025-12-03T06:21:43.419006",
+  "pointer_version": "1.0"
+}

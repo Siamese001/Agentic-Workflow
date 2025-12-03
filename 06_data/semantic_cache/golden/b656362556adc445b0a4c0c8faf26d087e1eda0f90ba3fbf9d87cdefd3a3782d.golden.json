@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
+  "content_hash": "088c7a02cde17c9322bc9e157482dddc6ced76fbd87821751dd7eba0e9977919",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "runtime\\trace\\trace_reconstruction.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\trace\\trace_reconstruction.py",
+    "file_size": 1451,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
+    "scan_timestamp": "2025-12-03T06:21:11.298071"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom runtime.observability.collectors import get_events\n\n\ndef get_routing_trace() -> List[Dict[str, Any]]:\n    \"\"\"Return a structured trace of routing decisions from telemetry.\n\n    This mirrors the real runtime.trace.trace_reconstruction helper but lives\n    inside the Agentic-Workflow-10_10 snapshot so that\n    ``from runtime.trace.trace_reconstruction import get_routing_trace`` works\n    when tests are run with rootdir=Ag...",
+  "creation_timestamp": "2025-12-03T06:21:16.130869",
+  "version": "1.0"
+}

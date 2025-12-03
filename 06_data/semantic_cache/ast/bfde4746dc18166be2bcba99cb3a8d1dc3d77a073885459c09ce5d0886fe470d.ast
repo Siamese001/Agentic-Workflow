@@ -1,0 +1,905 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "workflow.runner",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "run_workflow",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 28
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_legacy_resume_view_is_filtered",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "out",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 5,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "run_workflow",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 5,
+                        "_col_offset": 10
+                      },
+                      "args": [
+                        {
+                          "_type": "Dict",
+                          "_fields": {
+                            "keys": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "compat_mode",
+                                  "kind": "None"
+                                },
+                                "_lineno": 5,
+                                "_col_offset": 24
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "resume",
+                                  "kind": "None"
+                                },
+                                "_lineno": 5,
+                                "_col_offset": 48
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "jd",
+                                  "kind": "None"
+                                },
+                                "_lineno": 5,
+                                "_col_offset": 72
+                              }
+                            ],
+                            "values": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "v10_7",
+                                  "kind": "None"
+                                },
+                                "_lineno": 5,
+                                "_col_offset": 39
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "CompatUser",
+                                  "kind": "None"
+                                },
+                                "_lineno": 5,
+                                "_col_offset": 58
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "Engineer",
+                                  "kind": "None"
+                                },
+                                "_lineno": 5,
+                                "_col_offset": 78
+                              }
+                            ]
+                          },
+                          "_lineno": 5,
+                          "_col_offset": 23
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 5,
+                    "_col_offset": 10
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Call",
+                        "_fields": {
+                          "func": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "set",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 7,
+                            "_col_offset": 11
+                          },
+                          "args": [
+                            {
+                              "_type": "Call",
+                              "_fields": {
+                                "func": {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Subscript",
+                                      "_fields": {
+                                        "value": {
+                                          "_type": "Name",
+                                          "_fields": {
+                                            "id": "out",
+                                            "ctx": {
+                                              "_type": "Load",
+                                              "_fields": {}
+                                            }
+                                          },
+                                          "_lineno": 7,
+                                          "_col_offset": 15
+                                        },
+                                        "slice": {
+                                          "_type": "Constant",
+                                          "_fields": {
+                                            "value": "resume",
+                                            "kind": "None"
+                                          },
+                                          "_lineno": 7,
+                                          "_col_offset": 19
+                                        },
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 7,
+                                      "_col_offset": 15
+                                    },
+                                    "attr": "keys",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 7,
+                                  "_col_offset": 15
+                                },
+                                "args": [],
+                                "keywords": []
+                              },
+                              "_lineno": 7,
+                              "_col_offset": 15
+                            }
+                          ],
+                          "keywords": []
+                        },
+                        "_lineno": 7,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Eq",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Set",
+                          "_fields": {
+                            "elts": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "candidate",
+                                  "kind": "None"
+                                },
+                                "_lineno": 8,
+                                "_col_offset": 8
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "job_title",
+                                  "kind": "None"
+                                },
+                                "_lineno": 9,
+                                "_col_offset": 8
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "summary",
+                                  "kind": "None"
+                                },
+                                "_lineno": 10,
+                                "_col_offset": 8
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "highlights",
+                                  "kind": "None"
+                                },
+                                "_lineno": 11,
+                                "_col_offset": 8
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "skills",
+                                  "kind": "None"
+                                },
+                                "_lineno": 12,
+                                "_col_offset": 8
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "sections",
+                                  "kind": "None"
+                                },
+                                "_lineno": 13,
+                                "_col_offset": 8
+                              }
+                            ]
+                          },
+                          "_lineno": 7,
+                          "_col_offset": 40
+                        }
+                      ]
+                    },
+                    "_lineno": 7,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "state",
+                          "kind": "None"
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "In",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "out",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 15,
+                          "_col_offset": 22
+                        }
+                      ]
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "master_resume",
+                          "kind": "None"
+                        },
+                        "_lineno": 16,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "NotIn",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Subscript",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "out",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 16,
+                              "_col_offset": 34
+                            },
+                            "slice": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "resume",
+                                "kind": "None"
+                              },
+                              "_lineno": 16,
+                              "_col_offset": 38
+                            },
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 34
+                        }
+                      ]
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_full_state_available_in_v10_8_mode",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "out",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "run_workflow",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 20,
+                        "_col_offset": 10
+                      },
+                      "args": [
+                        {
+                          "_type": "Dict",
+                          "_fields": {
+                            "keys": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "resume",
+                                  "kind": "None"
+                                },
+                                "_lineno": 20,
+                                "_col_offset": 24
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "jd",
+                                  "kind": "None"
+                                },
+                                "_lineno": 20,
+                                "_col_offset": 48
+                              }
+                            ],
+                            "values": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "CompatUser",
+                                  "kind": "None"
+                                },
+                                "_lineno": 20,
+                                "_col_offset": 34
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "Engineer",
+                                  "kind": "None"
+                                },
+                                "_lineno": 20,
+                                "_col_offset": 54
+                              }
+                            ]
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 23
+                        }
+                      ],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "compat_mode",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "v10_8",
+                                "kind": "None"
+                              },
+                              "_lineno": 20,
+                              "_col_offset": 79
+                            }
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 67
+                        }
+                      ]
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 10
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "master_resume",
+                          "kind": "None"
+                        },
+                        "_lineno": 22,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "In",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Subscript",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "out",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 22,
+                              "_col_offset": 30
+                            },
+                            "slice": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "resume",
+                                "kind": "None"
+                              },
+                              "_lineno": 22,
+                              "_col_offset": 34
+                            },
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 22,
+                          "_col_offset": 30
+                        }
+                      ]
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Subscript",
+                            "_fields": {
+                              "value": {
+                                "_type": "Subscript",
+                                "_fields": {
+                                  "value": {
+                                    "_type": "Name",
+                                    "_fields": {
+                                      "id": "out",
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 23,
+                                    "_col_offset": 11
+                                  },
+                                  "slice": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "state",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 23,
+                                    "_col_offset": 15
+                                  },
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 23,
+                                "_col_offset": 11
+                              },
+                              "slice": {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "memory",
+                                  "kind": "None"
+                                },
+                                "_lineno": 23,
+                                "_col_offset": 24
+                              },
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 23,
+                            "_col_offset": 11
+                          },
+                          "slice": {
+                            "_type": "Constant",
+                            "_fields": {
+                              "value": "episodic",
+                              "kind": "None"
+                            },
+                            "_lineno": 23,
+                            "_col_offset": 34
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 23,
+                        "_col_offset": 11
+                      },
+                      "slice": {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "conversation",
+                          "kind": "None"
+                        },
+                        "_lineno": 23,
+                        "_col_offset": 46
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 23,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Subscript",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "out",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 24,
+                                "_col_offset": 11
+                              },
+                              "slice": {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "state",
+                                  "kind": "None"
+                                },
+                                "_lineno": 24,
+                                "_col_offset": 15
+                              },
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 24,
+                            "_col_offset": 11
+                          },
+                          "slice": {
+                            "_type": "Constant",
+                            "_fields": {
+                              "value": "ephemeral",
+                              "kind": "None"
+                            },
+                            "_lineno": 24,
+                            "_col_offset": 24
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 24,
+                        "_col_offset": 11
+                      },
+                      "slice": {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "events",
+                          "kind": "None"
+                        },
+                        "_lineno": 24,
+                        "_col_offset": 37
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 24,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 24,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Subscript",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "out",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 25,
+                                "_col_offset": 11
+                              },
+                              "slice": {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "resume",
+                                  "kind": "None"
+                                },
+                                "_lineno": 25,
+                                "_col_offset": 15
+                              },
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 25,
+                            "_col_offset": 11
+                          },
+                          "slice": {
+                            "_type": "Constant",
+                            "_fields": {
+                              "value": "candidate",
+                              "kind": "None"
+                            },
+                            "_lineno": 25,
+                            "_col_offset": 25
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 25,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Eq",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "CompatUser",
+                            "kind": "None"
+                          },
+                          "_lineno": 25,
+                          "_col_offset": 41
+                        }
+                      ]
+                    },
+                    "_lineno": 25,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 25,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 19,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 117,
+    "function_count": 2,
+    "class_count": 0,
+    "import_count": 1
+  }
+}

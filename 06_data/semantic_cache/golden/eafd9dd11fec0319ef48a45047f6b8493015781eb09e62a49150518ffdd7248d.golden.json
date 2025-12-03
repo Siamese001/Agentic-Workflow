@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "eafd9dd11fec0319ef48a45047f6b8493015781eb09e62a49150518ffdd7248d",
+  "content_hash": "3e709228269bb6ab3ac680a7d78dcef8ade736b3a3aaa1a4c5e139607e9cc92f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10",
+    "archive_name": "Agentic_Workflow-10_10",
+    "relative_path": "observability.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\observability.py",
+    "file_size": 7846,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "eafd9dd11fec0319ef48a45047f6b8493015781eb09e62a49150518ffdd7248d",
+    "scan_timestamp": "2025-12-03T06:21:11.356530"
+  },
+  "content_preview": "# FILE: observability.py\n\"\"\"\nObservability / Telemetry Layer (v10_10 \u00b7 Phase 3)\n==================================================\n\nThis module provides:\n    \u2022 Structured spans (start_span / end_span)\n    \u2022 Structured events (emit_node_event, emit_telemetry_event)\n    \u2022 Typed retrieval + ranking events:\n          \u2013 RetrievalAttemptEvent\n          \u2013 RetrievalSuccessEvent\n          \u2013 RetrievalFailureEvent\n          \u2013 RankingEvent\n    \u2022 Cost snapshot emission\n    \u2022 Deterministic logging for DAG orc...",
+  "creation_timestamp": "2025-12-03T06:21:18.799474",
+  "version": "1.0"
+}

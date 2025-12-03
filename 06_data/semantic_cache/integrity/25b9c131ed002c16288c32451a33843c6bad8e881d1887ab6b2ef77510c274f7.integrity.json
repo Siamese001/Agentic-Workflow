@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "25b9c131ed002c16288c32451a33843c6bad8e881d1887ab6b2ef77510c274f7",
+  "content_hash": "6fe1ced3bdfc96da490696ac9d216cf58c3d09ef37600d43cf44c76dece20ee1",
+  "file_size": 33597,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\kg_ingestion_dag.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\kg_ingestion_dag.py",
+    "file_size": 33597,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "25b9c131ed002c16288c32451a33843c6bad8e881d1887ab6b2ef77510c274f7",
+    "scan_timestamp": "2025-12-03T06:21:11.277266"
+  },
+  "verification_timestamp": "2025-12-03T06:21:15.452897",
+  "checksums": {
+    "sha256": "6fe1ced3bdfc96da490696ac9d216cf58c3d09ef37600d43cf44c76dece20ee1",
+    "md5": "14554fb468c840444a55b28a6dd3706d"
+  }
+}

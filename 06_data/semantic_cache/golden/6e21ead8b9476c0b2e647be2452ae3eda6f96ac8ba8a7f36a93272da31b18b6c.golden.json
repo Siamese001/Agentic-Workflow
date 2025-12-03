@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6e21ead8b9476c0b2e647be2452ae3eda6f96ac8ba8a7f36a93272da31b18b6c",
+  "content_hash": "6e21ead8b9476c0b2e647be2452ae3eda6f96ac8ba8a7f36a93272da31b18b6c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\state\\test_state_adapter_stack_v10_8.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state\\test_state_adapter_stack_v10_8.py",
+    "file_size": 2595,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6e21ead8b9476c0b2e647be2452ae3eda6f96ac8ba8a7f36a93272da31b18b6c",
+    "scan_timestamp": "2025-12-03T06:21:11.452151"
+  },
+  "content_preview": "import copy\n\nimport pytest\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState, StrategyPlan\n\n\n@pytest.fixture\ndef base_state() -> dict:\n    state = MainGraphState()\n    state.metadata.workflow_id = \"wf-demo\"\n    state.resume.master_resume = {\"summary\": \"Original summary\"}\n    state.draft.sections = {\n        \"summary\": {\"draft\": \"v1\", \"tone\": \"Warm\"},\n        \"experience\": {\"entries\": [{\"company\": \"Acme\"}]},\n    }\n    return state.to_dict(...",
+  "creation_timestamp": "2025-12-03T06:21:24.988541",
+  "version": "1.0"
+}

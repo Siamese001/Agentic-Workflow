@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "fda0a812d8977115f52f6a7525dfb28ac2bf6faa4ddab2d3a51c13fc63b2e21a",
+  "content_hash": "fda0a812d8977115f52f6a7525dfb28ac2bf6faa4ddab2d3a51c13fc63b2e21a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\unit\\test_retrieval_planner.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_retrieval_planner.py",
+    "file_size": 1011,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "fda0a812d8977115f52f6a7525dfb28ac2bf6faa4ddab2d3a51c13fc63b2e21a",
+    "scan_timestamp": "2025-12-03T06:21:11.519436"
+  },
+  "content_preview": "from src.lic_agentic.rag.content_store import ContentStore\nfrom src.lic_agentic.rag.retrieval_planner import RetrievalPlan\nfrom src.lic_agentic.rag.tool_registry import ToolRegistry\n\n\ndef test_dedupe_and_budget():\n    plan = RetrievalPlan([], {\"ttl_s\": 3600, \"company_id\": \"ACME\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.add({\"tool\": \"news\", \"query\": \"ACME earnings\"})\n    plan.dedupe()\n    plan.budget(max...",
+  "creation_timestamp": "2025-12-03T06:21:35.089839",
+  "version": "1.0"
+}

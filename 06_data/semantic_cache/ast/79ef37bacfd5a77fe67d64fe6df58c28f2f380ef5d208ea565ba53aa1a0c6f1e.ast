@@ -1,0 +1,1230 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nL1 Result Parser for resume generation result processing.\n\nParses and structures results for consistent resume improvement\nand job alignment validation.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "dataclasses",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "dataclass",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 24
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "StrategyResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Strategy result data for resume improvement planning.\n\n    Ensures structured strategy output for optimal resume job alignment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 12,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "strategy",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "confidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 10,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "DraftResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Draft result data for resume content creation.\n\n    Ensures structured draft output for professional resume enhancement.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "sections",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "list",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 27,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "content",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 28,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 28,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 28,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 20,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 21,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "QAResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    QA result data for resume quality validation.\n\n    Ensures structured QA output for resume accuracy assessment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 32,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "findings",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 37,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 37,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 37,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "confidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 38,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 30,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 31,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "SafetyResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Safety result data for resume compliance checking.\n\n    Ensures structured safety output for professional standards.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 42,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 42,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "violations",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "list",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 47,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "approved",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 48,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 48,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 48,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 40,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 41,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "ResultParser",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Parses resume generation results without execution logic.\n\n    Ensures consistent result processing for improved resume\n    quality and job alignment validation.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 51,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 51,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "parse_strategy_result",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "llm_response",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 59,
+                              "_col_offset": 44
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 59,
+                          "_col_offset": 30
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Parses strategy result for resume improvement planning.\n\n        Structures strategy output for optimal resume job alignment.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 60,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 60,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "StrategyResult",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 64,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": [
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "strategy",
+                                  "value": {
+                                    "_type": "Call",
+                                    "_fields": {
+                                      "func": {
+                                        "_type": "Attribute",
+                                        "_fields": {
+                                          "value": {
+                                            "_type": "Name",
+                                            "_fields": {
+                                              "id": "llm_response",
+                                              "ctx": {
+                                                "_type": "Load",
+                                                "_fields": {}
+                                              }
+                                            },
+                                            "_lineno": 65,
+                                            "_col_offset": 21
+                                          },
+                                          "attr": "strip",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 65,
+                                        "_col_offset": 21
+                                      },
+                                      "args": [],
+                                      "keywords": []
+                                    },
+                                    "_lineno": 65,
+                                    "_col_offset": 21
+                                  }
+                                },
+                                "_lineno": 65,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "confidence",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "0.8",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 66,
+                                    "_col_offset": 23
+                                  }
+                                },
+                                "_lineno": 66,
+                                "_col_offset": 12
+                              }
+                            ]
+                          },
+                          "_lineno": 64,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 64,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "staticmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 58,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "StrategyResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 59,
+                    "_col_offset": 52
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 59,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "parse_draft_result",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "llm_response",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 70,
+                              "_col_offset": 41
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 70,
+                          "_col_offset": 27
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Parses draft result for resume content creation.\n\n        Structures draft output for professional resume enhancement.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 71,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "DraftResult",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 75,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": [
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "sections",
+                                  "value": {
+                                    "_type": "List",
+                                    "_fields": {
+                                      "elts": [
+                                        {
+                                          "_type": "Constant",
+                                          "_fields": {
+                                            "value": "summary",
+                                            "kind": "None"
+                                          },
+                                          "_lineno": 76,
+                                          "_col_offset": 22
+                                        },
+                                        {
+                                          "_type": "Constant",
+                                          "_fields": {
+                                            "value": "experience",
+                                            "kind": "None"
+                                          },
+                                          "_lineno": 76,
+                                          "_col_offset": 33
+                                        },
+                                        {
+                                          "_type": "Constant",
+                                          "_fields": {
+                                            "value": "skills",
+                                            "kind": "None"
+                                          },
+                                          "_lineno": 76,
+                                          "_col_offset": 47
+                                        }
+                                      ],
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 76,
+                                    "_col_offset": 21
+                                  }
+                                },
+                                "_lineno": 76,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "content",
+                                  "value": {
+                                    "_type": "Call",
+                                    "_fields": {
+                                      "func": {
+                                        "_type": "Attribute",
+                                        "_fields": {
+                                          "value": {
+                                            "_type": "Name",
+                                            "_fields": {
+                                              "id": "llm_response",
+                                              "ctx": {
+                                                "_type": "Load",
+                                                "_fields": {}
+                                              }
+                                            },
+                                            "_lineno": 77,
+                                            "_col_offset": 20
+                                          },
+                                          "attr": "strip",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 77,
+                                        "_col_offset": 20
+                                      },
+                                      "args": [],
+                                      "keywords": []
+                                    },
+                                    "_lineno": 77,
+                                    "_col_offset": 20
+                                  }
+                                },
+                                "_lineno": 77,
+                                "_col_offset": 12
+                              }
+                            ]
+                          },
+                          "_lineno": 75,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 75,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "staticmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 69,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "DraftResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 70,
+                    "_col_offset": 49
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 70,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "parse_qa_result",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "llm_response",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 81,
+                              "_col_offset": 38
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 81,
+                          "_col_offset": 24
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Parses QA result for resume quality validation.\n\n        Structures QA output for resume accuracy assessment.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 82,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 82,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "QAResult",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": [
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "findings",
+                                  "value": {
+                                    "_type": "Call",
+                                    "_fields": {
+                                      "func": {
+                                        "_type": "Attribute",
+                                        "_fields": {
+                                          "value": {
+                                            "_type": "Name",
+                                            "_fields": {
+                                              "id": "llm_response",
+                                              "ctx": {
+                                                "_type": "Load",
+                                                "_fields": {}
+                                              }
+                                            },
+                                            "_lineno": 87,
+                                            "_col_offset": 21
+                                          },
+                                          "attr": "strip",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 87,
+                                        "_col_offset": 21
+                                      },
+                                      "args": [],
+                                      "keywords": []
+                                    },
+                                    "_lineno": 87,
+                                    "_col_offset": 21
+                                  }
+                                },
+                                "_lineno": 87,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "confidence",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "0.8",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 88,
+                                    "_col_offset": 23
+                                  }
+                                },
+                                "_lineno": 88,
+                                "_col_offset": 12
+                              }
+                            ]
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 86,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "staticmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 80,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "QAResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 81,
+                    "_col_offset": 46
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 81,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "parse_safety_result",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "llm_response",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 92,
+                              "_col_offset": 42
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 92,
+                          "_col_offset": 28
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Parses safety result for resume compliance checking.\n\n        Structures safety output for professional standards validation.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 93,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 93,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SafetyResult",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 97,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": [
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "violations",
+                                  "value": {
+                                    "_type": "List",
+                                    "_fields": {
+                                      "elts": [],
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 98,
+                                    "_col_offset": 23
+                                  }
+                                },
+                                "_lineno": 98,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "approved",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "True",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 99,
+                                    "_col_offset": 21
+                                  }
+                                },
+                                "_lineno": 99,
+                                "_col_offset": 12
+                              }
+                            ]
+                          },
+                          "_lineno": 97,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 97,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "staticmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 91,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "SafetyResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 92,
+                    "_col_offset": 50
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 92,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 50,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 161,
+    "function_count": 4,
+    "class_count": 5,
+    "import_count": 1
+  }
+}

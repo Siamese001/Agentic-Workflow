@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d53fd13332af59623be74c00307e2dee6e35fad26d71c02a8a57382d906868ad",
+  "content_hash": "d53fd13332af59623be74c00307e2dee6e35fad26d71c02a8a57382d906868ad",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\e2e\\test_policy_feedback.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_policy_feedback.py",
+    "file_size": 901,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d53fd13332af59623be74c00307e2dee6e35fad26d71c02a8a57382d906868ad",
+    "scan_timestamp": "2025-12-03T06:21:11.511541"
+  },
+  "content_preview": "from types import SimpleNamespace\nfrom unittest.mock import patch\n\nfrom src.lic_agentic.agents.k3_message_architect import DraftPackage\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_policy_feedback_updates_toggles_and_budget():\n    stack = OutreachStack(ReasoningToggles())\n\n    def fake_compose(inputs, route, *, max_calls=None):\n        draft = \"Subject: Hi\\n\\nHello there\\n[artifact_id:aid] evidence\"\n    ...",
+  "creation_timestamp": "2025-12-03T06:21:34.862573",
+  "version": "1.0"
+}

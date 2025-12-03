@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36",
+  "content_hash": "500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36",
+  "file_size": 35022,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "00_hop_rag_v1_3.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\00_hop_rag_v1_3.py",
+    "file_size": 35022,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36",
+    "scan_timestamp": "2025-12-03T06:21:11.461699"
+  },
+  "verification_timestamp": "2025-12-03T06:21:25.408979",
+  "checksums": {
+    "sha256": "500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36",
+    "md5": "5d64d16b77457c745f4c2f83469dfd83"
+  }
+}

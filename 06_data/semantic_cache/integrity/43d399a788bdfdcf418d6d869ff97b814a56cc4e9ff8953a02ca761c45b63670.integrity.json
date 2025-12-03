@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "43d399a788bdfdcf418d6d869ff97b814a56cc4e9ff8953a02ca761c45b63670",
+  "content_hash": "6ece1bfb7c31f0ad51faadcfff75ef7d392319fa6b9ea4de57967f0d12eb4d8f",
+  "file_size": 520,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L4_memory_state\\temporal_KG\\test_temporal_kg.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\temporal_KG\\test_temporal_kg.py",
+    "file_size": 520,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "43d399a788bdfdcf418d6d869ff97b814a56cc4e9ff8953a02ca761c45b63670",
+    "scan_timestamp": "2025-12-03T06:21:11.322775"
+  },
+  "verification_timestamp": "2025-12-03T06:21:16.972776",
+  "checksums": {
+    "sha256": "6ece1bfb7c31f0ad51faadcfff75ef7d392319fa6b9ea4de57967f0d12eb4d8f",
+    "md5": "7b28302b3a56f302159cfc5bbdebe037"
+  }
+}

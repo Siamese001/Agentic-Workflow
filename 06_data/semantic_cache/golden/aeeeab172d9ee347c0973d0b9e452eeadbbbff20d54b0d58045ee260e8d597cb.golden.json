@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb",
+  "content_hash": "46828629846d2fed1709d7709e77266e4f83de2013e6e862ea7d97f9dc5bece8",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "eval\\golden_state\\datasets.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\datasets.py",
+    "file_size": 2339,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb",
+    "scan_timestamp": "2025-12-03T06:21:11.230574"
+  },
+  "content_preview": "from __future__ import annotations\n\nimport json\nfrom pathlib import Path\nfrom typing import Any, Dict, List\n\nfrom eval.golden_state.models import GoldenStateTestCase, GoldenCase\n\n\n_BASE_DIR = Path(__file__).resolve().parent\n_BASELINES_DIR = _BASE_DIR / \"baselines\"\n\n\ndef _load_json(name: str) -> Any:\n    path = _BASELINES_DIR / name\n    if not path.exists():\n        return None\n    with path.open(\"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n\n\ndef load_golden_inputs() -> List[GoldenSta...",
+  "creation_timestamp": "2025-12-03T06:21:12.533392",
+  "version": "1.0"
+}

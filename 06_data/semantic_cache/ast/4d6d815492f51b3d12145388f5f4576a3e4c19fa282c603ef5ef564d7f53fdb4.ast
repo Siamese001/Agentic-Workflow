@@ -1,0 +1,523 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Shared Test Stubs.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "StubSafetyEngine",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Stub safety engine for testing.",
+                      "kind": "None"
+                    },
+                    "_lineno": 4,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 4,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "evaluate",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 17
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "context",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 23
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Stub evaluate method.",
+                            "kind": "None"
+                          },
+                          "_lineno": 7,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 7,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "StubPolicyResult",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 8,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": []
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "StubPolicyResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Stub policy result for testing.",
+                      "kind": "None"
+                    },
+                    "_lineno": 11,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 11,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 13,
+                          "_col_offset": 17
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 14,
+                                "_col_offset": 8
+                              },
+                              "attr": "blocking_findings",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 14,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "List",
+                          "_fields": {
+                            "elts": [],
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 14,
+                          "_col_offset": 33
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 14,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 15,
+                                "_col_offset": 8
+                              },
+                              "attr": "warnings",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 15,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "List",
+                          "_fields": {
+                            "elts": [],
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 15,
+                          "_col_offset": 24
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 15,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_stub_safety_engine",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Test StubSafetyEngine.",
+                      "kind": "None"
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "engine",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 19,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "StubSafetyEngine",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 19,
+                        "_col_offset": 13
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "result",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "engine",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 20,
+                            "_col_offset": 13
+                          },
+                          "attr": "evaluate",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 20,
+                        "_col_offset": 13
+                      },
+                      "args": [
+                        {
+                          "_type": "Dict",
+                          "_fields": {
+                            "keys": [],
+                            "values": []
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 29
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "result",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 21,
+                            "_col_offset": 11
+                          },
+                          "attr": "blocking_findings",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 21,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Eq",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "List",
+                          "_fields": {
+                            "elts": [],
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 21,
+                          "_col_offset": 39
+                        }
+                      ]
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 17,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 64,
+    "function_count": 3,
+    "class_count": 2,
+    "import_count": 0
+  }
+}

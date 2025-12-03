@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "2c698cf1b5e2176559eb305bd718e4fab84d2aa9d43a1fd963fd4898ec075c90",
+  "content_hash": "d3bd227fd8eb2e8752c8116f6ec8bd4b0bcb71a684020ec7e9ab2327147736fe",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\stress\\concurrency\\test_stress_concurrency.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\concurrency\\test_stress_concurrency.py",
+    "file_size": 1441,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2c698cf1b5e2176559eb305bd718e4fab84d2aa9d43a1fd963fd4898ec075c90",
+    "scan_timestamp": "2025-12-03T06:21:11.339187"
+  },
+  "content_preview": "\"\"\"Stress Tests for Concurrency.\"\"\"\nimport threading\n\nclass TestStressConcurrency:\n    \"\"\"Stress tests for concurrency handling.\"\"\"\n    \n    def test_thread_safety(self):\n        \"\"\"Test thread safety of shared resources.\"\"\"\n        counter = {\"value\": 0}\n        lock = threading.Lock()\n        \n        def increment():\n            with lock:\n                counter[\"value\"] += 1\n        \n        threads = [threading.Thread(target=increment) for _ in range(20)]\n        for t in threads:\n        ...",
+  "creation_timestamp": "2025-12-03T06:21:17.572426",
+  "version": "1.0"
+}

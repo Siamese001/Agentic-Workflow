@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "957f7918efa720d268ac3ff56350bc54e7d3c0424deca9c1f2de7c0d0ebd5634",
+  "content_hash": "47f5222a8e0cdcfaf8763b78513c2ec56b9725b06d0589a199f0c7587bd7ce06",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "runtime\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\__init__.py",
+    "file_size": 1261,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "957f7918efa720d268ac3ff56350bc54e7d3c0424deca9c1f2de7c0d0ebd5634",
+    "scan_timestamp": "2025-12-03T06:21:11.298584"
+  },
+  "content_preview": "\"\"\"Snapshot-local runtime package shim for v10_10 tests.\n\nWhen tests are run with rootdir=Agentic-Workflow-10_10, the name ``runtime``\nresolves to this package. This shim ensures that imports like\n``from runtime.observability import start_span`` are forwarded to the real\nruntime package defined at the repo root.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport importlib\nimport os\nimport sys\n\n# Ensure the repo root (parent of Agentic-Workflow-10_10) is on sys.path\n_PARENT = os.path.dirname(os.path...",
+  "creation_timestamp": "2025-12-03T06:21:16.141866",
+  "version": "1.0"
+}

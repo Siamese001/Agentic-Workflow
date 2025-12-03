@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "535610470612fcfe538f3eda85d207cdc3a762412f792971111968a8cda84a66",
+  "content_hash": "f50ce2914ca0cbad3ca4703af535a1e57135a33bbb1adac724f23bc3bdb864c0",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\modularity\\test_layer_imports.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_layer_imports.py",
+    "file_size": 4487,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "535610470612fcfe538f3eda85d207cdc3a762412f792971111968a8cda84a66",
+    "scan_timestamp": "2025-12-03T06:21:11.329963"
+  },
+  "content_preview": "from __future__ import annotations\n\nimport ast\nimport pathlib\n\n\nPROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]\n\n\nFORBIDDEN_TOP_LEVEL = {\"l1\", \"l2\", \"cognitive_agents\"}\nPROVIDERS_PACKAGE = \"providers\"\nFORBIDDEN_IMPORTERS_FOR_PROVIDERS = {\"core\", \"meta\", \"prompts\", \"profiles\"}\n\n\ndef _iter_project_py_files():\n    for path in PROJECT_ROOT.glob(\"*.py\"):\n        if path.name in {\"l1.py\", \"l2.py\", \"cognitive_agents.py\", \"import_check.py\"}:\n            continue\n        yield path\n    for pat...",
+  "creation_timestamp": "2025-12-03T06:21:17.229377",
+  "version": "1.0"
+}

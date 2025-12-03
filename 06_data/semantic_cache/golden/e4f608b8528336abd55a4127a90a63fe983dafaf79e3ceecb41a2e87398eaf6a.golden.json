@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e4f608b8528336abd55a4127a90a63fe983dafaf79e3ceecb41a2e87398eaf6a",
+  "content_hash": "e27553a519742ec5f2e5aef865e4be1207851467079e137631eac38426affcc3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "eval\\simulation\\metrics.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\simulation\\metrics.py",
+    "file_size": 2193,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e4f608b8528336abd55a4127a90a63fe983dafaf79e3ceecb41a2e87398eaf6a",
+    "scan_timestamp": "2025-12-03T06:21:11.233850"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Iterable, Mapping\n\n\ndef _as_mapping(obj: Any) -> Mapping[str, Any]:\n    if isinstance(obj, Mapping):\n        return obj\n    if hasattr(obj, \"model_dump\"):\n        try:\n            return obj.model_dump()  # type: ignore[call-arg]\n        except TypeError:  # pragma: no cover - defensive\n            pass\n    if hasattr(obj, \"dict\"):\n        try:\n            return obj.dict()  # type: ignore[call-arg]\n        except TypeError:  # pragma: ...",
+  "creation_timestamp": "2025-12-03T06:21:12.631426",
+  "version": "1.0"
+}

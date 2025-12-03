@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "content_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\unit\\test_mcp_selector.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_mcp_selector.py",
+    "file_size": 3696,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+    "scan_timestamp": "2025-12-03T06:21:11.516727"
+  },
+  "content_preview": "from src.lic_agentic.mcp import MCPClient, ToolSpec\nfrom src.lic_agentic.rag import MCPSelector, ToolRegistry, register_discovered_tools\nfrom src.lic_agentic.telemetry import PolicyController\n\n\ndef test_selector_respects_allowlist_and_quarantine():\n    client = MCPClient(\n        tools=[\n            ToolSpec(\n                id=\"trusted\",\n                name=\"Trusted\",\n                capabilities=(\"web_search\",),\n                cost=0.3,\n                trust_tier=\"high\",\n                late...",
+  "creation_timestamp": "2025-12-03T06:21:34.998084",
+  "version": "1.0"
+}

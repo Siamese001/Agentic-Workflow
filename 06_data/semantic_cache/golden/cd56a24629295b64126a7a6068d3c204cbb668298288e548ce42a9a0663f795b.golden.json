@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cd56a24629295b64126a7a6068d3c204cbb668298288e548ce42a9a0663f795b",
+  "content_hash": "1a9bdc36e61c2882ad3f832bd3d90e72b359822a6efde18e6812be25cbc01f96",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\sandbox\\test_sandbox_observability.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_sandbox_observability.py",
+    "file_size": 650,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cd56a24629295b64126a7a6068d3c204cbb668298288e548ce42a9a0663f795b",
+    "scan_timestamp": "2025-12-03T06:21:11.334684"
+  },
+  "content_preview": "from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest\nfrom observability import clear_events, get_all_events\n\n\ndef test_sandbox_observability_events_include_vm_id():\n    clear_events()\n\n    vm = create_vm({})\n    req = ToolCallRequest(tool_name=\"echo\", args=[\"hi\"], timeout_s=1.0)\n    exec_in_vm(vm, req)\n    teardown_vm(vm)\n\n    events = get_all_events()\n    vm_ids = {e.attributes.get(\"vm_id\") for e in events if isinstance(getattr(e,...",
+  "creation_timestamp": "2025-12-03T06:21:17.426158",
+  "version": "1.0"
+}

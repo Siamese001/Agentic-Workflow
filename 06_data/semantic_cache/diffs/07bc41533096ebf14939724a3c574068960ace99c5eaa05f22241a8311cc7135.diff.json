@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "tests/integration/test_retry_improvement.py",
+  "diff_content": "from src.lic_agentic.agents.k7_validator_agent import ValidatorAgent\n\n\ndef test_retry_brings_to_pass():\n    agent = ValidatorAgent(max_retries=1)\n    initial_draft = \"\"\"Subject: Hello\\n\\nHello there\\nBest regards,\\nLIC Outreach Bot\"\"\"\n    artifacts = {\"aid\": \"Grounded insight\"}\n    verdict = agent.check(\n        initial_draft,\n        route_decision=None,\n        pii_map={},\n        artifacts=artifacts,\n    )\n    assert verdict.passed\n    assert \"CTA:\" in verdict.final_draft\n    assert \"[artifact_id:aid]\" in verdict.final_draft\n",
+  "statistics": {
+    "lines_added": 16,
+    "lines_removed": 0,
+    "lines_changed": 16
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

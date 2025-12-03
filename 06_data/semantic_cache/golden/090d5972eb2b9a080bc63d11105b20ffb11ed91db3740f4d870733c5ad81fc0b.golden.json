@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
+  "content_hash": "ccaec9d47350b90db314c4a9df53bc600f35ca538ccb98c8b310347c765ab424",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\dag\\dag_executor.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag\\dag_executor.py",
+    "file_size": 1803,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
+    "scan_timestamp": "2025-12-03T06:21:11.238663"
+  },
+  "content_preview": "\"\"\"\nDAG executor for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides async execution engine for comprehensive r\u00e9sum\u00e9 enhancement directed acyclic graphs.\n\"\"\"\n\nfrom typing import Any, Dict, Iterable, Optional, Set, List\n\nfrom .dag_models import Graph\n\n\nclass DAGExecutor:\n    \"\"\"\n    Executes directed acyclic graphs for r\u00e9sum\u00e9 processing workflows.\n\n    Orchestrates node execution with proper dependency resolution for r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n    def __init__(self, graph: Graph) -> None:\n  ...",
+  "creation_timestamp": "2025-12-03T06:21:12.741523",
+  "version": "1.0"
+}

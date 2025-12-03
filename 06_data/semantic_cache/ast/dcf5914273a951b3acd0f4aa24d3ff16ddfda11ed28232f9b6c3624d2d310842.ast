@@ -1,0 +1,298 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Snapshot-local runtime.runtime_utils shim for v10_10 tests.\n\nThis module allows imports of the form::\n\n    from runtime.runtime_utils import invoke_model, SandboxConfig\n\nwhen tests are run with rootdir=Agentic-Workflow-10_10. It delegates to the\nexisting runtime_utils module at the snapshot root.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "tools.runtime_utils",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ValidationError",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ToolExecutionError",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ModelClientError",
+                  "asname": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "SafetyException",
+                  "asname": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "LLMInvocationError",
+                  "asname": "None"
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "CircuitBreaker",
+                  "asname": "None"
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "invoke_with_retry",
+                  "asname": "None"
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "SandboxConfig",
+                  "asname": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "get_sandbox",
+                  "asname": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "PredictiveCacheManager",
+                  "asname": "None"
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "invoke_model",
+                  "asname": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 26,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "ValidationError",
+                      "kind": "None"
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "ToolExecutionError",
+                      "kind": "None"
+                    },
+                    "_lineno": 28,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "ModelClientError",
+                      "kind": "None"
+                    },
+                    "_lineno": 29,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "SafetyException",
+                      "kind": "None"
+                    },
+                    "_lineno": 30,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "LLMInvocationError",
+                      "kind": "None"
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CircuitBreaker",
+                      "kind": "None"
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "invoke_with_retry",
+                      "kind": "None"
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "SandboxConfig",
+                      "kind": "None"
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "get_sandbox",
+                      "kind": "None"
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "PredictiveCacheManager",
+                      "kind": "None"
+                    },
+                    "_lineno": 36,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "invoke_model",
+                      "kind": "None"
+                    },
+                    "_lineno": 37,
+                    "_col_offset": 4
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 26,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 26,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 33,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 2
+  }
+}

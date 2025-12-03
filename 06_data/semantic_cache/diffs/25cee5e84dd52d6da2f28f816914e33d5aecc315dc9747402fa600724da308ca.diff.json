@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l1/__init__.py",
+  "diff_content": "\"\"\"\nL1 Planning layer for resume generation strategy and organization.\n\nCoordinates resume structure planning for optimal job alignment\nand ATS compatibility to improve application success.\n\"\"\"",
+  "statistics": {
+    "lines_added": 6,
+    "lines_removed": 0,
+    "lines_changed": 6
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

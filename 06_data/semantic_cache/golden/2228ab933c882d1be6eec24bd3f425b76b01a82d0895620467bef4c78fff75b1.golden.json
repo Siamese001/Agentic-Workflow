@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "2228ab933c882d1be6eec24bd3f425b76b01a82d0895620467bef4c78fff75b1",
+  "content_hash": "2228ab933c882d1be6eec24bd3f425b76b01a82d0895620467bef4c78fff75b1",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_2025-09-10_v3.2.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v3.2.md",
+    "file_size": 8669,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "2228ab933c882d1be6eec24bd3f425b76b01a82d0895620467bef4c78fff75b1",
+    "scan_timestamp": "2025-12-03T06:21:11.588020"
+  },
+  "content_preview": "Perfect. Below is the **full Zero-Loss Overwrite of LinkedInCanonical v3.1 \u2192 v3.2**.\nThis is a **complete canonical file** suitable for direct copy-paste into VSC, preserving all sections from v3.1 while embedding the new **RAG Enrichment governance** (minimum \u22653 bullets, supplemental web search, new blockers).\n\n---\n\n# LinkedInCanonical \u2014 2025-09-13 v3.2 (FULL, ZLO \u2014 RAG Enrichment Overlay Integrated)\n\nVersion: v3.2 | Status: Canonical\nSource baseline: LinkedInCanonical \u2014 2025-09-12 v3.1\n\n---\n\n#...",
+  "creation_timestamp": "2025-12-03T06:21:38.522327",
+  "version": "1.0"
+}

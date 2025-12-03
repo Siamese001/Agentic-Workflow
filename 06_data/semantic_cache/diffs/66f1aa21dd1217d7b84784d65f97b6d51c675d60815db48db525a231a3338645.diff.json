@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/golden_state/test_evaluator.py",
+  "diff_content": "from eval.golden_state.datasets import load_golden_cases\nfrom eval.golden_state.evaluator import evaluate_case_output\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\n\n\ndef test_evaluate_case_output_basic():\n    cases = load_golden_cases()\n    assert cases\n\n    case = cases[0]\n    output = GoldenOutput(\n        case_id=case.id,\n        produced_keypoints=list(case.expected_keypoints),\n        correctness_map={},\n        safety_decisions={},\n        metacognition_summary={},\n        final_verdict=\"borderline\",\n    )\n\n    evaluated = evaluate_case_output(case, output)\n    assert isinstance(evaluated, GoldenOutput)\n    assert evaluated.final_verdict in {\"pass\", \"fail\", \"borderline\"}\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 28,
+    "lines_removed": 0,
+    "lines_changed": 28
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

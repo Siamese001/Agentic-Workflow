@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
+    "archive_name": "Monolith",
+    "relative_path": "DEPRECATION_APPROVAL.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolith\\DEPRECATION_APPROVAL.md",
+    "file_size": 5359,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+    "scan_timestamp": "2025-12-03T06:21:11.466671"
+  },
+  "artifacts": {
+    "ast": "ast/04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.ast",
+    "embedding": "embeddings/04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.embedding",
+    "diff": "diffs/04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.diff.json",
+    "safety": "safety/04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.safety.json",
+    "golden": "golden/04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.golden.json",
+    "integrity": "integrity/04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:26.133989",
+  "artifact_count": 5
+}

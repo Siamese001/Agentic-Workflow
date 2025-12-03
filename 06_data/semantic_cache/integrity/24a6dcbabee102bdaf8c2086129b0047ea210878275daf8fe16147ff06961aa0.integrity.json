@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "24a6dcbabee102bdaf8c2086129b0047ea210878275daf8fe16147ff06961aa0",
+  "content_hash": "24a6dcbabee102bdaf8c2086129b0047ea210878275daf8fe16147ff06961aa0",
+  "file_size": 80,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "agentic_workflow\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agentic_workflow\\__init__.py",
+    "file_size": 80,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "24a6dcbabee102bdaf8c2086129b0047ea210878275daf8fe16147ff06961aa0",
+    "scan_timestamp": "2025-12-03T06:21:11.375879"
+  },
+  "verification_timestamp": "2025-12-03T06:21:20.565201",
+  "checksums": {
+    "sha256": "24a6dcbabee102bdaf8c2086129b0047ea210878275daf8fe16147ff06961aa0",
+    "md5": "f05d42b93e40cd90c99158435ae2dfcf"
+  }
+}

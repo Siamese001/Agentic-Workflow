@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
+  "content_hash": "defd7babad7d1d18b87cc85bacfa6bb6e652602937b1483276fde7ac56911053",
+  "file_size": 12448,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l4\\triplet_store.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\triplet_store.py",
+    "file_size": 12448,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
+    "scan_timestamp": "2025-12-03T06:21:11.265853"
+  },
+  "verification_timestamp": "2025-12-03T06:21:14.608636",
+  "checksums": {
+    "sha256": "defd7babad7d1d18b87cc85bacfa6bb6e652602937b1483276fde7ac56911053",
+    "md5": "8d8419a69f28a48f450f0494a3f05be7"
+  }
+}

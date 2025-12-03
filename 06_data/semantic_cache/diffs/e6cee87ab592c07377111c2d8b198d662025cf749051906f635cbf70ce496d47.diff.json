@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/dag/dag_models.py",
+  "diff_content": "\"\"\"\nDAG models for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides core data structures for comprehensive r\u00e9sum\u00e9 enhancement directed acyclic graphs.\n\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Awaitable, Callable, Dict, List\n\n\nNodeFn = Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]\n\n\n@dataclass\nclass Node:\n    \"\"\"\n    Represents DAG node for r\u00e9sum\u00e9 processing workflow execution.\n\n    Defines executable units within comprehensive r\u00e9sum\u00e9 enhancement orchestration.\n    \"\"\"\n    id: str\n    fn: NodeFn\n    metadata: Dict[str, Any] = field(default_factory=dict)\n\n\n@dataclass\nclass Edge:\n    \"\"\"\n    Represents directed edge in r\u00e9sum\u00e9 processing DAGs.\n\n    Defines execution flow and dependencies for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    source: str\n    target: str\n\n\n@dataclass\nclass Graph:\n    \"\"\"\n    Represents directed acyclic graph for r\u00e9sum\u00e9 processing orchestration.\n\n    Enables structured workflow execution for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n    nodes: Dict[str, Node]\n    edges: List[Edge]\n\n    def successors(self, node_id: str) -> List[Node]:\n        \"\"\"\n        Retrieves successor nodes for r\u00e9sum\u00e9 processing workflow execution.\n\n        Enables proper dependency resolution in r\u00e9sum\u00e9 improvement DAGs.\n        \"\"\"\n        return [self.nodes[e.target] for e in self.edges if e.source == node_id]\n\n    def predecessors(self, node_id: str) -> List[Node]:\n        \"\"\"\n        Retrieves predecessor nodes for r\u00e9sum\u00e9 processing workflow execution.\n\n        Enables proper dependency tracking in r\u00e9sum\u00e9 improvement DAGs.\n        \"\"\"\n        return [self.nodes[e.source] for e in self.edges if e.target == node_id]\n\n\n\n",
+  "statistics": {
+    "lines_added": 64,
+    "lines_removed": 0,
+    "lines_changed": 64
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

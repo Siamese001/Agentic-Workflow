@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "83c114a4e6886dd52ee5f299c60924241b819ecc2d6074e87d38fde0c8946c12",
+  "content_hash": "2d7e52cdab78001eee6881a9f34ab6bb950e55654e3baff8b2a38eeee8611f39",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "core\\routing.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\core\\routing.py",
+    "file_size": 240,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "83c114a4e6886dd52ee5f299c60924241b819ecc2d6074e87d38fde0c8946c12",
+    "scan_timestamp": "2025-12-03T06:21:11.228206"
+  },
+  "content_preview": "\"\"\"Provides a stable entry point to the routing rules that decide which agents and checks each resume goes through, directly influencing how deep and rigorous the improvements are.\"\"\"\n\nfrom meta.routing import *  # noqa: F401,F403\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:12.495989",
+  "version": "1.0"
+}

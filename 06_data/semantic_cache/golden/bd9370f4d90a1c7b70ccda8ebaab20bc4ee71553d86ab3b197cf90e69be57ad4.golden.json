@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bd9370f4d90a1c7b70ccda8ebaab20bc4ee71553d86ab3b197cf90e69be57ad4",
+  "content_hash": "bd9370f4d90a1c7b70ccda8ebaab20bc4ee71553d86ab3b197cf90e69be57ad4",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "validation_LIC_v_12.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\validation_LIC_v_12.py",
+    "file_size": 41163,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bd9370f4d90a1c7b70ccda8ebaab20bc4ee71553d86ab3b197cf90e69be57ad4",
+    "scan_timestamp": "2025-12-03T06:21:11.656921"
+  },
+  "content_preview": "# File: validation.py\n# Description: Validation agents, rules, and utilities for the LIC workflow.\n# REFACTOR: v12.0 - Added Strategic Alignment validation and Voice Profile validation\n\n__version__ = \"12.0\"\n\nimport re\nimport json\nimport os\nfrom typing import Dict, List, Any, Tuple, Optional\nfrom pathlib import Path\nimport numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nfrom models_LIC import (\n    ValidationSeverity,...",
+  "creation_timestamp": "2025-12-03T06:21:42.770261",
+  "version": "1.0"
+}

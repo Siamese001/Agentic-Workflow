@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "595c3151f24d74c0ea5927c3112b1a04f2717fece5657fe7c73d8b8bbda2467b",
+  "content_hash": "dcd81332549887bb7eec788740215d3f9baf83aed3d387a812e52d3583f2424a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "config\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\__init__.py",
+    "file_size": 63,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "595c3151f24d74c0ea5927c3112b1a04f2717fece5657fe7c73d8b8bbda2467b",
+    "scan_timestamp": "2025-12-03T06:21:11.225910"
+  },
+  "content_preview": "\"\"\"Configuration module for Agentic Workflow v10_10.\"\"\"\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:12.277458",
+  "version": "1.0"
+}

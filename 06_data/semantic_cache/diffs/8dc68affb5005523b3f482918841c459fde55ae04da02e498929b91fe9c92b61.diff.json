@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "safety_simulation.py",
+  "diff_content": "\"\"\"Safety simulation models.\"\"\"\n\nfrom pydantic import BaseModel\n\nfrom .simulation_base import SimulationInput, SimulationResult\n\n\nclass SafetySimRequest(SimulationInput):\n    \"\"\"Input payload for safety simulation.\"\"\"\n\n    text: str\n\n\nclass SafetySimMetrics(BaseModel):\n    \"\"\"Metrics produced by safety simulations.\"\"\"\n\n    pii_risk: float\n    injection_risk: float\n    bias_risk: float\n\n\nclass SafetySimResult(SimulationResult):\n    \"\"\"Result model for safety simulations.\"\"\"\n\n    pass\n",
+  "statistics": {
+    "lines_added": 25,
+    "lines_removed": 0,
+    "lines_changed": 25
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

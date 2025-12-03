@@ -1,0 +1,1766 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nOrchestration layer data models.\n\nThis module provides data models specific to orchestration operations.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "List",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 30
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Optional",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 36
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "dataclasses",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "dataclass",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "field",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 35
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "enum",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Enum",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 17
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "datetime",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "datetime",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 21
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.models.dag_models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "*",
+                  "asname": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 35
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 15,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "OrchestrationStatus",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "str",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 18,
+                "_col_offset": 26
+              },
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 18,
+                "_col_offset": 31
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Status of orchestration operations.",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "PENDING",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "pending",
+                      "kind": "None"
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 14
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "RUNNING",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 21,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "running",
+                      "kind": "None"
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 14
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 22,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "completed",
+                      "kind": "None"
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "FAILED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 23,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "failed",
+                      "kind": "None"
+                    },
+                    "_lineno": 23,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CANCELLED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 24,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "cancelled",
+                      "kind": "None"
+                    },
+                    "_lineno": 24,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 24,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 18,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "OrchestrationContext",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Context for orchestration operations.",
+                      "kind": "None"
+                    },
+                    "_lineno": 29,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 29,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "workflow_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 30,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 30,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 30,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "execution_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 18
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 31,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "status",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "OrchestrationStatus",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 12
+                  },
+                  "value": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "OrchestrationStatus",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 32,
+                        "_col_offset": 34
+                      },
+                      "attr": "PENDING",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 34
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 32,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "created_at",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "datetime",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 16
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 33,
+                        "_col_offset": 27
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "datetime",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 33,
+                                  "_col_offset": 49
+                                },
+                                "attr": "now",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 33,
+                              "_col_offset": 49
+                            }
+                          },
+                          "_lineno": 33,
+                          "_col_offset": 33
+                        }
+                      ]
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 27
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 33,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "updated_at",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "datetime",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 16
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 27
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "datetime",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 34,
+                                  "_col_offset": 49
+                                },
+                                "attr": "now",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 34,
+                              "_col_offset": 49
+                            }
+                          },
+                          "_lineno": 34,
+                          "_col_offset": 33
+                        }
+                      ]
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 27
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 34,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "metadata",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 35,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 35,
+                              "_col_offset": 19
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 35,
+                              "_col_offset": 24
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 35,
+                        "_col_offset": 19
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 14
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 35,
+                        "_col_offset": 31
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "dict",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 35,
+                              "_col_offset": 53
+                            }
+                          },
+                          "_lineno": 35,
+                          "_col_offset": 37
+                        }
+                      ]
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 31
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 35,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 27,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 28,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "NodeExecution",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Represents execution of a single node in the orchestration graph.",
+                      "kind": "None"
+                    },
+                    "_lineno": 40,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 40,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "node_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 41,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 41,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 41,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "workflow_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 42,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 42,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 42,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "status",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "OrchestrationStatus",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 12
+                  },
+                  "value": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "OrchestrationStatus",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 43,
+                        "_col_offset": 34
+                      },
+                      "attr": "PENDING",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 34
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 43,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "start_time",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 44,
+                        "_col_offset": 16
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "datetime",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 44,
+                        "_col_offset": 25
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 16
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 37
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 44,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "end_time",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 45,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "datetime",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 45,
+                        "_col_offset": 23
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 14
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 35
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 45,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "result",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 46,
+                        "_col_offset": 12
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Any",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 46,
+                        "_col_offset": 21
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 12
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 28
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 46,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "error",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 47,
+                        "_col_offset": 11
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 47,
+                        "_col_offset": 20
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 11
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 27
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 47,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 38,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 39,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "WorkflowExecution",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Represents execution of an entire workflow.",
+                      "kind": "None"
+                    },
+                    "_lineno": 52,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 52,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "workflow_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 53,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 53,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 53,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "execution_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 54,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 54,
+                    "_col_offset": 18
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 54,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "nodes",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 55,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 55,
+                        "_col_offset": 11
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "NodeExecution",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 55,
+                        "_col_offset": 16
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 55,
+                    "_col_offset": 11
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 55,
+                        "_col_offset": 33
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "list",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 55,
+                              "_col_offset": 55
+                            }
+                          },
+                          "_lineno": 55,
+                          "_col_offset": 39
+                        }
+                      ]
+                    },
+                    "_lineno": 55,
+                    "_col_offset": 33
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 55,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "status",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 56,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "OrchestrationStatus",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 56,
+                    "_col_offset": 12
+                  },
+                  "value": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "OrchestrationStatus",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 56,
+                        "_col_offset": 34
+                      },
+                      "attr": "PENDING",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 56,
+                    "_col_offset": 34
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 56,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "start_time",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "datetime",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 16
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 57,
+                        "_col_offset": 27
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "datetime",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 57,
+                                  "_col_offset": 49
+                                },
+                                "attr": "now",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 57,
+                              "_col_offset": 49
+                            }
+                          },
+                          "_lineno": 57,
+                          "_col_offset": 33
+                        }
+                      ]
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 27
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 57,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "end_time",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 58,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 58,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "datetime",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 58,
+                        "_col_offset": 23
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 58,
+                    "_col_offset": 14
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 58,
+                    "_col_offset": 35
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 58,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "context",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 59,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "OrchestrationContext",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 59,
+                    "_col_offset": 13
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 59,
+                        "_col_offset": 36
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "OrchestrationContext",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 59,
+                              "_col_offset": 58
+                            }
+                          },
+                          "_lineno": 59,
+                          "_col_offset": 42
+                        }
+                      ]
+                    },
+                    "_lineno": 59,
+                    "_col_offset": 36
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 59,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 50,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 51,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 252,
+    "function_count": 0,
+    "class_count": 4,
+    "import_count": 6
+  }
+}

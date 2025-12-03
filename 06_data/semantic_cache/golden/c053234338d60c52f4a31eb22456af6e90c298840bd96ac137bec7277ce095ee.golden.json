@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c053234338d60c52f4a31eb22456af6e90c298840bd96ac137bec7277ce095ee",
+  "content_hash": "c053234338d60c52f4a31eb22456af6e90c298840bd96ac137bec7277ce095ee",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "agent_stacks_v10_8\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\__init__.py",
+    "file_size": 840,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c053234338d60c52f4a31eb22456af6e90c298840bd96ac137bec7277ce095ee",
+    "scan_timestamp": "2025-12-03T06:21:11.380543"
+  },
+  "content_preview": "\"\"\"v10.8 agent stack shims that delegate to the existing v10.7 agents.\"\"\"\n\nfrom .rag_execution_stack import RAGExecutionStack\nfrom .qa_validation_stack import QAValidationStack\nfrom .drafting_execution_stack import DraftingExecutionStack\nfrom .bullet_execution_stack import BulletExecutionStack\nfrom .prompt_builder_stack import PromptBuilderStack\nfrom .strategy_stack import StrategyStackV10_8\nfrom .safety_stack import SafetyStackV10_8\nfrom .hil_stack import HILStackV10_8\nfrom .state_adapter_stack...",
+  "creation_timestamp": "2025-12-03T06:21:20.953858",
+  "version": "1.0"
+}

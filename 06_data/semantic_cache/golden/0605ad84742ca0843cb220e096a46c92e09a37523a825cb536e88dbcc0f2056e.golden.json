@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
+  "content_hash": "b614de94a8483652f2f9895cb1b82bed2bf1c29fcc1b27a066ef8df04da807de",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\sandbox\\networking.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\networking.py",
+    "file_size": 588,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
+    "scan_timestamp": "2025-12-03T06:21:11.243172"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Dict, List\n\n\ndef default_network_policy() -> Dict[str, object]:\n    \"\"\"Return the default network policy for sandboxed execution.\n\n    By default all outbound network access is disabled.\n    \"\"\"\n\n    return {\n        \"allow_network\": False,\n        \"allowlist\": [],\n    }\n\n\ndef is_destination_allowed(policy: Dict[str, object], host: str) -> bool:\n    if not policy.get(\"allow_network\"):\n        return False\n    allowlist: List[str] = list(poli...",
+  "creation_timestamp": "2025-12-03T06:21:12.909900",
+  "version": "1.0"
+}

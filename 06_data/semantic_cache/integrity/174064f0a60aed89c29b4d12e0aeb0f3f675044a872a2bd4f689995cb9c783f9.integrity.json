@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "174064f0a60aed89c29b4d12e0aeb0f3f675044a872a2bd4f689995cb9c783f9",
+  "content_hash": "174064f0a60aed89c29b4d12e0aeb0f3f675044a872a2bd4f689995cb9c783f9",
+  "file_size": 2605,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\test_flat__integration__test_sla_latency_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__integration__test_sla_latency_v10_7.py",
+    "file_size": 2605,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "174064f0a60aed89c29b4d12e0aeb0f3f675044a872a2bd4f689995cb9c783f9",
+    "scan_timestamp": "2025-12-03T06:21:11.431324"
+  },
+  "verification_timestamp": "2025-12-03T06:21:24.316709",
+  "checksums": {
+    "sha256": "174064f0a60aed89c29b4d12e0aeb0f3f675044a872a2bd4f689995cb9c783f9",
+    "md5": "61f242ec5da06ae4d0b83e3148f89e98"
+  }
+}

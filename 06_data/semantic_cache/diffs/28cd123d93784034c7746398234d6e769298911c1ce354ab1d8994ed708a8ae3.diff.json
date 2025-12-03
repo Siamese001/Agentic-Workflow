@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "src/lic_agentic/agents/k1_router_agent.py",
+  "diff_content": "\"\"\"Router agent responsible for selecting the outreach path.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict\n\nfrom ..safety.bias_auditor import BiasAssessment\n\n\n@dataclass(frozen=True)\nclass RouteDecision:\n    channel: str\n    priority: str\n\n\nclass RouterAgent:\n    \"\"\"Very small heuristic-based router.\"\"\"\n\n    def route(self, sanitized_inputs, bias: BiasAssessment) -> RouteDecision:\n        prompt = getattr(sanitized_inputs, \"prompt\", \"\")\n        if \"meeting\" in prompt.lower():\n            return RouteDecision(channel=\"email\", priority=\"high\")\n        return RouteDecision(channel=\"email\", priority=\"normal\")\n",
+  "statistics": {
+    "lines_added": 23,
+    "lines_removed": 0,
+    "lines_changed": 23
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f23aba071c98fd9549920bf782875ffb12f4cf5905d8f9f9c4d48fb6945bf757",
+  "content_hash": "6689f69d7aa8f17a10daf4d74c4d9db4ba2bd6104f2f722f4e938f87f46bff21",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L2_execution\\integration\\tool_pipelines\\test_l2_tool_pipelines.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\integration\\tool_pipelines\\test_l2_tool_pipelines.py",
+    "file_size": 523,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f23aba071c98fd9549920bf782875ffb12f4cf5905d8f9f9c4d48fb6945bf757",
+    "scan_timestamp": "2025-12-03T06:21:11.313843"
+  },
+  "content_preview": "\"\"\"L2 Execution Tool Pipelines Tests.\"\"\"\n\nclass TestL2ToolPipelines:\n    \"\"\"Tests for L2 execution tool pipelines.\"\"\"\n    \n    def test_sequential_pipeline(self):\n        \"\"\"Test sequential tool pipeline.\"\"\"\n        pipeline = [\"step1\", \"step2\", \"step3\"]\n        for i, step in enumerate(pipeline):\n            assert step == f\"step{i+1}\"\n    \n    def test_parallel_pipeline(self):\n        \"\"\"Test parallel tool pipeline.\"\"\"\n        parallel_results = [True, True, True]\n        assert all(parallel_r...",
+  "creation_timestamp": "2025-12-03T06:21:16.814259",
+  "version": "1.0"
+}

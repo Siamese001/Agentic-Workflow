@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ef8c2c8e074a87d6914bdc909714079dc44140182229b1e307e10f37e0e896a9",
+  "content_hash": "ef8c2c8e074a87d6914bdc909714079dc44140182229b1e307e10f37e0e896a9",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
+    "archive_name": "Monolith",
+    "relative_path": "test_resume_workflow_v16_20.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolith\\test_resume_workflow_v16_20.py",
+    "file_size": 23440,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ef8c2c8e074a87d6914bdc909714079dc44140182229b1e307e10f37e0e896a9",
+    "scan_timestamp": "2025-12-03T06:21:11.469040"
+  },
+  "content_preview": "\"\"\"\nComprehensive Pytest Suite for Resume Workflow v16_00 Refactoring\nTests all three specification implementations:\n1. Spec 1: Dormant Retry Logic (Pre-flight + Failure Classification)\n2. Spec 2: Agentic RAG Feature Activation\n3. Spec 3: Code Cleanup Refactoring\n\"\"\"\n\nimport pytest\nimport json\nimport os\nimport sys\nfrom unittest.mock import Mock, MagicMock, patch, call\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom typing import Dict, List, Any\n\n# Add the module to path\nsy...",
+  "creation_timestamp": "2025-12-03T06:21:28.026141",
+  "version": "1.0"
+}

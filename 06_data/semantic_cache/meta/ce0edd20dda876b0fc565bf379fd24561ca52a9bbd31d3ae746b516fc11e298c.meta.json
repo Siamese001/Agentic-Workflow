@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\agents\\k3_message_architect.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k3_message_architect.py",
+    "file_size": 8067,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c",
+    "scan_timestamp": "2025-12-03T06:21:11.499341"
+  },
+  "artifacts": {
+    "ast": "ast/ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c.ast",
+    "embedding": "embeddings/ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c.embedding",
+    "diff": "diffs/ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c.diff.json",
+    "safety": "safety/ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c.safety.json",
+    "golden": "golden/ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c.golden.json",
+    "integrity": "integrity/ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:34.268129",
+  "artifact_count": 6
+}

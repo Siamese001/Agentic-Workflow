@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "4e9f86f7a8d738c4333c7cb7d95ac7c45062064e45c6dd5e014f1a696c548f38",
+  "content_hash": "4e9f86f7a8d738c4333c7cb7d95ac7c45062064e45c6dd5e014f1a696c548f38",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "run_batch_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\run_batch_v10_7.py",
+    "file_size": 13827,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "4e9f86f7a8d738c4333c7cb7d95ac7c45062064e45c6dd5e014f1a696c548f38",
+    "scan_timestamp": "2025-12-03T06:21:11.397667"
+  },
+  "content_preview": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: run_batch_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7 (e.g., core_v10_7, ConfigV10_7).\n# - UPDATED: create_workflow_context call updated to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #25): Added backpressur...",
+  "creation_timestamp": "2025-12-03T06:21:22.529862",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "38e43de6bef9cb8c4f4b7e62e7a90ccc0e497aa46824768173c0947d626f76de",
+  "content_hash": "55b4dc70ec658bc8049d59b4dace70005a24f6e3ef1c4fa21eb13dc933a17ff5",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LinkedInCanonical_2025-09-08_v2.87.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-08_v2.87.md",
+    "file_size": 35679,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "38e43de6bef9cb8c4f4b7e62e7a90ccc0e497aa46824768173c0947d626f76de",
+    "scan_timestamp": "2025-12-03T06:21:11.647842"
+  },
+  "content_preview": "# LinkedInCanonical \u2014 2025-09-10 v2.87 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> v2.86 -> **v2.87**\n\nv2.87 is a versioned zero-loss overwrite that adds explicit **CXO** routing to the C Level archetype and clarifies DRQ scope. All v2.86 hardenings and restorations remain intact.\n\nZLO Method: Versioned Zero-Loss Overwrite per Steps 1\u20135 (identify, direct edit, diff QA, canonical QA, explicit changelog).\n\n-------------------...",
+  "creation_timestamp": "2025-12-03T06:21:42.120230",
+  "version": "1.0"
+}

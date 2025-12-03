@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L4_memory_state/unit/state_models/test_l4_state_models.py",
+  "diff_content": "\"\"\"L4 Memory State Models Tests.\"\"\"\n\nclass TestL4StateModels:\n    \"\"\"Tests for L4 state models.\"\"\"\n    \n    def test_triplet_model(self):\n        \"\"\"Test triplet model structure.\"\"\"\n        triplet = {\"subject\": \"entity1\", \"predicate\": \"relates_to\", \"object\": \"entity2\"}\n        assert triplet[\"predicate\"] == \"relates_to\"\n    \n    def test_entity_model(self):\n        \"\"\"Test entity model structure.\"\"\"\n        entity = {\"id\": \"e1\", \"type\": \"skill\", \"value\": \"Python\"}\n        assert entity[\"type\"] == \"skill\"\n    \n    def test_relationship_model(self):\n        \"\"\"Test relationship model structure.\"\"\"\n        rel = {\"from\": \"e1\", \"to\": \"e2\", \"type\": \"has_skill\"}\n        assert rel[\"type\"] == \"has_skill\"\n",
+  "statistics": {
+    "lines_added": 19,
+    "lines_removed": 0,
+    "lines_changed": 19
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

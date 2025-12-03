@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9e1d949433072e2feb06a17249f60ca7a55a977ca043c8a0aef9304249826742",
+  "content_hash": "aa17dac0a2a623fc0251b71c6b228a2fc2c6892c56548204892a21f6724f3e23",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\testing\\setup_validation_report.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\setup_validation_report.md",
+    "file_size": 3316,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "9e1d949433072e2feb06a17249f60ca7a55a977ca043c8a0aef9304249826742",
+    "scan_timestamp": "2025-12-03T06:21:11.294994"
+  },
+  "content_preview": "# Environment Setup Validation Report\n\n## Task A \u2014 Pip Package Installation Status\n\n\u2705 **SUCCESS**: All pip packages installed successfully\n\n- Requirements.txt packages: \u2705 INSTALLED\n- Additional SDK packages: \u2705 INSTALLED\n- Fixed pinecone-client \u2192 pinecone migration: \u2705 COMPLETED\n\n## Task B \u2014 SDK Import Validation\n\n\u26a0\ufe0f **PARTIAL SUCCESS**: Most SDK imports working\n\n- \u2705 openai, anthropic, google.generativeai: WORKING\n- \u2705 redis, pinecone: WORKING\n- \u2705 numpy, pandas, sklearn: WORKING\n- \u2705 requests, httpx...",
+  "creation_timestamp": "2025-12-03T06:21:16.057854",
+  "version": "1.0"
+}

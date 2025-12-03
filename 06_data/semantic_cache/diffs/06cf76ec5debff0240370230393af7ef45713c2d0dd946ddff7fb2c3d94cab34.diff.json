@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "v2",
+  "logical_path": "QUICK_REFERENCE.md",
+  "diff_content": "# V2 Architecture Quick Reference\n\n## File Structure\n```\nresume_gen_files/\n\u251c\u2500\u2500 workflow_RES_v2.py      # Main orchestrator (180K)\n\u251c\u2500\u2500 run_workflow_RES_v2.py  # Launcher (11K)\n\u251c\u2500\u2500 governor.py             # V2 agents (34K)\n\u251c\u2500\u2500 config_RES.py           # Config + GovernorConfig (20K)\n\u251c\u2500\u2500 models_RES.py           # Data models (15K)\n\u251c\u2500\u2500 utils_RES.py            # Utilities (33K)\n\u251c\u2500\u2500 rag_RES.py              # RAG + LibrarianAgent (46K)\n\u251c\u2500\u2500 prompts_RES.py          # Prompt templates (30K)\n\u251c\u2500\u2500 validation_RES.py       # Validators (132K)\n\u251c\u2500\u2500 state_manager_RES.py    # State persistence (14K)\n\u2514\u2500\u2500 *.json                  # Data files (8 files)\n```\n\n## Run Commands\n```bash\n# New run\npython run_workflow_RES_v2.py --job-input job_input.json\n\n# Resume run\npython run_workflow_RES_v2.py --resume-id <run_id>\n\n# List runs\npython run_workflow_RES_v2.py --list-runs\n```\n\n## Import Pattern\n```python\n# Main orchestrator\nfrom workflow_RES_v2 import WorkflowOrchestrator\n\n# Governor components\nfrom governor import PolicyAgent, CostRouter, ContextRelayLayer\n\n# Configuration\nfrom config_RES import CONFIG\n\n# Supporting modules\nfrom models_RES import ResumeSection, ValidationResult\nfrom utils_RES import TextUtils, CodeInterpreterTool\nfrom rag_RES import EnhancedJobDescriptionAnalyzer\nfrom validation_RES import PreFlightValidator\n```\n\n## Version Info\n- All modules: v17.00\n- Architecture: V2 Agentic with Async Governor\n- Python: 3.8+\n- Status: Production Ready \u2705\n",
+  "statistics": {
+    "lines_added": 53,
+    "lines_removed": 0,
+    "lines_changed": 53
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

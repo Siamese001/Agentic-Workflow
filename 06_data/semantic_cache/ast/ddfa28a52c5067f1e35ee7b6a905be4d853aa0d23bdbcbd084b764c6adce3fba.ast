@@ -1,0 +1,502 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 24
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "infra.sandbox.microvm",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "MicroVM",
+                  "asname": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 34
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "create_vm",
+                  "asname": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 43
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "teardown_vm",
+                  "asname": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 54
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "exec_in_vm",
+                  "asname": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 67
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 5,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "infra.sandbox.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ToolCallRequest",
+                  "asname": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 33
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ToolCallResult",
+                  "asname": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 50
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 6,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "run_in_ephemeral_vm",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "request",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ToolCallRequest",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 9,
+                        "_col_offset": 33
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 9,
+                    "_col_offset": 24
+                  },
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "resource_limits",
+                      "annotation": {
+                        "_type": "BinOp",
+                        "_fields": {
+                          "left": {
+                            "_type": "Subscript",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "Dict",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 9,
+                                "_col_offset": 67
+                              },
+                              "slice": {
+                                "_type": "Tuple",
+                                "_fields": {
+                                  "elts": [
+                                    {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "str",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 9,
+                                      "_col_offset": 72
+                                    },
+                                    {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "Any",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 9,
+                                      "_col_offset": 77
+                                    }
+                                  ],
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 9,
+                                "_col_offset": 72
+                              },
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 9,
+                            "_col_offset": 67
+                          },
+                          "op": {
+                            "_type": "BitOr",
+                            "_fields": {}
+                          },
+                          "right": {
+                            "_type": "Constant",
+                            "_fields": {
+                              "value": "None",
+                              "kind": "None"
+                            },
+                            "_lineno": 9,
+                            "_col_offset": 84
+                          }
+                        },
+                        "_lineno": 9,
+                        "_col_offset": 67
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 9,
+                    "_col_offset": 50
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 9,
+                    "_col_offset": 91
+                  }
+                ]
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Convenience helper to run a single tool call in an ephemeral VM.\n\n    This creates a VM, executes the request, and tears the VM down,\n    ensuring cleanup even on errors.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 10,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 10,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "vm",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 16,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "create_vm",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 16,
+                        "_col_offset": 9
+                      },
+                      "args": [
+                        {
+                          "_type": "BoolOp",
+                          "_fields": {
+                            "op": {
+                              "_type": "Or",
+                              "_fields": {}
+                            },
+                            "values": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "resource_limits",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 16,
+                                "_col_offset": 19
+                              },
+                              {
+                                "_type": "Dict",
+                                "_fields": {
+                                  "keys": [],
+                                  "values": []
+                                },
+                                "_lineno": 16,
+                                "_col_offset": 38
+                              }
+                            ]
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 19
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 9
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Try",
+                "_fields": {
+                  "body": [
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "exec_in_vm",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 18,
+                              "_col_offset": 15
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "vm",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 18,
+                                "_col_offset": 26
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "request",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 18,
+                                "_col_offset": 30
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 18,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 18,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "handlers": [],
+                  "orelse": [],
+                  "finalbody": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "teardown_vm",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 20,
+                              "_col_offset": 8
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "vm",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 20,
+                                "_col_offset": 20
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 8
+                    }
+                  ]
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Name",
+              "_fields": {
+                "id": "ToolCallResult",
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 9,
+              "_col_offset": 100
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 64,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 4
+  }
+}

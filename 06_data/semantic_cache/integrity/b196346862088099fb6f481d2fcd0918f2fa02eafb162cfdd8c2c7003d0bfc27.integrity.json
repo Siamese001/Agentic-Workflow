@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "b196346862088099fb6f481d2fcd0918f2fa02eafb162cfdd8c2c7003d0bfc27",
+  "content_hash": "b196346862088099fb6f481d2fcd0918f2fa02eafb162cfdd8c2c7003d0bfc27",
+  "file_size": 7047,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\test_flat__test_baseline_schema_diff_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__test_baseline_schema_diff_v10_7.py",
+    "file_size": 7047,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b196346862088099fb6f481d2fcd0918f2fa02eafb162cfdd8c2c7003d0bfc27",
+    "scan_timestamp": "2025-12-03T06:21:11.439501"
+  },
+  "verification_timestamp": "2025-12-03T06:21:24.658157",
+  "checksums": {
+    "sha256": "b196346862088099fb6f481d2fcd0918f2fa02eafb162cfdd8c2c7003d0bfc27",
+    "md5": "2d9ce17fe8816a0bc66679a433d3a40b"
+  }
+}

@@ -1,0 +1,5021 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__version__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 7,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "13.0",
+                "kind": "None"
+              },
+              "_lineno": 7,
+              "_col_offset": 14
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "dataclasses",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "dataclass",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "field",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 35
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "datetime",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "datetime",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 21
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "enum",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Enum",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 17
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "List",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 25
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Optional",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 31
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 41
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Set",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 46
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Tuple",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 51
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Callable",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 58
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "Route",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 18,
+                "_col_offset": 12
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Message delivery routes",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "INMAIL",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "INMAIL",
+                      "kind": "None"
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CONNECTION_REQ",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 21,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CONNECTION_REQ",
+                      "kind": "None"
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 21
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "EMAIL",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 22,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "EMAIL",
+                      "kind": "None"
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 12
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "FOLLOW_UP",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 23,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "FOLLOW_UP",
+                      "kind": "None"
+                    },
+                    "_lineno": 23,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 18,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "Archetype",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 25,
+                "_col_offset": 16
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Recipient archetypes for personalization - v11.6 4-archetype standard",
+                      "kind": "None"
+                    },
+                    "_lineno": 26,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 26,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "C_LEVEL",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 27,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "C_LEVEL",
+                      "kind": "None"
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 14
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 27,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "EXECUTIVE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 28,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "EXECUTIVE",
+                      "kind": "None"
+                    },
+                    "_lineno": 28,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 28,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "SENIOR_TA",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 29,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "SENIOR_TA",
+                      "kind": "None"
+                    },
+                    "_lineno": 29,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 29,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "RECRUITER",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 30,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RECRUITER",
+                      "kind": "None"
+                    },
+                    "_lineno": 30,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 30,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 25,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "EventType",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 32,
+                "_col_offset": 16
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Event types for message bus / state logging",
+                      "kind": "None"
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 33,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "WORKFLOW_STARTED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 34,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "WORKFLOW_STARTED",
+                      "kind": "None"
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 23
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 34,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "WORKFLOW_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 35,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "WORKFLOW_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 25
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 35,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_1_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 36,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_1_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 36,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 36,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_2_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 37,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_2_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 37,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 37,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_3_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 38,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_3_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 38,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_4_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 39,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_4_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 39,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 39,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_5_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 40,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_5_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 40,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 40,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_6_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 41,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_6_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 41,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 41,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_7_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 42,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_7_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 42,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 42,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HOP_8_COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 43,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HOP_8_COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 43,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "FACTUAL_LOOP_TRIGGERED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 44,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "FACTUAL_LOOP_TRIGGERED",
+                      "kind": "None"
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 29
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 44,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CREATIVE_LOOP_TRIGGERED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 45,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CREATIVE_LOOP_TRIGGERED",
+                      "kind": "None"
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 30
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 45,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CIRCUIT_BREAKER_TRIGGERED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 46,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CIRCUIT_BREAKER_TRIGGERED",
+                      "kind": "None"
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 32
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 46,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 32,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "AgentStatus",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 48,
+                "_col_offset": 18
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Agent execution status",
+                      "kind": "None"
+                    },
+                    "_lineno": 49,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 49,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "IDLE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 50,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "IDLE",
+                      "kind": "None"
+                    },
+                    "_lineno": 50,
+                    "_col_offset": 11
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 50,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "RUNNING",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 51,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RUNNING",
+                      "kind": "None"
+                    },
+                    "_lineno": 51,
+                    "_col_offset": 14
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 51,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "COMPLETED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 52,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "COMPLETED",
+                      "kind": "None"
+                    },
+                    "_lineno": 52,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 52,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "FAILED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 53,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "FAILED",
+                      "kind": "None"
+                    },
+                    "_lineno": 53,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 53,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 48,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "ValidationSeverity",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 55,
+                "_col_offset": 25
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Validation result severity levels",
+                      "kind": "None"
+                    },
+                    "_lineno": 56,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 56,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CRITICAL",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 57,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CRITICAL",
+                      "kind": "None"
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 15
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 57,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HIGH",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 58,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HIGH",
+                      "kind": "None"
+                    },
+                    "_lineno": 58,
+                    "_col_offset": 11
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 58,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "MEDIUM",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 59,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "MEDIUM",
+                      "kind": "None"
+                    },
+                    "_lineno": 59,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 59,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "INFO",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 60,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "INFO",
+                      "kind": "None"
+                    },
+                    "_lineno": 60,
+                    "_col_offset": 11
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 60,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 55,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "CircuitState",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 62,
+                "_col_offset": 19
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Circuit breaker states",
+                      "kind": "None"
+                    },
+                    "_lineno": 63,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 63,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CLOSED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 64,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CLOSED",
+                      "kind": "None"
+                    },
+                    "_lineno": 64,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 64,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "OPEN",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 65,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "OPEN",
+                      "kind": "None"
+                    },
+                    "_lineno": 65,
+                    "_col_offset": 11
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 65,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "HALF_OPEN",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 66,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "HALF_OPEN",
+                      "kind": "None"
+                    },
+                    "_lineno": 66,
+                    "_col_offset": 16
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 66,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 62,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "FailureClassifier",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 68,
+                "_col_offset": 24
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Classifies S6 validation failures to determine retry strategy in HOP-7.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 69,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 69,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CREATIVE_FAILURE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 72,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CREATIVE_FAILURE",
+                      "kind": "None"
+                    },
+                    "_lineno": 72,
+                    "_col_offset": 23
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 72,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "FACTUAL_FAILURE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 73,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "FACTUAL_FAILURE",
+                      "kind": "None"
+                    },
+                    "_lineno": 73,
+                    "_col_offset": 22
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 73,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 68,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "FactualGapError",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Exception",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 79,
+                "_col_offset": 22
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    v13.0: Raised by HOP-7 GateDecisionAgent when a FACTUAL failure is detected.\n    This signals the HOPOrchestrator to trigger the S6->S2 \"Slow Factual Loop\"\n    for a full re-planning and re-research cycle.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 80,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 80,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Pass",
+                "_fields": {},
+                "_lineno": 85,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 79,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "CircuitBreakerOpenError",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Exception",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 87,
+                "_col_offset": 30
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Raised when circuit breaker is OPEN",
+                      "kind": "None"
+                    },
+                    "_lineno": 88,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 88,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Pass",
+                "_fields": {},
+                "_lineno": 89,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 87,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "OutreachMission",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Complete mission specification (Input)",
+                      "kind": "None"
+                    },
+                    "_lineno": 97,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 97,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "mission_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 98,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 98,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 98,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "sender_profile",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 99,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 99,
+                        "_col_offset": 20
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 99,
+                              "_col_offset": 25
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 99,
+                              "_col_offset": 30
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 99,
+                        "_col_offset": 25
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 99,
+                    "_col_offset": 20
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 99,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "recipient_profile",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 100,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 100,
+                        "_col_offset": 23
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 100,
+                              "_col_offset": 28
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 100,
+                              "_col_offset": 33
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 100,
+                        "_col_offset": 28
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 100,
+                    "_col_offset": 23
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 100,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "job_description",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 101,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 101,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 26
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 31
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 101,
+                        "_col_offset": 26
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 101,
+                    "_col_offset": 21
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 101,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "connection_status",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 102,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 102,
+                    "_col_offset": 23
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "not_connected",
+                      "kind": "None"
+                    },
+                    "_lineno": 102,
+                    "_col_offset": 29
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 102,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "prior_message_count",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 103,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "int",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 103,
+                    "_col_offset": 25
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "0",
+                      "kind": "None"
+                    },
+                    "_lineno": 103,
+                    "_col_offset": 31
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 103,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "route_override",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 104,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 104,
+                        "_col_offset": 20
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Route",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 104,
+                        "_col_offset": 29
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 104,
+                    "_col_offset": 20
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 104,
+                    "_col_offset": 38
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 104,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "context",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 105,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 105,
+                        "_col_offset": 13
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 105,
+                              "_col_offset": 18
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 105,
+                              "_col_offset": 23
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 105,
+                        "_col_offset": 18
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 105,
+                    "_col_offset": 13
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 105,
+                        "_col_offset": 30
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "dict",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 105,
+                              "_col_offset": 52
+                            }
+                          },
+                          "_lineno": 105,
+                          "_col_offset": 36
+                        }
+                      ]
+                    },
+                    "_lineno": 105,
+                    "_col_offset": 30
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 105,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 95,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 96,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "ProfileAnalysis",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    DEPRECATED v13.0: Logic moved to HOP1_ProfileAnalysisAgent.\n    Output is now state/1_profile_analysis.json\n    This class is kept for type hinting in legacy models if needed.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 109,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 109,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "archetype",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 114,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Archetype",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 114,
+                    "_col_offset": 15
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 114,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "confidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 115,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 115,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 115,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "reasoning",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 116,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 116,
+                    "_col_offset": 15
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 116,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "key_indicators",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 117,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 117,
+                        "_col_offset": 20
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 117,
+                        "_col_offset": 25
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 117,
+                    "_col_offset": 20
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 117,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "needs_manual_override",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 118,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 118,
+                    "_col_offset": 27
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "False",
+                      "kind": "None"
+                    },
+                    "_lineno": 118,
+                    "_col_offset": 34
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 118,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 107,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 108,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "RAGResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Single RAG retrieval result with metadata.\n    Used by HOP-2 ResearchAgent.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 122,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 122,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "source",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 126,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 126,
+                    "_col_offset": 12
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 126,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "source_type",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 127,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 127,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 127,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "text",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 128,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 128,
+                    "_col_offset": 10
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 128,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "extracted_keywords",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 129,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 129,
+                        "_col_offset": 24
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 129,
+                        "_col_offset": 29
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 129,
+                    "_col_offset": 24
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 129,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "source_weight",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 130,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 130,
+                    "_col_offset": 19
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 130,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "age_days",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 131,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "int",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 131,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 131,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "recipient_specific",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 132,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 132,
+                    "_col_offset": 24
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 132,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "confidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 133,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 133,
+                    "_col_offset": 16
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "1.0",
+                      "kind": "None"
+                    },
+                    "_lineno": 133,
+                    "_col_offset": 24
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 133,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 120,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 121,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "SenderGroundingWhitelists",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Output of HOP-3 SenderGroundingAgent.\n    Used to validate \"my team\" / \"our product\" claims in HOP-6.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 137,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 137,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "team_members",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 141,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 141,
+                        "_col_offset": 18
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 141,
+                        "_col_offset": 23
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 141,
+                    "_col_offset": 18
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 141,
+                        "_col_offset": 30
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "list",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 141,
+                              "_col_offset": 52
+                            }
+                          },
+                          "_lineno": 141,
+                          "_col_offset": 36
+                        }
+                      ]
+                    },
+                    "_lineno": 141,
+                    "_col_offset": 30
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 141,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "products",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 142,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 142,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 142,
+                        "_col_offset": 19
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 142,
+                    "_col_offset": 14
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 142,
+                        "_col_offset": 26
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "list",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 142,
+                              "_col_offset": 48
+                            }
+                          },
+                          "_lineno": 142,
+                          "_col_offset": 32
+                        }
+                      ]
+                    },
+                    "_lineno": 142,
+                    "_col_offset": 26
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 142,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "case_studies",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 143,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 143,
+                        "_col_offset": 18
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 143,
+                        "_col_offset": 23
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 143,
+                    "_col_offset": 18
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 143,
+                        "_col_offset": 30
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "list",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 143,
+                              "_col_offset": 52
+                            }
+                          },
+                          "_lineno": 143,
+                          "_col_offset": 36
+                        }
+                      ]
+                    },
+                    "_lineno": 143,
+                    "_col_offset": 30
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 143,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "quantifiable_achievements",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 144,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 144,
+                        "_col_offset": 31
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 144,
+                        "_col_offset": 36
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 144,
+                    "_col_offset": 31
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 144,
+                        "_col_offset": 43
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "list",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 144,
+                              "_col_offset": 65
+                            }
+                          },
+                          "_lineno": 144,
+                          "_col_offset": 49
+                        }
+                      ]
+                    },
+                    "_lineno": 144,
+                    "_col_offset": 43
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 144,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "raw_evidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 145,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 145,
+                        "_col_offset": 18
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 145,
+                              "_col_offset": 23
+                            },
+                            {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "List",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 145,
+                                  "_col_offset": 28
+                                },
+                                "slice": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "str",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 145,
+                                  "_col_offset": 33
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 145,
+                              "_col_offset": 28
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 145,
+                        "_col_offset": 23
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 145,
+                    "_col_offset": 18
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 145,
+                        "_col_offset": 41
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "dict",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 145,
+                              "_col_offset": 63
+                            }
+                          },
+                          "_lineno": 145,
+                          "_col_offset": 47
+                        }
+                      ]
+                    },
+                    "_lineno": 145,
+                    "_col_offset": 41
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 145,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 135,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 136,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "ResearchContext",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    DEPRECATED v13.0: Logic moved to HOP2_ResearchAgent.\n    Output is now state/2_research_context.json\n    This class is kept for type hinting in legacy models if needed.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 149,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 149,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "recipient_insights",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 154,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 154,
+                        "_col_offset": 24
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 154,
+                        "_col_offset": 29
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 154,
+                    "_col_offset": 24
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 154,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "company_context",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 155,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 155,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 155,
+                        "_col_offset": 26
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 155,
+                    "_col_offset": 21
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 155,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "recent_activity",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 156,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 156,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 156,
+                        "_col_offset": 26
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 156,
+                    "_col_offset": 21
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 156,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "rag_results",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 157,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 157,
+                        "_col_offset": 17
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "RAGResult",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 157,
+                        "_col_offset": 22
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 157,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 157,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "sender_grounding",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 158,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 158,
+                        "_col_offset": 22
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "SenderGroundingWhitelists",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 158,
+                        "_col_offset": 31
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 158,
+                    "_col_offset": 22
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 158,
+                    "_col_offset": 60
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 158,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "adversarial_findings",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 159,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 159,
+                        "_col_offset": 26
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 159,
+                        "_col_offset": 31
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 159,
+                    "_col_offset": 26
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 159,
+                        "_col_offset": 38
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "list",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 159,
+                              "_col_offset": 60
+                            }
+                          },
+                          "_lineno": 159,
+                          "_col_offset": 44
+                        }
+                      ]
+                    },
+                    "_lineno": 159,
+                    "_col_offset": 38
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 159,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 147,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 148,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "MessageScaffold",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    DEPRECATED v13.0: Logic moved to HOP4_RoutingAgent.\n    Output is now state/4_routing_decision.json\n    This class is kept for type hinting in legacy models if needed.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 163,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 163,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "route",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 168,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Route",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 168,
+                    "_col_offset": 11
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 168,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "archetype",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 169,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Archetype",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 169,
+                    "_col_offset": 15
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 169,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "sections",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 170,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 170,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 170,
+                              "_col_offset": 19
+                            },
+                            {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Dict",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 170,
+                                  "_col_offset": 24
+                                },
+                                "slice": {
+                                  "_type": "Tuple",
+                                  "_fields": {
+                                    "elts": [
+                                      {
+                                        "_type": "Name",
+                                        "_fields": {
+                                          "id": "str",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 170,
+                                        "_col_offset": 29
+                                      },
+                                      {
+                                        "_type": "Name",
+                                        "_fields": {
+                                          "id": "Any",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 170,
+                                        "_col_offset": 34
+                                      }
+                                    ],
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 170,
+                                  "_col_offset": 29
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 170,
+                              "_col_offset": 24
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 170,
+                        "_col_offset": 19
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 170,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 170,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "constraints",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 171,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 171,
+                        "_col_offset": 17
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 171,
+                              "_col_offset": 22
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 171,
+                              "_col_offset": 27
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 171,
+                        "_col_offset": 22
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 171,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 171,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "locked_sections",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 172,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Set",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 172,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 172,
+                        "_col_offset": 25
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 172,
+                    "_col_offset": 21
+                  },
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "field",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 172,
+                        "_col_offset": 32
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "default_factory",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "set",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 172,
+                              "_col_offset": 54
+                            }
+                          },
+                          "_lineno": 172,
+                          "_col_offset": 38
+                        }
+                      ]
+                    },
+                    "_lineno": 172,
+                    "_col_offset": 32
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 172,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 161,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 162,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "GeneratedMessage",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    DEPRECATED v13.0: Logic moved to HOP5_GenerationAgent.\n    Output is now state/5_generated_drafts.json\n    This class is kept for type hinting in legacy models if needed.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 176,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 176,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "content",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 181,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 181,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 181,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "word_count",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 182,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "int",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 182,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 182,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "char_count",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 183,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "int",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 183,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 183,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "route",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 184,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Route",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 184,
+                    "_col_offset": 11
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 184,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "archetype",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 185,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Archetype",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 185,
+                    "_col_offset": 15
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 185,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "generation_temperature",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 186,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 186,
+                    "_col_offset": 28
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 186,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "generation_attempts",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 187,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "int",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 187,
+                    "_col_offset": 25
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 187,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "checksum",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 188,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 188,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 188,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 174,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 175,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "ValidationResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Result from a single validation check in HOP-6.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 192,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 192,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "passed",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 195,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 195,
+                    "_col_offset": 12
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 195,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "severity",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 196,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "ValidationSeverity",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 196,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 196,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "rule_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 197,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 197,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 197,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "message",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 198,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 198,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 198,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "details",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 199,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 199,
+                        "_col_offset": 13
+                      },
+                      "slice": {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "Dict",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 199,
+                            "_col_offset": 22
+                          },
+                          "slice": {
+                            "_type": "Tuple",
+                            "_fields": {
+                              "elts": [
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "str",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 199,
+                                  "_col_offset": 27
+                                },
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Any",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 199,
+                                  "_col_offset": 32
+                                }
+                              ],
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 199,
+                            "_col_offset": 27
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 199,
+                        "_col_offset": 22
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 199,
+                    "_col_offset": 13
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 199,
+                    "_col_offset": 40
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 199,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 190,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 191,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "QAReport",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    DEPRECATED v13.0: Logic moved to HOP8_QAReportAgent.\n    Output is now a persistent .md file.\n    This class is kept for type hinting in legacy models if needed.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 203,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 203,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "mission_id",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 208,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 208,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 208,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "validation_results",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 209,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 209,
+                        "_col_offset": 24
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ValidationResult",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 209,
+                        "_col_offset": 29
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 209,
+                    "_col_offset": 24
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 209,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "passed",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 210,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 210,
+                    "_col_offset": 12
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 210,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "timestamp",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 211,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 211,
+                    "_col_offset": 15
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 211,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 201,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 202,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 713,
+    "function_count": 0,
+    "class_count": 18,
+    "import_count": 4
+  }
+}

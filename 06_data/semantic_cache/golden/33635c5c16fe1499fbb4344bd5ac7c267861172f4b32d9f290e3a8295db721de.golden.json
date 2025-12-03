@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "33635c5c16fe1499fbb4344bd5ac7c267861172f4b32d9f290e3a8295db721de",
+  "content_hash": "4d2bf55f947661c52b78a8307a89a6232fae4a023c0c1c1d1c1a44af459fd3a3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "database\\graph_store_neo4j.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\database\\graph_store_neo4j.py",
+    "file_size": 6029,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "33635c5c16fe1499fbb4344bd5ac7c267861172f4b32d9f290e3a8295db721de",
+    "scan_timestamp": "2025-12-03T06:21:11.229300"
+  },
+  "content_preview": "try:\n    from neo4j import GraphDatabase\nexcept ImportError:\n    # Neo4j driver not installed - provide fallback\n    GraphDatabase = None\nimport os\nfrom typing import Any, List, Dict\n\nclass Neo4jGraphStore:\n    \"\"\"\n    Stores resume-related entities and relationships in Neo4j graph database.\n\n    Enables efficient retrieval of structured knowledge to improve\n    resume content accuracy and job alignment.\n    \"\"\"\n\n    def __init__(self) -> None:\n        if GraphDatabase is None:\n            raise...",
+  "creation_timestamp": "2025-12-03T06:21:12.510996",
+  "version": "1.0"
+}

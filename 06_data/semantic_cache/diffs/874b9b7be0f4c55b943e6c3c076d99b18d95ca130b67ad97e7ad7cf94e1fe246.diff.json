@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_7/integration/test_perf_latency_v10_7.py",
+  "diff_content": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"case\", [\"fast\",\"e2e\",\"rag-heavy\",\"qa-heavy\"])\ndef test_latency_smoke(benchmark, case):\n    out = benchmark(lambda: run_workflow({\"compat_mode\": \"v10_7\", \"resume\": case, \"jd\":\"perf\"}))\n    assert out is not None\n",
+  "statistics": {
+    "lines_added": 7,
+    "lines_removed": 0,
+    "lines_changed": 7
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

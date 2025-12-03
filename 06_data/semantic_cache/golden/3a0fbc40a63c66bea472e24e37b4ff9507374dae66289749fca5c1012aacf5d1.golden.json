@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+  "content_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
+    "archive_name": "Monolith",
+    "relative_path": "resume_workflow_v16_20.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolith\\resume_workflow_v16_20.py",
+    "file_size": 453323,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+    "scan_timestamp": "2025-12-03T06:21:11.468259"
+  },
+  "content_preview": "from __future__ import annotations\n\nimport copy\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport re\nimport shutil\nimport signal\nimport time\nimport uuid\nfrom collections import defaultdict\nfrom datetime import datetime, timedelta\nimport functools\nfrom functools import partial\nfrom enum import Enum, auto\nfrom typing import (\n    Any, Callable, ClassVar, Dict, List, \n    Optional, Set, Tuple, TypeVar, Union\n)\n\nT = TypeVar('T')\n\nfrom dataclasses import asdict, dataclass, fiel...",
+  "creation_timestamp": "2025-12-03T06:21:27.040505",
+  "version": "1.0"
+}

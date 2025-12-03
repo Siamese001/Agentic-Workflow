@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f456031a9d5cad4c69093285df831bbb2b048a5fe0e65d38eb03a4afc3dec8a8",
+  "content_hash": "1d2cbc5c01dcdbe34272b259aa49ceb0fdf2c491635646eae85d4baeef6cdb8b",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "providers\\anthropic_client.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\anthropic_client.py",
+    "file_size": 1338,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f456031a9d5cad4c69093285df831bbb2b048a5fe0e65d38eb03a4afc3dec8a8",
+    "scan_timestamp": "2025-12-03T06:21:11.282761"
+  },
+  "content_preview": "\"\"\"Anthropic client adapter for v10_10.\n\nThis module is the ONLY place where the Anthropic SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any, List\n\n\ndef run_llm_anthropic(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run an Anthropic message completion and return the response text.\"\"\"\n\n    try:\n        import anthropic ...",
+  "creation_timestamp": "2025-12-03T06:21:15.828178",
+  "version": "1.0"
+}

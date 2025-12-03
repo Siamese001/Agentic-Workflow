@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+  "content_hash": "07aac4bbf5ac5ac0def27ebbdcbf93539af4a2a108bb0d767784a29e18125093",
+  "file_size": 3138,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\agent_bus.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_bus.py",
+    "file_size": 3138,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+    "scan_timestamp": "2025-12-03T06:21:11.275256"
+  },
+  "verification_timestamp": "2025-12-03T06:21:15.307148",
+  "checksums": {
+    "sha256": "07aac4bbf5ac5ac0def27ebbdcbf93539af4a2a108bb0d767784a29e18125093",
+    "md5": "bc10b1b509d18645625f5ee295b1bf49"
+  }
+}

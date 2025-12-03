@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9ffe7ee4bef30a07d118c931755afd53357a3992d11047a46ef972454af645ce",
+  "content_hash": "9ffe7ee4bef30a07d118c931755afd53357a3992d11047a46ef972454af645ce",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "models_RES.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\models_RES.py",
+    "file_size": 17260,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "9ffe7ee4bef30a07d118c931755afd53357a3992d11047a46ef972454af645ce",
+    "scan_timestamp": "2025-12-03T06:21:11.475346"
+  },
+  "content_preview": "# File: models.py\n# Data Models module for Resume Workflow\n# Contains all data structures, enumerations, model classes, and custom exceptions\n\nimport logging\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum, auto\nfrom typing import Any, ClassVar, Dict, List, Optional, Set\nimport copy\n\n# ============================================================================\n# CUSTOM EXCEPTIONS\n# =====================================================================...",
+  "creation_timestamp": "2025-12-03T06:21:29.039612",
+  "version": "1.0"
+}

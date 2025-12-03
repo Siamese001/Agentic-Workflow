@@ -1,0 +1,13 @@
+{
+  "diff_type": "lineage_diff",
+  "baseline_version": "Agentic-Workflow-10_11",
+  "current_version": "Agentic-Workflow-10_9",
+  "logical_path": "production_inputs/job_input.json",
+  "diff_content": "",
+  "statistics": {
+    "lines_added": 0,
+    "lines_removed": 0,
+    "lines_changed": 0
+  },
+  "has_changes": false
+}

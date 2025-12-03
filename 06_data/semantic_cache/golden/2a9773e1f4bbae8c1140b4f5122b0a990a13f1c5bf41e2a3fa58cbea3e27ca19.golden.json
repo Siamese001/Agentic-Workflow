@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "2a9773e1f4bbae8c1140b4f5122b0a990a13f1c5bf41e2a3fa58cbea3e27ca19",
+  "content_hash": "2a9773e1f4bbae8c1140b4f5122b0a990a13f1c5bf41e2a3fa58cbea3e27ca19",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "stacks_v10_8\\rag_orchestration.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\rag_orchestration.py",
+    "file_size": 7282,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2a9773e1f4bbae8c1140b4f5122b0a990a13f1c5bf41e2a3fa58cbea3e27ca19",
+    "scan_timestamp": "2025-12-03T06:21:11.403180"
+  },
+  "content_preview": "\"\"\"Layer-3 orchestration for the v10.8 RAG workflow.\"\"\"\n\nfrom __future__ import annotations\n\nfrom datetime import datetime\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import BaseAgent\n\nfrom .rag_execution import RAGExecutionStack\nfrom .rag_planning import RAGPlanningStack\n\n\nclass RAGOrchestratorStack(BaseAgent):\n    \"\"\"Coordinates RAG planning and execution without adding new heuristics.\"\"\"\n\n    def __init__(self, c...",
+  "creation_timestamp": "2025-12-03T06:21:23.152972",
+  "version": "1.0"
+}

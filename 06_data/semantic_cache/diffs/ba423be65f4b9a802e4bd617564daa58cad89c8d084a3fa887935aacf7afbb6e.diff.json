@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "TESTING.md",
+  "diff_content": "# Testing and Coverage\n\nTo run the full validation suite used by CI:\n\n```bash\npytest tests/unit -q\npytest tests/integration -q\npytest tests/e2e -q\npytest tests/regression -q\ntools/run_tests_with_coverage.py\n```\n\nThe `tools/run_tests_with_coverage.py` helper executes pytest under Python's\nstandard-library `trace` module so the 90% coverage gate can be enforced even in\nrestricted environments where third-party plugins cannot be installed. Pass\nadditional pytest arguments after ``--`` if you need to narrow the run.\n",
+  "statistics": {
+    "lines_added": 16,
+    "lines_removed": 0,
+    "lines_changed": 16
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

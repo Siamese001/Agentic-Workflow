@@ -1,0 +1,391 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Observability Tracing Tests.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "TestObservabilityTracing",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Tests for observability tracing.",
+                      "kind": "None"
+                    },
+                    "_lineno": 4,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 4,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "test_span_creation",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 27
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Test trace span creation.",
+                            "kind": "None"
+                          },
+                          "_lineno": 7,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 7,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "span",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 8,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Dict",
+                          "_fields": {
+                            "keys": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "id",
+                                  "kind": "None"
+                                },
+                                "_lineno": 9,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "name",
+                                  "kind": "None"
+                                },
+                                "_lineno": 10,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "start_time",
+                                  "kind": "None"
+                                },
+                                "_lineno": 11,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "end_time",
+                                  "kind": "None"
+                                },
+                                "_lineno": 12,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "duration_ms",
+                                  "kind": "None"
+                                },
+                                "_lineno": 13,
+                                "_col_offset": 12
+                              }
+                            ],
+                            "values": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "span_001",
+                                  "kind": "None"
+                                },
+                                "_lineno": 9,
+                                "_col_offset": 18
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "test_operation",
+                                  "kind": "None"
+                                },
+                                "_lineno": 10,
+                                "_col_offset": 20
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "1000",
+                                  "kind": "None"
+                                },
+                                "_lineno": 11,
+                                "_col_offset": 26
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "1100",
+                                  "kind": "None"
+                                },
+                                "_lineno": 12,
+                                "_col_offset": 24
+                              },
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "100",
+                                  "kind": "None"
+                                },
+                                "_lineno": 13,
+                                "_col_offset": 27
+                              }
+                            ]
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 15
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assert",
+                      "_fields": {
+                        "test": {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "span",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 15,
+                                  "_col_offset": 15
+                                },
+                                "slice": {
+                                  "_type": "Constant",
+                                  "_fields": {
+                                    "value": "duration_ms",
+                                    "kind": "None"
+                                  },
+                                  "_lineno": 15,
+                                  "_col_offset": 20
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 15,
+                              "_col_offset": 15
+                            },
+                            "ops": [
+                              {
+                                "_type": "Eq",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "100",
+                                  "kind": "None"
+                                },
+                                "_lineno": 15,
+                                "_col_offset": 38
+                              }
+                            ]
+                          },
+                          "_lineno": 15,
+                          "_col_offset": 15
+                        },
+                        "msg": "None"
+                      },
+                      "_lineno": 15,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assert",
+                      "_fields": {
+                        "test": {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "span",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 16,
+                                  "_col_offset": 15
+                                },
+                                "slice": {
+                                  "_type": "Constant",
+                                  "_fields": {
+                                    "value": "end_time",
+                                    "kind": "None"
+                                  },
+                                  "_lineno": 16,
+                                  "_col_offset": 20
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 16,
+                              "_col_offset": 15
+                            },
+                            "ops": [
+                              {
+                                "_type": "Gt",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Subscript",
+                                "_fields": {
+                                  "value": {
+                                    "_type": "Name",
+                                    "_fields": {
+                                      "id": "span",
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 16,
+                                    "_col_offset": 34
+                                  },
+                                  "slice": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "start_time",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 16,
+                                    "_col_offset": 39
+                                  },
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 16,
+                                "_col_offset": 34
+                              }
+                            ]
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 15
+                        },
+                        "msg": "None"
+                      },
+                      "_lineno": 16,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 47,
+    "function_count": 1,
+    "class_count": 1,
+    "import_count": 0
+  }
+}

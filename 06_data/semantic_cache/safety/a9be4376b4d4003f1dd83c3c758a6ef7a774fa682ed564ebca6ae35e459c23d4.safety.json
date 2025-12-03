@@ -1,0 +1,19 @@
+{
+  "safety_score": 75,
+  "risk_level": "medium",
+  "checks": {
+    "has_executable_code": false,
+    "has_file_operations": true,
+    "has_network_operations": true,
+    "has_system_operations": false,
+    "has_sensitive_patterns": true,
+    "file_size_risk": false,
+    "line_count": 4960,
+    "complexity_score": 4977.46
+  },
+  "recommendations": [
+    "Validate network operations and endpoints",
+    "Ensure sensitive data is properly secured"
+  ],
+  "scan_timestamp": "2025-12-03T06:21:36.681736"
+}

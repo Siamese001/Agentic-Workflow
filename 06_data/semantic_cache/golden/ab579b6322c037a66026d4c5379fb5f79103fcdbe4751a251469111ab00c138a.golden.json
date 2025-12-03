@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ab579b6322c037a66026d4c5379fb5f79103fcdbe4751a251469111ab00c138a",
+  "content_hash": "6762a6720a5e768f0dbce9645340cd7add988e27e28ec93c6291b6ab78e2c183",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L1_planning\\integration\\test_l1_integration_core.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\integration\\test_l1_integration_core.py",
+    "file_size": 1238,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ab579b6322c037a66026d4c5379fb5f79103fcdbe4751a251469111ab00c138a",
+    "scan_timestamp": "2025-12-03T06:21:11.309831"
+  },
+  "content_preview": "\"\"\"L1 Planning Integration Tests.\"\"\"\n\nclass TestL1PlanningIntegration:\n    \"\"\"Integration tests for L1 planning layer.\"\"\"\n    \n    def test_workflow_to_strategy_integration(self):\n        \"\"\"Test workflow to strategy planning integration.\"\"\"\n        workflow = {\"id\": \"wf1\", \"steps\": [\"plan\", \"execute\"]}\n        strategy = {\"workflow_id\": workflow[\"id\"], \"mode\": \"cot\"}\n        assert strategy[\"workflow_id\"] == \"wf1\"\n    \n    def test_strategy_to_drafting_integration(self):\n        \"\"\"Test strateg...",
+  "creation_timestamp": "2025-12-03T06:21:16.673903",
+  "version": "1.0"
+}

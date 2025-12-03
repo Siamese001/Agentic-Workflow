@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/control_plane/judge_engine.py",
+  "diff_content": "\"\"\"\nJudge engine for r\u00e9sum\u00e9 processing safety verdict generation.\n\nProvides deterministic safety evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import Any, Dict\n\nfrom .decisions import JudgeVerdict, RulesEngineResult\nfrom .models import SafetyContext\n\n\ndef evaluate_with_guard_model(\n    context: SafetyContext,\n    rules_result: RulesEngineResult,\n) -> JudgeVerdict:\n    \"\"\"\n    Evaluates r\u00e9sum\u00e9 processing safety with deterministic guard model.\n\n    Provides structured safety assessment for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    signals: Dict[str, Any] = {\n        \"max_severity\": rules_result.max_severity,\n        \"match_count\": len(rules_result.matches),\n        \"has_pii\": rules_result.has_pii,\n    }\n\n    max_sev = (rules_result.max_severity or \"\").lower()\n\n    if max_sev == \"high\":\n        return JudgeVerdict(\n            verdict=\"unsafe\",\n            explanation=\"High-severity safety rules matched in deterministic guard.\",\n            signals=signals,\n        )\n\n    if max_sev == \"medium\" or rules_result.has_pii:\n        return JudgeVerdict(\n            verdict=\"ambiguous\",\n            explanation=\"Medium-severity or PII-related signals detected; recommend revision.\",\n            signals=signals,\n        )\n\n    return JudgeVerdict(\n        verdict=\"safe\",\n        explanation=\"No significant safety rule matches detected.\",\n        signals=signals,\n    )\n\n\n\n",
+  "statistics": {
+    "lines_added": 52,
+    "lines_removed": 0,
+    "lines_changed": 52
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

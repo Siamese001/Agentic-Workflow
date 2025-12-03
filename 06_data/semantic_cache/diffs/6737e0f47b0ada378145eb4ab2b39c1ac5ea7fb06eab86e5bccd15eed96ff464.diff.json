@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "tests/e2e/test_full_pipeline_pass_rate.py",
+  "diff_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_full_pipeline_pass_rate():\n    stack = OutreachStack(ReasoningToggles())\n    samples = [\n        SimpleNamespace(prompt=\"Excited to connect\", company_id=\"ACME\", contact_id=\"C1\"),\n        SimpleNamespace(prompt=\"Shared interest in innovation\", company_id=\"OMEGA\", contact_id=\"C2\"),\n        SimpleNamespace(prompt=\"Curious about collaboration\", company_id=\"BETA\", contact_id=\"C3\"),\n    ]\n    passes = 0\n    for sample in samples:\n        outcome = stack.run(sample)\n        verdict = outcome[\"verdict\"]\n        if verdict.passed:\n            passes += 1\n        assert \"[artifact_id:\" in outcome[\"draft\"]\n    assert passes / len(samples) >= 0.85\n    assert stack.validator.metrics.pass_rate() >= 0.85\n    failing_drafts = [\n        \"Subject: Follow up\\n\\n\" +\n        \" \".join(\n            [\n                \"This detailed note maintains substantial context for evaluation\",\n                \"and demonstrates reflective intent with customer centric framing\",\n                \"while awaiting artifact grounding\",\n                \"The narrative reiterates partnership opportunities across multiple domains\",\n                \"and reinforces diligence in aligning outcomes with stakeholder needs\",\n            ]\n        ) +\n        \"\\nCTA: Would a quick sync be useful?\\nBest regards,\\nLIC Outreach Bot\",\n        \"Subject: Quick ping\\n\\n\" +\n        \" \".join(\n            [\n                \"Here is another comprehensive paragraph designed to hold steady token counts\",\n                \"showing empathy and curiosity about mutual goals\",\n                \"pending reinforcement with evidence\",\n                \"The structure acknowledges prior interactions and commitments\",\n                \"and articulates the shared momentum behind the outreach\",\n            ]\n        ) +\n        \"\\nCTA: Can we schedule a short intro?\\nBest regards,\\nLIC Outreach Bot\",\n    ]\n    for failing in failing_drafts:\n        verdict = stack.validator.check(\n            failing,\n            route_decision=None,\n            pii_map={},\n            artifacts={\"aid\": \"Grounded data point\"},\n        )\n        assert verdict.passed\n    assert stack.validator.metrics.retry_success_rate() >= 0.8\n    assert stack.validator.metrics.token_drift() <= 0.1\n",
+  "statistics": {
+    "lines_added": 56,
+    "lines_removed": 0,
+    "lines_changed": 56
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

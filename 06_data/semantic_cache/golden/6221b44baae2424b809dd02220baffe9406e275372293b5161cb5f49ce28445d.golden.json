@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
+  "content_hash": "d500212cf264f00c69c0352220621a029b7c8c7217ed77b9d74a26bf6158ef57",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\_deprecated\\test_agent_bus_basic.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_bus_basic.py",
+    "file_size": 542,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
+    "scan_timestamp": "2025-12-03T06:21:11.341787"
+  },
+  "content_preview": "from orchestration.agent_bus import AgentBus\nfrom core.models.models import AgentMessage  # normalized import\n\n\ndef test_agent_bus_send_and_get():\n    bus = AgentBus()\n\n    msg = AgentMessage(\n        message_id=\"m1\",\n        source_agent_id=\"planner-1\",\n        target_agent_id=\"qa-1\",\n        channel=\"test\",\n        payload_type=\"request\",\n        content={\"x\": 1},\n    )\n\n    bus.send(msg)\n\n    inbox = bus.get_for(\"qa-1\")\n    assert msg in inbox\n\n    bus.clear()\n    assert bus.get_for(\"qa-1\") =...",
+  "creation_timestamp": "2025-12-03T06:21:17.674840",
+  "version": "1.0"
+}

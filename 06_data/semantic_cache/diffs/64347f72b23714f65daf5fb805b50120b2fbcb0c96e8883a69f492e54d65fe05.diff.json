@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "windsurf_rules/01_core_governance.md",
+  "diff_content": "# /windsurf_rules/01_core_governance.md\n## Core Governance & Layering Model (Condensed)\n\n### 1. Repository Boundaries\n- Treat the Explorer root as `Agentic-Workflow-10_11/`.\n- Operate ONLY inside this directory.\n\n### 2. File Operations\n- Existing files \u2192 modify via apply_patch only.\n- New files \u2192 use write_to_file with absolute Windows path.\n- Never mix creation + modification in the same patch.\n- No `.py` allowed under `refactoring/**`.\n\n### 3. MAX Override Mode\n- Never stop, ask questions, or explain.\n- Only apply_patch + write_to_file allowed.\n- Ambiguity \u2192 choose the most reasonable safe interpretation.\n- Errors \u2192 auto-correct via additional diffs.\n- Active until: `RESET WIND SURF`.\n\n### 4. Layering Model (L1\u2013L5)\n- L1: Planning only; no IO, network, randomness, or tools.\n- L2: Tool execution only; no planning.\n- L3: Orchestration only; DAG control only.\n- L4: State + memory only; no logic.\n- L5: Safety + policy only; no functional output.\n- Cognitive agents must be thin L1\u2192L2 shims only.\n\n### 5. Sub-Atomic Agent Architecture\n- Each agent implements a single capability.\n- Agents must be deterministic, stateless, side-effect free.\n- Agents >25 logical lines must be decomposed into micro-agents.\n- Typed boundaries required: InputSchema / OutputSchema / FailureModes / Invariants.\n- Agents must not retain memory; all persistent data is L4.\n\n### 6. 14 Sub-Domain Alignment\nStructural: layering, boundaries, typed contracts, typed DAGs  \nBehavioral: capability maturity, reasoning models, context, tools  \nOperational: safety, observability, cost, testing, prompt governance, sandbox\n",
+  "statistics": {
+    "lines_added": 39,
+    "lines_removed": 0,
+    "lines_changed": 39
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

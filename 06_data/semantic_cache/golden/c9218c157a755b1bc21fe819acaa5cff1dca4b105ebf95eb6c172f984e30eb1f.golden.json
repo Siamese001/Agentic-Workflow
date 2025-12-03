@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c9218c157a755b1bc21fe819acaa5cff1dca4b105ebf95eb6c172f984e30eb1f",
+  "content_hash": "c9218c157a755b1bc21fe819acaa5cff1dca4b105ebf95eb6c172f984e30eb1f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\integration\\test_integration_flow_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_integration_flow_v10_7.py",
+    "file_size": 8116,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c9218c157a755b1bc21fe819acaa5cff1dca4b105ebf95eb6c172f984e30eb1f",
+    "scan_timestamp": "2025-12-03T06:21:11.415867"
+  },
+  "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------------\n# Helper: ensure predictable event progression\n# ---------------------------------------------------------------------\nEXPECTED_EVENT_ORDER = [\n    \"safety\",      # SafetyGuardStack\n    \"strategy\",    # StrategyStack\n    \"rag\",         # RAGStack\n    \"bullet\",      # BulletStack\n    \"draft\",       # DraftingStack\n    \"qa\",          # QAStack\n    \"hil\",         # HILInt...",
+  "creation_timestamp": "2025-12-03T06:21:23.680311",
+  "version": "1.0"
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "meta/retrieval/semantic_cache.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Optional\n\nfrom core.models.models import RetrievalConfig\nfrom meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache\n\n\ndef read_semantic_cache(key: str, cfg: RetrievalConfig) -> Optional[Any]:\n    \"\"\"Read a value from the semantic cache if enabled.\n\n    Currently this delegates to the generic Redis cache using the\n    RetrievalConfig.redis_cache settings.\n    \"\"\"\n\n    redis_cfg = getattr(cfg, \"redis_cache\", None)\n    if not redis_cfg or not redis_cfg.enabled:\n        return None\n\n    client = init_redis_client(url=redis_cfg.url)\n    return get_llm_cache(client, key)\n\n\ndef write_semantic_cache(key: str, value: Any, cfg: RetrievalConfig) -> None:\n    \"\"\"Write a value to the semantic cache if enabled.\"\"\"\n\n    redis_cfg = getattr(cfg, \"redis_cache\", None)\n    if not redis_cfg or not redis_cfg.enabled:\n        return\n\n    client = init_redis_client(url=redis_cfg.url)\n    set_llm_cache(client, key, value, ttl_s=redis_cfg.ttl_s)\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 36,
+    "lines_removed": 0,
+    "lines_changed": 36
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

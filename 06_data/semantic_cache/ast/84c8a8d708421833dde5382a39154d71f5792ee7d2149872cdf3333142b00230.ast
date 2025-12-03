@@ -1,0 +1,435 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Try",
+          "_fields": {
+            "body": [
+              {
+                "_type": "ImportFrom",
+                "_fields": {
+                  "module": "neo4j",
+                  "names": [
+                    {
+                      "_type": "alias",
+                      "_fields": {
+                        "name": "GraphDatabase",
+                        "asname": "None"
+                      },
+                      "_lineno": 5,
+                      "_col_offset": 22
+                    }
+                  ],
+                  "level": "0"
+                },
+                "_lineno": 5,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "_NEO4J_AVAILABLE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 6,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "True",
+                      "kind": "None"
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 23
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              }
+            ],
+            "handlers": [
+              {
+                "_type": "ExceptHandler",
+                "_fields": {
+                  "type": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Exception",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 7,
+                    "_col_offset": 7
+                  },
+                  "name": "None",
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "GraphDatabase",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 8,
+                            "_col_offset": 4
+                          }
+                        ],
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 20
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 4
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "_NEO4J_AVAILABLE",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 9,
+                            "_col_offset": 4
+                          }
+                        ],
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "False",
+                            "kind": "None"
+                          },
+                          "_lineno": 9,
+                          "_col_offset": 23
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 9,
+                      "_col_offset": 4
+                    }
+                  ]
+                },
+                "_lineno": 7,
+                "_col_offset": 0
+              }
+            ],
+            "orelse": [],
+            "finalbody": []
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "graph_query",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": {
+                  "_type": "arg",
+                  "_fields": {
+                    "arg": "args",
+                    "annotation": "None",
+                    "type_comment": "None"
+                  },
+                  "_lineno": 11,
+                  "_col_offset": 17
+                },
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": {
+                  "_type": "arg",
+                  "_fields": {
+                    "arg": "kwargs",
+                    "annotation": "None",
+                    "type_comment": "None"
+                  },
+                  "_lineno": 11,
+                  "_col_offset": 25
+                },
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Stubbed query function to satisfy import tests.\n    Does not execute Neo4j operations.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 12,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              },
+              {
+                "_type": "If",
+                "_fields": {
+                  "test": {
+                    "_type": "UnaryOp",
+                    "_fields": {
+                      "op": {
+                        "_type": "Not",
+                        "_fields": {}
+                      },
+                      "operand": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "_NEO4J_AVAILABLE",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 16,
+                        "_col_offset": 11
+                      }
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 7
+                  },
+                  "body": [
+                    {
+                      "_type": "Raise",
+                      "_fields": {
+                        "exc": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ImportError",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 17,
+                              "_col_offset": 14
+                            },
+                            "args": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "Neo4j driver not installed",
+                                  "kind": "None"
+                                },
+                                "_lineno": 17,
+                                "_col_offset": 26
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 17,
+                          "_col_offset": 14
+                        },
+                        "cause": "None"
+                      },
+                      "_lineno": 17,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "orelse": []
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Dict",
+                    "_fields": {
+                      "keys": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "status",
+                            "kind": "None"
+                          },
+                          "_lineno": 19,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "results",
+                            "kind": "None"
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "error",
+                            "kind": "None"
+                          },
+                          "_lineno": 21,
+                          "_col_offset": 8
+                        }
+                      ],
+                      "values": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "neo4j_unavailable",
+                            "kind": "None"
+                          },
+                          "_lineno": 19,
+                          "_col_offset": 18
+                        },
+                        {
+                          "_type": "List",
+                          "_fields": {
+                            "elts": [],
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 19
+                        },
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Neo4j driver not installed",
+                            "kind": "None"
+                          },
+                          "_lineno": 21,
+                          "_col_offset": 17
+                        }
+                      ]
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 24,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "graph_query",
+                      "kind": "None"
+                    },
+                    "_lineno": 24,
+                    "_col_offset": 11
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "GraphDatabase",
+                      "kind": "None"
+                    },
+                    "_lineno": 24,
+                    "_col_offset": 26
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "_NEO4J_AVAILABLE",
+                      "kind": "None"
+                    },
+                    "_lineno": 24,
+                    "_col_offset": 43
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 24,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 24,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 52,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 1
+  }
+}

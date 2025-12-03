@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "89f018c06b5f131659b01908b3f82da2fb8899292aa6e60c605f9459d411d2c4",
+  "content_hash": "89f018c06b5f131659b01908b3f82da2fb8899292aa6e60c605f9459d411d2c4",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
+    "archive_name": "Agentic LIC",
+    "relative_path": "tools_LIC.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\tools_LIC.py",
+    "file_size": 21128,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "89f018c06b5f131659b01908b3f82da2fb8899292aa6e60c605f9459d411d2c4",
+    "scan_timestamp": "2025-12-03T06:21:11.524864"
+  },
+  "content_preview": "# File: tools_LIC.py\n# Description: Tool-Augmented Agents - \"Fast Loop\" tools for deterministic evaluation\n# v13.0: Replaces expensive LLM calls with cheap, fast, deterministic code\n\n__version__ = \"13.0\"\n\nimport re\nimport json\nfrom typing import Dict, List, Any, Tuple, Optional, Callable\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\nimport numpy as np\n\n\nclass CodeInterpreterTool:\n    \"\"\"\n    v13.0: Safe code execution environme...",
+  "creation_timestamp": "2025-12-03T06:21:35.525456",
+  "version": "1.0"
+}

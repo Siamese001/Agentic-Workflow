@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L3_orchestration/integration/control_flow/test_l3_control_flow.py",
+  "diff_content": "\"\"\"L3 Orchestration Control Flow Tests.\"\"\"\n\nclass TestL3ControlFlow:\n    \"\"\"Tests for L3 orchestration control flow.\"\"\"\n    \n    def test_sequential_control_flow(self):\n        \"\"\"Test sequential control flow.\"\"\"\n        steps = [\"a\", \"b\", \"c\"]\n        executed = []\n        for step in steps:\n            executed.append(step)\n        assert executed == steps\n    \n    def test_conditional_branching(self):\n        \"\"\"Test conditional branching.\"\"\"\n        condition = True\n        branch = \"true_branch\" if condition else \"false_branch\"\n        assert branch == \"true_branch\"\n    \n    def test_loop_control(self):\n        \"\"\"Test loop control in workflow.\"\"\"\n        iterations = 0\n        max_iter = 3\n        while iterations < max_iter:\n            iterations += 1\n        assert iterations == 3\n",
+  "statistics": {
+    "lines_added": 26,
+    "lines_removed": 0,
+    "lines_changed": 26
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

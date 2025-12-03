@@ -1,0 +1,752 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "eval.golden_state.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "GoldenStateTestCase",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 37
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "JudgeVerdict",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 58
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "evaluate_output",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "test_case",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "GoldenStateTestCase",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 6,
+                        "_col_offset": 31
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 20
+                  },
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "agent_output",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 6,
+                        "_col_offset": 66
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 52
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Deterministic judge over agent output for a given test case.\n\n    This initial implementation is intentionally simple and does not\n    call any language models. It uses string heuristics to produce a\n    coarse score in [0.0, 1.0].\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 7,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 7,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "text",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 14,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Call",
+                            "_fields": {
+                              "func": {
+                                "_type": "Attribute",
+                                "_fields": {
+                                  "value": {
+                                    "_type": "BoolOp",
+                                    "_fields": {
+                                      "op": {
+                                        "_type": "Or",
+                                        "_fields": {}
+                                      },
+                                      "values": [
+                                        {
+                                          "_type": "Name",
+                                          "_fields": {
+                                            "id": "agent_output",
+                                            "ctx": {
+                                              "_type": "Load",
+                                              "_fields": {}
+                                            }
+                                          },
+                                          "_lineno": 14,
+                                          "_col_offset": 12
+                                        },
+                                        {
+                                          "_type": "Constant",
+                                          "_fields": {
+                                            "value": "",
+                                            "kind": "None"
+                                          },
+                                          "_lineno": 14,
+                                          "_col_offset": 28
+                                        }
+                                      ]
+                                    },
+                                    "_lineno": 14,
+                                    "_col_offset": 12
+                                  },
+                                  "attr": "strip",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 14,
+                                "_col_offset": 11
+                              },
+                              "args": [],
+                              "keywords": []
+                            },
+                            "_lineno": 14,
+                            "_col_offset": 11
+                          },
+                          "attr": "lower",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 14,
+                        "_col_offset": 11
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 14,
+                    "_col_offset": 11
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              },
+              {
+                "_type": "If",
+                "_fields": {
+                  "test": {
+                    "_type": "UnaryOp",
+                    "_fields": {
+                      "op": {
+                        "_type": "Not",
+                        "_fields": {}
+                      },
+                      "operand": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "text",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 11
+                      }
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 7
+                  },
+                  "body": [
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "JudgeVerdict",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 16,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": [
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "score",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "0.0",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 17,
+                                    "_col_offset": 18
+                                  }
+                                },
+                                "_lineno": 17,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "rating",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "fail",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 18,
+                                    "_col_offset": 19
+                                  }
+                                },
+                                "_lineno": 18,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "explanation",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "Empty output.",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 19,
+                                    "_col_offset": 24
+                                  }
+                                },
+                                "_lineno": 19,
+                                "_col_offset": 12
+                              }
+                            ]
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 16,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "orelse": []
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "expected",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 24,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "BoolOp",
+                            "_fields": {
+                              "op": {
+                                "_type": "Or",
+                                "_fields": {}
+                              },
+                              "values": [
+                                {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "test_case",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 24,
+                                      "_col_offset": 16
+                                    },
+                                    "attr": "expected_behavior",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 24,
+                                  "_col_offset": 16
+                                },
+                                {
+                                  "_type": "Constant",
+                                  "_fields": {
+                                    "value": "",
+                                    "kind": "None"
+                                  },
+                                  "_lineno": 24,
+                                  "_col_offset": 47
+                                }
+                              ]
+                            },
+                            "_lineno": 24,
+                            "_col_offset": 16
+                          },
+                          "attr": "lower",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 24,
+                        "_col_offset": 15
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 24,
+                    "_col_offset": 15
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 24,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "key_ok",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 25,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "BoolOp",
+                    "_fields": {
+                      "op": {
+                        "_type": "And",
+                        "_fields": {}
+                      },
+                      "values": [
+                        {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "professional",
+                                "kind": "None"
+                              },
+                              "_lineno": 25,
+                              "_col_offset": 13
+                            },
+                            "ops": [
+                              {
+                                "_type": "In",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "expected",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 25,
+                                "_col_offset": 31
+                              }
+                            ]
+                          },
+                          "_lineno": 25,
+                          "_col_offset": 13
+                        },
+                        {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "professional",
+                                "kind": "None"
+                              },
+                              "_lineno": 25,
+                              "_col_offset": 44
+                            },
+                            "ops": [
+                              {
+                                "_type": "In",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "text",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 25,
+                                "_col_offset": 62
+                              }
+                            ]
+                          },
+                          "_lineno": 25,
+                          "_col_offset": 44
+                        }
+                      ]
+                    },
+                    "_lineno": 25,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 25,
+                "_col_offset": 4
+              },
+              {
+                "_type": "If",
+                "_fields": {
+                  "test": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "key_ok",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 7
+                  },
+                  "body": [
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "JudgeVerdict",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 28,
+                              "_col_offset": 15
+                            },
+                            "args": [],
+                            "keywords": [
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "score",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "1.0",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 29,
+                                    "_col_offset": 18
+                                  }
+                                },
+                                "_lineno": 29,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "rating",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "pass",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 30,
+                                    "_col_offset": 19
+                                  }
+                                },
+                                "_lineno": 30,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "keyword",
+                                "_fields": {
+                                  "arg": "explanation",
+                                  "value": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "Output contains key expected behavior signal.",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 31,
+                                    "_col_offset": 24
+                                  }
+                                },
+                                "_lineno": 31,
+                                "_col_offset": 12
+                              }
+                            ]
+                          },
+                          "_lineno": 28,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 28,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "orelse": []
+                },
+                "_lineno": 27,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "JudgeVerdict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 11
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "score",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "0.5",
+                                "kind": "None"
+                              },
+                              "_lineno": 35,
+                              "_col_offset": 14
+                            }
+                          },
+                          "_lineno": 35,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "rating",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "borderline",
+                                "kind": "None"
+                              },
+                              "_lineno": 36,
+                              "_col_offset": 15
+                            }
+                          },
+                          "_lineno": 36,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "explanation",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "Output is non-empty but did not hit key expected signals.",
+                                "kind": "None"
+                              },
+                              "_lineno": 37,
+                              "_col_offset": 20
+                            }
+                          },
+                          "_lineno": 37,
+                          "_col_offset": 8
+                        }
+                      ]
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 34,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Name",
+              "_fields": {
+                "id": "JudgeVerdict",
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 6,
+              "_col_offset": 74
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 6,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 98,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 2
+  }
+}

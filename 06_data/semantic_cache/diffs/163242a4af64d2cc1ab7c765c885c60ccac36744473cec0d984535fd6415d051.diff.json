@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "orchestration/agent_router_policy.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import List\n\nfrom config.agent_profile import AgentCard\nfrom orchestration.agent_registry import AgentRegistry\n\n\"\"\"Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise.\"\"\"\n\n\ndef choose_agents_for_task(task_type: str, registry: AgentRegistry) -> List[AgentCard]:\n    \"\"\"Chooses agents for a given task type so planning, retrieval, drafting, QA, and safety work are handled by specialists, leading to clearer, more relevant, and safer resumes.\"\"\"\n\n    mapping = {\n        \"strategy\": \"planner\",\n        \"planning\": \"planner\",\n        \"retrieval\": \"researcher\",\n        \"rag\": \"researcher\",\n        \"drafting\": \"drafter\",\n        \"qa\": \"qa\",\n        \"safety\": \"safety\",\n    }\n    desired_type = mapping.get(task_type)\n    if desired_type is None:\n        return list(registry.agents.values())\n    candidates = registry.find_agents_by_type(desired_type)\n    return candidates or list(registry.agents.values())\n\n\n\n",
+  "statistics": {
+    "lines_added": 30,
+    "lines_removed": 0,
+    "lines_changed": 30
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

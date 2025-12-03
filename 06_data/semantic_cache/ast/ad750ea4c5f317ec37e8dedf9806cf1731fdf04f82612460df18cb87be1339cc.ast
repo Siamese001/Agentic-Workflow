@@ -1,0 +1,1658 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nCMS schemas for resume generation prompt validation.\n\nProvides schema definitions for prompt validation to ensure\nconsistent resume improvement and job alignment.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "List",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 30
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "dataclasses",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "dataclass",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 24
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "enum",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Enum",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 17
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "PromptType",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "str",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 13,
+                "_col_offset": 17
+              },
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "Enum",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 13,
+                "_col_offset": 22
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Types of prompts supported by the CMS for resume generation.\n\n    Defines prompt categories for consistent resume improvement workflows.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 14,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "SIMPLE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 19,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "simple",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "TEMPLATE",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "template",
+                      "kind": "None"
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 15
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CONDITIONAL",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 21,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "conditional",
+                      "kind": "None"
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 18
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "CHAINED",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 22,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "chained",
+                      "kind": "None"
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 14
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 13,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "PromptSchema",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Schema definition for resume generation prompt validation.\n\n    Ensures consistent prompt structure for improved resume quality.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 27,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 27,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "name",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 10
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 32,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "prompt_type",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "PromptType",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 33,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "required_fields",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 26
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 21
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 34,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "optional_fields",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 35,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 35,
+                        "_col_offset": 26
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 21
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 33
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 35,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "validation_rules",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 36,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 36,
+                        "_col_offset": 22
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 36,
+                              "_col_offset": 27
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 36,
+                              "_col_offset": 32
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 36,
+                        "_col_offset": 27
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 36,
+                    "_col_offset": 22
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 36,
+                    "_col_offset": 39
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 36,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 25,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 26,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "ValidationResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Result of resume generation prompt validation.\n\n    Tracks validation outcomes for consistent resume improvement.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 41,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 41,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "is_valid",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 46,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "errors",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 47,
+                        "_col_offset": 12
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 47,
+                        "_col_offset": 17
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 12
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 24
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 47,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "warnings",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 48,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 48,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 48,
+                        "_col_offset": 19
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 48,
+                    "_col_offset": 14
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 48,
+                    "_col_offset": 26
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 48,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__post_init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 50,
+                          "_col_offset": 22
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "If",
+                      "_fields": {
+                        "test": {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "self",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 51,
+                                  "_col_offset": 11
+                                },
+                                "attr": "errors",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 51,
+                              "_col_offset": 11
+                            },
+                            "ops": [
+                              {
+                                "_type": "Is",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "None",
+                                  "kind": "None"
+                                },
+                                "_lineno": 51,
+                                "_col_offset": 26
+                              }
+                            ]
+                          },
+                          "_lineno": 51,
+                          "_col_offset": 11
+                        },
+                        "body": [
+                          {
+                            "_type": "Assign",
+                            "_fields": {
+                              "targets": [
+                                {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 52,
+                                      "_col_offset": 12
+                                    },
+                                    "attr": "errors",
+                                    "ctx": {
+                                      "_type": "Store",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 52,
+                                  "_col_offset": 12
+                                }
+                              ],
+                              "value": {
+                                "_type": "List",
+                                "_fields": {
+                                  "elts": [],
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 52,
+                                "_col_offset": 26
+                              },
+                              "type_comment": "None"
+                            },
+                            "_lineno": 52,
+                            "_col_offset": 12
+                          }
+                        ],
+                        "orelse": []
+                      },
+                      "_lineno": 51,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "If",
+                      "_fields": {
+                        "test": {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "self",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 53,
+                                  "_col_offset": 11
+                                },
+                                "attr": "warnings",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 53,
+                              "_col_offset": 11
+                            },
+                            "ops": [
+                              {
+                                "_type": "Is",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "None",
+                                  "kind": "None"
+                                },
+                                "_lineno": 53,
+                                "_col_offset": 28
+                              }
+                            ]
+                          },
+                          "_lineno": 53,
+                          "_col_offset": 11
+                        },
+                        "body": [
+                          {
+                            "_type": "Assign",
+                            "_fields": {
+                              "targets": [
+                                {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 54,
+                                      "_col_offset": 12
+                                    },
+                                    "attr": "warnings",
+                                    "ctx": {
+                                      "_type": "Store",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 54,
+                                  "_col_offset": 12
+                                }
+                              ],
+                              "value": {
+                                "_type": "List",
+                                "_fields": {
+                                  "elts": [],
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 54,
+                                "_col_offset": 28
+                              },
+                              "type_comment": "None"
+                            },
+                            "_lineno": 54,
+                            "_col_offset": 12
+                          }
+                        ],
+                        "orelse": []
+                      },
+                      "_lineno": 53,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 50,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 39,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 40,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "validate_prompt",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "prompt",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 57,
+                        "_col_offset": 28
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 20
+                  },
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "schema",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "PromptSchema",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 57,
+                        "_col_offset": 41
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 33
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Validates resume generation prompt against schema.\n\n    Ensures prompt structure supports consistent resume improvement.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 58,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 58,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "errors",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 63,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "List",
+                    "_fields": {
+                      "elts": [],
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 63,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 63,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "warnings",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 64,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "List",
+                    "_fields": {
+                      "elts": [],
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 64,
+                    "_col_offset": 15
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 64,
+                "_col_offset": 4
+              },
+              {
+                "_type": "If",
+                "_fields": {
+                  "test": {
+                    "_type": "UnaryOp",
+                    "_fields": {
+                      "op": {
+                        "_type": "Not",
+                        "_fields": {}
+                      },
+                      "operand": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "prompt",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 67,
+                        "_col_offset": 11
+                      }
+                    },
+                    "_lineno": 67,
+                    "_col_offset": 7
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "errors",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 68,
+                                  "_col_offset": 8
+                                },
+                                "attr": "append",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 68,
+                              "_col_offset": 8
+                            },
+                            "args": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "Prompt cannot be empty",
+                                  "kind": "None"
+                                },
+                                "_lineno": 68,
+                                "_col_offset": 22
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 68,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 68,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "orelse": []
+                },
+                "_lineno": 67,
+                "_col_offset": 4
+              },
+              {
+                "_type": "If",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "schema",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 71,
+                            "_col_offset": 7
+                          },
+                          "attr": "prompt_type",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 71,
+                        "_col_offset": 7
+                      },
+                      "ops": [
+                        {
+                          "_type": "Eq",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Attribute",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "PromptType",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 29
+                            },
+                            "attr": "TEMPLATE",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 29
+                        }
+                      ]
+                    },
+                    "_lineno": 71,
+                    "_col_offset": 7
+                  },
+                  "body": [
+                    {
+                      "_type": "If",
+                      "_fields": {
+                        "test": {
+                          "_type": "BoolOp",
+                          "_fields": {
+                            "op": {
+                              "_type": "Or",
+                              "_fields": {}
+                            },
+                            "values": [
+                              {
+                                "_type": "Compare",
+                                "_fields": {
+                                  "left": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "{",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 72,
+                                    "_col_offset": 11
+                                  },
+                                  "ops": [
+                                    {
+                                      "_type": "NotIn",
+                                      "_fields": {}
+                                    }
+                                  ],
+                                  "comparators": [
+                                    {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "prompt",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 72,
+                                      "_col_offset": 22
+                                    }
+                                  ]
+                                },
+                                "_lineno": 72,
+                                "_col_offset": 11
+                              },
+                              {
+                                "_type": "Compare",
+                                "_fields": {
+                                  "left": {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "}",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 72,
+                                    "_col_offset": 32
+                                  },
+                                  "ops": [
+                                    {
+                                      "_type": "NotIn",
+                                      "_fields": {}
+                                    }
+                                  ],
+                                  "comparators": [
+                                    {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "prompt",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 72,
+                                      "_col_offset": 43
+                                    }
+                                  ]
+                                },
+                                "_lineno": 72,
+                                "_col_offset": 32
+                              }
+                            ]
+                          },
+                          "_lineno": 72,
+                          "_col_offset": 11
+                        },
+                        "body": [
+                          {
+                            "_type": "Expr",
+                            "_fields": {
+                              "value": {
+                                "_type": "Call",
+                                "_fields": {
+                                  "func": {
+                                    "_type": "Attribute",
+                                    "_fields": {
+                                      "value": {
+                                        "_type": "Name",
+                                        "_fields": {
+                                          "id": "errors",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 73,
+                                        "_col_offset": 12
+                                      },
+                                      "attr": "append",
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 73,
+                                    "_col_offset": 12
+                                  },
+                                  "args": [
+                                    {
+                                      "_type": "Constant",
+                                      "_fields": {
+                                        "value": "Template prompt must contain placeholder fields",
+                                        "kind": "None"
+                                      },
+                                      "_lineno": 73,
+                                      "_col_offset": 26
+                                    }
+                                  ],
+                                  "keywords": []
+                                },
+                                "_lineno": 73,
+                                "_col_offset": 12
+                              }
+                            },
+                            "_lineno": 73,
+                            "_col_offset": 12
+                          }
+                        ],
+                        "orelse": []
+                      },
+                      "_lineno": 72,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "orelse": []
+                },
+                "_lineno": 71,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ValidationResult",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 75,
+                        "_col_offset": 11
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "is_valid",
+                            "value": {
+                              "_type": "Compare",
+                              "_fields": {
+                                "left": {
+                                  "_type": "Call",
+                                  "_fields": {
+                                    "func": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "len",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 76,
+                                      "_col_offset": 17
+                                    },
+                                    "args": [
+                                      {
+                                        "_type": "Name",
+                                        "_fields": {
+                                          "id": "errors",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 76,
+                                        "_col_offset": 21
+                                      }
+                                    ],
+                                    "keywords": []
+                                  },
+                                  "_lineno": 76,
+                                  "_col_offset": 17
+                                },
+                                "ops": [
+                                  {
+                                    "_type": "Eq",
+                                    "_fields": {}
+                                  }
+                                ],
+                                "comparators": [
+                                  {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "0",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 76,
+                                    "_col_offset": 32
+                                  }
+                                ]
+                              },
+                              "_lineno": 76,
+                              "_col_offset": 17
+                            }
+                          },
+                          "_lineno": 76,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "errors",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "errors",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 77,
+                              "_col_offset": 15
+                            }
+                          },
+                          "_lineno": 77,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "warnings",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "warnings",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 78,
+                              "_col_offset": 17
+                            }
+                          },
+                          "_lineno": 78,
+                          "_col_offset": 8
+                        }
+                      ]
+                    },
+                    "_lineno": 75,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 75,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Name",
+              "_fields": {
+                "id": "ValidationResult",
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 57,
+              "_col_offset": 58
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 57,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 229,
+    "function_count": 2,
+    "class_count": 3,
+    "import_count": 3
+  }
+}

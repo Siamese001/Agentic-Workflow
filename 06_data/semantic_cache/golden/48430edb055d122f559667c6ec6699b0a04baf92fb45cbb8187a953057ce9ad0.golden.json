@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "content_hash": "71a07cc9783b9e2654022fc94e18318cc632fcc2808f1fc85566c05e188499a3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\integration\\NEO4J_INTEGRATION_README.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\integration\\NEO4J_INTEGRATION_README.md",
+    "file_size": 6608,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+    "scan_timestamp": "2025-12-03T06:21:11.288726"
+  },
+  "content_preview": "# Neo4j Integration for Temporal Knowledge Graph\n\nThis document describes the Neo4j integration that has been added to the temporal knowledge graph and multi-hop retrieval stack.\n\n## Overview\n\nNeo4j has been integrated as the graph database backing the graph data design (graph DD) for temporal knowledge graph operations. The integration is designed to be:\n\n- **Additive**: All existing SQLite/NetworkX logic is preserved\n- **Graceful**: System continues to work without Neo4j if driver is not insta...",
+  "creation_timestamp": "2025-12-03T06:21:15.964041",
+  "version": "1.0"
+}

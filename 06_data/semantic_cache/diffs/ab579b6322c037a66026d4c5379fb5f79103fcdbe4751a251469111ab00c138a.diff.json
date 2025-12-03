@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L1_planning/integration/test_l1_integration_core.py",
+  "diff_content": "\"\"\"L1 Planning Integration Tests.\"\"\"\n\nclass TestL1PlanningIntegration:\n    \"\"\"Integration tests for L1 planning layer.\"\"\"\n    \n    def test_workflow_to_strategy_integration(self):\n        \"\"\"Test workflow to strategy planning integration.\"\"\"\n        workflow = {\"id\": \"wf1\", \"steps\": [\"plan\", \"execute\"]}\n        strategy = {\"workflow_id\": workflow[\"id\"], \"mode\": \"cot\"}\n        assert strategy[\"workflow_id\"] == \"wf1\"\n    \n    def test_strategy_to_drafting_integration(self):\n        \"\"\"Test strategy to drafting integration.\"\"\"\n        strategy_result = {\"complexity\": \"medium\"}\n        drafting_config = {\"based_on\": strategy_result[\"complexity\"]}\n        assert drafting_config[\"based_on\"] == \"medium\"\n    \n    def test_planning_to_safety_integration(self):\n        \"\"\"Test planning to safety integration.\"\"\"\n        plan = {\"content\": \"resume text\"}\n        safety_check = {\"plan_id\": \"p1\", \"validated\": True}\n        assert safety_check[\"validated\"] is True\n    \n    def test_full_planning_pipeline(self):\n        \"\"\"Test full planning pipeline integration.\"\"\"\n        stages = [\"workflow\", \"strategy\", \"drafting\", \"qa\", \"safety\"]\n        completed = [True for _ in stages]\n        assert all(completed)\n",
+  "statistics": {
+    "lines_added": 28,
+    "lines_removed": 0,
+    "lines_changed": 28
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

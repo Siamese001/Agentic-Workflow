@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e9a2e747d442bdb31becec5ea9b330530eba9ececdf97b433b1bc8302eadba2c",
+  "content_hash": "e9a2e747d442bdb31becec5ea9b330530eba9ececdf97b433b1bc8302eadba2c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\safety\\test_safety_policy_stack_basic.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\safety\\test_safety_policy_stack_basic.py",
+    "file_size": 794,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e9a2e747d442bdb31becec5ea9b330530eba9ececdf97b433b1bc8302eadba2c",
+    "scan_timestamp": "2025-12-03T06:21:11.447889"
+  },
+  "content_preview": "import pytest\n\nfrom stacks_v10_8.safety_policy_stack import SafetyPolicyStack\n\n\ndef _make_stack():\n    return SafetyPolicyStack(context=None, debug_mode=False)\n\n\ndef test_safe_text_is_safe():\n    stack = _make_stack()\n    report = stack.evaluate_text(\"This is a harmless, generic sentence.\")\n\n    assert hasattr(report, \"is_safe\")\n    assert hasattr(report, \"findings\")\n    assert report.is_safe is True\n    assert isinstance(report.findings, list)\n\n\ndef test_pii_like_text_triggers_findings():\n    s...",
+  "creation_timestamp": "2025-12-03T06:21:24.897330",
+  "version": "1.0"
+}

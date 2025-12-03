@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f192a17464331d81fc3b18a97d8b846ed5edfba3b558e4bf93097286bd1cd016",
+  "content_hash": "f192a17464331d81fc3b18a97d8b846ed5edfba3b558e4bf93097286bd1cd016",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\state_v10_8\\test_memory_population.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state_v10_8\\test_memory_population.py",
+    "file_size": 980,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f192a17464331d81fc3b18a97d8b846ed5edfba3b558e4bf93097286bd1cd016",
+    "scan_timestamp": "2025-12-03T06:21:11.453037"
+  },
+  "content_preview": "from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState\n\n\ndef test_memory_patch_populates_and_preserves_existing_state():\n    adapter = StateAdapterStack(context=None)\n    base_state = MainGraphState()\n    base_state.memory.semantic.vector_store_ids = [\"existing\"]\n    base_state.metadata.workflow_id = \"wf-123\"\n\n    patch = adapter.patch_memory(\n        conversation=[{\"role\": \"user\", \"content\": \"first\"}],\n        agent_notes=[\"note-1\"],\n        v...",
+  "creation_timestamp": "2025-12-03T06:21:25.005971",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6baf351cd00d8d3f1e103912584815cab53a98d4dbf6dfa5807a6a29e6ac3f44",
+  "content_hash": "808b2fb70dca87f32540e88530cf22a5e7f46dfc1ce63442e4fdfb8da48e6b87",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\models\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\models\\__init__.py",
+    "file_size": 1838,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6baf351cd00d8d3f1e103912584815cab53a98d4dbf6dfa5807a6a29e6ac3f44",
+    "scan_timestamp": "2025-12-03T06:21:11.278133"
+  },
+  "content_preview": "\"\"\"\nOrchestration layer data models.\n\nThis module provides data models specific to orchestration operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nfrom datetime import datetime\n\n# Import DAG models from core.models for backward compatibility\nfrom core.models.dag_models import *\n\n\nclass OrchestrationStatus(str, Enum):\n    \"\"\"Status of orchestration operations.\"\"\"\n    PENDING = \"pending\"\n...",
+  "creation_timestamp": "2025-12-03T06:21:15.565382",
+  "version": "1.0"
+}

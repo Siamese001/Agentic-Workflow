@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "860c4ea93914109de2c6f739615e0e50f36d9ea6063cdd942e06ea249842d4c1",
+  "content_hash": "24f93e2485ea7d19f19627f4eb4b3245d943a92cf41bf0c740f89f3186b496df",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L2_execution\\unit\\test_triplet_extraction.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\unit\\test_triplet_extraction.py",
+    "file_size": 1838,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "860c4ea93914109de2c6f739615e0e50f36d9ea6063cdd942e06ea249842d4c1",
+    "scan_timestamp": "2025-12-03T06:21:11.315946"
+  },
+  "content_preview": "\"\"\"\nTest Triplet Extraction\n\nTests triplet extraction functionality extracted from working legacy tests.\n\"\"\"\n\nimport pytest\n\n# L2 Components\nfrom l2.triplet_extraction_executor import (\n    TripletExtractionExecutor,\n    create_extraction_plan,\n)\n\n# Mark all tests as L2 execution tests\npytestmark = [pytest.mark.unit, pytest.mark.l2, pytest.mark.execution]\n\n\nclass TestTripletExtraction:\n    \"\"\"Test L2 Triplet Extraction Executor.\"\"\"\n    \n    def test_extract_skills(self):\n        \"\"\"Test skill ex...",
+  "creation_timestamp": "2025-12-03T06:21:16.847712",
+  "version": "1.0"
+}

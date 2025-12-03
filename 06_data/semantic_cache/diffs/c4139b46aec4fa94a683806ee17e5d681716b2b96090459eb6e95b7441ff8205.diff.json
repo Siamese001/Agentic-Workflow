@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "meta/schema_validation.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Iterable, Type\n\nfrom pydantic import BaseModel\n\n\ndef _get_schema_version(obj: Any) -> str | None:\n    \"\"\"Best-effort helper to read a schema_version attribute from a model.\n\n    The validator is intentionally defensive and never raises on simple\n    attribute access issues; it only raises when the value is present but\n    incompatible with expectations.\n    \"\"\"\n\n    try:\n        return getattr(obj, \"schema_version\", None)\n    except Exception:  # pragma: no cover - extreme defensive\n        return None\n\n\ndef validate_schema_version(\n    obj: Any,\n    expected_versions: Iterable[str] = (\"v1\",),\n    model_type: Type[BaseModel] | None = None,\n) -> None:\n    \"\"\"Validate that a Pydantic model has an expected schema_version.\n\n    This is a light-weight guard used on critical cross-layer contracts\n    (e.g., WorkflowPlanBundle, L2ResultBundle) so that incompatible data\n    shapes surface early during development and testing.\n\n    The function is intentionally conservative:\n        \u2022 If obj is not a BaseModel (and model_type is not given), it is a no-op.\n        \u2022 If schema_version is missing or None, it is a no-op for now.\n        \u2022 If schema_version is present but not in expected_versions, it raises\n          a ValueError to signal an incompatible contract.\n    \"\"\"\n\n    if model_type is not None and not isinstance(obj, model_type):\n        # Caller requested a specific model type; anything else is ignored.\n        return\n\n    if model_type is None and not isinstance(obj, BaseModel):\n        # Non-Pydantic payloads are ignored by this helper.\n        return\n\n    version = _get_schema_version(obj)\n    if version is None:\n        # Older objects or non-versioned models are tolerated for now.\n        return\n\n    if str(version) not in set(expected_versions):\n        raise ValueError(\n            f\"Unexpected schema_version={version!r}; expected one of {tuple(expected_versions)!r}\"\n        )\n\n\n\n",
+  "statistics": {
+    "lines_added": 59,
+    "lines_removed": 0,
+    "lines_changed": 59
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

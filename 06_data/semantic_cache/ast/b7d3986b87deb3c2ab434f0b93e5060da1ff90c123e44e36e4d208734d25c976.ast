@@ -1,0 +1,1041 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nRAG planning for comprehensive resume evidence gathering and retrieval.\n\nCreates structured plans to retrieve relevant data for optimal\nresume improvement and job alignment.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "dataclasses",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "dataclass",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 24
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Sequence",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 24
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.models.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ExecutionContext",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 31
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Evidence",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 49
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 13,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "l1.builders.prompt_builder",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "PromptInstance",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 39
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "build_rag_prompt",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 55
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "build_hyde_prompt",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 73
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 14,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "RAGReasoningPlan",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Defines evidence analysis structure for resume improvement.\n\n    Ensures systematic processing of retrieved data for comprehensive\n    resume enhancement and job alignment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "prompt",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 26,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "PromptInstance",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 26,
+                    "_col_offset": 12
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 26,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Call",
+                "_fields": {
+                  "func": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "dataclass",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 1
+                  },
+                  "args": [],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "_fields": {
+                        "arg": "frozen",
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "True",
+                            "kind": "None"
+                          },
+                          "_lineno": 17,
+                          "_col_offset": 18
+                        }
+                      },
+                      "_lineno": 17,
+                      "_col_offset": 11
+                    }
+                  ]
+                },
+                "_lineno": 17,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 18,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "HydePlan",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Structures hypothetical document query planning.\n\n    Creates enhanced search strategies for better resume\n    evidence retrieval and job alignment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 31,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "prompt",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "PromptInstance",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 12
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 38,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Call",
+                "_fields": {
+                  "func": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "dataclass",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 29,
+                    "_col_offset": 1
+                  },
+                  "args": [],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "_fields": {
+                        "arg": "frozen",
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "True",
+                            "kind": "None"
+                          },
+                          "_lineno": 29,
+                          "_col_offset": 18
+                        }
+                      },
+                      "_lineno": 29,
+                      "_col_offset": 11
+                    }
+                  ]
+                },
+                "_lineno": 29,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 30,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "plan_rag_reasoning",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "rag_plan",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Any",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 42,
+                        "_col_offset": 14
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 42,
+                    "_col_offset": 4
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "ctx",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ExecutionContext",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 44,
+                        "_col_offset": 9
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "evidence",
+                      "annotation": {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "Sequence",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 45,
+                            "_col_offset": 14
+                          },
+                          "slice": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "Evidence",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 45,
+                            "_col_offset": 23
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 45,
+                        "_col_offset": 14
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 4
+                  }
+                ],
+                "kw_defaults": [
+                  "None",
+                  "None"
+                ],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Creates evidence analysis plan for resume improvement.\n\n    Structures approach to process retrieved data for comprehensive\n    resume enhancement and job alignment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 47,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "prompt",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 53,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "build_rag_prompt",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 53,
+                        "_col_offset": 13
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "plan",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "rag_plan",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 54,
+                              "_col_offset": 13
+                            }
+                          },
+                          "_lineno": 54,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "ctx",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ctx",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 55,
+                              "_col_offset": 12
+                            }
+                          },
+                          "_lineno": 55,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "evidence",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "evidence",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 56,
+                              "_col_offset": 17
+                            }
+                          },
+                          "_lineno": 56,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "prompt_id",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "system.rag.reasoning",
+                                "kind": "None"
+                              },
+                              "_lineno": 57,
+                              "_col_offset": 18
+                            }
+                          },
+                          "_lineno": 57,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "layer",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "L2",
+                                "kind": "None"
+                              },
+                              "_lineno": 58,
+                              "_col_offset": 14
+                            }
+                          },
+                          "_lineno": 58,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "agent",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "rag",
+                                "kind": "None"
+                              },
+                              "_lineno": 59,
+                              "_col_offset": 14
+                            }
+                          },
+                          "_lineno": 59,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "model_tier",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "balanced",
+                                "kind": "None"
+                              },
+                              "_lineno": 60,
+                              "_col_offset": 19
+                            }
+                          },
+                          "_lineno": 60,
+                          "_col_offset": 8
+                        }
+                      ]
+                    },
+                    "_lineno": 53,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 53,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "RAGReasoningPlan",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 62,
+                        "_col_offset": 11
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "prompt",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "prompt",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 62,
+                              "_col_offset": 35
+                            }
+                          },
+                          "_lineno": 62,
+                          "_col_offset": 28
+                        }
+                      ]
+                    },
+                    "_lineno": 62,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 62,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Name",
+              "_fields": {
+                "id": "RAGReasoningPlan",
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 46,
+              "_col_offset": 5
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 41,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "plan_hyde_query",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "hyde_plan",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Any",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 66,
+                        "_col_offset": 15
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 66,
+                    "_col_offset": 4
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "ctx",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ExecutionContext",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 68,
+                        "_col_offset": 9
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 68,
+                    "_col_offset": 4
+                  }
+                ],
+                "kw_defaults": [
+                  "None"
+                ],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Plans enhanced query generation for r\u00e9sum\u00e9 evidence retrieval.\n\n    Creates hypothetical documents to improve search relevance for r\u00e9sum\u00e9 improvement.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 70,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 70,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "prompt",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 75,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "build_hyde_prompt",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 75,
+                        "_col_offset": 13
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "plan",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "hyde_plan",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 76,
+                              "_col_offset": 13
+                            }
+                          },
+                          "_lineno": 76,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "ctx",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ctx",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 77,
+                              "_col_offset": 12
+                            }
+                          },
+                          "_lineno": 77,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "prompt_id",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "system.hyde",
+                                "kind": "None"
+                              },
+                              "_lineno": 78,
+                              "_col_offset": 18
+                            }
+                          },
+                          "_lineno": 78,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "layer",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "L2",
+                                "kind": "None"
+                              },
+                              "_lineno": 79,
+                              "_col_offset": 14
+                            }
+                          },
+                          "_lineno": 79,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "agent",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "hyde",
+                                "kind": "None"
+                              },
+                              "_lineno": 80,
+                              "_col_offset": 14
+                            }
+                          },
+                          "_lineno": 80,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "model_tier",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "balanced",
+                                "kind": "None"
+                              },
+                              "_lineno": 81,
+                              "_col_offset": 19
+                            }
+                          },
+                          "_lineno": 81,
+                          "_col_offset": 8
+                        }
+                      ]
+                    },
+                    "_lineno": 75,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 75,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "HydePlan",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 83,
+                        "_col_offset": 11
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "prompt",
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "prompt",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 83,
+                              "_col_offset": 27
+                            }
+                          },
+                          "_lineno": 83,
+                          "_col_offset": 20
+                        }
+                      ]
+                    },
+                    "_lineno": 83,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 83,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Name",
+              "_fields": {
+                "id": "HydePlan",
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 69,
+              "_col_offset": 5
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 65,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 131,
+    "function_count": 2,
+    "class_count": 2,
+    "import_count": 5
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\integration\\test_autotune_latency_gain.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_autotune_latency_gain.py",
+    "file_size": 567,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175",
+    "scan_timestamp": "2025-12-03T06:21:11.512825"
+  },
+  "artifacts": {
+    "ast": "ast/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.ast",
+    "embedding": "embeddings/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.embedding",
+    "diff": "diffs/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.diff.json",
+    "safety": "safety/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.safety.json",
+    "golden": "golden/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.golden.json",
+    "integrity": "integrity/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:34.896041",
+  "artifact_count": 6
+}

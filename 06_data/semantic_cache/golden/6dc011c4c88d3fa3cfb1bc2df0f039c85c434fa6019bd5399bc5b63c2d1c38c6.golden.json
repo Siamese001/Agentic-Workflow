@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
+  "content_hash": "c8162b8c8dcb9d6bafa459d6a3c8cd5bd30d4b4e5c246d8e5bac19ad01d002f6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\control_plane\\rules_engine.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\rules_engine.py",
+    "file_size": 2577,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
+    "scan_timestamp": "2025-12-03T06:21:11.237907"
+  },
+  "content_preview": "\"\"\"\nRules engine for r\u00e9sum\u00e9 processing safety policy enforcement.\n\nProvides deterministic rule evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nimport re\nfrom typing import List\n\nfrom .decisions import RuleMatch, RulesEngineResult, aggregate_severity\nfrom .models import PolicyRule, SafetyContext\n\n\n_PII_REGEXES = [\n    # Email addresses\n    re.compile(r\"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\", re.IGNORECASE),\n    # Simple phone number patterns (international and local)\n    ...",
+  "creation_timestamp": "2025-12-03T06:21:12.727706",
+  "version": "1.0"
+}

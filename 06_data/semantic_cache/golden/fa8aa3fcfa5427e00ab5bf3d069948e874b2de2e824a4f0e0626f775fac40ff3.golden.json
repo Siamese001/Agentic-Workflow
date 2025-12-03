@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "fa8aa3fcfa5427e00ab5bf3d069948e874b2de2e824a4f0e0626f775fac40ff3",
+  "content_hash": "fa8aa3fcfa5427e00ab5bf3d069948e874b2de2e824a4f0e0626f775fac40ff3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\stacks\\test_drafting_execution_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_drafting_execution_v10_7.py",
+    "file_size": 1333,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "fa8aa3fcfa5427e00ab5bf3d069948e874b2de2e824a4f0e0626f775fac40ff3",
+    "scan_timestamp": "2025-12-03T06:21:11.420880"
+  },
+  "content_preview": "import pytest\n\nimport stacks_v10_8.draft_orchestration as orchestrator_module\nfrom agent_stacks_v10_8.drafting_execution_stack import DraftingExecutionStack\n\n\nclass _DummyDraftOrchestrator:\n    calls = []\n\n    def __init__(self, context, debug_mode=False):\n        self.context = context\n        self.debug_mode = debug_mode\n\n    async def run_async(self, state, workflow_id, state_snapshot=None):\n        self.__class__.calls.append((state, workflow_id, state_snapshot))\n        return {\"draft\": {\"s...",
+  "creation_timestamp": "2025-12-03T06:21:23.881010",
+  "version": "1.0"
+}

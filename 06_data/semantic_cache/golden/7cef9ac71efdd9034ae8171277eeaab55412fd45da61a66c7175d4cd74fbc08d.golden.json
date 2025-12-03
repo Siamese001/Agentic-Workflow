@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
+  "content_hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\unit\\test_reasoning_toggles.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_reasoning_toggles.py",
+    "file_size": 847,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
+    "scan_timestamp": "2025-12-03T06:21:11.519228"
+  },
+  "content_preview": "\"\"\"Tests for ReasoningToggles validation logic.\"\"\"\nimport pytest\nfrom pydantic import ValidationError\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef test_toggle_defaults():\n    toggles = ReasoningToggles()\n    assert toggles.cot\n    assert toggles.reflexion\n    assert 1 <= toggles.tot_branches <= 4\n\n\ndef test_toggle_bounds_for_tot_branches():\n    with pytest.raises(ValidationError):\n        ReasoningToggles(tot_branches=7)\n\n\ndef test_toggle_bounds_for_min_tot_depth():\n    ...",
+  "creation_timestamp": "2025-12-03T06:21:35.083767",
+  "version": "1.0"
+}

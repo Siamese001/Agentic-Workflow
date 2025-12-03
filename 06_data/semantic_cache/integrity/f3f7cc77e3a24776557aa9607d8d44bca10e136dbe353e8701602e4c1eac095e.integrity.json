@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "f3f7cc77e3a24776557aa9607d8d44bca10e136dbe353e8701602e4c1eac095e",
+  "content_hash": "f3f7cc77e3a24776557aa9607d8d44bca10e136dbe353e8701602e4c1eac095e",
+  "file_size": 28,
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "requirements-dev.txt",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\requirements-dev.txt",
+    "file_size": 28,
+    "file_extension": ".txt",
+    "is_eligible": true,
+    "sha256_hash": "f3f7cc77e3a24776557aa9607d8d44bca10e136dbe353e8701602e4c1eac095e",
+    "scan_timestamp": "2025-12-03T06:21:11.496958"
+  },
+  "verification_timestamp": "2025-12-03T06:21:34.139167",
+  "checksums": {
+    "sha256": "f3f7cc77e3a24776557aa9607d8d44bca10e136dbe353e8701602e4c1eac095e",
+    "md5": "990807da45ff79c7b5b95cac49751175"
+  }
+}

@@ -469,7 +469,19 @@ class SemanticArtifactGenerator:
             return
         
         try:
-            artifact_path = self.semantic_cache_root / artifact_type / filename
+            # Map singular artifact types to plural directory names
+            directory_map = {
+                "ast": "ast",
+                "embedding": "embeddings",
+                "diff": "diffs",
+                "safety": "safety",
+                "golden": "golden",
+                "integrity": "integrity",
+                "meta": "meta"
+            }
+            
+            directory_name = directory_map.get(artifact_type, artifact_type)
+            artifact_path = self.semantic_cache_root / directory_name / filename
             
             with open(artifact_path, 'w', encoding='utf-8') as f:
                 json.dump(artifact_data, f, indent=2)

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9d3f839a5359d2378f68cce306aee560d5c8d80b55c69755c21edf3661119fa0",
+  "content_hash": "488e489607780e3edf3e53056bc0691ce1e8c13dcfda0a38f220b19a0fa1931b",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "README.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\README.md",
+    "file_size": 4530,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "9d3f839a5359d2378f68cce306aee560d5c8d80b55c69755c21edf3661119fa0",
+    "scan_timestamp": "2025-12-03T06:21:11.285237"
+  },
+  "content_preview": "# Agentic Workflow 10_10\n\nA sophisticated multi-layer agentic architecture for temporal knowledge graph processing and intelligent workflow orchestration.\n\n## \ud83c\udfd7\ufe0f Architecture Overview\n\nThis project implements a **5-layer agentic architecture** with capability-based organization:\n\n```text\nL1 (Planning)     \u2192 L2 (Execution) \u2192 L3 (Orchestration) \u2192 L4 (State) \u2192 L5 (Safety)\n     \u2191                    \u2191                \u2191                   \u2191            \u2191\n   Strategy           Tools           Workflow    ...",
+  "creation_timestamp": "2025-12-03T06:21:15.891125",
+  "version": "1.0"
+}

@@ -1,0 +1,680 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Import",
+          "_fields": {
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "sys",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 7
+              }
+            ]
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "pathlib",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Path",
+                  "asname": "None"
+                },
+                "_lineno": 2,
+                "_col_offset": 20
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 2,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Import",
+          "_fields": {
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest",
+                  "asname": "None"
+                },
+                "_lineno": 4,
+                "_col_offset": 7
+              }
+            ]
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "tests.shared",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "fixtures",
+                  "asname": "shared_fixtures"
+                },
+                "_lineno": 6,
+                "_col_offset": 25
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 6,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "tests.shared.test_utils",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "install_langgraph_stub",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest_addoption",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest_collection_modifyitems",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest_configure",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest_pyfunc_call",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "ROOT",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 16,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "Subscript",
+              "_fields": {
+                "value": {
+                  "_type": "Attribute",
+                  "_fields": {
+                    "value": {
+                      "_type": "Call",
+                      "_fields": {
+                        "func": {
+                          "_type": "Attribute",
+                          "_fields": {
+                            "value": {
+                              "_type": "Call",
+                              "_fields": {
+                                "func": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Path",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 16,
+                                  "_col_offset": 7
+                                },
+                                "args": [
+                                  {
+                                    "_type": "Name",
+                                    "_fields": {
+                                      "id": "__file__",
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 16,
+                                    "_col_offset": 12
+                                  }
+                                ],
+                                "keywords": []
+                              },
+                              "_lineno": 16,
+                              "_col_offset": 7
+                            },
+                            "attr": "resolve",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 7
+                        },
+                        "args": [],
+                        "keywords": []
+                      },
+                      "_lineno": 16,
+                      "_col_offset": 7
+                    },
+                    "attr": "parents",
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 16,
+                  "_col_offset": 7
+                },
+                "slice": {
+                  "_type": "Constant",
+                  "_fields": {
+                    "value": "1",
+                    "kind": "None"
+                  },
+                  "_lineno": 16,
+                  "_col_offset": 40
+                },
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 16,
+              "_col_offset": 7
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 16,
+          "_col_offset": 0
+        },
+        {
+          "_type": "If",
+          "_fields": {
+            "test": {
+              "_type": "Compare",
+              "_fields": {
+                "left": {
+                  "_type": "Call",
+                  "_fields": {
+                    "func": {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "str",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 17,
+                      "_col_offset": 3
+                    },
+                    "args": [
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ROOT",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 17,
+                        "_col_offset": 7
+                      }
+                    ],
+                    "keywords": []
+                  },
+                  "_lineno": 17,
+                  "_col_offset": 3
+                },
+                "ops": [
+                  {
+                    "_type": "NotIn",
+                    "_fields": {}
+                  }
+                ],
+                "comparators": [
+                  {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "sys",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 17,
+                        "_col_offset": 20
+                      },
+                      "attr": "path",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 20
+                  }
+                ]
+              },
+              "_lineno": 17,
+              "_col_offset": 3
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "sys",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 18,
+                                "_col_offset": 4
+                              },
+                              "attr": "path",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 18,
+                            "_col_offset": 4
+                          },
+                          "attr": "insert",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 18,
+                        "_col_offset": 4
+                      },
+                      "args": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "0",
+                            "kind": "None"
+                          },
+                          "_lineno": 18,
+                          "_col_offset": 20
+                        },
+                        {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 18,
+                              "_col_offset": 23
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "ROOT",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 18,
+                                "_col_offset": 27
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 18,
+                          "_col_offset": 23
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              }
+            ],
+            "orelse": []
+          },
+          "_lineno": 17,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Call",
+              "_fields": {
+                "func": {
+                  "_type": "Name",
+                  "_fields": {
+                    "id": "install_langgraph_stub",
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 20,
+                  "_col_offset": 0
+                },
+                "args": [],
+                "keywords": []
+              },
+              "_lineno": 20,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 20,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Call",
+              "_fields": {
+                "func": {
+                  "_type": "Attribute",
+                  "_fields": {
+                    "value": {
+                      "_type": "Call",
+                      "_fields": {
+                        "func": {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "globals",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 23,
+                          "_col_offset": 0
+                        },
+                        "args": [],
+                        "keywords": []
+                      },
+                      "_lineno": 23,
+                      "_col_offset": 0
+                    },
+                    "attr": "update",
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 23,
+                  "_col_offset": 0
+                },
+                "args": [
+                  {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "vars",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 23,
+                        "_col_offset": 17
+                      },
+                      "args": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "shared_fixtures",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 23,
+                          "_col_offset": 22
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 23,
+                    "_col_offset": 17
+                  }
+                ],
+                "keywords": []
+              },
+              "_lineno": 23,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 23,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 25,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "IfExp",
+              "_fields": {
+                "test": {
+                  "_type": "Call",
+                  "_fields": {
+                    "func": {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "hasattr",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 25,
+                      "_col_offset": 43
+                    },
+                    "args": [
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "shared_fixtures",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 25,
+                        "_col_offset": 51
+                      },
+                      {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "__all__",
+                          "kind": "None"
+                        },
+                        "_lineno": 25,
+                        "_col_offset": 68
+                      }
+                    ],
+                    "keywords": []
+                  },
+                  "_lineno": 25,
+                  "_col_offset": 43
+                },
+                "body": {
+                  "_type": "Call",
+                  "_fields": {
+                    "func": {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "list",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 25,
+                      "_col_offset": 10
+                    },
+                    "args": [
+                      {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "shared_fixtures",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 25,
+                            "_col_offset": 15
+                          },
+                          "attr": "__all__",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 25,
+                        "_col_offset": 15
+                      }
+                    ],
+                    "keywords": []
+                  },
+                  "_lineno": 25,
+                  "_col_offset": 10
+                },
+                "orelse": {
+                  "_type": "List",
+                  "_fields": {
+                    "elts": [],
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 25,
+                  "_col_offset": 84
+                }
+              },
+              "_lineno": 25,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 25,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 92,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 5
+  }
+}

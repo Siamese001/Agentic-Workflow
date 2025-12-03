@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "079e45a7c62f4e8ad8905f715088cbf92c1a4f3a18863efa286e4b0d589c4382",
+  "content_hash": "079e45a7c62f4e8ad8905f715088cbf92c1a4f3a18863efa286e4b0d589c4382",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\core\\test_arbitration_engine_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\core\\test_arbitration_engine_v10_7.py",
+    "file_size": 4338,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "079e45a7c62f4e8ad8905f715088cbf92c1a4f3a18863efa286e4b0d589c4382",
+    "scan_timestamp": "2025-12-03T06:21:11.410250"
+  },
+  "content_preview": "import copy\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom agent_orchestration_v10_7 import _attach_arbitration_report\nfrom core_v10_7.config import ConfigSection\nfrom core_v10_7.models import ArbitrationReport\nfrom core_v10_7.services import ArbitrationEngine, MetricsCollector\n\n\nBASE_STAGES = {\n    \"strategy_post_plan\": {\"enabled\": True, \"allow_revision\": True},\n    \"prompt_rag_join\": {\"enabled\": True, \"allow_revision\": False},\n    \"draft_post_assembly\": {\"enabled\": True, \"allow_revisio...",
+  "creation_timestamp": "2025-12-03T06:21:23.515104",
+  "version": "1.0"
+}

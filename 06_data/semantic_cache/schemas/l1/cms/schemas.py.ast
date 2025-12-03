@@ -1,0 +1,9 @@
+{
+  "pointer_type": "ast",
+  "target_root": "schemas",
+  "canonical_relative": "l1\\cms\\schemas.py",
+  "global_hash": "ad750ea4c5f317ec37e8dedf9806cf1731fdf04f82612460df18cb87be1339cc",
+  "global_path": "06_data/semantic_cache/ast/ad750ea4c5f317ec37e8dedf9806cf1731fdf04f82612460df18cb87be1339cc.ast",
+  "created_timestamp": "2025-12-03T06:21:43.386564",
+  "pointer_version": "1.0"
+}

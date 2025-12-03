@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb",
+  "content_hash": "5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "stacks_v10_7\\safety.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\safety.py",
+    "file_size": 6580,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb",
+    "scan_timestamp": "2025-12-03T06:21:11.509401"
+  },
+  "content_preview": "\"\"\"Safety guard stack agents.\"\"\"\n\nimport json\nimport re\nfrom typing import Any, Dict\n\nfrom pydantic import BaseModel, Field\n\nfrom core_v10_7 import (\n    BaseAgent,\n    ConstitutionalReviewResult,\n    track_metrics,\n    _format_prompt_with_defaults,\n    detect_bias,\n)\n\n\nclass PIISanitizerAgent(BaseAgent):\n    \"\"\"Performs local PII detection using regex heuristics.\"\"\"\n\n    PII_PATTERNS = {\n        \"EMAIL\": re.compile(r\"\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b\"),\n        \"PHONE\": re.com...",
+  "creation_timestamp": "2025-12-03T06:21:34.756620",
+  "version": "1.0"
+}

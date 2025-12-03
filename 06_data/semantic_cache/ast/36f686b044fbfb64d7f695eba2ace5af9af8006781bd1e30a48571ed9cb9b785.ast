@@ -1,0 +1,2587 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nDefines abstract interfaces for L1 planning operations in resume generation.\n\nEnsures consistent planning implementation across all resume\ngeneration components for improved code organization.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "abc",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ABC",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 16
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "abstractmethod",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 21
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "List",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 30
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Optional",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 36
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "dataclasses",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "dataclass",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 24
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.models.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "WorkflowPlanBundle",
+                  "asname": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ExecutionContext",
+                  "asname": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ComplexityLevel",
+                  "asname": "None"
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "TaskDecomposition",
+                  "asname": "None"
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "UncertaintyEstimate",
+                  "asname": "None"
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 14,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1PlanRequest",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Input request for L1 resume planning operations.\n\n    Ensures standardized planning requests for consistent\n    resume generation across all components.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 25,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 25,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "mission",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 30,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 30,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 30,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "context",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "ExecutionContext",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 13
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 31,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "constraints",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 32,
+                        "_col_offset": 17
+                      },
+                      "slice": {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "Dict",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 32,
+                            "_col_offset": 26
+                          },
+                          "slice": {
+                            "_type": "Tuple",
+                            "_fields": {
+                              "elts": [
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "str",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 32,
+                                  "_col_offset": 31
+                                },
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Any",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 32,
+                                  "_col_offset": 36
+                                }
+                              ],
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 32,
+                            "_col_offset": 31
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 32,
+                        "_col_offset": 26
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 17
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 44
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 32,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "complexity_hint",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Optional",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 33,
+                        "_col_offset": 21
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ComplexityLevel",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 33,
+                        "_col_offset": 30
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 21
+                  },
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "None",
+                      "kind": "None"
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 49
+                  },
+                  "simple": "1"
+                },
+                "_lineno": 33,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 23,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 24,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1PlanResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Output result from L1 resume planning operations.\n\n    Provides structured planning results for consistent\n    resume generation across all system components.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 38,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 38,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "plan_bundle",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "WorkflowPlanBundle",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 43,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "decomposition",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "TaskDecomposition",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 19
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 44,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "uncertainty",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "UncertaintyEstimate",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 45,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "metadata",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 46,
+                        "_col_offset": 14
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 46,
+                              "_col_offset": 19
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 46,
+                              "_col_offset": 24
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 46,
+                        "_col_offset": 19
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 46,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 36,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 37,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1PlannerInterface",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "ABC",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 49,
+                "_col_offset": 25
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Abstract interface for L1 resume planning operations.\n\n    Ensures consistent planning behavior across all resume\n    generation components for improved system reliability.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 50,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 50,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "plan_workflow",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 57,
+                          "_col_offset": 28
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "request",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanRequest",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 57,
+                              "_col_offset": 43
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 57,
+                          "_col_offset": 34
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Creates comprehensive resume workflow plans.\n\n        Ensures structured planning for consistent resume\n        generation across all job applications.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 58,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 58,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 63,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 56,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "L1PlanResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 61
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 57,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "decompose_task",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 66,
+                          "_col_offset": 29
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "task",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 66,
+                              "_col_offset": 41
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 66,
+                          "_col_offset": 35
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "context",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ExecutionContext",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 66,
+                              "_col_offset": 55
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 66,
+                          "_col_offset": 46
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Decomposes resume tasks into executable subtasks.\n\n        Enables systematic resume generation through proper\n        task breakdown for improved quality.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 67,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 67,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 72,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 65,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "TaskDecomposition",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 66,
+                    "_col_offset": 76
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 66,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "estimate_uncertainty",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 75,
+                          "_col_offset": 35
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "plan",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "WorkflowPlanBundle",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 75,
+                              "_col_offset": 47
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 75,
+                          "_col_offset": 41
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "context",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ExecutionContext",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 75,
+                              "_col_offset": 76
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 75,
+                          "_col_offset": 67
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Estimates uncertainty levels for resume planning.\n\n        Provides confidence metrics to ensure resume\n        generation meets quality standards.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 76,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 76,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 81,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 74,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "UncertaintyEstimate",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 75,
+                    "_col_offset": 97
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 75,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "validate_plan",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 84,
+                          "_col_offset": 28
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "plan",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "WorkflowPlanBundle",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 84,
+                              "_col_offset": 40
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 84,
+                          "_col_offset": 34
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "context",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ExecutionContext",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 84,
+                              "_col_offset": 69
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 84,
+                          "_col_offset": 60
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Validates resume plans for execution and safety.\n\n        Ensures generated resumes meet professional standards\n        and job application requirements.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 85,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 85,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 90,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 83,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 84,
+                    "_col_offset": 90
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 84,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 49,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1StrategyPlannerInterface",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "L1PlannerInterface",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 93,
+                "_col_offset": 33
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Interface for resume strategy planning operations.\n\n    Ensures consistent strategy planning for optimal\n    job alignment and resume effectiveness.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 94,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 94,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "plan_strategy",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 28
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "request",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanRequest",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 43
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 34
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Plans resume strategy execution workflow.\n\n        Ensures strategic resume organization for maximum\n        impact on job applications.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 102,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 102,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 107,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 100,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "L1PlanResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 101,
+                    "_col_offset": 61
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 101,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 93,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1DraftingPlannerInterface",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "L1PlannerInterface",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 110,
+                "_col_offset": 33
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Interface for resume content drafting planning.\n\n    Ensures consistent drafting planning for high-quality\n        resume content generation.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 111,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 111,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "plan_drafting",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 118,
+                          "_col_offset": 28
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "request",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanRequest",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 118,
+                              "_col_offset": 43
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 118,
+                          "_col_offset": 34
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Plans resume content drafting workflow.\n\n        Ensures structured content creation for professional\n        resume presentation.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 119,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 119,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 124,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 117,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "L1PlanResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 118,
+                    "_col_offset": 61
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 118,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 110,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1QAPlannerInterface",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "L1PlannerInterface",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 127,
+                "_col_offset": 27
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Interface for resume quality assurance planning.\n\n    Ensures consistent QA planning for resume\n    accuracy and job alignment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 128,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 128,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "plan_qa",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 135,
+                          "_col_offset": 22
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "request",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanRequest",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 135,
+                              "_col_offset": 37
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 135,
+                          "_col_offset": 28
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Plans resume quality assurance workflow.\n\n        Ensures thorough validation for resume\n        correctness and professional standards.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 136,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 136,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 141,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 134,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "L1PlanResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 135,
+                    "_col_offset": 55
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 135,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 127,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1SafetyPlannerInterface",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "L1PlannerInterface",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 144,
+                "_col_offset": 31
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Interface for resume safety planning operations.\n\n    Ensures consistent safety planning for professional\n    and ethical resume generation.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 145,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 145,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "plan_safety",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 152,
+                          "_col_offset": 26
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "request",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanRequest",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 152,
+                              "_col_offset": 41
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 152,
+                          "_col_offset": 32
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Plans resume safety evaluation workflow.\n\n        Ensures resume content meets professional standards\n        and ethical guidelines.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 153,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 153,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 158,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 151,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "L1PlanResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 152,
+                    "_col_offset": 59
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 152,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 144,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "BiasIndicator",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Indicator of potential bias in resume planning.\n\n    Helps ensure resume generation remains fair and unbiased\n    for professional job applications.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 167,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 167,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "indicator_type",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 173,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 173,
+                    "_col_offset": 20
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 173,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "description",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 174,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 174,
+                    "_col_offset": 17
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 174,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "severity",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 175,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 175,
+                    "_col_offset": 14
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 175,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "source_field",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 176,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 176,
+                    "_col_offset": 18
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 176,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "confidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 177,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 177,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 177,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 165,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 166,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "BiasPreCheckResult",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Result of bias pre-check for resume planning.\n\n    Ensures resume generation maintains fairness and\n    professional standards throughout the process.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 182,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 182,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "has_bias_indicators",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 188,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "bool",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 188,
+                    "_col_offset": 25
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 188,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "indicators",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 189,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 189,
+                        "_col_offset": 16
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "BiasIndicator",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 189,
+                        "_col_offset": 21
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 189,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 189,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "recommendation",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 190,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "str",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 190,
+                    "_col_offset": 20
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 190,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AnnAssign",
+                "_fields": {
+                  "target": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "confidence",
+                      "ctx": {
+                        "_type": "Store",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 191,
+                    "_col_offset": 4
+                  },
+                  "annotation": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "float",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 191,
+                    "_col_offset": 16
+                  },
+                  "value": "None",
+                  "simple": "1"
+                },
+                "_lineno": 191,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "dataclass",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 180,
+                "_col_offset": 1
+              }
+            ],
+            "type_params": []
+          },
+          "_lineno": 181,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "L1BiasPreCheckInterface",
+            "bases": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "ABC",
+                  "ctx": {
+                    "_type": "Load",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 194,
+                "_col_offset": 30
+              }
+            ],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Interface for detecting bias in resume planning operations.\n\n    Ensures resume generation remains fair and unbiased\n    for professional job applications.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 195,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 195,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "check_input_bias",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 203,
+                          "_col_offset": 25
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "request",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanRequest",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 203,
+                              "_col_offset": 40
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 203,
+                          "_col_offset": 31
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "\n        Checks resume planning requests for bias indicators.\n\n        Ensures fair and unbiased resume generation\n        before planning operations begin.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 204,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 204,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 210,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 202,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "BiasPreCheckResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 203,
+                    "_col_offset": 58
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 203,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "check_output_bias",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 213,
+                          "_col_offset": 26
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "result",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "L1PlanResult",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 213,
+                              "_col_offset": 40
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 213,
+                          "_col_offset": 32
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "\n        Checks resume planning results for bias indicators.\n\n        Validates that generated plans remain fair\n        and unbiased for professional use.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 214,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 214,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 220,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 212,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "BiasPreCheckResult",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 213,
+                    "_col_offset": 57
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 213,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "get_bias_patterns",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 223,
+                          "_col_offset": 26
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "\n        Gets bias patterns checked in resume planning.\n\n        Provides transparency for bias detection\n        in resume generation processes.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 224,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 224,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Pass",
+                      "_fields": {},
+                      "_lineno": 230,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "abstractmethod",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 222,
+                      "_col_offset": 5
+                    }
+                  ],
+                  "returns": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "List",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 223,
+                        "_col_offset": 35
+                      },
+                      "slice": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 223,
+                        "_col_offset": 40
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 223,
+                    "_col_offset": 35
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 223,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 194,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 339,
+    "function_count": 3,
+    "class_count": 10,
+    "import_count": 5
+  }
+}

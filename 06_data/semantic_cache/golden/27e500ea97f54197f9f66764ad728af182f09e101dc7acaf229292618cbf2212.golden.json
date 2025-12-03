@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
+  "content_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "constraints.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\constraints.json",
+    "file_size": 1811,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
+    "scan_timestamp": "2025-12-03T06:21:11.472316"
+  },
+  "content_preview": "{\n  \"headline\": {\n    \"word_count_min\": 7,\n    \"word_count_max\": 12,\n    \"component_words_min\": 2,\n    \"component_words_max\": 4\n  },\n  \"executive_summary\": {\n    \"word_count_min\": 120,\n    \"word_count_max\": 150,\n    \"sentence_count_min\": 7,\n    \"sentence_count_max\": 9\n  },\n  \"bullets\": {\n    \"word_count_min\": 25,\n    \"word_count_max\": 40,\n    \"word_count_acceptable_min\": 21,\n    \"word_count_acceptable_max\": 44\n  },\n  \"competencies\": {\n    \"bullet_count_min\": 5,\n    \"bullet_count_max\": 7\n  },\n  \"...",
+  "creation_timestamp": "2025-12-03T06:21:28.696262",
+  "version": "1.0"
+}

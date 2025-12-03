@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/__init__.py",
+  "diff_content": "\"\"\"\nInfrastructure dependency injection for r\u00e9sum\u00e9 processing workflows.\n\nProvides service management and dependency resolution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, TypeVar, Callable\nimport functools\n\nT = TypeVar('T')\n\n# Simple service registry for atomic architecture\n_services: Dict[str, Any] = {}\n\ndef register_service(name: str, service: Any) -> None:\n    \"\"\"\n    Registers service for r\u00e9sum\u00e9 processing dependency injection.\n\n    Enables modular service management for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n    _services[name] = service\n\ndef get_service(name: str) -> Any:\n    \"\"\"\n    Retrieves registered service for r\u00e9sum\u00e9 processing workflows.\n\n    Provides reliable dependency resolution for r\u00e9sum\u00e9 improvement operations.\n    \"\"\"\n    if name not in _services:\n        raise ValueError(f\"Service '{name}' not registered\")\n    return _services[name]\n\ndef inject_dependencies(**dependencies: Any) -> Callable:\n    \"\"\"\n    Creates dependency injection decorator for r\u00e9sum\u00e9 processing functions.\n\n    Enables automatic service resolution for modular r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    def decorator(func: Callable) -> Callable:\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            # Inject dependencies\n            for key, service_name in dependencies.items():\n                if key not in kwargs:\n                    kwargs[key] = get_service(service_name)\n            return func(*args, **kwargs)\n        return wrapper\n    return decorator\n\ndef initialize_default_services() -> None:\n    \"\"\"\n    Initializes default services for r\u00e9sum\u00e9 processing architecture.\n\n    Sets up essential dependencies for comprehensive r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    # Register default atomic services\n    register_service(\"state_manager\", None)  # Will be injected later\n    register_service(\"safety_validator\", None)  # Will be injected later",
+  "statistics": {
+    "lines_added": 58,
+    "lines_removed": 0,
+    "lines_changed": 58
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

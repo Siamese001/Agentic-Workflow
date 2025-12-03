@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/shared/baselines/baseline_outputs_v10_7.json",
+  "diff_content": "{\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\", \"context\"],\n    \"version\": \"v10.7\",\n    \"notes\": \"Extended context to include orchestration metadata\"\n  },\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\", \"issues\"],\n    \"version\": \"v10.7\",\n    \"notes\": \"Includes structured issue reporting\"\n  }\n}\n",
+  "statistics": {
+    "lines_added": 12,
+    "lines_removed": 0,
+    "lines_changed": 12
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

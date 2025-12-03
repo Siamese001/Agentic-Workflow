@@ -1,0 +1,579 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "src.lic_agentic.telemetry",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "PolicyController",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 38
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_autotune_reacts_to_latency_changes",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "controller",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 5,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "PolicyController",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 5,
+                        "_col_offset": 17
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 5,
+                    "_col_offset": 17
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "controller",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 6,
+                            "_col_offset": 4
+                          },
+                          "attr": "register_tool",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 6,
+                        "_col_offset": 4
+                      },
+                      "args": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "web_search_v1",
+                            "kind": "None"
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 29
+                        }
+                      ],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "quarantined",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "False",
+                                "kind": "None"
+                              },
+                              "_lineno": 6,
+                              "_col_offset": 58
+                            }
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 46
+                        }
+                      ]
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "before",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 7,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "controller",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 7,
+                        "_col_offset": 13
+                      },
+                      "attr": "budget_multiplier",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 7,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "controller",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 8,
+                            "_col_offset": 4
+                          },
+                          "attr": "update",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 8,
+                        "_col_offset": 4
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "latency_p95_ms",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "4800",
+                                "kind": "None"
+                              },
+                              "_lineno": 8,
+                              "_col_offset": 37
+                            }
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 22
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "qa_pass_rate",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "0.9",
+                                "kind": "None"
+                              },
+                              "_lineno": 8,
+                              "_col_offset": 56
+                            }
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 43
+                        }
+                      ]
+                    },
+                    "_lineno": 8,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 8,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "after_high_latency",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 9,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "controller",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 9,
+                        "_col_offset": 25
+                      },
+                      "attr": "budget_multiplier",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 9,
+                    "_col_offset": 25
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "after_high_latency",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 10,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "LtE",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "before",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 10,
+                          "_col_offset": 33
+                        }
+                      ]
+                    },
+                    "_lineno": 10,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "controller",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 12,
+                            "_col_offset": 4
+                          },
+                          "attr": "update",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 12,
+                        "_col_offset": 4
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "latency_p95_ms",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "2000",
+                                "kind": "None"
+                              },
+                              "_lineno": 12,
+                              "_col_offset": 37
+                            }
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 22
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "qa_pass_rate",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "0.95",
+                                "kind": "None"
+                              },
+                              "_lineno": 12,
+                              "_col_offset": 56
+                            }
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 43
+                        }
+                      ]
+                    },
+                    "_lineno": 12,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "controller",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 13,
+                            "_col_offset": 11
+                          },
+                          "attr": "budget_multiplier",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 13,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "GtE",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "after_high_latency",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 13,
+                          "_col_offset": 43
+                        }
+                      ]
+                    },
+                    "_lineno": 13,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "controller",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 14,
+                            "_col_offset": 11
+                          },
+                          "attr": "tot_branches",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 14,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "GtE",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "1",
+                            "kind": "None"
+                          },
+                          "_lineno": 14,
+                          "_col_offset": 38
+                        }
+                      ]
+                    },
+                    "_lineno": 14,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 78,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 1
+  }
+}

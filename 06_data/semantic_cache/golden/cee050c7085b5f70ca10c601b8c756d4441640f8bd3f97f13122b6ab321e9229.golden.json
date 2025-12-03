@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cee050c7085b5f70ca10c601b8c756d4441640f8bd3f97f13122b6ab321e9229",
+  "content_hash": "ff5fc8ec4575c8ac2a04e5513aecbd3ece4cc741eb0d6aa3ef52c60dc7f0473e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\dag\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag\\__init__.py",
+    "file_size": 180,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cee050c7085b5f70ca10c601b8c756d4441640f8bd3f97f13122b6ab321e9229",
+    "scan_timestamp": "2025-12-03T06:21:11.239081"
+  },
+  "content_preview": "\"\"\"\nDAG infrastructure for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides directed acyclic graph execution for comprehensive r\u00e9sum\u00e9 enhancement operations.\n\"\"\"\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:12.760599",
+  "version": "1.0"
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l1/cms/schemas.py",
+  "diff_content": "\"\"\"\nCMS schemas for resume generation prompt validation.\n\nProvides schema definitions for prompt validation to ensure\nconsistent resume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, List\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n\nclass PromptType(str, Enum):\n    \"\"\"\n    Types of prompts supported by the CMS for resume generation.\n\n    Defines prompt categories for consistent resume improvement workflows.\n    \"\"\"\n    SIMPLE = \"simple\"\n    TEMPLATE = \"template\"\n    CONDITIONAL = \"conditional\"\n    CHAINED = \"chained\"\n\n\n@dataclass\nclass PromptSchema:\n    \"\"\"\n    Schema definition for resume generation prompt validation.\n\n    Ensures consistent prompt structure for improved resume quality.\n    \"\"\"\n    name: str\n    prompt_type: PromptType\n    required_fields: List[str]\n    optional_fields: List[str] = None\n    validation_rules: Dict[str, Any] = None\n\n\n@dataclass\nclass ValidationResult:\n    \"\"\"\n    Result of resume generation prompt validation.\n\n    Tracks validation outcomes for consistent resume improvement.\n    \"\"\"\n    is_valid: bool\n    errors: List[str] = None\n    warnings: List[str] = None\n    \n    def __post_init__(self):\n        if self.errors is None:\n            self.errors = []\n        if self.warnings is None:\n            self.warnings = []\n\n\ndef validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:\n    \"\"\"\n    Validates resume generation prompt against schema.\n\n    Ensures prompt structure supports consistent resume improvement.\n    \"\"\"\n    errors = []\n    warnings = []\n    \n    # Basic validation logic\n    if not prompt:\n        errors.append(\"Prompt cannot be empty\")\n    \n    # Check required fields based on schema\n    if schema.prompt_type == PromptType.TEMPLATE:\n        if \"{\" not in prompt or \"}\" not in prompt:\n            errors.append(\"Template prompt must contain placeholder fields\")\n    \n    return ValidationResult(\n        is_valid=len(errors) == 0,\n        errors=errors,\n        warnings=warnings\n    )\n",
+  "statistics": {
+    "lines_added": 79,
+    "lines_removed": 0,
+    "lines_changed": 79
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

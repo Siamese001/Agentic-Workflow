@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a97ddee562ea8933683e843eedada1ec1ab2a2454260ac3ee2d032bb1ada4e07",
+  "content_hash": "a97ddee562ea8933683e843eedada1ec1ab2a2454260ac3ee2d032bb1ada4e07",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\__init__.py",
+    "file_size": 588,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a97ddee562ea8933683e843eedada1ec1ab2a2454260ac3ee2d032bb1ada4e07",
+    "scan_timestamp": "2025-12-03T06:21:11.441375"
+  },
+  "content_preview": "from __future__ import annotations\n\nimport sys\nimport types\nfrom pathlib import Path\n\n_REPO_ROOT = Path(__file__).resolve().parents[1]\n_TESTS_ROOT = _REPO_ROOT / \"tests\"\n_TESTS_FLAT_ROOT = _REPO_ROOT / \"tests_flat\"\n\nfor _candidate in (_REPO_ROOT, _TESTS_FLAT_ROOT):\n    _candidate_str = str(_candidate)\n    if _candidate_str not in sys.path:\n        sys.path.insert(0, _candidate_str)\n\n_tests_pkg = sys.modules.setdefault(\"tests\", types.ModuleType(\"tests\"))\n_tests_pkg.__path__ = list({*(getattr(_tes...",
+  "creation_timestamp": "2025-12-03T06:21:24.757727",
+  "version": "1.0"
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/model_routing/models.py",
+  "diff_content": "\"\"\"\nModel routing data structures for r\u00e9sum\u00e9 processing workflows.\n\nDefines lightweight model selection and routing context for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Optional\n\nfrom core.models.models import ExecutionProfile\n\n\n@dataclass\nclass ModelChoice:\n    \"\"\"\n    Represents model selection choice for r\u00e9sum\u00e9 processing workflows.\n\n    Enables lightweight provider-agnostic model routing for comprehensive r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n\n    provider: str\n    model_name: str\n    cost_tier: str  # e.g. \"low\", \"medium\", \"high\"\n    estimated_cost: float\n    latency_ms: int\n\n\n@dataclass\nclass RoutingContext:\n    \"\"\"\n    Provides routing context for r\u00e9sum\u00e9 processing model selection.\n\n    Ensures optimal model choice based on agent and task requirements for r\u00e9sum\u00e9 improvement.\n    \"\"\"\n\n    agent_id: str\n    task_type: str\n    execution_profile: Optional[ExecutionProfile] = None\n\n\n\n",
+  "statistics": {
+    "lines_added": 41,
+    "lines_removed": 0,
+    "lines_changed": 41
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

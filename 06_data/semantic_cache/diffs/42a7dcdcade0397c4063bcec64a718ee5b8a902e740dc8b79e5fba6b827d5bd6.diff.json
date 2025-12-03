@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "src/lic_agentic/orchestration/__init__.py",
+  "diff_content": "\"\"\"Orchestration utilities for asynchronous execution.\"\"\"\nfrom .conductor import Conductor\n\n__all__ = [\"Conductor\"]\n\n\ndef _touch_exports() -> tuple[str, ...]:\n    return tuple(__all__)\n\n\n_touch_exports()\n",
+  "statistics": {
+    "lines_added": 11,
+    "lines_removed": 0,
+    "lines_changed": 11
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

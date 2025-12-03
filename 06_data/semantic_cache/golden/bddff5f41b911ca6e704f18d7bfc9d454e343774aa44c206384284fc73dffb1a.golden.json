@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bddff5f41b911ca6e704f18d7bfc9d454e343774aa44c206384284fc73dffb1a",
+  "content_hash": "bddff5f41b911ca6e704f18d7bfc9d454e343774aa44c206384284fc73dffb1a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_AGENTIC_v11_6_1_FIXED.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_6_1_FIXED.py",
+    "file_size": 85463,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bddff5f41b911ca6e704f18d7bfc9d454e343774aa44c206384284fc73dffb1a",
+    "scan_timestamp": "2025-12-03T06:21:11.615261"
+  },
+  "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.6.1\n====================================================\n\nCHANGELOG v11.6.1 (PATCH - Test Fixes):\n---------------------------------------------------------\n\ud83d\udd27 FIX: Added \"drive\" to FORBIDDEN_VERBS list (complements existing \"drove\")\n\ud83d\udd27 FIX: Adjusted feasibility heuristic - CONNECTION_REQ now requires 8 words/element (was 5)\n\ud83d\udd27 FIX: Improved RAG confidence calculation - less conservative scoring with diversity bonus\n- Base score: 0.15 per result...",
+  "creation_timestamp": "2025-12-03T06:21:40.955509",
+  "version": "1.0"
+}

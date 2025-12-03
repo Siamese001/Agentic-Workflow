@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
+  "content_hash": "9aeb7d62ca165d45b30c9b662ac82b7dbf9dd4f970cd0081bd7e7d456de8ac22",
+  "file_size": 978,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\metacognition\\test_hypothesis_generation.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_hypothesis_generation.py",
+    "file_size": 978,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
+    "scan_timestamp": "2025-12-03T06:21:11.326978"
+  },
+  "verification_timestamp": "2025-12-03T06:21:17.110500",
+  "checksums": {
+    "sha256": "9aeb7d62ca165d45b30c9b662ac82b7dbf9dd4f970cd0081bd7e7d456de8ac22",
+    "md5": "0ba4add0174ecbc3fd00e996e4d249d5"
+  }
+}

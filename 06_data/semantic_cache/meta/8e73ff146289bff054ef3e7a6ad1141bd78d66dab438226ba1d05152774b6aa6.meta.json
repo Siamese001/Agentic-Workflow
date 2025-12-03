@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "validator_RES_v2.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\validator_RES_v2.py",
+    "file_size": 41921,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6",
+    "scan_timestamp": "2025-12-03T06:21:11.480169"
+  },
+  "artifacts": {
+    "ast": "ast/8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6.ast",
+    "embedding": "embeddings/8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6.embedding",
+    "diff": "diffs/8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6.diff.json",
+    "safety": "safety/8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6.safety.json",
+    "golden": "golden/8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6.golden.json",
+    "integrity": "integrity/8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:29.547231",
+  "artifact_count": 6
+}

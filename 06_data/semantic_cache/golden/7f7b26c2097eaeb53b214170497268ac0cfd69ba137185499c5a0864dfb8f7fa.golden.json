@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "7f7b26c2097eaeb53b214170497268ac0cfd69ba137185499c5a0864dfb8f7fa",
+  "content_hash": "7f7b26c2097eaeb53b214170497268ac0cfd69ba137185499c5a0864dfb8f7fa",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_9.25.2025_v4.0.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.25.2025_v4.0.json",
+    "file_size": 120982,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "7f7b26c2097eaeb53b214170497268ac0cfd69ba137185499c5a0864dfb8f7fa",
+    "scan_timestamp": "2025-12-03T06:21:11.605241"
+  },
+  "content_preview": "{\n  \"metadata\": {\n    \"version\": \"v4.0\",\n    \"patched_from\": \"v3.1-MZLO\",\n    \"patched_at\": \"2025-09-23T22:19:27.553463+00:00\",\n    \"governance_alignment\": \"[REMOVED_LEGACY_REFERENCE]\",\n    \"smoke_test_pass\": true,\n    \"smoke_test_failures\": [],\n    \"patch_notes\": [\n      \"ensured six-section shell\",\n      \"role standards expanded\",\n      \"task success criteria hardened\",\n      \"context retrieval and toggles set\",\n      \"reasoning hybrid, QA, and mirror keys added\",\n      \"output mirroring and h...",
+  "creation_timestamp": "2025-12-03T06:21:39.113370",
+  "version": "1.0"
+}

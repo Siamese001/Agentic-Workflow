@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414",
+  "content_hash": "d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "V2_IMPORTS_FIXED.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\V2_IMPORTS_FIXED.md",
+    "file_size": 3930,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414",
+    "scan_timestamp": "2025-12-03T06:21:11.479774"
+  },
+  "content_preview": "# V2 Architecture - All Imports Fixed to Use _v2 Suffix\n\n## What Was Changed\n\nAll supporting modules now use `_v2` suffix consistently across all imports.\n\n## File Structure (Final)\n\n### Main Orchestration (WITH _v2):\n- workflow_RES_v2.py\n- run_workflow_RES_v2.py\n\n### Supporting Modules (WITH _v2):\n- config_RES_v2.py (v17.00) - Configuration + GovernorConfig\n- utils_RES_v2.py (v17.00) - Utilities + V2 tools\n- rag_RES_v2.py (v17.00) - RAG + LibrarianAgent\n- prompts_RES_v2.py (v17.00) - Prompt tem...",
+  "creation_timestamp": "2025-12-03T06:21:29.531450",
+  "version": "1.0"
+}

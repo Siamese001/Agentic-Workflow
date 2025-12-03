@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "2911c7dc079d5b11594d2caed3812b149acd177d78546e758ddf9eb50c1ba4f5",
+  "content_hash": "7e6cbaa09add128f30996d8f00163240c05a44dd052453bd6216b5d77dd5203e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\agent_registry.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_registry.py",
+    "file_size": 4120,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2911c7dc079d5b11594d2caed3812b149acd177d78546e758ddf9eb50c1ba4f5",
+    "scan_timestamp": "2025-12-03T06:21:11.275463"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List\n\nfrom core.models.models import AgentCard, AgentRole\n\n\"\"\"\nMaintains catalog of specialized agents for r\u00e9sum\u00e9 analysis workflow routing and coordination.\n\nImproves r\u00e9sum\u00e9 processing by directing each analysis step to the appropriate specialist agent for optimal job matching results.\n\"\"\"\n\n\n@dataclass\nclass AgentRegistry:\n    \"\"\"\n    Stores specialized agent definitions for coordinating r\u00e9sum\u00e9...",
+  "creation_timestamp": "2025-12-03T06:21:15.314205",
+  "version": "1.0"
+}

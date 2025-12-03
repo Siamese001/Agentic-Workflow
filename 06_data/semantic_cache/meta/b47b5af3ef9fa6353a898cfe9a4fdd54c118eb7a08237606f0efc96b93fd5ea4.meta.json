@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "job_input.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\job_input.json",
+    "file_size": 6198,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4",
+    "scan_timestamp": "2025-12-03T06:21:11.474868"
+  },
+  "artifacts": {
+    "ast": "ast/b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4.ast",
+    "embedding": "embeddings/b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4.embedding",
+    "diff": "diffs/b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4.diff.json",
+    "safety": "safety/b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4.safety.json",
+    "golden": "golden/b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4.golden.json",
+    "integrity": "integrity/b47b5af3ef9fa6353a898cfe9a4fdd54c118eb7a08237606f0efc96b93fd5ea4.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:29.018427",
+  "artifact_count": 5
+}

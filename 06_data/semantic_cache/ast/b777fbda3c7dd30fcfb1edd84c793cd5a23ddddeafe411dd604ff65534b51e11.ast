@@ -1,0 +1,461 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Test that all vector search modules can be imported.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Import",
+          "_fields": {
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "pytest",
+                  "asname": "None"
+                },
+                "_lineno": 2,
+                "_col_offset": 7
+              }
+            ]
+          },
+          "_lineno": 2,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "_can_import_pinecone",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Check if Pinecone SDK is properly installed.",
+                      "kind": "None"
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Try",
+                "_fields": {
+                  "body": [
+                    {
+                      "_type": "ImportFrom",
+                      "_fields": {
+                        "module": "pinecone",
+                        "names": [
+                          {
+                            "_type": "alias",
+                            "_fields": {
+                              "name": "Pinecone",
+                              "asname": "None"
+                            },
+                            "_lineno": 8,
+                            "_col_offset": 29
+                          }
+                        ],
+                        "level": "0"
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "True",
+                            "kind": "None"
+                          },
+                          "_lineno": 9,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 9,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "handlers": [
+                    {
+                      "_type": "ExceptHandler",
+                      "_fields": {
+                        "type": {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "ImportError",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 10,
+                          "_col_offset": 11
+                        },
+                        "name": "None",
+                        "body": [
+                          {
+                            "_type": "Return",
+                            "_fields": {
+                              "value": {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "False",
+                                  "kind": "None"
+                                },
+                                "_lineno": 11,
+                                "_col_offset": 15
+                              }
+                            },
+                            "_lineno": 11,
+                            "_col_offset": 8
+                          }
+                        ]
+                      },
+                      "_lineno": 10,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "orelse": [],
+                  "finalbody": []
+                },
+                "_lineno": 7,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Name",
+              "_fields": {
+                "id": "bool",
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 5,
+              "_col_offset": 30
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 5,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_import_vector_modules",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Test that all vector search related modules can be imported.",
+                      "kind": "None"
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Import",
+                "_fields": {
+                  "names": [
+                    {
+                      "_type": "alias",
+                      "_fields": {
+                        "name": "l2.agents.planning.vector_search_planning",
+                        "asname": "None"
+                      },
+                      "_lineno": 17,
+                      "_col_offset": 11
+                    }
+                  ]
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Import",
+                "_fields": {
+                  "names": [
+                    {
+                      "_type": "alias",
+                      "_fields": {
+                        "name": "l2.agents.execution.vector_search_executor",
+                        "asname": "None"
+                      },
+                      "_lineno": 20,
+                      "_col_offset": 11
+                    }
+                  ]
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "True",
+                      "kind": "None"
+                    },
+                    "_lineno": 23,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 14,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_import_pinecone_provider",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Test that pinecone provider can be imported when SDK is available.",
+                      "kind": "None"
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 31,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Import",
+                "_fields": {
+                  "names": [
+                    {
+                      "_type": "alias",
+                      "_fields": {
+                        "name": "providers.pinecone_client",
+                        "asname": "None"
+                      },
+                      "_lineno": 32,
+                      "_col_offset": 11
+                    }
+                  ]
+                },
+                "_lineno": 32,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "True",
+                      "kind": "None"
+                    },
+                    "_lineno": 33,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 33,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [
+              {
+                "_type": "Call",
+                "_fields": {
+                  "func": {
+                    "_type": "Attribute",
+                    "_fields": {
+                      "value": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "pytest",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 26,
+                            "_col_offset": 1
+                          },
+                          "attr": "mark",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 26,
+                        "_col_offset": 1
+                      },
+                      "attr": "skipif",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 26,
+                    "_col_offset": 1
+                  },
+                  "args": [
+                    {
+                      "_type": "UnaryOp",
+                      "_fields": {
+                        "op": {
+                          "_type": "Not",
+                          "_fields": {}
+                        },
+                        "operand": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "_can_import_pinecone",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 27,
+                              "_col_offset": 8
+                            },
+                            "args": [],
+                            "keywords": []
+                          },
+                          "_lineno": 27,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 27,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "_fields": {
+                        "arg": "reason",
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Pinecone SDK not properly installed or incompatible version",
+                            "kind": "None"
+                          },
+                          "_lineno": 28,
+                          "_col_offset": 11
+                        }
+                      },
+                      "_lineno": 28,
+                      "_col_offset": 4
+                    }
+                  ]
+                },
+                "_lineno": 26,
+                "_col_offset": 1
+              }
+            ],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 30,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 53,
+    "function_count": 3,
+    "class_count": 0,
+    "import_count": 5
+  }
+}

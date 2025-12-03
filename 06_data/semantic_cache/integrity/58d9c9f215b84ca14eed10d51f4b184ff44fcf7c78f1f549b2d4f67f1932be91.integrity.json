@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "58d9c9f215b84ca14eed10d51f4b184ff44fcf7c78f1f549b2d4f67f1932be91",
+  "content_hash": "58d9c9f215b84ca14eed10d51f4b184ff44fcf7c78f1f549b2d4f67f1932be91",
+  "file_size": 179804,
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_10-03-2025_v6.7.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.7.json",
+    "file_size": 179804,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "58d9c9f215b84ca14eed10d51f4b184ff44fcf7c78f1f549b2d4f67f1932be91",
+    "scan_timestamp": "2025-12-03T06:21:11.543315"
+  },
+  "verification_timestamp": "2025-12-03T06:21:36.772190",
+  "checksums": {
+    "sha256": "58d9c9f215b84ca14eed10d51f4b184ff44fcf7c78f1f549b2d4f67f1932be91",
+    "md5": "d87f75b9ba4577f038baf6ed8d766b8e"
+  }
+}

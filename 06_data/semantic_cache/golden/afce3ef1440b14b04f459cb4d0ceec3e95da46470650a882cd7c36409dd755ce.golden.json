@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "afce3ef1440b14b04f459cb4d0ceec3e95da46470650a882cd7c36409dd755ce",
+  "content_hash": "afce3ef1440b14b04f459cb4d0ceec3e95da46470650a882cd7c36409dd755ce",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "drafting_execution_stack.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\drafting_execution_stack.py",
+    "file_size": 180,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "afce3ef1440b14b04f459cb4d0ceec3e95da46470650a882cd7c36409dd755ce",
+    "scan_timestamp": "2025-12-03T06:21:11.388360"
+  },
+  "content_preview": "\"\"\"Compatibility shim that re-exports the v10.8 Draft execution stack.\"\"\"\n\nfrom stacks_v10_8.drafting_execution import DraftingExecutionStack\n\n__all__ = [\"DraftingExecutionStack\"]\n",
+  "creation_timestamp": "2025-12-03T06:21:21.989103",
+  "version": "1.0"
+}

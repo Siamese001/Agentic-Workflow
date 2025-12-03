@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l2/draft_executor.py",
+  "diff_content": "\"\"\"\nL2 execution layer for resume draft generation.\n\nExecutes model calls to create compelling resume content\naligned with job requirements for better applications.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass DraftExecutor:\n    \"\"\"\n    Executes resume draft generation with optimal model selection.\n\n    Ensures consistent quality and proper formatting for professional\n    resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def execute_draft(self, prompt: str) -> str:\n        \"\"\"\n        Generates resume draft content using optimal model.\n\n        Creates tailored resume sections that emphasize relevant skills\n        and accomplishments for better job alignment.\n        \"\"\"\n        record_event(\"draft_execution_start\", {})\n        \n        try:\n            model = self.routing_policy.select_model(\n                task=\"draft_generation\",\n                complexity=ComplexityLevel.MEDIUM,\n                meta_profile=self.meta_profile,\n            )\n            result = invoke_model(model=model, prompt=prompt, sandbox=self.sandbox)\n            record_event(\"draft_execution_success\", {})\n            return result\n        except Exception as exc:\n            record_exception(\"draft_execution_error\", exc)\n            raise\n",
+  "statistics": {
+    "lines_added": 48,
+    "lines_removed": 0,
+    "lines_changed": 48
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

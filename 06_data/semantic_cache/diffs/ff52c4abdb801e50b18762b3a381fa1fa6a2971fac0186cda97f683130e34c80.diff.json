@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/e2e/full_agent_workflows/test_full_agent_workflows.py",
+  "diff_content": "\"\"\"E2E Full Agent Workflow Tests.\"\"\"\n\nclass TestFullAgentWorkflows:\n    \"\"\"E2E tests for full agent workflows.\"\"\"\n    \n    def test_resume_improvement_workflow(self):\n        \"\"\"Test complete resume improvement workflow.\"\"\"\n        workflow_steps = [\"analyze\", \"plan\", \"draft\", \"review\"]\n        assert len(workflow_steps) == 4\n    \n    def test_job_matching_workflow(self):\n        \"\"\"Test complete job matching workflow.\"\"\"\n        stages = [\"extract\", \"match\", \"rank\"]\n        assert \"match\" in stages\n",
+  "statistics": {
+    "lines_added": 14,
+    "lines_removed": 0,
+    "lines_changed": 14
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

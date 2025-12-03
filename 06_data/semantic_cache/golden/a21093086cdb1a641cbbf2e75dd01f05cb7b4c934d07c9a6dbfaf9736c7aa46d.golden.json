@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a21093086cdb1a641cbbf2e75dd01f05cb7b4c934d07c9a6dbfaf9736c7aa46d",
+  "content_hash": "303c236b7e5bb47d3c9ef2252c865e9fc95f3504bef64cf2f26ef076ae25c321",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L1_planning\\unit\\test_safety_planning.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_safety_planning.py",
+    "file_size": 1167,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a21093086cdb1a641cbbf2e75dd01f05cb7b4c934d07c9a6dbfaf9736c7aa46d",
+    "scan_timestamp": "2025-12-03T06:21:11.311419"
+  },
+  "content_preview": "\"\"\"\nTest Safety Planning\n\nTests comprehensive safety planning functionality for r\u00e9sum\u00e9 validation,\nincluding safety plan creation, content validation, and policy enforcement.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock\n\n# Import actual safety planning components\ntry:\n    from l1.safety_planning import (\n        SafetyPlan,\n    )\nexcept ImportError:\n    pytest.skip(\"Safety planning components not available\", allow_module_level=True)\n\n# Mark as L1 planning tests\npytestmark = [pytest.mark.l1,...",
+  "creation_timestamp": "2025-12-03T06:21:16.725083",
+  "version": "1.0"
+}

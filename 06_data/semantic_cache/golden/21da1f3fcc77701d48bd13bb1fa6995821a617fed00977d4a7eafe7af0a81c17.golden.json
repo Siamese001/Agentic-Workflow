@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "21da1f3fcc77701d48bd13bb1fa6995821a617fed00977d4a7eafe7af0a81c17",
+  "content_hash": "21da1f3fcc77701d48bd13bb1fa6995821a617fed00977d4a7eafe7af0a81c17",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "test_system_v10_7.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\test_system_v10_7.py",
+    "file_size": 49456,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "21da1f3fcc77701d48bd13bb1fa6995821a617fed00977d4a7eafe7af0a81c17",
+    "scan_timestamp": "2025-12-03T06:21:11.520201"
+  },
+  "content_preview": "\"\"\"Focused regression tests for the v10.7 core components.\"\"\"\n\nimport asyncio\nimport json\nfrom functools import partial\nfrom pathlib import Path\nimport sys\nimport textwrap\nimport types\nfrom typing import Any, Callable, Dict, List\n\nimport pytest\n\nfrom core_v10_7 import (\n    BaseTool,\n    CacheManager,\n    CircuitBreaker,\n    CircuitBreakerOpenError,\n    ConfigV10_7,\n    ContextBudgetManager,\n    CostTracker,\n    FeedbackLogReader,\n    MCPClientStub,\n    MetricsCollector,\n    ModelAPIError,\n    M...",
+  "creation_timestamp": "2025-12-03T06:21:35.151866",
+  "version": "1.0"
+}

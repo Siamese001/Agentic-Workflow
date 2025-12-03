@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "44ed4a8ab24af9556a8a4961d63f3cec0eab865b48d101e8b39d65c7333aaf05",
+  "content_hash": "44ed4a8ab24af9556a8a4961d63f3cec0eab865b48d101e8b39d65c7333aaf05",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "utils.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\utils.py",
+    "file_size": 409,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "44ed4a8ab24af9556a8a4961d63f3cec0eab865b48d101e8b39d65c7333aaf05",
+    "scan_timestamp": "2025-12-03T06:21:11.455300"
+  },
+  "content_preview": "\"\"\"Utility helpers for simulation subsystem.\"\"\"\n\nfrom typing import Any, Dict\n\n\ndef model_to_payload(model: Any) -> Dict[str, Any]:\n    \"\"\"Return a dict of public fields from a pydantic model.\"\"\"\n\n    if model is None:\n        return {}\n    data = {}\n    for key, value in getattr(model, \"__dict__\", {}).items():\n        if key.startswith(\"__\"):\n            continue\n        data[key] = value\n    return data\n",
+  "creation_timestamp": "2025-12-03T06:21:25.078468",
+  "version": "1.0"
+}

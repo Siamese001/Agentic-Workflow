@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "providers\\README.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\README.md",
+    "file_size": 3254,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8",
+    "scan_timestamp": "2025-12-03T06:21:11.284272"
+  },
+  "artifacts": {
+    "ast": "ast/daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8.ast",
+    "embedding": "embeddings/daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8.embedding",
+    "diff": "diffs/daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8.diff.json",
+    "safety": "safety/daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8.safety.json",
+    "golden": "golden/daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8.golden.json",
+    "integrity": "integrity/daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:15.875259",
+  "artifact_count": 5
+}

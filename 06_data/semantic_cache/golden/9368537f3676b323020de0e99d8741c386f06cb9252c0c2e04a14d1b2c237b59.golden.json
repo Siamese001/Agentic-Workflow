@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9368537f3676b323020de0e99d8741c386f06cb9252c0c2e04a14d1b2c237b59",
+  "content_hash": "9368537f3676b323020de0e99d8741c386f06cb9252c0c2e04a14d1b2c237b59",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
+    "archive_name": "v6.0",
+    "relative_path": "validation_stack_v6_0.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\validation_stack_v6_0.py",
+    "file_size": 37357,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "9368537f3676b323020de0e99d8741c386f06cb9252c0c2e04a14d1b2c237b59",
+    "scan_timestamp": "2025-12-03T06:21:11.484692"
+  },
+  "content_preview": "# File: validation_stack.py\n# Version: 5.9 (Batch Harness)\n# Zero-Loss Consolidation - The V18 Engine with MoE Architecture\n# Merges: validation_context.py \u2192 validation_rules.py \u2192 validation_engine.py \u2192 validator_RES.py\n# REFACTORED: Removed all hard-coded agent maps, fallback constraints, magic numbers, and rule lists.\n# All configuration is now read from the central CONFIG object.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n...",
+  "creation_timestamp": "2025-12-03T06:21:29.955934",
+  "version": "1.0"
+}

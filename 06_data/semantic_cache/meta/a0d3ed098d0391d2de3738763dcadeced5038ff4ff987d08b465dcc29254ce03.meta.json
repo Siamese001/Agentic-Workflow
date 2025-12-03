@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\unit\\test_bias_auditor.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_bias_auditor.py",
+    "file_size": 586,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
+    "scan_timestamp": "2025-12-03T06:21:11.515546"
+  },
+  "artifacts": {
+    "ast": "ast/a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03.ast",
+    "embedding": "embeddings/a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03.embedding",
+    "diff": "diffs/a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03.diff.json",
+    "safety": "safety/a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03.safety.json",
+    "golden": "golden/a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03.golden.json",
+    "integrity": "integrity/a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:34.950060",
+  "artifact_count": 6
+}

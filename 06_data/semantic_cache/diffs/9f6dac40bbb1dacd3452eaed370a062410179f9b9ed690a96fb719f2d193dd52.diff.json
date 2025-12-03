@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_8/integration/test_safety_pipeline_e2e.py",
+  "diff_content": "import pytest\n\nfrom models import MainGraphState\n\ntry:  # Optional depending on build exposure\n    from agent_orchestration_v10_7 import build_workflow\n\n    HAS_WORKFLOW = True\nexcept ImportError:  # pragma: no cover - guard until workflow factory is available\n    HAS_WORKFLOW = False\n\n\n@pytest.mark.skipif(not HAS_WORKFLOW, reason=\"Workflow builder not available\")\ndef test_safety_fields_populate_in_simple_run():\n    initial = MainGraphState()\n    workflow = build_workflow(debug_mode=False)\n\n    result_state = workflow.invoke(initial)\n\n    assert hasattr(result_state, \"safety_report\")\n    assert hasattr(result_state, \"policy_decision\")\n    assert hasattr(result_state, \"constitutional_review\")\n",
+  "statistics": {
+    "lines_added": 22,
+    "lines_removed": 0,
+    "lines_changed": 22
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

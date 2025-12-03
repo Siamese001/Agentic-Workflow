@@ -1,0 +1,78 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Global pytest configuration that delegates to shared test utilities.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "pytest_plugins",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 3,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "tests.shared.conftest",
+                      "kind": "None"
+                    },
+                    "_lineno": 3,
+                    "_col_offset": 18
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 3,
+              "_col_offset": 17
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 9,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 0
+  }
+}

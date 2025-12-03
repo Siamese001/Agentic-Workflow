@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "src/lic_agentic/rag/retrieval_planner.py",
+  "diff_content": "\"\"\"Retrieval planning utilities.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Sequence\n\n\n@dataclass\nclass RetrievalJob:\n    tool: str\n    query: str\n    scope: str = \"outreach\"\n    section: str = \"value_wedge\"\n\n\n@dataclass\nclass RetrievalPlan:\n    wants: Sequence[str]\n    context: Dict[str, str]\n    jobs: List[RetrievalJob] = field(default_factory=list)\n\n    def add(self, job: Dict[str, str] | RetrievalJob) -> None:\n        if isinstance(job, RetrievalJob):\n            self.jobs.append(job)\n        else:\n            self.jobs.append(RetrievalJob(**job))\n\n    def dedupe(self) -> None:\n        unique: Dict[tuple[str, str], RetrievalJob] = {}\n        for job in self.jobs:\n            key = (job.tool, job.query)\n            unique[key] = job\n        self.jobs = list(unique.values())\n\n    def budget(self, max_calls: int = 6) -> None:\n        self.jobs = self.jobs[: max(0, max_calls)]\n\n    def execute(self, registry, store) -> List[tuple[str, RetrievalJob, object]]:\n        ttl_s = int(self.context.get(\"ttl_s\", 60 * 60 * 24 * 90))\n        results = []\n        for job in self.jobs:\n            cache_key = registry.make_key(\n                {\"tool\": job.tool, \"query\": job.query, \"scope\": job.scope}, self.context\n            )\n            cached = store.get(cache_key, ttl_s=ttl_s)\n            if cached and cached[2]:\n                results.append((\"cache\", job, cached[0]))\n                continue\n            tool = registry.resolve(job.tool)\n            tool_context = {\n                \"company_id\": self.context.get(\"company_id\"),\n                \"contact_id\": self.context.get(\"contact_id\"),\n            }\n            outcome = tool.run(job.query, tool_context)\n            store.put(cache_key, outcome, {\"tool\": job.tool, \"scope\": job.scope})\n            results.append((\"live\", job, outcome))\n        return results\n",
+  "statistics": {
+    "lines_added": 57,
+    "lines_removed": 0,
+    "lines_changed": 57
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

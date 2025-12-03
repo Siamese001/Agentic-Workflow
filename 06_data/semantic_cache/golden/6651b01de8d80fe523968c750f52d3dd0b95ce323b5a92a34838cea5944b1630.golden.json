@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6651b01de8d80fe523968c750f52d3dd0b95ce323b5a92a34838cea5944b1630",
+  "content_hash": "6651b01de8d80fe523968c750f52d3dd0b95ce323b5a92a34838cea5944b1630",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_10-03-2025_v6.8.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.8.json",
+    "file_size": 180962,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "6651b01de8d80fe523968c750f52d3dd0b95ce323b5a92a34838cea5944b1630",
+    "scan_timestamp": "2025-12-03T06:21:11.544168"
+  },
+  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v4\",\n  \"metadata\": {\n    \"version\": \"LIC_10-03-2025_v6.8\",\n    \"patches\": [\n      \"C001\",\n      \"C002\",\n      \"C003\",\n      \"C004\",\n      \"C005\",\n      \"C006\",\n      \"C007\",\n      \"C008\",\n      \"C009\",\n      \"C010\",\n      \"C011\",\n      \"C012\",\n      \"C013\",\n      \"C014\",\n      \"C015\",\n      \"C016\"\n    ],\n    \"changelog\": \"external://CHANGELOG.md\",\n    \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec526822...",
+  "creation_timestamp": "2025-12-03T06:21:36.804500",
+  "version": "1.0"
+}

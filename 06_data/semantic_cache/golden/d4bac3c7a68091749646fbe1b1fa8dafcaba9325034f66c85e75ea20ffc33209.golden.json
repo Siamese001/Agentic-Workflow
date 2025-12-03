@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d4bac3c7a68091749646fbe1b1fa8dafcaba9325034f66c85e75ea20ffc33209",
+  "content_hash": "d4bac3c7a68091749646fbe1b1fa8dafcaba9325034f66c85e75ea20ffc33209",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\drafting\\test_drafting_guild_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\drafting\\test_drafting_guild_v10_7.py",
+    "file_size": 5037,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d4bac3c7a68091749646fbe1b1fa8dafcaba9325034f66c85e75ea20ffc33209",
+    "scan_timestamp": "2025-12-03T06:21:11.413477"
+  },
+  "content_preview": "from types import SimpleNamespace\nfrom typing import Any, Dict\n\nfrom typing import Any, Dict\n\nimport pytest\nimport agent_stacks_v10_8.components.drafting as drafting_module\nfrom agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool\nfrom agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator\n\n\n@pytest.fixture\ndef strategy_payload() -> Dict[str, Any]:\n    return {\n        \"strategy_name\": \"AI Trailblazer\",\n        \"focus_areas\": [\"automation\", \"scalability\"...",
+  "creation_timestamp": "2025-12-03T06:21:23.612186",
+  "version": "1.0"
+}

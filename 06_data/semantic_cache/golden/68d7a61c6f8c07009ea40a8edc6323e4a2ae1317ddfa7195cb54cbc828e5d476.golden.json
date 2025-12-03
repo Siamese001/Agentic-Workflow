@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "68d7a61c6f8c07009ea40a8edc6323e4a2ae1317ddfa7195cb54cbc828e5d476",
+  "content_hash": "7252dc6770ae026bb8c1dd413416c39e279298ce304794421f544bdf8cdc6b0d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\metacognition\\test_meta_hybrid_ranker.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_hybrid_ranker.py",
+    "file_size": 2072,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "68d7a61c6f8c07009ea40a8edc6323e4a2ae1317ddfa7195cb54cbc828e5d476",
+    "scan_timestamp": "2025-12-03T06:21:11.327201"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom meta.retrieval.hybrid_ranker import fuse_and_rank\nfrom core.models.models import CouncilVote, Evidence, RetrievalConfig\n\n\ndef _make_ev(text: str, score: float, source: str) -> Evidence:\n    return Evidence(text=text, score=score, source=source, metadata={})\n\n\ndef test_fuse_and_rank_rrf_with_uniform_weights() -> None:\n    cfg = RetrievalConfig(max_hits=10)\n\n    lex = [\n        _make_ev(text=\"doc1\", score=0.0, source=\"bm25\"),\n        _make_ev(text=\"doc2\", s...",
+  "creation_timestamp": "2025-12-03T06:21:17.122807",
+  "version": "1.0"
+}

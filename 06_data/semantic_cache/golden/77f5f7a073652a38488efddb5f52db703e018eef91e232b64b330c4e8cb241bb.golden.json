@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
+  "content_hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "config\\__init__.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\config\\__init__.py",
+    "file_size": 475,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
+    "scan_timestamp": "2025-12-03T06:21:11.493107"
+  },
+  "content_preview": "\"\"\"Centralised configuration helpers for Agentic Workflow v10.7.\"\"\"\n\nfrom __future__ import annotations\n\nfrom copy import deepcopy\nfrom typing import Any, Dict\n\nfrom mcp import get_schema\n\n\ndef load_master_config() -> Dict[str, Any]:\n    \"\"\"Return a mutable copy of the shared master configuration.\"\"\"\n\n    schema = get_schema(\"master_config_v10_7.json\")\n    return deepcopy(schema)\n\n\nCONFIG: Dict[str, Any] = load_master_config()\n\n__all__ = [\"CONFIG\", \"load_master_config\"]\n",
+  "creation_timestamp": "2025-12-03T06:21:33.777050",
+  "version": "1.0"
+}

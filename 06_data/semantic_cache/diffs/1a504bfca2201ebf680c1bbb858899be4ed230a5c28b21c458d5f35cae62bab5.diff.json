@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "v2",
+  "logical_path": "__init__.py",
+  "diff_content": "# File: validation/__init__.py\n# Validation Package - V18 Architecture\n# Version: 18.00\n# Exports all validation components for easy import\n\nfrom .engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier\nfrom .context import ValidationContext\nfrom .external import JDEnforcementValidator, AppTrackerQAValidator\n\n__all__ = [\n    'ValidationEngine',\n    'ValidationRule', \n    'ConstraintFailureClassifier',\n    'ValidationContext',\n    'JDEnforcementValidator',\n    'AppTrackerQAValidator'\n]\n",
+  "statistics": {
+    "lines_added": 17,
+    "lines_removed": 0,
+    "lines_changed": 17
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

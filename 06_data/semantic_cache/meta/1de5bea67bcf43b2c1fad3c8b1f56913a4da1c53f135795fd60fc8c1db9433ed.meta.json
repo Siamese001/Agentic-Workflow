@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\hil\\test_hil_loop_bounding_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\hil\\test_hil_loop_bounding_v10_7.py",
+    "file_size": 2392,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed",
+    "scan_timestamp": "2025-12-03T06:21:11.414076"
+  },
+  "artifacts": {
+    "ast": "ast/1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed.ast",
+    "embedding": "embeddings/1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed.embedding",
+    "diff": "diffs/1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed.diff.json",
+    "safety": "safety/1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed.safety.json",
+    "golden": "golden/1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed.golden.json",
+    "integrity": "integrity/1de5bea67bcf43b2c1fad3c8b1f56913a4da1c53f135795fd60fc8c1db9433ed.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:23.626903",
+  "artifact_count": 6
+}

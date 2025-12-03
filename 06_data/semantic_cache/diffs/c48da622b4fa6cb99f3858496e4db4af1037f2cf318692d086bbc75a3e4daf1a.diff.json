@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "schema/__init__.py",
+  "diff_content": "\"\"\"Lightweight schema helpers used during tests.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass ResumeOutputSchema:\n    \"\"\"Minimal structure validator for resume payloads in tests.\"\"\"\n\n    candidate: str\n    job_title: str\n    summary: str\n    highlights: List[str] = field(default_factory=list)\n    skills: List[str] = field(default_factory=list)\n    sections: List[Dict[str, Any]] = field(default_factory=list)\n\n    def __post_init__(self) -> None:\n        if not self.candidate:\n            raise ValueError(\"candidate must be provided\")\n        if not self.job_title:\n            raise ValueError(\"job_title must be provided\")\n        if not self.summary:\n            raise ValueError(\"summary must be provided\")\n\n\n__all__ = [\"ResumeOutputSchema\"]\n",
+  "statistics": {
+    "lines_added": 29,
+    "lines_removed": 0,
+    "lines_changed": 29
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

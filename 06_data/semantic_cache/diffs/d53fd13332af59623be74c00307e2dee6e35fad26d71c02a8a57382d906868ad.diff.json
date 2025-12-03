@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "tests/e2e/test_policy_feedback.py",
+  "diff_content": "from types import SimpleNamespace\nfrom unittest.mock import patch\n\nfrom src.lic_agentic.agents.k3_message_architect import DraftPackage\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_policy_feedback_updates_toggles_and_budget():\n    stack = OutreachStack(ReasoningToggles())\n\n    def fake_compose(inputs, route, *, max_calls=None):\n        draft = \"Subject: Hi\\n\\nHello there\\n[artifact_id:aid] evidence\"\n        return DraftPackage(draft=draft, artifacts={\"aid\": \"evidence\"}, total_latency_ms=5000)\n\n    with patch.object(stack.architect, \"compose\", side_effect=fake_compose):\n        result = stack.run(SimpleNamespace(prompt=\"Testing\", company_id=\"ACME\", contact_id=\"C1\"))\n\n    assert result[\"verdict\"].passed\n    assert stack.policy.budget_multiplier <= 1.0\n    assert 1 <= stack.toggles.tot_branches <= 4\n",
+  "statistics": {
+    "lines_added": 21,
+    "lines_removed": 0,
+    "lines_changed": 21
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

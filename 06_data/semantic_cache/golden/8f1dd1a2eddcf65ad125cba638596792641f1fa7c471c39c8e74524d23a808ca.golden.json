@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "8f1dd1a2eddcf65ad125cba638596792641f1fa7c471c39c8e74524d23a808ca",
+  "content_hash": "8f1dd1a2eddcf65ad125cba638596792641f1fa7c471c39c8e74524d23a808ca",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\constitution\\test_constitutional_engine_basic.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\constitution\\test_constitutional_engine_basic.py",
+    "file_size": 835,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "8f1dd1a2eddcf65ad125cba638596792641f1fa7c471c39c8e74524d23a808ca",
+    "scan_timestamp": "2025-12-03T06:21:11.443133"
+  },
+  "content_preview": "from stacks_v10_8.constitutional_engine import ConstitutionalEngine\n\n\ndef _make_engine():\n    return ConstitutionalEngine(context=None, debug_mode=False)\n\n\ndef test_benign_text_passes():\n    engine = _make_engine()\n    result = engine.review_text(\"This is a neutral, factual statement.\")\n\n    assert hasattr(result, \"passed\")\n    assert hasattr(result, \"violations\")\n    assert isinstance(result.violations, list)\n    assert result.passed is True\n\n\ndef test_violating_text_can_produce_violations():\n ...",
+  "creation_timestamp": "2025-12-03T06:21:24.797892",
+  "version": "1.0"
+}

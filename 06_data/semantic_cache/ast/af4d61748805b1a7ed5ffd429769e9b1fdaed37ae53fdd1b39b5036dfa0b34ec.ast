@@ -1,0 +1,7 @@
+{
+  "ast_version": "python_3.8+",
+  "error": "Syntax error: unterminated string literal (detected at line 188) (<unknown>, line 188)",
+  "line_number": 188,
+  "offset": 19,
+  "parse_failed": true
+}

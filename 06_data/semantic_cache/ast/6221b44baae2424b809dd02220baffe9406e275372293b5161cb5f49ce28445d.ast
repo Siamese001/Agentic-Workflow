@@ -1,0 +1,576 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "orchestration.agent_bus",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "AgentBus",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 36
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.models.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "AgentMessage",
+                  "asname": "None"
+                },
+                "_lineno": 2,
+                "_col_offset": 31
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 2,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_agent_bus_send_and_get",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "bus",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 6,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "AgentBus",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 6,
+                        "_col_offset": 10
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 10
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "msg",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "AgentMessage",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 8,
+                        "_col_offset": 10
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "message_id",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "m1",
+                                "kind": "None"
+                              },
+                              "_lineno": 9,
+                              "_col_offset": 19
+                            }
+                          },
+                          "_lineno": 9,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "source_agent_id",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "planner-1",
+                                "kind": "None"
+                              },
+                              "_lineno": 10,
+                              "_col_offset": 24
+                            }
+                          },
+                          "_lineno": 10,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "target_agent_id",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "qa-1",
+                                "kind": "None"
+                              },
+                              "_lineno": 11,
+                              "_col_offset": 24
+                            }
+                          },
+                          "_lineno": 11,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "channel",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "test",
+                                "kind": "None"
+                              },
+                              "_lineno": 12,
+                              "_col_offset": 16
+                            }
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "payload_type",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "request",
+                                "kind": "None"
+                              },
+                              "_lineno": 13,
+                              "_col_offset": 21
+                            }
+                          },
+                          "_lineno": 13,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "content",
+                            "value": {
+                              "_type": "Dict",
+                              "_fields": {
+                                "keys": [
+                                  {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "x",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 14,
+                                    "_col_offset": 17
+                                  }
+                                ],
+                                "values": [
+                                  {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "1",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 14,
+                                    "_col_offset": 22
+                                  }
+                                ]
+                              },
+                              "_lineno": 14,
+                              "_col_offset": 16
+                            }
+                          },
+                          "_lineno": 14,
+                          "_col_offset": 8
+                        }
+                      ]
+                    },
+                    "_lineno": 8,
+                    "_col_offset": 10
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "bus",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 17,
+                            "_col_offset": 4
+                          },
+                          "attr": "send",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 17,
+                        "_col_offset": 4
+                      },
+                      "args": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "msg",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 17,
+                          "_col_offset": 13
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "inbox",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 19,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "bus",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 19,
+                            "_col_offset": 12
+                          },
+                          "attr": "get_for",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 19,
+                        "_col_offset": 12
+                      },
+                      "args": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "qa-1",
+                            "kind": "None"
+                          },
+                          "_lineno": 19,
+                          "_col_offset": 24
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 12
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "msg",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 20,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "In",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "inbox",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 20,
+                          "_col_offset": 18
+                        }
+                      ]
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "bus",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 22,
+                            "_col_offset": 4
+                          },
+                          "attr": "clear",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 22,
+                        "_col_offset": 4
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Call",
+                        "_fields": {
+                          "func": {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "bus",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 23,
+                                "_col_offset": 11
+                              },
+                              "attr": "get_for",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 23,
+                            "_col_offset": 11
+                          },
+                          "args": [
+                            {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "qa-1",
+                                "kind": "None"
+                              },
+                              "_lineno": 23,
+                              "_col_offset": 23
+                            }
+                          ],
+                          "keywords": []
+                        },
+                        "_lineno": 23,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "Eq",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "List",
+                          "_fields": {
+                            "elts": [],
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 23,
+                          "_col_offset": 34
+                        }
+                      ]
+                    },
+                    "_lineno": 23,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 5,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 74,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 2
+  }
+}

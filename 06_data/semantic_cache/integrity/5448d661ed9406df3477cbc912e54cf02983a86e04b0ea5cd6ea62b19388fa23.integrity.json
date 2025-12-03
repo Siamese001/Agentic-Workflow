@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23",
+  "content_hash": "9480d389a8c50877920a030585332f9e8dff151b701b69c39c6e7989c643d0fd",
+  "file_size": 2210,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\refactoring\\11-24-2025\\MERGE_COMPLETE.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\11-24-2025\\MERGE_COMPLETE.md",
+    "file_size": 2210,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23",
+    "scan_timestamp": "2025-12-03T06:21:11.290131"
+  },
+  "verification_timestamp": "2025-12-03T06:21:15.980124",
+  "checksums": {
+    "sha256": "9480d389a8c50877920a030585332f9e8dff151b701b69c39c6e7989c643d0fd",
+    "md5": "2ac7fb1f99f12de5c87225c5afbbce3c"
+  }
+}

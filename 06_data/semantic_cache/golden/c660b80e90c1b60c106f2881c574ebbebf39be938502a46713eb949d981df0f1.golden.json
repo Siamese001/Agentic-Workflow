@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c660b80e90c1b60c106f2881c574ebbebf39be938502a46713eb949d981df0f1",
+  "content_hash": "df5f0f2d76f769baec1d2383d71aa1ab723d04933bd25d851b10120fa67e42b7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "config\\llm_profile.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\llm_profile.py",
+    "file_size": 724,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c660b80e90c1b60c106f2881c574ebbebf39be938502a46713eb949d981df0f1",
+    "scan_timestamp": "2025-12-03T06:21:11.225084"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Optional\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ReasoningMode\n\n\nclass LLMProfile(BaseModel):\n    \"\"\"LLM configuration profile used by execution profiles.\n\n    This model is intentionally minimal and mirrors the knobs already\n    present in ExecutionProfileSpec: reasoning_mode, model_tier,\n    max_cost_usd, max_latency_ms.\n    \"\"\"\n\n    reasoning_mode: ReasoningMode = ReasoningMode.COT\n    model_tier: str = Fiel...",
+  "creation_timestamp": "2025-12-03T06:21:12.249052",
+  "version": "1.0"
+}

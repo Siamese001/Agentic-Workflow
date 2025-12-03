@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f508ec3bce44d053740a6c7bd4086d4878de9906eeb0f268ab8b0b7ba275450c",
+  "content_hash": "f508ec3bce44d053740a6c7bd4086d4878de9906eeb0f268ab8b0b7ba275450c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "qa_validation_stack.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\qa_validation_stack.py",
+    "file_size": 10378,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f508ec3bce44d053740a6c7bd4086d4878de9906eeb0f268ab8b0b7ba275450c",
+    "scan_timestamp": "2025-12-03T06:21:11.394216"
+  },
+  "content_preview": "\"\"\"Layer-5 QA validation stack for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom agent_tools_v10_7 import (\n    QAAdversarialReviewerTool,\n    QABiasDetectorTool,\n    QAClaimValidatorTool,\n    QAJDSkillsValidatorTool,\n    QAMissedOpportunityTool,\n    QANarrativeThreadTool,\n    QAThematicAlignmentTool,\n    QAToneValidatorTool,\n    QATenureValidatorTool,\n    QASemanticEntailmentTool,\n    QASignalScoreValidat...",
+  "creation_timestamp": "2025-12-03T06:21:22.305610",
+  "version": "1.0"
+}

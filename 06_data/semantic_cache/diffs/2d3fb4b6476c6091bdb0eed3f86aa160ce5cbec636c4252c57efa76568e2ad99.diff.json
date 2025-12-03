@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "runtime/observability/__init__.py",
+  "diff_content": "from __future__ import annotations\n\n\"\"\"Snapshot-local observability fa\u00e7ade for v10_10.\n\nThis makes ``from runtime.observability import ...`` work inside the\nAgentic-Workflow-10_10 test snapshot by re-exporting symbols from the\nnested observability modules.\n\"\"\"\n\nfrom .spans import start_span, end_span\nfrom .events import TelemetryEvent  # type: ignore[F401]\nfrom .emitters import (\n    emit_node_event,\n    emit_telemetry_event,\n    emit_ranking_event,\n    emit_cost_snapshot,\n    emit_golden_eval_event,\n    emit_scenario_start_event,\n    emit_scenario_end_event,\n    emit_scenario_simulation_event,\n    emit_council_arbitration_event,\n    emit_resilience_event,\n    emit_resilience_trace_event,\n    log_exception,\n    record_event,\n    record_exception,\n)\nfrom .collectors import get_events, clear_events  # noqa: F401\n\n\ndef get_all_events():\n    \"\"\"Backward-compatible alias used by routing.\n\n    Historically, callers imported get_all_events from observability; in the\n    new layout, collectors exposes get_events. This adapter preserves the\n    older name.\n    \"\"\"\n\n    return list(get_events())\n\n\n__all__ = [\n    \"start_span\",\n    \"end_span\",\n    \"emit_node_event\",\n    \"emit_telemetry_event\",\n    \"emit_ranking_event\",\n    \"emit_cost_snapshot\",\n    \"emit_golden_eval_event\",\n    \"emit_scenario_start_event\",\n    \"emit_scenario_end_event\",\n    \"emit_scenario_simulation_event\",\n    \"emit_council_arbitration_event\",\n    \"emit_resilience_event\",\n    \"emit_resilience_trace_event\",\n    \"log_exception\",\n    \"record_event\",\n    \"record_exception\",\n    \"get_events\",\n    \"get_all_events\",\n    \"clear_events\",\n]\n\n\n\n",
+  "statistics": {
+    "lines_added": 65,
+    "lines_removed": 0,
+    "lines_changed": 65
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

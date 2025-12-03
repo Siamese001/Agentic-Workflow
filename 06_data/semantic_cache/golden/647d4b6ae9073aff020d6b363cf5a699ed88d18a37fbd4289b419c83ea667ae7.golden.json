@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7",
+  "content_hash": "647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LinkedInCanonical_2025-08-31.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-08-31.md",
+    "file_size": 20694,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7",
+    "scan_timestamp": "2025-12-03T06:21:11.626200"
+  },
+  "content_preview": "## PATCH LOG \u2014 Non-Destructive Patches (2025-08-31)\n- change_type: non_destructive_patch\n- reason: Enforce pre-run gate, role-detector mismatch block, signature enforcement, recruiter vs executive resume-line rules\n- sections_affected: [TASK - START PROMPT, OUTPUT - EXECUTIVE (EXISTING), OUTPUT - RECRUITER (EXISTING), AUDIT AND QA]\n- timestamp: 2025-09-01T00:53:29.671273\n\n# LINKEDIN OUTREACH - CANONICAL\n\n## ROLE\n- Recruiter Outreach Automation Specialist  \n- Validates contacts, regions, URLs, an...",
+  "creation_timestamp": "2025-12-03T06:21:41.555697",
+  "version": "1.0"
+}

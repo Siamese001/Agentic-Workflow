@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l1/cms/compiler.py",
+  "diff_content": "\"\"\"\nCMS compiler for resume generation prompt compilation.\n\nProvides prompt compilation functionality to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, Optional\n\n\ndef compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str:\n    \"\"\"\n    Compiles prompt template for resume generation.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    # Minimal implementation to unblock imports\n    # This should be expanded based on actual requirements\n    if context is None:\n        context = {}\n    \n    # Simple template substitution\n    try:\n        return prompt.format(**context)\n    except KeyError as e:\n        # Return original prompt if context variable missing\n        return prompt\n    except Exception:\n        # Return original prompt if compilation fails\n        return prompt\n\n\nclass PromptCompiler:\n    \"\"\"\n    CMS prompt compiler for resume generation.\n\n    Ensures consistent prompt compilation for improved resume\n    quality and job alignment.\n    \"\"\"\n    \n    def __init__(self, default_context: Optional[Dict[str, Any]] = None):\n        self.default_context = default_context or {}\n    \n    def compile(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:\n        \"\"\"Compiles prompt with merged context for resume generation.\"\"\"\n        merged_context = {**self.default_context, **(context or {})}\n        return compile_prompt(prompt, merged_context)\n",
+  "statistics": {
+    "lines_added": 48,
+    "lines_removed": 0,
+    "lines_changed": 48
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

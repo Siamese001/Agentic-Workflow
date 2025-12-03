@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5631b031013fbe36368370a3531ac142d4ac5c1a1a4aec63077168601f92a9b2",
+  "content_hash": "5631b031013fbe36368370a3531ac142d4ac5c1a1a4aec63077168601f92a9b2",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "models.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\models.py",
+    "file_size": 7506,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5631b031013fbe36368370a3531ac142d4ac5c1a1a4aec63077168601f92a9b2",
+    "scan_timestamp": "2025-12-03T06:21:11.654996"
+  },
+  "content_preview": "# File: models.py\n# Description: Data models, enumerations, and custom exceptions for the LIC workflow.\n\n__version__ = \"11.10\"\n\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum\nfrom typing import Dict, List, Optional, Any, Set, Tuple, Callable\n\n# ============================================================================\n# ENUMS & CONSTANTS\n# ============================================================================\n\nclass Route(Enum):\n    \"\"\"Messag...",
+  "creation_timestamp": "2025-12-03T06:21:42.377286",
+  "version": "1.0"
+}

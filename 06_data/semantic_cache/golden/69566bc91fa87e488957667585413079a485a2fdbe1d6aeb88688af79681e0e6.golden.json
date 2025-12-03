@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "69566bc91fa87e488957667585413079a485a2fdbe1d6aeb88688af79681e0e6",
+  "content_hash": "69566bc91fa87e488957667585413079a485a2fdbe1d6aeb88688af79681e0e6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "main_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\main_v10_7.py",
+    "file_size": 12562,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "69566bc91fa87e488957667585413079a485a2fdbe1d6aeb88688af79681e0e6",
+    "scan_timestamp": "2025-12-03T06:21:11.390934"
+  },
+  "content_preview": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\n# Only load vendor stubs when explicitly testing\nif os.environ.get(\"USE_VENDOR_STUBS\") == \"1\":\n    if VENDOR_PATH not in sys.path:\n        sys.path.insert(0, VENDOR_PATH)\n\n\n# File: main_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context call updated to v10_7.\n#\n...",
+  "creation_timestamp": "2025-12-03T06:21:22.146293",
+  "version": "1.0"
+}

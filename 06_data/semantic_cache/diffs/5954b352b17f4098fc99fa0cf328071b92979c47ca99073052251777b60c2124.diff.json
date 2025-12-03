@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "src/lic_agentic/reasoning/toggles.py",
+  "diff_content": "\"\"\"Reasoning toggles for the LIC outreach stack.\"\"\"\nfrom __future__ import annotations\n\nfrom pydantic import BaseModel, ValidationError\n\n\nclass ReasoningToggles(BaseModel):\n    \"\"\"Bounded reasoning configuration shared across the stack.\"\"\"\n\n    cot: bool = True\n    tot_branches: int = 3\n    min_tot_depth: int = 2\n    self_consistency: int = 3\n    reflexion: bool = True\n    temperature_cap: float = 0.5\n\n    def __init__(self, **data):\n        super().__init__(**data)\n        self._enforce_bounds()\n\n    def _enforce_bounds(self) -> None:\n        if not 1 <= int(self.tot_branches) <= 4:\n            raise ValidationError(\"tot_branches must be between 1 and 4\")\n        if not 1 <= int(self.min_tot_depth) <= 3:\n            raise ValidationError(\"min_tot_depth must be between 1 and 3\")\n        if not 1 <= int(self.self_consistency) <= 5:\n            raise ValidationError(\"self_consistency must be between 1 and 5\")\n        if not 0.1 <= float(self.temperature_cap) <= 0.9:\n            raise ValidationError(\"temperature_cap must be between 0.1 and 0.9\")\n",
+  "statistics": {
+    "lines_added": 29,
+    "lines_removed": 0,
+    "lines_changed": 29
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

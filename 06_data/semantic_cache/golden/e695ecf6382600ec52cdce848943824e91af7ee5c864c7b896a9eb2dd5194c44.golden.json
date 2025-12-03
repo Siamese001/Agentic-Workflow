@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e695ecf6382600ec52cdce848943824e91af7ee5c864c7b896a9eb2dd5194c44",
+  "content_hash": "295d764bb48871762c86fd16727dd43eb6a8de3fbba0a3be70d06d1775a76c36",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\FOLDER_MAP.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\FOLDER_MAP.md",
+    "file_size": 7589,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "e695ecf6382600ec52cdce848943824e91af7ee5c864c7b896a9eb2dd5194c44",
+    "scan_timestamp": "2025-12-03T06:21:11.287973"
+  },
+  "content_preview": "# FOLDER_MAP.md  \n# Agentic-Workflow-10_10  \nA learnability-first map of every meaningful folder in the project, explaining  \nwhat each folder does, how it fits into the OpenAI L1\u2013L5 agentic architecture,  \nand where documentation for each layer must live.\n\nThis version includes the rule:  \n**Each major folder must contain a `docs/` subfolder where ALL local documentation, READMEs, reports, and summaries for that folder must go.**  \nNo documentation is permitted at the repo root.\n\n---\n\n# =======...",
+  "creation_timestamp": "2025-12-03T06:21:15.951329",
+  "version": "1.0"
+}

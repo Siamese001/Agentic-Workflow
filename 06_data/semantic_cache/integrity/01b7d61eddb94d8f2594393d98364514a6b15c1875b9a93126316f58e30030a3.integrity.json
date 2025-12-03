@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+  "content_hash": "9598aacfa948f68580636b77644a23027aa81e3211c26c68b692ab8d4960c687",
+  "file_size": 2295,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\modularity\\test_layer_boundaries.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_layer_boundaries.py",
+    "file_size": 2295,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+    "scan_timestamp": "2025-12-03T06:21:11.329619"
+  },
+  "verification_timestamp": "2025-12-03T06:21:17.215791",
+  "checksums": {
+    "sha256": "9598aacfa948f68580636b77644a23027aa81e3211c26c68b692ab8d4960c687",
+    "md5": "3863ff2bbc879f5b64e277229b6974b7"
+  }
+}

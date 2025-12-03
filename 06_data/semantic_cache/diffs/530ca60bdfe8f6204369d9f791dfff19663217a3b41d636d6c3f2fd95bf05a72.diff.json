@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "simulation_base.py",
+  "diff_content": "\"\"\"Base models for simulations.\"\"\"\n\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel, Field\n\n\nclass SimulationInput(BaseModel):\n    \"\"\"Base class for simulation input payloads.\"\"\"\n\n    simulation_id: str = Field(...)\n    payload: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass SimulationResult(BaseModel):\n    \"\"\"Base class for simulation results.\"\"\"\n\n    simulation_id: str\n    success: bool\n    metrics: Dict[str, Any] = Field(default_factory=dict)\n    details: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass SimulationBatchResult(BaseModel):\n    \"\"\"Aggregated simulation result container.\"\"\"\n\n    results: List[SimulationResult] = Field(default_factory=list)\n",
+  "statistics": {
+    "lines_added": 27,
+    "lines_removed": 0,
+    "lines_changed": 27
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

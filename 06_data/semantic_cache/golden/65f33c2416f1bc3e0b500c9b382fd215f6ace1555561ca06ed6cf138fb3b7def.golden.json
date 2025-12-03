@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
+  "content_hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\unit\\test_mcp_discovery.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_mcp_discovery.py",
+    "file_size": 1965,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
+    "scan_timestamp": "2025-12-03T06:21:11.516411"
+  },
+  "content_preview": "\"\"\"MCPClient discovery and invocation tests.\"\"\"\nimport pytest\n\nfrom src.lic_agentic.mcp import MCPClient, ToolSpec\n\n\ndef test_discover_filters_by_capability_and_trust():\n    client = MCPClient(\n        tools=[\n            ToolSpec(\n                id=\"alpha\",\n                name=\"Alpha\",\n                capabilities=(\"profile_lookup\",),\n                cost=0.2,\n                trust_tier=\"high\",\n                latency_ms=200,\n            ),\n            ToolSpec(\n                id=\"beta\",\n   ...",
+  "creation_timestamp": "2025-12-03T06:21:34.982221",
+  "version": "1.0"
+}

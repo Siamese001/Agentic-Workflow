@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
+  "content_hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\e2e\\test_full_pipeline_pass_rate.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_full_pipeline_pass_rate.py",
+    "file_size": 2395,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
+    "scan_timestamp": "2025-12-03T06:21:11.511329"
+  },
+  "content_preview": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_full_pipeline_pass_rate():\n    stack = OutreachStack(ReasoningToggles())\n    samples = [\n        SimpleNamespace(prompt=\"Excited to connect\", company_id=\"ACME\", contact_id=\"C1\"),\n        SimpleNamespace(prompt=\"Shared interest in innovation\", company_id=\"OMEGA\", contact_id=\"C2\"),\n        SimpleNamespace(prompt=\"Curious about ...",
+  "creation_timestamp": "2025-12-03T06:21:34.855321",
+  "version": "1.0"
+}

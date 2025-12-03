@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a1038dc626e9c0852f6846ddca6b47b5753bb636d9e2b468842ac2c8b5c60e99",
+  "content_hash": "e72abf19506b08163cb0f984b3037bf6b07a53cae14c96e6b965455bb68585b9",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L1_planning\\unit\\test_kg_retrieval_planning.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_kg_retrieval_planning.py",
+    "file_size": 3233,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a1038dc626e9c0852f6846ddca6b47b5753bb636d9e2b468842ac2c8b5c60e99",
+    "scan_timestamp": "2025-12-03T06:21:11.310518"
+  },
+  "content_preview": "\"\"\"\nTest KG Retrieval Planning\n\nTests knowledge graph retrieval planning functionality extracted from working legacy tests.\n\"\"\"\n\nimport pytest\nfrom datetime import datetime, UTC\n\n# L1 Components\nfrom l1.kg_retrieval_planning import (\n    KGRetrievalPlanner,\n    KGQueryPlan,\n    QueryType,\n    HopDirection,\n    plan_entity_retrieval,\n)\n\n# Mark all tests as L1 planning tests\npytestmark = [pytest.mark.unit, pytest.mark.l1, pytest.mark.planning]\n\n\nclass TestKGRetrievalPlanning:\n    \"\"\"Test KG retrie...",
+  "creation_timestamp": "2025-12-03T06:21:16.686708",
+  "version": "1.0"
+}

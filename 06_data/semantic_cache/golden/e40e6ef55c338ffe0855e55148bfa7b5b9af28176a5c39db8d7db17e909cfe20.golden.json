@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e40e6ef55c338ffe0855e55148bfa7b5b9af28176a5c39db8d7db17e909cfe20",
+  "content_hash": "e40e6ef55c338ffe0855e55148bfa7b5b9af28176a5c39db8d7db17e909cfe20",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\architecture\\test_config_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\architecture\\test_config_v10_7.py",
+    "file_size": 475,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e40e6ef55c338ffe0855e55148bfa7b5b9af28176a5c39db8d7db17e909cfe20",
+    "scan_timestamp": "2025-12-03T06:21:11.408264"
+  },
+  "content_preview": "import pytest\n\nfrom core_v10_7 import ConfigV10_7\n\n\ndef test_config_provides_nested_sections(config: ConfigV10_7) -> None:\n    assert config.logging_config.log_level == \"INFO\"\n    assert config.agent_stacks.enable_constitutional_review is True\n    assert config.agent_stacks.conductor_max_steps == 10\n\n\ndef test_config_missing_section_raises_attribute_error(config: ConfigV10_7) -> None:\n    with pytest.raises(AttributeError):\n        _ = config.this_section_does_not_exist\n",
+  "creation_timestamp": "2025-12-03T06:21:23.431596",
+  "version": "1.0"
+}

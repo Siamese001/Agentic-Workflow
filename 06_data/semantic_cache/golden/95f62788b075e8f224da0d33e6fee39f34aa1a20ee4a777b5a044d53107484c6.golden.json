@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "95f62788b075e8f224da0d33e6fee39f34aa1a20ee4a777b5a044d53107484c6",
+  "content_hash": "95f62788b075e8f224da0d33e6fee39f34aa1a20ee4a777b5a044d53107484c6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\architecture\\test_no_legacy_stack_imports.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\architecture\\test_no_legacy_stack_imports.py",
+    "file_size": 558,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "95f62788b075e8f224da0d33e6fee39f34aa1a20ee4a777b5a044d53107484c6",
+    "scan_timestamp": "2025-12-03T06:21:11.442271"
+  },
+  "content_preview": "\"\"\"Architecture regression tests to enforce v10.8 stack usage.\"\"\"\n\nfrom __future__ import annotations\n\nfrom pathlib import Path\n\n\ndef test_no_v10_7_stack_imports_outside_legacy_dirs():\n    repo_root = Path(__file__).resolve().parents[1]\n    offenders: list[Path] = []\n\n    for path in repo_root.rglob(\"*.py\"):\n        text = path.read_text(encoding=\"utf-8\")\n        if \"agent_stacks_v10_7\" in text or \"stacks_v10_7\" in text:\n            offenders.append(path.relative_to(repo_root))\n\n    assert offen...",
+  "creation_timestamp": "2025-12-03T06:21:24.782609",
+  "version": "1.0"
+}

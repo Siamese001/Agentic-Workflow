@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "rag_sim.py",
+  "diff_content": "\"\"\"Synthetic RAG simulator.\"\"\"\n\nimport random\nfrom typing import List\n\nfrom simulations.models.rag_simulation import (\n    RAGSimMetrics,\n    RAGSimRequest,\n    RAGSimResult,\n)\nfrom simulations.utils import model_to_payload\n\n\nclass RAGSimulator:\n    \"\"\"Runs retrieval quality simulations.\"\"\"\n\n    async def run(self, request: RAGSimRequest) -> RAGSimResult:\n        doc_count = len(request.documents)\n        diversity_bonus = min(doc_count / 10.0, 0.3)\n        recall = round(min(1.0, 0.4 + diversity_bonus + random.uniform(0.0, 0.4)), 3)\n        precision = round(min(1.0, 0.5 + random.uniform(-0.2, 0.3)), 3)\n        redundancy = round(max(0.0, 0.2 + random.uniform(-0.1, 0.5)), 3)\n        metrics = RAGSimMetrics(\n            recall=max(0.0, recall),\n            precision=max(0.0, precision),\n            redundancy=min(1.0, redundancy),\n        )\n        top_docs: List[str] = request.documents[:3]\n        return RAGSimResult(\n            simulation_id=request.simulation_id,\n            success=True,\n            metrics=model_to_payload(metrics),\n            details={\"top_documents\": top_docs},\n        )\n",
+  "statistics": {
+    "lines_added": 34,
+    "lines_removed": 0,
+    "lines_changed": 34
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

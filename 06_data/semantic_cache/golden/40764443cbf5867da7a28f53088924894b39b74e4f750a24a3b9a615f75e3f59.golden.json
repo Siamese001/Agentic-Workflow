@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "40764443cbf5867da7a28f53088924894b39b74e4f750a24a3b9a615f75e3f59",
+  "content_hash": "94b231d29b63d725110b2fa6b0ab33283b106910098b4a3edaa8906155ecbbc6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\kg_retrieval_orchestration.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\kg_retrieval_orchestration.py",
+    "file_size": 20312,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "40764443cbf5867da7a28f53088924894b39b74e4f750a24a3b9a615f75e3f59",
+    "scan_timestamp": "2025-12-03T06:21:11.277579"
+  },
+  "content_preview": "\"\"\"KG-First Retrieval Orchestration - Hybrid KG + Vector Retrieval DAG\n\nThis module implements L3 orchestration for KG-first retrieval,\ncombining knowledge graph queries with vector search for enhanced\ncontext retrieval.\n\nLayer: L3 (Orchestration)\nResponsibilities:\n- Orchestrate KG \u2192 Vector \u2192 Fusion pipeline\n- Build retrieval DAGs\n- Coordinate L1 planners and L2 executors\n- Manage hybrid ranking\n\nNon-responsibilities:\n- Query planning (L1)\n- Query execution (L2)\n- State storage (L4)\n- Policy enf...",
+  "creation_timestamp": "2025-12-03T06:21:15.523843",
+  "version": "1.0"
+}

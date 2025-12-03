@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/simulation/test_metrics.py",
+  "diff_content": "from eval.simulation.metrics import compute_collaboration_score, compute_conflict_index\n\n\nclass _DummyOutcome:\n    def __init__(self, score: float, conflicts: int) -> None:\n        self.outcome = {\"golden_eval_score\": score, \"correction_iterations\": conflicts}\n        self.agent_conflict_count = conflicts\n\n\ndef test_compute_collaboration_score_and_conflict_index():\n    outputs = [\n        _DummyOutcome(1.0, 0),\n        _DummyOutcome(0.0, 2),\n    ]\n\n    collab = compute_collaboration_score(outputs)\n    conflict = compute_conflict_index(outputs)\n\n    assert isinstance(collab, float)\n    assert isinstance(conflict, float)\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 26,
+    "lines_removed": 0,
+    "lines_changed": 26
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

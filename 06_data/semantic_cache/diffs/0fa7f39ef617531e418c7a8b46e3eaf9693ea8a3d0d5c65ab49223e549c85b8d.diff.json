@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/context_engine/assembly.py",
+  "diff_content": "\"\"\"\nContext assembly and pruning for r\u00e9sum\u00e9 processing workflows.\n\nOrchestrates relevant information into structured text blocks for optimal r\u00e9sum\u00e9 improvement prompts.\n\"\"\"\n\nfrom typing import List\n\nfrom .pinned import PinnedItem, filter_pinned\nfrom .relevance import ContextItem, score_relevance\nfrom .slots import ContextSlot, assign_to_slot\n\n\ndef assemble_context(\n    query: str,\n    pinned: List[PinnedItem],\n    candidates: List[ContextItem],\n    slots: List[ContextSlot],\n) -> List[str]:\n    \"\"\"\n    Assembles context strings for r\u00e9sum\u00e9 improvement prompt generation.\n\n    Prioritizes relevant information to ensure comprehensive r\u00e9sum\u00e9 enhancement processing.\n    \"\"\"\n\n    result: List[str] = []\n\n    # Step 1: pinned items (shared across slots for now).\n    pinned_selected = filter_pinned(pinned, max_items=sum(s.max_items for s in slots))\n\n    # Step 2: relevance scoring.\n    scored = score_relevance(query, candidates)\n    ranked_candidates = [item for item, _ in scored]\n\n    pinned_texts = [p.text for p in pinned_selected]\n    candidate_texts = [c.text for c in ranked_candidates]\n\n    for slot in slots:\n        # Fill each slot with pinned first, then candidates.\n        texts_for_slot = pinned_texts + candidate_texts\n        assigned = assign_to_slot(slot, texts_for_slot)\n        result.extend(assigned)\n\n    return result\n\n\n\n",
+  "statistics": {
+    "lines_added": 47,
+    "lines_removed": 0,
+    "lines_changed": 47
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

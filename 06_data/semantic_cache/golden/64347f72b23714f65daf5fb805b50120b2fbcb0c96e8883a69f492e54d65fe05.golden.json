@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
+  "content_hash": "a1036234b1d7e83e7927d20e2e4280d612455d1c19fc44bf1c1e5cc08f334b9b",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "windsurf_rules\\01_core_governance.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\01_core_governance.md",
+    "file_size": 1654,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
+    "scan_timestamp": "2025-12-03T06:21:11.351352"
+  },
+  "content_preview": "# /windsurf_rules/01_core_governance.md\n## Core Governance & Layering Model (Condensed)\n\n### 1. Repository Boundaries\n- Treat the Explorer root as `Agentic-Workflow-10_11/`.\n- Operate ONLY inside this directory.\n\n### 2. File Operations\n- Existing files \u2192 modify via apply_patch only.\n- New files \u2192 use write_to_file with absolute Windows path.\n- Never mix creation + modification in the same patch.\n- No `.py` allowed under `refactoring/**`.\n\n### 3. MAX Override Mode\n- Never stop, ask questions, or ...",
+  "creation_timestamp": "2025-12-03T06:21:18.368636",
+  "version": "1.0"
+}

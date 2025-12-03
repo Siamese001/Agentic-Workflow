@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "ce25e461c2a7132c32403ec8c05058e0018f895eefb4c43888c64d20e0e73b86",
+  "content_hash": "ce25e461c2a7132c32403ec8c05058e0018f895eefb4c43888c64d20e0e73b86",
+  "file_size": 1627,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\integration\\test_arbitration_graph_wiring.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\integration\\test_arbitration_graph_wiring.py",
+    "file_size": 1627,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ce25e461c2a7132c32403ec8c05058e0018f895eefb4c43888c64d20e0e73b86",
+    "scan_timestamp": "2025-12-03T06:21:11.443778"
+  },
+  "verification_timestamp": "2025-12-03T06:21:24.809141",
+  "checksums": {
+    "sha256": "ce25e461c2a7132c32403ec8c05058e0018f895eefb4c43888c64d20e0e73b86",
+    "md5": "e676360b9940d59fcf9dc0a6534d455c"
+  }
+}

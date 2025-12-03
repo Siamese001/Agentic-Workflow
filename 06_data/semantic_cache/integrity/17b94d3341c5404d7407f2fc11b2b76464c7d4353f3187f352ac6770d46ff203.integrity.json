@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "17b94d3341c5404d7407f2fc11b2b76464c7d4353f3187f352ac6770d46ff203",
+  "content_hash": "6c01fa37c688703cafc2bfd8bf7a88d461d73fa3019bb0ee93c00f8e9d210ffa",
+  "file_size": 555,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\shared\\fixtures\\common_fixtures.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\fixtures\\common_fixtures.py",
+    "file_size": 555,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "17b94d3341c5404d7407f2fc11b2b76464c7d4353f3187f352ac6770d46ff203",
+    "scan_timestamp": "2025-12-03T06:21:11.336901"
+  },
+  "verification_timestamp": "2025-12-03T06:21:17.483450",
+  "checksums": {
+    "sha256": "6c01fa37c688703cafc2bfd8bf7a88d461d73fa3019bb0ee93c00f8e9d210ffa",
+    "md5": "16594fba1301c298d8079e5b40c3ac89"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "windsurf_rules/04_testing_autorepair.md",
+  "diff_content": "# /windsurf_rules/04_testing_autorepair.md\n## Testing Standards, Continuous Re-Run, Auto-Repair Loop (Condensed)\n\n### 1. Testing Requirements\n- Must pass: imports, pytest, ruff, mypy.\n- No regressions allowed in RAG, drafting, QA, safety, HYDE, ExecutionContext.\n- Each agent requires: functional, schema, edge-case, determinism, failure-mode, and no-op detection tests.\n\n### 2. Zero-Failure Mandate\n- Partial passes count as failures.\n- No skips, xfail, or placeholders unless explicitly approved.\n- All tests MUST pass 100% before any command may complete.\n\n### 3. Continuous Auto-Retry Loop\n- After any failure, the ENTIRE test suite must automatically re-run.\n- Windsurf must apply corrective patches between runs.\n- The test loop must continue indefinitely until all tests pass.\n- Windsurf must not stop, pause, or return control until the suite is fully green.\n\n### 4. Mandatory Console Review\n- Windsurf must parse the full test console after each run.\n- Must extract all failing tests, error types, tracebacks, file paths, and failure summaries.\n- Auto-repair logic must use parsed diagnostics.\n\n### 5. Pycache Clearance (Mandatory)\n- Before EVERY test run (initial or re-run), Windsurf MUST:\n  - Delete all `__pycache__/` directories.\n  - Delete all `.pyc` files across the entire repository.\n- No test cycle may begin until repository is free of bytecode caches.\n- Ensures deterministic imports and prevents stale-module behavior.\n\n### 6. Deterministic Completion Gate\n- Only acceptable terminal condition:\n  - 0 failures  \n  - 0 errors  \n  - 0 warnings (unless permitted)  \n  - 0 skipped (unless sanctioned)\n",
+  "statistics": {
+    "lines_added": 37,
+    "lines_removed": 0,
+    "lines_changed": 37
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "4c56070526b021efb8aad5391e1972749d17e9e307b33580ae2c0f396578154b",
+  "content_hash": "4c56070526b021efb8aad5391e1972749d17e9e307b33580ae2c0f396578154b",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "services.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\services.py",
+    "file_size": 79363,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "4c56070526b021efb8aad5391e1972749d17e9e307b33580ae2c0f396578154b",
+    "scan_timestamp": "2025-12-03T06:21:11.399605"
+  },
+  "content_preview": "\"\"\"Service-layer helpers for the v10.7 runtime.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport time\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom functools import wraps\nfrom typing import (\n    TYPE_CHECKING,\n    Any,\n    Callable,\n    Dict,\n    List,\n    Mapping,\n    Optional,\n    Tuple,\n    Union,\n)\n\nfrom chromadb.utils import embedding_functions\nfrom pydantic import BaseModel, Field,...",
+  "creation_timestamp": "2025-12-03T06:21:22.758342",
+  "version": "1.0"
+}

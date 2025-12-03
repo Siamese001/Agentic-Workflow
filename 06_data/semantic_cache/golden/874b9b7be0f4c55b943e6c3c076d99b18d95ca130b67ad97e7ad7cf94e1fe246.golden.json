@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "874b9b7be0f4c55b943e6c3c076d99b18d95ca130b67ad97e7ad7cf94e1fe246",
+  "content_hash": "874b9b7be0f4c55b943e6c3c076d99b18d95ca130b67ad97e7ad7cf94e1fe246",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\integration\\test_perf_latency_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_perf_latency_v10_7.py",
+    "file_size": 293,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "874b9b7be0f4c55b943e6c3c076d99b18d95ca130b67ad97e7ad7cf94e1fe246",
+    "scan_timestamp": "2025-12-03T06:21:11.416189"
+  },
+  "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"case\", [\"fast\",\"e2e\",\"rag-heavy\",\"qa-heavy\"])\ndef test_latency_smoke(benchmark, case):\n    out = benchmark(lambda: run_workflow({\"compat_mode\": \"v10_7\", \"resume\": case, \"jd\":\"perf\"}))\n    assert out is not None\n",
+  "creation_timestamp": "2025-12-03T06:21:23.696611",
+  "version": "1.0"
+}

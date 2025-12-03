@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d5d87f1271a2df4298e0c33098dcc3016c47225bc599e82a71ec4e9439801690",
+  "content_hash": "d5d87f1271a2df4298e0c33098dcc3016c47225bc599e82a71ec4e9439801690",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "04_hop_staging_v1_1.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\04_hop_staging_v1_1.py",
+    "file_size": 11692,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d5d87f1271a2df4298e0c33098dcc3016c47225bc599e82a71ec4e9439801690",
+    "scan_timestamp": "2025-12-03T06:21:11.463181"
+  },
+  "content_preview": "# hops/04_hop_staging.py\n\"\"\"\nHop 4: Staging and Sanitization with Signal Score Calculation\n\nThis hop:\n1. Cleans and sanitizes LLM output\n2. Validates structural integrity\n3. Calculates per-section signal scores using ThematicAnalysis\n4. Creates ImmutableStagingBuffer\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Union\n\n# Add project root to path\npro...",
+  "creation_timestamp": "2025-12-03T06:21:25.627233",
+  "version": "1.0"
+}

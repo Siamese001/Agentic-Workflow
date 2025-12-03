@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\context_engine\\assembly.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\assembly.py",
+    "file_size": 1403,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+    "scan_timestamp": "2025-12-03T06:21:11.235659"
+  },
+  "artifacts": {
+    "ast": "ast/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.ast",
+    "embedding": "embeddings/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.embedding",
+    "diff": "diffs/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.diff.json",
+    "safety": "safety/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.safety.json",
+    "golden": "golden/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.golden.json",
+    "integrity": "integrity/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:12.665980",
+  "artifact_count": 6
+}

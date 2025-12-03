@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb",
+  "content_hash": "fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
+    "archive_name": "v6.0",
+    "relative_path": "main_v6_0.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\main_v6_0.py",
+    "file_size": 22132,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb",
+    "scan_timestamp": "2025-12-03T06:21:11.483360"
+  },
+  "content_preview": "# File: main.py\n# Zero-Loss Consolidation - Execution Entry Point\n# Merges: workflow_RES_v5_2.py \u2192 run_workflow_RES_v5_2.py\n# Version: 5.9 (Batch Harness)\n# REFACTORED: main() is now importable via `if __name__ == \"__main__\":` guard\n# This allows WorkflowV60 to be safely imported by batch processing scripts.\n# All configuration is now read from the central CONFIG object.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ==========...",
+  "creation_timestamp": "2025-12-03T06:21:29.858428",
+  "version": "1.0"
+}

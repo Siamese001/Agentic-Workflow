@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L1_planning/unit/test_safety_planning.py",
+  "diff_content": "\"\"\"\nTest Safety Planning\n\nTests comprehensive safety planning functionality for r\u00e9sum\u00e9 validation,\nincluding safety plan creation, content validation, and policy enforcement.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock\n\n# Import actual safety planning components\ntry:\n    from l1.safety_planning import (\n        SafetyPlan,\n    )\nexcept ImportError:\n    pytest.skip(\"Safety planning components not available\", allow_module_level=True)\n\n# Mark as L1 planning tests\npytestmark = [pytest.mark.l1, pytest.mark.planning, pytest.mark.safety]\n\n\nclass TestSafetyPlanning:\n    \"\"\"Test safety planning functionality.\"\"\"\n    \n    def test_safety_plan_dataclass_structure(self):\n        \"\"\"Test SafetyPlan dataclass structure.\"\"\"\n        # Create a mock prompt\n        prompt = Mock()\n        prompt.id = \"test.safety\"\n        prompt.content = \"Test safety content\"\n        \n        # Create SafetyPlan\n        safety_plan = SafetyPlan(prompt=prompt)\n        \n        # Validate structure\n        assert hasattr(safety_plan, 'prompt')\n        assert safety_plan.prompt == prompt\n        assert isinstance(safety_plan.prompt, Mock)\n",
+  "statistics": {
+    "lines_added": 39,
+    "lines_removed": 0,
+    "lines_changed": 39
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

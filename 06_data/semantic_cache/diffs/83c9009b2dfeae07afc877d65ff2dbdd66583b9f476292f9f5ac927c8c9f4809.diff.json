@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l3/draft_orchestrator.py",
+  "diff_content": "\"\"\"\nL3 orchestration layer for r\u00e9sum\u00e9 drafting workflow.\n\nCoordinates planning and execution to create comprehensive r\u00e9sum\u00e9 improvements.\n\"\"\"\n\nfrom typing import Any\nfrom l1.draft_planning import plan_drafting\nfrom l2.draft_executor import DraftExecutor\nfrom runtime.observability import record_event\n\nclass DraftOrchestrator:\n    \"\"\"\n    Coordinates r\u00e9sum\u00e9 drafting workflow across all layers.\n\n    Ensures systematic integration of planning and execution for optimal r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n    \n    def __init__(self, draft_executor: DraftExecutor):\n        self.draft_executor = draft_executor\n    \n    def orchestrate_draft(self, strategy_result: Any, job: Any, resume: Any) -> str:\n        \"\"\"\n        Orchestrates complete r\u00e9sum\u00e9 drafting workflow.\n\n        Integrates planning and execution to generate tailored r\u00e9sum\u00e9 content aligned with job requirements.\n        \"\"\"\n        record_event(\"draft_orchestration_start\", {})\n        \n        # L1: Pure planning\n        draft_plan = plan_drafting(strategy_result, job, resume)\n        \n        # L2: Pure execution\n        result = self.draft_executor.execute_draft(\n            f\"Execute draft for sections: {draft_plan.sections}\"\n        )\n        \n        record_event(\"draft_orchestration_complete\", {})\n        return result\n",
+  "statistics": {
+    "lines_added": 39,
+    "lines_removed": 0,
+    "lines_changed": 39
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

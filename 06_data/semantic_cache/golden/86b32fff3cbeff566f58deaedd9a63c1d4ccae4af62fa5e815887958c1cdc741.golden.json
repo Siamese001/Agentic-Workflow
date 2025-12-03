@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "86b32fff3cbeff566f58deaedd9a63c1d4ccae4af62fa5e815887958c1cdc741",
+  "content_hash": "68924f2f3afd0d007f92b5fac7b6b2b8a26f301c465a514e5a5f67f68b5ce166",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\sandbox\\fs_template.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\fs_template.py",
+    "file_size": 491,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "86b32fff3cbeff566f58deaedd9a63c1d4ccae4af62fa5e815887958c1cdc741",
+    "scan_timestamp": "2025-12-03T06:21:11.242554"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Dict, List\n\n\ndef build_ephemeral_rootfs() -> Dict[str, object]:\n    \"\"\"Return a deterministic description of an ephemeral rootfs.\n\n    This does not perform any real filesystem mutation; instead it\n    returns a structure that can be inspected in tests.\n    \"\"\"\n\n    return {\n        \"tmpfs\": True,\n        \"restricted_paths\": [\"/\", \"/etc\", \"/var\", \"/home\"],\n        \"writable_paths\": [\"/tmp\", \"/sandbox\"],\n    }\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:12.886422",
+  "version": "1.0"
+}

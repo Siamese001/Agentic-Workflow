@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bda5fa750bf9930f937cd9499422b0d5c7eb193f877e51d5817822737d6c56b4",
+  "content_hash": "bda5fa750bf9930f937cd9499422b0d5c7eb193f877e51d5817822737d6c56b4",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "stacks_v10_7\\drafting.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\drafting.py",
+    "file_size": 17170,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bda5fa750bf9930f937cd9499422b0d5c7eb193f877e51d5817822737d6c56b4",
+    "scan_timestamp": "2025-12-03T06:21:11.508301"
+  },
+  "content_preview": "\"\"\"Drafting guild stack with specialist agents.\"\"\"\n\nimport json\nfrom typing import Any, Dict, List\n\nfrom core_v10_7 import (\n    BaseAgent,\n    StrategyPlan,\n    track_metrics,\n)\nfrom agent_tools_v10_7 import (\n    EvidenceBriefAssemblerTool,\n    EvidenceClarificationTool,\n)\n\nfrom .models import (\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n    EvidenceBriefRecord,\n    EvidenceClarificationRecord,\n    EvidenceLiaisonPacket,\n    SpecialistDraftPacket,\n)\n\n\nclass StructureLeadAgent(BaseAgen...",
+  "creation_timestamp": "2025-12-03T06:21:34.622440",
+  "version": "1.0"
+}

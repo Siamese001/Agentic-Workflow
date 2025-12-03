@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+  "content_hash": "4817128dbf8385bc4540f5f81ab5b97b218fe54f3951ff66051ca4077c53c0b0",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l2\\strategy_executor.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\strategy_executor.py",
+    "file_size": 2011,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+    "scan_timestamp": "2025-12-03T06:21:11.259269"
+  },
+  "content_preview": "\"\"\"\nL2 strategy execution for resume improvement workflows.\n\nExecutes strategy generation using optimal models for comprehensive\nresume enhancement planning and job alignment.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass StrategyExecutor:\n ...",
+  "creation_timestamp": "2025-12-03T06:21:14.045398",
+  "version": "1.0"
+}

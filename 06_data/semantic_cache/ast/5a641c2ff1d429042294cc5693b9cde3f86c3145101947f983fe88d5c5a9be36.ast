@@ -1,0 +1,212 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Facade for model routing functions used by orchestration layers.\n\nThis package re-exports the existing infra.model_routing primitives so\ncallers can depend on a stable ``orchestration.model_routing``\nnamespace without changing the underlying implementation.\n",
+                "kind": "None"
+              },
+              "_lineno": 3,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "infra.model_routing.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RoutingContext",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 39
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ModelChoice",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 55
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "infra.model_routing.policies",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "choose_provider_and_model",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "enforce_budget",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "infra.model_routing.selector",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "select_model",
+                  "asname": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 41
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 15,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 17,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RoutingContext",
+                      "kind": "None"
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "ModelChoice",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "choose_provider_and_model",
+                      "kind": "None"
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "enforce_budget",
+                      "kind": "None"
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "select_model",
+                      "kind": "None"
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 4
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 17,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 17,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 23,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 4
+  }
+}

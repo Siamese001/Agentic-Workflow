@@ -1,0 +1,478 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "src.lic_agentic.rag.evidence_registry",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "EvidenceRegistry",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 50
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "test_mapping",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "registry",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 5,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "EvidenceRegistry",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 5,
+                        "_col_offset": 15
+                      },
+                      "args": [],
+                      "keywords": []
+                    },
+                    "_lineno": 5,
+                    "_col_offset": 15
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "artifact_id",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 6,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "registry",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 6,
+                            "_col_offset": 18
+                          },
+                          "attr": "upsert",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 6,
+                        "_col_offset": 18
+                      },
+                      "args": [],
+                      "keywords": [
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "scope",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "company",
+                                "kind": "None"
+                              },
+                              "_lineno": 7,
+                              "_col_offset": 14
+                            }
+                          },
+                          "_lineno": 7,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "company_id",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "ACME",
+                                "kind": "None"
+                              },
+                              "_lineno": 8,
+                              "_col_offset": 19
+                            }
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "source_url",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "http://example.com",
+                                "kind": "None"
+                              },
+                              "_lineno": 9,
+                              "_col_offset": 19
+                            }
+                          },
+                          "_lineno": 9,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "summary",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "ACME hit revenue goals",
+                                "kind": "None"
+                              },
+                              "_lineno": 10,
+                              "_col_offset": 16
+                            }
+                          },
+                          "_lineno": 10,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "anchor_date",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "2025-10-01",
+                                "kind": "None"
+                              },
+                              "_lineno": 11,
+                              "_col_offset": 20
+                            }
+                          },
+                          "_lineno": 11,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "confidence",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "0.9",
+                                "kind": "None"
+                              },
+                              "_lineno": 12,
+                              "_col_offset": 19
+                            }
+                          },
+                          "_lineno": 12,
+                          "_col_offset": 8
+                        },
+                        {
+                          "_type": "keyword",
+                          "_fields": {
+                            "arg": "used_in_section",
+                            "value": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "value_wedge",
+                                "kind": "None"
+                              },
+                              "_lineno": 13,
+                              "_col_offset": 24
+                            }
+                          },
+                          "_lineno": 13,
+                          "_col_offset": 8
+                        }
+                      ]
+                    },
+                    "_lineno": 6,
+                    "_col_offset": 18
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "Compare",
+                    "_fields": {
+                      "left": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "artifact_id",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 11
+                      },
+                      "ops": [
+                        {
+                          "_type": "In",
+                          "_fields": {}
+                        }
+                      ],
+                      "comparators": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "registry",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 15,
+                          "_col_offset": 26
+                        }
+                      ]
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "stored",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 16,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "registry",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 16,
+                            "_col_offset": 13
+                          },
+                          "attr": "get",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 16,
+                        "_col_offset": 13
+                      },
+                      "args": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "artifact_id",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 26
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 13
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assert",
+                "_fields": {
+                  "test": {
+                    "_type": "BoolOp",
+                    "_fields": {
+                      "op": {
+                        "_type": "And",
+                        "_fields": {}
+                      },
+                      "values": [
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "stored",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 17,
+                          "_col_offset": 11
+                        },
+                        {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "stored",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 17,
+                                  "_col_offset": 22
+                                },
+                                "attr": "used_in_section",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 17,
+                              "_col_offset": 22
+                            },
+                            "ops": [
+                              {
+                                "_type": "Eq",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "value_wedge",
+                                  "kind": "None"
+                                },
+                                "_lineno": 17,
+                                "_col_offset": 48
+                              }
+                            ]
+                          },
+                          "_lineno": 17,
+                          "_col_offset": 22
+                        }
+                      ]
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 11
+                  },
+                  "msg": "None"
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 62,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 1
+  }
+}

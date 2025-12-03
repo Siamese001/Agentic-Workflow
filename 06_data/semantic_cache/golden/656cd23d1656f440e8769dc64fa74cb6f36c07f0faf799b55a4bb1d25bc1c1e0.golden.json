@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "656cd23d1656f440e8769dc64fa74cb6f36c07f0faf799b55a4bb1d25bc1c1e0",
+  "content_hash": "7af558d5d5d9f0c9f2884c9bb59669db9ca03d4cb8963ace65ee972eb0b07ae5",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l2\\tool_output_validator.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\tool_output_validator.py",
+    "file_size": 6708,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "656cd23d1656f440e8769dc64fa74cb6f36c07f0faf799b55a4bb1d25bc1c1e0",
+    "scan_timestamp": "2025-12-03T06:21:11.259476"
+  },
+  "content_preview": "\"\"\"\nL2 Tool Output Validator for resume processing security.\n\nValidates tool outputs at L2 execution boundary to protect\nresume improvement workflows from injection attacks.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\nimport json\nfrom typing import Any, List, Optional\n\nfrom l2.interfaces import L2ToolOutputValidatorInterface, ToolOutputValidationResult\n\n\nclass L2ToolOutputValidator(L2ToolOutputValidatorInterface):\n    \"\"\"\n    Concrete tool output validation for resume processing L2 layer....",
+  "creation_timestamp": "2025-12-03T06:21:14.054699",
+  "version": "1.0"
+}

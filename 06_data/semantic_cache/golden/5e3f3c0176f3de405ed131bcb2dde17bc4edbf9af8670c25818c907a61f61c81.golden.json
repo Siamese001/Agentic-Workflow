@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5e3f3c0176f3de405ed131bcb2dde17bc4edbf9af8670c25818c907a61f61c81",
+  "content_hash": "cc5753341d61e28051c522d458c4339308a5f525d93ef2d38eb1118b0dcb4a3e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
+    "archive_name": "Agentic-Workflow-10_9",
+    "relative_path": "prompt.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\prompt.py",
+    "file_size": 12876,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5e3f3c0176f3de405ed131bcb2dde17bc4edbf9af8670c25818c907a61f61c81",
+    "scan_timestamp": "2025-12-03T06:21:11.366049"
+  },
+  "content_preview": "# FILE: observability.py\n\"\"\"\nUnified Observability Module (v10_9) \u2014 META / INFRASTRUCTURE LAYER (REFINED)\n\nThis module provides the entire observability subsystem for the v10_9\nagentic runtime. It sits strictly ABOVE L1\u2013L5 and owns:\n\n    \u2022 Run-level tracing and metrics collection\n    \u2022 Span-based performance tracking\n    \u2022 Metric recording (counts, ratios, histograms \u2013 in memory)\n    \u2022 Structured run summaries for:\n        - Strategy\n        - RAG\n        - Bullets\n        - Drafting\n        - Q...",
+  "creation_timestamp": "2025-12-03T06:21:19.739584",
+  "version": "1.0"
+}

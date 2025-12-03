@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "358d19fc896560a7875479de9e0ccf0cc9bcedc1e30ffd6a519618927d9fa00f",
+  "content_hash": "6db0bde93a45e657708a856729c0377ce8dd4dc999bd1645491a94cd553f5f24",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\conftest.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\conftest.py",
+    "file_size": 20928,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "358d19fc896560a7875479de9e0ccf0cc9bcedc1e30ffd6a519618927d9fa00f",
+    "scan_timestamp": "2025-12-03T06:21:11.299037"
+  },
+  "content_preview": "\"\"\"\nRoot pytest configuration with centralized fixtures and mock factories.\n\nProvides consistent mocking, test data management, and configuration across all test layers.\nImplements session-level fixtures for expensive resources and function-level for isolation.\n\"\"\"\n\nimport pytest\nfrom typing import Dict, Any, List, Optional, Tuple, Union\nfrom unittest.mock import Mock, MagicMock, AsyncMock\nimport json\nimport uuid\nfrom datetime import datetime, timedelta\nimport threading\nimport time\n\n# Import sha...",
+  "creation_timestamp": "2025-12-03T06:21:16.163759",
+  "version": "1.0"
+}

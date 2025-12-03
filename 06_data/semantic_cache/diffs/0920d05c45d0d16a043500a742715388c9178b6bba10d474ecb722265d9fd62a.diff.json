@@ -1,0 +1,13 @@
+{
+  "diff_type": "lineage_diff",
+  "baseline_version": "Agentic-Workflow-10_7_main",
+  "current_version": "Agentic-LIC",
+  "logical_path": "chromadb/utils/__init__.py",
+  "diff_content": "--- Agentic-Workflow-10_7_main/chromadb/utils/__init__.py+++ Agentic-LIC/chromadb/utils/__init__.py@@ -1,5 +1,4 @@-\"\"\"Utilities namespace for the local chromadb shim.\"\"\"\n-\n-from vendor.chromadb_stub import embedding_functions\n-\n-__all__ = [\"embedding_functions\"]\n+class embedding_functions:  # pragma: no cover - stub namespace\n+    class EmbeddingFunction:\n+        def __call__(self, *args, **kwargs):  # pragma: no cover - interface stub\n+            raise NotImplementedError\n",
+  "statistics": {
+    "lines_added": 4,
+    "lines_removed": 5,
+    "lines_changed": 1
+  },
+  "has_changes": true
+}

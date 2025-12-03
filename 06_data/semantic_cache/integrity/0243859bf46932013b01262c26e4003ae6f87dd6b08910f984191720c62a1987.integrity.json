@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "0243859bf46932013b01262c26e4003ae6f87dd6b08910f984191720c62a1987",
+  "content_hash": "c3dce36019a92630df00e2bc05ef0159284c62cbbf4117d6bea466dddc2cfdbf",
+  "file_size": 630,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L3_orchestration\\workflow_graphs\\branching\\test_l3_branching.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\workflow_graphs\\branching\\test_l3_branching.py",
+    "file_size": 630,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "0243859bf46932013b01262c26e4003ae6f87dd6b08910f984191720c62a1987",
+    "scan_timestamp": "2025-12-03T06:21:11.319171"
+  },
+  "verification_timestamp": "2025-12-03T06:21:16.905276",
+  "checksums": {
+    "sha256": "c3dce36019a92630df00e2bc05ef0159284c62cbbf4117d6bea466dddc2cfdbf",
+    "md5": "0c568c849869f8bdb8cc07933f00f739"
+  }
+}

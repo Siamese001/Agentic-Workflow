@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/metacognition/test_hypothesis_generation.py",
+  "diff_content": "from meta.metacognition.hypothesis import generate_initial_hypotheses\nfrom meta.metacognition.models import Hypothesis\n\n\nclass DummyRAG:\n    def __init__(self, evidence_count: int) -> None:\n        self.evidence = [object() for _ in range(evidence_count)]\n\n\nclass DummyAgentCard:\n    def __init__(self, agent_id: str) -> None:\n        self.agent_id = agent_id\n\n\ndef test_generate_initial_hypotheses_with_evidence():\n    rag = DummyRAG(evidence_count=3)\n    agent = DummyAgentCard(\"planner_1\")\n\n    hs = generate_initial_hypotheses(\"task\", rag, agent)\n    assert len(hs) >= 1\n    assert all(isinstance(h, Hypothesis) for h in hs)\n    assert {h.agent_id for h in hs} == {\"planner_1\"}\n\n\ndef test_generate_initial_hypotheses_without_evidence():\n    rag = DummyRAG(evidence_count=0)\n    agent = DummyAgentCard(\"planner_1\")\n\n    hs = generate_initial_hypotheses(\"task\", rag, agent)\n    assert len(hs) == 1\n    assert hs[0].confidence <= 0.3\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 37,
+    "lines_removed": 0,
+    "lines_changed": 37
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

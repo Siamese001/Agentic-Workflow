@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b23dbcc1f689d4c469f7c480717849c5bd0c3fda0462d46b813d2efc1f4ca462",
+  "content_hash": "95c2085c3a7bed9fbf7e787296a03445c843253816fb24ad44a16ddd18f05149",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\refactoring\\11-24-2025\\phase_a_l1_planning\\PHASE_A_SUMMARY.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\11-24-2025\\phase_a_l1_planning\\PHASE_A_SUMMARY.md",
+    "file_size": 9935,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "b23dbcc1f689d4c469f7c480717849c5bd0c3fda0462d46b813d2efc1f4ca462",
+    "scan_timestamp": "2025-12-03T06:21:11.290471"
+  },
+  "content_preview": "# Phase A: L1 Planning Layer - Executive Summary\n\n## \u2705 Status: COMPLETE\n\n**Date Completed:** November 24, 2025  \n**Verification Status:** All tests passing (9/9 + 6/6)\n\n---\n\n## What Was Accomplished\n\nPhase A successfully established the **L1 Planning Layer** with strict separation between planning and execution:\n\n### Architecture Achieved\n\n```\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                    L1 PLANNING LAYER                     \u2502\n\u2502  (Pure, Declarative, No Side Ef...",
+  "creation_timestamp": "2025-12-03T06:21:15.984156",
+  "version": "1.0"
+}

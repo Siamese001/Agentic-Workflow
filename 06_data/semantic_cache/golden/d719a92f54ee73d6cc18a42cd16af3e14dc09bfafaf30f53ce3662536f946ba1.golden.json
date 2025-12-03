@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d719a92f54ee73d6cc18a42cd16af3e14dc09bfafaf30f53ce3662536f946ba1",
+  "content_hash": "9bc87332368c26d5f887d9a1ab513ac649be9ede92b83eada810aa31f3e1dda1",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "10_7_consolidated\\v10_7_runtime.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_runtime.py",
+    "file_size": 11641,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d719a92f54ee73d6cc18a42cd16af3e14dc09bfafaf30f53ce3662536f946ba1",
+    "scan_timestamp": "2025-12-03T06:21:11.374681"
+  },
+  "content_preview": "# FILE: v10_7_runtime.py\n# CONSOLIDATED: Entrypoints, Batch Runner, and Meta-Learning Loop\n# STATUS: Production Ready (v10.7 Baseline)\n\nfrom __future__ import annotations\nimport asyncio\nimport json\nimport logging\nimport os\nimport uuid\nimport sys\nimport csv\nimport shutil\nfrom datetime import datetime\nfrom typing import Any, Dict, List, Optional, Tuple\nfrom functools import wraps\n\n# Assuming Core/Models/Clients/Orchestration are available from the consolidated scope.\n# Base classes and Pydantic mo...",
+  "creation_timestamp": "2025-12-03T06:21:20.512905",
+  "version": "1.0"
+}

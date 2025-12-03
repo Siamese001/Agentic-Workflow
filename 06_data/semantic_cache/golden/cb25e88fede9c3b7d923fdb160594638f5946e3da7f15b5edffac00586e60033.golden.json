@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+  "content_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Monolithic",
+    "archive_name": "Monolithic",
+    "relative_path": "test_lic_v11_10.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Monolithic\\test_lic_v11_10.py",
+    "file_size": 45899,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+    "scan_timestamp": "2025-12-03T06:21:11.526859"
+  },
+  "content_preview": "\"\"\"\nLIC v11.10 - Complete Agentic Architecture Test Suite\n=====================================================\n\n__version__ = \"11.10\"\n\nRequirements:\n  pip install pytest pytest-asyncio pytest-mock\n\nRun tests:\n  pytest test_lic_v11_10.py -v\n  pytest test_lic_v11_10.py -k \"Enhancement1\" -v  # Run specific test group\n\nComprehensive tests for 4 key v11.10 enhancements:\n1. S2 Multi-Agent Specialization (Supervisor/Specialist pattern)\n2. S2 Internal \"Execute-Critique-Replan\" Loop\n3. S2 Adversarial Se...",
+  "creation_timestamp": "2025-12-03T06:21:36.048815",
+  "version": "1.0"
+}

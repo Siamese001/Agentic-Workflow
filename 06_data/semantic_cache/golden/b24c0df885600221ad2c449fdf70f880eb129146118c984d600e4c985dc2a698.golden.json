@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b24c0df885600221ad2c449fdf70f880eb129146118c984d600e4c985dc2a698",
+  "content_hash": "d55abc02665a8f8ed495bfdf00d64621c71a5cb12e28ebb3dd56a0a7fcd39b0d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\model_routing\\test_policy_selection.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\model_routing\\test_policy_selection.py",
+    "file_size": 733,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b24c0df885600221ad2c449fdf70f880eb129146118c984d600e4c985dc2a698",
+    "scan_timestamp": "2025-12-03T06:21:11.328626"
+  },
+  "content_preview": "from orchestration.model_routing import RoutingContext, choose_provider_and_model\n\n\ndef test_policy_selection_honors_requested_model():\n    ctx = RoutingContext(agent_id=\"agent\", task_type=\"llm_call\", execution_profile=None)\n\n    choice = choose_provider_and_model(ctx, requested_model=\"claude-3-haiku\")\n\n    assert choice.model_name == \"claude-3-haiku\"\n    assert choice.provider == \"anthropic\"\n\n\ndef test_policy_selection_defaults_when_no_model():\n    ctx = RoutingContext(agent_id=\"agent\", task_ty...",
+  "creation_timestamp": "2025-12-03T06:21:17.192097",
+  "version": "1.0"
+}

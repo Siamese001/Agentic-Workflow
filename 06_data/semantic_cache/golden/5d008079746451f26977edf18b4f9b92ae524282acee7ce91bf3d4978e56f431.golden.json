@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5d008079746451f26977edf18b4f9b92ae524282acee7ce91bf3d4978e56f431",
+  "content_hash": "ca608c4195e76091ef1834d277c40969a6bbd305aa092d039c624bcf370b23d7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\_deprecated\\test_prompt_compiler.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_prompt_compiler.py",
+    "file_size": 622,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5d008079746451f26977edf18b4f9b92ae524282acee7ce91bf3d4978e56f431",
+    "scan_timestamp": "2025-12-03T06:21:11.343599"
+  },
+  "content_preview": "from l1.cms.schemas import PromptSchema\nfrom l1.cms.compiler import compile_prompt\n\n\ndef test_compile_prompt_produces_string():\n    schema = PromptSchema(\n        id=\"test.prompt\",\n        role=\"system\",\n        objective=\"Test objective\",\n        instructions=\"Do the thing.\",\n        examples=[{\"input\": \"x\", \"output\": \"y\"}],\n        safety_tags=[\"safety\"],\n        allowed_tools=[\"tool1\"],\n        version=\"1.0.0\",\n    )\n\n    rendered = compile_prompt(schema, {\"layer\": \"L2\"})\n    assert isinstanc...",
+  "creation_timestamp": "2025-12-03T06:21:17.793637",
+  "version": "1.0"
+}

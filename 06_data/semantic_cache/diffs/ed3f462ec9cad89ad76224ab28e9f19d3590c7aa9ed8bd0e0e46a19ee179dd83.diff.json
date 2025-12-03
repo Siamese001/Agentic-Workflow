@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/golden_state/test_datasets.py",
+  "diff_content": "from eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts\n\n\ndef test_load_golden_inputs_minimum_cases():\n    cases = load_golden_inputs()\n    assert len(cases) >= 2\n    ids = {c.id for c in cases}\n    assert \"gs_basic_1\" in ids\n    assert \"gs_safety_1\" in ids\n\n\ndef test_load_baselines_and_exemplars_present():\n    baselines = load_baseline_scores()\n    exemplars = load_exemplar_prompts()\n\n    assert \"avg_score\" in baselines\n    assert \"gs_basic_1\" in exemplars\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 23,
+    "lines_removed": 0,
+    "lines_changed": 23
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L2_execution/unit/test_l2_unit_core.py",
+  "diff_content": "\"\"\"L2 Execution Unit Tests - Core.\"\"\"\n\nclass TestL2ExecutionUnitCore:\n    \"\"\"Core unit tests for L2 execution layer.\"\"\"\n    \n    def test_tool_executor_initialization(self):\n        \"\"\"Test tool executor initialization.\"\"\"\n        executor = {\"name\": \"tool_executor\", \"ready\": True}\n        assert executor[\"ready\"] is True\n    \n    def test_execution_context_creation(self):\n        \"\"\"Test execution context creation.\"\"\"\n        ctx = {\"user_id\": \"u1\", \"session_id\": \"s1\"}\n        assert ctx[\"user_id\"] == \"u1\"\n    \n    def test_result_aggregation(self):\n        \"\"\"Test result aggregation logic.\"\"\"\n        results = [{\"score\": 0.8}, {\"score\": 0.9}]\n        avg = sum(r[\"score\"] for r in results) / len(results)\n        assert abs(avg - 0.85) < 0.001\n",
+  "statistics": {
+    "lines_added": 20,
+    "lines_removed": 0,
+    "lines_changed": 20
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

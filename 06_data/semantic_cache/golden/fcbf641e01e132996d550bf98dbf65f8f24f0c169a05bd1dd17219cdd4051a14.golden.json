@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "fcbf641e01e132996d550bf98dbf65f8f24f0c169a05bd1dd17219cdd4051a14",
+  "content_hash": "fcbf641e01e132996d550bf98dbf65f8f24f0c169a05bd1dd17219cdd4051a14",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "robustness_stack.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\robustness_stack.py",
+    "file_size": 2743,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "fcbf641e01e132996d550bf98dbf65f8f24f0c169a05bd1dd17219cdd4051a14",
+    "scan_timestamp": "2025-12-03T06:21:11.397072"
+  },
+  "content_preview": "\"\"\"Layer-5 resilience stack that centralizes retry logic.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport random\nfrom typing import Any, Awaitable, Callable, Dict, Optional\n\n\nclass RobustnessStack:\n    \"\"\"Implements workflow-wide retry and backoff heuristics.\"\"\"\n\n    def __init__(\n        self,\n        context: Any,\n        debug_mode: bool = False,\n        *,\n        max_retries: Optional[int] = None,\n        base_backoff: Optional[float] = None,\n        max_backoff: Optional[floa...",
+  "creation_timestamp": "2025-12-03T06:21:22.502817",
+  "version": "1.0"
+}

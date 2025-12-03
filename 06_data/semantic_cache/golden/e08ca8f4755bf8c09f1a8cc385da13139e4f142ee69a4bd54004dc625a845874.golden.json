@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
+  "content_hash": "391a37f8786aea61ceadd8f9e1993e5d41739cdc18d7b248db8d4a2c556c99f3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\testing\\REFACTORING_SUMMARY.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\REFACTORING_SUMMARY.md",
+    "file_size": 4726,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
+    "scan_timestamp": "2025-12-03T06:21:11.294785"
+  },
+  "content_preview": "# OpenAI Agentic Architecture Refactoring Summary\n\n## Completion Status: \u2705 COMPLETE\n\nAll imports are working correctly and all end-to-end tests are passing (12/12).\n\n## Changes Implemented\n\n### 1. File Reorganization\n\n**Moved to L1 (Planning Layer):**\n- `workflow_planning.py` \u2192 `l1/workflow_planning.py`\n\n**Moved to L3 (Orchestration Layer):**\n- `workflow_graph.py` \u2192 `l3/workflow_graph.py`\n\n**Moved to Meta Layer:**\n- `routing.py` \u2192 `meta/routing.py`\n- `multi_agent.py` \u2192 `meta/multi_agent.py`\n- `r...",
+  "creation_timestamp": "2025-12-03T06:21:16.054317",
+  "version": "1.0"
+}

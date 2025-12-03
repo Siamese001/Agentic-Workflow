@@ -1,0 +1,7 @@
+{
+  "ast_version": "python_3.8+",
+  "error": "Syntax error: invalid character '\u2192' (U+2192) (<unknown>, line 483)",
+  "line_number": 483,
+  "offset": 23,
+  "parse_failed": true
+}

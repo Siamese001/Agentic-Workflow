@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+  "content_hash": "e6e5739c286c014fb144611df603be06572477c6c08d04239e3276f51d3845f4",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l2\\invalidation_executor.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\invalidation_executor.py",
+    "file_size": 13932,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+    "scan_timestamp": "2025-12-03T06:21:11.258020"
+  },
+  "content_preview": "\"\"\"\nTemporal fact invalidation executor for resume processing workflows.\n\nDetects and marks outdated or contradictory facts in resume\nenhancement operations for accurate job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set\nfrom datetime import datetime, timedelta, UTC\nfrom enum import Enum\n\nfrom l4.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery\n\n\nclass InvalidationReason(str, En...",
+  "creation_timestamp": "2025-12-03T06:21:13.942226",
+  "version": "1.0"
+}

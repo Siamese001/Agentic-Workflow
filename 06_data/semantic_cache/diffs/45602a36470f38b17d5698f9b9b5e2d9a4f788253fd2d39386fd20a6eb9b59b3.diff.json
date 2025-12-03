@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Old LIC",
+  "logical_path": "LIC_v6.2_QA_Summary.json",
+  "diff_content": "{\n  \"version\": \"LIC_10-02-2025_v6.2\",\n  \"sha256_v6_2\": \"a426d4d28d7c50cd92bc91987b491f8b089998f622b2eafa2adca2d7a8ccc29e\",\n  \"file_sizes_bytes\": {\n    \"before\": 208575,\n    \"after\": 209507,\n    \"delta\": 932\n  },\n  \"size_deltas\": []\n}",
+  "statistics": {
+    "lines_added": 10,
+    "lines_removed": 0,
+    "lines_changed": 10
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

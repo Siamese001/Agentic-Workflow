@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d76139f011e1fa483d62558813461368fc73ef5e25045062c830b7be48201665",
+  "content_hash": "406b52d66336a4853c4c61a8326297172bc9ee791943cf1bcd6f17931b1494a6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_10-12-2025_v9.22.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-12-2025_v9.22.json",
+    "file_size": 25082,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "d76139f011e1fa483d62558813461368fc73ef5e25045062c830b7be48201665",
+    "scan_timestamp": "2025-12-03T06:21:11.585141"
+  },
+  "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v9.22\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"description\": \"Overwrote reasoning_params with a comprehensive, self-contained set of explicit toggles for each archetype.\"\n  },\n  \"1.role\": {\n    \"description\": \"Defines the AI's role under the new, hardened architecture.\",\n    \"persona\": \"LIC (Lifecycle Integration Catalyst)\",\n    \"objective\": \"To first act as a deterministic 'Clerk' to extract and scaffold all fact...",
+  "creation_timestamp": "2025-12-03T06:21:38.434657",
+  "version": "1.0"
+}

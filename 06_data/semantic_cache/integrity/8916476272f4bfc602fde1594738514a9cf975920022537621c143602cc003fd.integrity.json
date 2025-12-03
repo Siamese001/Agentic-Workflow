@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "8916476272f4bfc602fde1594738514a9cf975920022537621c143602cc003fd",
+  "content_hash": "efd7308f7684d6b9b77d283dce599eff749a84a16f8b35b0b710822fcb845c59",
+  "file_size": 497,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\e2e\\multi_agent_scenarios\\test_multi_agent_scenarios.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\multi_agent_scenarios\\test_multi_agent_scenarios.py",
+    "file_size": 497,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "8916476272f4bfc602fde1594738514a9cf975920022537621c143602cc003fd",
+    "scan_timestamp": "2025-12-03T06:21:11.302900"
+  },
+  "verification_timestamp": "2025-12-03T06:21:16.306366",
+  "checksums": {
+    "sha256": "efd7308f7684d6b9b77d283dce599eff749a84a16f8b35b0b710822fcb845c59",
+    "md5": "2c0f051a551463fe12135c4c8fb80b25"
+  }
+}

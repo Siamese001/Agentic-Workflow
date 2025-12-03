@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+  "content_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+  "file_size": 7369,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "02_hop_enrichment.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\02_hop_enrichment.py",
+    "file_size": 7369,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+    "scan_timestamp": "2025-12-03T06:21:11.462227"
+  },
+  "verification_timestamp": "2025-12-03T06:21:25.523304",
+  "checksums": {
+    "sha256": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+    "md5": "16a5147ea5790d6718bfb149f0a3080c"
+  }
+}

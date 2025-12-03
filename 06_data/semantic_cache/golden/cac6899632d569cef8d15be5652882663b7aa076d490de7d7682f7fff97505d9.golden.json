@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9",
+  "content_hash": "cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "03_hop_artist.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\03_hop_artist.py",
+    "file_size": 20064,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9",
+    "scan_timestamp": "2025-12-03T06:21:11.462563"
+  },
+  "content_preview": "# hops/hop_3_artist.py\n\"\"\"\nHop 3: Content Generation (Artist) - HIGH-SIGNAL OVERWRITE\n\nThis advanced Artist implements a \"Select, then Synthesize\" strategy.\n1.  It uses vector embeddings from HOP-1 (via HOP-2 scaffold) and thematic\n    targets from HOP-0 to perform multi-criteria semantic scoring and\n    *selection* of the best bullets from the master pool.\n2.  It then uses the LLM (Gemini) for its true strength: *synthesis* and\n    *rewriting*, by feeding it the pre-selected content with high-s...",
+  "creation_timestamp": "2025-12-03T06:21:25.549043",
+  "version": "1.0"
+}

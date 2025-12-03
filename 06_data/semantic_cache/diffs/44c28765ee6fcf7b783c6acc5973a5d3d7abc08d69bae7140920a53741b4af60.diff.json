@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "windsurf_rules/03_dag_workflow_topology.md",
+  "diff_content": "# /windsurf_rules/03_dag_workflow_topology.md\n## DAG, Workflow, and Module Topology Rules (Condensed)\n\n### 1. DAG Orchestration (L3 Only)\n- DAG must be typed, acyclic, resumable.\n- All node transitions validate OutputSchema \u2192 InputSchema.\n- Only L3 may orchestrate; agents must not self-route.\n- Branching must be explicit and validated.\n\n### 2. Module & Folder Topology\n- /l1 = planning  \n- /l2 = tools  \n- /l3 = orchestration  \n- /l4 = state/memory  \n- /l5 = safety  \n- /prompts = templates & constitutions  \n- /tests mirrors module topology  \n- /refactoring = notes/docs only; no `.py`  \n\n### 3. Public API Surfaces\n- Each layer must expose a single stable facade:  \n  - l1.api, l2.api, l3.api, l4.api, l5.api\n\n### 4. Import Matrix (Golden)\nAll modules must satisfy the layer import matrix without exception.\n",
+  "statistics": {
+    "lines_added": 25,
+    "lines_removed": 0,
+    "lines_changed": 25
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

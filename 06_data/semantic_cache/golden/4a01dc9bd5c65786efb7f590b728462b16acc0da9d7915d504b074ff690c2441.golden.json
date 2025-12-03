@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
+  "content_hash": "c93af41d99f143ebe504ca6cb8df6940c83809793037a827f547aa7d79efc889",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "graph_store_neo4j.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\graph_store_neo4j.py",
+    "file_size": 761,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
+    "scan_timestamp": "2025-12-03T06:21:11.235269"
+  },
+  "content_preview": "# graph_store_neo4j.py\n# L2-safe Neo4j graph store stub module.\n\ntry:\n    from neo4j import GraphDatabase\nexcept Exception:\n    GraphDatabase = None\n\nclass Neo4jGraphStore:\n    \"\"\"\n    Stub graph store class used when Neo4j is not installed.\n    Provides import-safe behavior only.\n    \"\"\"\n\n    def __init__(self, uri=None, auth=None):\n        if GraphDatabase is None:\n            raise ImportError(\"Neo4j driver not installed\")\n        self.driver = None\n\n    def write_node(self, *args, **kwargs):...",
+  "creation_timestamp": "2025-12-03T06:21:12.660428",
+  "version": "1.0"
+}

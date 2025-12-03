@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/observability/cost_budget/test_obs_cost_budget.py",
+  "diff_content": "\"\"\"Observability Cost Budget Tests.\"\"\"\n\nclass TestObservabilityCostBudget:\n    \"\"\"Tests for cost budget tracking.\"\"\"\n    \n    def test_budget_tracking(self):\n        \"\"\"Test budget tracking logic.\"\"\"\n        budget = {\"max_usd\": 1.0, \"spent_usd\": 0.25}\n        remaining = budget[\"max_usd\"] - budget[\"spent_usd\"]\n        assert remaining == 0.75\n        assert remaining > 0\n",
+  "statistics": {
+    "lines_added": 11,
+    "lines_removed": 0,
+    "lines_changed": 11
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

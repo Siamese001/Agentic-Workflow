@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a347e03ea9fce99775bf9e69159608c805430c788c2adb3ffc1cf9cd0b29ef2f",
+  "content_hash": "0fc4e3d0b96ddd03c3f108dce13c6b0284e35aee72e4c2249247eaca4d684293",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L4_memory_state\\integration\\test_l4_integration_core.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\integration\\test_l4_integration_core.py",
+    "file_size": 1041,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a347e03ea9fce99775bf9e69159608c805430c788c2adb3ffc1cf9cd0b29ef2f",
+    "scan_timestamp": "2025-12-03T06:21:11.320740"
+  },
+  "content_preview": "\"\"\"L4 Memory State Integration Tests.\"\"\"\n\nclass TestL4MemoryStateIntegration:\n    \"\"\"Integration tests for L4 memory state layer.\"\"\"\n    \n    def test_state_persistence_flow(self):\n        \"\"\"Test state persistence flow.\"\"\"\n        state = {\"data\": \"test\"}\n        persisted = True\n        assert persisted is True\n    \n    def test_memory_retrieval_integration(self):\n        \"\"\"Test memory retrieval integration.\"\"\"\n        query = \"find skills\"\n        results = [\"Python\", \"AWS\"]\n        assert l...",
+  "creation_timestamp": "2025-12-03T06:21:16.935708",
+  "version": "1.0"
+}

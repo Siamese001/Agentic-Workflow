@@ -1,0 +1,192 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.models.models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "TelemetryEvent",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RetrievalAttemptEvent",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RetrievalSuccessEvent",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RetrievalFailureEvent",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RankingEvent",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "CostSnapshot",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 4
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 6,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 15,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "TelemetryEvent",
+                      "kind": "None"
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RetrievalAttemptEvent",
+                      "kind": "None"
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RetrievalSuccessEvent",
+                      "kind": "None"
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RetrievalFailureEvent",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RankingEvent",
+                      "kind": "None"
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "CostSnapshot",
+                      "kind": "None"
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 4
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 15,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 15,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 21,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 2
+  }
+}

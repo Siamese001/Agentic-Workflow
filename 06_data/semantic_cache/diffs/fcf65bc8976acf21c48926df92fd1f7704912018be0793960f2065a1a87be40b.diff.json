@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_8/architecture/test_agent_stacks_v10_8_imports.py",
+  "diff_content": "\"\"\"Smoke-tests for the v10.8 stack scaffolding.\"\"\"\n\nfrom __future__ import annotations\n\nimport pytest\n\nfrom agent_stacks_v10_8 import (\n    BulletExecutionStack,\n    DraftingExecutionStack,\n    HILStackV10_8,\n    QAValidationStack,\n    RAGExecutionStack,\n    SafetyStackV10_8,\n    StateAdapterStack,\n    StrategyStackV10_8,\n    RobustnessStack,\n)\n\n\n@pytest.mark.parametrize(\n    \"stack_cls\",\n    [\n        RAGExecutionStack,\n        QAValidationStack,\n        DraftingExecutionStack,\n        BulletExecutionStack,\n        StrategyStackV10_8,\n        SafetyStackV10_8,\n        HILStackV10_8,\n        RobustnessStack,\n    ],\n)\ndef test_stack_instantiation(stack_cls, mock_workflow_context):\n    stack = stack_cls(mock_workflow_context)\n    assert stack is not None\n\n\ndef test_state_adapter_stack_instantiation(mock_workflow_context):\n    adapter = StateAdapterStack(mock_workflow_context)\n    assert adapter.context is mock_workflow_context\n",
+  "statistics": {
+    "lines_added": 40,
+    "lines_removed": 0,
+    "lines_changed": 40
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2",
+  "content_hash": "d04c6652043d3670c5d52f9c12473f996a6b7e6f04af2561cc7ac8deb43a8643",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l1\\cms\\store.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\cms\\store.py",
+    "file_size": 2586,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2",
+    "scan_timestamp": "2025-12-03T06:21:11.246706"
+  },
+  "content_preview": "\"\"\"\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass StoredPrompt:\n    \"\"\"\n    Represents a stored resume generation prompt with metadata.\n\n    Ensures prompt storage supports consistent resume improvement.\n    \"\"\"\n    id: str\n    content: str\n    template: ...",
+  "creation_timestamp": "2025-12-03T06:21:13.063353",
+  "version": "1.0"
+}

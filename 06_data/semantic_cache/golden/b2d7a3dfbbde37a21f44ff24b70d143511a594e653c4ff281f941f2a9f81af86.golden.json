@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b2d7a3dfbbde37a21f44ff24b70d143511a594e653c4ff281f941f2a9f81af86",
+  "content_hash": "42e76f0e3f80f3b9c553fb7829e78dd8724b58ab3426415208b163286f5da826",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "meta\\routing.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\routing.py",
+    "file_size": 17711,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b2d7a3dfbbde37a21f44ff24b70d143511a594e653c4ff281f941f2a9f81af86",
+    "scan_timestamp": "2025-12-03T06:21:11.274055"
+  },
+  "content_preview": "\"\"\"Routing Policy - Meta Layer\n\nThis module provides model routing and selection logic.\n\nLayer: Meta\nResponsibilities:\n- Model selection based on task + complexity\n- ToT branch count determination\n- MetaProfile-influenced routing\n- Pure decision logic\n\nNon-responsibilities:\n- Provider SDK calls\n- L1/L2/L3/L4/L5 logic\n- Prompt construction\n- Model invocation\n\"\"\"\n\n# FILE: meta/routing.py\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Optional, Any, List, ...",
+  "creation_timestamp": "2025-12-03T06:21:15.244022",
+  "version": "1.0"
+}

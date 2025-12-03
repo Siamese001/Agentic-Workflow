@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "55b79136b94ac0caa8abb40e8238c5acd72d5166de3d897a4b58565d215a3344",
+  "content_hash": "55b79136b94ac0caa8abb40e8238c5acd72d5166de3d897a4b58565d215a3344",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\rag\\test_rag_invariants_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\rag\\test_rag_invariants_v10_7.py",
+    "file_size": 6461,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "55b79136b94ac0caa8abb40e8238c5acd72d5166de3d897a4b58565d215a3344",
+    "scan_timestamp": "2025-12-03T06:21:11.419546"
+  },
+  "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------\n# Helper: detect fields for RAG correctness\n# ---------------------------------------------------------------\ndef _extract_rag_block(out):\n    # RAG block may be top-level or inside resume\n    return (\n        out.get(\"rag\")\n        or out.get(\"resume\", {}).get(\"rag\")\n        or {}\n    )\n\n\n# ---------------------------------------------------------------\n# 1. RAG output must...",
+  "creation_timestamp": "2025-12-03T06:21:23.820141",
+  "version": "1.0"
+}

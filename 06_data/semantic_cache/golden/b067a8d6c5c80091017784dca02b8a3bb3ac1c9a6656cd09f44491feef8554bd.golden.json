@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
+  "content_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
+    "archive_name": "v6.0",
+    "relative_path": "Change Log\\CHANGELOG_v6_0.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\Change Log\\CHANGELOG_v6_0.md",
+    "file_size": 14267,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
+    "scan_timestamp": "2025-12-03T06:21:11.482294"
+  },
+  "content_preview": "# CHANGELOG - v5.9 \u2192 v6.0\n\n## \ud83d\ude80 v6.0: \"Zero-Loss\" & Telemetry Patch\n**Release Date**: November 7, 2025\n\n---\n\n## Overview\n\nv6.0 transforms the v5.9 batch harness into a production-ready, observable system with comprehensive telemetry, cost controls, and fault tolerance. This release implements Spells #4, #5, #6, and #9 from the master patch plan.\n\n**Goal**: Harden the batch processing system to make it stable, observable, and safe for production use.\n\n---\n\n## \ud83d\udcc2 File Changes\n\n### New Files\n- `core...",
+  "creation_timestamp": "2025-12-03T06:21:29.739713",
+  "version": "1.0"
+}

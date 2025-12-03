@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "01d90e92e2082503e29a1da88d5e154117582f81e749ef8419cb0da161217c74",
+  "content_hash": "01d90e92e2082503e29a1da88d5e154117582f81e749ef8419cb0da161217c74",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\rag\\mcp_selector.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\mcp_selector.py",
+    "file_size": 3916,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "01d90e92e2082503e29a1da88d5e154117582f81e749ef8419cb0da161217c74",
+    "scan_timestamp": "2025-12-03T06:21:11.503191"
+  },
+  "content_preview": "\"\"\"Selection logic for MCP-discovered tools.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Sequence\n\nfrom ..mcp import MCPClient, ToolSpec\nfrom ..telemetry import PolicyController\n\n_TRUST_SCORE = {\"low\": 0.4, \"medium\": 0.7, \"high\": 1.0}\n\n\n@dataclass(frozen=True)\nclass SelectedTool:\n    \"\"\"Tool selection decision returned by :class:`MCPSelector`.\"\"\"\n\n    spec: ToolSpec\n    score: float\n    quarantined: bool\n    budget_multiplier:...",
+  "creation_timestamp": "2025-12-03T06:21:34.421741",
+  "version": "1.0"
+}

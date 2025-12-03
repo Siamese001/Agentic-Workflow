@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
+  "content_hash": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_SCOPE_ISOLATION_FIX_v10_23.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_SCOPE_ISOLATION_FIX_v10_23.json",
+    "file_size": 26056,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
+    "scan_timestamp": "2025-12-03T06:21:11.621394"
+  },
+  "content_preview": "{\n  \"metadata\": {\n    \"patch_id\": \"LIC-P023-SCOPE-FIX\",\n    \"patch_name\": \"Staging Buffer Scope Isolation Fix - CRITICAL\",\n    \"base_version\": \"v10.23\",\n    \"target_version\": \"v10.23.1\",\n    \"severity\": \"CRITICAL\",\n    \"created_date\": \"2025-10-15\",\n    \"author\": \"System (based on Job Workflow v1.6.3 fix)\",\n    \"status\": \"URGENT_DEPLOYMENT_REQUIRED\",\n    \"bug_reference\": \"Same bug as Job Workflow BUG-1.6.2-001\"\n  },\n\n  \"bug_analysis\": {\n    \"bug_id\": \"LIC-BUG-10.23-001\",\n    \"title\": \"QA Engine V...",
+  "creation_timestamp": "2025-12-03T06:21:41.464784",
+  "version": "1.0"
+}

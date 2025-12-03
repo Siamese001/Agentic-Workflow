@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/dag/dag_engine.py",
+  "diff_content": "\"\"\"\nDAG engine compatibility shim for r\u00e9sum\u00e9 processing workflows.\n\nPreserves backward compatibility while supporting comprehensive r\u00e9sum\u00e9 enhancement operations.\n\"\"\"\n\nfrom .dag_models import Node, Edge, Graph  # noqa: F401\nfrom .dag_executor import DAGExecutor  # noqa: F401\n\n\n\n",
+  "statistics": {
+    "lines_added": 11,
+    "lines_removed": 0,
+    "lines_changed": 11
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

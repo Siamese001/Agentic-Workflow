@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "70d30c628a31ed9027fb1eb0dde53027776dcf278108feb14a6e923d4131a63f",
+  "content_hash": "70d30c628a31ed9027fb1eb0dde53027776dcf278108feb14a6e923d4131a63f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_9.24.2025_v1.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.24.2025_v1.json",
+    "file_size": 86177,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "70d30c628a31ed9027fb1eb0dde53027776dcf278108feb14a6e923d4131a63f",
+    "scan_timestamp": "2025-12-03T06:21:11.601085"
+  },
+  "content_preview": "{\n  \"prompt_shell\": {\n    \"version\": \"3.5-MZLO\",\n    \"name\": \"Six-Section Canonical Prompt Shell\",\n    \"purpose\": \"Define authority, scope, enforceable rules, and non-negotiables for converting any prompt into the canonical six-section structure.\",\n    \"sections_required\": [\n      \"1.role\",\n      \"2.task\",\n      \"3.context\",\n      \"4.reasoning\",\n      \"5.output\",\n      \"6.conditions\"\n    ],\n    \"enforcement\": {\n      \"reject_out_of_order_emission\": true,\n      \"block_output_on_reasoning_qa_fail\"...",
+  "creation_timestamp": "2025-12-03T06:21:38.939813",
+  "version": "1.0"
+}

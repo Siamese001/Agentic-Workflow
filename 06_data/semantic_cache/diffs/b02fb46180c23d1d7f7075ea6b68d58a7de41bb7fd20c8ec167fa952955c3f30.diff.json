@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/shared/test_suite_unified.py",
+  "diff_content": "import os\n\n\ndef test_test_suite_unified():\n    assert not os.path.exists(\"tests_flat\"), \"tests_flat should not exist\"\n    assert os.path.isdir(\"tests/v10_7\")\n    assert os.path.isdir(\"tests/v10_8\")\n",
+  "statistics": {
+    "lines_added": 7,
+    "lines_removed": 0,
+    "lines_changed": 7
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

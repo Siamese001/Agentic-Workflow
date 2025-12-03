@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+  "content_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "governor.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\governor.py",
+    "file_size": 33854,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+    "scan_timestamp": "2025-12-03T06:21:11.474227"
+  },
+  "content_preview": "# File: governor.py\n# Version: 17.01 (Patched) - V2 Agentic Architecture (Production Implementation)\n# Complete implementations of all v2 agents with zero placeholders\n\nimport logging\nimport json\nfrom typing import Dict, Any, Optional, List, Tuple\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom enum import Enum\n\n# Import models for type hints\ntry:\n    from models_RES import ResumeSection, ValidationResult, ThematicAnalysis\nexcept ImportError:\n    # Fallback for standalone ...",
+  "creation_timestamp": "2025-12-03T06:21:28.948230",
+  "version": "1.0"
+}

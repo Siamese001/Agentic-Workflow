@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+  "content_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+  "file_size": 5359,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
+    "archive_name": "Monolith",
+    "relative_path": "DEPRECATION_APPROVAL.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolith\\DEPRECATION_APPROVAL.md",
+    "file_size": 5359,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+    "scan_timestamp": "2025-12-03T06:21:11.466671"
+  },
+  "verification_timestamp": "2025-12-03T06:21:26.133952",
+  "checksums": {
+    "sha256": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+    "md5": "c2e14d69a8f4dfa457add0ebe7a0fe43"
+  }
+}

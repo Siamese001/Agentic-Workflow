@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
+  "content_hash": "dcbb7c22fba44cb5b9b89bf8f432e07bb8da5e66e656cd0411564922524bc56d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden_state\\test_scorer.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_scorer.py",
+    "file_size": 497,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
+    "scan_timestamp": "2025-12-03T06:21:11.308473"
+  },
+  "content_preview": "from eval.golden_state.models import JudgeVerdict\nfrom eval.golden_state.scorer import aggregate_scores\n\n\ndef test_aggregate_scores_basic():\n    verdicts = [\n        JudgeVerdict(score=1.0, rating=\"pass\", explanation=\"\"),\n        JudgeVerdict(score=0.0, rating=\"fail\", explanation=\"\"),\n    ]\n\n    agg = aggregate_scores(verdicts)\n\n    assert agg[\"avg_score\"] == 0.5\n    assert agg[\"pass_count\"] == 1.0\n    assert agg[\"fail_count\"] == 1.0\n    assert agg[\"total\"] == 2.0\n\n\n\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:16.637635",
+  "version": "1.0"
+}

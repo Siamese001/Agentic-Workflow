@@ -1,0 +1,896 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nModel routing cache for r\u00e9sum\u00e9 processing workflows.\n\nProvides efficient model choice caching to optimize r\u00e9sum\u00e9 improvement performance.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Tuple",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 25
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "ModelChoice",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 20
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RoutingContext",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 33
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        },
+        {
+          "_type": "AnnAssign",
+          "_fields": {
+            "target": {
+              "_type": "Name",
+              "_fields": {
+                "id": "_CACHE",
+                "ctx": {
+                  "_type": "Store",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 12,
+              "_col_offset": 0
+            },
+            "annotation": {
+              "_type": "Subscript",
+              "_fields": {
+                "value": {
+                  "_type": "Name",
+                  "_fields": {
+                    "id": "Dict",
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 12,
+                  "_col_offset": 8
+                },
+                "slice": {
+                  "_type": "Tuple",
+                  "_fields": {
+                    "elts": [
+                      {
+                        "_type": "Subscript",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "Tuple",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 12,
+                            "_col_offset": 13
+                          },
+                          "slice": {
+                            "_type": "Tuple",
+                            "_fields": {
+                              "elts": [
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "str",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 12,
+                                  "_col_offset": 19
+                                },
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "str",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 12,
+                                  "_col_offset": 24
+                                },
+                                {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "str",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 12,
+                                  "_col_offset": 29
+                                }
+                              ],
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 12,
+                            "_col_offset": 19
+                          },
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 12,
+                        "_col_offset": 13
+                      },
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ModelChoice",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 12,
+                        "_col_offset": 35
+                      }
+                    ],
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 12,
+                  "_col_offset": 13
+                },
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 12,
+              "_col_offset": 8
+            },
+            "value": {
+              "_type": "Dict",
+              "_fields": {
+                "keys": [],
+                "values": []
+              },
+              "_lineno": 12,
+              "_col_offset": 50
+            },
+            "simple": "1"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "_key",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "ctx",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "RoutingContext",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 14
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 9
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Generates cache key for r\u00e9sum\u00e9 processing model routing.\n\n    Ensures consistent cache indexing for optimal r\u00e9sum\u00e9 improvement performance.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "profile_name",
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 21,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "IfExp",
+                    "_fields": {
+                      "test": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "ctx",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 21,
+                            "_col_offset": 49
+                          },
+                          "attr": "execution_profile",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 21,
+                        "_col_offset": 49
+                      },
+                      "body": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "ctx",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 21,
+                                "_col_offset": 19
+                              },
+                              "attr": "execution_profile",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 21,
+                            "_col_offset": 19
+                          },
+                          "attr": "name",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 21,
+                        "_col_offset": 19
+                      },
+                      "orelse": {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "default",
+                          "kind": "None"
+                        },
+                        "_lineno": 21,
+                        "_col_offset": 76
+                      }
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 19
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Tuple",
+                    "_fields": {
+                      "elts": [
+                        {
+                          "_type": "Attribute",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ctx",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 22,
+                              "_col_offset": 12
+                            },
+                            "attr": "agent_id",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 22,
+                          "_col_offset": 12
+                        },
+                        {
+                          "_type": "Attribute",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "ctx",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 22,
+                              "_col_offset": 26
+                            },
+                            "attr": "task_type",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 22,
+                          "_col_offset": 26
+                        },
+                        {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "profile_name",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 22,
+                          "_col_offset": 41
+                        }
+                      ],
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 22,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Subscript",
+              "_fields": {
+                "value": {
+                  "_type": "Name",
+                  "_fields": {
+                    "id": "Tuple",
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 15,
+                  "_col_offset": 33
+                },
+                "slice": {
+                  "_type": "Tuple",
+                  "_fields": {
+                    "elts": [
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 39
+                      },
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 44
+                      },
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "str",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 15,
+                        "_col_offset": 49
+                      }
+                    ],
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 15,
+                  "_col_offset": 39
+                },
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 15,
+              "_col_offset": 33
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 15,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "get_cached_choice",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "ctx",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "RoutingContext",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 25,
+                        "_col_offset": 27
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 25,
+                    "_col_offset": 22
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Retrieves cached model choice for r\u00e9sum\u00e9 processing workflows.\n\n    Optimizes performance by avoiding redundant routing decisions for r\u00e9sum\u00e9 improvement.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 26,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 26,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Attribute",
+                        "_fields": {
+                          "value": {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "_CACHE",
+                              "ctx": {
+                                "_type": "Load",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 31,
+                            "_col_offset": 11
+                          },
+                          "attr": "get",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 31,
+                        "_col_offset": 11
+                      },
+                      "args": [
+                        {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "_key",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 31,
+                              "_col_offset": 22
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "ctx",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 31,
+                                "_col_offset": 27
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 31,
+                          "_col_offset": 22
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 31,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 31,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "BinOp",
+              "_fields": {
+                "left": {
+                  "_type": "Name",
+                  "_fields": {
+                    "id": "ModelChoice",
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 25,
+                  "_col_offset": 46
+                },
+                "op": {
+                  "_type": "BitOr",
+                  "_fields": {}
+                },
+                "right": {
+                  "_type": "Constant",
+                  "_fields": {
+                    "value": "None",
+                    "kind": "None"
+                  },
+                  "_lineno": 25,
+                  "_col_offset": 60
+                }
+              },
+              "_lineno": 25,
+              "_col_offset": 46
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 25,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "set_cached_choice",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "ctx",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "RoutingContext",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 27
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 22
+                  },
+                  {
+                    "_type": "arg",
+                    "_fields": {
+                      "arg": "choice",
+                      "annotation": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "ModelChoice",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 34,
+                        "_col_offset": 51
+                      },
+                      "type_comment": "None"
+                    },
+                    "_lineno": 34,
+                    "_col_offset": 43
+                  }
+                ],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "\n    Caches model choice for r\u00e9sum\u00e9 processing workflows.\n\n    Ensures efficient routing for subsequent r\u00e9sum\u00e9 improvement operations.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 35,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 35,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Assign",
+                "_fields": {
+                  "targets": [
+                    {
+                      "_type": "Subscript",
+                      "_fields": {
+                        "value": {
+                          "_type": "Name",
+                          "_fields": {
+                            "id": "_CACHE",
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 40,
+                          "_col_offset": 4
+                        },
+                        "slice": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "_key",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 40,
+                              "_col_offset": 11
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "ctx",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 40,
+                                "_col_offset": 16
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 40,
+                          "_col_offset": 11
+                        },
+                        "ctx": {
+                          "_type": "Store",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 40,
+                      "_col_offset": 4
+                    }
+                  ],
+                  "value": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "choice",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 40,
+                    "_col_offset": 24
+                  },
+                  "type_comment": "None"
+                },
+                "_lineno": 40,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "None",
+                "kind": "None"
+              },
+              "_lineno": 34,
+              "_col_offset": 67
+            },
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 34,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 126,
+    "function_count": 3,
+    "class_count": 0,
+    "import_count": 2
+  }
+}

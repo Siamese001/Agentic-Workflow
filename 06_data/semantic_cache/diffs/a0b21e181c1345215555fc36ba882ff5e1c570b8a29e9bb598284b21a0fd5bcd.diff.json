@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "tests/unit/test_evidence_registry.py",
+  "diff_content": "\"\"\"EvidenceRegistry behavior tests.\"\"\"\nfrom src.lic_agentic.rag.evidence_registry import EvidenceRegistry\n\n\ndef test_evidence_registry_list_filters_scope():\n    registry = EvidenceRegistry()\n    a1 = registry.upsert(\n        \"company\",\n        \"ACME\",\n        \"http://example.com/a\",\n        \"Summary A\",\n        \"2025-01-01\",\n        0.9,\n        \"value_wedge\",\n    )\n    _ = registry.upsert(\n        \"contact\",\n        \"ACME\",\n        \"http://example.com/b\",\n        \"Summary B\",\n        \"2025-01-02\",\n        0.8,\n        \"personalization\",\n    )\n    assert registry.get(a1).summary == \"Summary A\"\n    assert len(registry.list()) == 2\n    company_records = registry.list(scope=\"company\")\n    assert len(company_records) == 1\n    assert company_records[0].artifact_id == a1\n    manual_id = \"artifact-123\"\n    registry.upsert(\n        \"company\",\n        \"ACME\",\n        \"http://example.com/c\",\n        \"Summary C\",\n        \"2025-01-03\",\n        0.7,\n        \"value_wedge\",\n        artifact_id=manual_id,\n    )\n    assert manual_id in registry\n    assert registry.get(\"missing\") is None\n    assert registry.list(scope=\"unknown\") == []\n",
+  "statistics": {
+    "lines_added": 43,
+    "lines_removed": 0,
+    "lines_changed": 43
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

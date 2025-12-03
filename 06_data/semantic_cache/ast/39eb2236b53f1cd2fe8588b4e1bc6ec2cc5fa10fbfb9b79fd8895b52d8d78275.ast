@@ -1,0 +1,183 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Compatibility layer that re-exports stack agents for v10.7.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "stacks_v10_7",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "*",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 25
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "stacks_v10_7",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "__all__",
+                  "asname": "_STACK_EXPORTS"
+                },
+                "_lineno": 4,
+                "_col_offset": 25
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core_v10_7",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "wrap_mcp",
+                  "asname": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 6,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 8,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "BinOp",
+              "_fields": {
+                "left": {
+                  "_type": "Call",
+                  "_fields": {
+                    "func": {
+                      "_type": "Name",
+                      "_fields": {
+                        "id": "list",
+                        "ctx": {
+                          "_type": "Load",
+                          "_fields": {}
+                        }
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 10
+                    },
+                    "args": [
+                      {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "_STACK_EXPORTS",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 8,
+                        "_col_offset": 15
+                      }
+                    ],
+                    "keywords": []
+                  },
+                  "_lineno": 8,
+                  "_col_offset": 10
+                },
+                "op": {
+                  "_type": "Add",
+                  "_fields": {}
+                },
+                "right": {
+                  "_type": "List",
+                  "_fields": {
+                    "elts": [
+                      {
+                        "_type": "Constant",
+                        "_fields": {
+                          "value": "wrap_mcp",
+                          "kind": "None"
+                        },
+                        "_lineno": 8,
+                        "_col_offset": 34
+                      }
+                    ],
+                    "ctx": {
+                      "_type": "Load",
+                      "_fields": {}
+                    }
+                  },
+                  "_lineno": 8,
+                  "_col_offset": 33
+                }
+              },
+              "_lineno": 8,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 22,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 3
+  }
+}

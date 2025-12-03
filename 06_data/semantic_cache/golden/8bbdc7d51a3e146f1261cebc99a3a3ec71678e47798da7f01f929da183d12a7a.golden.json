@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "8bbdc7d51a3e146f1261cebc99a3a3ec71678e47798da7f01f929da183d12a7a",
+  "content_hash": "724dc2d52cde6c0d8d207d2ec5e936351c5e9014c3812c3a261250fac1c0444d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\_deprecated\\test_integration_security.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_integration_security.py",
+    "file_size": 5932,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "8bbdc7d51a3e146f1261cebc99a3a3ec71678e47798da7f01f929da183d12a7a",
+    "scan_timestamp": "2025-12-03T06:21:11.343138"
+  },
+  "content_preview": "\"\"\"Integration Tests for Security and Injection Detection\n\nTests integration between injection detection, dependency injection,\nand V6 prompt systems to ensure end-to-end security flows work correctly.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock\nfrom datetime import datetime\n\nfrom l5.injection_detection import InjectionDetector, create_injection_safety_policy\nfrom l5.types import SafetyContext, Severity, Verdict\nfrom infra.di_container import initialize_default_services, inject_dependencie...",
+  "creation_timestamp": "2025-12-03T06:21:17.747713",
+  "version": "1.0"
+}

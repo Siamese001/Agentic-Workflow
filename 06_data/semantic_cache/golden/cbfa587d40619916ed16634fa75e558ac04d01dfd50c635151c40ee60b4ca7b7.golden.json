@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cbfa587d40619916ed16634fa75e558ac04d01dfd50c635151c40ee60b4ca7b7",
+  "content_hash": "cbfa587d40619916ed16634fa75e558ac04d01dfd50c635151c40ee60b4ca7b7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_v11_1_FIXES_APPLIED.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_v11_1_FIXES_APPLIED.md",
+    "file_size": 7323,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "cbfa587d40619916ed16634fa75e558ac04d01dfd50c635151c40ee60b4ca7b7",
+    "scan_timestamp": "2025-12-03T06:21:11.622204"
+  },
+  "content_preview": "# LIC v11.1 - ALL FIXES APPLIED SUCCESSFULLY \u2705\n\n**Date:** October 29, 2025  \n**Status:** \ud83c\udf89 **100% PASS RATE ACHIEVED**\n\n---\n\n## TEST RESULTS\n\n```\n============================= 43 passed in 16.71s ==============================\n```\n\n| Metric | Before | After | Change |\n|--------|--------|-------|--------|\n| **Total Tests** | 43 | 43 | - |\n| **Passed** | 38 | **43** | +5 \u2705 |\n| **Failed** | 5 | **0** | -5 \u2705 |\n| **Pass Rate** | 88.4% | **100%** | +11.6% \u2705 |\n\n---\n\n## FIXES APPLIED\n\n### 1. \u2705 Test Fixt...",
+  "creation_timestamp": "2025-12-03T06:21:41.486506",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f2c8b0420288e085a11a52308599f63db9328e3906934da0a9a3eadb01f5e74b",
+  "content_hash": "36a29f49af6c7d42ffa137cd64b35ee0bae520cda603e8c5a959a0da15bc74b6",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\_deprecated\\test_instructional_prompts.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_instructional_prompts.py",
+    "file_size": 9977,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f2c8b0420288e085a11a52308599f63db9328e3906934da0a9a3eadb01f5e74b",
+    "scan_timestamp": "2025-12-03T06:21:11.342915"
+  },
+  "content_preview": "\"\"\"Tests for Instructional Injection v6 Prompts and Many-Shot Examples\n\nThis module validates:\n- v6 prompt structure and completeness\n- Many-shot example quality\n- Prompt integration with agents\n- Layer and extension functionality\n\"\"\"\n\nimport pytest\nfrom l1.instructional_injection_v6 import (\n    InstructionalPrompt,\n    InstructionalLayer,\n    InstructionalExtension,\n    LayerContent,\n    ExtensionContent,\n    create_l1_planner_prompt,\n    create_l2_executor_prompt,\n    add_rag_extension,\n    a...",
+  "creation_timestamp": "2025-12-03T06:21:17.724973",
+  "version": "1.0"
+}

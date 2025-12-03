@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
+  "content_hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\integration\\test_safe_route_equivalence.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_safe_route_equivalence.py",
+    "file_size": 451,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
+    "scan_timestamp": "2025-12-03T06:21:11.513404"
+  },
+  "content_preview": "from src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs\n\n\nclass _Inputs:\n    prompt = \"Hello\"\n    company_id = \"ACME\"\n    contact_id = \"C1\"\n\n\ndef test_safe_route_equivalence():\n    stack = OutreachStack(ReasoningToggles())\n    out = stack.run(StackInputs(prompt=\"Hello\", company_id=\"ACME\", contact_id=\"C1\"))\n    assert \"draft\" in out\n    assert out[\"verdict\"].passed\n",
+  "creation_timestamp": "2025-12-03T06:21:34.906054",
+  "version": "1.0"
+}

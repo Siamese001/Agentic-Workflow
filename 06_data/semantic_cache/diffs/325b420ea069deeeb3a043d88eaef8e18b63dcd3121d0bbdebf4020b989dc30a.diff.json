@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/metacognition/test_meta_ranking.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores\nfrom core.models.models import Evidence\n\n\ndef _make_item(text: str) -> Dict[str, Any]:\n    return {\"text\": text}\n\n\ndef test_bm25_score_prefers_important_tokens() -> None:\n    low = bm25_score(_make_item(\"foo bar\"))\n    high = bm25_score(_make_item(\"llm resume experience\"))\n    assert high >= low\n\n\ndef test_dense_score_is_deterministic() -> None:\n    a1 = dense_score(_make_item(\"some text\"))\n    a2 = dense_score(_make_item(\"some text\"))\n    b = dense_score(_make_item(\"different text\"))\n    assert a1 == a2\n    assert a1 != b\n\n\ndef test_normalize_scores_range_and_relative_order() -> None:\n    e1 = Evidence(text=\"a\", score=1.0, source=\"s\", metadata={})\n    e2 = Evidence(text=\"b\", score=3.0, source=\"s\", metadata={})\n    e3 = Evidence(text=\"c\", score=2.0, source=\"s\", metadata={})\n\n    out = normalize_scores([e1, e2, e3])\n    scores = [e.score for e in out]\n    assert all(0.0 <= s <= 1.0 for s in scores)\n    assert max(scores) == 1.0\n\n\ndef test_merge_scores_deduplicates_by_source_and_text() -> None:\n    e1 = Evidence(text=\"x\", score=1.0, source=\"job\", metadata={})\n    e2 = Evidence(text=\"x\", score=0.5, source=\"job\", metadata={})\n    e3 = Evidence(text=\"x\", score=0.2, source=\"resume\", metadata={})\n\n    merged = merge_scores([e1, e2, e3])\n    assert merged[0].source == \"job\"\n    assert merged[0].text == \"x\"\n    assert merged[1].source == \"resume\"\n    assert len(merged) == 2\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 53,
+    "lines_removed": 0,
+    "lines_changed": 53
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

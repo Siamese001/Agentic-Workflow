@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
+  "content_hash": "335e6aab938ba0717d5f18f4aab0ace66fedddbfbceb4d3207748e412554701f",
+  "file_size": 903,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "eval\\health\\adapter.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\adapter.py",
+    "file_size": 903,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
+    "scan_timestamp": "2025-12-03T06:21:11.232707"
+  },
+  "verification_timestamp": "2025-12-03T06:21:12.603795",
+  "checksums": {
+    "sha256": "335e6aab938ba0717d5f18f4aab0ace66fedddbfbceb4d3207748e412554701f",
+    "md5": "99c3f64c470602004b96c22866795456"
+  }
+}

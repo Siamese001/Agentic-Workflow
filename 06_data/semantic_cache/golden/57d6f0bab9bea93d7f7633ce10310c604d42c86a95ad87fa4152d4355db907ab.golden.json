@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "57d6f0bab9bea93d7f7633ce10310c604d42c86a95ad87fa4152d4355db907ab",
+  "content_hash": "0c6d7f17e5dc559df3f8729f5f888d75097b073ac04f4976eb9e73a2b770b044",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L1_planning\\fixtures\\l1_fixtures.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\fixtures\\l1_fixtures.py",
+    "file_size": 464,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "57d6f0bab9bea93d7f7633ce10310c604d42c86a95ad87fa4152d4355db907ab",
+    "scan_timestamp": "2025-12-03T06:21:11.309293"
+  },
+  "content_preview": "\"\"\"L1 Planning Layer Fixtures.\"\"\"\nimport pytest\n\n@pytest.fixture\ndef mock_workflow_config():\n    \"\"\"Fixture providing mock workflow configuration.\"\"\"\n    return {\n        \"profile_id\": \"test_profile\",\n        \"enable_rag\": True,\n        \"enable_qa\": True,\n    }\n\n@pytest.fixture\ndef mock_job_input():\n    \"\"\"Fixture providing mock job input.\"\"\"\n    return {\n        \"title\": \"Software Engineer\",\n        \"requirements\": [\"Python\", \"AWS\"],\n    }\n",
+  "creation_timestamp": "2025-12-03T06:21:16.664488",
+  "version": "1.0"
+}

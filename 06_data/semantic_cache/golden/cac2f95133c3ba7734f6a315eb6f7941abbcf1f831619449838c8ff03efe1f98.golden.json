@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cac2f95133c3ba7734f6a315eb6f7941abbcf1f831619449838c8ff03efe1f98",
+  "content_hash": "cac2f95133c3ba7734f6a315eb6f7941abbcf1f831619449838c8ff03efe1f98",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "vendor\\anthropic_stub\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\vendor\\anthropic_stub\\__init__.py",
+    "file_size": 2153,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cac2f95133c3ba7734f6a315eb6f7941abbcf1f831619449838c8ff03efe1f98",
+    "scan_timestamp": "2025-12-03T06:21:11.455745"
+  },
+  "content_preview": "\"\"\"\nanthropic_stub \u2013 safe, minimal test stub for Anthropic.\n\nThis DOES NOT override the real SDK in runtime.\nIt ONLY serves as an optional testing fallback.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\n\n\n# ---------------------------------------------------------------------\n# Utility: fake usage stats\n# ---------------------------------------------------------------------\ndef _fake_usage() -> Dict[str, int...",
+  "creation_timestamp": "2025-12-03T06:21:25.084355",
+  "version": "1.0"
+}

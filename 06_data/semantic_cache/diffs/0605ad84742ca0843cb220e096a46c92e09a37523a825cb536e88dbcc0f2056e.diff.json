@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/sandbox/networking.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Dict, List\n\n\ndef default_network_policy() -> Dict[str, object]:\n    \"\"\"Return the default network policy for sandboxed execution.\n\n    By default all outbound network access is disabled.\n    \"\"\"\n\n    return {\n        \"allow_network\": False,\n        \"allowlist\": [],\n    }\n\n\ndef is_destination_allowed(policy: Dict[str, object], host: str) -> bool:\n    if not policy.get(\"allow_network\"):\n        return False\n    allowlist: List[str] = list(policy.get(\"allowlist\", []) or [])\n    return host in allowlist\n\n\n\n",
+  "statistics": {
+    "lines_added": 25,
+    "lines_removed": 0,
+    "lines_changed": 25
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

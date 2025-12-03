@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "3c6c85b8004a23b69a971c9a0893beb66889d00f98f47ac9a6c9389f536f803c",
+  "content_hash": "5c3d4e099fbd226067c6b249763b3a320ddfd0a80a91c279ec5062aa43672000",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\sandbox\\sandbox_errors.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\sandbox_errors.py",
+    "file_size": 482,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "3c6c85b8004a23b69a971c9a0893beb66889d00f98f47ac9a6c9389f536f803c",
+    "scan_timestamp": "2025-12-03T06:21:11.243372"
+  },
+  "content_preview": "from __future__ import annotations\n\n\nclass SandboxError(RuntimeError):\n    \"\"\"Base class for sandbox-related errors.\"\"\"\n\n\nclass SandboxTimeoutError(SandboxError):\n    \"\"\"Raised when a tool call exceeds its allowed timeout inside the VM.\"\"\"\n\n\nclass SandboxExecutionError(SandboxError):\n    \"\"\"Raised when a tool execution fails inside the VM.\"\"\"\n\n\nclass SandboxIsolationError(SandboxError):\n    \"\"\"Raised when an isolation invariant appears to be violated.\"\"\"\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:12.917795",
+  "version": "1.0"
+}

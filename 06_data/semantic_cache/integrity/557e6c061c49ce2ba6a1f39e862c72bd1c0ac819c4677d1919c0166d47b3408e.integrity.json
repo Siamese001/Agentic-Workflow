@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
+  "content_hash": "3c6864d106238bd09e6b8bf2f7e7ce34a1a9deb627ee659c19cf0b21968e2fc0",
+  "file_size": 29216,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\fusion_governance.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\fusion_governance.py",
+    "file_size": 29216,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
+    "scan_timestamp": "2025-12-03T06:21:11.276784"
+  },
+  "verification_timestamp": "2025-12-03T06:21:15.369370",
+  "checksums": {
+    "sha256": "3c6864d106238bd09e6b8bf2f7e7ce34a1a9deb627ee659c19cf0b21968e2fc0",
+    "md5": "b04549b20890d161b5b3b06ccf8d73a5"
+  }
+}

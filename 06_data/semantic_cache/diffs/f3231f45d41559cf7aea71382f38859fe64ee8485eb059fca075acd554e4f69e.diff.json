@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_8/conftest.py",
+  "diff_content": "pytest_plugins = [\"tests.shared.conftest\"]\n",
+  "statistics": {
+    "lines_added": 1,
+    "lines_removed": 0,
+    "lines_changed": 1
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "c35cbc50152b952b2f3fc225759c5ce1dce6e003b98aa8079673ad8ccbfbd759",
+  "content_hash": "c35cbc50152b952b2f3fc225759c5ce1dce6e003b98aa8079673ad8ccbfbd759",
+  "file_size": 269,
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\agents\\k6_signature_agent.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k6_signature_agent.py",
+    "file_size": 269,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c35cbc50152b952b2f3fc225759c5ce1dce6e003b98aa8079673ad8ccbfbd759",
+    "scan_timestamp": "2025-12-03T06:21:11.499810"
+  },
+  "verification_timestamp": "2025-12-03T06:21:34.294848",
+  "checksums": {
+    "sha256": "c35cbc50152b952b2f3fc225759c5ce1dce6e003b98aa8079673ad8ccbfbd759",
+    "md5": "bf7b07461f763ddb572d52c3fb2e8b78"
+  }
+}

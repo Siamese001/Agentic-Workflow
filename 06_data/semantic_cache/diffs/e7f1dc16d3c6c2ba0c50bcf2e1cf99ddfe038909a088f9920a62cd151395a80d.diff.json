@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Old LIC",
+  "logical_path": "LIC_v7.4_smoke_tests.json",
+  "diff_content": "{\n  \"tests\": [\n    {\n      \"name\": \"About optional gate present\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Rerank audit block exists\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"HyDE section added\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Self-RAG triggers added\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Runtime toggles merged\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"Metadata version updated\",\n      \"pass\": true\n    }\n  ]\n}",
+  "statistics": {
+    "lines_added": 28,
+    "lines_removed": 0,
+    "lines_changed": 28
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

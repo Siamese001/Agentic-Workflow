@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b6754d04989d4615e358545c694dad26e0ba2a149bb6200fec031e7e98acc5cd",
+  "content_hash": "b6754d04989d4615e358545c694dad26e0ba2a149bb6200fec031e7e98acc5cd",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_9.26.2025_v7.5.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.26.2025_v7.5.json",
+    "file_size": 128490,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "b6754d04989d4615e358545c694dad26e0ba2a149bb6200fec031e7e98acc5cd",
+    "scan_timestamp": "2025-12-03T06:21:11.609384"
+  },
+  "content_preview": "{\n  \"1.role\": {\n    \"standards\": {\n      \"audit_ready_qa\": {\n        \"end_to_end\": true,\n        \"enforce\": [\n          \"QA Tables\",\n          \"Schema Enforcement\"\n        ]\n      },\n      \"reasoning_isolation\": {\n        \"confined_to_section\": 4,\n        \"enforced\": true,\n        \"methods_allowed\": [\n          \"CoT\",\n          \"ToT\",\n          \"Self-Consistency\",\n          \"Reflexion\"\n        ]\n      },\n      \"strict_mzlo\": {\n        \"record_conformance\": true,\n        \"requirements\": [\n       ...",
+  "creation_timestamp": "2025-12-03T06:21:39.280201",
+  "version": "1.0"
+}

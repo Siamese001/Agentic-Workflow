@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "1b76b555fba480ed9dc32e8954ad97a254db90bd84cb635eeee6c61b08c452fd",
+  "content_hash": "5720eb0262e420b534d228d11e7cfbfd30d8cac5603b9e81b641aff1e26ac896",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\refactoring\\11-24-2025\\phase_c_l2_execution\\README_PHASE_C.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\11-24-2025\\phase_c_l2_execution\\README_PHASE_C.md",
+    "file_size": 3624,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "1b76b555fba480ed9dc32e8954ad97a254db90bd84cb635eeee6c61b08c452fd",
+    "scan_timestamp": "2025-12-03T06:21:11.291844"
+  },
+  "content_preview": "# Phase C \u2014 L2 Pure Execution Layer Refactoring\n\n**Date**: 2024-11-24  \n**Objective**: Refactor L2 to be a pure execution layer with no planning, reasoning, or orchestration logic.\n\n## Directory Structure\n\n```\nrefactoring/2024-11-24/phase_c_l2_pure_execution/\n\u251c\u2500\u2500 README.md                    # This file\n\u251c\u2500\u2500 PHASE_C_SUMMARY.md          # Detailed summary of changes\n\u251c\u2500\u2500 l2.py                       # New pure execution L2 implementation\n\u2514\u2500\u2500 l1_planning.py              # Temporary stub for L1 planni...",
+  "creation_timestamp": "2025-12-03T06:21:16.002618",
+  "version": "1.0"
+}

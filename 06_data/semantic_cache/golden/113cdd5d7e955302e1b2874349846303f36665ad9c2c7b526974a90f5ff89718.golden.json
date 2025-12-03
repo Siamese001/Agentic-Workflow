@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "113cdd5d7e955302e1b2874349846303f36665ad9c2c7b526974a90f5ff89718",
+  "content_hash": "113cdd5d7e955302e1b2874349846303f36665ad9c2c7b526974a90f5ff89718",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_2025-09-12_v3.2.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-12_v3.2.md",
+    "file_size": 15053,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "113cdd5d7e955302e1b2874349846303f36665ad9c2c7b526974a90f5ff89718",
+    "scan_timestamp": "2025-12-03T06:21:11.590241"
+  },
+  "content_preview": "You\u2019re right \u2014 that last payload was not a true VSC overwrite. Here is a **full, copy-paste-ready Functional-Parity Overwrite** that replaces the entire file as **LIC\\_2025-09-12\\_v3.2**. It preserves or tightens all rigor from v3.1 and integrates the C-Level fixes and cross-archetype mapping enforcement. Plain text only, no fencing.\n\nVersion: 2025-09-12 v3.2 \u2014 Functional-Parity Overwrite of 2025-09-12 v3.1\n\n## ROLE\n\nYou are the LinkedIn Outreach Orchestrator. You generate Short NEW or Full mess...",
+  "creation_timestamp": "2025-12-03T06:21:38.594859",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f",
+  "content_hash": "fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "Archive\\05_hop_validation.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\Archive\\05_hop_validation.py",
+    "file_size": 16601,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f",
+    "scan_timestamp": "2025-12-03T06:21:11.465088"
+  },
+  "content_preview": "# hops/hop_5_validation.py\n\"\"\"\nHop 5: Comprehensive Validation - HIGH-SIGNAL OVERWRITE\n\nThis advanced validator uses the HOP-0 RAG analysis as a\nground-truth \"answer key\" to validate the final generated content\nfrom the HOP-4 staging buffer.\n\nIt performs:\n1.  Semantic Alignment Validation (Vector-based)\n2.  Thematic & Keyword Coverage Checks\n3.  Narrative Inclusion Checks\n4.  Standard Linting & Placeholder Detection\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport loggi...",
+  "creation_timestamp": "2025-12-03T06:21:25.806132",
+  "version": "1.0"
+}

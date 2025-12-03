@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "827612251718a8af90201cc7a6637111e787a752271560993553ede595be76d9",
+  "content_hash": "d65fdc49b5cae7fb87a10bfec9b37b8513870bf7e5ad3de4b2422ecd43873810",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l1\\prompt_builder.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\prompt_builder.py",
+    "file_size": 1662,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "827612251718a8af90201cc7a6637111e787a752271560993553ede595be76d9",
+    "scan_timestamp": "2025-12-03T06:21:11.250999"
+  },
+  "content_preview": "\"\"\"\nL1 Prompt Builder for resume generation prompt construction.\n\nCreates structured prompts for consistent resume improvement\nand optimal job alignment.\n\"\"\"\n\nfrom typing import Any\n\nclass PromptBuilder:\n    \"\"\"\n    Builds prompts for resume generation without execution logic.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    \n    @staticmethod\n    def build_strategy_prompt(strategy_plan: Any, job: Any, resume: Any, config: Any) -> str:\n     ...",
+  "creation_timestamp": "2025-12-03T06:21:13.390808",
+  "version": "1.0"
+}

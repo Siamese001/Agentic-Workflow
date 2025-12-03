@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "orchestration/models/__init__.py",
+  "diff_content": "\"\"\"\nOrchestration layer data models.\n\nThis module provides data models specific to orchestration operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nfrom datetime import datetime\n\n# Import DAG models from core.models for backward compatibility\nfrom core.models.dag_models import *\n\n\nclass OrchestrationStatus(str, Enum):\n    \"\"\"Status of orchestration operations.\"\"\"\n    PENDING = \"pending\"\n    RUNNING = \"running\"\n    COMPLETED = \"completed\"\n    FAILED = \"failed\"\n    CANCELLED = \"cancelled\"\n\n\n@dataclass\nclass OrchestrationContext:\n    \"\"\"Context for orchestration operations.\"\"\"\n    workflow_id: str\n    execution_id: str\n    status: OrchestrationStatus = OrchestrationStatus.PENDING\n    created_at: datetime = field(default_factory=datetime.now)\n    updated_at: datetime = field(default_factory=datetime.now)\n    metadata: Dict[str, Any] = field(default_factory=dict)\n\n\n@dataclass\nclass NodeExecution:\n    \"\"\"Represents execution of a single node in the orchestration graph.\"\"\"\n    node_id: str\n    workflow_id: str\n    status: OrchestrationStatus = OrchestrationStatus.PENDING\n    start_time: Optional[datetime] = None\n    end_time: Optional[datetime] = None\n    result: Optional[Any] = None\n    error: Optional[str] = None\n\n\n@dataclass\nclass WorkflowExecution:\n    \"\"\"Represents execution of an entire workflow.\"\"\"\n    workflow_id: str\n    execution_id: str\n    nodes: List[NodeExecution] = field(default_factory=list)\n    status: OrchestrationStatus = OrchestrationStatus.PENDING\n    start_time: datetime = field(default_factory=datetime.now)\n    end_time: Optional[datetime] = None\n    context: OrchestrationContext = field(default_factory=OrchestrationContext)\n",
+  "statistics": {
+    "lines_added": 59,
+    "lines_removed": 0,
+    "lines_changed": 59
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

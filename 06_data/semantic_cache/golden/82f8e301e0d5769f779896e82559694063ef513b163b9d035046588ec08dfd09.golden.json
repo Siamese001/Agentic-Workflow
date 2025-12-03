@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
+  "content_hash": "6de67c82e67ce3665dbf96517222aac91a3689cf9e30533eaee784a8e7bc9a92",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\metacognition\\test_hypothesis_evaluation.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_hypothesis_evaluation.py",
+    "file_size": 702,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
+    "scan_timestamp": "2025-12-03T06:21:11.326760"
+  },
+  "content_preview": "from meta.metacognition.evaluator import evaluate_hypotheses\nfrom meta.metacognition.models import Hypothesis\n\n\ndef test_evaluate_penalizes_no_evidence():\n    h = Hypothesis(\n        id=\"h1\",\n        agent_id=\"a1\",\n        content=\"short\",\n        confidence=1.0,\n        evidence_ids=[],\n    )\n\n    evaluated = evaluate_hypotheses([h])[0]\n    assert evaluated.confidence < 1.0\n\n\ndef test_evaluate_clamps_confidence_range():\n    h = Hypothesis(\n        id=\"h1\",\n        agent_id=\"a1\",\n        content...",
+  "creation_timestamp": "2025-12-03T06:21:17.102321",
+  "version": "1.0"
+}

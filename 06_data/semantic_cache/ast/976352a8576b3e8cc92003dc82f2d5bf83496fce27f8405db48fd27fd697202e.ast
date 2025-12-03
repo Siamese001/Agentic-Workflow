@@ -1,0 +1,693 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Stress Tests for Parallel Agents.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "TestStressParallelAgents",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Stress tests for parallel agent execution.",
+                      "kind": "None"
+                    },
+                    "_lineno": 4,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 4,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "test_many_parallel_agents",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 6,
+                          "_col_offset": 34
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Test many parallel agents.",
+                            "kind": "None"
+                          },
+                          "_lineno": 7,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 7,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "agent_count",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 8,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "50",
+                            "kind": "None"
+                          },
+                          "_lineno": 8,
+                          "_col_offset": 22
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 8,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "results",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 9,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "ListComp",
+                          "_fields": {
+                            "elt": {
+                              "_type": "Dict",
+                              "_fields": {
+                                "keys": [
+                                  {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "agent",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 9,
+                                    "_col_offset": 20
+                                  },
+                                  {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "done",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 9,
+                                    "_col_offset": 43
+                                  }
+                                ],
+                                "values": [
+                                  {
+                                    "_type": "JoinedStr",
+                                    "_fields": {
+                                      "values": [
+                                        {
+                                          "_type": "Constant",
+                                          "_fields": {
+                                            "value": "agent_",
+                                            "kind": "None"
+                                          },
+                                          "_lineno": 9,
+                                          "_col_offset": 31
+                                        },
+                                        {
+                                          "_type": "FormattedValue",
+                                          "_fields": {
+                                            "value": {
+                                              "_type": "Name",
+                                              "_fields": {
+                                                "id": "i",
+                                                "ctx": {
+                                                  "_type": "Load",
+                                                  "_fields": {}
+                                                }
+                                              },
+                                              "_lineno": 9,
+                                              "_col_offset": 38
+                                            },
+                                            "conversion": "-1",
+                                            "format_spec": "None"
+                                          },
+                                          "_lineno": 9,
+                                          "_col_offset": 37
+                                        }
+                                      ]
+                                    },
+                                    "_lineno": 9,
+                                    "_col_offset": 29
+                                  },
+                                  {
+                                    "_type": "Constant",
+                                    "_fields": {
+                                      "value": "True",
+                                      "kind": "None"
+                                    },
+                                    "_lineno": 9,
+                                    "_col_offset": 51
+                                  }
+                                ]
+                              },
+                              "_lineno": 9,
+                              "_col_offset": 19
+                            },
+                            "generators": [
+                              {
+                                "_type": "comprehension",
+                                "_fields": {
+                                  "target": {
+                                    "_type": "Name",
+                                    "_fields": {
+                                      "id": "i",
+                                      "ctx": {
+                                        "_type": "Store",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 9,
+                                    "_col_offset": 61
+                                  },
+                                  "iter": {
+                                    "_type": "Call",
+                                    "_fields": {
+                                      "func": {
+                                        "_type": "Name",
+                                        "_fields": {
+                                          "id": "range",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 9,
+                                        "_col_offset": 66
+                                      },
+                                      "args": [
+                                        {
+                                          "_type": "Name",
+                                          "_fields": {
+                                            "id": "agent_count",
+                                            "ctx": {
+                                              "_type": "Load",
+                                              "_fields": {}
+                                            }
+                                          },
+                                          "_lineno": 9,
+                                          "_col_offset": 72
+                                        }
+                                      ],
+                                      "keywords": []
+                                    },
+                                    "_lineno": 9,
+                                    "_col_offset": 66
+                                  },
+                                  "ifs": [],
+                                  "is_async": "0"
+                                }
+                              }
+                            ]
+                          },
+                          "_lineno": 9,
+                          "_col_offset": 18
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 9,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assert",
+                      "_fields": {
+                        "test": {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Call",
+                              "_fields": {
+                                "func": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "len",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 10,
+                                  "_col_offset": 15
+                                },
+                                "args": [
+                                  {
+                                    "_type": "Name",
+                                    "_fields": {
+                                      "id": "results",
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 10,
+                                    "_col_offset": 19
+                                  }
+                                ],
+                                "keywords": []
+                              },
+                              "_lineno": 10,
+                              "_col_offset": 15
+                            },
+                            "ops": [
+                              {
+                                "_type": "Eq",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "50",
+                                  "kind": "None"
+                                },
+                                "_lineno": 10,
+                                "_col_offset": 31
+                              }
+                            ]
+                          },
+                          "_lineno": 10,
+                          "_col_offset": 15
+                        },
+                        "msg": "None"
+                      },
+                      "_lineno": 10,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assert",
+                      "_fields": {
+                        "test": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "all",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 11,
+                              "_col_offset": 15
+                            },
+                            "args": [
+                              {
+                                "_type": "GeneratorExp",
+                                "_fields": {
+                                  "elt": {
+                                    "_type": "Subscript",
+                                    "_fields": {
+                                      "value": {
+                                        "_type": "Name",
+                                        "_fields": {
+                                          "id": "r",
+                                          "ctx": {
+                                            "_type": "Load",
+                                            "_fields": {}
+                                          }
+                                        },
+                                        "_lineno": 11,
+                                        "_col_offset": 19
+                                      },
+                                      "slice": {
+                                        "_type": "Constant",
+                                        "_fields": {
+                                          "value": "done",
+                                          "kind": "None"
+                                        },
+                                        "_lineno": 11,
+                                        "_col_offset": 21
+                                      },
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 11,
+                                    "_col_offset": 19
+                                  },
+                                  "generators": [
+                                    {
+                                      "_type": "comprehension",
+                                      "_fields": {
+                                        "target": {
+                                          "_type": "Name",
+                                          "_fields": {
+                                            "id": "r",
+                                            "ctx": {
+                                              "_type": "Store",
+                                              "_fields": {}
+                                            }
+                                          },
+                                          "_lineno": 11,
+                                          "_col_offset": 33
+                                        },
+                                        "iter": {
+                                          "_type": "Name",
+                                          "_fields": {
+                                            "id": "results",
+                                            "ctx": {
+                                              "_type": "Load",
+                                              "_fields": {}
+                                            }
+                                          },
+                                          "_lineno": 11,
+                                          "_col_offset": 38
+                                        },
+                                        "ifs": [],
+                                        "is_async": "0"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "_lineno": 11,
+                                "_col_offset": 18
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 11,
+                          "_col_offset": 15
+                        },
+                        "msg": "None"
+                      },
+                      "_lineno": 11,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 6,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "test_parallel_agent_resource_usage",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 13,
+                          "_col_offset": 43
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Test parallel agent resource usage.",
+                            "kind": "None"
+                          },
+                          "_lineno": 14,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 14,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "agents",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 15,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "20",
+                            "kind": "None"
+                          },
+                          "_lineno": 15,
+                          "_col_offset": 17
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 15,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "memory_per_agent",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 16,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "10",
+                            "kind": "None"
+                          },
+                          "_lineno": 16,
+                          "_col_offset": 27
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 16,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "total_memory",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 17,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "BinOp",
+                          "_fields": {
+                            "left": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "agents",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 17,
+                              "_col_offset": 23
+                            },
+                            "op": {
+                              "_type": "Mult",
+                              "_fields": {}
+                            },
+                            "right": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "memory_per_agent",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 17,
+                              "_col_offset": 32
+                            }
+                          },
+                          "_lineno": 17,
+                          "_col_offset": 23
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 17,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assert",
+                      "_fields": {
+                        "test": {
+                          "_type": "Compare",
+                          "_fields": {
+                            "left": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "total_memory",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 18,
+                              "_col_offset": 15
+                            },
+                            "ops": [
+                              {
+                                "_type": "Eq",
+                                "_fields": {}
+                              }
+                            ],
+                            "comparators": [
+                              {
+                                "_type": "Constant",
+                                "_fields": {
+                                  "value": "200",
+                                  "kind": "None"
+                                },
+                                "_lineno": 18,
+                                "_col_offset": 31
+                              }
+                            ]
+                          },
+                          "_lineno": 18,
+                          "_col_offset": 15
+                        },
+                        "msg": "None"
+                      },
+                      "_lineno": 18,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 88,
+    "function_count": 2,
+    "class_count": 1,
+    "import_count": 0
+  }
+}

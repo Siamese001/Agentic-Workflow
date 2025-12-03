@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+  "content_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "gemini_service.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\gemini_service.py",
+    "file_size": 24330,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+    "scan_timestamp": "2025-12-03T06:21:11.473945"
+  },
+  "content_preview": "# File: gemini_service.py\n# Version: 2.0.2 (Patched) - Production Ready (Config-Managed Constants)\n# Unified Gemini API Service - Hardened for Production\n# Centralizes all Gemini API call logic for the Resume Generation Engine\n\nimport json\nimport logging\nimport os\nimport re\nimport time\nimport hashlib\nfrom typing import Any, Dict, List, Optional, Tuple\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n# Robust import handling for google-generativeai\ntry:\n    import google.generativeai as g...",
+  "creation_timestamp": "2025-12-03T06:21:28.888311",
+  "version": "1.0"
+}

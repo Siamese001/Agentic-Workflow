@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bb6efbb4b354ed76c3d0ad07559ee1fbcac2e68193032d252b9ef6ef479cbc47",
+  "content_hash": "bb6efbb4b354ed76c3d0ad07559ee1fbcac2e68193032d252b9ef6ef479cbc47",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\telemetry\\__init__.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\telemetry\\__init__.py",
+    "file_size": 252,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bb6efbb4b354ed76c3d0ad07559ee1fbcac2e68193032d252b9ef6ef479cbc47",
+    "scan_timestamp": "2025-12-03T06:21:11.507107"
+  },
+  "content_preview": "\"\"\"Telemetry utilities for adaptive policy tuning.\"\"\"\nfrom .policy_controller import PolicyController, PolicyUpdate\n\n__all__ = [\"PolicyController\", \"PolicyUpdate\"]\n\n\ndef _touch_exports() -> tuple[str, ...]:\n    return tuple(__all__)\n\n\n_touch_exports()\n",
+  "creation_timestamp": "2025-12-03T06:21:34.543180",
+  "version": "1.0"
+}

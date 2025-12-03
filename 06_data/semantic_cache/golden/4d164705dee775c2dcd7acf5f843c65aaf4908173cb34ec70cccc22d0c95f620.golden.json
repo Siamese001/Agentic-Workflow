@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "4d164705dee775c2dcd7acf5f843c65aaf4908173cb34ec70cccc22d0c95f620",
+  "content_hash": "4d164705dee775c2dcd7acf5f843c65aaf4908173cb34ec70cccc22d0c95f620",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "tests\\unit\\test_rag_init.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_rag_init.py",
+    "file_size": 317,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "4d164705dee775c2dcd7acf5f843c65aaf4908173cb34ec70cccc22d0c95f620",
+    "scan_timestamp": "2025-12-03T06:21:11.518813"
+  },
+  "content_preview": "import importlib\n\n\ndef test_rag_package_exports_expected_symbols():\n    module = importlib.import_module(\"src.lic_agentic.rag\")\n    for symbol in [\n        \"ContentStore\",\n        \"EvidenceRegistry\",\n        \"RetrievalPlan\",\n        \"ToolRegistry\",\n        \"ToolResult\",\n    ]:\n        assert hasattr(module, symbol)\n",
+  "creation_timestamp": "2025-12-03T06:21:35.074250",
+  "version": "1.0"
+}

@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "e24fab01e678474dc52f33fe4b81211b203ea5e33c2ceab805fe7748a1302550",
+  "content_hash": "e24fab01e678474dc52f33fe4b81211b203ea5e33c2ceab805fe7748a1302550",
+  "file_size": 733,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\integration\\test_sla_latency_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_sla_latency_v10_7.py",
+    "file_size": 733,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e24fab01e678474dc52f33fe4b81211b203ea5e33c2ceab805fe7748a1302550",
+    "scan_timestamp": "2025-12-03T06:21:11.416439"
+  },
+  "verification_timestamp": "2025-12-03T06:21:23.701653",
+  "checksums": {
+    "sha256": "e24fab01e678474dc52f33fe4b81211b203ea5e33c2ceab805fe7748a1302550",
+    "md5": "0417243072dae67e74b0bb4e5d4b94a2"
+  }
+}

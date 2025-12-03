@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cd11eb61bde24f6b90da425a36f8d554dd22980d96a83d5586ae91d5a9a6a96a",
+  "content_hash": "cd11eb61bde24f6b90da425a36f8d554dd22980d96a83d5586ae91d5a9a6a96a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\simulations\\test_safety_sim.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\simulations\\test_safety_sim.py",
+    "file_size": 887,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cd11eb61bde24f6b90da425a36f8d554dd22980d96a83d5586ae91d5a9a6a96a",
+    "scan_timestamp": "2025-12-03T06:21:11.449244"
+  },
+  "content_preview": "\"\"\"Tests for safety simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.safety_sim import SafetySimulator\nfrom simulations.models import SafetySimRequest\n\n\n@pytest.mark.asyncio\nasync def test_safety_simulator_returns_result():\n    simulator = SafetySimulator()\n    request = SafetySimRequest(\n        simulation_id=\"sim-safety\",\n        payload={},\n        text=\"Some text that might contain pii.\",\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <...",
+  "creation_timestamp": "2025-12-03T06:21:24.916804",
+  "version": "1.0"
+}

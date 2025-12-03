@@ -1,0 +1,77 @@
+{
+  "pipeline_id": "20251203_062111",
+  "start_time": "2025-12-03T06:21:11.067369",
+  "status": "RUNNING",
+  "dry_run": false,
+  "steps": [
+    {
+      "step_id": "SSOT_LOAD",
+      "step_name": "Load and validate SSoT",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T06:21:11.067517",
+      "end_time": "2025-12-03T06:21:11.220540",
+      "error_message": null,
+      "artifacts_created": [
+        "ssot_validation_report.json"
+      ]
+    },
+    {
+      "step_id": "ARCHIVE_SCAN",
+      "step_name": "Scan archives and compute hashes",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T06:21:11.221508",
+      "end_time": "2025-12-03T06:21:12.210535",
+      "error_message": null,
+      "artifacts_created": [
+        "archive_scan_report.json",
+        "integrity_records_1328.json"
+      ]
+    },
+    {
+      "step_id": "ARTIFACT_GENERATION",
+      "step_name": "Generate semantic artifacts",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T06:21:12.211514",
+      "end_time": "2025-12-03T06:21:43.359062",
+      "error_message": null,
+      "artifacts_created": [
+        "semantic_artifacts_1296.json"
+      ]
+    },
+    {
+      "step_id": "DUAL_WRITE",
+      "step_name": "Create global artifacts and canonical pointers",
+      "status": "COMPLETED",
+      "start_time": "2025-12-03T06:21:43.360018",
+      "end_time": "2025-12-03T06:21:43.739913",
+      "error_message": null,
+      "artifacts_created": [
+        "dual_write_report.json",
+        "unmapped_files.json"
+      ]
+    },
+    {
+      "step_id": "VALIDATION",
+      "step_name": "Run comprehensive validation",
+      "status": "FAILED",
+      "start_time": "2025-12-03T06:21:43.741039",
+      "end_time": "2025-12-03T06:22:34.753019",
+      "error_message": "Step Run comprehensive validation failed",
+      "artifacts_created": [
+        "validation_report.json"
+      ]
+    },
+    {
+      "step_id": "CLEANUP",
+      "step_name": "Final cleanup and reporting",
+      "status": "PENDING",
+      "start_time": null,
+      "end_time": null,
+      "error_message": null,
+      "artifacts_created": []
+    }
+  ],
+  "current_step": 4,
+  "total_files_processed": 0,
+  "artifacts_generated": 0
+}

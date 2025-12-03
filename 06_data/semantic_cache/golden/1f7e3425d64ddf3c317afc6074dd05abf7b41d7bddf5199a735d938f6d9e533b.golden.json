@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "1f7e3425d64ddf3c317afc6074dd05abf7b41d7bddf5199a735d938f6d9e533b",
+  "content_hash": "5176cabb342fcbffb9191f12d89dbd81942548c1499898a3880935d82c9a847d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tools\\main_v10_10.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\main_v10_10.py",
+    "file_size": 21909,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "1f7e3425d64ddf3c317afc6074dd05abf7b41d7bddf5199a735d938f6d9e533b",
+    "scan_timestamp": "2025-12-03T06:21:11.348608"
+  },
+  "content_preview": "\"\"\"\nCommand-line interface for r\u00e9sum\u00e9 analysis and job matching optimization.\n\nImproves r\u00e9sum\u00e9 quality by coordinating multi-agent workflow execution with configurable analysis parameters.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport uuid\nfrom dataclasses import dataclass, asdict\nfrom enum import Enum\nfrom typing import Any, Dict, Mapping, Sequence, Optional, Callable, TypeVar, cast\n\n# ---------------------------------------------------------------------------\n# Optional / dyn...",
+  "creation_timestamp": "2025-12-03T06:21:18.117209",
+  "version": "1.0"
+}

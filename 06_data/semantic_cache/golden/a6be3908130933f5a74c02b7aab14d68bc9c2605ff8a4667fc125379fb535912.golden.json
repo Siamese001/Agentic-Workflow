@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a6be3908130933f5a74c02b7aab14d68bc9c2605ff8a4667fc125379fb535912",
+  "content_hash": "a6be3908130933f5a74c02b7aab14d68bc9c2605ff8a4667fc125379fb535912",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "FINAL_V2_SETUP.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\FINAL_V2_SETUP.md",
+    "file_size": 3414,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "a6be3908130933f5a74c02b7aab14d68bc9c2605ff8a4667fc125379fb535912",
+    "scan_timestamp": "2025-12-03T06:21:11.473688"
+  },
+  "content_preview": "# Final V2 Architecture Setup - COMPLETE\n\n## \u2705 All Imports Fixed with _v2 Suffix\n\n### What You Should Use (V2 Files):\n\n#### Python Modules (10 files):\n1. **workflow_RES_v2.py** (180K) - Main orchestrator\n2. **run_workflow_RES_v2.py** (11K) - Launcher\n3. **config_RES_v2.py** (20K) - Configuration + GovernorConfig \u2705\n4. **utils_RES_v2.py** (33K) - Utilities + V2 tools \u2705\n5. **rag_RES_v2.py** (46K) - RAG + LibrarianAgent \u2705\n6. **prompts_RES_v2.py** (30K) - Prompt templates \u2705\n7. **validation_RES_v2.py*...",
+  "creation_timestamp": "2025-12-03T06:21:28.860245",
+  "version": "1.0"
+}

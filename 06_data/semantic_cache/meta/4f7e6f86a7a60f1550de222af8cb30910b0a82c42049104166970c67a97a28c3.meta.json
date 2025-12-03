@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "06_hop_gate.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\06_hop_gate.py",
+    "file_size": 10924,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3",
+    "scan_timestamp": "2025-12-03T06:21:11.463743"
+  },
+  "artifacts": {
+    "ast": "ast/4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3.ast",
+    "embedding": "embeddings/4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3.embedding",
+    "diff": "diffs/4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3.diff.json",
+    "safety": "safety/4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3.safety.json",
+    "golden": "golden/4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3.golden.json",
+    "integrity": "integrity/4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:25.672548",
+  "artifact_count": 6
+}

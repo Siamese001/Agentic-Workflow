@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "8510162ce2c4e0d67634acd3d2d04655100284931bbaf4c297bad09b2349b54c",
+  "content_hash": "8510162ce2c4e0d67634acd3d2d04655100284931bbaf4c297bad09b2349b54c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\telemetry\\policy_controller.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\telemetry\\policy_controller.py",
+    "file_size": 3964,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "8510162ce2c4e0d67634acd3d2d04655100284931bbaf4c297bad09b2349b54c",
+    "scan_timestamp": "2025-12-03T06:21:11.506890"
+  },
+  "content_preview": "\"\"\"Telemetry policy controller for adaptive tuning.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Mapping\n\n\ndef _clamp(value: float, minimum: float, maximum: float) -> float:\n    return max(minimum, min(value, maximum))\n\n\n@dataclass(frozen=True)\nclass PolicyUpdate:\n    \"\"\"Return value describing the latest policy adjustments.\"\"\"\n\n    budget_multiplier: float\n    temperature_cap: float\n    tot_branches: int\n    tool_weights: Dict[str, float]\n\n\nc...",
+  "creation_timestamp": "2025-12-03T06:21:34.529421",
+  "version": "1.0"
+}

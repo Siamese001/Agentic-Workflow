@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_7/integration/test_end_to_end_paths_v10_7.py",
+  "diff_content": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"resume,jd,expect_keys\", [\n    (\"Jane Doe\",\"Chief AI Officer\", [\"summary\"]),\n    (\"John Smith\",\"Director, AI\", [\"summary\"]),\n    (\"LowConf\",\"Analyst\", [\"events\"]),\n    (\"Ambiguous\",\"Unknown\", [\"events\"]),\n])\ndef test_full_run_variants(resume,jd,expect_keys):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\": resume, \"jd\": jd})\n    for k in expect_keys: assert k in out\n\n@pytest.mark.parametrize(\"scenario\", [\"batch-small\",\"batch-large\",\"parallel-merge\",\"hil-trigger\"])\ndef test_scenarios_collectively(scenario):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\": scenario, \"jd\":\"scenario\"})\n    assert isinstance(out, dict)\n",
+  "statistics": {
+    "lines_added": 17,
+    "lines_removed": 0,
+    "lines_changed": 17
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

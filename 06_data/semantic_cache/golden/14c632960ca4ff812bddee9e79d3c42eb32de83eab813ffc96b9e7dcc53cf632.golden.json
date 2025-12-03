@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632",
+  "content_hash": "b1c32f6162f9764a1d032b14933c19968041656943d1b4da00de0dd08b9efc1a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden\\test_scoring_harness.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\test_scoring_harness.py",
+    "file_size": 45851,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632",
+    "scan_timestamp": "2025-12-03T06:21:11.306616"
+  },
+  "content_preview": "\"\"\"\nScoring Harness for Quality Evaluation\n\nDeterministic quantitative metrics for resume analysis, job matching, and skill extraction.\nFocuses on structural completeness, content coverage, and format validation without LLM dependencies.\n\"\"\"\n\nimport pytest\nimport re\nfrom typing import Dict, Any, List\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport time\n\n# Mark all tests as golden evaluation tests\npytestmark = [pytest.mark.golden, pytest.mark.integration]\n\n\nclass ScoreLevel(...",
+  "creation_timestamp": "2025-12-03T06:21:16.512959",
+  "version": "1.0"
+}

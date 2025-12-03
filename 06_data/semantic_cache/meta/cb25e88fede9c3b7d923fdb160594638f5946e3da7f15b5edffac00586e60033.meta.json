@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Monolithic",
+    "archive_name": "Monolithic",
+    "relative_path": "test_lic_v11_10.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Monolithic\\test_lic_v11_10.py",
+    "file_size": 45899,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+    "scan_timestamp": "2025-12-03T06:21:11.526859"
+  },
+  "artifacts": {
+    "ast": "ast/cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033.ast",
+    "embedding": "embeddings/cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033.embedding",
+    "diff": "diffs/cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033.diff.json",
+    "safety": "safety/cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033.safety.json",
+    "golden": "golden/cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033.golden.json",
+    "integrity": "integrity/cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:36.048987",
+  "artifact_count": 6
+}

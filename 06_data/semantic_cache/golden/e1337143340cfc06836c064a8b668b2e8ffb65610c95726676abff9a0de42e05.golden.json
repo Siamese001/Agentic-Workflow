@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e1337143340cfc06836c064a8b668b2e8ffb65610c95726676abff9a0de42e05",
+  "content_hash": "e1337143340cfc06836c064a8b668b2e8ffb65610c95726676abff9a0de42e05",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "master_config_v10_7.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\master_config_v10_7.json",
+    "file_size": 11226,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "e1337143340cfc06836c064a8b668b2e8ffb65610c95726676abff9a0de42e05",
+    "scan_timestamp": "2025-12-03T06:21:11.391170"
+  },
+  "content_preview": "{\n  \"schema_version\": \"master_config_v10.7\",\n  \"description\": \"v10.7: Implements 15 new enhancements including Semantic Caching, Idempotency Validation, Concurrent Node Execution, Constitutional AI, and Agent-to-Agent (A2A) Comms.\",\n  \"version_notes\": {\n    \"v10_5_changes\": [\n      \"Inherits all v10.5 features: Dynamic Model Routing, Tool Caching, Node Timeouts, Tool Generation, Agent Metrics, Self-Consistency Voting, Curriculum Prompting, PI Detection, and Semantic Validation.\"\n    ],\n    \"v10_...",
+  "creation_timestamp": "2025-12-03T06:21:22.174031",
+  "version": "1.0"
+}

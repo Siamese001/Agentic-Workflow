@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "tests/unit/test_agents_misc.py",
+  "diff_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.agents.k1_router_agent import RouterAgent\nfrom src.lic_agentic.agents.k5_cta_agent import CTAAgent\nfrom src.lic_agentic.agents.k6_signature_agent import SignatureAgent\nfrom src.lic_agentic.safety.bias_auditor import BiasAssessment\n\n\ndef test_router_prioritizes_meeting_intent():\n    router = RouterAgent()\n    inputs = SimpleNamespace(prompt=\"Can we schedule a meeting next week?\")\n    decision = router.route(inputs, BiasAssessment(0.0, \"clean\"))\n    assert decision.priority == \"high\"\n    assert decision.channel == \"email\"\n\n\ndef test_cta_agent_appends_default_line():\n    draft = CTAAgent().adjust(\"Body\", route_decision=None)\n    assert \"CTA:\" in draft\n\n\ndef test_signature_agent_adds_signature_block():\n    draft = SignatureAgent().attach(\"Body\", route_decision=None)\n    assert draft.endswith(\"LIC Outreach Bot\")\n",
+  "statistics": {
+    "lines_added": 24,
+    "lines_removed": 0,
+    "lines_changed": 24
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

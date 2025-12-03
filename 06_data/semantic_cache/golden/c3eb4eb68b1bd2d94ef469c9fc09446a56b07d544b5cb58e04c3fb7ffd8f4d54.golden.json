@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c3eb4eb68b1bd2d94ef469c9fc09446a56b07d544b5cb58e04c3fb7ffd8f4d54",
+  "content_hash": "d3415c24c89dcfbd05d375b53004fc5c73905982b67279a4850f25e0ac932577",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l2\\factual_qa.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\factual_qa.py",
+    "file_size": 3382,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c3eb4eb68b1bd2d94ef469c9fc09446a56b07d544b5cb58e04c3fb7ffd8f4d54",
+    "scan_timestamp": "2025-12-03T06:21:11.257330"
+  },
+  "content_preview": "\"\"\"\nL2 Factual QA for resume temporal fact verification.\n\nAnswers factual questions about temporal career facts using Neo4j\nto ensure resume accuracy and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import List, Optional\n\ntry:\n    from graph_store_neo4j import Neo4jGraphStore\n    _graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()\n    _NEO4J_AVAILABLE = True\nexcept ImportError:\n    _graph = None\n    _NEO4J_AVAILABLE = False\n\n\ndef factual_qa(\n    entity: str,\n    start_da...",
+  "creation_timestamp": "2025-12-03T06:21:13.848211",
+  "version": "1.0"
+}

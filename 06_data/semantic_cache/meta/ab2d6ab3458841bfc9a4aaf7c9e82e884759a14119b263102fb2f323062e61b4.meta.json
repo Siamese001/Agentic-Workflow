@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\testing\\MCP_SERVER_INSTALLATION.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\MCP_SERVER_INSTALLATION.md",
+    "file_size": 8113,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
+    "scan_timestamp": "2025-12-03T06:21:11.293692"
+  },
+  "artifacts": {
+    "ast": "ast/ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4.ast",
+    "embedding": "embeddings/ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4.embedding",
+    "diff": "diffs/ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4.diff.json",
+    "safety": "safety/ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4.safety.json",
+    "golden": "golden/ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4.golden.json",
+    "integrity": "integrity/ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:16.032101",
+  "artifact_count": 5
+}

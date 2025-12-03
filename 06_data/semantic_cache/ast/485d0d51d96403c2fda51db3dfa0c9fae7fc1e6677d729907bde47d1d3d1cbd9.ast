@@ -1,0 +1,3259 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Bridges OpenAI structure to atomic L1-L5 layers with strict boundaries.\n\nEnsures resume generation follows a clean, maintainable architecture that improves\noutput consistency and makes it easier to enhance resume quality over time.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "typing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Any",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Dict",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Optional",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 30
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "pathlib",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Path",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 20
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "l3.unified_workflow_orchestrator",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "UnifiedWorkflowOrchestrator",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 45
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "l4.state_manager",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "StateManager",
+                  "asname": "None"
+                },
+                "_lineno": 12,
+                "_col_offset": 29
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "l5.safety_validator",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "SafetyValidator",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 32
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 13,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.routing",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RoutingPolicy",
+                  "asname": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 25
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 16,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "config.meta_profile",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "MetaProfileSnapshot",
+                  "asname": "None"
+                },
+                "_lineno": 17,
+                "_col_offset": 32
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 17,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "runtime.runtime_utils",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "SandboxConfig",
+                  "asname": "None"
+                },
+                "_lineno": 18,
+                "_col_offset": 34
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 18,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "AtomicWorkflowBridge",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Coordinates resume generation across specialized atomic layers.\n    \n    Ensures each resume section is processed with the right balance of\n    planning, execution, and safety checks for optimal job alignment.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 21,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 27,
+                          "_col_offset": 17
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "routing_policy",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "RoutingPolicy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 27,
+                              "_col_offset": 39
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 27,
+                          "_col_offset": 23
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "sandbox",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SandboxConfig",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 27,
+                              "_col_offset": 63
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 27,
+                          "_col_offset": 54
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "meta_profile",
+                            "annotation": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Optional",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 27,
+                                  "_col_offset": 92
+                                },
+                                "slice": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "MetaProfileSnapshot",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 27,
+                                  "_col_offset": 101
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 27,
+                              "_col_offset": 92
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 27,
+                          "_col_offset": 78
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 27,
+                          "_col_offset": 124
+                        }
+                      ]
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "state_manager",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 29,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "StateManager",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 29,
+                              "_col_offset": 24
+                            },
+                            "args": [
+                              {
+                                "_type": "Call",
+                                "_fields": {
+                                  "func": {
+                                    "_type": "Name",
+                                    "_fields": {
+                                      "id": "Path",
+                                      "ctx": {
+                                        "_type": "Load",
+                                        "_fields": {}
+                                      }
+                                    },
+                                    "_lineno": 29,
+                                    "_col_offset": 37
+                                  },
+                                  "args": [
+                                    {
+                                      "_type": "Call",
+                                      "_fields": {
+                                        "func": {
+                                          "_type": "Attribute",
+                                          "_fields": {
+                                            "value": {
+                                              "_type": "Attribute",
+                                              "_fields": {
+                                                "value": {
+                                                  "_type": "Name",
+                                                  "_fields": {
+                                                    "id": "sandbox",
+                                                    "ctx": {
+                                                      "_type": "Load",
+                                                      "_fields": {}
+                                                    }
+                                                  },
+                                                  "_lineno": 29,
+                                                  "_col_offset": 42
+                                                },
+                                                "attr": "config",
+                                                "ctx": {
+                                                  "_type": "Load",
+                                                  "_fields": {}
+                                                }
+                                              },
+                                              "_lineno": 29,
+                                              "_col_offset": 42
+                                            },
+                                            "attr": "get",
+                                            "ctx": {
+                                              "_type": "Load",
+                                              "_fields": {}
+                                            }
+                                          },
+                                          "_lineno": 29,
+                                          "_col_offset": 42
+                                        },
+                                        "args": [
+                                          {
+                                            "_type": "Constant",
+                                            "_fields": {
+                                              "value": "state_path",
+                                              "kind": "None"
+                                            },
+                                            "_lineno": 29,
+                                            "_col_offset": 61
+                                          },
+                                          {
+                                            "_type": "Constant",
+                                            "_fields": {
+                                              "value": "state.json",
+                                              "kind": "None"
+                                            },
+                                            "_lineno": 29,
+                                            "_col_offset": 75
+                                          }
+                                        ],
+                                        "keywords": []
+                                      },
+                                      "_lineno": 29,
+                                      "_col_offset": 42
+                                    }
+                                  ],
+                                  "keywords": []
+                                },
+                                "_lineno": 29,
+                                "_col_offset": 37
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 29,
+                          "_col_offset": 24
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 29,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "safety_validator",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 30,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SafetyValidator",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 30,
+                              "_col_offset": 27
+                            },
+                            "args": [],
+                            "keywords": []
+                          },
+                          "_lineno": 30,
+                          "_col_offset": 27
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 30,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 33,
+                                "_col_offset": 8
+                              },
+                              "attr": "unified_orchestrator",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 33,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "UnifiedWorkflowOrchestrator",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 33,
+                              "_col_offset": 36
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "routing_policy",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 34,
+                                "_col_offset": 12
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "sandbox",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 34,
+                                "_col_offset": 28
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "state_manager",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 34,
+                                "_col_offset": 37
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "safety_validator",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 34,
+                                "_col_offset": 52
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "meta_profile",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 34,
+                                "_col_offset": 70
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 33,
+                          "_col_offset": 36
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 33,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 27,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "execute_atomic_workflow",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 37,
+                          "_col_offset": 32
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "job",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 37,
+                              "_col_offset": 43
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 37,
+                          "_col_offset": 38
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "resume",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 37,
+                              "_col_offset": 56
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 37,
+                          "_col_offset": 48
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "config",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 37,
+                              "_col_offset": 69
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 37,
+                          "_col_offset": 61
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Orchestrates the resume generation workflow through atomic layers.\n        \n        Maintains clean separation of concerns while ensuring all resume sections\n        meet quality standards and job requirements.\n        ",
+                            "kind": "None"
+                          },
+                          "_lineno": 38,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 38,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 43,
+                                      "_col_offset": 15
+                                    },
+                                    "attr": "unified_orchestrator",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 43,
+                                  "_col_offset": 15
+                                },
+                                "attr": "orchestrate_full_workflow",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 43,
+                              "_col_offset": 15
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "job",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 43,
+                                "_col_offset": 67
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "resume",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 43,
+                                "_col_offset": 72
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "config",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 43,
+                                "_col_offset": 80
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 43,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 43,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": {
+                    "_type": "Subscript",
+                    "_fields": {
+                      "value": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "Dict",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 37,
+                        "_col_offset": 77
+                      },
+                      "slice": {
+                        "_type": "Tuple",
+                        "_fields": {
+                          "elts": [
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "str",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 37,
+                              "_col_offset": 82
+                            },
+                            {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 37,
+                              "_col_offset": 87
+                            }
+                          ],
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 37,
+                        "_col_offset": 82
+                      },
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 37,
+                    "_col_offset": 77
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 37,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 20,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "AtomicStrategyAgent",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Handles strategic planning for resume content organization.\n    \n    Aligns resume structure with job requirements for maximum impact\n    and applicant tracking system (ATS) compatibility.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 47,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 53,
+                          "_col_offset": 17
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "routing_policy",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "RoutingPolicy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 53,
+                              "_col_offset": 39
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 53,
+                          "_col_offset": 23
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "sandbox",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SandboxConfig",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 53,
+                              "_col_offset": 63
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 53,
+                          "_col_offset": 54
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "meta_profile",
+                            "annotation": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Optional",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 53,
+                                  "_col_offset": 92
+                                },
+                                "slice": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "MetaProfileSnapshot",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 53,
+                                  "_col_offset": 101
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 53,
+                              "_col_offset": 92
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 53,
+                          "_col_offset": 78
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 53,
+                          "_col_offset": 124
+                        }
+                      ]
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 54,
+                                "_col_offset": 8
+                              },
+                              "attr": "bridge",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 54,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "AtomicWorkflowBridge",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 54,
+                              "_col_offset": 22
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "routing_policy",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 54,
+                                "_col_offset": 43
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "sandbox",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 54,
+                                "_col_offset": 59
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "meta_profile",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 54,
+                                "_col_offset": 68
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 54,
+                          "_col_offset": 22
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 54,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 53,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "run_strategy",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 56,
+                          "_col_offset": 27
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "strategy_plan",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 56,
+                              "_col_offset": 48
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 56,
+                          "_col_offset": 33
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "job",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 56,
+                              "_col_offset": 58
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 56,
+                          "_col_offset": 53
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "resume",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 56,
+                              "_col_offset": 71
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 56,
+                          "_col_offset": 63
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "config",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 56,
+                              "_col_offset": 84
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 56,
+                          "_col_offset": 76
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Delegate to atomic workflow - pure orchestration.",
+                            "kind": "None"
+                          },
+                          "_lineno": 57,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 57,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "result",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 58,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 58,
+                                      "_col_offset": 17
+                                    },
+                                    "attr": "bridge",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 58,
+                                  "_col_offset": 17
+                                },
+                                "attr": "execute_atomic_workflow",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 58,
+                              "_col_offset": 17
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "job",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 58,
+                                "_col_offset": 53
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "resume",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 58,
+                                "_col_offset": 58
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "config",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 58,
+                                "_col_offset": 66
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 58,
+                          "_col_offset": 17
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 58,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Subscript",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "result",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 59,
+                              "_col_offset": 15
+                            },
+                            "slice": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "strategy",
+                                "kind": "None"
+                              },
+                              "_lineno": 59,
+                              "_col_offset": 22
+                            },
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 59,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 59,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Any",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 56,
+                    "_col_offset": 92
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 56,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 46,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "AtomicDraftingAgent",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Manages the creation of initial resume drafts.\n    \n    Ensures content flows naturally while highlighting relevant\n    skills and experiences for the target position.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 62,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 62,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 68,
+                          "_col_offset": 17
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "routing_policy",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "RoutingPolicy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 68,
+                              "_col_offset": 39
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 68,
+                          "_col_offset": 23
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "sandbox",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SandboxConfig",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 68,
+                              "_col_offset": 63
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 68,
+                          "_col_offset": 54
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "meta_profile",
+                            "annotation": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Optional",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 68,
+                                  "_col_offset": 92
+                                },
+                                "slice": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "MetaProfileSnapshot",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 68,
+                                  "_col_offset": 101
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 68,
+                              "_col_offset": 92
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 68,
+                          "_col_offset": 78
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 68,
+                          "_col_offset": 124
+                        }
+                      ]
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 69,
+                                "_col_offset": 8
+                              },
+                              "attr": "bridge",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 69,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "AtomicWorkflowBridge",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 69,
+                              "_col_offset": 22
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "routing_policy",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 69,
+                                "_col_offset": 43
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "sandbox",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 69,
+                                "_col_offset": 59
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "meta_profile",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 69,
+                                "_col_offset": 68
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 69,
+                          "_col_offset": 22
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 69,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 68,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "run_drafting",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 27
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "drafting_plan",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 48
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 33
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "job",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 58
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 53
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "resume",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 71
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 63
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "strategy_result",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 93
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 76
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "rag_result",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 110
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 98
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "config",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 71,
+                              "_col_offset": 123
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 71,
+                          "_col_offset": 115
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Delegate to atomic workflow - pure orchestration.",
+                            "kind": "None"
+                          },
+                          "_lineno": 72,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 72,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "result",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 73,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 73,
+                                      "_col_offset": 17
+                                    },
+                                    "attr": "bridge",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 73,
+                                  "_col_offset": 17
+                                },
+                                "attr": "execute_atomic_workflow",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 73,
+                              "_col_offset": 17
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "job",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 73,
+                                "_col_offset": 53
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "resume",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 73,
+                                "_col_offset": 58
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "config",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 73,
+                                "_col_offset": 66
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 73,
+                          "_col_offset": 17
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 73,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Subscript",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "result",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 74,
+                              "_col_offset": 15
+                            },
+                            "slice": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "draft",
+                                "kind": "None"
+                              },
+                              "_lineno": 74,
+                              "_col_offset": 22
+                            },
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 74,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 74,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Any",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 71,
+                    "_col_offset": 131
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 71,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 61,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "AtomicQAAgent",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Validates resume content quality and consistency.\n    \n    Checks for clarity, relevance, and alignment with job requirements\n    to ensure the resume makes a strong first impression.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 77,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 77,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 83,
+                          "_col_offset": 17
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "routing_policy",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "RoutingPolicy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 83,
+                              "_col_offset": 39
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 83,
+                          "_col_offset": 23
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "sandbox",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SandboxConfig",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 83,
+                              "_col_offset": 63
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 83,
+                          "_col_offset": 54
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "meta_profile",
+                            "annotation": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Optional",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 83,
+                                  "_col_offset": 92
+                                },
+                                "slice": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "MetaProfileSnapshot",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 83,
+                                  "_col_offset": 101
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 83,
+                              "_col_offset": 92
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 83,
+                          "_col_offset": 78
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 83,
+                          "_col_offset": 124
+                        }
+                      ]
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 84,
+                                "_col_offset": 8
+                              },
+                              "attr": "bridge",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 84,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "AtomicWorkflowBridge",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 84,
+                              "_col_offset": 22
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "routing_policy",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 84,
+                                "_col_offset": 43
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "sandbox",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 84,
+                                "_col_offset": 59
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "meta_profile",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 84,
+                                "_col_offset": 68
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 84,
+                          "_col_offset": 22
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 84,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 83,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "run_qa",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 21
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "qa_plan",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 36
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 27
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "draft",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 48
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 41
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "rag",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 58
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 53
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "job",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 68
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 63
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "resume",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 81
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 73
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "config",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 86,
+                              "_col_offset": 94
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 86,
+                          "_col_offset": 86
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Delegate to atomic workflow - pure orchestration.",
+                            "kind": "None"
+                          },
+                          "_lineno": 87,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 87,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "result",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 88,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 88,
+                                      "_col_offset": 17
+                                    },
+                                    "attr": "bridge",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 88,
+                                  "_col_offset": 17
+                                },
+                                "attr": "execute_atomic_workflow",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 88,
+                              "_col_offset": 17
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "job",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 88,
+                                "_col_offset": 53
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "resume",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 88,
+                                "_col_offset": 58
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "config",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 88,
+                                "_col_offset": 66
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 88,
+                          "_col_offset": 17
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 88,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Subscript",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "result",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 89,
+                              "_col_offset": 15
+                            },
+                            "slice": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "qa",
+                                "kind": "None"
+                              },
+                              "_lineno": 89,
+                              "_col_offset": 22
+                            },
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 89,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 89,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Any",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 86,
+                    "_col_offset": 102
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 86,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 76,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ClassDef",
+          "_fields": {
+            "name": "AtomicSafetyAgent",
+            "bases": [],
+            "keywords": [],
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Ensures resume content meets professional and ethical standards.\n    \n    Validates factual accuracy and prevents misleading claims while\n    maintaining a positive, professional tone throughout the resume.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 92,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 92,
+                "_col_offset": 4
+              },
+              {
+                "_type": "FunctionDef",
+                "_fields": {
+                  "name": "__init__",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 98,
+                          "_col_offset": 17
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "routing_policy",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "RoutingPolicy",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 98,
+                              "_col_offset": 39
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 98,
+                          "_col_offset": 23
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "sandbox",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "SandboxConfig",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 98,
+                              "_col_offset": 63
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 98,
+                          "_col_offset": 54
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "meta_profile",
+                            "annotation": {
+                              "_type": "Subscript",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "Optional",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 98,
+                                  "_col_offset": 92
+                                },
+                                "slice": {
+                                  "_type": "Name",
+                                  "_fields": {
+                                    "id": "MetaProfileSnapshot",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 98,
+                                  "_col_offset": 101
+                                },
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 98,
+                              "_col_offset": 92
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 98,
+                          "_col_offset": 78
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": [
+                        {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "None",
+                            "kind": "None"
+                          },
+                          "_lineno": 98,
+                          "_col_offset": 124
+                        }
+                      ]
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Attribute",
+                            "_fields": {
+                              "value": {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "self",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 99,
+                                "_col_offset": 8
+                              },
+                              "attr": "bridge",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 99,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "AtomicWorkflowBridge",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 99,
+                              "_col_offset": 22
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "routing_policy",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 99,
+                                "_col_offset": 43
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "sandbox",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 99,
+                                "_col_offset": 59
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "meta_profile",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 99,
+                                "_col_offset": 68
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 99,
+                          "_col_offset": 22
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 99,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": "None",
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 98,
+                "_col_offset": 4
+              },
+              {
+                "_type": "AsyncFunctionDef",
+                "_fields": {
+                  "name": "run_safety",
+                  "args": {
+                    "_type": "arguments",
+                    "_fields": {
+                      "posonlyargs": [],
+                      "args": [
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "self",
+                            "annotation": "None",
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 25
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "safety_plan",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 44
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 31
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "draft",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 56
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 49
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "rag",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 66
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 61
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "qa",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 75
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 71
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "job",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 85
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 80
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "resume",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 98
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 90
+                        },
+                        {
+                          "_type": "arg",
+                          "_fields": {
+                            "arg": "config",
+                            "annotation": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "Any",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 101,
+                              "_col_offset": 111
+                            },
+                            "type_comment": "None"
+                          },
+                          "_lineno": 101,
+                          "_col_offset": 103
+                        }
+                      ],
+                      "vararg": "None",
+                      "kwonlyargs": [],
+                      "kw_defaults": [],
+                      "kwarg": "None",
+                      "defaults": []
+                    }
+                  },
+                  "body": [
+                    {
+                      "_type": "Expr",
+                      "_fields": {
+                        "value": {
+                          "_type": "Constant",
+                          "_fields": {
+                            "value": "Delegate to atomic workflow - pure orchestration.",
+                            "kind": "None"
+                          },
+                          "_lineno": 102,
+                          "_col_offset": 8
+                        }
+                      },
+                      "_lineno": 102,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Assign",
+                      "_fields": {
+                        "targets": [
+                          {
+                            "_type": "Name",
+                            "_fields": {
+                              "id": "result",
+                              "ctx": {
+                                "_type": "Store",
+                                "_fields": {}
+                              }
+                            },
+                            "_lineno": 103,
+                            "_col_offset": 8
+                          }
+                        ],
+                        "value": {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Attribute",
+                              "_fields": {
+                                "value": {
+                                  "_type": "Attribute",
+                                  "_fields": {
+                                    "value": {
+                                      "_type": "Name",
+                                      "_fields": {
+                                        "id": "self",
+                                        "ctx": {
+                                          "_type": "Load",
+                                          "_fields": {}
+                                        }
+                                      },
+                                      "_lineno": 103,
+                                      "_col_offset": 17
+                                    },
+                                    "attr": "bridge",
+                                    "ctx": {
+                                      "_type": "Load",
+                                      "_fields": {}
+                                    }
+                                  },
+                                  "_lineno": 103,
+                                  "_col_offset": 17
+                                },
+                                "attr": "execute_atomic_workflow",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 103,
+                              "_col_offset": 17
+                            },
+                            "args": [
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "job",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 103,
+                                "_col_offset": 53
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "resume",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 103,
+                                "_col_offset": 58
+                              },
+                              {
+                                "_type": "Name",
+                                "_fields": {
+                                  "id": "config",
+                                  "ctx": {
+                                    "_type": "Load",
+                                    "_fields": {}
+                                  }
+                                },
+                                "_lineno": 103,
+                                "_col_offset": 66
+                              }
+                            ],
+                            "keywords": []
+                          },
+                          "_lineno": 103,
+                          "_col_offset": 17
+                        },
+                        "type_comment": "None"
+                      },
+                      "_lineno": 103,
+                      "_col_offset": 8
+                    },
+                    {
+                      "_type": "Return",
+                      "_fields": {
+                        "value": {
+                          "_type": "Subscript",
+                          "_fields": {
+                            "value": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "result",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 104,
+                              "_col_offset": 15
+                            },
+                            "slice": {
+                              "_type": "Constant",
+                              "_fields": {
+                                "value": "safety",
+                                "kind": "None"
+                              },
+                              "_lineno": 104,
+                              "_col_offset": 22
+                            },
+                            "ctx": {
+                              "_type": "Load",
+                              "_fields": {}
+                            }
+                          },
+                          "_lineno": 104,
+                          "_col_offset": 15
+                        }
+                      },
+                      "_lineno": 104,
+                      "_col_offset": 8
+                    }
+                  ],
+                  "decorator_list": [],
+                  "returns": {
+                    "_type": "Name",
+                    "_fields": {
+                      "id": "Any",
+                      "ctx": {
+                        "_type": "Load",
+                        "_fields": {}
+                      }
+                    },
+                    "_lineno": 101,
+                    "_col_offset": 119
+                  },
+                  "type_comment": "None",
+                  "type_params": []
+                },
+                "_lineno": 101,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "type_params": []
+          },
+          "_lineno": 91,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 442,
+    "function_count": 6,
+    "class_count": 5,
+    "import_count": 8
+  }
+}

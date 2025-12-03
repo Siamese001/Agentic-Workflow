@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ed9f96c034b11943f7a8dffbcbc218effb7ac59356cf96a1babe8030158c776e",
+  "content_hash": "feaa146c6846ec188988a2753642787aba9c85bfa1e92a6ce663e0d25153fe33",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\workflow_graph.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\workflow_graph.py",
+    "file_size": 22785,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ed9f96c034b11943f7a8dffbcbc218effb7ac59356cf96a1babe8030158c776e",
+    "scan_timestamp": "2025-12-03T06:21:11.280862"
+  },
+  "content_preview": "\"\"\"\nL3 orchestration layer for r\u00e9sum\u00e9 workflow coordination.\n\nManages workflow execution and correction loops to ensure comprehensive r\u00e9sum\u00e9 improvement.\n\"\"\"\n\n# FILE: l3/workflow_graph.py\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Optional, Callable, Awaitable\n\nfrom core.models.models import (\n    WorkflowPlanBundle,\n    ExecutionContext,\n    RAGResult,\n    StrategyResult,\n    DraftingResult,\n    QAResult,\n    SafetyResult,\n    L2ResultBundle,\n)\nfrom runtime.observabi...",
+  "creation_timestamp": "2025-12-03T06:21:15.782058",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "777570d689f198eeb10de61f66858afe236481663df5cb5a321a3602bc75b1f4",
+  "content_hash": "b15f2a8759d302b29671fcb540a929ed0e84096987dcc0e35e1c38a4b889ab76",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "runtime\\trace\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\trace\\__init__.py",
+    "file_size": 509,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "777570d689f198eeb10de61f66858afe236481663df5cb5a321a3602bc75b1f4",
+    "scan_timestamp": "2025-12-03T06:21:11.298280"
+  },
+  "content_preview": "from __future__ import annotations\n\n\"\"\"Snapshot-local runtime.trace package for v10_10 tests.\n\nThis ensures that imports like\n    from runtime.trace.trace_reconstruction import get_routing_trace\nresolve correctly when tests are run with rootdir=Agentic-Workflow-10_10.\n\nThe implementation of get_routing_trace lives in trace_reconstruction.py in\nthis package and mirrors the real runtime.trace helper at the repo root.\n\"\"\"\n\nfrom .trace_reconstruction import get_routing_trace  # noqa: F401\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:16.137702",
+  "version": "1.0"
+}

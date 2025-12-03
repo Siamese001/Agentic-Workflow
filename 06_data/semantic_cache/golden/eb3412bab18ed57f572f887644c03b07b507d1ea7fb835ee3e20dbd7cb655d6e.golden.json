@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
+  "content_hash": "0f0e95c688e4e722f32bfa9d44a7a327ede30d7c976735e38d2f118110805cf5",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "requirements.txt",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\requirements.txt",
+    "file_size": 474,
+    "file_extension": ".txt",
+    "is_eligible": true,
+    "sha256_hash": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
+    "scan_timestamp": "2025-12-03T06:21:11.285430"
+  },
+  "content_preview": "# Stable + production-safe Python 3.12 environment\nannotated-types==0.6.0\npydantic==2.7.4\npydantic-core==2.18.4\n\nfastapi==0.110.0\nredis==5.0.1\nopenai==1.43.0\n\n# Optional but recommended for L1\u2013L5 agentic stack\nuvicorn==0.27.1\n\n# Testing dependencies\npytest==8.3.4\npytest-asyncio==0.24.0\nhttpx\nrequests\npython-dotenv\nrich\nnumpy\npandas\ntqdm\nscikit-learn\nsentence-transformers\nneo4j>=5.22.0\nfaiss-cpu\nopentelemetry-api\nopentelemetry-sdk\ntenacity\n",
+  "creation_timestamp": "2025-12-03T06:21:15.894932",
+  "version": "1.0"
+}

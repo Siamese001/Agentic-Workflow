@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "83de52582c7657faafb1ea3ee7b87dda272188460f8e085c28a09e8829fafaa2",
+  "content_hash": "9a77fe120a2377b4da52d73ad3abee6badc933c779fc51e658067f6bb49df7b7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden\\traces\\workflow_trace_002.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\traces\\workflow_trace_002.json",
+    "file_size": 613,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "83de52582c7657faafb1ea3ee7b87dda272188460f8e085c28a09e8829fafaa2",
+    "scan_timestamp": "2025-12-03T06:21:11.307129"
+  },
+  "content_preview": "{\n  \"version\": \"1.0\",\n  \"trace_id\": \"trace_002\",\n  \"workflow_id\": \"wf_002\",\n  \"spans\": [\n    {\n      \"span_id\": \"span_001\",\n      \"name\": \"draft_resume\",\n      \"start_time\": 1700001000,\n      \"end_time\": 1700001500,\n      \"status\": \"success\",\n      \"metadata\": {\n        \"sections_drafted\": 4,\n        \"tokens_used\": 1500\n      }\n    },\n    {\n      \"span_id\": \"span_002\",\n      \"name\": \"review_draft\",\n      \"start_time\": 1700001500,\n      \"end_time\": 1700001800,\n      \"status\": \"success\",\n      \"me...",
+  "creation_timestamp": "2025-12-03T06:21:16.593638",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a22dde496339eb96762d0c5ea5e62349f4963bfa815ec51730418c074d5c5e34",
+  "content_hash": "b343a8b5da39230799ce9535f3a2b0e596f096fab96d62b63777d458907784c2",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden_state\\test_judge.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_judge.py",
+    "file_size": 712,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a22dde496339eb96762d0c5ea5e62349f4963bfa815ec51730418c074d5c5e34",
+    "scan_timestamp": "2025-12-03T06:21:11.308076"
+  },
+  "content_preview": "from eval.golden_state.models import GoldenStateTestCase\nfrom eval.golden_state.judge import evaluate_output\n\n\ndef test_judge_empty_output_fails():\n    tc = GoldenStateTestCase(id=\"t1\", input_text=\"x\", expected_behavior=\"\", metadata={})\n    verdict = evaluate_output(tc, \"\")\n    assert verdict.rating == \"fail\"\n    assert verdict.score == 0.0\n\n\ndef test_judge_detects_key_behavior():\n    tc = GoldenStateTestCase(\n        id=\"t2\",\n        input_text=\"x\",\n        expected_behavior=\"Summary should be ...",
+  "creation_timestamp": "2025-12-03T06:21:16.624965",
+  "version": "1.0"
+}

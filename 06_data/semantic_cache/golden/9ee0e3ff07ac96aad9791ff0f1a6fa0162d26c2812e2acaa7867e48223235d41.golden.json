@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9ee0e3ff07ac96aad9791ff0f1a6fa0162d26c2812e2acaa7867e48223235d41",
+  "content_hash": "14cf0f3305b3082d4c77df38e32474b335404983dcf761a7b10b54cf88f4d3be",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\testing\\PHASE_F_G_SUMMARY.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\PHASE_F_G_SUMMARY.md",
+    "file_size": 14228,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "9ee0e3ff07ac96aad9791ff0f1a6fa0162d26c2812e2acaa7867e48223235d41",
+    "scan_timestamp": "2025-12-03T06:21:11.294579"
+  },
+  "content_preview": "# PHASE F & G IMPLEMENTATION SUMMARY\n\n## Completed Work\n\n### Phase F: Full Pinecone Integration \u2705\n\n**Objective**: Wire v6 prompts to agents, implement hybrid search, and add temporal KG integration.\n\n**Changes Implemented**:\n\n1. **V6 Prompt Adapter** (`l1/v6_prompt_adapter.py`) - **NEW FILE** (280+ lines)\n   \n   **Prompt Builders**:\n   - `build_v6_strategy_prompt()`: Strategy planning with v6 layers + examples\n   - `build_v6_rag_prompt()`: RAG planning with retrieval best practices\n   - `build_v...",
+  "creation_timestamp": "2025-12-03T06:21:16.050083",
+  "version": "1.0"
+}

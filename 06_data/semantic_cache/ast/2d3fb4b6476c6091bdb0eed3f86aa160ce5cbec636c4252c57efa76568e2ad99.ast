@@ -1,0 +1,567 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "__future__",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "annotations",
+                  "asname": "None"
+                },
+                "_lineno": 1,
+                "_col_offset": 23
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "Snapshot-local observability fa\u00e7ade for v10_10.\n\nThis makes ``from runtime.observability import ...`` work inside the\nAgentic-Workflow-10_10 test snapshot by re-exporting symbols from the\nnested observability modules.\n",
+                "kind": "None"
+              },
+              "_lineno": 3,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "spans",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "start_span",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 19
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "end_span",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 31
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "events",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "TelemetryEvent",
+                  "asname": "None"
+                },
+                "_lineno": 11,
+                "_col_offset": 20
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 11,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "emitters",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_node_event",
+                  "asname": "None"
+                },
+                "_lineno": 13,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_telemetry_event",
+                  "asname": "None"
+                },
+                "_lineno": 14,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_ranking_event",
+                  "asname": "None"
+                },
+                "_lineno": 15,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_cost_snapshot",
+                  "asname": "None"
+                },
+                "_lineno": 16,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_golden_eval_event",
+                  "asname": "None"
+                },
+                "_lineno": 17,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_scenario_start_event",
+                  "asname": "None"
+                },
+                "_lineno": 18,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_scenario_end_event",
+                  "asname": "None"
+                },
+                "_lineno": 19,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_scenario_simulation_event",
+                  "asname": "None"
+                },
+                "_lineno": 20,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_council_arbitration_event",
+                  "asname": "None"
+                },
+                "_lineno": 21,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_resilience_event",
+                  "asname": "None"
+                },
+                "_lineno": 22,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "emit_resilience_trace_event",
+                  "asname": "None"
+                },
+                "_lineno": 23,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "log_exception",
+                  "asname": "None"
+                },
+                "_lineno": 24,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "record_event",
+                  "asname": "None"
+                },
+                "_lineno": 25,
+                "_col_offset": 4
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "record_exception",
+                  "asname": "None"
+                },
+                "_lineno": 26,
+                "_col_offset": 4
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "collectors",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "get_events",
+                  "asname": "None"
+                },
+                "_lineno": 28,
+                "_col_offset": 24
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "clear_events",
+                  "asname": "None"
+                },
+                "_lineno": 28,
+                "_col_offset": 36
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 28,
+          "_col_offset": 0
+        },
+        {
+          "_type": "FunctionDef",
+          "_fields": {
+            "name": "get_all_events",
+            "args": {
+              "_type": "arguments",
+              "_fields": {
+                "posonlyargs": [],
+                "args": [],
+                "vararg": "None",
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": "None",
+                "defaults": []
+              }
+            },
+            "body": [
+              {
+                "_type": "Expr",
+                "_fields": {
+                  "value": {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "Backward-compatible alias used by routing.\n\n    Historically, callers imported get_all_events from observability; in the\n    new layout, collectors exposes get_events. This adapter preserves the\n    older name.\n    ",
+                      "kind": "None"
+                    },
+                    "_lineno": 32,
+                    "_col_offset": 4
+                  }
+                },
+                "_lineno": 32,
+                "_col_offset": 4
+              },
+              {
+                "_type": "Return",
+                "_fields": {
+                  "value": {
+                    "_type": "Call",
+                    "_fields": {
+                      "func": {
+                        "_type": "Name",
+                        "_fields": {
+                          "id": "list",
+                          "ctx": {
+                            "_type": "Load",
+                            "_fields": {}
+                          }
+                        },
+                        "_lineno": 39,
+                        "_col_offset": 11
+                      },
+                      "args": [
+                        {
+                          "_type": "Call",
+                          "_fields": {
+                            "func": {
+                              "_type": "Name",
+                              "_fields": {
+                                "id": "get_events",
+                                "ctx": {
+                                  "_type": "Load",
+                                  "_fields": {}
+                                }
+                              },
+                              "_lineno": 39,
+                              "_col_offset": 16
+                            },
+                            "args": [],
+                            "keywords": []
+                          },
+                          "_lineno": 39,
+                          "_col_offset": 16
+                        }
+                      ],
+                      "keywords": []
+                    },
+                    "_lineno": 39,
+                    "_col_offset": 11
+                  }
+                },
+                "_lineno": 39,
+                "_col_offset": 4
+              }
+            ],
+            "decorator_list": [],
+            "returns": "None",
+            "type_comment": "None",
+            "type_params": []
+          },
+          "_lineno": 31,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 42,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "start_span",
+                      "kind": "None"
+                    },
+                    "_lineno": 43,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "end_span",
+                      "kind": "None"
+                    },
+                    "_lineno": 44,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_node_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 45,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_telemetry_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 46,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_ranking_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 47,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_cost_snapshot",
+                      "kind": "None"
+                    },
+                    "_lineno": 48,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_golden_eval_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 49,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_scenario_start_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 50,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_scenario_end_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 51,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_scenario_simulation_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 52,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_council_arbitration_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 53,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_resilience_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 54,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "emit_resilience_trace_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 55,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "log_exception",
+                      "kind": "None"
+                    },
+                    "_lineno": 56,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "record_event",
+                      "kind": "None"
+                    },
+                    "_lineno": 57,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "record_exception",
+                      "kind": "None"
+                    },
+                    "_lineno": 58,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "get_events",
+                      "kind": "None"
+                    },
+                    "_lineno": 59,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "get_all_events",
+                      "kind": "None"
+                    },
+                    "_lineno": 60,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "clear_events",
+                      "kind": "None"
+                    },
+                    "_lineno": 61,
+                    "_col_offset": 4
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 42,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 42,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 63,
+    "function_count": 1,
+    "class_count": 0,
+    "import_count": 5
+  }
+}

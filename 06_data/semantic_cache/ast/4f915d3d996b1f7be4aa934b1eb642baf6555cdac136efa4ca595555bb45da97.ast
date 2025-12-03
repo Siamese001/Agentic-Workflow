@@ -1,0 +1,54 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nOrchestration DAG models - re-exported from core.models for backward compatibility.\n\nThis module re-exports DAG models from core.models to maintain import compatibility\nduring the canonical structure cleanup.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "core.models.dag_models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "*",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 35
+              }
+            ],
+            "level": "0"
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 5,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 1
+  }
+}

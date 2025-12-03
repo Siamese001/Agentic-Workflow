@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b294bffe386d37872654d30abb556bb8f6100a3c497c03c7a66b92bb08fea3da",
+  "content_hash": "b294bffe386d37872654d30abb556bb8f6100a3c497c03c7a66b92bb08fea3da",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_8\\design\\test_prompt_nodes_dag.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\design\\test_prompt_nodes_dag.py",
+    "file_size": 426,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b294bffe386d37872654d30abb556bb8f6100a3c497c03c7a66b92bb08fea3da",
+    "scan_timestamp": "2025-12-03T06:21:11.443449"
+  },
+  "content_preview": "import pytest\n\nfrom agent_orchestration_v10_7 import get_graph_app\n\n\n@pytest.mark.design\ndef test_prompt_nodes_available_when_enabled(workflow_context):\n    workflow_context.enable_v10_8_prompts = True\n    workflow = get_graph_app(checkpointer=None, workflow_context=workflow_context, enable_hil=False)\n\n    node_names = set(workflow.nodes.keys())\n    assert {\"run_prompt_builder\", \"run_prompt_renderer\"}.issubset(node_names)\n",
+  "creation_timestamp": "2025-12-03T06:21:24.803507",
+  "version": "1.0"
+}

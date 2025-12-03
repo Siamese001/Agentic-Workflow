@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "40a7d909b3faee28f450eece387c251ba9c5b94ea56737d48e9e6fce7297ae2c",
+  "content_hash": "44cba8216f004412ced1bd5521d0c46ae5d6c34222f037005aaf296eb29e6b27",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tools\\update_imports_reorganization.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\update_imports_reorganization.py",
+    "file_size": 7743,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "40a7d909b3faee28f450eece387c251ba9c5b94ea56737d48e9e6fce7297ae2c",
+    "scan_timestamp": "2025-12-03T06:21:11.350049"
+  },
+  "content_preview": "#!/usr/bin/env python3\n\"\"\"\nUpdates import paths after reorganization for clean architecture.\n\nEnsures resume generation system maintains proper structure\n for improved code organization and easier maintenance.\n\"\"\"\n\nfrom pathlib import Path\n\n# Define the root directory\nROOT = Path(__file__).parent\n\n# Define import mappings (old -> new) for the reorganized structure\nIMPORT_MAPPINGS = {\n    # L1 -> agents/planning\n    \"from l1.\": \"from l1.\",\n    \"import l1.\": \"import l1.\",\n    \"from workflow_planni...",
+  "creation_timestamp": "2025-12-03T06:21:18.319021",
+  "version": "1.0"
+}

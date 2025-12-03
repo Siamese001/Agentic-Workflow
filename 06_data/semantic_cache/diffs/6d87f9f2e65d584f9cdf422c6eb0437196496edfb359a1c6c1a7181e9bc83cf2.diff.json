@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Old LIC",
+  "logical_path": "LIC_v7.4_diff_manifest.json",
+  "diff_content": "{\n  \"base_file\": \"LIC_10-03-2025_v7.1.json\",\n  \"target_file\": \"LIC_10-03-2025_v7.4.json\",\n  \"generated_at\": \"2025-10-03T12:57:16.268870Z\",\n  \"summary\": {\n    \"added_keys\": 30,\n    \"modified_keys\": 1,\n    \"unchanged_keys\": 14\n  },\n  \"added_keys\": [\n    \"3.context.intelligence_source_hierarchy\",\n    \"3.context.linkedin_input_collection\",\n    \"4.reasoning.K1.hyde_enrichment\",\n    \"4.reasoning.K3.execution_flow.self_rag_steps\",\n    \"4.reasoning.K3.execution_flow.step_3_stage_2_rerank\",\n    \"4.reasoning.K3.self_rag_triggers\",\n    \"4.reasoning.about_section_policy\",\n    \"4.reasoning.rag_source_prioritization.source_weighting_v2\",\n    \"4.reasoning.rag_source_prioritization.two_stage_retrieval\",\n    \"4.reasoning.rag_source_prioritization.two_stage_retrieval.stage_1_recall.query_enrichment\",\n    \"4.reasoning.validation_rule_schema.rules_compact\",\n    \"4.reasoning.validation_rule_schema.rules_compact#C026_adds\",\n    \"4.reasoning.validation_rule_schema.rules_compact#C027_adds\",\n    \"4.reasoning.validation_rule_schema.rules_compact#C028_adds\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-040\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-060\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-061\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-062\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-063\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-064\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-065\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-066\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-067\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-068\",\n    \"4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-069\",\n    \"5.output.audit.hyde_enrichment_log\",\n    \"5.output.audit.self_rag_decision_log\",\n    \"5.output.audit.stage_2_rerank_logs\",\n    \"performance_benchmarks\",\n    \"runtime_toggles\"\n  ],\n  \"modified_keys\": [\n    \"metadata\"\n  ]\n}",
+  "statistics": {
+    "lines_added": 45,
+    "lines_removed": 0,
+    "lines_changed": 45
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

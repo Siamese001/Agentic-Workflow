@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/sandbox/test_microvm_basic.py",
+  "diff_content": "from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest\nfrom observability import get_all_events, clear_events\n\n\ndef test_microvm_create_exec_teardown_emits_events():\n    clear_events()\n\n    vm = create_vm({\"cpu_ms\": 1000})\n    req = ToolCallRequest(tool_name=\"echo\", args=[\"hello\"], timeout_s=1.0)\n\n    result = exec_in_vm(vm, req)\n    teardown_vm(vm)\n\n    assert result.success is True\n    assert \"TOOL echo\" in result.stdout\n\n    events = get_all_events()\n    names = [e.name for e in events]\n    assert \"sandbox_start\" in names\n    assert \"sandbox_stop\" in names\n    assert \"sandbox_tool_complete\" in names\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 28,
+    "lines_removed": 0,
+    "lines_changed": 28
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

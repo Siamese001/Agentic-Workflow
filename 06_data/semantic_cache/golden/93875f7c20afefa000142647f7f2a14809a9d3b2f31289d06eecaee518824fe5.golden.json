@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "93875f7c20afefa000142647f7f2a14809a9d3b2f31289d06eecaee518824fe5",
+  "content_hash": "96e72ee5ee4ea7fd54ea2c155d5de728aaedb1ad5247b5c0010fab3813cbef90",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L4_memory_state\\RAG\\test_rag.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\RAG\\test_rag.py",
+    "file_size": 505,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "93875f7c20afefa000142647f7f2a14809a9d3b2f31289d06eecaee518824fe5",
+    "scan_timestamp": "2025-12-03T06:21:11.321756"
+  },
+  "content_preview": "\"\"\"L4 RAG (Retrieval Augmented Generation) Tests.\"\"\"\n\nclass TestRAG:\n    \"\"\"Tests for L4 RAG functionality.\"\"\"\n    \n    def test_retrieval_query(self):\n        \"\"\"Test retrieval query construction.\"\"\"\n        query = {\"text\": \"test query\", \"top_k\": 10}\n        assert query[\"top_k\"] == 10\n    \n    def test_context_augmentation(self):\n        \"\"\"Test context augmentation logic.\"\"\"\n        context = [\"doc1\", \"doc2\"]\n        augmented = \" \".join(context)\n        assert \"doc1\" in augmented\n",
+  "creation_timestamp": "2025-12-03T06:21:16.954316",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "6fcd38b437a8e5f607acdf90641a0485ef06e5032a36838bbd8bd689d987d45f",
+  "content_hash": "92c6e650041dc55c90934d0cf18b9d949784bb4975786f00a062b86075db99f5",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L1_planning\\unit\\test_prompt_system_v10_10.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_prompt_system_v10_10.py",
+    "file_size": 8238,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "6fcd38b437a8e5f607acdf90641a0485ef06e5032a36838bbd8bd689d987d45f",
+    "scan_timestamp": "2025-12-03T06:21:11.311014"
+  },
+  "content_preview": "\"\"\"\nTest Prompt System v10.10\n\nTests prompt registry, ACL governance, and prompt validation\nfunctionality for the v10.10 prompt system.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch\n\n# Import actual prompt system components\ntry:\n    from l1.prompt_system_v10_10 import (\n        PromptActorRole,\n        PromptACL,\n        PromptDiff,\n        register_prompt,\n        get_prompt,\n        get_prompt_acl,\n        validate_prompt_definition,\n    )\n    from core.models.models import PromptDe...",
+  "creation_timestamp": "2025-12-03T06:21:16.708414",
+  "version": "1.0"
+}

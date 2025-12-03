@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
+  "content_hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
+    "archive_name": "Agentic LIC",
+    "relative_path": "LIC_V2_FILES_SUMMARY.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\LIC_V2_FILES_SUMMARY.md",
+    "file_size": 6852,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
+    "scan_timestamp": "2025-12-03T06:21:11.522293"
+  },
+  "content_preview": "# LIC V2 Files - Complete Summary\n\n## All V2 Python Files Created\n\n### 1. **models_LIC_v2.py** (377 lines, 12K)\nComplete data models with V2 architecture patterns:\n- Custom exceptions (HopExecutionError, StagingBufferError, FactualGapError, etc.)\n- Enumerations (Route, Archetype, GateDecision, ValidationSeverity, etc.)\n- Dataclasses for all workflow entities:\n  - OutreachMission, ProfileAnalysis, ResearchContext\n  - MessageScaffold, GeneratedMessage, ValidationResult\n  - HopCheckpoint, RAGEviden...",
+  "creation_timestamp": "2025-12-03T06:21:35.374582",
+  "version": "1.0"
+}

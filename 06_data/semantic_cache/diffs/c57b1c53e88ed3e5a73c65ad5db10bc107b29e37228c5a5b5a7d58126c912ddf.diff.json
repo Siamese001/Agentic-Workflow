@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "config/safety_profile.py",
+  "diff_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyProfile(BaseModel):\n    \"\"\"Safety configuration profile used by execution profiles.\n\n    This is intentionally string/primitive based to avoid cycles and\n    mirrors the SafetyTier + policy toggles used in ExecutionProfileSpec.\n    \"\"\"\n\n    safety_tier: str = Field(default=\"standard\", description=\"Safety tier: standard | strict | relaxed | debug\")\n    pii_detection_enabled: bool = True\n    policy_engine_enabled: bool = True\n\n\n\n",
+  "statistics": {
+    "lines_added": 18,
+    "lines_removed": 0,
+    "lines_changed": 18
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

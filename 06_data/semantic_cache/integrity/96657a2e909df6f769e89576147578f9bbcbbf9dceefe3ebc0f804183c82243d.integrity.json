@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "96657a2e909df6f769e89576147578f9bbcbbf9dceefe3ebc0f804183c82243d",
+  "content_hash": "96657a2e909df6f769e89576147578f9bbcbbf9dceefe3ebc0f804183c82243d",
+  "file_size": 7057,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\contracts\\test_contract_invariants_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\contracts\\test_contract_invariants_v10_7.py",
+    "file_size": 7057,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "96657a2e909df6f769e89576147578f9bbcbbf9dceefe3ebc0f804183c82243d",
+    "scan_timestamp": "2025-12-03T06:21:11.409700"
+  },
+  "verification_timestamp": "2025-12-03T06:21:23.492332",
+  "checksums": {
+    "sha256": "96657a2e909df6f769e89576147578f9bbcbbf9dceefe3ebc0f804183c82243d",
+    "md5": "74cf62e7369d6da76e6e541a7108b2be"
+  }
+}

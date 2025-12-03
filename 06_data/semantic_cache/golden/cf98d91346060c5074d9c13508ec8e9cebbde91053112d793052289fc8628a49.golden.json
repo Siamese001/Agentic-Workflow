@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "content_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
+    "archive_name": "Agentic LIC",
+    "relative_path": "hop_agents_LIC.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\hop_agents_LIC.py",
+    "file_size": 25345,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+    "scan_timestamp": "2025-12-03T06:21:11.521813"
+  },
+  "content_preview": "# File: hop_agents_LIC.py\n# Description: Refactored HOP agents for v13.0 pure agentic architecture\n# Demonstrates state-based I/O, single responsibility, and tool augmentation\n\n__version__ = \"13.0\"\n\nimport json\nimport os\nfrom typing import Dict, List, Any, Optional\nfrom datetime import datetime\n\nfrom models_LIC import (\n    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,\n    Route, Archetype, ValidationResult, ValidationSeverity, RAGResult,\n    SenderGroundingWhitelists, Fact...",
+  "creation_timestamp": "2025-12-03T06:21:35.277966",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bcc585b114cb104b14cbb031fe3d9fceb8fc8279323b57a2e6d7fbb5fe321614",
+  "content_hash": "71f6531a11af2a8f466f2e2c8ff0be886971013d75bca30b8fcaaefdd74a831f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
+    "archive_name": "Agentic-Workflow-10_9",
+    "relative_path": "l1.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l1.py",
+    "file_size": 31291,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bcc585b114cb104b14cbb031fe3d9fceb8fc8279323b57a2e6d7fbb5fe321614",
+    "scan_timestamp": "2025-12-03T06:21:11.361277"
+  },
+  "content_preview": "# FILE: l1.py\n\"\"\"\nUnified L1 Cognition Layer (v10_9) \u2014 FULL AGENTIC PLANNING (REFINED)\n\nThis module implements ALL L1 responsibilities for the v10_9 agentic\nworkflow. It is strictly *cognition-only*:\n\n    \u2022 Performs profile inference (seniority, domain, skills).\n    \u2022 Estimates task complexity and selects reasoning mode (CoT vs ToT).\n    \u2022 Builds linear strategy plans (clarify \u2192 context \u2192 structure).\n    \u2022 Plans RAG intents (queries, evidence targets, sources).\n    \u2022 Plans drafting structure (se...",
+  "creation_timestamp": "2025-12-03T06:21:19.228357",
+  "version": "1.0"
+}

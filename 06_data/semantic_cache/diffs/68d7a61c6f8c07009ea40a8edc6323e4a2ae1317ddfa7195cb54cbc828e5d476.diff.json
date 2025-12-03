@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/metacognition/test_meta_hybrid_ranker.py",
+  "diff_content": "from __future__ import annotations\n\nfrom meta.retrieval.hybrid_ranker import fuse_and_rank\nfrom core.models.models import CouncilVote, Evidence, RetrievalConfig\n\n\ndef _make_ev(text: str, score: float, source: str) -> Evidence:\n    return Evidence(text=text, score=score, source=source, metadata={})\n\n\ndef test_fuse_and_rank_rrf_with_uniform_weights() -> None:\n    cfg = RetrievalConfig(max_hits=10)\n\n    lex = [\n        _make_ev(text=\"doc1\", score=0.0, source=\"bm25\"),\n        _make_ev(text=\"doc2\", score=0.0, source=\"bm25\"),\n    ]\n    dense = [\n        Evidence(text=\"doc2\", score=0.0, source=\"dense\", metadata={}),\n        Evidence(text=\"doc3\", score=0.0, source=\"dense\", metadata={}),\n    ]\n\n    rag = fuse_and_rank(lex_results=lex, dense_results=dense, cfg=cfg)\n    texts = [e.text for e in rag.evidence]\n\n    # All docs appear once after fusion; ordering is defined by RRF.\n    assert set(texts) == {\"doc1\", \"doc2\", \"doc3\"}\n\n\ndef test_fuse_and_rank_truncates_to_max_hits() -> None:\n    cfg = RetrievalConfig(max_hits=1)\n\n    lex = [Evidence(text=\"doc1\", score=0.0, source=\"bm25\", metadata={})]\n    dense = [Evidence(text=\"doc2\", score=0.0, source=\"dense\", metadata={})]\n\n    rag = fuse_and_rank(lex_results=lex, dense_results=dense, cfg=cfg)\n    assert len(rag.evidence) == 1\n\n\ndef test_fuse_and_rank_applies_council_weights() -> None:\n    cfg = RetrievalConfig(max_hits=10)\n    council = CouncilVote(\n        members=1,\n        selected_id=\"preferred candidate\",\n        scores={\"preferred candidate\": 1.0},\n        ties=[],\n        reason=\"Test vote for preferred candidate\"\n    )\n\n    lex = [\n        Evidence(text=\"preferred candidate\", score=0.5, source=\"bm25\", metadata={}),\n        Evidence(text=\"other\", score=0.5, source=\"bm25\", metadata={}),\n    ]\n    dense: list[Evidence] = []\n\n    rag = fuse_and_rank(lex_results=lex, dense_results=dense, cfg=cfg, council_vote=council)\n    scores = {e.text: e.score for e in rag.evidence}\n    assert scores[\"preferred candidate\"] > scores[\"other\"]\n\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 65,
+    "lines_removed": 0,
+    "lines_changed": 65
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

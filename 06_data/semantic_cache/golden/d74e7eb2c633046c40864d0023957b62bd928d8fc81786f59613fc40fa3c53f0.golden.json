@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d74e7eb2c633046c40864d0023957b62bd928d8fc81786f59613fc40fa3c53f0",
+  "content_hash": "d74e7eb2c633046c40864d0023957b62bd928d8fc81786f59613fc40fa3c53f0",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
+    "archive_name": "v6.0",
+    "relative_path": "run_batch_v6_0.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\run_batch_v6_0.py",
+    "file_size": 5089,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d74e7eb2c633046c40864d0023957b62bd928d8fc81786f59613fc40fa3c53f0",
+    "scan_timestamp": "2025-12-03T06:21:11.484395"
+  },
+  "content_preview": "# File: run_batch_v6_0.py\n# NEW: Batch processing harness for v6.0\n# Processes all job_input.json files in batch_queue/ folder\n# Writes one-line summaries to batch_summary_v6_0.csv\n# Moves completed files to batch_complete/\n\nimport os\nimport csv\nimport json\nimport logging\nimport shutil\nfrom datetime import datetime\n\n# Imports from its *own* versioned files\nfrom main_v6_0 import WorkflowV60, setup_logging \nfrom core_v6_0 import CONFIG, CircuitBreakerOpenError\n\nlogger = logging.getLogger(\"batch_ru...",
+  "creation_timestamp": "2025-12-03T06:21:29.914633",
+  "version": "1.0"
+}

@@ -1,0 +1,301 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "v10.8 planning + execution stacks used across the workflow.",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "rag_planning",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RAGPlanningStack",
+                  "asname": "None"
+                },
+                "_lineno": 3,
+                "_col_offset": 26
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 3,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "bullet_planning",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "BulletPlanningStack",
+                  "asname": "None"
+                },
+                "_lineno": 4,
+                "_col_offset": 29
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 4,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "draft_planning",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "DraftPlanningStack",
+                  "asname": "None"
+                },
+                "_lineno": 5,
+                "_col_offset": 28
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 5,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "rag_execution",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RAGExecutionStack",
+                  "asname": "None"
+                },
+                "_lineno": 6,
+                "_col_offset": 27
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 6,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "bullet_execution",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "BulletExecutionStack",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 30
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "drafting_execution",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "DraftingExecutionStack",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 32
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "rag_orchestration",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "RAGOrchestratorStack",
+                  "asname": "None"
+                },
+                "_lineno": 9,
+                "_col_offset": 31
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 9,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "draft_orchestration",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "DraftOrchestratorStack",
+                  "asname": "None"
+                },
+                "_lineno": 10,
+                "_col_offset": 33
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 10,
+          "_col_offset": 0
+        },
+        {
+          "_type": "Assign",
+          "_fields": {
+            "targets": [
+              {
+                "_type": "Name",
+                "_fields": {
+                  "id": "__all__",
+                  "ctx": {
+                    "_type": "Store",
+                    "_fields": {}
+                  }
+                },
+                "_lineno": 12,
+                "_col_offset": 0
+              }
+            ],
+            "value": {
+              "_type": "List",
+              "_fields": {
+                "elts": [
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RAGPlanningStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 13,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "BulletPlanningStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 14,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "DraftPlanningStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 15,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RAGExecutionStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 16,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "BulletExecutionStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 17,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "DraftingExecutionStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 18,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "RAGOrchestratorStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 19,
+                    "_col_offset": 4
+                  },
+                  {
+                    "_type": "Constant",
+                    "_fields": {
+                      "value": "DraftOrchestratorStack",
+                      "kind": "None"
+                    },
+                    "_lineno": 20,
+                    "_col_offset": 4
+                  }
+                ],
+                "ctx": {
+                  "_type": "Load",
+                  "_fields": {}
+                }
+              },
+              "_lineno": 12,
+              "_col_offset": 10
+            },
+            "type_comment": "None"
+          },
+          "_lineno": 12,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 32,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 8
+  }
+}

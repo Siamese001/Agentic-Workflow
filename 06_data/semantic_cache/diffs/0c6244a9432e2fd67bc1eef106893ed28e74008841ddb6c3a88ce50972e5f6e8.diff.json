@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/_deprecated/test_agent_cards.py",
+  "diff_content": "from __future__ import annotations\n\nimport pytest\n\nfrom l2.agents import (\n    StrategyLLMAgent,\n    DraftingGuild,\n    SemanticQAAgent,\n    ConstitutionalSafetyAgent,\n    HYDEQueryAgent,\n    QACouncilAgent,\n)\nfrom core.models.models import AgentCard, AgentRole  # normalized import\nfrom core.routing import RoutingPolicy\nfrom tools.runtime_utils import SandboxConfig\n\n\ndef _make_agent(agent_cls, card: AgentCard | None = None):\n    routing = RoutingPolicy()\n    sandbox = SandboxConfig()\n    if card is not None:\n        return agent_cls(routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None)\n    return agent_cls(routing_policy=routing, sandbox=sandbox, meta_profile=None)\n\n\ndef test_all_major_agents_have_agent_card_with_expected_roles():\n    agents = [\n        (StrategyLLMAgent, AgentRole.PLANNER),\n        (DraftingGuild, AgentRole.EXECUTION),\n        (SemanticQAAgent, AgentRole.QA),\n        (ConstitutionalSafetyAgent, AgentRole.SAFETY),\n        (HYDEQueryAgent, AgentRole.META),\n        (QACouncilAgent, AgentRole.QA),\n    ]\n\n    for cls, expected_role in agents:\n        agent = _make_agent(cls)\n        assert isinstance(agent.agent_card, AgentCard)\n        assert agent.agent_card.role == expected_role\n        assert agent.agent_card.agent_id == cls.__name__\n\n\ndef test_allowed_tools_enforced_by_llm_base_agent_helper():\n    card = AgentCard(\n        agent_id=\"test_agent\",\n        role=AgentRole.EXECUTION,\n        capabilities=[\"test\"],\n        allowed_tools=[\"tool_a\", \"tool_b\"],\n        policy_scope={},\n    )\n\n    agent = _make_agent(StrategyLLMAgent, card)\n\n    # Allowed tools should pass silently.\n    agent._check_tool_allowed(\"tool_a\")  # type: ignore[attr-defined]\n    agent._check_tool_allowed(\"tool_b\")  # type: ignore[attr-defined]\n\n    # Disallowed tool should raise a PermissionError.\n    with pytest.raises(PermissionError):\n        agent._check_tool_allowed(\"tool_c\")  # type: ignore[attr-defined]\n\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 67,
+    "lines_removed": 0,
+    "lines_changed": 67
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

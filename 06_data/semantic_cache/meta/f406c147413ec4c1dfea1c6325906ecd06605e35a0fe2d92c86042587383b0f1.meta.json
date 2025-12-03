@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "engine.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\engine.py",
+    "file_size": 5388,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1",
+    "scan_timestamp": "2025-12-03T06:21:11.472788"
+  },
+  "artifacts": {
+    "ast": "ast/f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1.ast",
+    "embedding": "embeddings/f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1.embedding",
+    "diff": "diffs/f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1.diff.json",
+    "safety": "safety/f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1.safety.json",
+    "golden": "golden/f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1.golden.json",
+    "integrity": "integrity/f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:28.768003",
+  "artifact_count": 6
+}

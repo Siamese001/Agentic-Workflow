@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "src/lic_agentic/rag/__init__.py",
+  "diff_content": "from .content_store import ContentStore, make_key\nfrom .evidence_registry import EvidenceRegistry\nfrom .mcp_selector import MCPSelector, SelectedTool, register_discovered_tools\nfrom .retrieval_planner import RetrievalPlan\nfrom .tool_registry import BaseTool, NewsTool, ProfileLookupTool, ToolRegistry, ToolResult, WebSearchTool\n\n__all__ = (\n    \"ContentStore\",\n    \"make_key\",\n    \"EvidenceRegistry\",\n    \"RetrievalPlan\",\n    \"BaseTool\",\n    \"ToolRegistry\",\n    \"ToolResult\",\n    \"WebSearchTool\",\n    \"ProfileLookupTool\",\n    \"NewsTool\",\n    \"MCPSelector\",\n    \"SelectedTool\",\n    \"register_discovered_tools\",\n)\n\n\ndef _touch_exports() -> tuple[str, ...]:\n    return __all__\n\n\n_touch_exports()\n",
+  "statistics": {
+    "lines_added": 28,
+    "lines_removed": 0,
+    "lines_changed": 28
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

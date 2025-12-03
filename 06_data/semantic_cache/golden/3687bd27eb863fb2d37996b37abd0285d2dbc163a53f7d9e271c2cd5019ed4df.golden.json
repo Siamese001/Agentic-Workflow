@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "3687bd27eb863fb2d37996b37abd0285d2dbc163a53f7d9e271c2cd5019ed4df",
+  "content_hash": "881462416bad1e1f47b7a088adbe19a8cef1b02189e20f9e22fd282bc93c4d82",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L5_safety_policy\\integration\\test_l5_integration.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L5_safety_policy\\integration\\test_l5_integration.py",
+    "file_size": 374,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "3687bd27eb863fb2d37996b37abd0285d2dbc163a53f7d9e271c2cd5019ed4df",
+    "scan_timestamp": "2025-12-03T06:21:11.325292"
+  },
+  "content_preview": "\"\"\"L5 Safety Policy Layer Integration Tests.\"\"\"\n\nclass TestL5SafetyIntegration:\n    \"\"\"Integration tests for L5 safety policy layer.\"\"\"\n    \n    def test_policy_enforcement_flow(self):\n        \"\"\"Test policy enforcement flow.\"\"\"\n        assert True\n    \n    def test_safety_validation_chain(self):\n        \"\"\"Test safety validation chain.\"\"\"\n        assert True\n",
+  "creation_timestamp": "2025-12-03T06:21:17.043924",
+  "version": "1.0"
+}

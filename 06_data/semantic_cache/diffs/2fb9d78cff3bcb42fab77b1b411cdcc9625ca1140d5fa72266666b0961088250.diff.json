@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/e2e/multi-agent_scenarios/test_e2e_multi_agent.py",
+  "diff_content": "\"\"\"E2E Multi-Agent Scenario Tests.\"\"\"\n\nclass TestE2EMultiAgent:\n    \"\"\"E2E tests for multi-agent scenarios.\"\"\"\n    \n    def test_planner_executor_reviewer_chain(self):\n        \"\"\"Test planner-executor-reviewer agent chain.\"\"\"\n        agents = [\"planner\", \"executor\", \"reviewer\"]\n        results = []\n        for agent in agents:\n            results.append({\"agent\": agent, \"status\": \"complete\"})\n        assert len(results) == 3\n    \n    def test_parallel_agent_coordination(self):\n        \"\"\"Test parallel agent coordination.\"\"\"\n        parallel_agents = [\"agent_a\", \"agent_b\", \"agent_c\"]\n        outputs = {a: f\"output_{a}\" for a in parallel_agents}\n        assert len(outputs) == 3\n",
+  "statistics": {
+    "lines_added": 18,
+    "lines_removed": 0,
+    "lines_changed": 18
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

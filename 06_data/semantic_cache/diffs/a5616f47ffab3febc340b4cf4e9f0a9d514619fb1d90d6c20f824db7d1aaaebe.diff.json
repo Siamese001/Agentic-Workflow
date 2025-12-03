@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "eval/golden_state/gating.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Dict\n\n\ndef gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:\n    \"\"\"Return True if the experiment meets or exceeds baseline.\n\n    For now we only enforce that avg_score is not worse and that\n    pass_count is not lower when both metrics are present.\n    \"\"\"\n\n    if not baseline_scores:\n        # No baseline recorded yet \u2192 allow by default.\n        return True\n\n    new_avg = float(new_scores.get(\"avg_score\", 0.0))\n    base_avg = float(baseline_scores.get(\"avg_score\", 0.0))\n\n    if new_avg < base_avg:\n        return False\n\n    if \"pass_count\" in baseline_scores and \"pass_count\" in new_scores:\n        if float(new_scores[\"pass_count\"]) < float(baseline_scores[\"pass_count\"]):\n            return False\n\n    return True\n\n\ndef gate_against_baseline(\n    current_scores: Dict[str, float],\n    baseline_scores: Dict[str, float],\n    tolerance: float = 0.0,\n) -> bool:\n    if not baseline_scores:\n        return True\n\n    adjusted_baseline = dict(baseline_scores)\n    base_avg = float(baseline_scores.get(\"avg_score\", 0.0))\n    adjusted_baseline[\"avg_score\"] = max(0.0, base_avg - tolerance)\n    return gate_experiment(current_scores, adjusted_baseline)\n\n\n\n",
+  "statistics": {
+    "lines_added": 44,
+    "lines_removed": 0,
+    "lines_changed": 44
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

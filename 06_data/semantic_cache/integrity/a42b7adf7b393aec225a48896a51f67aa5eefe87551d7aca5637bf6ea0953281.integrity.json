@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
+  "content_hash": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
+  "file_size": 14921,
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
+    "archive_name": "Agentic LIC",
+    "relative_path": "agent_specs_LIC.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\agent_specs_LIC.json",
+    "file_size": 14921,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
+    "scan_timestamp": "2025-12-03T06:21:11.521546"
+  },
+  "verification_timestamp": "2025-12-03T06:21:35.257148",
+  "checksums": {
+    "sha256": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
+    "md5": "b746f32c51ea7093a61b12875a65dd9e"
+  }
+}

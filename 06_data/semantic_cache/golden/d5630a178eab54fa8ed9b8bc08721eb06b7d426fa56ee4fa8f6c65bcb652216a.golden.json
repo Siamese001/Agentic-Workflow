@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d5630a178eab54fa8ed9b8bc08721eb06b7d426fa56ee4fa8f6c65bcb652216a",
+  "content_hash": "d5630a178eab54fa8ed9b8bc08721eb06b7d426fa56ee4fa8f6c65bcb652216a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "prompting.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\prompting.py",
+    "file_size": 6181,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d5630a178eab54fa8ed9b8bc08721eb06b7d426fa56ee4fa8f6c65bcb652216a",
+    "scan_timestamp": "2025-12-03T06:21:11.392766"
+  },
+  "content_preview": "\"\"\"Prompt engineering stack.\"\"\"\n\nimport json\nfrom typing import Any, Dict, Optional, Tuple\n\nfrom core_v10_7 import (\n    BaseAgent,\n    GeneratedPrompts,\n    StrategyPlan,\n    ValidationError,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\n\n\nclass PromptEngineerAgent(BaseAgent):\n    \"\"\"LLM-driven prompt engineering that adapts to task complexity.\"\"\"\n\n    @track_metrics(\"run_prompt_engineer\")\n    async def run_async(\n        self,\n        strategy: StrategyPlan,\n        complexity: str,\n ...",
+  "creation_timestamp": "2025-12-03T06:21:22.261051",
+  "version": "1.0"
+}

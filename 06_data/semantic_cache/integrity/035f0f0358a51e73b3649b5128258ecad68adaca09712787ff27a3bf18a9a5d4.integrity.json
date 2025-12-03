@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4",
+  "content_hash": "270edea5c990c1b7839178ea62ce7773c3ec2a33eb3705ac9eff6a71e8c098da",
+  "file_size": 2365,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "providers\\redis_client.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\redis_client.py",
+    "file_size": 2365,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4",
+    "scan_timestamp": "2025-12-03T06:21:11.284474"
+  },
+  "verification_timestamp": "2025-12-03T06:21:15.880274",
+  "checksums": {
+    "sha256": "270edea5c990c1b7839178ea62ce7773c3ec2a33eb3705ac9eff6a71e8c098da",
+    "md5": "49fc5be3cffba68df2544e993d44e2dd"
+  }
+}

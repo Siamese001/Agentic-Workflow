@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bd9e70c02fda7d8556cb7c4d5bec96e57927bbbc22ae7936f30f27b224d93286",
+  "content_hash": "1b9176e0bb582e75502c437a1f9c0ab7debe7ff425299d311086ce2877558262",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\workflow_engine.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\workflow_engine.py",
+    "file_size": 3007,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bd9e70c02fda7d8556cb7c4d5bec96e57927bbbc22ae7936f30f27b224d93286",
+    "scan_timestamp": "2025-12-03T06:21:11.280487"
+  },
+  "content_preview": "\"\"\"\nProvides high-level r\u00e9sum\u00e9 analysis workflow execution with coordinated multi-agent processing.\n\nImproves r\u00e9sum\u00e9 processing reliability by orchestrating complex analysis workflows with safety validation and error handling.\n\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar\n\nfrom l5 import SafetySystem\n\nfrom .integration import WorkflowExecutionConfig, create_workflo...",
+  "creation_timestamp": "2025-12-03T06:21:15.762536",
+  "version": "1.0"
+}

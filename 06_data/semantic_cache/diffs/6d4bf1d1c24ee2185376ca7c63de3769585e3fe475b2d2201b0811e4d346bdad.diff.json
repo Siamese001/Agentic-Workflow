@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "prompt_builder_stack.py",
+  "diff_content": "\"\"\"Prompt building stack for v10.8 that wraps the legacy prompt engineer.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.components.prompting import PromptEngineerAgent\n\n\nclass PromptBuilderStack:\n    \"\"\"Layer-isolated facade for prompt engineering.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._prompt_agent = PromptEngineerAgent(context, debug_mode)\n\n    async def run_async(\n        self,\n        strategy_plan: Any,\n        complexity: str,\n        workflow_id: str,\n        state: Optional[Dict[str, Any]] = None,\n    ) -> Dict[str, Any]:\n        \"\"\"Execute prompt engineering and emit a structured state patch.\"\"\"\n\n        prompts_result = await self._prompt_agent.run_async(\n            strategy_plan,\n            complexity,\n            workflow_id,\n            state,\n        )\n\n        prompts_payload: Dict[str, Any] = {}\n        prompts_model = prompts_result.get(\"prompts\") if isinstance(prompts_result, dict) else None\n        if prompts_model is None:\n            prompts_payload = prompts_result if isinstance(prompts_result, dict) else {}\n        elif hasattr(prompts_model, \"model_dump\"):\n            prompts_payload = prompts_model.model_dump()\n        elif isinstance(prompts_model, dict):\n            prompts_payload = prompts_model\n\n        return {\"prompts\": {\"prompts\": prompts_payload}}\n",
+  "statistics": {
+    "lines_added": 43,
+    "lines_removed": 0,
+    "lines_changed": 43
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

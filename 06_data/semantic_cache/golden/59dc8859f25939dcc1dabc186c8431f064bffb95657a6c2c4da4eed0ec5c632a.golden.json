@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "59dc8859f25939dcc1dabc186c8431f064bffb95657a6c2c4da4eed0ec5c632a",
+  "content_hash": "19931309ba9e3c974183eff3b4b2a99160fef308e9eecc5f93d7039b0924646c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l4\\pinecone_adapter.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\pinecone_adapter.py",
+    "file_size": 13294,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "59dc8859f25939dcc1dabc186c8431f064bffb95657a6c2c4da4eed0ec5c632a",
+    "scan_timestamp": "2025-12-03T06:21:11.264520"
+  },
+  "content_preview": "\"\"\"\nL4 Pinecone adapter for resume job alignment workflows.\n\nCentralizes vector operations for resume enhancement processing.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Sequence\nfrom datetime import datetime, UTC\n\n\n@dataclass\nclass PineconeConfig:\n    \"\"\"Configuration for resume workflow Pinecone vector store.\"\"\"\n    \n    api_key: str\n    index_name: str\n    namespace_prefix: str = \"agentic_workfl...",
+  "creation_timestamp": "2025-12-03T06:21:14.438847",
+  "version": "1.0"
+}

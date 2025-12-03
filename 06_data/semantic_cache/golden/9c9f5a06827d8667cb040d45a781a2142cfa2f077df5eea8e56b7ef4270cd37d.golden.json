@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9c9f5a06827d8667cb040d45a781a2142cfa2f077df5eea8e56b7ef4270cd37d",
+  "content_hash": "9c9f5a06827d8667cb040d45a781a2142cfa2f077df5eea8e56b7ef4270cd37d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\data\\test_data_transformation_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\data\\test_data_transformation_v10_7.py",
+    "file_size": 5736,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "9c9f5a06827d8667cb040d45a781a2142cfa2f077df5eea8e56b7ef4270cd37d",
+    "scan_timestamp": "2025-12-03T06:21:11.412329"
+  },
+  "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# --------------------------------------------------------------------\n# Helpers\n# --------------------------------------------------------------------\ndef _len_or_zero(x):\n    if x is None:\n        return 0\n    if isinstance(x, (list, dict, str)):\n        return len(x)\n    return 1\n\n\n# --------------------------------------------------------------------\n# 1. Summary must be meaningfully shorter than resume input\n# ------------------------...",
+  "creation_timestamp": "2025-12-03T06:21:23.586025",
+  "version": "1.0"
+}

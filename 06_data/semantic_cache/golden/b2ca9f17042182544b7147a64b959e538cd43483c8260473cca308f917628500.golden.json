@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b2ca9f17042182544b7147a64b959e538cd43483c8260473cca308f917628500",
+  "content_hash": "b2ca9f17042182544b7147a64b959e538cd43483c8260473cca308f917628500",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\qa\\metrics.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\qa\\metrics.py",
+    "file_size": 2806,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b2ca9f17042182544b7147a64b959e538cd43483c8260473cca308f917628500",
+    "scan_timestamp": "2025-12-03T06:21:11.501937"
+  },
+  "content_preview": "\"\"\"Metrics tracking for QA performance.\"\"\"\nfrom __future__ import annotations\n\nimport math\nfrom collections import Counter\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List\n\nfrom .qa_validator import QAResult\n\n\n@dataclass\nclass MetricsTracker:\n    \"\"\"Collect run-level QA metrics for later analysis.\"\"\"\n\n    total_runs: int = 0\n    passes: int = 0\n    latency_samples_ms: List[int] = field(default_factory=list)\n    token_samples: List[int] = field(default_factory=list)\n    toke...",
+  "creation_timestamp": "2025-12-03T06:21:34.365034",
+  "version": "1.0"
+}

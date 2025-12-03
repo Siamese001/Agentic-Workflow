@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "2fb9d78cff3bcb42fab77b1b411cdcc9625ca1140d5fa72266666b0961088250",
+  "content_hash": "d3e59139c260c630055f1bed28619e567ee8aa96921aece3fb477e3ddd0aafb3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\e2e\\multi-agent_scenarios\\test_e2e_multi_agent.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\multi-agent_scenarios\\test_e2e_multi_agent.py",
+    "file_size": 703,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2fb9d78cff3bcb42fab77b1b411cdcc9625ca1140d5fa72266666b0961088250",
+    "scan_timestamp": "2025-12-03T06:21:11.302562"
+  },
+  "content_preview": "\"\"\"E2E Multi-Agent Scenario Tests.\"\"\"\n\nclass TestE2EMultiAgent:\n    \"\"\"E2E tests for multi-agent scenarios.\"\"\"\n    \n    def test_planner_executor_reviewer_chain(self):\n        \"\"\"Test planner-executor-reviewer agent chain.\"\"\"\n        agents = [\"planner\", \"executor\", \"reviewer\"]\n        results = []\n        for agent in agents:\n            results.append({\"agent\": agent, \"status\": \"complete\"})\n        assert len(results) == 3\n    \n    def test_parallel_agent_coordination(self):\n        \"\"\"Test pa...",
+  "creation_timestamp": "2025-12-03T06:21:16.300662",
+  "version": "1.0"
+}

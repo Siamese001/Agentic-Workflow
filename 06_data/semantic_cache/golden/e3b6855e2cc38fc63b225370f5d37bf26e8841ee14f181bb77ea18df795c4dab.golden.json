@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e3b6855e2cc38fc63b225370f5d37bf26e8841ee14f181bb77ea18df795c4dab",
+  "content_hash": "e3b6855e2cc38fc63b225370f5d37bf26e8841ee14f181bb77ea18df795c4dab",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "simulations\\models\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\simulations\\models\\__init__.py",
+    "file_size": 896,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e3b6855e2cc38fc63b225370f5d37bf26e8841ee14f181bb77ea18df795c4dab",
+    "scan_timestamp": "2025-12-03T06:21:11.400456"
+  },
+  "content_preview": "\"\"\"Pydantic models for simulation subsystem.\"\"\"\n\nfrom .simulation_base import SimulationInput, SimulationResult, SimulationBatchResult\nfrom .strategy_simulation import (\n    StrategySimRequest,\n    StrategySimResult,\n    StrategySimMetrics,\n)\nfrom .rag_simulation import (\n    RAGSimRequest,\n    RAGSimResult,\n    RAGSimMetrics,\n)\nfrom .draft_simulation import (\n    DraftSimRequest,\n    DraftSimResult,\n    DraftSimMetrics,\n)\nfrom .safety_simulation import (\n    SafetySimRequest,\n    SafetySimResul...",
+  "creation_timestamp": "2025-12-03T06:21:22.913338",
+  "version": "1.0"
+}

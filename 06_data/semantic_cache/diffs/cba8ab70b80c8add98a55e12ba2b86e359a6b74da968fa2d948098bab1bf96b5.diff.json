@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/control_plane/control_plane.py",
+  "diff_content": "\"\"\"\nControl plane orchestration for r\u00e9sum\u00e9 processing safety pipeline.\n\nCoordinates rule evaluation and safety decisions for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import Tuple\n\nfrom .decisions import JudgeVerdict, SafetyPipelineTrace, RulesEngineResult\nfrom .judge_engine import evaluate_with_guard_model\nfrom .models import PolicyDecision, SafetyContext\nfrom .routing import resolve_rules_for_context\nfrom .rules_engine import evaluate_rules\n\n\ndef run_safety_pipeline(\n    context: SafetyContext,\n    execution_profile: object | None = None,\n) -> Tuple[PolicyDecision, SafetyPipelineTrace]:\n    \"\"\"\n    Executes complete safety pipeline for r\u00e9sum\u00e9 processing workflows.\n\n    Ensures comprehensive safety validation for r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    # Step 1: resolve rules for this agent / task.\n    rules = resolve_rules_for_context(context)\n\n    # Step 2: deterministic rules engine.\n    rules_result: RulesEngineResult = evaluate_rules(context, rules)\n\n    # Step 3: guard-style judge over the rules output.\n    judge_verdict: JudgeVerdict = evaluate_with_guard_model(context, rules_result)\n\n    # Step 4: merge into a final PolicyDecision.\n    if judge_verdict.verdict == \"unsafe\":\n        action = \"deny\"\n    elif judge_verdict.verdict == \"ambiguous\":\n        # In ambiguous cases, prefer a revision path that allows\n        # upstream layers to sanitize content instead of hard-blocking.\n        action = \"revise\"\n    else:\n        action = \"allow\"\n\n    decision = PolicyDecision(\n        action=action,\n        verdict=judge_verdict.verdict,\n        reason=judge_verdict.explanation,\n        rule_ids=[m.rule_id for m in rules_result.matches],\n        max_severity=rules_result.max_severity,\n        details={\n            \"has_pii\": rules_result.has_pii,\n            \"match_count\": len(rules_result.matches),\n        },\n    )\n\n    trace = SafetyPipelineTrace(\n        rules_engine={\n            \"matches\": [m.dict() for m in rules_result.matches],\n            \"max_severity\": rules_result.max_severity,\n            \"has_pii\": rules_result.has_pii,\n            \"match_count\": len(rules_result.matches),\n        },\n        judge={\n            \"verdict\": judge_verdict.verdict,\n            \"signals\": judge_verdict.signals,\n        },\n    )\n\n    return decision, trace\n\n\n\n",
+  "statistics": {
+    "lines_added": 73,
+    "lines_removed": 0,
+    "lines_changed": 73
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

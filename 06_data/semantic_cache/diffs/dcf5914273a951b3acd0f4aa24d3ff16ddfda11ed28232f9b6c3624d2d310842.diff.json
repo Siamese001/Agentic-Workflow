@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "runtime/runtime_utils.py",
+  "diff_content": "\"\"\"Snapshot-local runtime.runtime_utils shim for v10_10 tests.\n\nThis module allows imports of the form::\n\n    from runtime.runtime_utils import invoke_model, SandboxConfig\n\nwhen tests are run with rootdir=Agentic-Workflow-10_10. It delegates to the\nexisting runtime_utils module at the snapshot root.\n\"\"\"\nfrom __future__ import annotations\n\nfrom tools.runtime_utils import (  # noqa: F401\n    ValidationError,\n    ToolExecutionError,\n    ModelClientError,\n    SafetyException,\n    LLMInvocationError,\n    CircuitBreaker,\n    invoke_with_retry,\n    SandboxConfig,\n    get_sandbox,\n    PredictiveCacheManager,\n    invoke_model,\n)\n\n__all__ = [\n    \"ValidationError\",\n    \"ToolExecutionError\",\n    \"ModelClientError\",\n    \"SafetyException\",\n    \"LLMInvocationError\",\n    \"CircuitBreaker\",\n    \"invoke_with_retry\",\n    \"SandboxConfig\",\n    \"get_sandbox\",\n    \"PredictiveCacheManager\",\n    \"invoke_model\",\n]\n\n\n\n",
+  "statistics": {
+    "lines_added": 41,
+    "lines_removed": 0,
+    "lines_changed": 41
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb",
+  "content_hash": "78460988dc9ee44f75fd38dbd50c5c9681b2893e71445a67854377fb5031cfa5",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden\\datasets\\golden_job_dataset.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\datasets\\golden_job_dataset.json",
+    "file_size": 520,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb",
+    "scan_timestamp": "2025-12-03T06:21:11.304198"
+  },
+  "content_preview": "{\n  \"version\": \"1.0\",\n  \"description\": \"Golden dataset for job description testing\",\n  \"samples\": [\n    {\n      \"id\": \"job_001\",\n      \"title\": \"Senior Software Engineer\",\n      \"company\": \"Tech Corp\",\n      \"requirements\": [\"Python\", \"AWS\", \"Docker\", \"Kubernetes\"],\n      \"experience_years\": 5\n    },\n    {\n      \"id\": \"job_002\",\n      \"title\": \"ML Engineer\",\n      \"company\": \"AI Startup\",\n      \"requirements\": [\"Python\", \"TensorFlow\", \"PyTorch\", \"MLOps\"],\n      \"experience_years\": 3\n    }\n  ]\n}\n",
+  "creation_timestamp": "2025-12-03T06:21:16.399393",
+  "version": "1.0"
+}

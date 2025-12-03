@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c7ea402be4d44888ec79f4329463d2c4048da71831a826ef4daf2ad63bebd912",
+  "content_hash": "a6d3c07dc97f3577b64829d98de4ed27616fcec44d9804e4dd3c535f0b156925",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\sandbox\\test_models.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_models.py",
+    "file_size": 687,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c7ea402be4d44888ec79f4329463d2c4048da71831a826ef4daf2ad63bebd912",
+    "scan_timestamp": "2025-12-03T06:21:11.334268"
+  },
+  "content_preview": "from infra.sandbox.models import ToolCallRequest, ToolCallResult, SandboxEvent\n\n\ndef test_tool_call_request_defaults():\n    req = ToolCallRequest(tool_name=\"echo\")\n    assert req.tool_name == \"echo\"\n    assert req.args == []\n    assert isinstance(req.env, dict)\n    assert req.timeout_s > 0\n\n\ndef test_tool_call_result_defaults():\n    res = ToolCallResult(success=True)\n    assert res.success is True\n    assert res.exit_code == 0\n\n\ndef test_sandbox_event_structure():\n    evt = SandboxEvent(name=\"sa...",
+  "creation_timestamp": "2025-12-03T06:21:17.413391",
+  "version": "1.0"
+}

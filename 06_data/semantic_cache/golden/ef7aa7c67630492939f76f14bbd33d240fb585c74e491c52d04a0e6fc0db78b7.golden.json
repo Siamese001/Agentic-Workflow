@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
+  "content_hash": "d50b895095ed3ec45a5084a5758acbe01911c903d5ed2de8d2743c9bdec6829d",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "runtime\\observability\\agentic_events.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_events.py",
+    "file_size": 1322,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
+    "scan_timestamp": "2025-12-03T06:21:11.295794"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyEvent(BaseModel):\n    \"\"\"Observability event capturing safety-related activity.\n\n    This is intentionally lightweight and does not depend on higher-level\n    orchestration types; callers pass identifiers and structured payloads.\n    \"\"\"\n\n    name: str = \"safety_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    stage: Opt...",
+  "creation_timestamp": "2025-12-03T06:21:16.066178",
+  "version": "1.0"
+}

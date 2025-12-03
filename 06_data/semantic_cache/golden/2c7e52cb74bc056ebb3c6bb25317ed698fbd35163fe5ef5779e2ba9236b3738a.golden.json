@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "2c7e52cb74bc056ebb3c6bb25317ed698fbd35163fe5ef5779e2ba9236b3738a",
+  "content_hash": "2c7e52cb74bc056ebb3c6bb25317ed698fbd35163fe5ef5779e2ba9236b3738a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_AGENTIC_v11_3.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_3.py",
+    "file_size": 114868,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2c7e52cb74bc056ebb3c6bb25317ed698fbd35163fe5ef5779e2ba9236b3738a",
+    "scan_timestamp": "2025-12-03T06:21:11.612996"
+  },
+  "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.3\n====================================================\n\nCHANGELOG v11.3:\n---------------\nPriority 1: Constraint Failure Classification & Adaptive Temperature Retry\n- Added ConstraintFailureType enum (MECHANICAL, CREATIVE, SEMANTIC, CONFLICT)\n- Added ConstraintFailureClassifier for intelligent failure analysis\n- Enhanced progressive temperature with adaptive retry strategies\n- Section-specific temperature optimization based on failure pattern...",
+  "creation_timestamp": "2025-12-03T06:21:39.977941",
+  "version": "1.0"
+}

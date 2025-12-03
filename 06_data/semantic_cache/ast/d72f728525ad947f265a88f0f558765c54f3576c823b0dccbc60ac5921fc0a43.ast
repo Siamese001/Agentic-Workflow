@@ -1,0 +1,92 @@
+{
+  "ast_version": "python_3.8+",
+  "encoding": "utf-8",
+  "tree": {
+    "_type": "Module",
+    "_fields": {
+      "body": [
+        {
+          "_type": "Expr",
+          "_fields": {
+            "value": {
+              "_type": "Constant",
+              "_fields": {
+                "value": "\nDAG engine orchestration for r\u00e9sum\u00e9 processing workflows.\n\nProvides directed acyclic graph execution for comprehensive r\u00e9sum\u00e9 improvement operations.\n",
+                "kind": "None"
+              },
+              "_lineno": 1,
+              "_col_offset": 0
+            }
+          },
+          "_lineno": 1,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "models",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Graph",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 20
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Node",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 27
+              },
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "Edge",
+                  "asname": "None"
+                },
+                "_lineno": 7,
+                "_col_offset": 33
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 7,
+          "_col_offset": 0
+        },
+        {
+          "_type": "ImportFrom",
+          "_fields": {
+            "module": "executor",
+            "names": [
+              {
+                "_type": "alias",
+                "_fields": {
+                  "name": "DAGExecutor",
+                  "asname": "None"
+                },
+                "_lineno": 8,
+                "_col_offset": 22
+              }
+            ],
+            "level": "1"
+          },
+          "_lineno": 8,
+          "_col_offset": 0
+        }
+      ],
+      "type_ignores": []
+    }
+  },
+  "statistics": {
+    "node_count": 9,
+    "function_count": 0,
+    "class_count": 0,
+    "import_count": 2
+  }
+}

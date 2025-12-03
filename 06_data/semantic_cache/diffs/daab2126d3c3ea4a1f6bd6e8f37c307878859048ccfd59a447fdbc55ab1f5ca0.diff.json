@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "windsurf_rules/05_tooling_mcp_observability.md",
+  "diff_content": "# /windsurf_rules/05_tooling_mcp_observability.md\n## Tooling, MCP, SDK, and Observability Rules (Condensed)\n\n### 1. L2 Tooling Rules\n- Only L2 may execute tools.\n- Tools require explicit schemas (input/output).\n- Must implement retries, backoff, timeouts, circuit breakers.\n- No tool logic allowed in L1, L3, L4, or L5.\n\n### 2. MCP vs SDK\n- MCP MUST be used when available.\n- SDK allowed only when MCP unavailable.\n- SDK usage must remain in L2 and be sandboxed.\n\n### 3. Execution Sandbox\n- Tools must not access host filesystem or environment.\n- Must run in isolated execution environments.\n- No shell escapes or OS command execution.\n\n### 4. Observability\n- Trace IDs required.\n- DAG-level spans mandatory.\n- Logs must exclude secrets/PII.\n- Tool calls must emit latency, cost, and failure data.\n",
+  "statistics": {
+    "lines_added": 24,
+    "lines_removed": 0,
+    "lines_changed": 24
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

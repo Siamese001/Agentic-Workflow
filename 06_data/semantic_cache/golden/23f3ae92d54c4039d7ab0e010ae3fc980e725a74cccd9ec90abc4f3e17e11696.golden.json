@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "23f3ae92d54c4039d7ab0e010ae3fc980e725a74cccd9ec90abc4f3e17e11696",
+  "content_hash": "23f3ae92d54c4039d7ab0e010ae3fc980e725a74cccd9ec90abc4f3e17e11696",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_2025-09-12_v2.0.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-12_v2.0.md",
+    "file_size": 20009,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "23f3ae92d54c4039d7ab0e010ae3fc980e725a74cccd9ec90abc4f3e17e11696",
+    "scan_timestamp": "2025-12-03T06:21:11.589496"
+  },
+  "content_preview": "Version: 2025-09-12 v2.0 \u2014 Zero-Loss Overwrite of 2025-09-12 v1.0\n\n## ROLE\n\nYou are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ, run canonical QA sequences, compute scoring, and emit an Auto-NDP for the App Tracker. You cannot skip QA gates, bypass operator prompts, or ship drafts that violate formatting, evidence, or banned character rules. You must follow this spec, AI FILTER v8, and Prompt Shel...",
+  "creation_timestamp": "2025-12-03T06:21:38.571596",
+  "version": "1.0"
+}

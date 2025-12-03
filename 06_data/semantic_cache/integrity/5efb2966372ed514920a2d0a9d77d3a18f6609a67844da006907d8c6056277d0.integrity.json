@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+  "content_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+  "file_size": 8253,
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
+    "archive_name": "deprecated in v13",
+    "relative_path": "config_LIC.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\config_LIC.py",
+    "file_size": 8253,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+    "scan_timestamp": "2025-12-03T06:21:11.658615"
+  },
+  "verification_timestamp": "2025-12-03T06:21:43.152337",
+  "checksums": {
+    "sha256": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+    "md5": "824ca1b69e84a207dae7ed4c9b87c869"
+  }
+}

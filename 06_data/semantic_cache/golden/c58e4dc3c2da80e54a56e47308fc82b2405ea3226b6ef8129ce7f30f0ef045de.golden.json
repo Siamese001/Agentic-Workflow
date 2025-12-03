@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c58e4dc3c2da80e54a56e47308fc82b2405ea3226b6ef8129ce7f30f0ef045de",
+  "content_hash": "50fc8b31b86c4f9dbd0e4db1a197b6f233c4535ecb4ccc36c5a1257e2fea30cf",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L5_safety_policy\\integration\\test_l5_integration_core.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L5_safety_policy\\integration\\test_l5_integration_core.py",
+    "file_size": 878,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c58e4dc3c2da80e54a56e47308fc82b2405ea3226b6ef8129ce7f30f0ef045de",
+    "scan_timestamp": "2025-12-03T06:21:11.325520"
+  },
+  "content_preview": "\"\"\"L5 Safety Policy Integration Tests.\"\"\"\n\nclass TestL5SafetyPolicyIntegration:\n    \"\"\"Integration tests for L5 safety policy layer.\"\"\"\n    \n    def test_policy_enforcement_flow(self):\n        \"\"\"Test policy enforcement flow.\"\"\"\n        content = \"resume content\"\n        policies = [\"pii\", \"bias\", \"injection\"]\n        results = {p: \"pass\" for p in policies}\n        assert all(v == \"pass\" for v in results.values())\n    \n    def test_safety_validation_chain(self):\n        \"\"\"Test safety validation...",
+  "creation_timestamp": "2025-12-03T06:21:17.048343",
+  "version": "1.0"
+}

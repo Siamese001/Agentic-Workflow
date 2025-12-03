@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "l2/llm_caller.py",
+  "diff_content": "\"\"\"L2 LLM Caller for resume processing execution.\n\nProvides pure LLM execution for resume improvement workflows.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass LLMCaller:\n    \"\"\"\n    Pure LLM execution for resume processing workflows.\n\n    Handles LLM calls without planning or orchestration logic\n    for resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def call_llm(self, prompt: str, task_type: str = \"default\") -> str:\n        \"\"\"Executes pure LLM call for resume processing workflows.\"\"\"\n        record_event(\"llm_call_start\", {\"task_type\": task_type})\n        \n        try:\n            model = self.routing_policy.select_model(\n                task=task_type,\n                complexity=ComplexityLevel.MEDIUM,\n                meta_profile=self.meta_profile,\n            )\n            result = invoke_model(model=model, prompt=prompt, sandbox=self.sandbox)\n            record_event(\"llm_call_success\", {\"task_type\": task_type})\n            return result\n        except Exception as exc:\n            record_exception(\"llm_call_error\", exc)\n            raise\n",
+  "statistics": {
+    "lines_added": 41,
+    "lines_removed": 0,
+    "lines_changed": 41
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bdc97534515df2e7f6655f6dea7e018a71f0678a371d508224ed09c9f812cc08",
+  "content_hash": "bdc97534515df2e7f6655f6dea7e018a71f0678a371d508224ed09c9f812cc08",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "stacks_v10_8\\planning_utils.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\planning_utils.py",
+    "file_size": 3719,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bdc97534515df2e7f6655f6dea7e018a71f0678a371d508224ed09c9f812cc08",
+    "scan_timestamp": "2025-12-03T06:21:11.402501"
+  },
+  "content_preview": "\"\"\"Shared helpers for lightweight L1 planning stacks.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Iterable, List\n\n\ndef extract_job_profile(state: Dict[str, Any]) -> Dict[str, Any]:\n    job = state.get(\"job\") or {}\n\n    def _first(*keys: str) -> str:\n        for key in keys:\n            value = job.get(key)\n            if value:\n                return str(value)\n        return \"\"\n\n    raw_requirements = (\n        job.get(\"top_requirements\")\n        or job.get(\"required_s...",
+  "creation_timestamp": "2025-12-03T06:21:23.067995",
+  "version": "1.0"
+}

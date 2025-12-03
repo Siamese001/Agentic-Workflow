@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "28fe64f8a3237b843a0ee10b65c92b0ae5f8a09fcf20567d7e94d5be25bb5071",
+  "content_hash": "76bb5d83883649a0e33cdbe3c181558360731a07d8ac27a753dc889b82101901",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10",
+    "archive_name": "Agentic_Workflow-10_10",
+    "relative_path": "retrieval.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\retrieval.py",
+    "file_size": 5713,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "28fe64f8a3237b843a0ee10b65c92b0ae5f8a09fcf20567d7e94d5be25bb5071",
+    "scan_timestamp": "2025-12-03T06:21:11.357756"
+  },
+  "content_preview": "# FILE: retrieval.py\n\"\"\"\nRetrieval & Query Planning (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n=====================================================\n\nImplements:\n    \u2022 BM25 retrieval\n    \u2022 Dense retrieval\n    \u2022 Hybrid mode (BM25 + Dense)\n    \u2022 HYDE query support (real hook; L2 supplies HYDE query)\n    \u2022 Retriever-level failure isolation\n    \u2022 Weighted RRF fusion (Phase-3 requirement)\n    \u2022 QA-council evidence weighting (Phase-3 requirement)\n    \u2022 Full telemetry spans / failure events\n\nLayer: META (no LLM calls;...",
+  "creation_timestamp": "2025-12-03T06:21:18.947388",
+  "version": "1.0"
+}

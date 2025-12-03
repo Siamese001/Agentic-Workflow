@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8",
+  "content_hash": "09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "telemetry_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\telemetry_v10_7.py",
+    "file_size": 3621,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8",
+    "scan_timestamp": "2025-12-03T06:21:11.405129"
+  },
+  "content_preview": "\"\"\"\nTelemetry helpers for v10.7.\n\nThis module provides a unified event envelope for:\n - LLM metrics\n - tool execution metrics\n - cache events (exact + semantic)\n - agent routing decisions\n - pruning outcomes\n - MCP-integrated telemetry streams\n\nAll telemetry events are emitted via MCP (if present) and mirrored to local logs.\nExisting calls to log_event(...) continue to work unchanged.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom datetime import datetime\nfrom typing import Any, Di...",
+  "creation_timestamp": "2025-12-03T06:21:23.319165",
+  "version": "1.0"
+}

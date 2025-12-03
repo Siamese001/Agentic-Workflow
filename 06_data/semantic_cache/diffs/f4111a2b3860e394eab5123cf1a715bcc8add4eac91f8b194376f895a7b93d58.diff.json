@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "runner.py",
+  "diff_content": "\"\"\"Simulation runner utilities.\"\"\"\n\nimport asyncio\nfrom typing import Any, Dict, List\n\nfrom simulations.models import (\n    DraftSimRequest,\n    RAGSimRequest,\n    SafetySimRequest,\n    SimulationBatchResult,\n    SimulationResult,\n    StrategySimRequest,\n)\nfrom simulations.registry import get_simulator\n\n\nREQUEST_MODEL_MAP = {\n    \"strategy\": StrategySimRequest,\n    \"rag\": RAGSimRequest,\n    \"draft\": DraftSimRequest,\n    \"safety\": SafetySimRequest,\n}\n\n\nasync def run_simulation(sim_type: str, payload: Dict[str, Any]) -> SimulationResult:\n    \"\"\"Run a single simulation request.\"\"\"\n\n    simulator = get_simulator(sim_type)\n    if not simulator:\n        raise ValueError(f\"Unknown simulation type: {sim_type}\")\n    request_model = REQUEST_MODEL_MAP.get(sim_type)\n    if not request_model:\n        raise ValueError(f\"No request model registered for simulation type: {sim_type}\")\n    request = request_model(**payload)\n    return await simulator.run(request)\n\n\nasync def run_batch(sim_requests: List[Dict[str, Any]]) -> SimulationBatchResult:\n    \"\"\"Run a batch of simulations sequentially.\"\"\"\n\n    results = []\n    for req in sim_requests:\n        sim_type = req.get(\"sim_type\")\n        payload = req.get(\"payload\", {})\n        if not sim_type:\n            raise ValueError(\"Each batch request must include 'sim_type'\")\n        results.append(await run_simulation(sim_type, payload))\n    return SimulationBatchResult(results=results)\n\n\ndef run_simulation_sync(sim_type: str, payload: Dict[str, Any]) -> SimulationResult:\n    \"\"\"Convenience synchronous wrapper.\"\"\"\n\n    return asyncio.run(run_simulation(sim_type, payload))\n",
+  "statistics": {
+    "lines_added": 54,
+    "lines_removed": 0,
+    "lines_changed": 54
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

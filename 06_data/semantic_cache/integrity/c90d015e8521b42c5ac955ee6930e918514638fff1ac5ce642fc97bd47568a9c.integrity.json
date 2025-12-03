@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "c90d015e8521b42c5ac955ee6930e918514638fff1ac5ce642fc97bd47568a9c",
+  "content_hash": "8f22317ccacd7a899d5f99ef1937df2d2e8ab860ce002142d908d4e7048b3dbc",
+  "file_size": 985,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L4_memory_state\\temporal_KG\\invalidation\\test_l4_kg_invalidation.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\temporal_KG\\invalidation\\test_l4_kg_invalidation.py",
+    "file_size": 985,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c90d015e8521b42c5ac955ee6930e918514638fff1ac5ce642fc97bd47568a9c",
+    "scan_timestamp": "2025-12-03T06:21:11.322229"
+  },
+  "verification_timestamp": "2025-12-03T06:21:16.960132",
+  "checksums": {
+    "sha256": "8f22317ccacd7a899d5f99ef1937df2d2e8ab860ce002142d908d4e7048b3dbc",
+    "md5": "e8a1f1f8841c2b0d3881aaee13cd011e"
+  }
+}

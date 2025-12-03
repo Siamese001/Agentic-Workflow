@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "0f7766ca49d04e4f4046af809dc3c2469b51b33af11069d5c2a1f250fa7d8cd9",
+  "content_hash": "3d1c2decef78cdc4abcd0323dbd3b06e1d6d60062ed4bd5dc6e5763a7acedd69",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l2\\execution.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\execution.py",
+    "file_size": 22443,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "0f7766ca49d04e4f4046af809dc3c2469b51b33af11069d5c2a1f250fa7d8cd9",
+    "scan_timestamp": "2025-12-03T06:21:11.257124"
+  },
+  "content_preview": "\"\"\"\nL2 execution layer for resume improvement tasks.\n\nExecutes cognitive agents for strategy, drafting, QA, and safety\nimprovements to enhance resume job alignment.\n\"\"\"\n\n# FILE: l2.py\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Any, List, Optional, Sequence, Tuple\n\nfrom core.models.models import (\n    ExecutionContext,\n    WorkflowPlanBundle,\n    StrategyResult,\n    StrategyBranch,\n    Evidence,\n    RAGResult,\n    DraftingResult,\n    DraftSection,\n    QAResult,\n    Saf...",
+  "creation_timestamp": "2025-12-03T06:21:13.811330",
+  "version": "1.0"
+}

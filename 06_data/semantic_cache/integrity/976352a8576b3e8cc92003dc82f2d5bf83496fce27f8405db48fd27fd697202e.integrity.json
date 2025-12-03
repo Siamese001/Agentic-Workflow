@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "976352a8576b3e8cc92003dc82f2d5bf83496fce27f8405db48fd27fd697202e",
+  "content_hash": "e23f189184abe09721bdebc0886351414f8d806b061dc8a27d40885f18728b9f",
+  "file_size": 662,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\stress\\parallel_agents\\test_stress_parallel_agents.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\parallel_agents\\test_stress_parallel_agents.py",
+    "file_size": 662,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "976352a8576b3e8cc92003dc82f2d5bf83496fce27f8405db48fd27fd697202e",
+    "scan_timestamp": "2025-12-03T06:21:11.340343"
+  },
+  "verification_timestamp": "2025-12-03T06:21:17.595675",
+  "checksums": {
+    "sha256": "e23f189184abe09721bdebc0886351414f8d806b061dc8a27d40885f18728b9f",
+    "md5": "a560a2757c357196d3ae606c8231636e"
+  }
+}

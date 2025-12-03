@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+  "content_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+  "file_size": 453323,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Monolith",
+    "archive_name": "Monolith",
+    "relative_path": "resume_workflow_v16_20.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Monolith\\resume_workflow_v16_20.py",
+    "file_size": 453323,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+    "scan_timestamp": "2025-12-03T06:21:11.468259"
+  },
+  "verification_timestamp": "2025-12-03T06:21:27.041412",
+  "checksums": {
+    "sha256": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+    "md5": "7fcc3b8e59dad862554b4325c8db9f51"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124",
+  "content_hash": "2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124",
+  "file_size": 3287,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "stacks_v10_8\\bullet_planning.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\bullet_planning.py",
+    "file_size": 3287,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124",
+    "scan_timestamp": "2025-12-03T06:21:11.401578"
+  },
+  "verification_timestamp": "2025-12-03T06:21:22.969235",
+  "checksums": {
+    "sha256": "2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124",
+    "md5": "d664d61b9e4afd15c717418861e74f46"
+  }
+}

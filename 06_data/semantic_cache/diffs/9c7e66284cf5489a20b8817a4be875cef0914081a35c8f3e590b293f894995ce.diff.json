@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "pydantic.py",
+  "diff_content": "class ValidationError(Exception):\n    pass\n\n\ndef Field(default=..., **kwargs):  # pragma: no cover - stub\n    return default\n\n\nclass BaseModel:\n    \"\"\"Minimal stand-in for pydantic.BaseModel used in tests.\"\"\"\n\n    def __init__(self, **data):\n        annotations = getattr(self, \"__annotations__\", {})\n        for name, annotation in annotations.items():\n            if name in data:\n                value = data[name]\n            elif hasattr(self, name):\n                value = getattr(self, name)\n                if value is ...:\n                    raise ValidationError(f\"Field '{name}' is required\")\n            else:\n                raise ValidationError(f\"Field '{name}' is required\")\n            setattr(self, name, value)\n\n        for extra_key, extra_value in data.items():\n            if extra_key not in annotations:\n                setattr(self, extra_key, extra_value)\n\n    def dict(self):\n        annotations = getattr(self, \"__annotations__\", {})\n        return {name: getattr(self, name) for name in annotations}\n\n    def model_dump(self):\n        return self.dict()\n",
+  "statistics": {
+    "lines_added": 34,
+    "lines_removed": 0,
+    "lines_changed": 34
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

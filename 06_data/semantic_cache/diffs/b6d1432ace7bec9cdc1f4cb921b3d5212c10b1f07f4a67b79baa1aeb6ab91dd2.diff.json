@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "core_v10_7/config.py",
+  "diff_content": "\"\"\"Configuration helpers for the v10.7 runtime.\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import Dict\n\nfrom mcp import get_schema\n\nlogger = logging.getLogger(\"core_v10_7\")\n\n\nclass ConfigV10_7:\n    \"\"\"Configuration loader for v10.7\"\"\"\n    \n    def __init__(self, config_path: str = \"master_config_v10_7.json\"):\n        self._config = get_schema(config_path)\n\n        # Validate schema version\n        expected_schema = \"master_config_v10.7\"\n        loaded_schema = self._config.get(\"schema_version\")\n        if loaded_schema != expected_schema:\n            raise ValueError(f\"Config schema mismatch. Expected {expected_schema}, got {loaded_schema}\")\n\n        redis_cfg = self._config.setdefault(\"redis_config\", {})\n        redis_cfg.setdefault(\"required\", True)\n        redis_cfg.setdefault(\"persistent\", False)\n\n        logger.info(f\"Loaded {loaded_schema} configuration\")\n    \n    def __getattr__(self, name):\n        \"\"\"Dynamic attribute access for nested config\"\"\"\n        if name.startswith('_'):\n            return object.__getattribute__(self, name)\n        \n        section = self._config.get(name)\n        if section is None:\n            snake_name = name.replace('-', '_')\n            section = self._config.get(snake_name)\n            if section is None:\n                raise AttributeError(f\"Config section '{name}' or '{snake_name}' not found\")\n\n        return ConfigSection(section)\n\nclass ConfigSection:\n    \"\"\"Wrapper for nested config sections\"\"\"\n\n    def __init__(self, data: Dict):\n        self._data = data\n\n    def __getattr__(self, name):\n        if name.startswith('_'):\n            return object.__getattribute__(self, name)\n\n        value = self._data.get(name)\n        if value is None:\n            snake_name = name.replace('-', '_')\n            value = self._data.get(snake_name)\n            if value is None:\n                raise AttributeError(f\"Config key '{name}' or '{snake_name}' not found\")\n\n        if isinstance(value, dict):\n            return ConfigSection(value)\n        return value\n\n    def __setattr__(self, name, value):\n        if name.startswith('_'):\n            object.__setattr__(self, name, value)\n            return\n\n        key = name if name in self._data else name.replace('-', '_')\n        self._data[key] = value\n\n    def get(self, key, default=None):\n        return self._data.get(key, default)\n\n    def __contains__(self, key):\n        return key in self._data\n\n\n__all__ = [\"ConfigV10_7\", \"ConfigSection\"]\n\n",
+  "statistics": {
+    "lines_added": 82,
+    "lines_removed": 0,
+    "lines_changed": 82
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

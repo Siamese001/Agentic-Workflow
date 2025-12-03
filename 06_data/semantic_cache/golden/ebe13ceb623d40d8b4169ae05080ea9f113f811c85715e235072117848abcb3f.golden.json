@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ebe13ceb623d40d8b4169ae05080ea9f113f811c85715e235072117848abcb3f",
+  "content_hash": "ebe13ceb623d40d8b4169ae05080ea9f113f811c85715e235072117848abcb3f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_PATCH_v10.21_COMPREHENSIVE.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_PATCH_v10.21_COMPREHENSIVE.json",
+    "file_size": 47951,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "ebe13ceb623d40d8b4169ae05080ea9f113f811c85715e235072117848abcb3f",
+    "scan_timestamp": "2025-12-03T06:21:11.621134"
+  },
+  "content_preview": "{\n  \"metadata\": {\n    \"patch_series\": \"v10.21\",\n    \"base_version\": \"v10.20\",\n    \"target_version\": \"v10.21\",\n    \"release_date\": \"2025-10-15\",\n    \"patch_count\": 3,\n    \"severity\": \"ARCHITECTURAL_REFACTORING\",\n    \"breaking_changes\": false,\n    \"rollback_compatible\": true,\n    \"description\": \"Architectural refactoring to centralize message length constraints, consolidate routes, and migrate archetype configurations to reference global constraints. Zero functional changes to output.\",\n    \"total...",
+  "creation_timestamp": "2025-12-03T06:21:41.457379",
+  "version": "1.0"
+}

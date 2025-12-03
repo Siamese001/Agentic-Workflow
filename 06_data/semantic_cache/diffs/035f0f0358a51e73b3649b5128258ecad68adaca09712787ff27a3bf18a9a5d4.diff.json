@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "providers/redis_client.py",
+  "diff_content": "\"\"\"\nRedis client provider for caching operations.\n\nIsolates Redis SDK dependencies to the providers layer\nand provides a clean interface for cache operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Optional\n\ntry:\n    import redis  # type: ignore\nexcept ImportError as exc:\n    raise ImportError(\"redis package not installed. Install with: pip install redis\") from exc\n\n\nclass RedisClient:\n    \"\"\"Provider client for Redis operations.\"\"\"\n    \n    def __init__(self, host: str = \"localhost\", port: int = 6379, \n                 db: int = 0, password: Optional[str] = None,\n                 decode_responses: bool = True, **kwargs):\n        \"\"\"Initialize Redis client with connection parameters.\"\"\"\n        self.client = redis.Redis(\n            host=host, port=port, db=db, password=password,\n            decode_responses=decode_responses, **kwargs\n        )\n    \n    def get(self, key: str) -> Optional[str]:\n        \"\"\"Get value from Redis.\"\"\"\n        return self.client.get(key)\n    \n    def set(self, key: str, value: str, ex: Optional[int] = None) -> bool:\n        \"\"\"Set value in Redis with optional expiration.\"\"\"\n        return self.client.set(key, value, ex=ex)\n    \n    def delete(self, key: str) -> int:\n        \"\"\"Delete key from Redis.\"\"\"\n        return self.client.delete(key)\n    \n    def exists(self, key: str) -> bool:\n        \"\"\"Check if key exists in Redis.\"\"\"\n        return self.client.exists(key)\n    \n    def ping(self) -> bool:\n        \"\"\"Ping Redis server to check connectivity.\"\"\"\n        return self.client.ping()\n    \n    def close(self) -> None:\n        \"\"\"Close Redis connection.\"\"\"\n        self.client.close()\n\n\ndef init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0) -> RedisClient:\n    \"\"\"Initialize a Redis client from URL or default parameters.\"\"\"\n    if url:\n        # Parse redis URL: redis://[:password@]host:port/db\n        import urllib.parse\n        parsed = urllib.parse.urlparse(url)\n        return RedisClient(\n            host=parsed.hostname or \"localhost\",\n            port=parsed.port or 6379,\n            db=int(parsed.path.lstrip('/')) if parsed.path else 0,\n            password=parsed.password,\n            socket_timeout=timeout_s\n        )\n    else:\n        return RedisClient(socket_timeout=timeout_s)\n",
+  "statistics": {
+    "lines_added": 69,
+    "lines_removed": 0,
+    "lines_changed": 69
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

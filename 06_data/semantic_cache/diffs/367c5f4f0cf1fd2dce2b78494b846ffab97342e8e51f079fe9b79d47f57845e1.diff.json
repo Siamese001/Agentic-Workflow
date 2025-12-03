@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "providers/pinecone_client/__init__.py",
+  "diff_content": "\"\"\"Pinecone vector database client wrapper.\"\"\"\n\nfrom .pinecone_client import PineconeClient, Vector  # noqa: F401\n\n__all__ = [\"PineconeClient\", \"Vector\"]\n\n\n\n",
+  "statistics": {
+    "lines_added": 8,
+    "lines_removed": 0,
+    "lines_changed": 8
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

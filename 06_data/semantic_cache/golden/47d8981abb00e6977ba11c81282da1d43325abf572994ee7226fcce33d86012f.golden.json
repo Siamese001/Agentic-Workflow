@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "47d8981abb00e6977ba11c81282da1d43325abf572994ee7226fcce33d86012f",
+  "content_hash": "47d8981abb00e6977ba11c81282da1d43325abf572994ee7226fcce33d86012f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\agents\\k5_cta_agent.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k5_cta_agent.py",
+    "file_size": 279,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "47d8981abb00e6977ba11c81282da1d43325abf572994ee7226fcce33d86012f",
+    "scan_timestamp": "2025-12-03T06:21:11.499586"
+  },
+  "content_preview": "\"\"\"Refine the call-to-action portion of the draft.\"\"\"\nfrom __future__ import annotations\n\n\nclass CTAAgent:\n    def adjust(self, draft: str, route_decision) -> str:\n        cta_line = \"CTA: Would you be open to a 15-minute chat next week?\"\n        return f\"{draft}\\n\\n{cta_line}\"\n",
+  "creation_timestamp": "2025-12-03T06:21:34.290986",
+  "version": "1.0"
+}

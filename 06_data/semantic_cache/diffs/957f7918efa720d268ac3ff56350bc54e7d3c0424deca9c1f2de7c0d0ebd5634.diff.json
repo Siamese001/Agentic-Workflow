@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "runtime/__init__.py",
+  "diff_content": "\"\"\"Snapshot-local runtime package shim for v10_10 tests.\n\nWhen tests are run with rootdir=Agentic-Workflow-10_10, the name ``runtime``\nresolves to this package. This shim ensures that imports like\n``from runtime.observability import start_span`` are forwarded to the real\nruntime package defined at the repo root.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport importlib\nimport os\nimport sys\n\n# Ensure the repo root (parent of Agentic-Workflow-10_10) is on sys.path\n_PARENT = os.path.dirname(os.path.dirname(__file__))\nif _PARENT not in sys.path:\n    sys.path.insert(0, _PARENT)\n\n# Import the real top-level runtime package\n_real_runtime = importlib.import_module(\"runtime\")\n\n# Ensure key submodules are importable via this shim\nfor _sub in [\n    \"runtime.observability\",\n    \"runtime.runtime_utils\",\n    \"runtime.trace\",\n    \"runtime.trace.trace_reconstruction\",\n]:\n    try:\n        sys.modules[_sub] = importlib.import_module(_sub)\n    except Exception:\n        # Best-effort; tests should still be able to import these modules\n        # if they exist in the real package at the repo root.\n        pass\n\n# Re-export everything from the real runtime package for convenience\nfrom runtime import *  # noqa: F401,F403\n\n\n\n",
+  "statistics": {
+    "lines_added": 41,
+    "lines_removed": 0,
+    "lines_changed": 41
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

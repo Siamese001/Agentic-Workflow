@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
+  "content_hash": "5618122a7cad9a5d98f4326374ee4997919b2c669a4f22564ff512a26fc8018f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\model_routing\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\model_routing\\__init__.py",
+    "file_size": 723,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
+    "scan_timestamp": "2025-12-03T06:21:11.278433"
+  },
+  "content_preview": "from __future__ import annotations\n\n\"\"\"Facade for model routing functions used by orchestration layers.\n\nThis package re-exports the existing infra.model_routing primitives so\ncallers can depend on a stable ``orchestration.model_routing``\nnamespace without changing the underlying implementation.\n\"\"\"\n\nfrom infra.model_routing.models import RoutingContext, ModelChoice  # noqa: F401\nfrom infra.model_routing.policies import (  # noqa: F401\n    choose_provider_and_model,\n    enforce_budget,\n)\nfrom in...",
+  "creation_timestamp": "2025-12-03T06:21:15.572191",
+  "version": "1.0"
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/golden/traces/workflow_trace_002.json",
+  "diff_content": "{\n  \"version\": \"1.0\",\n  \"trace_id\": \"trace_002\",\n  \"workflow_id\": \"wf_002\",\n  \"spans\": [\n    {\n      \"span_id\": \"span_001\",\n      \"name\": \"draft_resume\",\n      \"start_time\": 1700001000,\n      \"end_time\": 1700001500,\n      \"status\": \"success\",\n      \"metadata\": {\n        \"sections_drafted\": 4,\n        \"tokens_used\": 1500\n      }\n    },\n    {\n      \"span_id\": \"span_002\",\n      \"name\": \"review_draft\",\n      \"start_time\": 1700001500,\n      \"end_time\": 1700001800,\n      \"status\": \"success\",\n      \"metadata\": {\n        \"issues_found\": 2,\n        \"issues_fixed\": 2\n      }\n    }\n  ]\n}\n",
+  "statistics": {
+    "lines_added": 29,
+    "lines_removed": 0,
+    "lines_changed": 29
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

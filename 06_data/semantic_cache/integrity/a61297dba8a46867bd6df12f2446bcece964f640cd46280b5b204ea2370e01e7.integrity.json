@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
+  "content_hash": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
+  "file_size": 665,
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
+    "archive_name": "Agentic-LIC",
+    "relative_path": "src\\lic_agentic\\safety\\bias_auditor.py",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\safety\\bias_auditor.py",
+    "file_size": 665,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
+    "scan_timestamp": "2025-12-03T06:21:11.505368"
+  },
+  "verification_timestamp": "2025-12-03T06:21:34.490763",
+  "checksums": {
+    "sha256": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
+    "md5": "78b165415b1cd22cc75c2248355694ee"
+  }
+}

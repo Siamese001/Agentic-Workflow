@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
+  "content_hash": "b1c10e1dd6817c724d457e41f43e4a9fb74f19def6e9b5ec7c2c068fcfa33813",
+  "file_size": 14117,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "orchestration\\routing.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\routing.py",
+    "file_size": 14117,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
+    "scan_timestamp": "2025-12-03T06:21:11.279328"
+  },
+  "verification_timestamp": "2025-12-03T06:21:15.624358",
+  "checksums": {
+    "sha256": "b1c10e1dd6817c724d457e41f43e4a9fb74f19def6e9b5ec7c2c068fcfa33813",
+    "md5": "7e449449662f0d885c5975b14cf27f14"
+  }
+}

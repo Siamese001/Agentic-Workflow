@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b4d345e9d4bbc4022de685433ead6d6ab2c50c669bd48f968397ae7ab68cf608",
+  "content_hash": "1aef5577e2abaddc259fce702ab664a3f6300bce42f01af365b2eebc6f2f6b01",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\golden\\scoring\\test_golden_scoring.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\scoring\\test_golden_scoring.py",
+    "file_size": 627,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "b4d345e9d4bbc4022de685433ead6d6ab2c50c669bd48f968397ae7ab68cf608",
+    "scan_timestamp": "2025-12-03T06:21:11.305735"
+  },
+  "content_preview": "\"\"\"Golden Scoring Tests.\"\"\"\n\nclass TestGoldenScoring:\n    \"\"\"Tests for golden scoring.\"\"\"\n    \n    def test_quality_score_calculation(self):\n        \"\"\"Test quality score calculation.\"\"\"\n        scores = [0.85, 0.90, 0.88, 0.92]\n        avg_score = sum(scores) / len(scores)\n        assert avg_score > 0.8\n    \n    def test_keyword_match_scoring(self):\n        \"\"\"Test keyword match scoring.\"\"\"\n        expected = [\"python\", \"aws\", \"docker\"]\n        actual = [\"python\", \"aws\", \"kubernetes\"]\n        m...",
+  "creation_timestamp": "2025-12-03T06:21:16.464309",
+  "version": "1.0"
+}

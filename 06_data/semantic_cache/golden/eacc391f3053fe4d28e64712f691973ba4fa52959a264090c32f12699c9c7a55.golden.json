@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "eacc391f3053fe4d28e64712f691973ba4fa52959a264090c32f12699c9c7a55",
+  "content_hash": "435896acb524dcabe131c97ee496e3ed36fb7d995533c082033ddf6c0c0c9b4e",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l2\\agents.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\agents.py",
+    "file_size": 7352,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "eacc391f3053fe4d28e64712f691973ba4fa52959a264090c32f12699c9c7a55",
+    "scan_timestamp": "2025-12-03T06:21:11.256420"
+  },
+  "content_preview": "\"\"\"\nLegacy agents wrapper for resume processing workflow execution.\n\nProvides backward compatibility by delegating operations to atomic\nL1-L5 architecture for resume enhancement and job alignment.\n\"\"\"\n\nfrom typing import Any, Optional, TYPE_CHECKING\nfrom core.models.models import (\n    AgentCard,\n    AgentRole,\n)\nfrom core.routing import RoutingPolicy\nfrom runtime.runtime_utils import SandboxConfig\nfrom config.meta_profile import MetaProfileSnapshot\n\n# Placeholder for missing record_event functi...",
+  "creation_timestamp": "2025-12-03T06:21:13.777627",
+  "version": "1.0"
+}

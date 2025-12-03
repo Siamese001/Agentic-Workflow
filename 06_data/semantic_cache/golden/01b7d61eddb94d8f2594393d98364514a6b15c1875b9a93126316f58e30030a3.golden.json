@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+  "content_hash": "9598aacfa948f68580636b77644a23027aa81e3211c26c68b692ab8d4960c687",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\modularity\\test_layer_boundaries.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_layer_boundaries.py",
+    "file_size": 2295,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+    "scan_timestamp": "2025-12-03T06:21:11.329619"
+  },
+  "content_preview": "import ast\nfrom pathlib import Path\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef _iter_core_files():\n    core_root = PROJECT_ROOT / \"core\"\n    if not core_root.exists():\n        return\n    for path in core_root.rglob(\"*.py\"):\n        if path.name.startswith(\"test_\"):\n            continue\n        yield path\n\n\ndef _parse_calls(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename...",
+  "creation_timestamp": "2025-12-03T06:21:17.215779",
+  "version": "1.0"
+}

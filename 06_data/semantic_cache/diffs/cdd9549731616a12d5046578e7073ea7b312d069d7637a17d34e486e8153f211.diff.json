@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L5_safety_policy/unit/test_l5_unit_core.py",
+  "diff_content": "\"\"\"L5 Safety Policy Unit Tests - Core.\"\"\"\n\nclass TestL5SafetyPolicyUnitCore:\n    \"\"\"Core unit tests for L5 safety policy layer.\"\"\"\n    \n    def test_policy_rule_creation(self):\n        \"\"\"Test policy rule creation.\"\"\"\n        rule = {\"id\": \"r1\", \"type\": \"block\", \"pattern\": \"SSN\"}\n        assert rule[\"type\"] == \"block\"\n    \n    def test_safety_check_initialization(self):\n        \"\"\"Test safety check initialization.\"\"\"\n        check = {\"name\": \"pii_check\", \"enabled\": True}\n        assert check[\"enabled\"] is True\n    \n    def test_violation_detection(self):\n        \"\"\"Test violation detection logic.\"\"\"\n        content = \"safe content\"\n        violations = []\n        if \"SSN\" in content:\n            violations.append(\"pii_detected\")\n        assert len(violations) == 0\n",
+  "statistics": {
+    "lines_added": 22,
+    "lines_removed": 0,
+    "lines_changed": 22
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

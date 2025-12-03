@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "2e297e42217d2bc5e50b0d15a683d16c094865afa51e294a413a3334a44c67af",
+  "content_hash": "7ba6c09aba318ce4b62a709a88a125474a6a8d1deec96ea1d254c9e0eb6df563",
+  "file_size": 12525,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "01_hop_clerk.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\01_hop_clerk.py",
+    "file_size": 12525,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2e297e42217d2bc5e50b0d15a683d16c094865afa51e294a413a3334a44c67af",
+    "scan_timestamp": "2025-12-03T06:21:11.461984"
+  },
+  "verification_timestamp": "2025-12-03T06:21:25.489375",
+  "checksums": {
+    "sha256": "7ba6c09aba318ce4b62a709a88a125474a6a8d1deec96ea1d254c9e0eb6df563",
+    "md5": "42d7e0e5f7ca05c107f19d7d0fd1439b"
+  }
+}

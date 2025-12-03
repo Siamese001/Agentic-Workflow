@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba",
+  "content_hash": "49249eb44216d09f84817f65680bb3b72b90740b0f0a17822bc4d803d8031d1a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "app_tracker_schema.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\app_tracker_schema.json",
+    "file_size": 1599,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba",
+    "scan_timestamp": "2025-12-03T06:21:11.470735"
+  },
+  "content_preview": "{\n  \"Company\": \"\", \"Category\": \"\", \"Sub-Category\": \"\", \"Job Title\": \"\", \"Primary Job Role\": \"\",\n  \"JD URL\": \"\", \"Application Date\": \"\", \"Pipeline Status\": \"\",\n  \"Hiring Recruiter\": \"\", \"Hiring Recruiter URL\": \"\", \"Hiring Recruiter Interview Date\": \"\",\n  \"Hiring Manager\": \"\", \"Hiring Manager URL\": \"\", \"Hiring Manager Interview Date\": \"\",\n  \"Other Interviewer\": \"\", \"Other Interviewer URL\": \"\", \"Other Interviewer Date\": \"\",\n  \"Other Interviewer 2\": \"\", \"Other Interviewer 2 URL\": \"\", \"Other Intervie...",
+  "creation_timestamp": "2025-12-03T06:21:28.426509",
+  "version": "1.0"
+}

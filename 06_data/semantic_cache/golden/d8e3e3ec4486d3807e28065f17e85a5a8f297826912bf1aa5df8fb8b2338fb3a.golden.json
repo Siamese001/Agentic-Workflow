@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
+  "content_hash": "72d1d3feb83156201d71715ad0705cf0a10adf94dd5466f14e8da3717b2b7551",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "meta\\ranking.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\ranking.py",
+    "file_size": 18604,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
+    "scan_timestamp": "2025-12-03T06:21:11.272087"
+  },
+  "content_preview": "\"\"\"\nMeta ranking system for r\u00e9sum\u00e9 evidence evaluation.\n\nProvides deterministic scoring and fusion to prioritize relevant r\u00e9sum\u00e9 improvement content.\n\"\"\"\n\n# FILE: ranking.py\n\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom runtime.observability import emit_telemetry_event, emit_ranking_event\n\n\ndef _core_models() -> Any:\n    \"\"\"\n    Lazy imports core models to avoid circular dependencies.\n\n    Ensures clean module structure for reliable r\u00e9sum\u00e9 processing.\n    \"\"\"\n\n  ...",
+  "creation_timestamp": "2025-12-03T06:21:15.126614",
+  "version": "1.0"
+}

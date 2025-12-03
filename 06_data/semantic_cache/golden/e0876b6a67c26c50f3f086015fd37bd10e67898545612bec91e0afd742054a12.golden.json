@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e0876b6a67c26c50f3f086015fd37bd10e67898545612bec91e0afd742054a12",
+  "content_hash": "e0876b6a67c26c50f3f086015fd37bd10e67898545612bec91e0afd742054a12",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\test_flat_equivalence_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat_equivalence_v10_7.py",
+    "file_size": 2622,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e0876b6a67c26c50f3f086015fd37bd10e67898545612bec91e0afd742054a12",
+    "scan_timestamp": "2025-12-03T06:21:11.422574"
+  },
+  "content_preview": "\"\"\"Ensure the flattened test view stays synchronized with the source files.\"\"\"\nfrom __future__ import annotations\n\nimport ast\nimport json\nfrom pathlib import Path\nfrom typing import Dict, Iterable, List, Tuple\n\nimport pytest\n\nREPO_ROOT = Path(__file__).resolve().parents[1]\nMANIFEST_PATH = REPO_ROOT / \"tests_flat\" / \"manifest.json\"\n\n\ndef _load_manifest() -> List[Tuple[Path, Path]]:\n    manifest = json.loads(MANIFEST_PATH.read_text(encoding=\"utf-8\"))\n    return [\n        (Path(entry[\"flat\"]), Path...",
+  "creation_timestamp": "2025-12-03T06:21:23.965096",
+  "version": "1.0"
+}

@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Old LIC",
+  "logical_path": "LIC_10-03-2025_v6.8_diff.txt",
+  "diff_content": "--- LIC_10-03-2025_v6.7.json\n+++ LIC_10-03-2025_v6.8.json\n@@ -2,7 +2,7 @@\n   \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n   \"version\": \"LIC_10-01-2025_v4\",\n   \"metadata\": {\n-    \"version\": \"LIC_10-03-2025_v6.7\",\n+    \"version\": \"LIC_10-03-2025_v6.8\",\n     \"patches\": [\n       \"C001\",\n       \"C002\",\n@@ -17,7 +17,9 @@\n       \"C011\",\n       \"C012\",\n       \"C013\",\n-      \"C014\"\n+      \"C014\",\n+      \"C015\",\n+      \"C016\"\n     ],\n     \"changelog\": \"external://CHANGELOG.md\",\n     \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\",\n@@ -806,6 +808,24 @@\n         }\n       ],\n       \"blocking\": false\n+    },\n+    \"job_workflow_tracker_integration\": {\n+      \"trigger_point\": \"Section 3, Step 4: Job Application Context\",\n+      \"if_tracker_exists\": {\n+        \"action\": \"Parse tracker for applications to recipient company; present numbered list\",\n+        \"on_selection\": \"Load job details into context\"\n+      },\n+      \"formats\": [\n+        \"CSV\",\n+        \"JSON\",\n+        \"Excel\"\n+      ],\n+      \"required_fields\": [\n+        \"company\",\n+        \"job_title\",\n+        \"req_number\",\n+        \"application_date\"\n+      ]\n     }\n   },\n   \"4.reasoning\": {\n@@ -3348,6 +3368,24 @@\n         ],\n         \"action_on_violation\": \"BLOCK\"\n       }\n+    },\n+    \"validation_architecture_v2\": {\n+      \"layers\": {\n+        \"layer_1\": \"Configuration Validation (pre-execution; after Section 3)\",\n+        \"layer_2\": \"Per K-node Execution Evidence Validation\",\n+        \"layer_3\": \"K.7 Final Quality Gate\"\n+      },\n+      \"execution_contract\": {\n+        \"show_reasoning_off_still_validates\": true,\n+        \"failure_behavior\": \"BLOCK on any CRITICAL\"\n+      }\n+    },\n+    \"validation_executor_stub\": {\n+      \"class\": \"ValidationExecutor\",\n+      \"notes\": \"Pseudo-contract for rule execution; see C015\",\n+      \"ensures\": [\n+        \"audit_trail evidence checked when RAG_Mode=ON\"\n+      ]\n     }\n   },\n   \"5.output\": {",
+  "statistics": {
+    "lines_added": 72,
+    "lines_removed": 0,
+    "lines_changed": 72
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

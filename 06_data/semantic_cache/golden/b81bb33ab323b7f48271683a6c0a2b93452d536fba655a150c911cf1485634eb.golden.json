@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "b81bb33ab323b7f48271683a6c0a2b93452d536fba655a150c911cf1485634eb",
+  "content_hash": "b81bb33ab323b7f48271683a6c0a2b93452d536fba655a150c911cf1485634eb",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_9.25.2025_v5.0.json",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.25.2025_v5.0.json",
+    "file_size": 126047,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "b81bb33ab323b7f48271683a6c0a2b93452d536fba655a150c911cf1485634eb",
+    "scan_timestamp": "2025-12-03T06:21:11.605748"
+  },
+  "content_preview": "{\n  \"metadata\": {\n    \"version\": \"v5.0\",\n    \"patched_from\": \"v4.0\",\n    \"patched_at\": \"2025-09-25T16:09:35.624797\",\n    \"governance_alignment\": \"[REMOVED_LEGACY_REFERENCE]\",\n    \"smoke_test_pass\": true,\n    \"smoke_test_failures\": [],\n    \"patch_notes\": [\n      \"ensured six-section shell\",\n      \"role standards expanded\",\n      \"task success criteria hardened\",\n      \"context retrieval and toggles set\",\n      \"reasoning hybrid, QA, and mirror keys added\",\n      \"output mirroring and hygiene guar...",
+  "creation_timestamp": "2025-12-03T06:21:39.136311",
+  "version": "1.0"
+}

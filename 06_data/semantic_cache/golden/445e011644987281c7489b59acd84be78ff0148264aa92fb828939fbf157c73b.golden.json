@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "445e011644987281c7489b59acd84be78ff0148264aa92fb828939fbf157c73b",
+  "content_hash": "ce59ada116c2585f45312803084dea96d58795d5328ba759bcb9f1e1f5520465",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LinkedInCanonical_2025-09-08_v2.82.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-08_v2.82.md",
+    "file_size": 41128,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "445e011644987281c7489b59acd84be78ff0148264aa92fb828939fbf157c73b",
+    "scan_timestamp": "2025-12-03T06:21:11.645517"
+  },
+  "content_preview": "# LinkedInCanonical \u2014 2025-09-09 v2.82 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82  \nv2.82 resolves Nuclear RCA root causes by tightening scoring visibility rules, enforcing EXISTING-path prior-date continuity, hardening Auto-NDP subset and date alignment, and reaffirming AI FILTER v8 last-in-sequence. It preserves the Executive balance from v2.81 and the mandatory RAG Enrichment Summary for Executive runs.\n\nZLO Method: Versioned Zero-Loss Overwrite per Steps 1-5...",
+  "creation_timestamp": "2025-12-03T06:21:42.070016",
+  "version": "1.0"
+}

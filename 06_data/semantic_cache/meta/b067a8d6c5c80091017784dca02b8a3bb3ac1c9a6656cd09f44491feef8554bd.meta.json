@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
+    "archive_name": "v6.0",
+    "relative_path": "Change Log\\CHANGELOG_v6_0.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\Change Log\\CHANGELOG_v6_0.md",
+    "file_size": 14267,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
+    "scan_timestamp": "2025-12-03T06:21:11.482294"
+  },
+  "artifacts": {
+    "ast": "ast/b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd.ast",
+    "embedding": "embeddings/b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd.embedding",
+    "diff": "diffs/b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd.diff.json",
+    "safety": "safety/b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd.safety.json",
+    "golden": "golden/b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd.golden.json",
+    "integrity": "integrity/b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:29.739800",
+  "artifact_count": 5
+}

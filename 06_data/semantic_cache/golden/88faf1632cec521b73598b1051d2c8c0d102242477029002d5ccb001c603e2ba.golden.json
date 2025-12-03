@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "88faf1632cec521b73598b1051d2c8c0d102242477029002d5ccb001c603e2ba",
+  "content_hash": "bd12055adb433f3837aef18f330b534a8615ccf9acc788406440dcc662197adb",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10",
+    "archive_name": "Agentic_Workflow-10_10",
+    "relative_path": "config_profiles_v10_10.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\config_profiles_v10_10.py",
+    "file_size": 11559,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "88faf1632cec521b73598b1051d2c8c0d102242477029002d5ccb001c603e2ba",
+    "scan_timestamp": "2025-12-03T06:21:11.354106"
+  },
+  "content_preview": "# FILE: 10_10/config_profiles_v10_10.py\n\"\"\"\nExecution Profiles (v10_10 \u00b7 Phase 3)\n=====================================\n\nThis module defines the **deterministic, hard execution profiles**\nused by the v10_10 stack.\n\nProfiles drive:\n\n    \u2022 Reasoning strategy (CoT, ToT, ReAct)\n    \u2022 RAG retrieval strategy (BM25, Hybrid, Dense) + HYDE + RRF\n    \u2022 Safety tier (strict, standard, debug)\n    \u2022 Context budgets\n    \u2022 Model tier selection (cheap / balanced / premium)\n    \u2022 Drafting depth / QA depth\n    \u2022 A...",
+  "creation_timestamp": "2025-12-03T06:21:18.444807",
+  "version": "1.0"
+}

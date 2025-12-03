@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "74e1eba443af95d5e64ac1d0ae85956af94544e98269b10fd8cdd599d38d6428",
+  "content_hash": "74e1eba443af95d5e64ac1d0ae85956af94544e98269b10fd8cdd599d38d6428",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\auto_tuning\\test_auto_tuning_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\auto_tuning\\test_auto_tuning_v10_7.py",
+    "file_size": 3352,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "74e1eba443af95d5e64ac1d0ae85956af94544e98269b10fd8cdd599d38d6428",
+    "scan_timestamp": "2025-12-03T06:21:11.409163"
+  },
+  "content_preview": "import copy\n\nimport pytest\n\nfrom core_v10_7 import ConfigV10_7, MetricsCollector, PolicyAutoTuner, TuningProfile\n\n\nCONFIG_PATH = \"master_config_v10_7.json\"\n\n\ndef _enabled_config() -> ConfigV10_7:\n    cfg = ConfigV10_7(CONFIG_PATH)\n    cfg.auto_tuning_config.enabled = True\n    return cfg\n\n\ndef _make_metrics(*entries):\n    metrics = MetricsCollector()\n    for entry in entries:\n        metrics.metrics.append(entry)\n    return metrics\n\n\ndef _drafting_metric(duration_ms: float, workflow_id: str = \"wf...",
+  "creation_timestamp": "2025-12-03T06:21:23.474829",
+  "version": "1.0"
+}

@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "7750e74ea9cb18dfa30bccb88bdb4169cddac505f496e5f40a20b2887117a31a",
+  "content_hash": "ca2734a696f5c1e46cd701882b3b170a9353c62395fad5756ee4db1469713e42",
+  "file_size": 420,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\observability\\telemetry\\test_obs_telemetry.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\telemetry\\test_obs_telemetry.py",
+    "file_size": 420,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "7750e74ea9cb18dfa30bccb88bdb4169cddac505f496e5f40a20b2887117a31a",
+    "scan_timestamp": "2025-12-03T06:21:11.331701"
+  },
+  "verification_timestamp": "2025-12-03T06:21:17.271911",
+  "checksums": {
+    "sha256": "ca2734a696f5c1e46cd701882b3b170a9353c62395fad5756ee4db1469713e42",
+    "md5": "2364c337d74e7822d547d73bc4728124"
+  }
+}

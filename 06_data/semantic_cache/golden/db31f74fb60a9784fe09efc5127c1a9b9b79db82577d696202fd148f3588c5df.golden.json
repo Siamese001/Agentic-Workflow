@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "db31f74fb60a9784fe09efc5127c1a9b9b79db82577d696202fd148f3588c5df",
+  "content_hash": "db31f74fb60a9784fe09efc5127c1a9b9b79db82577d696202fd148f3588c5df",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "artist_RES_v2.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\artist_RES_v2.py",
+    "file_size": 65630,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "db31f74fb60a9784fe09efc5127c1a9b9b79db82577d696202fd148f3588c5df",
+    "scan_timestamp": "2025-12-03T06:21:11.471348"
+  },
+  "content_preview": "# File: artist_RES_v2.py\n# ArtistGenerator class - generates resume content sections\n# Version: 17.02 (V2 Cleaned)\n\nimport copy\nimport functools\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport re\nimport time\nfrom datetime import datetime\nfrom typing import Any, Callable, Dict, List, Optional, Set, Tuple\nfrom collections import defaultdict # <-- IMPORT ADDED\n\nimport google.generativeai as genai\n\nfrom models_RES import (\n    ResumeSection, ThematicAnalysis, HopExecutionErr...",
+  "creation_timestamp": "2025-12-03T06:21:28.498979",
+  "version": "1.0"
+}

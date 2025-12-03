@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "2e5bdc33bab2cdcaddb29cf75d8adaf8b14a3175ee37b54ac5e0d65daa704837",
+  "content_hash": "26781248bb43c5f97a373848b936bca15ecf13441ace6fb70a52f1f3752705a5",
+  "file_size": 21699,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10",
+    "archive_name": "Agentic_Workflow-10_10",
+    "relative_path": "cognitive_agents.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\cognitive_agents.py",
+    "file_size": 21699,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "2e5bdc33bab2cdcaddb29cf75d8adaf8b14a3175ee37b54ac5e0d65daa704837",
+    "scan_timestamp": "2025-12-03T06:21:11.353858"
+  },
+  "verification_timestamp": "2025-12-03T06:21:18.406030",
+  "checksums": {
+    "sha256": "26781248bb43c5f97a373848b936bca15ecf13441ace6fb70a52f1f3752705a5",
+    "md5": "7b411dd10cc03148119aeacf3331910a"
+  }
+}

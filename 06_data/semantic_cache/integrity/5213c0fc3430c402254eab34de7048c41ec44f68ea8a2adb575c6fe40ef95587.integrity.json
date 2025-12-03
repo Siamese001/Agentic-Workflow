@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
+  "content_hash": "e627eae04dc59de483e9d29e18ac78de3d4d18585c8c48ea5e4c539a0c9dd9f4",
+  "file_size": 425,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\sandbox\\test_sandbox_timeout.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_sandbox_timeout.py",
+    "file_size": 425,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
+    "scan_timestamp": "2025-12-03T06:21:11.334891"
+  },
+  "verification_timestamp": "2025-12-03T06:21:17.431400",
+  "checksums": {
+    "sha256": "e627eae04dc59de483e9d29e18ac78de3d4d18585c8c48ea5e4c539a0c9dd9f4",
+    "md5": "9673f0c6e795d0aa974060dc6ca0bf11"
+  }
+}

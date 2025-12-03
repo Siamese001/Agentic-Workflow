@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c5c0e6b59032e51f4d490a4d8d2e30aa3364af348bcf2934486c9f143b34dd3f",
+  "content_hash": "34ca65874cfc18c27a745debcb8b135a585f2cd8f210ad94a10bfa0384f16215",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L2_execution\\tools\\test_l2_tools.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\tools\\test_l2_tools.py",
+    "file_size": 502,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c5c0e6b59032e51f4d490a4d8d2e30aa3364af348bcf2934486c9f143b34dd3f",
+    "scan_timestamp": "2025-12-03T06:21:11.314708"
+  },
+  "content_preview": "\"\"\"L2 Execution Tools Tests.\"\"\"\n\nclass TestL2Tools:\n    \"\"\"Tests for L2 execution tools.\"\"\"\n    \n    def test_search_tool(self):\n        \"\"\"Test search tool functionality.\"\"\"\n        query = \"python developer\"\n        results = [\"result1\", \"result2\"]\n        assert len(results) > 0\n    \n    def test_extraction_tool(self):\n        \"\"\"Test extraction tool functionality.\"\"\"\n        text = \"Skills: Python, AWS\"\n        extracted = [\"Python\", \"AWS\"]\n        assert \"Python\" in extracted\n",
+  "creation_timestamp": "2025-12-03T06:21:16.825027",
+  "version": "1.0"
+}

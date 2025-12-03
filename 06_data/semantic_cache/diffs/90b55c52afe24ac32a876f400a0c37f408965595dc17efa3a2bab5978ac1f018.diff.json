@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/control_plane/test_rules_engine.py",
+  "diff_content": "from orchestration.control_plane import SafetyContext, PolicyRule, evaluate_rules\n\n\ndef test_rules_engine_detects_pii_email():\n    ctx = SafetyContext(input_text=\"Contact me at user@example.com\")\n    rules = [\n        PolicyRule(\n            id=\"custom_email\",\n            description=\"Email PII\",\n            category=\"pii\",\n            severity=\"medium\",\n            pattern=r\"@example\\.com\",\n            is_pii_rule=True,\n        )\n    ]\n\n    result = evaluate_rules(ctx, rules)\n\n    assert result.matches\n    assert result.max_severity == \"medium\"\n    assert result.has_pii is True\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 27,
+    "lines_removed": 0,
+    "lines_changed": 27
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

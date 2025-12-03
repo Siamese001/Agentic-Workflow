@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "25cee5e84dd52d6da2f28f816914e33d5aecc315dc9747402fa600724da308ca",
+  "content_hash": "c55d3a61a9210b457a320279fd09c0c024c576a0837409c55cff310bfa5e406c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l1\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\__init__.py",
+    "file_size": 198,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "25cee5e84dd52d6da2f28f816914e33d5aecc315dc9747402fa600724da308ca",
+    "scan_timestamp": "2025-12-03T06:21:11.255977"
+  },
+  "content_preview": "\"\"\"\nL1 Planning layer for resume generation strategy and organization.\n\nCoordinates resume structure planning for optimal job alignment\nand ATS compatibility to improve application success.\n\"\"\"",
+  "creation_timestamp": "2025-12-03T06:21:13.770384",
+  "version": "1.0"
+}

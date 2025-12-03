@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "da46e327af0a3826dac6a169936a3c95978e465fc11f77495b1d0ed8a49ef03a",
+  "content_hash": "da46e327af0a3826dac6a169936a3c95978e465fc11f77495b1d0ed8a49ef03a",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "tests\\v10_7\\core\\test_context_budget_manager_v10_7.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\core\\test_context_budget_manager_v10_7.py",
+    "file_size": 1896,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "da46e327af0a3826dac6a169936a3c95978e465fc11f77495b1d0ed8a49ef03a",
+    "scan_timestamp": "2025-12-03T06:21:11.410482"
+  },
+  "content_preview": "import pytest\n\nfrom core_v10_7 import ConfigV10_7, ContextBudgetManager\n\n\nclass StubSummarizer:\n    def __init__(self, response: str | None = None, should_fail: bool = False):\n        self.response = response or \"short summary\"\n        self.should_fail = should_fail\n        self.calls = 0\n\n    async def chat_completion_async(self, *_, **__):\n        self.calls += 1\n        if self.should_fail:\n            raise RuntimeError(\"LLM unavailable\")\n        return {\"content\": self.response}\n\n\n@pytest.m...",
+  "creation_timestamp": "2025-12-03T06:21:23.528699",
+  "version": "1.0"
+}

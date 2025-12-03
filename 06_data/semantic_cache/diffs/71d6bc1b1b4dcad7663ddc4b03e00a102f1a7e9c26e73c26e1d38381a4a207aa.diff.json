@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/shared/stubs/service_stubs.py",
+  "diff_content": "\"\"\"Service Stubs for Testing.\"\"\"\n\nclass StubRAGService:\n    \"\"\"Stub RAG service for testing.\"\"\"\n    \n    def __init__(self):\n        self.queries = []\n    \n    def search(self, query, top_k=10):\n        \"\"\"Stub search method.\"\"\"\n        self.queries.append(query)\n        return [{\"id\": f\"doc_{i}\", \"score\": 0.9 - i * 0.1} for i in range(min(top_k, 3))]\n\nclass StubLLMService:\n    \"\"\"Stub LLM service for testing.\"\"\"\n    \n    def __init__(self, responses=None):\n        self.responses = responses or [\"Default response\"]\n        self.call_count = 0\n    \n    def generate(self, prompt):\n        \"\"\"Stub generate method.\"\"\"\n        response = self.responses[self.call_count % len(self.responses)]\n        self.call_count += 1\n        return response\n\ndef test_stub_rag_service():\n    \"\"\"Test StubRAGService.\"\"\"\n    rag = StubRAGService()\n    results = rag.search(\"python developer\")\n    assert len(results) == 3\n    assert len(rag.queries) == 1\n\ndef test_stub_llm_service():\n    \"\"\"Test StubLLMService.\"\"\"\n    llm = StubLLMService(responses=[\"Response A\", \"Response B\"])\n    assert llm.generate(\"prompt1\") == \"Response A\"\n    assert llm.generate(\"prompt2\") == \"Response B\"\n",
+  "statistics": {
+    "lines_added": 38,
+    "lines_removed": 0,
+    "lines_changed": 38
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
+  "content_hash": "97b419468e3e0f5fd9c2500caf399fc8d72ef4afbfade5b126af6ee63c98b1fe",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "meta\\retrieval\\vector_store_chroma.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\retrieval\\vector_store_chroma.py",
+    "file_size": 1358,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
+    "scan_timestamp": "2025-12-03T06:21:11.273587"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional, Sequence\n\nfrom infra.storage.vector_store_chroma import (\n    chroma_hybrid_search as _core_chroma_hybrid_search,\n    chroma_semantic_cache_lookup as _core_chroma_semantic_cache_lookup,\n    chroma_semantic_cache_upsert as _core_chroma_semantic_cache_upsert,\n)\n\n\ndef chroma_hybrid_search(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, Any]:\n    \"\"\"META wrapper for Chroma hybrid search.\n\n    Delegates t...",
+  "creation_timestamp": "2025-12-03T06:21:15.223599",
+  "version": "1.0"
+}

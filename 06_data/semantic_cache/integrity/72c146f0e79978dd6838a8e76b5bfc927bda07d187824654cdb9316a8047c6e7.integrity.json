@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
+  "content_hash": "c5d5972a92533dafaebbb8be2a42cc37138e2163015a3f950d2bb949b2535cd2",
+  "file_size": 1810,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\dag_engine\\models.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag_engine\\models.py",
+    "file_size": 1810,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
+    "scan_timestamp": "2025-12-03T06:21:11.239709"
+  },
+  "verification_timestamp": "2025-12-03T06:21:12.779302",
+  "checksums": {
+    "sha256": "c5d5972a92533dafaebbb8be2a42cc37138e2163015a3f950d2bb949b2535cd2",
+    "md5": "69e60ef613e091b409bd7b636f0c34e2"
+  }
+}

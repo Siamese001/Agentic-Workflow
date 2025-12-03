@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-LIC",
+  "logical_path": "stacks_v10_7/models.py",
+  "diff_content": "\"\"\"Shared Pydantic data models for stack coordination.\"\"\"\n\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel, Field\n\n\nclass SpecialistDraftPacket(BaseModel):\n    \"\"\"Container for specialist drafting outputs.\"\"\"\n\n    specialist: str = Field(..., description=\"Name of the drafting specialist\")\n    focus_area: str = Field(..., description=\"Primary responsibility of the specialist\")\n    sections: Dict[str, Any] = Field(default_factory=dict, description=\"Section-level draft contributions\")\n    notes: List[str] = Field(default_factory=list, description=\"Observations or hand-off notes\")\n    dependencies: List[str] = Field(default_factory=list, description=\"Dependencies or follow-up actions\")\n\n\nclass EvidenceClarificationRecord(BaseModel):\n    \"\"\"Represents a clarification request raised by the liaison.\"\"\"\n\n    request_id: str\n    recipient: str\n    questions: List[str]\n    priority: str = \"normal\"\n    context_summary: str = \"\"\n\n\nclass EvidenceBriefRecord(BaseModel):\n    \"\"\"Structured evidence digest for a section.\"\"\"\n\n    section: str\n    brief: str\n    key_points: List[str] = Field(default_factory=list)\n    citations: List[str] = Field(default_factory=list)\n    outstanding_questions: List[str] = Field(default_factory=list)\n\n\nclass EvidenceLiaisonPacket(BaseModel):\n    \"\"\"Aggregated liaison output feeding back to the guild.\"\"\"\n\n    clarifications: List[EvidenceClarificationRecord] = Field(default_factory=list)\n    briefs: List[EvidenceBriefRecord] = Field(default_factory=list)\n\n\nclass CritiqueFindingRecord(BaseModel):\n    \"\"\"Single critique finding routed by the panel.\"\"\"\n\n    critic: str\n    severity: str\n    issues: List[str] = Field(default_factory=list)\n    recommendations: List[str] = Field(default_factory=list)\n    blockers: List[str] = Field(default_factory=list)\n\n\nclass CritiquePanelPacket(BaseModel):\n    \"\"\"Aggregated critique findings for the coordinator.\"\"\"\n\n    findings: List[CritiqueFindingRecord] = Field(default_factory=list)\n    overall_status: str = Field(..., description=\"Coordinator-level status derived from findings\")\n",
+  "statistics": {
+    "lines_added": 59,
+    "lines_removed": 0,
+    "lines_changed": 59
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

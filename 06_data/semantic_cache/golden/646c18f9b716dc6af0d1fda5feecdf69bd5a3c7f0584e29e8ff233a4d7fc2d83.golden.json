@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "646c18f9b716dc6af0d1fda5feecdf69bd5a3c7f0584e29e8ff233a4d7fc2d83",
+  "content_hash": "486873feea19d74dbf8d2389aafa3015a1c5a89422961dec054b844bf0ac7f40",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
+    "archive_name": "Agentic-Workflow-10_9",
+    "relative_path": "l4.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l4.py",
+    "file_size": 20980,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "646c18f9b716dc6af0d1fda5feecdf69bd5a3c7f0584e29e8ff233a4d7fc2d83",
+    "scan_timestamp": "2025-12-03T06:21:11.362635"
+  },
+  "content_preview": "# FILE: l4.py\n\"\"\"\nUnified L4 State Layer (v10_9) \u2014 PURE STATE / MEMORY MANAGEMENT (RESTORED)\n\nThis module implements ALL state-related responsibilities for the v10_9\nagentic architecture, with strict L1\u2013L5 separation:\n\n    \u2022 Context-budget-aware memory management.\n    \u2022 World-model normalization (facts, origins, categories).\n    \u2022 State validation helpers (type + structural checks).\n    \u2022 State views (conversational, retrieval, prompt-context).\n    \u2022 Unified StateAdapter:\n        - apply patches...",
+  "creation_timestamp": "2025-12-03T06:21:19.445284",
+  "version": "1.0"
+}

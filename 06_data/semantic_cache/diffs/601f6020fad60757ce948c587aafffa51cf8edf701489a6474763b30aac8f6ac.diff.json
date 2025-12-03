@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "orchestration/integration.py",
+  "diff_content": "\"\"\"\nOrchestration layer integration utilities.\n\nThis module provides integration functionality for orchestration operations,\nconnecting different components and managing cross-cutting concerns.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\n# Import WorkflowExecutionConfig from core/integration for backward compatibility\nfrom core.integration import WorkflowExecutionConfig\n\n\n@dataclass\nclass IntegrationConfig:\n    \"\"\"Configuration for orchestration integration.\"\"\"\n    enabled_components: List[str]\n    connection_settings: Dict[str, Any]\n    retry_policy: Dict[str, Any]\n\n\nclass OrchestrationIntegrator:\n    \"\"\"\n    Integrates orchestration components and manages cross-cutting concerns.\n    \n    Provides integration between different orchestration modules and\n    handles component lifecycle management.\n    \"\"\"\n    \n    def __init__(self, config: Optional[IntegrationConfig] = None):\n        self.config = config or IntegrationConfig(\n            enabled_components=[],\n            connection_settings={},\n            retry_policy={}\n        )\n        self._components: Dict[str, Any] = {}\n    \n    def register_component(self, name: str, component: Any) -> None:\n        \"\"\"Register a component for integration.\"\"\"\n        self._components[name] = component\n    \n    def get_component(self, name: str) -> Optional[Any]:\n        \"\"\"Get a registered component.\"\"\"\n        return self._components.get(name)\n    \n    def integrate(self) -> bool:\n        \"\"\"Perform integration between registered components.\"\"\"\n        # Basic integration logic\n        for component_name in self.config.enabled_components:\n            if component_name not in self._components:\n                return False\n        return True\n\n\n# Global integrator instance\ndefault_integrator = OrchestrationIntegrator()\n\n\ndef get_integrator() -> OrchestrationIntegrator:\n    \"\"\"Get the default orchestration integrator.\"\"\"\n    return default_integrator\n\n\n# Re-export functions from core.integration for backward compatibility\nfrom core.integration import execute_workflow, create_workflow_context\n",
+  "statistics": {
+    "lines_added": 66,
+    "lines_removed": 0,
+    "lines_changed": 66
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

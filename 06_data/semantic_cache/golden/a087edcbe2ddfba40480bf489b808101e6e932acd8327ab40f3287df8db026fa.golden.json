@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "a087edcbe2ddfba40480bf489b808101e6e932acd8327ab40f3287df8db026fa",
+  "content_hash": "b2f5ea26efa6ed9b55d1957ef949356dab655c8705de01e22259e5d294cb523c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L4_memory_state\\unit\\test_l4_state_unit.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\unit\\test_l4_state_unit.py",
+    "file_size": 451,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "a087edcbe2ddfba40480bf489b808101e6e932acd8327ab40f3287df8db026fa",
+    "scan_timestamp": "2025-12-03T06:21:11.323471"
+  },
+  "content_preview": "\"\"\"L4 Memory State Layer Unit Tests.\"\"\"\n\nclass TestL4StateUnit:\n    \"\"\"Unit tests for L4 memory state layer.\"\"\"\n    \n    def test_state_store_init(self):\n        \"\"\"Test state store initialization.\"\"\"\n        assert True\n    \n    def test_memory_entry_creation(self):\n        \"\"\"Test memory entry creation.\"\"\"\n        assert True\n    \n    def test_state_serialization(self):\n        \"\"\"Test state serialization.\"\"\"\n        assert True\n",
+  "creation_timestamp": "2025-12-03T06:21:16.982405",
+  "version": "1.0"
+}

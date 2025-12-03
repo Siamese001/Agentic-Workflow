@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "rag_simulation.py",
+  "diff_content": "\"\"\"RAG simulation models.\"\"\"\n\nfrom typing import List\n\nfrom pydantic import BaseModel\n\nfrom .simulation_base import SimulationInput, SimulationResult\n\n\nclass RAGSimRequest(SimulationInput):\n    \"\"\"Input payload for RAG simulation.\"\"\"\n\n    query: str\n    documents: List[str]\n\n\nclass RAGSimMetrics(BaseModel):\n    \"\"\"Metrics produced by the RAG simulation.\"\"\"\n\n    recall: float\n    precision: float\n    redundancy: float\n\n\nclass RAGSimResult(SimulationResult):\n    \"\"\"Result model for RAG simulations.\"\"\"\n\n    pass\n",
+  "statistics": {
+    "lines_added": 28,
+    "lines_removed": 0,
+    "lines_changed": 28
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

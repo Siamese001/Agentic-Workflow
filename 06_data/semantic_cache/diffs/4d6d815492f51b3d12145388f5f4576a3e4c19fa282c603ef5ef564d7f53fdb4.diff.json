@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/shared/stubs/test_stubs.py",
+  "diff_content": "\"\"\"Shared Test Stubs.\"\"\"\n\nclass StubSafetyEngine:\n    \"\"\"Stub safety engine for testing.\"\"\"\n    \n    def evaluate(self, context):\n        \"\"\"Stub evaluate method.\"\"\"\n        return StubPolicyResult()\n\nclass StubPolicyResult:\n    \"\"\"Stub policy result for testing.\"\"\"\n    \n    def __init__(self):\n        self.blocking_findings = []\n        self.warnings = []\n\ndef test_stub_safety_engine():\n    \"\"\"Test StubSafetyEngine.\"\"\"\n    engine = StubSafetyEngine()\n    result = engine.evaluate({})\n    assert result.blocking_findings == []\n",
+  "statistics": {
+    "lines_added": 21,
+    "lines_removed": 0,
+    "lines_changed": 21
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

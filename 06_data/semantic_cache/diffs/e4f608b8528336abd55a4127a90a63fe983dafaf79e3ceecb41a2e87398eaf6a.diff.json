@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "eval/simulation/metrics.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Iterable, Mapping\n\n\ndef _as_mapping(obj: Any) -> Mapping[str, Any]:\n    if isinstance(obj, Mapping):\n        return obj\n    if hasattr(obj, \"model_dump\"):\n        try:\n            return obj.model_dump()  # type: ignore[call-arg]\n        except TypeError:  # pragma: no cover - defensive\n            pass\n    if hasattr(obj, \"dict\"):\n        try:\n            return obj.dict()  # type: ignore[call-arg]\n        except TypeError:  # pragma: no cover - defensive\n            pass\n    if hasattr(obj, \"__dict__\"):\n        return dict(obj.__dict__)\n    return {}\n\n\ndef compute_collaboration_score(outputs: Iterable[Any]) -> float:\n    \"\"\"Compute a simple collaboration score over simulation outputs.\n\n    The current implementation looks for a ``golden_eval_score`` field in\n    each output's ``outcome`` mapping and returns the average. Missing\n    scores are treated as zero.\n    \"\"\"\n\n    total = 0.0\n    count = 0\n    for out in outputs:\n        m = _as_mapping(out)\n        outcome = m.get(\"outcome\") or m.get(\"average_scores\") or {}\n        outcome_map = _as_mapping(outcome)\n        score = float(outcome_map.get(\"golden_eval_score\") or 0.0)\n        total += score\n        count += 1\n    if not count:\n        return 0.0\n    return total / float(count)\n\n\ndef compute_conflict_index(outputs: Iterable[Any]) -> float:\n    \"\"\"Compute a heuristic conflict index from simulation outputs.\n\n    We treat any ``correction_iterations`` > 0 or explicit\n    ``agent_conflict_count`` > 0 as evidence of conflict and return the\n    fraction of outputs exhibiting such signals.\n    \"\"\"\n\n    conflict = 0\n    total = 0\n    for out in outputs:\n        m = _as_mapping(out)\n        outcome = m.get(\"outcome\") or {}\n        outcome_map = _as_mapping(outcome)\n\n        corr_iters = int(outcome_map.get(\"correction_iterations\", 0) or 0)\n        agent_conflicts = int(m.get(\"agent_conflict_count\", 0) or 0)\n\n        if corr_iters > 0 or agent_conflicts > 0:\n            conflict += 1\n        total += 1\n\n    if not total:\n        return 0.0\n    return conflict / float(total)\n\n\n\n",
+  "statistics": {
+    "lines_added": 73,
+    "lines_removed": 0,
+    "lines_changed": 73
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

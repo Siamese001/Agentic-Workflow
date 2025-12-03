@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/dag_engine/node.py",
+  "diff_content": "\"\"\"\nDAG node model for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides agent-aware node definitions for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass DAGNode(BaseModel):\n    \"\"\"\n    Represents agent-aware DAG node for r\u00e9sum\u00e9 processing workflows.\n\n    Defines declarative node structure for optimal r\u00e9sum\u00e9 enhancement orchestration.\n    \"\"\"\n\n    id: str\n    type: str\n    inputs: List[str] = Field(default_factory=list)\n    outputs: List[str] = Field(default_factory=list)\n    config: Dict[str, Any] = Field(default_factory=dict)\n    agent_type: Optional[str] = None\n    required_capabilities: List[str] = Field(default_factory=list)\n    preferred_agent_ids: List[str] = Field(default_factory=list)\n\n\n\n",
+  "statistics": {
+    "lines_added": 29,
+    "lines_removed": 0,
+    "lines_changed": 29
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

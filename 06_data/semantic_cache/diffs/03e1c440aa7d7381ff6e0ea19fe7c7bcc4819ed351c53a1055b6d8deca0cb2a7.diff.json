@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "windsurf_rules/02_structure_prompts_memory.md",
+  "diff_content": "# /windsurf_rules/02_structure_prompts_memory.md\n## Import Graph, Prompt Schema, Memory & Context Rules (Condensed)\n\n### 1. Import Graph Invariants\nForbidden:\n- L1\u2192L2\n- L1\u2192cognitive_agents\n- L2\u2192L3 internals\n- L4\u2192providers\n- Providers\u2192RAG/orchestration\n- No upward-layer imports.\n- No circular imports.\n\n### 2. Prompt Schema Rules\n- Declare placeholders explicitly.\n- No unused or hallucinated macros.\n- Validate substitution completeness.\n- Prompts must be versioned, governed, and schema-bound.\n\n### 3. Memory & Resource Requirements\n- Bounded lists, caches, and stores.\n- All caches must have eviction policies.\n- No unbounded embeddings or histories.\n- No orphaned async tasks.\n\n### 4. Context Engineering Requirements\n- Only relevant, safety-approved context may be injected.\n- RAG results must be deterministic under same inputs.\n- No infinite scroll accumulation; context must be curated.\n\n### 5. Drafting & RAG Agent Boundaries\n- Draft Planner = L1  \n- Draft Executor = L2  \n- Critic = L1  \n- Fix Agent = L1  \n- Integrated only through L3 DAG.\n- High-signal rules apply (no fluff, persona alignment, metric injection).\n",
+  "statistics": {
+    "lines_added": 37,
+    "lines_removed": 0,
+    "lines_changed": 37
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

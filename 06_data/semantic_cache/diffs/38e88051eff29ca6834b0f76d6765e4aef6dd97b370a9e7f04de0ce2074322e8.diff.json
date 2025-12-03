@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "strategy_simulation.py",
+  "diff_content": "\"\"\"Strategy simulation models.\"\"\"\n\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel, Field\n\nfrom .simulation_base import SimulationInput, SimulationResult\n\n\nclass StrategySimRequest(SimulationInput):\n    \"\"\"Input payload for strategy simulation.\"\"\"\n\n    job_title: str\n    company: str\n    strategy_plan: Dict[str, Any]\n\n\nclass StrategySimMetrics(BaseModel):\n    \"\"\"Metrics produced by a strategy simulation.\"\"\"\n\n    clarity_score: float\n    alignment_score: float\n    risk_score: float\n    notes: List[str] = Field(default_factory=list)\n\n\nclass StrategySimResult(SimulationResult):\n    \"\"\"Result model for strategy simulations.\"\"\"\n\n    metrics: Dict[str, Any]\n    details: Dict[str, Any]\n",
+  "statistics": {
+    "lines_added": 31,
+    "lines_removed": 0,
+    "lines_changed": 31
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

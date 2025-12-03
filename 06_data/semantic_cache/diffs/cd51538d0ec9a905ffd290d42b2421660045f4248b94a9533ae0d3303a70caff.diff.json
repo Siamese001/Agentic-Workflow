@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/sandbox/test_vm_manager.py",
+  "diff_content": "from infra.sandbox.models import ToolCallRequest\nfrom infra.sandbox.vm_manager import run_in_ephemeral_vm\n\n\ndef test_run_in_ephemeral_vm_basic():\n    req = ToolCallRequest(tool_name=\"echo\", args=[\"x\"], timeout_s=1.0)\n    result = run_in_ephemeral_vm(req, resource_limits={\"memory_mb\": 64})\n\n    assert result.success is True\n    assert result.exit_code == 0\n    assert \"TOOL echo\" in result.stdout\n\n\n\n\n\n\n",
+  "statistics": {
+    "lines_added": 17,
+    "lines_removed": 0,
+    "lines_changed": 17
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

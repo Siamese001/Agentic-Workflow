@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "config/context_profile.py",
+  "diff_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ContextBudget\n\n\nclass ContextProfile(BaseModel):\n    \"\"\"Profile capturing context budget hints used by planning and routing.\"\"\"\n\n    context_budget: ContextBudget = Field(default_factory=ContextBudget)\n\n\n\n",
+  "statistics": {
+    "lines_added": 14,
+    "lines_removed": 0,
+    "lines_changed": 14
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

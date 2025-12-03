@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "35f26c7652e37b2665d0c60976f3dcc491e6ea6c321909548556832cefbceac4",
+  "content_hash": "2169eedf06c0f770e68fd37c92516be305c9793ff002caec5af1a7aa7b835a40",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "eval\\simulation\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\simulation\\__init__.py",
+    "file_size": 243,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "35f26c7652e37b2665d0c60976f3dcc491e6ea6c321909548556832cefbceac4",
+    "scan_timestamp": "2025-12-03T06:21:11.234591"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom .models import SimScenario, SimOutcome\nfrom .simulator import run_scenario\nfrom . import metrics\n\n__all__ = [\n    \"SimScenario\",\n    \"SimOutcome\",\n    \"run_scenario\",\n    \"metrics\",\n]\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:12.652470",
+  "version": "1.0"
+}

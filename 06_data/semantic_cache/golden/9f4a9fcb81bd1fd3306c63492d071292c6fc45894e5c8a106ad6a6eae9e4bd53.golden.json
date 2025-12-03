@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "9f4a9fcb81bd1fd3306c63492d071292c6fc45894e5c8a106ad6a6eae9e4bd53",
+  "content_hash": "bd4a3f0d4be0c981a788474ce3d00e07663dbda8cb2dadf7b65735103cbb6000",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
+    "archive_name": "Agentic-Workflow-10_9",
+    "relative_path": "requirements.txt",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\requirements.txt",
+    "file_size": 126,
+    "file_extension": ".txt",
+    "is_eligible": true,
+    "sha256_hash": "9f4a9fcb81bd1fd3306c63492d071292c6fc45894e5c8a106ad6a6eae9e4bd53",
+    "scan_timestamp": "2025-12-03T06:21:11.366896"
+  },
+  "content_preview": "anthropic\ngoogle-generativeai\nopenai\npydantic\nredis\nchromadb\nrank-bm25\npython-dotenv\nhttpx\naiohttp\ntiktoken\nnumpy\n",
+  "creation_timestamp": "2025-12-03T06:21:19.787040",
+  "version": "1.0"
+}

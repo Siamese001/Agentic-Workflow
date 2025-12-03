@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "01e8035cdbd57a57fd450597a80779c5c72c5cb37a44096167191ba77fd52afa",
+  "content_hash": "6e4149af0b8ef8f7d5e2fd75ee91cd1bae8650f8ab413319021457a28df628ce",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "meta\\metacognition\\models.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\metacognition\\models.py",
+    "file_size": 705,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "01e8035cdbd57a57fd450597a80779c5c72c5cb37a44096167191ba77fd52afa",
+    "scan_timestamp": "2025-12-03T06:21:11.270916"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom typing import List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass Hypothesis(BaseModel):\n    \"\"\"Lightweight hypothesis used by the metacognition layer.\"\"\"\n\n    id: str\n    agent_id: str\n    content: str\n    confidence: float = 0.0\n    evidence_ids: List[str] = Field(default_factory=list)\n    rationale: Optional[str] = None\n\n\nclass MetacognitionReport(BaseModel):\n    \"\"\"Aggregate view over a set of hypotheses and signals.\"\"\"\n\n    hypotheses: List...",
+  "creation_timestamp": "2025-12-03T06:21:15.053442",
+  "version": "1.0"
+}

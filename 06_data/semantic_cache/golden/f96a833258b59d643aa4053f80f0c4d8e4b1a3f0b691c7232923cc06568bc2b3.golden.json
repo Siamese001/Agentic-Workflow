@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
+  "content_hash": "fe1afb2f34b0f203dc3cdf12f30d6eee806d92d73f4551e0dacf9ac55b9cd50f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "providers\\google_genai_client.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\google_genai_client.py",
+    "file_size": 1272,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
+    "scan_timestamp": "2025-12-03T06:21:11.283240"
+  },
+  "content_preview": "\"\"\"Google Generative AI (Gemini) client adapter for v10_10.\n\nThis module is the ONLY place where google.generativeai is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any\n\n\ndef run_llm_google(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run a Gemini generate_content call and return the response text.\"\"\"\n\n    try:\n        impor...",
+  "creation_timestamp": "2025-12-03T06:21:15.844358",
+  "version": "1.0"
+}

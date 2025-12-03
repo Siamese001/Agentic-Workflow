@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "c39d672b292ca4966225cfcc3d0a02323568e58564cf388a189b5e6b08bb6027",
+  "content_hash": "f6ab5551dc28e2f67d75cf8a4de7db4032a269e4a89c48a9cd75bf94ffc1a7a9",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L1_planning\\unit\\test_l1_unit_core.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_l1_unit_core.py",
+    "file_size": 1159,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "c39d672b292ca4966225cfcc3d0a02323568e58564cf388a189b5e6b08bb6027",
+    "scan_timestamp": "2025-12-03T06:21:11.310739"
+  },
+  "content_preview": "\"\"\"L1 Planning Unit Tests - Core.\"\"\"\nimport pytest\n\nclass TestL1PlanningUnitCore:\n    \"\"\"Core unit tests for L1 planning layer.\"\"\"\n    \n    def test_workflow_plan_creation(self):\n        \"\"\"Test workflow plan creation.\"\"\"\n        plan = {\"steps\": [\"analyze\", \"plan\", \"execute\"]}\n        assert len(plan[\"steps\"]) == 3\n    \n    def test_strategy_plan_initialization(self):\n        \"\"\"Test strategy plan initialization.\"\"\"\n        strategy = {\"mode\": \"cot\", \"depth\": 2}\n        assert strategy[\"mode\"] ...",
+  "creation_timestamp": "2025-12-03T06:21:16.695978",
+  "version": "1.0"
+}

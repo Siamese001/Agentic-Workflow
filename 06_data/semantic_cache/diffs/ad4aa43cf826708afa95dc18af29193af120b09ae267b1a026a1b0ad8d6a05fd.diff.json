@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "tests/L3_orchestration/unit/graphs/test_l3_graphs.py",
+  "diff_content": "\"\"\"L3 Orchestration Graph Unit Tests.\"\"\"\n\nclass TestL3Graphs:\n    \"\"\"Unit tests for L3 orchestration graphs.\"\"\"\n    \n    def test_graph_node_creation(self):\n        \"\"\"Test graph node creation.\"\"\"\n        nodes = [{\"id\": f\"n{i}\", \"data\": {}} for i in range(3)]\n        assert len(nodes) == 3\n    \n    def test_graph_edge_creation(self):\n        \"\"\"Test graph edge creation.\"\"\"\n        edges = [(\"n0\", \"n1\"), (\"n1\", \"n2\")]\n        assert len(edges) == 2\n    \n    def test_graph_traversal_order(self):\n        \"\"\"Test graph traversal order.\"\"\"\n        order = [\"n0\", \"n1\", \"n2\"]\n        for i, node in enumerate(order):\n            assert node == f\"n{i}\"\n",
+  "statistics": {
+    "lines_added": 20,
+    "lines_removed": 0,
+    "lines_changed": 20
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

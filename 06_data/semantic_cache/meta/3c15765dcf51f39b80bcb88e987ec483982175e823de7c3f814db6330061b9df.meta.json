@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l4\\state_validation.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\state_validation.py",
+    "file_size": 8904,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df",
+    "scan_timestamp": "2025-12-03T06:21:11.265049"
+  },
+  "artifacts": {
+    "ast": "ast/3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df.ast",
+    "embedding": "embeddings/3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df.embedding",
+    "diff": "diffs/3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df.diff.json",
+    "safety": "safety/3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df.safety.json",
+    "golden": "golden/3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df.golden.json",
+    "integrity": "integrity/3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:14.492386",
+  "artifact_count": 6
+}

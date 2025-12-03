@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "267432c96259e63042b27c5d657805c261f4e07feadfb72d6adc98b5d72540be",
+  "content_hash": "43dd1cf33bd9c094ada199c06ba50b84439ab5a3cf41f4bc8d9be974583e7939",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\refactoring\\REORGANIZATION_COMPLETE.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\REORGANIZATION_COMPLETE.md",
+    "file_size": 7472,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "267432c96259e63042b27c5d657805c261f4e07feadfb72d6adc98b5d72540be",
+    "scan_timestamp": "2025-12-03T06:21:11.292690"
+  },
+  "content_preview": "# Agentic Workflow 10_10 Reorganization Complete\n\n## Summary\n\nSuccessfully reorganized the Agentic Workflow 10_10 repository from layer-based (L1-L5) structure to OpenAI-style capability-based structure. The reorganization improves code navigation, reduces cognitive complexity, and follows modern agentic architecture best practices.\n\n## Changes Made\n\n### \u2705 Completed Tasks\n\n1. **Dependency Analysis**: Created comprehensive dependency analyzer that identified 3 circular dependencies\n2. **Circular ...",
+  "creation_timestamp": "2025-12-03T06:21:16.015968",
+  "version": "1.0"
+}

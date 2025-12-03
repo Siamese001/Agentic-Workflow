@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8",
+  "content_hash": "08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LIC_2025-09-10_v2.94.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v2.94.md",
+    "file_size": 14646,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8",
+    "scan_timestamp": "2025-12-03T06:21:11.587293"
+  },
+  "content_preview": "LinkedInCanonical \u2014 2025-09-11 v2.94 (FULL, ZLO-Consolidated). v2.94 is a zero loss overwrite of v2.93 that updates the C Level archetype to three insights and two bullets while preserving all other behaviors, gates, and operator workflow. Canonical governance remains Prompt Shell v1 and AI FILTER v8.\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ, run canonical QA sequences, comp...",
+  "creation_timestamp": "2025-12-03T06:21:38.499867",
+  "version": "1.0"
+}

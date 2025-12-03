@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "config/retrieval_profile.py",
+  "diff_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import RetrievalConfig\n\n\nclass RetrievalProfile(BaseModel):\n    \"\"\"Retrieval configuration profile wrapping RetrievalConfig.\n\n    Kept as a thin wrapper so that higher-level profiles can evolve\n    without changing the RetrievalConfig schema used by META.\n    \"\"\"\n\n    retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)\n\n\n\n",
+  "statistics": {
+    "lines_added": 18,
+    "lines_removed": 0,
+    "lines_changed": 18
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

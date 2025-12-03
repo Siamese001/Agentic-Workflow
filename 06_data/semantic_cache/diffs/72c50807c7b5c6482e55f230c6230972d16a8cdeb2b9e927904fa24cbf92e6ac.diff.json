@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "vendor/redis_stub/__init__.py",
+  "diff_content": "\"\"\"\nredis_stub \u2013 safe minimal Redis replacement for offline tests.\n\nThis stub:\n - does NOT shadow the real 'redis' client\n - is only active when vendor stubs are enabled\n - provides get / set / setex / delete used in v10.7 CacheManager\n\"\"\"\n\nfrom __future__ import annotations\nimport time\nfrom typing import Dict, Any, Optional\n\n\nclass RedisStubStore:\n    \"\"\"In-memory key-value store with optional TTL support.\"\"\"\n\n    def __init__(self):\n        self._store: Dict[str, Any] = {}\n        self._expiry: Dict[str, float] = {}\n\n    def cleanup(self):\n        \"\"\"Remove expired keys.\"\"\"\n        now = time.time()\n        to_delete = [k for k, exp in self._expiry.items() if exp <= now]\n        for k in to_delete:\n            self._store.pop(k, None)\n            self._expiry.pop(k, None)\n\n    def get(self, key: str) -> Optional[str]:\n        self.cleanup()\n        return self._store.get(key)\n\n    def set(self, key: str, value: str) -> None:\n        self._store[key] = value\n\n    def setex(self, key: str, ttl: int, value: str) -> None:\n        self._store[key] = value\n        self._expiry[key] = time.time() + ttl\n\n    def delete(self, key: str):\n        self._store.pop(key, None)\n        self._expiry.pop(key, None)\n\n\nclass Redis:\n    \"\"\"\n    Minimal Redis stub for offline use.\n    Supports only what CacheManager needs:\n      - get\n      - set\n      - setex\n      - delete\n    \"\"\"\n\n    def __init__(self, *args, **kwargs):\n        self._store = RedisStubStore()\n\n    def get(self, key: str):\n        return self._store.get(key)\n\n    def set(self, key: str, value: str):\n        self._store.set(key, value)\n\n    def setex(self, key: str, ttl: int, value: str):\n        self._store.setex(key, ttl, value)\n\n    def delete(self, key: str):\n        self._store.delete(key)\n\n\n__all__ = [\"Redis\"]\n",
+  "statistics": {
+    "lines_added": 72,
+    "lines_removed": 0,
+    "lines_changed": 72
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

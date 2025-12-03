@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "54f65347db9c6e580618135d24d4fbdf4ac7d739ea9162449260f53a4f9521fd",
+  "content_hash": "5209e4ff3a66498d3dbf15b91534c8a67b7394edb07775e5578779f5e9e9c3ec",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "tests\\L3_orchestration\\integration\\test_l3_integration.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\integration\\test_l3_integration.py",
+    "file_size": 373,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "54f65347db9c6e580618135d24d4fbdf4ac7d739ea9162449260f53a4f9521fd",
+    "scan_timestamp": "2025-12-03T06:21:11.317308"
+  },
+  "content_preview": "\"\"\"L3 Orchestration Layer Integration Tests.\"\"\"\n\nclass TestL3OrchestrationIntegration:\n    \"\"\"Integration tests for L3 orchestration layer.\"\"\"\n    \n    def test_dag_execution_flow(self):\n        \"\"\"Test DAG execution flow.\"\"\"\n        assert True\n    \n    def test_multi_agent_coordination(self):\n        \"\"\"Test multi-agent coordination.\"\"\"\n        assert True\n",
+  "creation_timestamp": "2025-12-03T06:21:16.864552",
+  "version": "1.0"
+}

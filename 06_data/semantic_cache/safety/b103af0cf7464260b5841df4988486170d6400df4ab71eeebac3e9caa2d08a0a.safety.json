@@ -1,0 +1,18 @@
+{
+  "safety_score": 80,
+  "risk_level": "medium",
+  "checks": {
+    "has_executable_code": true,
+    "has_file_operations": true,
+    "has_network_operations": false,
+    "has_system_operations": true,
+    "has_sensitive_patterns": false,
+    "file_size_risk": false,
+    "line_count": 106,
+    "complexity_score": 88.49
+  },
+  "recommendations": [
+    "Review system operations for security implications"
+  ],
+  "scan_timestamp": "2025-12-03T06:21:24.206294"
+}

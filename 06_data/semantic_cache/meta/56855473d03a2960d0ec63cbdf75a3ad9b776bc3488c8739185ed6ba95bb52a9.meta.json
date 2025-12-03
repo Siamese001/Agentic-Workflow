@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v2",
+    "archive_name": "v2",
+    "relative_path": "rules.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v2\\rules.py",
+    "file_size": 41535,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9",
+    "scan_timestamp": "2025-12-03T06:21:11.478045"
+  },
+  "artifacts": {
+    "ast": "ast/56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9.ast",
+    "embedding": "embeddings/56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9.embedding",
+    "diff": "diffs/56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9.diff.json",
+    "safety": "safety/56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9.safety.json",
+    "golden": "golden/56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9.golden.json",
+    "integrity": "integrity/56855473d03a2960d0ec63cbdf75a3ad9b776bc3488c8739185ed6ba95bb52a9.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:29.410582",
+  "artifact_count": 6
+}

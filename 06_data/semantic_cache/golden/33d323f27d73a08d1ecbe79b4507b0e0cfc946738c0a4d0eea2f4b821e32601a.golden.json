@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "33d323f27d73a08d1ecbe79b4507b0e0cfc946738c0a4d0eea2f4b821e32601a",
+  "content_hash": "f2b1a7e62c99afdcf749e6bee8246aa3424ffa6e8ff8afefac130e04be90a638",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "root_docs\\README.md",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\README.md",
+    "file_size": 2790,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "33d323f27d73a08d1ecbe79b4507b0e0cfc946738c0a4d0eea2f4b821e32601a",
+    "scan_timestamp": "2025-12-03T06:21:11.289376"
+  },
+  "content_preview": "# Root Documentation - Agentic Workflow 10_10\n\nThis directory contains all project-wide documentation as required by the canonical structure defined in **FOLDER_MAP.md**.\n\n## \ud83d\udcc1 Documentation Structure\n\n### **`architecture/`**\nCore architecture and design documentation\n\n- `FOLDER_STRUCTURE_GUIDE.md` - Complete guide to folder structure and functional organization\n\n### **`integration/`**\nExternal system integration documentation\n\n- `NEO4J_INTEGRATION_README.md` - Neo4j graph database integration g...",
+  "creation_timestamp": "2025-12-03T06:21:15.976680",
+  "version": "1.0"
+}

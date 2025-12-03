@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "eval/golden_state/evaluator.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import Any\n\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\n\n\ndef evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> GoldenOutput:\n    \"\"\"Compares expected keypoints to what the system produced so tests can see whether resumes captured the most important ideas or missed critical content.\"\"\"\n\n    produced_set = {k.strip().lower() for k in output.produced_keypoints}\n    correctness_map: dict[str, bool] = {}\n\n    for key in case.expected_keypoints:\n        norm = key.strip().lower()\n        correctness_map[key] = norm in produced_set\n\n    total = max(len(case.expected_keypoints), 1)\n    satisfied = sum(1 for ok in correctness_map.values() if ok)\n    ratio = satisfied / float(total)\n\n    if ratio >= 0.9:\n        verdict: Any = \"pass\"\n    elif ratio >= 0.5:\n        verdict = \"borderline\"\n    else:\n        verdict = \"fail\"\n\n    output.correctness_map = correctness_map\n    output.final_verdict = verdict  # type: ignore[assignment]\n    return output\n\n\n\n",
+  "statistics": {
+    "lines_added": 34,
+    "lines_removed": 0,
+    "lines_changed": 34
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

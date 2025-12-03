@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/shared/baselines/baseline_outputs_previous.json",
+  "diff_content": "{\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\"],\n    \"version\": \"legacy\"\n  },\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\"],\n    \"version\": \"legacy\"\n  }\n}\n",
+  "statistics": {
+    "lines_added": 10,
+    "lines_removed": 0,
+    "lines_changed": 10
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

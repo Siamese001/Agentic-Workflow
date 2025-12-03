@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "runtime/observability/agentic_collectors.py",
+  "diff_content": "from __future__ import annotations\n\nfrom typing import List, Any\n\n\nEVENTS: List[Any] = []\n\n\ndef append_event(event: Any) -> None:\n    \"\"\"Append a raw event object to the in-memory agentic event buffer.\"\"\"\n\n    EVENTS.append(event)\n\n\ndef get_events() -> List[Any]:\n    \"\"\"Return a snapshot of all collected agentic events.\"\"\"\n\n    return list(EVENTS)\n\n\ndef clear_events() -> None:\n    \"\"\"Clear all collected agentic events.\"\"\"\n\n    EVENTS.clear()\n\n\n\n",
+  "statistics": {
+    "lines_added": 27,
+    "lines_removed": 0,
+    "lines_changed": 27
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

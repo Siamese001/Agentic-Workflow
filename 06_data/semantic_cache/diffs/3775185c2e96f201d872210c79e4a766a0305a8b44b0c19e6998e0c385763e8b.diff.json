@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_8/simulations/test_draft_sim.py",
+  "diff_content": "\"\"\"Tests for draft simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.draft_sim import DraftSimulator\nfrom simulations.models import DraftSimRequest\n\n\n@pytest.mark.asyncio\nasync def test_draft_simulator_returns_result():\n    simulator = DraftSimulator()\n    request = DraftSimRequest(\n        simulation_id=\"sim-draft\",\n        payload={},\n        draft_sections={\"intro\": \"text\", \"body\": \"details\"},\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <= result.metrics[\"entropy\"] <= 1.0\n    assert 0.0 <= result.metrics[\"cohesion\"] <= 1.0\n    assert 0.0 <= result.metrics[\"rhythm_score\"] <= 1.0\n    assert \"section_preview\" in result.details\n\n\ndef test_draft_request_validation():\n    request = DraftSimRequest(\n        simulation_id=\"sim-draft-validate\",\n        payload={},\n        draft_sections={\"summary\": \"value\"},\n    )\n    assert \"summary\" in request.draft_sections\n",
+  "statistics": {
+    "lines_added": 31,
+    "lines_removed": 0,
+    "lines_changed": 31
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

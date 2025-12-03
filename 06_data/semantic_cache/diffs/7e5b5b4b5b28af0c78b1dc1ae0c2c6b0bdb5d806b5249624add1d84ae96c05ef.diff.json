@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/control_plane/routing.py",
+  "diff_content": "\"\"\"\nControl plane routing for r\u00e9sum\u00e9 processing safety policy selection.\n\nProvides deterministic rule resolution for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import List\n\nfrom .models import PolicyRule, SafetyContext\n\n\ndef default_rules_for(agent_id: str | None, task_type: str | None) -> List[PolicyRule]:\n    \"\"\"\n    Returns default safety rules for r\u00e9sum\u00e9 processing agent and task combinations.\n\n    Ensures appropriate policy enforcement for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    rules: List[PolicyRule] = []\n\n    aid = (agent_id or \"\").lower()\n    task = (task_type or \"\").lower()\n\n    # Basic PII rule for any text-generation task.\n    rules.append(\n        PolicyRule(\n            id=\"pii_email_basic\",\n            description=\"Flag potential email addresses as PII.\",\n            category=\"pii\",\n            severity=\"medium\",\n            pattern=r\"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\",\n            is_pii_rule=True,\n        )\n    )\n\n    # Heavier rule set for safety agents.\n    if \"safety\" in aid or task in {\"safety_check\", \"safety\"}:\n        rules.append(\n            PolicyRule(\n                id=\"violence_keywords\",\n                description=\"Flag obvious violence keywords.\",\n                category=\"violence\",\n                severity=\"high\",\n                pattern=r\"kill|murder|suicide|self[- ]harm\",\n            )\n        )\n\n    # High-risk tool usage (generic flag, does not depend on provider impls).\n    rules.append(\n        PolicyRule(\n            id=\"high_risk_tool_write_file\",\n            description=\"Flag use of high-risk write_file tools.\",\n            category=\"tools_high_risk\",\n            severity=\"medium\",\n            tool_name=\"write_file\",\n        )\n    )\n\n    return rules\n\n\ndef resolve_rules_for_context(ctx: SafetyContext) -> List[PolicyRule]:\n    \"\"\"\n    Resolves safety rules for r\u00e9sum\u00e9 processing context.\n\n    Provides appropriate policy selection for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n\n    return default_rules_for(ctx.agent_id, ctx.task_type)\n\n\n\n",
+  "statistics": {
+    "lines_added": 72,
+    "lines_removed": 0,
+    "lines_changed": 72
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "591bba274dcc9e945498e21b8b72bc062818ec0c01748efa606bb4afb40900d5",
+  "content_hash": "16e1b91054b9898a47b8a6f10da5eb8fcd4f1b93cb444d92236eb6f38a647b7c",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "meta\\self_correction.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\self_correction.py",
+    "file_size": 12347,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "591bba274dcc9e945498e21b8b72bc062818ec0c01748efa606bb4afb40900d5",
+    "scan_timestamp": "2025-12-03T06:21:11.274478"
+  },
+  "content_preview": "\"\"\"Self-Correction - Meta Layer\n\nThis module provides self-correction surface evaluation.\n\nLayer: Meta\nResponsibilities:\n- Evaluate L2 results for quality issues\n- Detect correction opportunities\n- Emit CorrectionSignal objects\n- Deterministic, side-effect-free analysis\n\nNon-responsibilities:\n- LLM calls\n- Tool execution\n- State mutation\n- Correction application (L3 decides)\n\"\"\"\n\n# FILE: self_correction.py\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import ...",
+  "creation_timestamp": "2025-12-03T06:21:15.284488",
+  "version": "1.0"
+}

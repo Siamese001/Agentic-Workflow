@@ -1,0 +1,25 @@
+{
+  "meta_type": "artifact_manifest",
+  "file_hash": "ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "hop_0_rag_v1_1.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\hop_0_rag_v1_1.py",
+    "file_size": 31987,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3",
+    "scan_timestamp": "2025-12-03T06:21:11.465655"
+  },
+  "artifacts": {
+    "ast": "ast/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.ast",
+    "embedding": "embeddings/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.embedding",
+    "diff": "diffs/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.diff.json",
+    "safety": "safety/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.safety.json",
+    "golden": "golden/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.golden.json",
+    "integrity": "integrity/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.integrity.json"
+  },
+  "generation_timestamp": "2025-12-03T06:21:25.960144",
+  "artifact_count": 6
+}

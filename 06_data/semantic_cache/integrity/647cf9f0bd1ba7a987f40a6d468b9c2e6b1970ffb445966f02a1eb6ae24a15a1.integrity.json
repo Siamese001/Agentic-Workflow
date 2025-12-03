@@ -1,0 +1,22 @@
+{
+  "integrity_type": "content_verification",
+  "file_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
+  "content_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
+  "file_size": 14603,
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\v6.0",
+    "archive_name": "v6.0",
+    "relative_path": "master_resume.json",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\v6.0\\master_resume.json",
+    "file_size": 14603,
+    "file_extension": ".json",
+    "is_eligible": true,
+    "sha256_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
+    "scan_timestamp": "2025-12-03T06:21:11.484125"
+  },
+  "verification_timestamp": "2025-12-03T06:21:29.907841",
+  "checksums": {
+    "sha256": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
+    "md5": "f70bef500296ad772d68192faf48edd9"
+  }
+}

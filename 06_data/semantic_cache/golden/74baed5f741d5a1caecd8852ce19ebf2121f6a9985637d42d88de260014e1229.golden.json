@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
+  "content_hash": "91415ed925b6673042ae22bd22b9021c7561b1dac40d093be438dd54aff2b2df",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "eval\\golden_state\\models.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\models.py",
+    "file_size": 1471,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
+    "scan_timestamp": "2025-12-03T06:21:11.231562"
+  },
+  "content_preview": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Literal\n\nfrom pydantic import BaseModel\n\n\n@dataclass\nclass GoldenStateTestCase:\n    \"\"\"Single golden-state test case.\n\n    `expected_behavior` is a free-form description used by judges.\n    `metadata` can hold scenario tags, severity, etc.\n    \"\"\"\n\n    id: str\n    input_text: str\n    expected_behavior: str\n    metadata: Dict[str, Any] = field(default_factory=dict)\n\n\n@dataclass\nclass J...",
+  "creation_timestamp": "2025-12-03T06:21:12.574323",
+  "version": "1.0"
+}

@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "86acec4f0336c62da29001c4fefd2ce7d54dd4c9daecfc963e45687dd71cdc28",
+  "content_hash": "e1f0801d96471ce6dac68b8f961d93b41c66c01d30ecdd1b81455db70a29c0fd",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "meta\\retrieval\\retrievers\\dense.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\retrieval\\retrievers\\dense.py",
+    "file_size": 73,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "86acec4f0336c62da29001c4fefd2ce7d54dd4c9daecfc963e45687dd71cdc28",
+    "scan_timestamp": "2025-12-03T06:21:11.273146"
+  },
+  "content_preview": "# placeholder for dense retriever (implementation in later steps)\n\n\n\n",
+  "creation_timestamp": "2025-12-03T06:21:15.213167",
+  "version": "1.0"
+}

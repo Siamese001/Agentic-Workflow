@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "abd983336092f32c5770511b54832d1bfe15b790226e7be9b71f46ba836bd0c0",
+  "content_hash": "abd983336092f32c5770511b54832d1bfe15b790226e7be9b71f46ba836bd0c0",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main",
+    "archive_name": "Agentic-Workflow-10_7_main",
+    "relative_path": "vendor\\pydantic_stub\\__init__.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\vendor\\pydantic_stub\\__init__.py",
+    "file_size": 189,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "abd983336092f32c5770511b54832d1bfe15b790226e7be9b71f46ba836bd0c0",
+    "scan_timestamp": "2025-12-03T06:21:11.458835"
+  },
+  "content_preview": "\"\"\"Public entry points for the vendored Pydantic shim.\"\"\"\nfrom .main import BaseModel, ConfigDict, Field, ValidationError\n\n__all__ = [\"BaseModel\", \"ConfigDict\", \"Field\", \"ValidationError\"]\n",
+  "creation_timestamp": "2025-12-03T06:21:25.203045",
+  "version": "1.0"
+}

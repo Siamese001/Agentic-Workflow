@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_7_main",
+  "logical_path": "tests/v10_8/simulations/test_rag_sim.py",
+  "diff_content": "\"\"\"Tests for RAG simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.rag_sim import RAGSimulator\nfrom simulations.models import RAGSimRequest\n\n\n@pytest.mark.asyncio\nasync def test_rag_simulator_returns_result():\n    simulator = RAGSimulator()\n    request = RAGSimRequest(\n        simulation_id=\"sim-rag\",\n        payload={},\n        query=\"test\",\n        documents=[\"doc1\", \"doc2\", \"doc3\"],\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <= result.metrics[\"recall\"] <= 1.0\n    assert 0.0 <= result.metrics[\"precision\"] <= 1.0\n    assert 0.0 <= result.metrics[\"redundancy\"] <= 1.0\n    assert isinstance(result.details[\"top_documents\"], list)\n\n\ndef test_rag_request_validation():\n    request = RAGSimRequest(\n        simulation_id=\"sim-rag-validate\",\n        payload={},\n        query=\"hello\",\n        documents=[\"a\"],\n    )\n    assert request.query == \"hello\"\n    assert request.documents == [\"a\"]\n",
+  "statistics": {
+    "lines_added": 34,
+    "lines_removed": 0,
+    "lines_changed": 34
+  },
+  "has_changes": true,
+  "initial_generation": true
+}

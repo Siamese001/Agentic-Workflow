@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "e5907a8d7ed7f3fadb2d164e93aa4fffebbef954d16395812cc607df62716f84",
+  "content_hash": "3e8c574e4a35a96df60026de7c7f621644e427e0630b07997384c6fc754ac5e9",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "l3\\interfaces.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\interfaces.py",
+    "file_size": 5197,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "e5907a8d7ed7f3fadb2d164e93aa4fffebbef954d16395812cc607df62716f84",
+    "scan_timestamp": "2025-12-03T06:21:11.260867"
+  },
+  "content_preview": "\"\"\"\nL3 interfaces for resume workflow orchestration.\n\nDefines abstract interfaces for resume job alignment coordination.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom abc import ABC, abstractmethod\nfrom typing import Any, Dict, List, Optional, Sequence, Callable, Awaitable\nfrom dataclasses import dataclass\nfrom enum import Enum\n\nfrom core.models.models import (\n    WorkflowPlanBundle,\n    ExecutionContext,\n    L2ResultBundle,\n    WorkflowStatus,\n    NodeResult,\n    DAGNode,\n    DAGEdge,\n)\n\n\nclas...",
+  "creation_timestamp": "2025-12-03T06:21:14.146250",
+  "version": "1.0"
+}

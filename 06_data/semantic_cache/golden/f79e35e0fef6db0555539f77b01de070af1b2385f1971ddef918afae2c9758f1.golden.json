@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "f79e35e0fef6db0555539f77b01de070af1b2385f1971ddef918afae2c9758f1",
+  "content_hash": "5c30342fdb7e7aa659156df9ce00e995d363e573a8b4a0546d6eb3da0607bcee",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
+    "archive_name": "Agentic-Workflow-10_11",
+    "relative_path": "infra\\model_routing\\cache.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\model_routing\\cache.py",
+    "file_size": 1233,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "f79e35e0fef6db0555539f77b01de070af1b2385f1971ddef918afae2c9758f1",
+    "scan_timestamp": "2025-12-03T06:21:11.240658"
+  },
+  "content_preview": "\"\"\"\nModel routing cache for r\u00e9sum\u00e9 processing workflows.\n\nProvides efficient model choice caching to optimize r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom typing import Dict, Tuple\n\nfrom .models import ModelChoice, RoutingContext\n\n\n_CACHE: Dict[Tuple[str, str, str], ModelChoice] = {}\n\n\ndef _key(ctx: RoutingContext) -> Tuple[str, str, str]:\n    \"\"\"\n    Generates cache key for r\u00e9sum\u00e9 processing model routing.\n\n    Ensures consistent cache indexing for optimal r\u00e9sum\u00e9 improvement performance.\n    \"\"\"\n ...",
+  "creation_timestamp": "2025-12-03T06:21:12.816251",
+  "version": "1.0"
+}

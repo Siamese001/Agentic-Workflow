@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+  "content_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+  "file_info": {
+    "archive_root": "C:\\Git\\Resume Engine Archive\\Microservices Model",
+    "archive_name": "Microservices Model",
+    "relative_path": "02_hop_enrichment.py",
+    "absolute_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\02_hop_enrichment.py",
+    "file_size": 7369,
+    "file_extension": ".py",
+    "is_eligible": true,
+    "sha256_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+    "scan_timestamp": "2025-12-03T06:21:11.462227"
+  },
+  "content_preview": "# hops/hop_2_enrichment.py\n\"\"\"\nHop 2: Data Enrichment.\nReads extracted clerk data and thematic analysis, enriches with canonical verbs\nand duplicate detection, writes enriched scaffold as JSON.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Tuple, List\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root)...",
+  "creation_timestamp": "2025-12-03T06:21:25.523282",
+  "version": "1.0"
+}

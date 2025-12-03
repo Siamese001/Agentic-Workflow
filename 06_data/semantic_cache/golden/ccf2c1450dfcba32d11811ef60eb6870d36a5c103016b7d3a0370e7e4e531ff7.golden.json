@@ -1,0 +1,19 @@
+{
+  "golden_type": "source_canonical",
+  "file_hash": "ccf2c1450dfcba32d11811ef60eb6870d36a5c103016b7d3a0370e7e4e531ff7",
+  "content_hash": "ccf2c1450dfcba32d11811ef60eb6870d36a5c103016b7d3a0370e7e4e531ff7",
+  "file_info": {
+    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
+    "archive_name": "Old LIC",
+    "relative_path": "LinkedInCanonical_2025-09-06 v2.8.md",
+    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-06 v2.8.md",
+    "file_size": 49931,
+    "file_extension": ".md",
+    "is_eligible": true,
+    "sha256_hash": "ccf2c1450dfcba32d11811ef60eb6870d36a5c103016b7d3a0370e7e4e531ff7",
+    "scan_timestamp": "2025-12-03T06:21:11.639766"
+  },
+  "content_preview": "\n# LinkedInCanonical \u2014 2025-09-06 v2.8 (ND Patch: AI Filter v4 Update)\nGenerated: 2025-09-06T22:47:02.136300\nSource SHA256 (v2.7): 25023ee73b834137016dba40942f0982e7dc95b416fd4269005eb5d370c11878\n\n\n# LinkedInCanonical \u2014 2025-09-06 v2.7 (DESTRUCTIVE OVERWRITE derived from v2.6 + Harsh Grader ND Patch)\nGenerated: 2025-09-06T22:40:58.412468\nSource SHA256 (v2.6): 06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c\n\n# LinkedInCanonical \u2014 2025-09-06 v2.6 (Content Hardening ND Patch applie...",
+  "creation_timestamp": "2025-12-03T06:21:41.879790",
+  "version": "1.0"
+}

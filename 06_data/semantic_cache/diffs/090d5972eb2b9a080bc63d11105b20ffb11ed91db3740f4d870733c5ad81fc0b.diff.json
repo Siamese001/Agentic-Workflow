@@ -1,0 +1,14 @@
+{
+  "diff_type": "initial_diff",
+  "baseline_version": null,
+  "current_version": "Agentic-Workflow-10_11",
+  "logical_path": "infra/dag/dag_executor.py",
+  "diff_content": "\"\"\"\nDAG executor for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides async execution engine for comprehensive r\u00e9sum\u00e9 enhancement directed acyclic graphs.\n\"\"\"\n\nfrom typing import Any, Dict, Iterable, Optional, Set, List\n\nfrom .dag_models import Graph\n\n\nclass DAGExecutor:\n    \"\"\"\n    Executes directed acyclic graphs for r\u00e9sum\u00e9 processing workflows.\n\n    Orchestrates node execution with proper dependency resolution for r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n    def __init__(self, graph: Graph) -> None:\n        self._graph = graph\n\n    async def run(\n        self,\n        start_nodes: Optional[Iterable[str]] = None,\n        ctx: Optional[Dict[str, Any]] = None,\n    ) -> Dict[str, Any]:\n        \"\"\"\n        Executes r\u00e9sum\u00e9 processing DAG with proper dependency resolution.\n\n        Ensures comprehensive workflow orchestration for r\u00e9sum\u00e9 improvement operations.\n        \"\"\"\n        if ctx is None:\n            ctx = {}\n\n        if start_nodes is None:\n            remaining: Set[str] = set(self._graph.nodes.keys())\n        else:\n            remaining = set(start_nodes)\n\n        completed: Set[str] = set()\n\n        while remaining:\n            ready: List[str] = []\n            for node_id in list(remaining):\n                preds = {e.source for e in self._graph.edges if e.target == node_id}\n                if preds.issubset(completed):\n                    ready.append(node_id)\n\n            if not ready:\n                raise RuntimeError(\"DAGExecutor detected a cycle or unresolved dependency\")\n\n            for node_id in ready:\n                node = self._graph.nodes[node_id]\n                ctx = await node.fn(ctx)\n                completed.add(node_id)\n                remaining.remove(node_id)\n\n        return ctx\n\n\n\n",
+  "statistics": {
+    "lines_added": 60,
+    "lines_removed": 0,
+    "lines_changed": 60
+  },
+  "has_changes": true,
+  "initial_generation": true
+}
