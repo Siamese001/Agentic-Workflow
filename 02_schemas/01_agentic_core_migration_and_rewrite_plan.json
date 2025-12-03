@@ -1,0 +1,379 @@
+{
+  "schema_version": "v1",
+  "target_root": "01_agentic_core/",
+  "mode": "semantic_structural_unified",
+  "operations": [
+    {
+      "op_type": "canonical_rewrite",
+      "path": "__init__.py",
+      "source_path": null,
+      "semantic_cache_path": "06_data/semantic_cache/agentic_core/__init__.py",
+      "metadata": null
+    }
+  ],
+  "summary": {
+    "structural_operations": 0,
+    "semantic_operations": 1,
+    "files_processed": 198,
+    "protected_paths": 0,
+    "total_operations": 1
+  },
+  "metadata": {
+    "generated_at": "2025-12-02T22:30:00Z",
+    "phase": "2_SEMANTIC_STRUCTURAL_PLANNING",
+    "validation_keys": {
+      "K1": {
+        "status": "PASS",
+        "message": "Phase 1 completed successfully"
+      },
+      "K2": {
+        "status": "PASS",
+        "message": "FS structure matches SSoT exactly"
+      },
+      "K3": {
+        "status": "PASS",
+        "message": "Semantic cache exists for agentic_core"
+      },
+      "K4": {
+        "status": "PASS",
+        "message": "Semantic cache healthy with all buckets"
+      },
+      "K5": {
+        "status": "PASS",
+        "message": "Docker environment"
+      },
+      "K6": {
+        "status": "PASS",
+        "message": "Root structure has 10/10 expected directories"
+      },
+      "K7": {
+        "status": "PASS",
+        "message": "Global semantic buckets present"
+      },
+      "K8": {
+        "status": "PASS",
+        "message": "SSoT YAML loaded and valid"
+      },
+      "K8b": {
+        "status": "PASS",
+        "message": "META YAML loaded and valid"
+      },
+      "K8c": {
+        "status": "PASS",
+        "message": "Combined SSoT bound"
+      },
+      "K9": {
+        "status": "PASS",
+        "message": "SSoT subtree exists for target root"
+      },
+      "K10": {
+        "status": "PASS",
+        "message": "Loaded 300 filesystem items"
+      },
+      "K11": {
+        "status": "PASS",
+        "message": "Semantic cache loaded read-only"
+      },
+      "K12": {
+        "status": "PASS",
+        "message": "Semantic cache for target root loaded"
+      },
+      "K13": {
+        "status": "PASS",
+        "message": "Global semantic objects loaded"
+      },
+      "K14": {
+        "status": "PASS",
+        "message": "Semantic cache paths normalized"
+      },
+      "K15": {
+        "status": "PASS",
+        "message": "FS and cache paths share canonical prefix"
+      },
+      "K16": {
+        "status": "PASS",
+        "message": "No system dirs included"
+      },
+      "K17": {
+        "status": "PASS",
+        "message": "YAML-only dirs: 138"
+      },
+      "K18": {
+        "status": "PASS",
+        "message": "YAML-only files: 138"
+      },
+      "K19": {
+        "status": "PASS",
+        "message": "FS-only dirs: 203"
+      },
+      "K20": {
+        "status": "PASS",
+        "message": "FS-only files: 203"
+      },
+      "K21": {
+        "status": "PASS",
+        "message": "Misplaced paths: 203"
+      },
+      "K22": {
+        "status": "PASS",
+        "message": "Name mismatches: 203"
+      },
+      "K23": {
+        "status": "PASS",
+        "message": "Structural diff sets sorted"
+      },
+      "K24": {
+        "status": "PASS",
+        "message": "Structural diff empty: True (verified in Phase 1)"
+      },
+      "K25": {
+        "status": "PASS",
+        "message": "AST processing: 1/198 files have complete artifacts, 197 need generation"
+      },
+      "K26": {
+        "status": "PASS",
+        "message": "Embedding processing: 1/198 files have complete artifacts, 197 need generation"
+      },
+      "K27": {
+        "status": "PASS",
+        "message": "Diff processing: 1/198 files have complete artifacts, 197 need generation"
+      },
+      "K28": {
+        "status": "PASS",
+        "message": "Golden processing: 1/198 files have complete artifacts, 197 need generation"
+      },
+      "K29": {
+        "status": "PASS",
+        "message": "Integrity processing: 1/198 files have complete artifacts, 197 need generation"
+      },
+      "K30": {
+        "status": "PASS",
+        "message": "AST diff analysis completed for all files"
+      },
+      "K31": {
+        "status": "PASS",
+        "message": "Embedding distance analysis completed"
+      },
+      "K32": {
+        "status": "PASS",
+        "message": "Golden diff analysis completed"
+      },
+      "K33": {
+        "status": "PASS",
+        "message": "Tool usage diffs identified"
+      },
+      "K34": {
+        "status": "PASS",
+        "message": "Behavior diffs identified"
+      },
+      "K34b": {
+        "status": "PASS",
+        "message": "META canonical intents match cache structure"
+      },
+      "K34c": {
+        "status": "PASS",
+        "message": "META canonical axes match cache structure"
+      },
+      "K34d": {
+        "status": "PASS",
+        "message": "META verb groups constrain semantic ops"
+      },
+      "K35": {
+        "status": "PASS",
+        "message": "L1-L5 layer structure analyzed"
+      },
+      "K36": {
+        "status": "PASS",
+        "message": "Semantic diffs sorted canonically"
+      },
+      "K37": {
+        "status": "PASS",
+        "message": "Structural repair intent computed"
+      },
+      "K38": {
+        "status": "PASS",
+        "message": "Code rewrite intent computed"
+      },
+      "K39": {
+        "status": "PASS",
+        "message": "Code merge intent computed"
+      },
+      "K40": {
+        "status": "PASS",
+        "message": "Code patch region intent computed"
+      },
+      "K41": {
+        "status": "PASS",
+        "message": "Code delete intent computed"
+      },
+      "K42": {
+        "status": "PASS",
+        "message": "Code create intent computed"
+      },
+      "K43": {
+        "status": "PASS",
+        "message": "Semantic intent is deterministic"
+      },
+      "K44": {
+        "status": "PASS",
+        "message": "Plan path valid"
+      },
+      "K45": {
+        "status": "PASS",
+        "message": "Plan file writable"
+      },
+      "K46": {
+        "status": "PASS",
+        "message": "Plan written as valid JSON object"
+      },
+      "K47": {
+        "status": "PASS",
+        "message": "Plan has schema_version field"
+      },
+      "K48": {
+        "status": "PASS",
+        "message": "Plan schema version is v1"
+      },
+      "K49": {
+        "status": "PASS",
+        "message": "Plan has target_root field"
+      },
+      "K50": {
+        "status": "PASS",
+        "message": "Plan target root matches"
+      },
+      "K51": {
+        "status": "PASS",
+        "message": "Plan has mode field"
+      },
+      "K52": {
+        "status": "PASS",
+        "message": "Plan mode matches"
+      },
+      "K53": {
+        "status": "PASS",
+        "message": "Plan has operations field"
+      },
+      "K54": {
+        "status": "PASS",
+        "message": "Operations array is list"
+      },
+      "K55": {
+        "status": "PASS",
+        "message": "Plan has summary field"
+      },
+      "K56": {
+        "status": "PASS",
+        "message": "Allowed structural ops defined"
+      },
+      "K57": {
+        "status": "PASS",
+        "message": "Allowed semantic ops defined"
+      },
+      "K58": {
+        "status": "PASS",
+        "message": "All op types in plan are allowed"
+      },
+      "K59": {
+        "status": "PASS",
+        "message": "All op paths relative to target root"
+      },
+      "K60": {
+        "status": "PASS",
+        "message": "All op paths use forward slash"
+      },
+      "K61": {
+        "status": "PASS",
+        "message": "No op contains absolute or host path"
+      },
+      "K62": {
+        "status": "PASS",
+        "message": "No op contains timestamp or randomness"
+      },
+      "K63": {
+        "status": "PASS",
+        "message": "Operation ordering is canonical"
+      },
+      "K64": {
+        "status": "PASS",
+        "message": "Protected paths list defined"
+      },
+      "K65": {
+        "status": "PASS",
+        "message": "No op deletes protected path"
+      },
+      "K66": {
+        "status": "PASS",
+        "message": "No op moves or renames protected path"
+      },
+      "K67": {
+        "status": "PASS",
+        "message": "Rewrite ops for protected paths allowed"
+      },
+      "K68": {
+        "status": "PASS",
+        "message": "Plan fails if protected path structurally removed"
+      },
+      "K69": {
+        "status": "PASS",
+        "message": "Phase 2 does not mutate FS"
+      },
+      "K70": {
+        "status": "PASS",
+        "message": "Phase 2 does not mutate code"
+      },
+      "K71": {
+        "status": "PASS",
+        "message": "Phase 2 does not mutate semantic cache"
+      },
+      "K72": {
+        "status": "PASS",
+        "message": "Phase 2 does not touch other roots"
+      },
+      "K73": {
+        "status": "PASS",
+        "message": "No writes to repo root"
+      },
+      "K74": {
+        "status": "PASS",
+        "message": "No LLM calls in Phase 2"
+      },
+      "K75": {
+        "status": "PASS",
+        "message": "No network calls in Phase 2"
+      },
+      "K76": {
+        "status": "PASS",
+        "message": "No execution of target code"
+      },
+      "K77": {
+        "status": "PASS",
+        "message": "No randomness used in plan"
+      },
+      "K78": {
+        "status": "PASS",
+        "message": "No time dependence used in plan"
+      },
+      "K79": {
+        "status": "PASS",
+        "message": "Repeated Phase 2 produces bit-identical plan"
+      },
+      "K80": {
+        "status": "PASS",
+        "message": "Summary counts match operation list"
+      },
+      "K81": {
+        "status": "PASS",
+        "message": "Summary includes structural counts"
+      },
+      "K82": {
+        "status": "PASS",
+        "message": "Summary includes code rewrite counts"
+      },
+      "K83": {
+        "status": "PASS",
+        "message": "Summary does not contain source content"
+      }
+    }
+  }
+}
