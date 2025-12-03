@@ -329,8 +329,14 @@ class SSoTLoader:
         # This is a simplified conversion - full implementation would
         # use the SSoT grammar to generate proper L1_cognition/P1_retrieve paths
         
-        # Remove file extension for processing
-        path_without_ext = archive_path.rsplit('.', 1)[0]
+        # Extract original file extension
+        if '.' in archive_path:
+            path_parts = archive_path.rsplit('.', 1)
+            path_without_ext = path_parts[0]
+            original_ext = '.' + path_parts[1]
+        else:
+            path_without_ext = archive_path
+            original_ext = ''
         
         # Convert common patterns
         path_without_ext = path_without_ext.replace("plan-layer/", "L1_cognition/P1_retrieve/")
@@ -345,7 +351,7 @@ class SSoTLoader:
                 part = part[:-3]  # Remove .py
             converted_parts.append(part)
         
-        return '/'.join(converted_parts) + '.py'
+        return '/'.join(converted_parts) + original_ext
     
     def get_validation_summary(self) -> Dict[str, Any]:
         """Get validation summary with all K-keys"""
