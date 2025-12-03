@@ -39,13 +39,16 @@ UNIFIED_META_YAML = PROJECT_ROOT / "unified_structure_subatomic_meta.yaml"
 
 @dataclass
 class ValidationResult:
-    """Validation result for a single K-key"""
+    """
+    Single validation result entry used by both the core K-keys and the
+    extreme (A–G) criteria. The `section` field is optional and is used
+    only by the extreme validation engine to group keys by section.
+    """
     key: str
-    status: str  # "PASS" or "FAIL"
+    status: str
     message: str
-    details: Optional[Dict] = None
-    timestamp: str = ""
-    section: str = "K"
+    details: Optional[dict] = None
+    section: Optional[str] = None
 
 @dataclass
 class FilesystemMonitor:
@@ -111,16 +114,25 @@ class ValidationEngine:
         self.artifact_generator = artifact_generator
         self.dual_write_coordinator = dual_write_coordinator
     
-    def _add_validation_result(self, key: str, status: str, message: str, 
-                              details: Optional[Dict] = None, section: str = "K"):
-        """Add a validation result and print status as required"""
+    def _add_validation_result(
+        self,
+        key: str,
+        status: str,
+        message: str,
+        details: Optional[dict] = None,
+        section: Optional[str] = None,
+    ):
+        """
+        Helper to append a validation result.
+        `section` is optional and is used by extreme_validation.py
+        to group keys (e.g., A/B/C/D/E/F/G).
+        """
         result = ValidationResult(
             key=key,
             status=status,
             message=message,
             details=details,
-            timestamp=datetime.now().isoformat(),
-            section=section
+            section=section,
         )
         self.validation_results.append(result)
         
