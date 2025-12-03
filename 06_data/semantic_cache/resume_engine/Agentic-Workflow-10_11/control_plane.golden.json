@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nControl plane orchestration for r\u00e9sum\u00e9 processing safety pipeline.\n\nCoordinates rule evaluation and safety decisions for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import Tuple\n\nfrom .decisions import JudgeVerdict, SafetyPipelineTrace, RulesEngineResult\nfrom .judge_engine import evaluate_with_guard_model\nfrom .models import PolicyDecision, SafetyContext\nfrom .routing import resolve_rules_for_context\nfrom .rules_engine import evaluate_rules\n\n\ndef run_safety_pipeline(\n    context: SafetyContext,\n    execution_profile: object | None = None,\n) -> Tuple[PolicyDecision, SafetyPipelineTrace]:\n    \"\"\"\n    Executes complete safety pipeline for r\u00e9sum\u00e9 processing workflows.\n\n    Ensures comprehensive safety validation for r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    # Step 1: resolve rules for this agent / task.\n    rules = resolve_rules_for_context(context)\n\n    # Step 2: deterministic rules engine.\n    rules_result: RulesEngineResult = evaluate_rules(context, rules)\n\n    # ",
-  "full_hash": "cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5",
-  "generated_at": 1764728224.1273797,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\control_plane.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"headline\": {\n    \"word_count_min\": 7,\n    \"word_count_max\": 12,\n    \"component_words_min\": 2,\n    \"component_words_max\": 4\n  },\n  \"executive_summary\": {\n    \"word_count_min\": 120,\n    \"word_count_max\": 150,\n    \"sentence_count_min\": 7,\n    \"sentence_count_max\": 9\n  },\n  \"bullets\": {\n    \"word_count_min\": 25,\n    \"word_count_max\": 40,\n    \"word_count_acceptable_min\": 21,\n    \"word_count_acceptable_max\": 44\n  },\n  \"competencies\": {\n    \"bullet_count_min\": 5,\n    \"bullet_count_max\": 7\n  },\n  \"skills\": {\n    \"count_min\": 8,\n    \"count_max\": 12,\n    \"word_count_min\": 1,\n    \"word_count_max\": 3\n  },\n  \"cover_letter\": {\n    \"p1_word_count_min\": 80,\n    \"p1_word_count_max\": 120,\n    \"p2_word_count_min\": 90,\n    \"p2_word_count_max\": 130,\n    \"p3_word_count_min\": 80,\n    \"p3_word_count_max\": 120,\n    \"jd_relevance_threshold\": 0.7\n  },\n  \"total_resume\": {\n    \"word_count_min\": 900,\n    \"word_count_max\": 1200\n  },\n  \"section_specific\": {\n    \"unify_overview\": {\n      \"word_count_min\": 25,\n   ",
-  "full_hash": "27e500ea97f54197f9f66764ad728af182f09e101dc7acaf229292618cbf2212",
-  "generated_at": 1764728326.9512553,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\constraints.json"
-}

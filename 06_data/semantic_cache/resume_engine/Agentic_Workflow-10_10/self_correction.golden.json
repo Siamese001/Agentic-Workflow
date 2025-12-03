@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: 10_10/self_correction.py\n\"\"\"\nSelf-Correction Surfaces (v10_10)\n=================================\n\nv10_10 refactor of the v10_9 self_correction module.\n\nThis version:\n\n    \u2022 NO longer operates on raw state dicts.\n    \u2022 NO longer uses SelfCorrectionSurface enums or SafetyIssue types.\n    \u2022 Operates directly on typed L2 results:\n        - StrategyResult\n        - RAGResult\n        - DraftingResult\n        - QAResult\n        - SafetyResult\n\n    \u2022 Provides:\n        - evaluate_all_surfaces(...) \u2192 list[CorrectionSignal]\n        - aggregate_correction_signals(...) \u2192 best CorrectionSignal | None\n\nResponsibilities:\n    \u2022 Detect when a re-run of part of the pipeline would likely improve quality.\n    \u2022 NEVER call LLMs or tools.\n    \u2022 NEVER mutate WorkflowState.\n    \u2022 Provide deterministic, side-effect-free advice to the L3 workflow graph.\n\nThis module is purely META-layer logic:\n\n    - It analyzes L2 outputs (StrategyResult, etc.).\n    - It emits structured CorrectionSignal objects.\n    - ",
-  "full_hash": "218a788f1fdd74f5d3e6b3e1866b133d1976077a2efc7fefafab6b7c33886f59",
-  "generated_at": 1764728228.476363,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\self_correction.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.46 - QA ENHANCEMENTS & TOKEN TRACKING\n\nv5.46 CHANGES - QA TABLE REQUIREMENTS & OUTPUT CONSOLIDATION:\n\u2713 REMOVED: Output 4 (Word Table) - consolidated into QA Report 1 final row\n\u2713 NEW: QA Provenance Category column (Verbatim/Synthesized/Transformed) - mandatory\n\u2713 NEW: QA Table 2 repurposed for Token Usage & Temperature Tracking\n\u2713 NEW: Enhanced Signal Compliance tracking by section (not just total)\n\u2713 NEW: Blocking validation - output rejected if QA tables incomplete\n\u2713 NEW: Gemini formatting fixes - no code fences, Word-compatible\n\u2713 Result: Complete QA audit trail, verified LLM usage, section-level quality gates\n\nAll v5.44 functionality maintained with enhanced quality controls.\n\nBUILD: October 19, 2025\n\"\"\"\n\nimport json\nimport re\nimport hashlib\nimport math\nimport os\nimport time\nimport requests\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nfrom dataclasses import dataclass, field, asdict\nfrom path",
-  "full_hash": "05a952782907178460c225892c239abd7dae1a27775e2a7ae4de118c61e4f454",
-  "generated_at": 1764728305.1143603,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_46.py"
-}

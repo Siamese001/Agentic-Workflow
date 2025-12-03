@@ -1,6 +1,0 @@
-{
-  "golden_content": "# CHANGELOG - v5.9 \u2192 v6.0\n\n## \ud83d\ude80 v6.0: \"Zero-Loss\" & Telemetry Patch\n**Release Date**: November 7, 2025\n\n---\n\n## Overview\n\nv6.0 transforms the v5.9 batch harness into a production-ready, observable system with comprehensive telemetry, cost controls, and fault tolerance. This release implements Spells #4, #5, #6, and #9 from the master patch plan.\n\n**Goal**: Harden the batch processing system to make it stable, observable, and safe for production use.\n\n---\n\n## \ud83d\udcc2 File Changes\n\n### New Files\n- `core_v6_0.py` - Enhanced with circuit breaker and cost config\n- `agent_swarm_v6_0.py` - Telemetry-integrated agent orchestration\n- `main_v6_0.py` - Updated workflow class (WorkflowV60)\n- `validation_stack_v6_0.py` - Version-bumped validation engine\n- `run_batch_v6_0.py` - Enhanced batch processor with alerting\n- `master_config_v6_0.json` - Extended config with new sections\n- `README_v6_0.md` - Comprehensive documentation\n- `CHANGELOG_v6_0.md` - This file\n\n### Modified Files (from v5.9)\nAll files rec",
-  "full_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
-  "generated_at": 1764728327.4807894,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\Change Log\\CHANGELOG_v6_0.md"
-}

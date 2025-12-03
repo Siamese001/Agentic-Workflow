@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c48da622b4fa6cb99f3858496e4db4af1037f2cf318692d086bbc75a3e4daf1a",
-    "scan_timestamp": "2025-12-03T07:26:03.730178"
+    "scan_timestamp": "2025-12-03T08:04:48.240911"
   },
   "content_preview": "\"\"\"Lightweight schema helpers used during tests.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass ResumeOutputSchema:\n    \"\"\"Minimal structure validator for resume payloads in tests.\"\"\"\n\n    candidate: str\n    job_title: str\n    summary: str\n    highlights: List[str] = field(default_factory=list)\n    skills: List[str] = field(default_factory=list)\n    sections: List[Dict[str, Any]] = field(default_factory=list)...",
-  "creation_timestamp": "2025-12-03T07:26:17.355703",
+  "creation_timestamp": "2025-12-03T08:05:04.532323",
   "version": "1.0"
 }

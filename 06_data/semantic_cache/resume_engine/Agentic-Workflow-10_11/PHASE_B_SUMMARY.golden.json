@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Phase B Completion Report\n\n## Objective\nRefactor all cognitive agents to be pure L1\u2192L2 shims following OpenAI agentic layering.\n\n## Changes Implemented\n\n### 1. Import Path Updates\n- **cognitive_agents.py**: Updated `import l1` \u2192 `import l1_planning`\n- **l2.py**: Updated `import l1` \u2192 `import l1_planning`\n- **core/__init__.py**: Updated documentation to reference `l1_planning`\n\n### 2. Agent Refactoring (cognitive_agents.py)\nAll agents now delegate to L1 (planning) and L2 (execution):\n\n#### StrategyLLMAgent\n- Removed: JSON parsing, branch construction, multi-step reasoning\n- Now: Delegates to `l2._execute_strategy()`\n\n#### DraftingGuild\n- Removed: JSON parsing, section construction, drafting logic\n- Now: Delegates to `l2._execute_drafting()`\n\n#### SemanticQAAgent\n- **run_qa()**: Delegates to `l2._execute_qa()`\n- **run_rag_reasoning()**: Delegates to `l1_planning.plan_rag_reasoning()` + LLM call only\n- Removed: QA finding parsing, reasoning orchestration\n\n#### ConstitutionalSafetyAgent\n",
-  "full_hash": "5a998e50df38622f19092c4eac97f305ae62172fa9b3656386b15ce05bbbb35e",
-  "generated_at": 1764728226.2411802,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\11-24-2025\\phase_b_atomic_agents\\PHASE_B_SUMMARY.md"
-}

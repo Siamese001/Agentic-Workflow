@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 8871,
-  "generated_at": 1764728233.1142862,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Monolith\\resume_workflow_v16_20.py"
-}

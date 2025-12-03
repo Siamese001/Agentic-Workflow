@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "535610470612fcfe538f3eda85d207cdc3a762412f792971111968a8cda84a66",
-    "scan_timestamp": "2025-12-03T07:26:03.653310"
+    "scan_timestamp": "2025-12-03T08:04:48.159859"
   },
   "content_preview": "from __future__ import annotations\n\nimport ast\nimport pathlib\n\n\nPROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]\n\n\nFORBIDDEN_TOP_LEVEL = {\"l1\", \"l2\", \"cognitive_agents\"}\nPROVIDERS_PACKAGE = \"providers\"\nFORBIDDEN_IMPORTERS_FOR_PROVIDERS = {\"core\", \"meta\", \"prompts\", \"profiles\"}\n\n\ndef _iter_project_py_files():\n    for path in PROJECT_ROOT.glob(\"*.py\"):\n        if path.name in {\"l1.py\", \"l2.py\", \"cognitive_agents.py\", \"import_check.py\"}:\n            continue\n        yield path\n    for pat...",
-  "creation_timestamp": "2025-12-03T07:26:10.303480",
+  "creation_timestamp": "2025-12-03T08:04:57.009270",
   "version": "1.0"
 }

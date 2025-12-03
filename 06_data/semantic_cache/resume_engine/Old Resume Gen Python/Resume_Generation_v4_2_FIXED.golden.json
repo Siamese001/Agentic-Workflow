@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v4.2 - FIXED: JD PARSING + EXEC SUMMARY + MASTER RESUME SOURCING\n============================================================================================\n\nFIXES FROM v4.1:\n\u2713 FIX 1: Now parses JD to extract key requirements\n\u2713 FIX 2: Generates executive summary from JD + candidate profile\n\u2713 FIX 3: Properly sources bullets from MasterResume.EXPERIENCE\n\u2713 FIX 4: Maps JD keywords to resume sections (skill-to-section matching)\n\u2713 FIX 5: Customizes headline based on JD role\n\nMAINTAINS ALL v4.1 FEATURES:\n\u2713 8 Optimizations (Per-section tolerance, elasticity, priority allocation, etc.)\n\u2713 5 v4.1 Fixes (QA gates, penalties, temperature modes)\n\u2713 6 QA Validation Gates (Signal Health, Tolerance Bands, Elasticity, Production Ready, Metrics, Coherence)\n\nPRODUCES 6 HIGH-SIGNAL OUTPUTS (NEW: Executive Summary):\n1. Executive Summary (1 sentence JD-matched value prop)\n2. Complete Resume (formatted, customized for role)\n3. Word Count Table (per-section tolerance bands, delta a",
-  "full_hash": "5e9a8388ef0ff59fb13a1c18ef65eb2c38aeef7c02693d2f72f0e9b9347a3e3c",
-  "generated_at": 1764728296.7246208,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_2_FIXED.py"
-}

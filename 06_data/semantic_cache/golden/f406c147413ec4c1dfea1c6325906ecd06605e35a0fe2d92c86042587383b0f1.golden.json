@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1",
-    "scan_timestamp": "2025-12-03T07:26:03.811633"
+    "scan_timestamp": "2025-12-03T08:04:48.317783"
   },
   "content_preview": "# File: validation/engine.py\n# Validation Engine Module - V18 Architecture\n# Version: 18.00\n# Contains the core validation engine, rule, and classifier classes.\n# Refactored from validator_RES_v2.py\n\nimport logging\nfrom typing import Dict, List, Optional, Any, Callable, Union\nfrom collections import defaultdict\nfrom models_RES import ValidationResult, ValidationSeverity\n\n\nclass ValidationRule:\n    \"\"\"\n    Represents a single executable validation rule.\n    (Extracted from resume_workflow_v16_20....",
-  "creation_timestamp": "2025-12-03T07:26:25.239443",
+  "creation_timestamp": "2025-12-03T08:05:11.862865",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c32256601a385aad9f86965915e16fa96f7bd2591384826b99202b3e8d388c6c",
-    "scan_timestamp": "2025-12-03T07:26:03.643405"
+    "scan_timestamp": "2025-12-03T08:04:48.149405"
   },
   "content_preview": "\"\"\"L4 RAG Hybrid Search Tests.\"\"\"\n\nclass TestL4RAGHybrid:\n    \"\"\"Tests for L4 RAG hybrid search.\"\"\"\n    \n    def test_hybrid_search_combination(self):\n        \"\"\"Test hybrid search combining dense and sparse.\"\"\"\n        dense_results = [{\"id\": \"d1\", \"score\": 0.9}]\n        sparse_results = [{\"id\": \"s1\", \"score\": 0.8}]\n        combined = dense_results + sparse_results\n        assert len(combined) == 2\n    \n    def test_hybrid_reranking(self):\n        \"\"\"Test hybrid reranking.\"\"\"\n        results = ...",
-  "creation_timestamp": "2025-12-03T07:26:09.932914",
+  "creation_timestamp": "2025-12-03T08:04:56.664590",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\n\nfrom agent_stacks_v10_8.safety_stack import SafetyStackV10_8\nfrom core_v10_7 import ConstitutionalReviewResult\n\n\n@pytest.mark.asyncio\nasync def test_constitutional_review_from_state_async_serializes_patch(monkeypatch, workflow_context):\n    stack = SafetyStackV10_8(workflow_context)\n    state = {\n        \"metadata\": {\"workflow_id\": \"wf-safety\"},\n        \"draft\": {\n            \"sections\": {\n                \"summary\": {\"draft\": \"Final resume ready.\"}\n            }\n        },\n    }\n\n    async def fake_review(final_draft, workflow_id):\n        assert \"Final resume\" in final_draft\n        assert workflow_id == \"wf-safety\"\n        return ConstitutionalReviewResult(\n            review_passed=True,\n            violations_found=[],\n            feedback=\"ok\",\n        )\n\n    monkeypatch.setattr(stack, \"run_constitutional_review_async\", fake_review)\n    patch = await stack.constitutional_review_from_state_async(state, \"wf-safety\")\n\n    assert patch[\"qa\"][\"constitutional_review\"][\"re",
-  "full_hash": "e35d6a2dae15aaca936923f8a8ccb480436ae181a3c1f3541d0958286dedcfe0",
-  "generated_at": 1764728230.7600698,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_safety_constitutional_v10_7.py"
-}

@@ -1,1 +1,0 @@
-{"\"\"\"simplified":1,"tree-of-thought":1,"reasoning":1,"utilities.\"\"\"":1,"from":2,"__future__":1,"import":2,"annotations":1,"typing":1,"list":1,"def":1,"branch(prompt:":1,"str,":1,"branches:":1,"int":1,"=":1,"2)":1,"->":1,"list[str]:":1,"return":1,"[f\"branch":1,"{idx+1}:":1,"considering":1,"{prompt}\"":1,"for":1,"idx":1,"in":1,"range(max(1,":1,"branches))]":1}

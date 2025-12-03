@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - normalize_data_scores\nImplements L1 Cognitive Planning Layer for normalize data scores operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass NormalizeDataScoresPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass NormalizeDataScoresPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass NormalizeDataScoresPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: b",
-  "full_hash": "50b551ddb9eedf425a2e4e739396a915620e8063c1a69388eaae0f068ed575e7",
-  "generated_at": 1764728349.914849,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\expand-phase\\convert-data-content\\semantic\\adjust-scores\\normalize_data_scores.py"
-}

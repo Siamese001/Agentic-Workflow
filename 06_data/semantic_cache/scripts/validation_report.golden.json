@@ -1,6 +1,0 @@
-{
-  "golden_content": "=== UNIFIED STRUCTURE VALIDATION REPORT ===\n\nTimestamp: 2025-12-02T20:26:52.178363\nYAML File: unified_structure_subatomic.yaml\n\n=== VALIDATION KEYS STATUS ===\n[PASS] K1: PASS\n[PASS] K2: PASS\n[PASS] K3: PASS\n[NOT_TESTABLE] K4: NOT_TESTABLE\n[NOT_TESTABLE] K5: NOT_TESTABLE\n[NOT_TESTABLE] K6: NOT_TESTABLE\n[PASS] K7: PASS\n[PASS] K8: PASS\n[PASS] K9: PASS\n[PASS] K10: PASS\n[PASS] K11: PASS\n[PASS] K12: PASS\n[PASS] K13: PASS\n[PASS] K14: PASS\n[PASS] K15: PASS\n[PASS] K16: PASS\n[PASS] K17: PASS\n[PASS] K18: PASS\n[PASS] K19: PASS\n[PASS] K20: PASS\n[PASS] K21: PASS\n[PASS] K22: PASS\n[PASS] K23: PASS\n[PASS] K24: PASS\n[PASS] K25: PASS\n[PASS] K26: PASS\n[PASS] K27: PASS\n[PASS] K28: PASS\n[PASS] K29: PASS\n[PASS] K30: PASS\n[PASS] K31: PASS\n[PASS] K32: PASS\n[PASS] K33: PASS\n[PASS] K34: PASS\n[PASS] K35: PASS\n[PASS] K36: PASS\n[PASS] K37: PASS\n[PASS] K38: PASS\n[PASS] K39: PASS\n[PASS] K40: PASS\n\n=== SUMMARY STATISTICS ===\ntotal_keys: 40\npass_count: 37\nfail_count: 0\nnot_testable_count: 3\npass_rate: 92.5%\nmax_depth: ",
-  "full_hash": "2032b9c550781874daa296b47140d736e3d70809e839ac7a012176eb133a2616",
-  "generated_at": 1764728352.6359155,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\validation_tools\\validation_report.txt"
-}

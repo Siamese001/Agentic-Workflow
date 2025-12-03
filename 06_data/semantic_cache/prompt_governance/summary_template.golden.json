@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"version\": \"LIC_10-02-2025_v6.2\",\n  \"sha256_v6_2\": \"a426d4d28d7c50cd92bc91987b491f8b089998f622b2eafa2adca2d7a8ccc29e\",\n  \"file_sizes_bytes\": {\n    \"before\": 208575,\n    \"after\": 209507,\n    \"delta\": 932\n  },\n  \"size_deltas\": []\n}",
-  "full_hash": "061e3cd58914e042be5054665daa147a9e9616fe566172690e65face88a02671",
-  "generated_at": 1764728348.2266219,
-  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\templates\\resume\\observer-microagent-layer\\inspect-phase-group\\diagnostics-ops\\summary_template.md"
-}

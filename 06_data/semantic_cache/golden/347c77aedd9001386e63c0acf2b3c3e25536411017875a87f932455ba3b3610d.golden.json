@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "347c77aedd9001386e63c0acf2b3c3e25536411017875a87f932455ba3b3610d",
-    "scan_timestamp": "2025-12-03T07:26:03.822010"
+    "scan_timestamp": "2025-12-03T08:04:48.327826"
   },
   "content_preview": "{\n  \"meta_loop_config\": {\n    \"enable_meta_learning\": false,\n    \"feedback_log_path\": \"feedback_log.jsonl\",\n    \"rules_registry_path\": \"rules_registry.json\",\n    \"pattern_confidence_threshold\": 0.75,\n    \"min_samples_for_learning\": 10\n  },\n  \"governor_config\": {\n    \"max_retries_per_node\": 2,\n    \"veto_hierarchy\": [\n      \"ADVERSARIAL\",\n      \"HOLISTIC\",\n      \"STRATEGY\",\n      \"QA3_SEMANTIC\",\n      \"QA2_FACTUAL\",\n      \"QA1_LINGUISTIC\"\n    ]\n  },\n  \"planner_config\": {\n    \"max_replan_loops\": 5,...",
-  "creation_timestamp": "2025-12-03T07:26:26.674613",
+  "creation_timestamp": "2025-12-03T08:05:13.065800",
   "version": "1.0"
 }

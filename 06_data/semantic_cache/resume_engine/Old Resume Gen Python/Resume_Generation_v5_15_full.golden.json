@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.15 - COMPETENCIES CONSTRAINTS\n================================================================================\nPATCH NOTES v5.15 (October 2025):\n\u2713 Competencies constraints: Bullet words \u00b13% of master resume avg per bullet\n\u2713 Competencies section total: \u00b120% of master resume total section words\n\u2713 Optimization: Maximize signal while maintaining highest possible temperature\n\u2713 Overwrite: Replaced all previous competencies constraints with new spec\n\nPATCH NOTES v5.14 (October 2025):\n\u2713 Output 4: Complete rewrite using v4.4.4 structure (17 sections + total)\n\u2713 Added 5th column: \"Comment\" (max 5 words explaining variance rationale)\n\u2713 All 17 sections from v4.4.4: Name, Headline, Contact, Exec Summary, all role sections\n\u2713 Baseline metrics preserved from v4.4.4 SECTION_BASELINES\n\nPATCH NOTES v5.12 (October 2025):\n\u2713 Reordered: Output 4 = Word Table, Output 5 = QA Report (swapped positions)\n\u2713 Final order: Resume, Skills, Cover Letter, Word Table, QA Report, App Tracker",
-  "full_hash": "2b6aaa9f11cf7e63c2a76373054a2125669946060934c1cbce869d5e006acc03",
-  "generated_at": 1764728300.509417,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_15_full.py"
-}

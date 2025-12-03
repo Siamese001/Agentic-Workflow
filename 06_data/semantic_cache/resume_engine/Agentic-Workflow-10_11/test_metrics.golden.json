@@ -1,6 +1,0 @@
-{
-  "golden_content": "from eval.simulation.metrics import compute_collaboration_score, compute_conflict_index\n\n\nclass _DummyOutcome:\n    def __init__(self, score: float, conflicts: int) -> None:\n        self.outcome = {\"golden_eval_score\": score, \"correction_iterations\": conflicts}\n        self.agent_conflict_count = conflicts\n\n\ndef test_compute_collaboration_score_and_conflict_index():\n    outputs = [\n        _DummyOutcome(1.0, 0),\n        _DummyOutcome(0.0, 2),\n    ]\n\n    collab = compute_collaboration_score(outputs)\n    conflict = compute_conflict_index(outputs)\n\n    assert isinstance(collab, float)\n    assert isinstance(conflict, float)\n\n\n\n\n\n\n",
-  "full_hash": "371b05ac0c47aa2d24fe997453d0a5378b4c2ef7c3b07d9d5a966e80ba81917b",
-  "generated_at": 1764728227.5976627,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\simulation\\test_metrics.py"
-}

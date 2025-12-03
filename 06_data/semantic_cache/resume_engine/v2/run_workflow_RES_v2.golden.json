@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: run_workflow_RES_v2.py\n# Version: 17.00 - V2 Agentic Architecture with Async Governor\n# Smart launcher with async execution support\n\nimport argparse\nimport json\nimport os\nimport sys\nimport asyncio\nfrom datetime import datetime\nimport logging\n\n# Configure logging for the launcher\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'\n)\nlogger = logging.getLogger(__name__)\n\n# Import the main components from the refactored modules\ntry:\n    from workflow_RES_v2 import (\n        WorkflowOrchestrator, \n        load_master_resume,\n        __version__\n    )\n    from config_RES_v2 import CONFIG, OUTPUT_DIR, DATA_DIR\nexcept ImportError as e:\n    logger.critical(f\"Error: Could not import from refactored modules (workflow_RES_v2.py, config_RES.py)\")\n    logger.critical(f\"Details: {e}\")\n    logger.critical(\"Please ensure workflow_RES_v2.py, config_RES.py, and all other modules are in the same directory.\")\n    sys.exit(1)\n\n\ndef load_job",
-  "full_hash": "8d8deae4173bff5ecff25113b7834d8e7f86283cc1c5aedd359895191df6f0ab",
-  "generated_at": 1764728327.3367918,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\run_workflow_RES_v2.py"
-}

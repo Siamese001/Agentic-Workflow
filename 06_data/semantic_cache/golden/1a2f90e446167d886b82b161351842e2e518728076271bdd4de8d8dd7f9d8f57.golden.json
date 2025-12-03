@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "1a2f90e446167d886b82b161351842e2e518728076271bdd4de8d8dd7f9d8f57",
-    "scan_timestamp": "2025-12-03T07:26:03.740595"
+    "scan_timestamp": "2025-12-03T08:04:48.250719"
   },
   "content_preview": "import ast\nimport os\nfrom pathlib import Path\nimport pytest\n\n\n# ----------------------------------------------------------------------\n# Paths\n# ----------------------------------------------------------------------\nROOT = Path(__file__).resolve().parents[2]\nAGENTIC_ROOT = ROOT\nSTACKS_DIR = AGENTIC_ROOT / \"agent_stacks_v10_8\" / \"components\"\nTOOLS_DIR = AGENTIC_ROOT / \"tools_v10_7\"\n\n\n# ----------------------------------------------------------------------\n# Helper: Parse Python module into AST\n# ...",
-  "creation_timestamp": "2025-12-03T07:26:18.429692",
+  "creation_timestamp": "2025-12-03T08:05:05.528630",
   "version": "1.0"
 }

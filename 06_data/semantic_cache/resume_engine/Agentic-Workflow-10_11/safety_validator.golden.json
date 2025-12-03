@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 safety validation for resume job alignment workflows.\n\nCentralizes safety constraints and ethical guidelines for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Dict, List, Optional, Callable\nfrom enum import Enum\nimport logging\n\nfrom l5.interfaces import (\n    SafetyConstraint,\n    SafetyPolicy,\n    SafetyViolation,\n    PolicyDecision,\n    PolicyEvaluationError,\n    Severity,\n    Verdict,\n    ExecutionContext,\n    SafetyResult,\n    SafetyFinding\n)\nfrom l5.types import SafetyContext\n\nlogger = logging.getLogger(__name__)\n\n\nclass LayerSafetyPolicy(SafetyPolicy):\n    \"\"\"Concrete safety policy implementation for resume workflow layers.\"\"\"\n    \n    def __init__(self, layer: str, constraints: List[SafetyConstraint], validation_callback: Callable[[str, SafetyConstraint], Optional[SafetyViolation]]):\n        \"\"\"Initializes safety policy for resume workflow layer.\"\"\"\n        self.layer = layer\n        self.constraints = constraints\n        self.validation_",
-  "full_hash": "a11c012de48aabca2397ffdefcce3563e96aa3d8b2ce13e65d7879968cc57698",
-  "generated_at": 1764728225.5101614,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\safety_validator.py"
-}

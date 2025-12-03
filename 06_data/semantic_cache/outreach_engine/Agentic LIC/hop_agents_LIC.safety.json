@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 697,
-  "generated_at": 1764728331.350703,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\hop_agents_LIC.py"
-}

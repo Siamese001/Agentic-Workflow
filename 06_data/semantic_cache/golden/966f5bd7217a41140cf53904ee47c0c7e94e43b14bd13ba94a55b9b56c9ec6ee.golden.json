@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
-    "scan_timestamp": "2025-12-03T07:26:03.657700"
+    "scan_timestamp": "2025-12-03T08:04:48.164187"
   },
   "content_preview": "from infra.sandbox.fs_template import build_ephemeral_rootfs\n\n\ndef test_build_ephemeral_rootfs_shape():\n    fs = build_ephemeral_rootfs()\n\n    assert fs.get(\"tmpfs\") is True\n    assert \"/\" in fs.get(\"restricted_paths\", [])\n    assert \"/tmp\" in fs.get(\"writable_paths\", [])\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T07:26:10.506861",
+  "creation_timestamp": "2025-12-03T08:04:57.245770",
   "version": "1.0"
 }

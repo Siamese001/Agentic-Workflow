@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nCMS schemas for resume generation prompt validation.\n\nProvides schema definitions for prompt validation to ensure\nconsistent resume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, List\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n\nclass PromptType(str, Enum):\n    \"\"\"\n    Types of prompts supported by the CMS for resume generation.\n\n    Defines prompt categories for consistent resume improvement workflows.\n    \"\"\"\n    SIMPLE = \"simple\"\n    TEMPLATE = \"template\"\n    CONDITIONAL = \"conditional\"\n    CHAINED = \"chained\"\n\n\n@dataclass\nclass PromptSchema:\n    \"\"\"\n    Schema definition for resume generation prompt validation.\n\n    Ensures consistent prompt structure for improved resume quality.\n    \"\"\"\n    name: str\n    prompt_type: PromptType\n    required_fields: List[str]\n    optional_fields: List[str] = None\n    validation_rules: Dict[str, Any] = None\n\n\n@dataclass\nclass ValidationResult:\n    \"\"\"\n    Result of resume generation prompt validation.\n\n    Tracks ",
-  "full_hash": "ad750ea4c5f317ec37e8dedf9806cf1731fdf04f82612460df18cb87be1339cc",
-  "generated_at": 1764728224.4092627,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\cms\\schemas.py"
-}

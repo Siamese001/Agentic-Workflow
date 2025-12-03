@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - update_scripts_usage\nImplements L5 Safety/Policy Layer for update scripts usage operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass UpdateScriptsUsageSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass UpdateScriptsUsageSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass UpdateScriptsUsageSafetyResult:\n    \"\"\"L5 Safety result with ful",
-  "full_hash": "820dbbbdaed8dd52be7958529dfbb632af14b3b7a8fe28de9f4a8e84640a43d6",
-  "generated_at": 1764728352.53141,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\update_scripts_usage.py"
-}

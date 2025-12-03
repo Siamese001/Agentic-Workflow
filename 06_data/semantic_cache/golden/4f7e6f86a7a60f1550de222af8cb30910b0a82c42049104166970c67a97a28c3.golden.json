@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3",
-    "scan_timestamp": "2025-12-03T07:26:03.801499"
+    "scan_timestamp": "2025-12-03T08:04:48.306822"
   },
   "content_preview": "# hops/hop_6_gate.py\n\"\"\"\nHop 6: Gate Decision - HIGH-SIGNAL OVERWRITE\n\nThis is a risk-aware, dynamic decision engine.\n1. It differentiates between deterministic (e.g., placeholder) and\n   quality-based (e.g., thematic alignment) failures.\n2. It reads the HOP-0 RAG signal quality (via HOP-5 results) to\n   dynamically adjust its risk tolerance.\n3. It outputs a \"PROCEED_WITH_REVIEW\" state for low-confidence runs.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimp...",
-  "creation_timestamp": "2025-12-03T07:26:21.245469",
+  "creation_timestamp": "2025-12-03T08:05:08.582351",
   "version": "1.0"
 }

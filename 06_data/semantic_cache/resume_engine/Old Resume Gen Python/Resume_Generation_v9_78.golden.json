@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\n\nimport json\nimport re # Added for truncation check logic and new validation rules\nimport hashlib\nimport math\nimport logging\nimport os\nimport time\nimport requests\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nimport argparse\nimport sys\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\nimport copy\n\n__version__ = \"9.78\" # Added critical formatting validation rules (H2, bullets, etc) and QA Table 16 enforcement.\n# v9.78: Added critical formatting validation rules (H2, bullets, etc) and QA Table 16 enforcement.\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    print(\"Warning: google-generativeai package not installed. Web RAG disabled.\")\n\n# v5.90: Switched to scikit-learn for robust cosine similarity\ntry:\n    from sklearn.feature_extraction.text import TfidfVectorizer\n    from sklearn.metrics.p",
-  "full_hash": "1abd34b54b834bb11846849512348a68419c76e76f440a81f966f03a2b36e8b2",
-  "generated_at": 1764728323.394554,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v9_78.py"
-}

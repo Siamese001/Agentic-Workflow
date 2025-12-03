@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List\n\nfrom core.models.models import AgentCard, AgentRole\n\n\"\"\"\nMaintains catalog of specialized agents for r\u00e9sum\u00e9 analysis workflow routing and coordination.\n\nImproves r\u00e9sum\u00e9 processing by directing each analysis step to the appropriate specialist agent for optimal job matching results.\n\"\"\"\n\n\n@dataclass\nclass AgentRegistry:\n    \"\"\"\n    Stores specialized agent definitions for coordinating r\u00e9sum\u00e9 analysis workflows with optimal specialist routing.\n\n    Improves r\u00e9sum\u00e9 processing by assembling the right mix of planners, drafters, reviewers, and safety checkers for each job application.\n    \"\"\"\n\n    _agents: Dict[str, AgentCard] = field(default_factory=dict)\n\n    @property\n    def agents(self) -> Dict[str, AgentCard]:\n        \"\"\"\n        Provides access to all available r\u00e9sum\u00e9 analysis agents for workflow routing and selection.\n\n        Improves r\u00e9sum\u00e9 processing by enabling proper agent ",
-  "full_hash": "2911c7dc079d5b11594d2caed3812b149acd177d78546e758ddf9eb50c1ba4f5",
-  "generated_at": 1764728225.7561584,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_registry.py"
-}

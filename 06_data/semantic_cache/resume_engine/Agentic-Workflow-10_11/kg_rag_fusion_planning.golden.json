@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nPlans knowledge graph and document retrieval for resume analysis.\n\nImproves resume accuracy by finding relevant job experiences\nand skills that match specific positions.\n\"\"\"\n\nfrom __future__ import annotations\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\nfrom datetime import datetime, UTC\nfrom enum import Enum\n\nfrom .kg_retrieval_planning import (\n    QueryType,\n    KGQueryPlan,\n    KGRetrievalPlanner,\n    HopSpec,\n    HopDirection,\n)\n\n\nclass RetrievalStepType(str, Enum):\n    \"\"\"\n    Defines types of information retrieval steps for resume processing.\n\n    Improves resume completeness by ensuring all relevant experiences\n    and skills are captured systematically.\n    \"\"\"\n    KG_HOP = \"kg_hop\"\n    VECTOR_SEARCH = \"vector_search\"\n    ENTITY_RESOLUTION = \"entity_resolution\"\n    TEMPORAL_FILTER = \"temporal_filter\"\n    FUSION_RANK = \"fusion_rank\"\n    RECURSIVE_DEEPEN = \"recursive_deepen\"\n\n\nclass QueryComplexity(str, Enum):\n    \"\"\"\n    Determines ",
-  "full_hash": "37adfd345ee98e1f6058c4de60f2da61f29a034dacc5957d47b9351bf2b1f615",
-  "generated_at": 1764728224.5300617,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_rag_fusion_planning.py"
-}

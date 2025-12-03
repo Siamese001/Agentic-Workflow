@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v6.30\n\nThis script orchestrates a multi-hop process to generate a tailored resume,\ncover letter, and other application materials based on a master resume JSON\nand a specific job description.\n\nKey Features:\n- RAG-based thematic analysis of job descriptions.\n- LLM-driven, context-aware content generation for all resume sections.\n- Advanced reasoning capabilities (CoT, ToT, Self-Consistency).\n- Comprehensive validation, QA, and deduplication.\n- Generates 5 outputs: Resume, Skills List, Cover Letter, QA Report, App Tracker.\n\nFor detailed version history, see the project's version control.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport json\nimport re\nimport hashlib\nimport math\nimport logging\nimport os\nimport time\nimport requests\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nimport argparse\nimport sys\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\nimport copy\n\n__version__",
-  "full_hash": "3d91b803381d34e18de5f7bb728ba1e7a38b8d37635914c03ae0803fbfb9b0c2",
-  "generated_at": 1764728313.068978,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v6.40.py"
-}

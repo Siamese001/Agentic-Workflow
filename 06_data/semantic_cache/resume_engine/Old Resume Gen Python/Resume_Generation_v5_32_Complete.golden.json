@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.32 - HARDENED JD ENFORCEMENT & COMPLETE QA SYSTEM\n================================================================================\nCRITICAL v5.32 UPDATE: ZERO MOCK DATA + COMPLETE JD ENFORCEMENT + QA GATE MAPPING\n\n\u2713 DESTRUCTIVE OVERWRITE: All mock data removed, JD enforcement hardened\n\u2713 ZERO MOCK DATA: No fallbacks, no defaults, no sample data ever used  \n\u2713 JD ENFORCEMENT: Job description required and validated at every step\n\u2713 QA GATE MAPPING: Every enforcement has corresponding validation gate\n\u2713 TRACEABILITY: Full audit trail proving JD data flow through all hops\n\u2713 FAIL-FAST: System halts immediately if JD not properly used\n\u2713 PRESERVED: All v5.31 QA V5 validation + v5.30 functionality\n\nv5.32 CHANGES FROM v5.31:\n\u2713 REMOVED: _get_mock_master_resume() function - COMPLETELY DELETED (140 lines)\n\u2713 REMOVED: load_master_resume() fallback to mock data - HARD FAIL instead (12 lines)\n\u2713 REMOVED: MockJDAnalyzer class - REPLACED with hardened JD parsing (86 lines)\n\u2713 A",
-  "full_hash": "14bcdaf37f1028a46043ca7701f82beb734e9eace36de7fb417896c9561370d0",
-  "generated_at": 1764728303.233677,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_32_Complete.py"
-}

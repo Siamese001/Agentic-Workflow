@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "8ee78fa03f293356bf53f36e1287ec7ecb928e5aafe9340537890dc5a2ec8043",
-    "scan_timestamp": "2025-12-03T07:26:03.922260"
+    "scan_timestamp": "2025-12-03T08:04:48.431738"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.6\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.6\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"Applied P856. Refactored the reasoning architecture to centralize all archetype-specific parameters into a single static object (`archetype_parameter_sets`). This eliminates distributed logic, improves maintainability, and makes the finalized ro...",
-  "creation_timestamp": "2025-12-03T07:26:35.693670",
+  "creation_timestamp": "2025-12-03T08:05:21.900559",
   "version": "1.0"
 }

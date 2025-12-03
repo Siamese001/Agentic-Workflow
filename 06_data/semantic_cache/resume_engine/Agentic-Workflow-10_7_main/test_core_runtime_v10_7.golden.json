@@ -1,6 +1,0 @@
-{
-  "golden_content": "import asyncio\nimport pytest\n\nfrom core_v10_7 import (\n    CacheManager,\n    CircuitBreaker,\n    CircuitBreakerOpenError,\n    ModelAPIError,\n    exponential_backoff_retry,\n)\n\n# ---- CircuitBreaker matrix (threshold x pattern) \u2192 12 tests\n@pytest.mark.parametrize(\"threshold,failures,opens\", [\n    (1, 1, True), (1, 0, False),\n    (2, 1, False), (2, 2, True),\n    (3, 2, False), (3, 3, True),\n])\ndef test_circuit_breaker_opening_behavior(threshold, failures, opens):\n    cb = CircuitBreaker(failure_threshold=threshold)\n    for _ in range(failures):\n        cb.record_failure()\n    assert cb.is_open is opens\n    if opens:\n        with pytest.raises(CircuitBreakerOpenError):\n            cb.check()\n    else:\n        cb.check()  # no raise\n\n# ---- Reset semantics (6 tests)\n@pytest.mark.parametrize(\"threshold\", [1, 2, 3])\ndef test_circuit_breaker_resets_on_success(threshold):\n    cb = CircuitBreaker(failure_threshold=threshold)\n    for _ in range(threshold):\n        cb.record_failure()\n    assert c",
-  "full_hash": "48d58d28174846723f63506fc8cf44963b471cf61f9a467a915919c4b723f215",
-  "generated_at": 1764728230.5755556,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_core_runtime_v10_7.py"
-}

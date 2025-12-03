@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: llm_clients.py\n# Description: Centralized LLM client for all generative AI calls\n\n__version__ = \"12.0\"\n\nimport google.generativeai as genai\nimport os\nfrom utils_LIC import CircuitBreaker, CircuitBreakerOpenError\n\nclass GeminiLLMClient:\n    \"\"\"\n    Centralized client for all Gemini API calls with circuit breaker protection\n    \"\"\"\n    \n    def __init__(self, circuit_breaker: CircuitBreaker):\n        self.api_key = os.environ.get(\"GEMINI_API_KEY\")\n        if not self.api_key:\n            raise ValueError(\"GEMINI_API_KEY not found in environment\")\n        genai.configure(api_key=self.api_key)\n        self.model = genai.GenerativeModel('gemini-1.5-pro-latest')\n        self.circuit_breaker = circuit_breaker\n\n    def _execute_llm_call(self, prompt: str) -> str:\n        \"\"\"Execute the actual LLM API call\"\"\"\n        response = self.model.generate_content(prompt)\n        return response.text\n\n    def generate(self, prompt: str) -> str:\n        \"\"\"\n        Generate content with circuit b",
-  "full_hash": "8cf640e8e75fb5fdd2518dc10ea70f212f91738a45c290d32798615aa46c0f31",
-  "generated_at": 1764728331.3917108,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\llm_clients.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nMCP client registry utilities for v10.7.\n\nThis version fixes:\n - provider\u2192module routing\n - proper stub fallback\n - module/class resolution\n - structured error propagation\n - compatibility with context._load_mcp_config()\n - alignment with instantiate_mcp_client() expectations\n\"\"\"\n\nfrom __future__ import annotations\n\nimport importlib\nimport logging\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\n\nfrom .exceptions import MCPClientInitializationError\n\nlogger = logging.getLogger(\"core_v10_7.mcp\")\n\n\n# ---------------------------------------------------------------------------\n# Provider \u2192 Default module/class maps (v10.7 standardization)\n# ---------------------------------------------------------------------------\n\nDEFAULT_PROVIDER_MODULES = {\n    \"redis\": \"redis\",\n    \"chromadb\": \"chromadb\",\n    \"openai\": \"mcp_openai\",  # Example: MCP OpenAI wrapper module\n    \"http\": \"mcp_http_client\",\n}\n\nDEFAULT_PROVIDER_CLASSES = {\n    \"redis\": \"RedisMCPClient\",",
-  "full_hash": "6fd6d17b5186a26bfb5b8adf0bce77ba5a59221c7acfe23e8b9fb4f84f21cdb2",
-  "generated_at": 1764728229.8293703,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\mcp.py"
-}

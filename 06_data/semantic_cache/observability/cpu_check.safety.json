@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 38,
-  "generated_at": 1764728350.449865,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\safety-guard-layer\\refine-phase-group\\constraint-check-ops\\general-operations-ops\\cpu_check.py"
-}

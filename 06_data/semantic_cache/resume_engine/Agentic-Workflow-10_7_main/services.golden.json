@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Service-layer helpers for the v10.7 runtime.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport time\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom functools import wraps\nfrom typing import (\n    TYPE_CHECKING,\n    Any,\n    Callable,\n    Dict,\n    List,\n    Mapping,\n    Optional,\n    Tuple,\n    Union,\n)\n\nfrom chromadb.utils import embedding_functions\nfrom pydantic import BaseModel, Field, ValidationError as PydanticValidationError\n\nfrom telemetry_v10_7 import log_event\n\nfrom .config import ConfigV10_7\nfrom .constants import legacy_model_alias\nfrom .exceptions import JSONParsingError, PydanticSchemaError\nfrom .models import ArbitrationReport, GeneratedPrompts, SelfCorrectionReport, StrategyPlan\n\nif TYPE_CHECKING:  # pragma: no cover - typing helpers\n    from .clients import AsyncBaseModelClient\n    from redis import Redis as RedisType\n    from chromadb import Client as ChromaClie",
-  "full_hash": "4c56070526b021efb8aad5391e1972749d17e9e307b33580ae2c0f396578154b",
-  "generated_at": 1764728230.1324503,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\services.py"
-}

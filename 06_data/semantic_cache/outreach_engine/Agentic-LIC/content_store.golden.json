@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Content-addressable store with TTL tracking.\"\"\"\nfrom __future__ import annotations\n\nimport hashlib\nimport json\nimport time\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, Optional, Tuple\n\n\n@dataclass(frozen=True)\nclass ContentMetadata:\n    \"\"\"Metadata persisted with cached retrieval artifacts.\"\"\"\n\n    tool: str\n    ts: float\n    extra: Dict[str, Any]\n\n\ndef make_key(**components: Any) -> str:\n    \"\"\"Return a stable cache key for retrieval artifacts.\"\"\"\n\n    normalized = json.dumps(components, sort_keys=True, default=str)\n    return hashlib.sha256(normalized.encode(\"utf-8\")).hexdigest()\n\n\nclass ContentStore:\n    \"\"\"In-memory cache with TTL-based freshness checks.\"\"\"\n\n    def __init__(self) -> None:\n        self._db: Dict[str, Tuple[Any, ContentMetadata]] = {}\n\n    def put(self, key: str, blob: Any, meta: Dict[str, Any]) -> None:\n        metadata = ContentMetadata(tool=str(meta.get(\"tool\", \"unknown\")), ts=time.time(), extra=dict(meta))\n        self._db[key] = (blob, met",
-  "full_hash": "717123193253ee65851c374a5ac25d94ac452a48cc2f1685e21f596120c8cb36",
-  "generated_at": 1764728330.5875869,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\content_store.py"
-}

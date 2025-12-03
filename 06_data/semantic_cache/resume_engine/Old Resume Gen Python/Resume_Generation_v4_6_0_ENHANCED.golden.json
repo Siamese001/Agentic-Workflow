@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v4.6.0 - ENHANCED WITH EMBEDDED MODULES\n================================================================\nMAJOR UPGRADE FROM v4.5.2:\n- Embedded SaaS Roles (1,993 roles across 4 levels)\n- Embedded App Tracker QA v5 (R1-R23 validation rules)\n- Embedded Hyphenation Rules (comprehensive style enforcement)\n- Embedded App Schema v4 (54 fields)\n- Maintains all v4.5.2 functionality (Temperature Modes, K.11 Skills, 4 Outputs)\n\nVersion: 4.6.0\nDate: October 2025\nAuthor: Resume Generation Team\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any\nfrom enum import Enum\nimport random\nfrom datetime import datetime\nfrom dataclasses import dataclass\n\n__version__ = \"4.6.0\"\n\n# ============================================================================\n# SECTION 1: TEMPERATURE MODE ENUM (FROM v4.5.2)\n# ============================================================================\n\nclass TemperatureMode(Enum):\n    \"\"\"Temperature modes for constraint relax",
-  "full_hash": "6d378242d6802d72f0289d4b00a55f0aa7348c1c668a664ff3da244a43907414",
-  "generated_at": 1764728297.2000647,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_6_0_ENHANCED.py"
-}

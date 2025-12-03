@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "56b50db6030f7acf3fdacecec8ab96db88445bd23a95aea57faefa8164b9a2b2",
-    "scan_timestamp": "2025-12-03T07:26:03.666620"
+    "scan_timestamp": "2025-12-03T08:04:48.172471"
   },
   "content_preview": "\"\"\"Stress Tests for Recursion Depth.\"\"\"\n\nclass TestRecursionDepth:\n    \"\"\"Stress tests for recursion depth limits.\"\"\"\n    \n    def test_deep_recursion_handling(self):\n        \"\"\"Test handling of deep recursion.\"\"\"\n        def recursive_func(n, acc=0):\n            if n <= 0:\n                return acc\n            return recursive_func(n - 1, acc + 1)\n        \n        result = recursive_func(100)\n        assert result == 100\n",
-  "creation_timestamp": "2025-12-03T07:26:10.718743",
+  "creation_timestamp": "2025-12-03T08:04:57.506266",
   "version": "1.0"
 }

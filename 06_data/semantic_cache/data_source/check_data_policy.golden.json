@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - check_data_policy\nImplements L1 Cognitive Planning Layer for check data policy operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass CheckDataPolicyPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass CheckDataPolicyPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass CheckDataPolicyPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n    data: Dict[s",
-  "full_hash": "577b0ad8b0e70403b66f4d99d9fb8b41fd35466219af6f3f4eaa1bef192da7d3",
-  "generated_at": 1764728349.9255128,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\plan-phase\\check-data-rules\\policy\\check-safety\\check_data_policy.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "6aea37bfd7a23f7852ae38fd577d38de4011774720ef3311ed133455ce0c1a82",
-    "scan_timestamp": "2025-12-03T07:26:04.010259"
+    "scan_timestamp": "2025-12-03T08:04:48.517627"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-09 v2.81 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81\nv2.81 adds an Executive MPV-5 prompt modeled on Jeff McMillan message balance, inserts a mandatory RAG Enrichment Summary table into QA, removes C Level DRQ checks from the Executive grid, and hardens no em dash policy.\n\nZLO Method: Versioned Zero-Loss Overwrite per Steps 1-5 (identify, direct edit, diff QA, canonical QA, explicit changelog).\n\n-----------------------------------------------...",
-  "creation_timestamp": "2025-12-03T07:26:39.656622",
+  "creation_timestamp": "2025-12-03T08:05:26.201991",
   "version": "1.0"
 }

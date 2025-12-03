@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.20\",\n    \"base_version\": \"v10.10\",\n    \"previous_version\": \"v10.10\",\n    \"release_date\": \"2025-10-14\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Comprehensive quality and edge case hardening patch based on 30-test validation suite. Addresses 11 critical gaps in boot validation, confidence scoring, metric validation, and error handling on top of v10.10's 41 remediations.\",\n    \"changes_summary\": {\n      \"v10.10_remediations\": 41,\n      \"v10.20_patches\": {\n        \"critical\": 7,\n        \"warning\": 4,\n        \"total\": 11\n      },\n      \"v10.20_total_remediations\": 52,\n      \"test_coverage\": \"100% (30/30 tests passing)\",\n      \"regression_count\": 0\n    },\n    \"changelog\": {\n      \"v10.20\": [\n        \"CRITICAL: Template spell-check integration in boot validator (PATCH-001)\",\n        \"CRITICAL: Circular reference detection in schema loader (PATCH-002)\",\n       ",
-  "full_hash": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2",
-  "generated_at": 1764728339.3828194,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_FULL_v10_20.json"
-}

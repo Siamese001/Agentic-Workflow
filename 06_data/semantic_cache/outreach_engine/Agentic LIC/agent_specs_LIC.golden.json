@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"schema_version\": \"13.0\",\n  \"description\": \"Externalized agent operational parameters for LIC v13.0 - All agent-specific configurations, thresholds, and behaviors\",\n  \n  \"circuit_breaker\": {\n    \"failure_threshold\": 3,\n    \"timeout_seconds\": 60,\n    \"_comment\": \"Circuit breaker prevents cascade failures by blocking requests after consecutive failures\"\n  },\n  \n  \"context_manager\": {\n    \"section_priorities\": {\n      \"job_description\": 100,\n      \"recipient_profile\": 90,\n      \"company_context\": 80,\n      \"sender_profile\": 70,\n      \"rag_recent\": 60,\n      \"rag_historical\": 40,\n      \"examples\": 30\n    },\n    \"max_context_tokens\": 180000,\n    \"chars_per_token\": 4,\n    \"min_truncated_section_chars\": 100,\n    \"_comment\": \"Intelligent context window management with priority-based truncation\"\n  },\n  \n  \"adaptive_temperature_controller\": {\n    \"base_temperatures\": {\n      \"C_LEVEL\": 0.45,\n      \"EXECUTIVE\": 0.5,\n      \"SENIOR_TA\": 0.55,\n      \"RECRUITER\": 0.65\n    },\n    \"escalation_step\"",
-  "full_hash": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
-  "generated_at": 1764728331.324162,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\agent_specs_LIC.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL3 unified workflow orchestrator for resume job alignment.\n\nCoordinates all atomic layers for resume processing workflows.\n\"\"\"\n\nfrom typing import Any, Dict, Protocol\nfrom l1.strategy_planning import plan_strategy\nfrom l1.draft_planning import plan_drafting\nfrom l1.qa_planning import plan_qa\nfrom l1.safety_planning import plan_safety\nfrom l1.result_parser import ResultParser\nfrom l2.llm_caller import LLMCaller\nfrom l2.strategy_executor import StrategyExecutor\nfrom l2.draft_executor import DraftExecutor\nfrom l2.qa_executor import QAExecutor\nfrom l2.safety_executor import SafetyExecutor\nfrom l3.strategy_orchestrator import StrategyOrchestrator\nfrom l3.draft_orchestrator import DraftOrchestrator\nfrom l3.qa_orchestrator import QAOrchestrator\nfrom l3.safety_orchestrator import SafetyOrchestrator\nfrom runtime.observability import record_event\n\n# Protocol interfaces for L4/L5 dependency injection\nclass StateManagerInterface(Protocol):\n    def save_state(self, state: Any) -> None: ...\n    ",
-  "full_hash": "59359bef4f6f87e81ea28e923f03ef3f1b1358aff37754852fea0e57a201b38d",
-  "generated_at": 1764728225.155488,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\unified_workflow_orchestrator.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState\n\n\ndef test_memory_patch_populates_and_preserves_existing_state():\n    adapter = StateAdapterStack(context=None)\n    base_state = MainGraphState()\n    base_state.memory.semantic.vector_store_ids = [\"existing\"]\n    base_state.metadata.workflow_id = \"wf-123\"\n\n    patch = adapter.patch_memory(\n        conversation=[{\"role\": \"user\", \"content\": \"first\"}],\n        agent_notes=[\"note-1\"],\n        vector_store_ids=[\"new\"],\n        tags=[\"core\", \"state\"],\n    )\n\n    updated = adapter.apply_patch(base_state.to_dict(), patch)\n\n    assert updated[\"memory\"][\"episodic\"][\"conversation\"][0][\"content\"] == \"first\"\n    assert updated[\"memory\"][\"episodic\"][\"agent_notes\"] == [\"note-1\"]\n    assert updated[\"memory\"][\"semantic\"][\"vector_store_ids\"] == [\"new\"]\n    assert updated[\"memory\"][\"semantic\"][\"tags\"] == [\"core\", \"state\"]\n    assert updated[\"metadata\"][\"workflow_id\"] == \"wf-123\"\n",
-  "full_hash": "f192a17464331d81fc3b18a97d8b846ed5edfba3b558e4bf93097286bd1cd016",
-  "generated_at": 1764728231.6354554,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state_v10_8\\test_memory_population.py"
-}

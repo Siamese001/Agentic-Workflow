@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\n\nfrom stacks_v10_8.safety_policy_stack import SafetyPolicyStack\n\n\ndef _make_stack():\n    return SafetyPolicyStack(context=None, debug_mode=False)\n\n\ndef test_safe_text_is_safe():\n    stack = _make_stack()\n    report = stack.evaluate_text(\"This is a harmless, generic sentence.\")\n\n    assert hasattr(report, \"is_safe\")\n    assert hasattr(report, \"findings\")\n    assert report.is_safe is True\n    assert isinstance(report.findings, list)\n\n\ndef test_pii_like_text_triggers_findings():\n    stack = _make_stack()\n    report = stack.evaluate_text(\"My social security number is 123-45-6789.\")\n\n    assert hasattr(report, \"is_safe\")\n    assert hasattr(report, \"findings\")\n    assert isinstance(report.findings, list)\n    assert len(report.findings) >= 1\n    assert report.is_safe is False\n",
-  "full_hash": "e9a2e747d442bdb31becec5ea9b330530eba9ececdf97b433b1bc8302eadba2c",
-  "generated_at": 1764728231.5437362,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\safety\\test_safety_policy_stack_basic.py"
-}

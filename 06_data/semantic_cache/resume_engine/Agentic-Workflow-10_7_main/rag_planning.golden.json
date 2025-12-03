@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Deterministic Level-1 planner for RAG orchestration.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import BaseAgent, RAGPlan\n\nfrom .planning_utils import describe_experience, extract_job_profile, extract_resume_profile\n\n\nclass RAGPlanningStack(BaseAgent):\n    \"\"\"Produces a lightweight retrieval plan without calling any tools.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        super().__init__(context, debug_mode)\n\n    async def run_async(\n        self, state: Dict[str, Any], workflow_id: Optional[str] = None\n    ) -> Dict[str, Any]:\n        plan = self._build_plan(state)\n        return {\"rag\": {\"plan\": plan.model_dump()}}\n\n    def _build_plan(self, state: Dict[str, Any]) -> RAGPlan:\n        job_profile = extract_job_profile(state)\n        resume_profile = extract_resume_profile(state)\n        experiences = resume_profile[\"experiences\"]\n        requirements = job_profile[\"requirements\"]\n        w",
-  "full_hash": "1d634517b61b37d159bb24e257ed9bfe0cbc482b9a173f1b599b1caed3f36192",
-  "generated_at": 1764728230.2603142,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\rag_planning.py"
-}

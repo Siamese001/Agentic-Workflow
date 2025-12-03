@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Pure action implementation of the v10.8 bullet execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import BaseAgent, BulletPlan, StrategyPlan\nfrom agent_stacks_v10_8.components.bullet import (\n    AsyncBulletCritiqueAgent,\n    AsyncBulletGeneratorAgent,\n    BulletCoordinatorAgent,\n)\n\n\nclass BulletExecutionStack(BaseAgent):\n    \"\"\"Generates deterministic bullets by applying a BulletPlan to resume data.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        super().__init__(context, debug_mode)\n        self.coordinator = BulletCoordinatorAgent(context, debug_mode)\n        self.generator = AsyncBulletGeneratorAgent(context, debug_mode)\n        self.critique_agent = AsyncBulletCritiqueAgent(context, debug_mode)\n        self.bullets_per_experience = max(\n            1, getattr(self.config.agent_stacks, \"bullets_per_experience\", 2)\n        )\n        self.safety_policy = getattr(context, \"safety",
-  "full_hash": "b46e23abb017f7b860591870208db342011f635206e85644accf8866433fbd01",
-  "generated_at": 1764728230.172274,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\bullet_execution.py"
-}

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 84,
-  "generated_at": 1764728355.066975,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\safety-guard-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\model_stub_fixtures.py"
-}

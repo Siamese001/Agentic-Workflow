@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Safety stack shim for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict\n\nfrom agent_stacks_v10_8.components.safety import (\n    BiasDetectorAgent,\n    ConstitutionalReviewerAgent,\n    PIISanitizerAgent,\n    PromptInjectionDetectorAgent,\n)\n\n\nclass SafetyStackV10_8:\n    \"\"\"Wrapper that exposes safety-only capabilities.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._pii_sanitizer = PIISanitizerAgent(context, debug_mode)\n        self._bias_detector = BiasDetectorAgent(context, debug_mode)\n        self._prompt_injection_detector = PromptInjectionDetectorAgent(\n            context, debug_mode\n        )\n        self._constitutional_reviewer = ConstitutionalReviewerAgent(\n            context, debug_mode\n        )\n\n    def sanitize_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:\n        \"\"\"Run the legacy PII sanitizer.\"\"\"\n\n        return",
-  "full_hash": "b021c776ac56e912ac16ba6227b282af2dda69ef7e3469d685f93d303ec72343",
-  "generated_at": 1764728230.0684376,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\safety_stack.py"
-}

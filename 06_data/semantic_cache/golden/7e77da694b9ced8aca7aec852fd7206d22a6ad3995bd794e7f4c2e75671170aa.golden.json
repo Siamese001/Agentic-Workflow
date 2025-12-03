@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7e77da694b9ced8aca7aec852fd7206d22a6ad3995bd794e7f4c2e75671170aa",
-    "scan_timestamp": "2025-12-03T07:26:03.747827"
+    "scan_timestamp": "2025-12-03T08:04:48.255983"
   },
   "content_preview": "import pytest\n\nfrom agent_orchestration_v10_7 import get_graph_app\nfrom agentic_workflow.workflow_v10_7.dag_spec import (\n    CONCEPTUAL_DAG,\n    CONCEPTUAL_EDGES,\n    all_concrete_nodes,\n    conceptual_node_map,\n)\n\nEXPECTED_NODES = [\n    \"SafetyGuardStack\",\n    \"StrategyStack\",\n    \"RAGStack\",\n    \"BulletStack\",\n    \"DraftingStack\",\n    \"QAStack\",\n    \"HILInteractionStack\",\n]\n\nEXPECTED_EDGES = [\n    (\"SafetyGuardStack\", \"StrategyStack\"),\n    (\"StrategyStack\", \"RAGStack\"),\n    (\"RAGStack\", \"Bull...",
-  "creation_timestamp": "2025-12-03T07:26:18.664713",
+  "creation_timestamp": "2025-12-03T08:05:05.817419",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: run_learning_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context call updated to v10_7.\n# - REFACTORED (Fix #14, #17, #19, #20, #24): All async agents\n#   (Summarizer, PatternFinder, Hypothesis, etc.) now use the new\n#   async `_format_prompt_with_defaults` from core. This injects\n#   Cognitive Modes, Goal State, Failure Warnings, and Reflection steps\n#   into all meta-learning LLM calls.\n#\n# v10.7 MAJOR CHANGES:\n# - FIXED: All v10_5 imports and class names updated to v10_7.\n# - FIXED: State object 'MetaGraphState' (from core) now used.\n\nimport json\nimport logging\nimport os\nimport uuid\nimport asyncio\nfrom datetime import datetime\nfrom typing import Any, Dict, List, Tuple\n\n# v10",
-  "full_hash": "b21911c70db83c40e5700dadc11b4cdf0a9cea4d9d00d52212e6267a5c4080ba",
-  "generated_at": 1764728230.0359015,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\run_learning_v10_7.py"
-}

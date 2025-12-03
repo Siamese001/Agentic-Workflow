@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4d6d815492f51b3d12145388f5f4576a3e4c19fa282c603ef5ef564d7f53fdb4",
-    "scan_timestamp": "2025-12-03T07:26:03.663257"
+    "scan_timestamp": "2025-12-03T08:04:48.169261"
   },
   "content_preview": "\"\"\"Shared Test Stubs.\"\"\"\n\nclass StubSafetyEngine:\n    \"\"\"Stub safety engine for testing.\"\"\"\n    \n    def evaluate(self, context):\n        \"\"\"Stub evaluate method.\"\"\"\n        return StubPolicyResult()\n\nclass StubPolicyResult:\n    \"\"\"Stub policy result for testing.\"\"\"\n    \n    def __init__(self):\n        self.blocking_findings = []\n        self.warnings = []\n\ndef test_stub_safety_engine():\n    \"\"\"Test StubSafetyEngine.\"\"\"\n    engine = StubSafetyEngine()\n    result = engine.evaluate({})\n    assert ...",
-  "creation_timestamp": "2025-12-03T07:26:10.644278",
+  "creation_timestamp": "2025-12-03T08:04:57.432975",
   "version": "1.0"
 }

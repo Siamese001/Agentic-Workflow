@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "573887c76064f3fab2c49c85a1196e7c3ba1e99f5c13aa8aaa1b315e46402bd0",
-    "scan_timestamp": "2025-12-03T07:26:03.553105"
+    "scan_timestamp": "2025-12-03T08:04:48.064869"
   },
   "content_preview": "\"\"\"ChromaDB Vector Store - Infrastructure Layer\n\nThis module provides ChromaDB integration for vector storage and retrieval.\n\nLayer: Infrastructure/Meta\nResponsibilities:\n- Chroma client initialization\n- Collection management\n- Hybrid search\n- Semantic cache operations\n\nNon-responsibilities:\n- Prompt knowledge\n- Agent logic\n- Workflow plans\n- Business logic\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Optional, Dict, Any, Sequence\n\n\nclass ChromaNo...",
-  "creation_timestamp": "2025-12-03T07:26:05.327465",
+  "creation_timestamp": "2025-12-03T08:04:50.364191",
   "version": "1.0"
 }

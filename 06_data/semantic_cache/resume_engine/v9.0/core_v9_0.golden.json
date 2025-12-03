@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: core_v9_0.py\n# Overwrites: core_v8_5.py\n# Version: 9.0 (Agentic Loops)\n# Zero-Loss Consolidation - The Foundation\n# Merges: models_RES.py \u2192 config_RES.py \u2192 utils_RES.py \u2192 prompts_RES.py\n# v9.0: Pointing CONFIG_PATH to master_config_v9_0.json\n#\n# v9.0: Added BulletCritiqueAgent prompts.\n# v6.4 (Corrected V3) CHANGES:\n# - Renamed ImmutableStagingBuffer 'metadata' field to 'sections' to match\n#   the semantic expectations of the ValidationContext.\n# v6.4 (Corrected V2) CHANGES:\n# - Added master_resume and job_input to WorkflowBlackboard dataclass\n#   to fix TypeError during Governor initialization.\n#\n# GEMINI REVIEW (v6.4 FINAL):\n# - Removed unused import 'TYPE_CHECKING'.\n# - Removed unused/uncalled function 'build_atomic_agent_prompt'.\n# - Removed unused/uncalled class 'WorkflowLogFilter'.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ============================================================================\n",
-  "full_hash": "3ee3d9912448d858768e3cf551653980360ff76e698937be70655f3bd185dcd0",
-  "generated_at": 1764728328.1068487,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\core_v9_0.py"
-}

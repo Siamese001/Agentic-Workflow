@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764728353.2041917,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\expand-phase\\score-job-fit\\general\\understand-request\\order_skills_by_relevance.py"
-}

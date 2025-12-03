@@ -1,6 +1,0 @@
-{
-  "golden_content": "# hops/hop_5_validation.py\n\"\"\"\nHop 5: Comprehensive Validation - HIGH-SIGNAL OVERWRITE\n\nThis advanced validator uses the HOP-0 RAG analysis as a\nground-truth \"answer key\" to validate the final generated content\nfrom the HOP-4 staging buffer.\n\nIt performs:\n1.  Semantic Alignment Validation (Vector-based)\n2.  Thematic & Keyword Coverage Checks\n3.  Narrative Inclusion Checks\n4.  Standard Linting & Placeholder Detection\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import List, Dict, Any, Set\n\n# --- High-Signal Imports ---\nimport numpy as np\nfrom sklearn.metrics.pairwise import cosine_similarity\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components\nfrom helpers import (\n    setup_workflow_logging, HopExecutionError, default_serializer,\n    ValidationResult, ValidationSeverit",
-  "full_hash": "fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f",
-  "generated_at": 1764728232.1046007,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\Archive\\05_hop_validation.py"
-}

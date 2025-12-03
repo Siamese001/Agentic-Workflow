@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: models.py\n\"\"\"\nUnified Runtime Models (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n=================================================\n\nThis file defines all structured dataclasses and Pydantic models\nused throughout the v10_10 agentic runtime:\n\n    \u2022 Core workflow dataclasses\n    \u2022 Plans / Results (Strategy, RAG, Drafting, QA, Safety)\n    \u2022 RetrievalConfig\n    \u2022 PromptDefinition / PromptVersion\n    \u2022 ExecutionProfile\n    \u2022 Telemetry models (Phase 3 typed events)\n    \u2022 CostSnapshot\n    \u2022 PolicyDecisionEvent\n    \u2022 Skill / Domain classifier results\n    \u2022 CouncilVote + CorrectionLoopState (Phase-3 DAG)\n\nDesign constraints:\n\n    1. This module is *data-only* (no I/O, no business logic).\n    2. Models are intentionally verbose and explicit.\n    3. All cross-layer contracts must be defined here (or imported here).\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\n# ==============================",
-  "full_hash": "5db752ef63717ffe2b71dc3774ceaefd26ba14043c009b14a84869035fe48b11",
-  "generated_at": 1764728228.342048,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\models.py"
-}

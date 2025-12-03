@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------------\n# Helper: ensure predictable event progression\n# ---------------------------------------------------------------------\nEXPECTED_EVENT_ORDER = [\n    \"safety\",      # SafetyGuardStack\n    \"strategy\",    # StrategyStack\n    \"rag\",         # RAGStack\n    \"bullet\",      # BulletStack\n    \"draft\",       # DraftingStack\n    \"qa\",          # QAStack\n    \"hil\",         # HILInteractionStack (only sometimes)\n]\n\n\ndef _normalize_events(events):\n    \"\"\"\n    Extracts canonical event prefixes from the workflow's event list.\n    Supports string or dict-based event objects.\n    \"\"\"\n    norm = []\n    for e in events:\n        if isinstance(e, str):\n            norm.append(e.lower())\n        elif isinstance(e, dict):\n            # e.g., {\"qa_pass\": \"...\"}\n            for k in e.keys():\n                norm.append(k.lower())\n        else:\n            norm.append(str(e).lower())\n ",
-  "full_hash": "c9218c157a755b1bc21fe819acaa5cff1dca4b105ebf95eb6c172f984e30eb1f",
-  "generated_at": 1764728230.5942557,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_integration_flow_v10_7.py"
-}

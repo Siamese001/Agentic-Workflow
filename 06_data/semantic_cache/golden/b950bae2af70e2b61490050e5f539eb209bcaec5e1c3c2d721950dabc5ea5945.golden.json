@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b950bae2af70e2b61490050e5f539eb209bcaec5e1c3c2d721950dabc5ea5945",
-    "scan_timestamp": "2025-12-03T07:26:03.618956"
+    "scan_timestamp": "2025-12-03T08:04:48.126921"
   },
   "content_preview": "from __future__ import annotations\n\nimport asyncio\nfrom typing import Any, Dict\n\nfrom orchestration.dag_engine import Graph, Node, Edge, DAGExecutor\nfrom orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole\n\n\nasync def _noop(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    return dict(ctx)\n\n\ndef test_dag_executor_records_agent_assignments():\n    nodes = {\n        \"n1\": Node(id=\"n1\", fn=_noop, metadata={\"agent_type\": \"pla...",
-  "creation_timestamp": "2025-12-03T07:26:09.095089",
+  "creation_timestamp": "2025-12-03T08:04:55.723146",
   "version": "1.0"
 }

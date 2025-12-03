@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.71 - REASONING TOGGLES HARDENED PATCH\n\nv5.71 CHANGES - REASONING TOGGLES TO LLM (HARDENED):\n\u2705 PATCH: REASONING CONFIG TO API PARAMETERS\n   - reasoning_config_to_api_params() translates toggles to temperature/tokens\n   - enhance_system_prompt_with_reasoning() adds reasoning directives\n   - All K-node generation methods updated to use reasoning config\n   - Graceful fallback with sensible defaults\n   - Temperature mapped: high intensity = low temp, low intensity = high temp\n   - Token allocation: 400-800 based on reasoning depth\n   - System prompt enhanced with mandatory reasoning directives\n   - QA Section 10 documents reasoning configurations used\n   - Extensive logging for debugging/audit trail\n\nv5.70 CHANGES - TRIPLE HARDENING (3 Critical Patches):\n\u2705 PATCH 1/3: WORD COUNT VALIDATION (HARDENED)\n   - _get_actual_word_counts() now iterates over staging_buffer keys (not SectionRegistry)\n   - Ensures ALL actually generated content is counted toward total\n   ",
-  "full_hash": "84a57db8133f2a05bd041567571eafad8b377902e1e9ca1ded41990c83e08201",
-  "generated_at": 1764728311.28581,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_73_2.py"
-}

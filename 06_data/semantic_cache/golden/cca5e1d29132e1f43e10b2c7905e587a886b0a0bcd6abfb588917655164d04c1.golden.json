@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cca5e1d29132e1f43e10b2c7905e587a886b0a0bcd6abfb588917655164d04c1",
-    "scan_timestamp": "2025-12-03T07:26:03.829335"
+    "scan_timestamp": "2025-12-03T08:04:48.334610"
   },
   "content_preview": "\"\"\"\nResume Generation Engine v5.44 - CRITICAL WORD COUNT FIXES\n\nv5.44 CHANGES - CRITICAL FIXES:\n\u2713 FIXED: Markdown token counting - now strips ##, **, \u2022 before counting\n\u2713 FIXED: Baseline calculation - uses static constants (949 words) from clean master\n\u2713 FIXED: Total baseline - correct value 949 (was 1,184 with markdown)\n\u2713 FIXED: Executive summary target - 125 words (midpoint of 100-150)\n\u2713 FIXED: Content verbosity - enforces master bullet length constraints\n\u2713 FIXED: Output 4 table - correct row o...",
-  "creation_timestamp": "2025-12-03T07:26:30.655797",
+  "creation_timestamp": "2025-12-03T08:05:16.860921",
   "version": "1.0"
 }

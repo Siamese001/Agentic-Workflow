@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.88\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.88\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P888, P887, P886. Overhauled L-series trace generation with real-time execution data capture and dynamic templating. Implemented highly-differentiated reasoning configurations for all four primary archetypes. Enforced schema ingestion prior to K.1 confirmation gate display.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.8.8\",\n        \"date\": \"2025-10-08\",\n        \"author\": \"Gemini System Engineer\",\n        \"description\": \"Applied P888. Overhauled L-series trace generation to be a dynamic, data-driven engine using real-time execution capture to populate user-provided templates, ensuring traces are high-fidelity representations of the work performed.\"\n      },\n      {\n        \"version\": \"v8.8.7\",\n        \"date\": \"2025-10-08\",\n",
-  "full_hash": "a6caf26754a0443564e622bafedaefe7e29e99b25c0df537ce1d259af0ef36b6",
-  "generated_at": 1764728336.785886,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.88.json"
-}

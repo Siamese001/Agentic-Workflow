@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: clerk_RES_v2.py\n# ClerkExtractor class - extracts data from master resume\n\nimport logging\nfrom typing import Dict, List, Tuple\n\nfrom models_RES import BulletProvenance, ValidationResult\n\nlogger = logging.getLogger(__name__)\n\n\nclass ClerkExtractor:\n\n    def __init__(self, master_resume: Dict):\n        self.master_resume = master_resume\n        self._validate_master_resume_structure()\n\n    def extract(self) -> Tuple[Dict, List[ValidationResult]]:\n        validation_results = []\n\n        experience_sections = self._build_experience_sections()\n\n        all_bullets = []\n        for section in experience_sections:\n            all_bullets.extend([bullet['bullet_text'] for bullet in section.get('bullets', [])])\n\n        bullet_dicts = [{'bullet_text': b} for b in all_bullets]\n\n        extracted_data = {\n            \"experience_sections\": experience_sections,\n            \"header\": self.master_resume.get(\"header\", {}),\n            \"education\": self.master_resume.get(\"education\", []),\n   ",
-  "full_hash": "79d7b5c2fa4c781e7c36a32cd9803093a69c3e862ab0fa4ec82051550af379d5",
-  "generated_at": 1764728326.9225345,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\clerk_RES_v2.py"
-}

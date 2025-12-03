@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.16 - DATA DESTRUCTIVE OVERWRITE\n================================================================================\nPATCH NOTES v5.16 (October 2025):\n\u2713 Master Resume: Destructive overwrite with V2.15 (from V2.14)\n  - Updated mock master resume fallback data with actual V2.15 schema\n  - Changed file reference from Master_Resume_V2_14.json to Master_Resume_V2_15.json\n  - Full bullet_pool arrays for Unify and IBM roles\n  - Updated owner contact info, education, certifications, and competencies\n\u2713 Note: SaaS_Roles_v3.json provided but not embedded (script uses external file reference)\n\u2713 No functional changes to engine logic or constraints\n\u2713 Data refresh only - all v5.15 logic preserved\n\nPATCH NOTES v5.15 (October 2025):\n\u2713 Competencies constraints: Bullet words \u00b13% of master resume avg per bullet\n\u2713 Competencies section total: \u00b120% of master resume total section words\n\u2713 Optimization: Maximize signal while maintaining highest possible temperature\n\u2713 Overwrite: Repla",
-  "full_hash": "4c41a144d640eb806c5ad0ad60ef5694c28e471de219e5ee36a0adc2ab303146",
-  "generated_at": 1764728300.648185,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_16_full.py"
-}

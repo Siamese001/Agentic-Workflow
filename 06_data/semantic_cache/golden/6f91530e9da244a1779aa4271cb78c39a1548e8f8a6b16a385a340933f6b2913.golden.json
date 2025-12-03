@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6f91530e9da244a1779aa4271cb78c39a1548e8f8a6b16a385a340933f6b2913",
-    "scan_timestamp": "2025-12-03T07:26:03.659282"
+    "scan_timestamp": "2025-12-03T08:04:48.165739"
   },
   "content_preview": "from infra.sandbox.models import ToolCallRequest\nfrom infra.sandbox.vm_manager import run_in_ephemeral_vm\n\n\ndef test_tool_like_call_runs_in_vm_boundary():\n    # In this codebase tools are not first-class, but this test ensures\n    # that the sandbox entrypoint can be used as a tool middleware shim.\n    req = ToolCallRequest(tool_name=\"echo\", args=[\"middleware\"], timeout_s=1.0)\n    result = run_in_ephemeral_vm(req, resource_limits={\"memory_mb\": 32})\n\n    assert result.success is True\n    assert \"...",
-  "creation_timestamp": "2025-12-03T07:26:10.539958",
+  "creation_timestamp": "2025-12-03T08:04:57.295432",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - execute_scripts_commands\nImplements L1 Cognitive Planning Layer for execute scripts commands operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ExecuteScriptsCommandsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ExecuteScriptsCommandsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ExecuteScriptsCommandsOrchestratorResult:\n    \"\"\"L5 Result structure ",
-  "full_hash": "9afeca44d9b7d10a5b910f4bbd1072e9badc94f86c1db8d6ed155dd5784d156a",
-  "generated_at": 1764728351.844066,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\execute_scripts_commands.py"
-}

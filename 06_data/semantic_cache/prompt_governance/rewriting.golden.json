@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Outreach Rewriting Prompts v1.0\n# Prompts for rewriting and optimizing outreach content\n\noutreach_rewriting:\n  version: \"1.0\"\n  last_updated: \"2024-01-01T00:00:00Z\"\n  \n  # Content rewriting frameworks\n  content_rewriting:\n    # Message rewriting\n    message_rewriting:\n      personalization_enhancement:\n        prompt: |\n          Rewrite outreach messages to enhance personalization and authenticity:\n          \n          Personalization Enhancement Framework:\n          1. Research-Based Personalization:\n             - Incorporate specific company research findings\n             - Reference recent company news or achievements\n             - Acknowledge recipient's specific contributions\n             - Connect to industry trends affecting their role\n             \n          2. Contextual Relevance:\n             - Align with their current projects or challenges\n             - Reference their professional interests and expertise\n             - Connect to mutual connections or shared experie",
-  "full_hash": "4dad666347d2711e692f06fe4590179b5ebbf60d52ef7e1b7721beb3c6277187",
-  "generated_at": 1764728348.021857,
-  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\executor-microagent-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\rewriting.yaml"
-}

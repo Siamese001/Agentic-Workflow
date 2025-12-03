@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v4\",\n  \"metadata\": {\n    \"version\": \"LIC_10-02-2025_v5\",\n    \"patches\": [\n      \"C001\",\n      \"C002\",\n      \"C003\",\n      \"C004\",\n      \"C005\",\n      \"C006\",\n      \"C007\",\n      \"C008\",\n      \"C009\"\n    ],\n    \"changelog\": \"external://CHANGELOG.md\",\n    \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\"\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3 (Context) once and pause - includes routing decision tree, LinkedIn inputs, job application context, and reasoning display preference.\",\n    \"Run Section 4 (Reasoning) with K.1-K.7 execution - use simplified output if SHOW_DETAILED_REASONING=OFF per JW v18.8.\",\n    \"Detect message type transitions requiring K.3-K.4 regeneration (e.g., SHORT_NEW to SENIOR_TA).\",\n    \"Run Section 5 (Output) to generate clean, copy-paste ready LinkedIn message per JW v18.8 format.",
-  "full_hash": "1108210402a82b90cb0ffba6892e7ae53c6a9daa23db9bbcb9ac70f7773f688d",
-  "generated_at": 1764728332.0617554,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-02-2025_v5.1.json"
-}

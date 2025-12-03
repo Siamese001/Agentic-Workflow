@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: rag_RES_v2.py\n# Version: 17.01 (Patched)\n# RAG (Retrieval-Augmented Generation) module for Resume Workflow\n# Contains classes for web search, circuit breakers, phase execution,\n# Librarian persistent memory agent, and job description analysis (HOP-0).\n#\n# V2 INTEGRATION:\n# - EnhancedJobDescriptionAnalyzer: Used in HOP-0 (initial state load)\n# - LibrarianAgent: Called by workflow for deep RAG with persistent memory\n# - RAGMission: Core data structure for thematic analysis\n# - WebSearchTool: Performs multi-phase RAG searches\n# - CircuitBreaker/PhaseExecutor: Reliability patterns for RAG operations\n\nimport copy\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport re\nimport signal\nimport time\nfrom collections import defaultdict\nfrom dataclasses import asdict, dataclass, field, is_dataclass\nfrom datetime import datetime, timedelta\nfrom enum import Enum\nfrom functools import partial\nfrom typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar\n\n# Third-pa",
-  "full_hash": "e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43",
-  "generated_at": 1764728327.2722752,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\rag_RES_v2.py"
-}

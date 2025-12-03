@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: utils_RES_v2.py\n# Version: 17.01 (Patched)\n# Utilities module for Resume Workflow\n# Contains logging, text utilities, data loading, and helper functions\n#\n# V2 TOOL INTEGRATION:\n# - TextSanitizer: Used in HOP-4 (generation loop step 4)\n# - CodeInterpreterTool: Used for Macro ToT evaluation and deterministic operations\n# - DuplicateDetector: Used in HOP-2 (enrichment)\n# - WorkflowLogFilter: Used by TraceRegistry/logging system\n# - TextUtils: Word counting and text manipulation for validation\n\nimport hashlib\nimport json\nimport logging\nimport os\nimport re\nimport subprocess\nimport uuid\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom typing import Any, Dict, List, Optional, Tuple, Set\n\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    genai = None # Add a placeholder for type hints\n\ntry:\n    from sklearn.feature_extraction.text import TfidfVectorizer\n    from sklearn.metrics.pairwise i",
-  "full_hash": "a0eb9aee3f027452e83bf9e04453ee183c4f8ec224aa6f916f7beada941ba660",
-  "generated_at": 1764728327.3690996,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\utils_RES_v2.py"
-}

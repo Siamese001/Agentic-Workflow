@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nTest Neo4j integration for L2 execution modules\n\nTests that Neo4j integration works correctly and gracefully handles\nmissing Neo4j driver or connection issues.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import patch\nfrom datetime import datetime, UTC\nimport sys\nimport os\n\n# Add project root to path for imports\nsys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))\n\nfrom l4.temporal_schemas import (\n    TemporalEntity,\n    TemporalTriplet,\n    TemporalEvent,\n    TemporalRange,\n)\n\n\nclass TestNeo4jIntegration:\n    \"\"\"Test Neo4j integration components.\"\"\"\n\n    def test_graph_query_imports(self):\n        \"\"\"Test that graph_query module imports correctly.\"\"\"\n        from graph_query import graph_query\n        assert callable(graph_query)\n\n    def test_graph_query_without_neo4j(self):\n        \"\"\"Test graph_query gracefully handles missing Neo4j.\"\"\"\n        from graph_query import graph_query\n        \n        with patch('graph_query._NEO4J_AVAILABLE', False):\n            ",
-  "full_hash": "fd597236b57862064966590021cb478a8bb47639c58ab405f5be46d1f6f0eda6",
-  "generated_at": 1764728226.947099,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\integration\\test_neo4j_integration.py"
-}

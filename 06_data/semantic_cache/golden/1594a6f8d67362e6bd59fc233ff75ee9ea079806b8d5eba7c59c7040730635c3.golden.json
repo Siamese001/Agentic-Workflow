@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "1594a6f8d67362e6bd59fc233ff75ee9ea079806b8d5eba7c59c7040730635c3",
-    "scan_timestamp": "2025-12-03T07:26:03.738780"
+    "scan_timestamp": "2025-12-03T08:04:48.249461"
   },
   "content_preview": "from __future__ import annotations\n\nimport asyncio\nimport contextlib\nimport sys\nimport types\nfrom typing import Any, List\n\nimport pytest\n\n\ndef install_langgraph_stub() -> None:\n    if \"langgraph\" in sys.modules:\n        return\n\n    langgraph = types.ModuleType(\"langgraph\")\n    graph_module = types.ModuleType(\"langgraph.graph\")\n\n    class StateGraph:  # type: ignore[override]\n        def __init__(self, _state_type):\n            self.nodes = {}\n\n        def add_node(self, name, func):\n            ...",
-  "creation_timestamp": "2025-12-03T07:26:18.414697",
+  "creation_timestamp": "2025-12-03T08:05:05.506492",
   "version": "1.0"
 }

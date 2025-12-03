@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: run_learning_v7.0.py\n# Overwrites: run_learning_v6_4.py\n# NEW: Asynchronous Meta-Learning Loop (v7.0)\n#\n# v7.0 (Based on v7.0 Architecture) CHANGES:\n# - Updated all imports from v6_4 to v7_0.\n# - 'PatternFinderAgent' updated to parse the new feedback log format,\n#   which uses 'agent_name' or 'check_name' instead of 'rule_id'.\n# - 'MetaPlannerAgent' logic updated to look for new agent names\n#   (e.g., 'SignalScoreValidatorAgent') as pattern keys.\n# - Assumes that some agent (even if not yet implemented) will\n#   read the 'rules_registry.json' to close the loop.\n\nimport json\nimport logging\nimport os\nfrom datetime import datetime\nfrom typing import List, Dict, Any\nfrom collections import defaultdict\n\n# Imports from its *own* versioned files (v7.0)\n# We need core_v7_0 for config and logging\nfrom core_v7_0 import CONFIG, setup_logging\n\nlogger = logging.getLogger(\"meta_learner_v7_0\")\n\n# --- AGENTS (Preserved from v6.4 structure) ---\n\nclass PatternFinderAgent:\n    \"\"\"Agent to find re",
-  "full_hash": "cd411030747654142fd50a229829dc960641abcc15e89a557973a330bd0c7f5a",
-  "generated_at": 1764728327.7659574,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\run_learning_v7_0.py"
-}

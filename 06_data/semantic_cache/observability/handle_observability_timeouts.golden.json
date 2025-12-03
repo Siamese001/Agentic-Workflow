@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - handle_observability_timeouts\nImplements L1 Cognitive Planning Layer for handle observability timeouts operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass HandleObservabilityTimeoutsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass HandleObservabilityTimeoutsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass HandleObservabilityTimeoutsOrchestratorResult:\n  ",
-  "full_hash": "2d959f24129c06aa566b0d87749e07be1b7bdbdb555b1d1f5ddab310a7c57aae",
-  "generated_at": 1764728350.829016,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\orc-layer\\act-phase\\use-observability-tools\\routing\\retry-task\\handle_observability_timeouts.py"
-}

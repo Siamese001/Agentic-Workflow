@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "91a5360a700e99114fa0a02dd610cc9a3ace3fca7f180a8b0b4e0553d87f2ec7",
-    "scan_timestamp": "2025-12-03T07:26:03.684791"
+    "scan_timestamp": "2025-12-03T08:04:48.191180"
   },
   "content_preview": "# FILE: ranking.py\n\"\"\"\nRanking Utilities (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n============================================\n\nResponsibilities:\n    \u2022 Provide deterministic, side-effect-free ranking functions.\n    \u2022 Dict-based API (backward-compatible):\n          - bm25(items)\n          - dense(items)\n          - hybrid(items)\n          - fuse_ranked_groups(groups, ...)\n          - rank_documents(items, strategy=...)\n    \u2022 Evidence-based API (for RAG):\n          - normalize_evidence_scores(...)\n          - d...",
-  "creation_timestamp": "2025-12-03T07:26:12.563947",
+  "creation_timestamp": "2025-12-03T08:04:59.447800",
   "version": "1.0"
 }

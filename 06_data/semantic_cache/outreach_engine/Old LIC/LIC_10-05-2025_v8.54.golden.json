@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.4\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.4\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.4: Fixed L1 transformer output rendering when detailed reasoning enabled. Decoupled high_signal_event flag requirement from L1 baseline generation. L1 now renders baseline narrative unconditionally with optional dynamic content inclusion based on execution depth.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.5.4\",\n        \"date\": \"2025-10-07\",\n        \"author\": \"LIC Engineering Team\",\n        \"description\": \"Applied PATCH_LIC_8.5.4. Fixed critical bug where L1 transformer output failed when user selected 'Yes' for detailed reasoning. Root cause: mandatory high_signal_event flag dependency blocked L1 baseline rendering. Solution: Implemented dual-mode rendering strategy (baseline always + dynamic content conditional). Added l",
-  "full_hash": "a477ff5dee32ff3599048951d3c53891c2c2ddca0e224a6ae819af15eb01409e",
-  "generated_at": 1764728336.077393,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.54.json"
-}

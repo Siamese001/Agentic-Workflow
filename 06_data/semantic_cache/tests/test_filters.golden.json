@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nContract-level tests for Safety Filters (L5)\nTests content filtering and input validation\n\"\"\"\nimport pytest\nfrom typing import Dict, Any, List\nfrom unittest.mock import Mock\n\n# Import the actual safety filters when available\ntry:\n    from agentic_core.l5_safety.filters.content_filter import ContentFilter\n    from agentic_core.l5_safety.filters.input_validator import InputValidator\n    from agentic_core.l5_safety.filters.output_sanitizer import OutputSanitizer\nexcept ImportError:\n    ContentFilter = InputValidator = OutputSanitizer = Mock\n\n\nclass TestSafetyFiltersContracts:\n    \"\"\"Test safety filters contracts at L5 boundary\"\"\"\n    \n    def test_content_filter_initialization_contract(self):\n        \"\"\"Test content filter initializes with required configuration\"\"\"\n        if ContentFilter is Mock:\n            pytest.skip(\"ContentFilter not implemented\")\n        \n        config = {\"filter_level\": \"strict\", \"blocked_categories\": [\"harmful\", \"illegal\"]}\n        filter = ContentFilter(co",
-  "full_hash": "f002636e51219047538406ec704da470f6cf17db7241fbe59eb9f7c09a2c9294",
-  "generated_at": 1764728354.0626574,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\l5_safety\\rules\\safety-guard-layer\\inspect-phase-group\\constraint-check-ops\\test_filters.py"
-}

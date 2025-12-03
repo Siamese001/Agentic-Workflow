@@ -1,6 +1,0 @@
-{
-  "golden_content": "# COMPREHENSIVE EQUIVALENCE TEST RESULTS\n## Monolithic v16_20 vs Modular Components - Final Report\n\n**Test Date:** October 30, 2025  \n**Test Suite:** Comprehensive Edge Cases and Stress Tests  \n**Total Tests:** 20 across 7 categories  \n**Pass Rate:** 80.0% (16 passed, 4 failed)\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modular components are **substantially equivalent** to the monolithic v16_20 implementation, with **one structural difference** identified that requires a minor fix.\n\n### Key Finding:\n\u2713 **80% of tests passed completely**  \n\u2713 **Core functionality is identical**  \n\u26a0 **One ValidationRule interface difference** (fixable)  \n\u2713 **All edge cases handled identically**  \n\u2713 **All stress tests passed**  \n\u2713 **All integration tests passed**\n\n---\n\n## DETAILED TEST RESULTS BY CATEGORY\n\n### CATEGORY 1: CLASS STRUCTURE (2/3 passed)\n```\n\u2713 PASS: Class Method Signatures\n\u2717 FAIL: Class Inheritance Structures (import issue, not logic issue)\n\u2713 PASS: Enum Value Completeness\n```\n\n**Assessment:** Class struc",
-  "full_hash": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
-  "generated_at": 1764728233.131754,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Monolith\\TEST_FINDINGS_REPORT.md"
-}

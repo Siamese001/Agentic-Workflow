@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "af09452b43d677bb5c6add158a2b32ed2ee9f5697664d0df6b6ed310ac20b6f3",
-    "scan_timestamp": "2025-12-03T07:26:03.586665"
+    "scan_timestamp": "2025-12-03T08:04:48.094967"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Optional\n\nfrom core.models.models import RetrievalConfig\nfrom meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache\n\n\ndef read_semantic_cache(key: str, cfg: RetrievalConfig) -> Optional[Any]:\n    \"\"\"Read a value from the semantic cache if enabled.\n\n    Currently this delegates to the generic Redis cache using the\n    RetrievalConfig.redis_cache settings.\n    \"\"\"\n\n    redis_cfg = getattr(cfg, \"redis_cache\", None)\n...",
-  "creation_timestamp": "2025-12-03T07:26:07.830757",
+  "creation_timestamp": "2025-12-03T08:04:54.208969",
   "version": "1.0"
 }

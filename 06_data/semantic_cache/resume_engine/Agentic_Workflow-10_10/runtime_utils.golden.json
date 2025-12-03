@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: 10_10/runtime_utils.py\n\"\"\"\nUnified Runtime Utilities (v10_10) \u2014 INFRASTRUCTURE LAYER\n=========================================================\n\nThis module is the v10_10 runtime utility layer.\n\nResponsibilities:\n    1. Exception hierarchy for runtime surfaces.\n    2. SandboxConfig + get_sandbox() for logical isolation.\n    3. PredictiveCacheManager for in-memory predictive/semantic caching.\n    4. invoke_model() unified LLM gateway (OpenAI + Anthropic).\n\nDesign constraints:\n    \u2022 No planning (L1).\n    \u2022 No tool logic besides LLM call wrappers (L2).\n    \u2022 No DAG/orchestration (L3).\n    \u2022 No state mutation of WorkflowState (L4).\n    \u2022 No safety/policy decisions (L5).\n    \u2022 No meta-learning or telemetry aggregation (telemetry is delegated\n      to observability.py via record_event / record_exception).\n\"\"\"\n\nfrom __future__ import annotations\n\nimport hashlib\nimport json\nimport os\nimport time\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, Optional, Tuple\n\nfrom",
-  "full_hash": "91f83ce023ebe110fc041480e84d38b75b7aea736a9d8a5079f24e8f2ef46864",
-  "generated_at": 1764728228.4382799,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\runtime_utils.py"
-}

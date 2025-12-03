@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nCommand-line interface for r\u00e9sum\u00e9 analysis and job matching optimization.\n\nImproves r\u00e9sum\u00e9 quality by coordinating multi-agent workflow execution with configurable analysis parameters.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport uuid\nfrom dataclasses import dataclass, asdict\nfrom enum import Enum\nfrom typing import Any, Dict, Mapping, Sequence, Optional, Callable, TypeVar, cast\n\n# ---------------------------------------------------------------------------\n# Optional / dynamic imports of Phase-0 and Phase-3 modules\n# ---------------------------------------------------------------------------\n\n# We keep imports resilient to minor API drift. If the \"real\" types or helpers\n# are present, they are used; otherwise we fall back to looser types so that\n# this module remains importable and testable in isolation.\n\nT = TypeVar(\"T\")\n\n\ndef _safe_import(name: str) -> Any:\n    try:\n        return __import__(name)\n    except Exception:  # pragma: no cover - defensive\n        re",
-  "full_hash": "1f7e3425d64ddf3c317afc6074dd05abf7b41d7bddf5199a735d938f6d9e533b",
-  "generated_at": 1764728228.0270216,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\main_v10_10.py"
-}

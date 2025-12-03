@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Tool registry and built-in retrieval tools.\"\"\"\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Sequence\n\nfrom .content_store import make_key\n\n\n@dataclass(frozen=True)\nclass ToolResult:\n    \"\"\"Response payload returned from tool invocations.\"\"\"\n\n    content: str\n    sources: List[str]\n    latency_ms: int\n    confidence: float\n\n\nclass BaseTool:\n    \"\"\"Base class for retrieval tools.\"\"\"\n\n    name: str = \"base\"\n    cost: float = 0.0\n\n    def run(self, query: str, context: Dict[str, str]) -> ToolResult:  # pragma: no cover - interface\n        raise NotImplementedError\n\n    def estimate_cost(self, query: str) -> float:\n        return self.cost\n\n\nclass WebSearchTool(BaseTool):\n    name = \"web_search\"\n    cost = 0.5\n\n    def run(self, query: str, context: Dict[str, str]) -> ToolResult:\n        latency = _deterministic_latency(self.name, query, context, base=140, spread=60)\n        snippet = f\"Latest web coverage f",
-  "full_hash": "f767f886e73bdbfd053dc3e004fb1c591086395f162d06c63f764d950a434d42",
-  "generated_at": 1764728330.6323388,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\tool_registry.py"
-}

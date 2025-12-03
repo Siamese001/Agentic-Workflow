@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: self_correction.py\n\"\"\"\nUnified Self-Correction Surfaces (v10_9 REFACTORED) \u2014 META LAYER ONLY\n\nThis module defines the unified self-correction framework for the v10_9\nagentic architecture. It implements:\n\n    \u2022 Canonical self-correction surfaces (RAG_RETRY, QA_RECHECK, etc.)\n    \u2022 Deterministic error detection rules over state snapshots\n    \u2022 Enterprise-ordered surface selection (safety > QA > RAG > strategy > checkpoint)\n    \u2022 Structured correction directives (for L3 / meta-learning)\n    \u2022 Multi-surface analysis for diagnostics\n    \u2022 Utilities for telemetry and state patches (read-only)\n\n\u2757 STRICT GUARDRAILS (META-ONLY):\n    \u2022 NO L1 (planning)\n    \u2022 NO L2 (execution / LLM / retrieval)\n    \u2022 NO L3 (orchestration)\n    \u2022 NO L4 (state mutation)\n    \u2022 NO L5 (policy/safety decisions)\n\nAll functions operate ONLY on finalized state snapshots and produce\nrecommendations \u2014 they NEVER perform workflow actions.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, fiel",
-  "full_hash": "3e148cefb46680bac828bd8007cbcad7968f48ef1116bc4066ec7827b19b313b",
-  "generated_at": 1764728228.82614,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\self_correction.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - perform_data_operations\nImplements L1 Cognitive Planning Layer for perform data operations operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass PerformDataOperationsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass PerformDataOperationsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass PerformDataOperationsOrchestratorResult:\n    \"\"\"L5 Result structure with ",
-  "full_hash": "6384fb6450045e5cd6d20ff82d81f265e088b22abcc0df39f6b12ecb296f3d7c",
-  "generated_at": 1764728349.7041547,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\orc-layer\\act-phase\\use-data-tools\\general\\use-a-tool\\perform_data_operations.py"
-}

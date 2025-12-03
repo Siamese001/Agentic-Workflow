@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764728354.6780615,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\validate-phase\\check-tests-structure\\semantic\\adjust-scores\\compute_tests_validation.py"
-}

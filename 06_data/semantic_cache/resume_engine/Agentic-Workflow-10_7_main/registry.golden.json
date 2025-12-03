@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Simulation registry to look up simulator instances.\"\"\"\n\nfrom simulations.engines import (\n    DraftSimulator,\n    RAGSimulator,\n    SafetySimulator,\n    StrategySimulator,\n)\n\nSIMULATION_REGISTRY = {\n    \"strategy\": StrategySimulator(),\n    \"rag\": RAGSimulator(),\n    \"draft\": DraftSimulator(),\n    \"safety\": SafetySimulator(),\n}\n\n\ndef get_simulator(name: str):\n    \"\"\"Return a simulator instance by name.\"\"\"\n\n    return SIMULATION_REGISTRY.get(name)\n",
-  "full_hash": "c71342531d47aae880bd8e05162ccf1b0b970049e10bb07616dd17fee19af2e5",
-  "generated_at": 1764728229.9689405,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\registry.py"
-}

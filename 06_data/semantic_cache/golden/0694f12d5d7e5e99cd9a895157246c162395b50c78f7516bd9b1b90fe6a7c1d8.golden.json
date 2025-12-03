@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0694f12d5d7e5e99cd9a895157246c162395b50c78f7516bd9b1b90fe6a7c1d8",
-    "scan_timestamp": "2025-12-03T07:26:03.660664"
+    "scan_timestamp": "2025-12-03T08:04:48.166775"
   },
   "content_preview": "\"\"\"Shared Test Factories.\"\"\"\n\nclass JobInputFactory:\n    \"\"\"Factory for creating JobInput test objects.\"\"\"\n    \n    @staticmethod\n    def create(title=\"Software Engineer\", requirements=None):\n        \"\"\"Create a JobInput dict.\"\"\"\n        return {\n            \"title\": title,\n            \"requirements\": requirements or [\"Python\", \"AWS\"],\n        }\n\nclass ResumeInputFactory:\n    \"\"\"Factory for creating ResumeInput test objects.\"\"\"\n    \n    @staticmethod\n    def create(summary=\"Experienced developer...",
-  "creation_timestamp": "2025-12-03T07:26:10.562304",
+  "creation_timestamp": "2025-12-03T08:04:57.323638",
   "version": "1.0"
 }

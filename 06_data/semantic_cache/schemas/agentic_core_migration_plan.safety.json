@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 323,
-  "generated_at": 1764728345.3918111,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\agentic_core_migration_plan.json"
-}

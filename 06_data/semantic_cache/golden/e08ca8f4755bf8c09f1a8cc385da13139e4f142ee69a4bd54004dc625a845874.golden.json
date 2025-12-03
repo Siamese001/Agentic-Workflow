@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
-    "scan_timestamp": "2025-12-03T07:26:03.613220"
+    "scan_timestamp": "2025-12-03T08:04:48.121232"
   },
   "content_preview": "# OpenAI Agentic Architecture Refactoring Summary\n\n## Completion Status: \u2705 COMPLETE\n\nAll imports are working correctly and all end-to-end tests are passing (12/12).\n\n## Changes Implemented\n\n### 1. File Reorganization\n\n**Moved to L1 (Planning Layer):**\n- `workflow_planning.py` \u2192 `l1/workflow_planning.py`\n\n**Moved to L3 (Orchestration Layer):**\n- `workflow_graph.py` \u2192 `l3/workflow_graph.py`\n\n**Moved to Meta Layer:**\n- `routing.py` \u2192 `meta/routing.py`\n- `multi_agent.py` \u2192 `meta/multi_agent.py`\n- `r...",
-  "creation_timestamp": "2025-12-03T07:26:08.870498",
+  "creation_timestamp": "2025-12-03T08:04:55.518093",
   "version": "1.0"
 }

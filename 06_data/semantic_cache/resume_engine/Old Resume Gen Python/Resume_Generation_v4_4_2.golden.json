@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v4.4 - MINIMAL OUTPUT VERSION\n=======================================================\n\nCHANGES FROM v4.3:\n- Removed opening banner and optimization list\n- Removed \"Executing pipeline\" message\n- Removed OUTPUT 5 (Optimization Report)\n- Removed all trailing summaries and metadata displays\n- Outputs only 4 items: Resume, Word Table, Signal Calibration, QA Gates\n\nVersion: 4.4.0-MINIMAL\nDate: October 18, 2025\n\"\"\"\n\nimport re\nfrom typing import Dict, List, Tuple, Optional, Callable\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum\nimport math\n\n__version__ = \"4.4.0-MINIMAL\"\n__all__ = [\n    'MasterResume',\n    'SaaSRoleProfiles',\n    'AppTrackerSchema',\n    'AppTrackerQA',\n    'HyphenationRules',\n    'TemperatureMode',\n    'SignalCalibrationConfigV4',\n    'PerSectionTolerance',\n    'SignalElasticityModel',\n    'SectionCoherenceScorer',\n    'SignalPreservationScorer',\n    'K1ExecutiveSummaryGenerator',\n    'BulletWordCountVa",
-  "full_hash": "90052493ce82dc71cc2206c340b71c7a96119cdfd547ff147fbf781e1015e2a5",
-  "generated_at": 1764728296.908976,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_4_2.py"
-}

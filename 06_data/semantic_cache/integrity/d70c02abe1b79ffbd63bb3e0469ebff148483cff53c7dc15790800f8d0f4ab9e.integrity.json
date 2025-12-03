@@ -12,9 +12,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "d70c02abe1b79ffbd63bb3e0469ebff148483cff53c7dc15790800f8d0f4ab9e",
-    "scan_timestamp": "2025-12-03T07:26:03.916046"
+    "scan_timestamp": "2025-12-03T08:04:48.424164"
   },
-  "verification_timestamp": "2025-12-03T07:26:35.479445",
+  "verification_timestamp": "2025-12-03T08:05:21.626138",
   "checksums": {
     "sha256": "0b8d34ec5535eda7da22d05c7a6f97d87b0ffbc7abf62d0740da32cdb1a91b20",
     "md5": "5c3c5a095804b51bcb076665cf3adb48"

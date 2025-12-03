@@ -1,6 +1,0 @@
-{
-  "golden_content": "from types import SimpleNamespace\n\nfrom agent_orchestration_v10_7 import get_graph_app\nfrom core_v10_7.models import ArbitrationReport\n\n\nclass DummyArbitrationEngine:\n    async def run_check(self, stage: str, state: dict) -> ArbitrationReport:  # pragma: no cover - trivial stub\n        return ArbitrationReport(stage=stage, decision=\"ACCEPT\", reasons=[\"stub\"], confidence=1.0)\n\n\nclass DummyWorkflowContext:\n    def __init__(self) -> None:\n        agent_stacks = SimpleNamespace(\n            enable_hil_stack=False,\n            max_local_retries=1,\n            enable_prompt_injection_detection=False,\n        )\n        performance_config = SimpleNamespace(workflow_node_timeout_seconds=1)\n        hil_config = SimpleNamespace(enabled=True, max_reentry_loops=2)\n        self.config = SimpleNamespace(\n            agent_stacks=agent_stacks,\n            performance_config=performance_config,\n            hil_config=hil_config,\n        )\n        self.arbitration_engine = DummyArbitrationEngine()\n     ",
-  "full_hash": "ce25e461c2a7132c32403ec8c05058e0018f895eefb4c43888c64d20e0e73b86",
-  "generated_at": 1764728231.4704025,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\integration\\test_arbitration_graph_wiring.py"
-}

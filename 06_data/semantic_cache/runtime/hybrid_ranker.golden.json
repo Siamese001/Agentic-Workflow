@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom typing import Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom core.models.models import CouncilVote, Evidence, RAGResult, RetrievalConfig\n\n\ndef _apply_council_weights(evidence: Sequence[Evidence], council: Optional[CouncilVote]) -> List[Evidence]:\n    \"\"\"Apply QA-council post-fusion weighting to Evidence scores.\n\n    Selected id receives a small boost; all others are slightly demoted.\n    This mirrors the behavior previously implemented in retrieval.py\n    but lives here so that all evidence-level ranking logic is contained\n    within the META retrieval/ranking layer.\n    \"\"\"\n\n    if council is None or not council.selected_id:\n        return list(evidence)\n\n    sel = council.selected_id\n    BOOST = 1.12\n    DEMOTE = 0.94\n\n    adjusted: List[Evidence] = []\n    for ev in evidence:\n        factor = BOOST if sel in ev.text else DEMOTE\n        adjusted.append(ev.model_copy(update={\"score\": ev.score * factor}))\n    return adjusted\n\n\ndef _canonic",
-  "full_hash": "aaaf900d2cf1d5d27c0fd14512b4b7cd561fd40954d2dcd05f388fc9104a880d",
-  "generated_at": 1764728347.7390654,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\router-microagent-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\hybrid_ranker.py"
-}

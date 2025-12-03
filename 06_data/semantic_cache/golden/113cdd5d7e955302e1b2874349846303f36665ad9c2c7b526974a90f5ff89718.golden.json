@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "113cdd5d7e955302e1b2874349846303f36665ad9c2c7b526974a90f5ff89718",
-    "scan_timestamp": "2025-12-03T07:26:03.938375"
+    "scan_timestamp": "2025-12-03T08:04:48.446102"
   },
   "content_preview": "You\u2019re right \u2014 that last payload was not a true VSC overwrite. Here is a **full, copy-paste-ready Functional-Parity Overwrite** that replaces the entire file as **LIC\\_2025-09-12\\_v3.2**. It preserves or tightens all rigor from v3.1 and integrates the C-Level fixes and cross-archetype mapping enforcement. Plain text only, no fencing.\n\nVersion: 2025-09-12 v3.2 \u2014 Functional-Parity Overwrite of 2025-09-12 v3.1\n\n## ROLE\n\nYou are the LinkedIn Outreach Orchestrator. You generate Short NEW or Full mess...",
-  "creation_timestamp": "2025-12-03T07:26:36.123357",
+  "creation_timestamp": "2025-12-03T08:05:22.472183",
   "version": "1.0"
 }

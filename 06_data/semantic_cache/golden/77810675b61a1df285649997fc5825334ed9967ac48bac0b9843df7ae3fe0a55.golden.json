@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "77810675b61a1df285649997fc5825334ed9967ac48bac0b9843df7ae3fe0a55",
-    "scan_timestamp": "2025-12-03T07:26:03.568684"
+    "scan_timestamp": "2025-12-03T08:04:48.078415"
   },
   "content_preview": "\"\"\"L2 Interfaces for resume processing execution layer.\n\nDefines abstract interfaces for L2 execution operations to ensure\nconsistent resume improvement and job alignment workflows.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom abc import ABC, abstractmethod\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\nfrom core.models.models import (\n    StrategyResult,\n    DraftingResult,\n    QAResult,\n    SafetyResult,\n    RAGResult,\n    Evidence,\n    LLMRequest,\n    LLMResp...",
-  "creation_timestamp": "2025-12-03T07:26:06.380714",
+  "creation_timestamp": "2025-12-03T08:04:51.829438",
   "version": "1.0"
 }

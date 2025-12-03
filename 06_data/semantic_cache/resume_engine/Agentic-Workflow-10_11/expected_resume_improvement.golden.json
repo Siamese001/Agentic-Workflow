@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"version\": \"1.0\",\n  \"description\": \"Expected outputs for resume improvement\",\n  \"outputs\": [\n    {\n      \"sample_id\": \"sample_001\",\n      \"expected_sections\": [\"summary\", \"experience\", \"skills\", \"education\"],\n      \"expected_keywords\": [\"software\", \"engineer\", \"python\"],\n      \"min_quality_score\": 0.80\n    },\n    {\n      \"sample_id\": \"sample_002\",\n      \"expected_sections\": [\"summary\", \"experience\", \"skills\", \"projects\"],\n      \"expected_keywords\": [\"data\", \"machine learning\", \"python\"],\n      \"min_quality_score\": 0.85\n    }\n  ]\n}\n",
-  "full_hash": "6b14c869c94bbac7d932bae8e017f587cee68e33d4d303f20c9357c95b984745",
-  "generated_at": 1764728226.6668658,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\expected_outputs\\expected_resume_improvement.json"
-}

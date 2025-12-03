@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Prompt injection detection heuristics for the outreach stack.\"\"\"  # pragma: no cover\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Iterable\n\n_HIGH_RISK_KEYWORDS: Iterable[str] = (\n    \"ignore previous instructions\",  # pragma: no cover\n    \"exfiltrate\",  # pragma: no cover\n    \"password\",  # pragma: no cover\n    \"disable safety\",  # pragma: no cover\n    \"run shell\",  # pragma: no cover\n)\n_MEDIUM_RISK_KEYWORDS: Iterable[str] = (\"bypass\", \"override\", \"forget the rules\")  # pragma: no cover\n\n\n@dataclass(frozen=True)\nclass InjectionFinding:\n    \"\"\"Represents the outcome of a prompt-injection scan.\"\"\"\n\n    is_injection: bool\n    severity: str\n    rationale: str\n\n\ndef _score_prompt(prompt: str) -> tuple[int, str]:\n    lowered = prompt.lower()\n    for keyword in _HIGH_RISK_KEYWORDS:\n        if keyword in lowered:\n            return 2, f\"High risk keyword detected: '{keyword}'\"\n    for keyword in _MEDIUM_RISK_KEYWORDS:\n        if keyword in lowered",
-  "full_hash": "67e228d8664de05a40e8b21cf3421dd53b0518dcaf55aaa726cb68f23b4a4791",
-  "generated_at": 1764728330.7075841,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\safety\\prompt_injection.py"
-}

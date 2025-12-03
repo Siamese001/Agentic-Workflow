@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Anthropic client adapter for v10_10.\n\nThis module is the ONLY place where the Anthropic SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any, List\n\n\ndef run_llm_anthropic(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run an Anthropic message completion and return the response text.\"\"\"\n\n    try:\n        import anthropic  # type: ignore\n    except ImportError as exc:  # pragma: no cover - optional dependency\n        raise ImportError(\"anthropic package not installed\") from exc\n\n    api_key = os.getenv(\"ANTHROPIC_API_KEY\")\n    if not api_key:\n        raise RuntimeError(\"ANTHROPIC_API_KEY must be set for Anthropic provider\")\n\n    client = anthropic.Anthropic(api_key=api_key)\n\n    resp: Any = client.messages.create(\n        model=model,\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        temperature=tem",
-  "full_hash": "f456031a9d5cad4c69093285df831bbb2b048a5fe0e65d38eb03a4afc3dec8a8",
-  "generated_at": 1764728226.0161476,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\anthropic_client.py"
-}

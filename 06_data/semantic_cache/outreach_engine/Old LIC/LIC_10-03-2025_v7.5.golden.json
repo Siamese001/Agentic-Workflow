@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-03-2025_v7.5\",\n  \"metadata\": {\n    \"version\": \"LIC_10-03-2025_v7.5\",\n    \"date\": \"2025-10-03\",\n    \"target_file\": \"LIC_10-03-2025_v7.5.json\",\n    \"base_file_reference\": \"LIC_10-03-2025_v7.1.json\",\n    \"patches\": [\n      \"C001\",\"C002\",\"C003\",\"C004\",\"C005\",\"C006\",\"C007\",\"C008\",\"C009\",\"C010\",\"C011\",\"C012\",\"C013\",\"C014\",\"C015\",\"C016\",\"C017\",\"C018\",\"C019\",\"C020\",\"C021\",\"C022\",\"C023\",\"C024\",\"C025\",\"C026\",\"C027\",\"C028\",\"C029\",\"C030\",\"C031\",\"C032\",\"C033\"\n    ],\n    \"changelog\": [\n      \"C025: About field made OPTIONAL; intelligence source hierarchy added; validation updated.\",\n      \"C026: Cross-encoder reranking stage added to retrieval.\",\n      \"C027: HyDE hypothetical profile enrichment for weak/missing About.\",\n      \"C028/C030: Self-RAG with adaptive multi-hop gap-closing.\",\n      \"C029: Episodic memory store & retrieval hop.\",\n      \"C031: Knowledge-graph schema & graph hop.\",\n      \"C032: Few-shot example libra",
-  "full_hash": "40449d9a6ca796d43d5885e4d09c25c05229c70c28a48ff47f848d94fbea9c19",
-  "generated_at": 1764728334.5672724,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v7.5.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------------\n# Helper: normalize QA issues\n# ---------------------------------------------------------------------\ndef _issues(out):\n    qa = (\n        out.get(\"qa\")\n        or out.get(\"resume\", {}).get(\"qa\")\n        or {}\n    )\n    return qa.get(\"issues\", [])\n\n\n# ---------------------------------------------------------------------\n# 1. Confidence score must be present and numeric\n# ---------------------------------------------------------------------\n@pytest.mark.validation\ndef test_confidence_score_numeric_and_in_range():\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\": \"ConfidenceTest\", \"jd\": \"AI Exec\"})\n    qa = out[\"resume\"][\"qa\"]\n\n    assert \"confidence\" in qa, \"QA missing confidence score\"\n    conf = qa[\"confidence\"]\n\n    assert isinstance(conf, (int, float)), f\"Confidence must be numeric; got {type(conf)}\"\n    assert 0 <= conf <= 1, f\"Confidence must be ",
-  "full_hash": "163d34489641c2e7177ec8f50dabab3fb980cf4041829daaee0d00583b88e6a9",
-  "generated_at": 1764728231.394474,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\validation\\test_semantic_and_qa_validation_v10_7.py"
-}

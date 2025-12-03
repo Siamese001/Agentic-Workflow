@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nControl plane decision logic for r\u00e9sum\u00e9 processing safety enforcement.\n\nProvides rule evaluation and verdict aggregation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional, Literal\n\nfrom pydantic import BaseModel, Field\n\nfrom .models import PolicyRule\n\n\nclass RuleMatch(BaseModel):\n    \"\"\"\n    Represents policy rule match for r\u00e9sum\u00e9 processing safety evaluation.\n\n    Enables systematic safety assessment for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    rule_id: str\n    category: str\n    severity: str\n    is_pii: bool = False\n\n    # Optional small snippet or structured payload.\n    details: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass RulesEngineResult(BaseModel):\n    \"\"\"\n    Aggregates rule evaluation results for r\u00e9sum\u00e9 processing safety decisions.\n\n    Provides comprehensive safety assessment for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n\n    matches: List[RuleMatch] = Field(default_factory=list)\n    max_severity: Optio",
-  "full_hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
-  "generated_at": 1764728224.1375325,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\decisions.py"
-}

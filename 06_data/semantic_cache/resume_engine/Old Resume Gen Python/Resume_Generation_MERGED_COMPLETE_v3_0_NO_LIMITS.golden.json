@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v3.0 - COMPLETE DEEP MERGE\n============================================================================\n\nFULL INTEGRATION:\n\u2713 v2.1 COMPLETE: All 2,972 lines (SaaS roles, signal calibration, 9-HOP, schema, baseline)\n\u2713 v1.2 HYBRID: All 732 lines (4-output format, word count tables, QA validation)\n\u2713 Master Resume: Enhanced with all bullets from both versions\n\u2713 Baseline Metrics: Full validation gates (v1.2 + v2.1)\n\nUNTRUNCATED - NO SHORTENED CONTENT\n\nPRODUCES 4 HIGH-SIGNAL OUTPUTS:\n1. Complete Resume (formatted, submission-ready, ATS-optimized)\n2. Word Count Table (with baseline comparison, delta analysis)\n3. Signal Calibration (role-specific, with detailed rationale)\n4. QA Validation Tables (5 gates: signal health, contribution, AI risk, readiness, baseline)\n\nArchitecture: 9-HOP execution engine with baseline metrics validation\nAuthor: Resume Generation Team\nVersion: 3.0.0-COMPLETE-MERGE\nDate: October 17, 2025\n\"\"\"\n\nimport re\nfrom typing import Dict, List, Tuple",
-  "full_hash": "30e0eef26d2b35da8bb9ff86a57f47b6f504621480ad55fd8ffa698940b10070",
-  "generated_at": 1764728233.3251414,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_MERGED_COMPLETE_v3_0_NO_LIMITS.py"
-}

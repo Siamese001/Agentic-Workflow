@@ -1,6 +1,6 @@
 {
-  "pipeline_id": "20251203_072603",
-  "start_time": "2025-12-03T07:26:03.360576",
+  "pipeline_id": "20251203_080447",
+  "start_time": "2025-12-03T08:04:47.861749",
   "status": "RUNNING",
   "dry_run": false,
   "steps": [
@@ -8,8 +8,8 @@
       "step_id": "SSOT_LOAD",
       "step_name": "Load and validate SSoT",
       "status": "COMPLETED",
-      "start_time": "2025-12-03T07:26:03.360670",
-      "end_time": "2025-12-03T07:26:03.524674",
+      "start_time": "2025-12-03T08:04:47.861850",
+      "end_time": "2025-12-03T08:04:48.034864",
       "error_message": null,
       "artifacts_created": [
         "ssot_validation_report.json"
@@ -19,8 +19,8 @@
       "step_id": "ARCHIVE_SCAN",
       "step_name": "Scan archives and compute hashes",
       "status": "COMPLETED",
-      "start_time": "2025-12-03T07:26:03.525998",
-      "end_time": "2025-12-03T07:26:04.593490",
+      "start_time": "2025-12-03T08:04:48.035937",
+      "end_time": "2025-12-03T08:04:49.369970",
       "error_message": null,
       "artifacts_created": [
         "archive_scan_report.json",
@@ -31,8 +31,8 @@
       "step_id": "ARTIFACT_GENERATION",
       "step_name": "Generate semantic artifacts",
       "status": "COMPLETED",
-      "start_time": "2025-12-03T07:26:04.594542",
-      "end_time": "2025-12-03T07:26:40.869037",
+      "start_time": "2025-12-03T08:04:49.371041",
+      "end_time": "2025-12-03T08:05:27.512518",
       "error_message": null,
       "artifacts_created": [
         "semantic_artifacts_1296.json"
@@ -42,8 +42,8 @@
       "step_id": "DUAL_WRITE",
       "step_name": "Create global artifacts and canonical pointers",
       "status": "COMPLETED",
-      "start_time": "2025-12-03T07:26:40.870122",
-      "end_time": "2025-12-03T07:26:41.257670",
+      "start_time": "2025-12-03T08:05:27.513520",
+      "end_time": "2025-12-03T08:05:28.002695",
       "error_message": null,
       "artifacts_created": [
         "dual_write_report.json",
@@ -54,8 +54,8 @@
       "step_id": "VALIDATION",
       "step_name": "Run comprehensive validation",
       "status": "FAILED",
-      "start_time": "2025-12-03T07:26:41.258728",
-      "end_time": "2025-12-03T07:26:46.894446",
+      "start_time": "2025-12-03T08:05:28.004341",
+      "end_time": "2025-12-03T08:05:28.918684",
       "error_message": "Step Run comprehensive validation failed",
       "artifacts_created": [
         "validation_report.json"

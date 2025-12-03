@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2d3fb4b6476c6091bdb0eed3f86aa160ce5cbec636c4252c57efa76568e2ad99",
-    "scan_timestamp": "2025-12-03T07:26:03.615579"
+    "scan_timestamp": "2025-12-03T08:04:48.123601"
   },
   "content_preview": "from __future__ import annotations\n\n\"\"\"Snapshot-local observability fa\u00e7ade for v10_10.\n\nThis makes ``from runtime.observability import ...`` work inside the\nAgentic-Workflow-10_10 test snapshot by re-exporting symbols from the\nnested observability modules.\n\"\"\"\n\nfrom .spans import start_span, end_span\nfrom .events import TelemetryEvent  # type: ignore[F401]\nfrom .emitters import (\n    emit_node_event,\n    emit_telemetry_event,\n    emit_ranking_event,\n    emit_cost_snapshot,\n    emit_golden_eval_e...",
-  "creation_timestamp": "2025-12-03T07:26:08.945986",
+  "creation_timestamp": "2025-12-03T08:04:55.590313",
   "version": "1.0"
 }

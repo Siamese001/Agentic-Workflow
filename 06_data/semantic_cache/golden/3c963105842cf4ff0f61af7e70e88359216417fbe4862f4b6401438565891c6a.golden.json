@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
-    "scan_timestamp": "2025-12-03T07:26:03.615349"
+    "scan_timestamp": "2025-12-03T08:04:48.123357"
   },
   "content_preview": "from __future__ import annotations\n\nimport time\nimport uuid\nfrom typing import Any, Dict, Optional\n\nfrom core.models.models import TelemetryEvent\nfrom runtime.observability.collectors import append_event, push_span, pop_span\n\n\ndef _now_ms() -> int:\n    return int(time.time() * 1000)\n\n\ndef start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n    \"\"\"Create a uniquely identified span and record the start time.\"\"\"\n\n    span_id = str(uuid.uuid4())\n    record: Dict[str, Any] ...",
-  "creation_timestamp": "2025-12-03T07:26:08.938322",
+  "creation_timestamp": "2025-12-03T08:04:55.581839",
   "version": "1.0"
 }

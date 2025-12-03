@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Render PromptEnvelope into a final prompt string with L5 safety signals.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom core_v10_7 import BaseAgent, PromptEnvelope\n\n\nclass PromptRendererStack(BaseAgent):\n    \"\"\"L2 stack responsible for rendering prompts from a PromptEnvelope.\"\"\"\n\n    async def run_async(\n        self, state: Dict[str, Any], workflow_id: Optional[str] = None\n    ) -> Dict[str, Any]:\n        env = PromptEnvelope.model_validate(state[\"prompts\"][\"prompt_envelope\"])\n\n        # Collect L5 signals\n        inj = self.context.prompt_injection_detector.detect(str(env))\n        pol = self.context.policy_stack.guard_output(env.model_dump())\n        cr = self.context.constitutional_engine.review_text(str(env))\n\n        env.safety_context = {\n            \"injection\": inj,\n            \"policy\": pol.dict(),\n            \"constitution\": cr.dict(),\n        }\n\n        final = self._render(env)\n        return {\"prompts\": {\"final_prompt\": final}}\n\n  ",
-  "full_hash": "f9b01bd0c51db913a50efa62673f258a697500b3a000411d02d8fd9341b3f5e4",
-  "generated_at": 1764728230.2236946,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\prompt_renderer_stack.py"
-}

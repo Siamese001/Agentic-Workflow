@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fa907e66a82c74be560fdd04e3ed9cb57e55d4b6664d40526fa3758219a42c74",
-    "scan_timestamp": "2025-12-03T07:26:03.694978"
+    "scan_timestamp": "2025-12-03T08:04:48.201856"
   },
   "content_preview": "# FILE: runtime_utils.py\n\"\"\"\nUnified Runtime Utilities (v10_9) \u2014 META / INFRASTRUCTURE ONLY (REFINED)\n\nThis module consolidates deterministic utility functions needed by the\nv10_9 agentic runtime. It lives strictly **outside** L1\u2013L5:\n\nSECTIONS:\n    1. Constants\n    2. Exceptions\n    3. Telemetry primitives\n    4. Cost & Optimization helpers\n    5. Retrieval utilities\n    6. Ranking utilities\n    7. RAGUtils (normalization + fusion)\n\nAgentic Guardrails (must hold at 14/14 maturity):\n\n    \u2022 NO L1 ...",
-  "creation_timestamp": "2025-12-03T07:26:13.714083",
+  "creation_timestamp": "2025-12-03T08:05:01.035973",
   "version": "1.0"
 }

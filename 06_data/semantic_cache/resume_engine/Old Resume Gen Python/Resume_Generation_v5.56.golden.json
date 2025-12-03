@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.56 - FILE SIZE OPTIMIZATION\n\nv5.56 CHANGES - CODEBASE OPTIMIZATION:\n\u2713 EXTRACTED: Test suite moved to separate test_resume_generation_v5_56.py file\n\u2713 CONDENSED: Version history documentation (full changelog available in CHANGELOG.md)\n\u2713 REDUCED: File size by ~655 lines (7.7% reduction)\n\u2713 PRESERVED: All MASTER_RESUME_JSON data and ActualResumeContentGenerator methods\n\u2713 MAINTAINED: Complete validation, enforcement, and generation pipeline integrity\n\u2713 RESULT: Cleaner separation of concerns, easier maintenance, zero functional changes\n\nKEY FEATURES:\n- 100% authentic content from MASTER_RESUME_JSON (zero mock data)\n- QA-enforced authenticity with pre-run validation\n- Web-search enhanced market intelligence gathering\n- Multi-LLM support (Claude/Gemini)\n- Comprehensive validation and enforcement framework\n- Complete audit trail and provenance tracking\n\nBUILD: October 20, 2025\nVERSION: 5.56\n\nFor detailed version history, see CHANGELOG.md\nFor test suite, see test_r",
-  "full_hash": "a4253ebcb141f72f17262f7cfe64c23249ca12e33cfaec1913d707fe9fbffa2e",
-  "generated_at": 1764728298.7008023,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.56.py"
-}

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 113,
-  "generated_at": 1764728230.2608864,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\rag_planning.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-03-2025_v7.5\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"v7.9_C042_integrated\",\n    \"last_updated\": \"2025-10-03\",\n    \"description\": \"Orchestration system for LinkedIn outreach with unified RAG, claim verification, job application linkage, Unicode filtering, enhanced reasoning toggles\",\n    \"changelog\": [\n      {\n        \"version\": \"v7.9_C042\",\n        \"date\": \"2025-10-03\",\n        \"changes\": [\n          \"C042: 16-column reasoning toggle format with rag_recency_weight, anchor_temporal_window_days, claim_verification_mode\",\n          \"C042b: C-level reasoning defaults destructively overwrite K-node configs (min_tot_depth=3, entropy\u22650.15, 12 retrievers, 6 hops)\",\n          \"C042c: Progressive validation independence from display toggle\",\n          \"C041: Mandatory job application reference in K.3 when job_application_confirmed=true\",\n          \"C041b: Unicode\u2192ASCII filter",
-  "full_hash": "fc4fa70d5dda5e5e15dfe4dbca9355a7d0c02e108f134fe101ac710e02718621",
-  "generated_at": 1764728334.754844,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v7.9.json"
-}

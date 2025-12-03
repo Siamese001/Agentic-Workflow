@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.safety.bias_auditor import BiasAssessment, audit_bias\n\n\nclass _Inputs:\n    def __init__(self, prompt: str):\n        self.prompt = prompt\n\n\ndef test_bias_auditor_empty_prompt():\n    assessment = audit_bias(_Inputs(\"\"))\n    assert isinstance(assessment, BiasAssessment)\n    assert assessment.score == 0.0\n    assert \"no bias\" in assessment.notes.lower()\n\n\ndef test_bias_auditor_detects_inclusive_language():\n    assessment = audit_bias(_Inputs(\"We value diversity and inclusion\"))\n    assert assessment.score == 0.1\n    assert \"inclusive\" in assessment.notes.lower()\n",
-  "full_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
-  "generated_at": 1764728331.0677385,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_bias_auditor.py"
-}

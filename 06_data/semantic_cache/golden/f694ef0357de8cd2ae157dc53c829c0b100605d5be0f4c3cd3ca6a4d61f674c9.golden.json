@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f694ef0357de8cd2ae157dc53c829c0b100605d5be0f4c3cd3ca6a4d61f674c9",
-    "scan_timestamp": "2025-12-03T07:26:03.858415"
+    "scan_timestamp": "2025-12-03T08:04:48.362062"
   },
   "content_preview": "\"\"\"Unit tests for the async Conductor helper.\"\"\"\nimport asyncio\n\nimport pytest\n\nfrom src.lic_agentic.orchestration.conductor import Conductor\n\n\nasync def _task(value):\n    await asyncio.sleep(0)\n    return value\n\n\ndef test_conductor_generates_stable_artifact_ids():\n    conductor = Conductor(seed=3)\n    first = conductor.make_artifact_id(\"value\", company_id=\"ACME\")\n    conductor.reset()\n    second = conductor.make_artifact_id(\"value\", company_id=\"ACME\")\n    assert first == second\n\n\ndef test_condu...",
-  "creation_timestamp": "2025-12-03T07:26:32.270209",
+  "creation_timestamp": "2025-12-03T08:05:18.337308",
   "version": "1.0"
 }

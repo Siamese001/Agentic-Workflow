@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 73,
-  "generated_at": 1764728326.9235818,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\clerk_RES_v2.py"
-}

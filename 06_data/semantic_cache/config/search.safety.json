@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 167,
-  "generated_at": 1764728348.3220978,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\budget-manager-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\search.yaml"
-}

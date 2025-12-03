@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.27 - RESTORED K.0 AND K.2 AGENTIC NODES\n================================================================================\nCRITICAL v5.27 UPDATE: Full restoration of agentic preprocessing intelligence\n\n\u2713 RESTORED: K.0 Thematic Analysis (50 RAG calls, COT=6/TOT=4/Depth=4/SC=12/Reflexion=True)\n\u2713 RESTORED: K.2 Competitive Analysis (24 RAG calls, COT=2/TOT=5/Depth=4/SC=12/Reflexion=True)\n\u2713 RESTORED: LinkedIn authenticity pattern extraction (15 calls, \u226510 profiles)\n\u2713 RESTORED: Peer JD competitive analysis (24 calls, \u22653 peer JDs)\n\u2713 RESTORED: Two-stage retrieval (BM25 \u2192 Cross-encoder reranking)\n\u2713 RESTORED: Multi-source competitive intelligence\n\u2713 UPGRADED: All K-node reasoning configurations to maximum robustness\n\u2713 PRESERVED: Complete v5.26 codebase (5,651 lines)\n\nREASONING CONFIG UPDATES v5.27:\n\u2713 K.0 Thematic Analysis: 6/4/4/12/True (RESTORED from v61)\n\u2713 K.1 Exec Summary: 3/3/3/12/True (UPGRADED from 2/3/2/8/True)\n\u2713 K.2 Competitive Analysis: 2/5/4/12/True (RESTOR",
-  "full_hash": "4ecc2dde36abf583f168608300e56dffbe85eda4c7834ffbe5a0906ad244f9eb",
-  "generated_at": 1764728302.5265357,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_28.py"
-}

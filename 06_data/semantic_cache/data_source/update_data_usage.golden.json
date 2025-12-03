@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - update_data_usage\nImplements L5 Safety/Policy Layer for update data usage operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass UpdateDataUsageSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass UpdateDataUsageSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass UpdateDataUsageSafetyResult:\n    \"\"\"L5 Safety result with full type safety\"\"",
-  "full_hash": "44b0088f02645961d4869225e3e2c845fabea7992e26070e816c2465b2e6a56d",
-  "generated_at": 1764728350.2571552,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\safe-layer\\safety-phase\\manage-data-costs\\general\\update-memory\\update_data_usage.py"
-}

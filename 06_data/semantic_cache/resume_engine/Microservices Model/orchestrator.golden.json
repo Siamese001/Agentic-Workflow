@@ -1,6 +1,0 @@
-{
-  "golden_content": "# orchestrator.py\n\"\"\"\nMain orchestrator for the decoupled resume generation pipeline (v16.0-WINNER).\nA spec-driven, DAG-aware, and cryptographically-verified engine.\nManages workflow execution by calling individual hop scripts via subprocess\nand coordinating data flow through files in a run directory.\n\"\"\"\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport os\nimport re\nimport shutil\nimport subprocess\nimport time\nimport uuid\nfrom pathlib import Path\nimport argparse\nfrom datetime import datetime\nfrom typing import (\n    Any, Dict, List, Optional, Set, Tuple\n)\n\n# Use networkx for DAG creation and topological sort\n# This is a hard requirement for a \"world-class\" orchestrator\ntry:\n    import networkx as nx\nexcept ImportError:\n    print(\"FATAL: networkx is required. Please 'pip install networkx'\", file=sys.stderr)\n    sys.exit(1)\n\n# Import all canonical definitions from our winning helper file\nfrom helpers import (\n    setup_workflow_logging, default_serializer, hash_file,\n",
-  "full_hash": "650a4f4aa5209aa099de6b583f4248fb0e74cb1f984b99db4f8a2dae69a197fa",
-  "generated_at": 1764728232.2080865,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\orchestrator.py"
-}

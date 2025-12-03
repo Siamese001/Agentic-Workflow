@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "f225dd4a9dd59c2bb90ffbc749cf6928d44e4503641713747e7884309e910df3",
-    "scan_timestamp": "2025-12-03T07:26:03.737241"
+    "scan_timestamp": "2025-12-03T08:04:48.247913"
   },
   "content_preview": "{\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\"],\n    \"version\": \"legacy\"\n  },\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\"],\n    \"version\": \"legacy\"\n  }\n}\n",
-  "creation_timestamp": "2025-12-03T07:26:18.307098",
+  "creation_timestamp": "2025-12-03T08:05:05.403973",
   "version": "1.0"
 }

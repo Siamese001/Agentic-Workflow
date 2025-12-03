@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\nimport re\n\n\n# ---------------------------------------------------------------------\n# Helper: detect stack trace leakage\n# ---------------------------------------------------------------------\nTRACE_PATTERNS = [\n    \"Traceback (most recent call last)\",\n    \"File \\\"\",\n    \"Exception:\",\n    \"ValueError:\",\n    \"TypeError:\",\n    \"KeyError:\",\n]\n\n\ndef _contains_trace(text: str) -> bool:\n    return any(pat in text for pat in TRACE_PATTERNS)\n\n\n# ---------------------------------------------------------------------\n# 1. SafetyGuard must block clearly unsafe inputs\n# ---------------------------------------------------------------------\n@pytest.mark.routing\n@pytest.mark.parametrize(\"unsafe_payload\", [\n    None,\n    \"\",\n    0,\n    123,\n    {},\n    {\"resume\": None, \"jd\": \"AI Exec\"},\n    {\"resume\": \"AI Exec\", \"jd\": None},\n])\ndef test_safetyguard_blocks_unsafe_inputs(unsafe_payload):\n    \"\"\"\n    SafetyGuard must run FIRST and block invalid payloa",
-  "full_hash": "197d928c65691abdaa20e564a15d1b3949cc6a4d50463a189653e6f9f6e01196",
-  "generated_at": 1764728230.7163076,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\routing\\test_negative_routing_v10_7.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Resilience utilities and MCP wrappers for v10.7.\"\"\"\nfrom __future__ import annotations\n\nimport asyncio\nimport logging\nfrom functools import wraps\nfrom typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Optional, Tuple\n\nfrom mcp import sync_context\n\nfrom .exceptions import (\n    CircuitBreakerOpenError,\n    JSONParsingError,\n    ModelAPIError,\n    PydanticSchemaError,\n    WorkflowError,\n    WorkflowTimeoutError,\n)\n\nif TYPE_CHECKING:  # pragma: no cover - typing only\n    from .context import WorkflowContext\n\nlogger = logging.getLogger(\"core_v10_7\")\n\n\nclass CircuitBreaker:\n    \"\"\"Circuit breaker utility used by batch workflows.\"\"\"\n\n    def __init__(self, failure_threshold: int = 3):\n        self.failure_threshold = failure_threshold\n        self.failure_count = 0\n        self.is_open = False\n        self.logger = logging.getLogger(f\"{__name__}.CircuitBreaker\")\n\n    def record_success(self):\n        self.failure_count = 0\n        self.is_open = False\n\n    def record_failure(se",
-  "full_hash": "5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3",
-  "generated_at": 1764728328.4660687,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\resilience.py"
-}

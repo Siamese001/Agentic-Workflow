@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 28,
-  "generated_at": 1764728354.0237093,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\l5_safety\\rules\\executor-microagent-layer\\rank-phase-group\\tool-adapter-ops\\test_prompt_injection_protection.py"
-}

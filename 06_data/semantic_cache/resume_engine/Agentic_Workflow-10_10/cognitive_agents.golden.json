@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: 10_10/cognitive_agents.py\n\"\"\"\nUnified Cognitive Agents (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n===================================================\n\nThis module implements ALL LLM-based cognition for the v10_10 workflow.\n\nL2 is the only layer allowed to call these agents.\n\nAgents (L2 cognition only):\n    \u2022 StrategyLLMAgent            \u2013 strategy reasoning\n    \u2022 DraftingGuild              \u2013 resume drafting\n    \u2022 SemanticQAAgent            \u2013 QA reasoning + RAG reasoning\n    \u2022 ConstitutionalSafetyAgent  \u2013 safety / policy review\n    \u2022 HYDEQueryAgent             \u2013 HYDE synthetic query generation\n    \u2022 QACouncilAgent             \u2013 QA council aggregation\n\nDesign constraints:\n    \u2022 Only this module may invoke LLMs.\n    \u2022 No planning (L1), orchestration (L3), state mutation (L4),\n      or safety policy enforcement (L5).\n    \u2022 All calls use PromptInstance + ACL from prompt_builder.\n    \u2022 All model selection goes through RoutingPolicy.\n    \u2022 All LLM calls go through runtime_utils.invoke_model.\n\"\"\"\n\nfrom",
-  "full_hash": "2e5bdc33bab2cdcaddb29cf75d8adaf8b14a3175ee37b54ac5e0d65daa704837",
-  "generated_at": 1764728228.19846,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\cognitive_agents.py"
-}

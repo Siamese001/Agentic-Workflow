@@ -1,1 +1,0 @@
-{"from":1,"infra.sandbox.fs_template":1,"import":1,"build_ephemeral_rootfs":1,"def":1,"test_build_ephemeral_rootfs_shape():":1,"fs":1,"=":1,"build_ephemeral_rootfs()":1,"assert":3,"fs.get(\"tmpfs\")":1,"is":1,"true":1,"\"/\"":1,"in":2,"fs.get(\"restricted_paths\",":1,"[])":2,"\"/tmp\"":1,"fs.get(\"writable_paths\",":1}

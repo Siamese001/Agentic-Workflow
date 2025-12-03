@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a0eb9aee3f027452e83bf9e04453ee183c4f8ec224aa6f916f7beada941ba660",
-    "scan_timestamp": "2025-12-03T07:26:03.817591"
+    "scan_timestamp": "2025-12-03T08:04:48.323527"
   },
   "content_preview": "# File: utils_RES_v2.py\n# Version: 17.01 (Patched)\n# Utilities module for Resume Workflow\n# Contains logging, text utilities, data loading, and helper functions\n#\n# V2 TOOL INTEGRATION:\n# - TextSanitizer: Used in HOP-4 (generation loop step 4)\n# - CodeInterpreterTool: Used for Macro ToT evaluation and deterministic operations\n# - DuplicateDetector: Used in HOP-2 (enrichment)\n# - WorkflowLogFilter: Used by TraceRegistry/logging system\n# - TextUtils: Word counting and text manipulation for validat...",
-  "creation_timestamp": "2025-12-03T07:26:26.157603",
+  "creation_timestamp": "2025-12-03T08:05:12.616328",
   "version": "1.0"
 }

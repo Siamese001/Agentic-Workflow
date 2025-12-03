@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"version\": \"1.0\",\n  \"description\": \"Expected outputs for golden dataset samples\",\n  \"outputs\": [\n    {\n      \"sample_id\": \"sample_001\",\n      \"expected_summary_keywords\": [\"software\", \"engineer\", \"experience\"],\n      \"expected_skill_count\": 5,\n      \"expected_quality_score\": 0.85\n    },\n    {\n      \"sample_id\": \"sample_002\",\n      \"expected_summary_keywords\": [\"data\", \"scientist\", \"machine learning\"],\n      \"expected_skill_count\": 7,\n      \"expected_quality_score\": 0.90\n    }\n  ]\n}\n",
-  "full_hash": "7a166fa097ef5a961da78e1195e1a278909ac52782f59ac6418fd8a53d16abbe",
-  "generated_at": 1764728226.6726477,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\expected_outputs\\expected_resume_output.json"
-}

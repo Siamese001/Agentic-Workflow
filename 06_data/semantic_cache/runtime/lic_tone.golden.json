@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Router agent responsible for selecting the outreach path.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\n\nfrom ..safety.bias_auditor import BiasAssessment\n\n\n@dataclass(frozen=True)\nclass RouteDecision:\n    channel: str\n    priority: str\n\n\nclass RouterAgent:\n    \"\"\"Very small heuristic-based router.\"\"\"\n\n    def route(self, sanitized_inputs, bias: BiasAssessment) -> RouteDecision:\n        prompt = getattr(sanitized_inputs, \"prompt\", \"\")\n        if \"meeting\" in prompt.lower():\n            return RouteDecision(channel=\"email\", priority=\"high\")\n        return RouteDecision(channel=\"email\", priority=\"normal\")\n",
-  "full_hash": "906e8d97423b7da0a816929eb10995dbe26d71c0b06f594f49eae738cd9679f3",
-  "generated_at": 1764728347.7453854,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\router-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\lic_tone.py"
-}

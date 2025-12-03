@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Unit tests for the v10.8 QAValidationStack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom agent_stacks_v10_8.qa_validation_stack import QAValidationStack\n\n\nclass _DummyTool:\n    def __init__(self, payload: dict) -> None:\n        self.payload = payload\n        self.invocations = 0\n\n    async def run_async(self, tool_input: dict, workflow_id: str) -> dict:  # pragma: no cover - simple stub\n        self.invocations += 1\n        assert \"draft_text\" in tool_input\n        assert workflow_id.startswith(\"wf\")\n        return dict(self.payload)\n\n\ndef _base_state() -> dict:\n    return {\n        \"draft\": {\"sections\": {\"summary\": {\"draft\": \"Summarize\"}}},\n        \"resume\": {\"master_resume\": {\"summary\": \"Master\"}},\n        \"job\": {\"raw_jd\": \"JD text\"},\n        \"strategy\": {\"strategy_plan\": {\"strategy_name\": \"Impact\"}},\n    }\n\n\n@pytest.mark.asyncio\nasync def test_qa_validation_stack_flags_issues_and_runs_all_tools():\n    failing_tool = _DummyTool({\"",
-  "full_hash": "2e05773ee9611ba76f647f6031ffc1bba9f98b14ca3045a39bf804ae41f860c1",
-  "generated_at": 1764728231.6662903,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\validation\\test_qa_validation_stack_v10_8.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "49b92d5788800000a224ce518e8d98b3a5c03d42e3ce9d4957b0b3340b7db537",
-    "scan_timestamp": "2025-12-03T07:26:03.979740"
+    "scan_timestamp": "2025-12-03T08:04:48.490884"
   },
   "content_preview": "\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\nLINKEDIN - SINGLE\n\nROLE\nRecruiter Outreach Automation Specialist\n\nTASK\nDiscover, validate, and message a single US or EU based LinkedIn contact for the active role. Explicitly exclude India. Enforce contact integrity, messaging standards, and mandatory blocking on violations.\n\nCONTEXT\n- Source: Active job row in App Tracker.\n- User is manually prompted to input each required field for the contact. No automated extra...",
-  "creation_timestamp": "2025-12-03T07:26:39.040459",
+  "creation_timestamp": "2025-12-03T08:05:25.575340",
   "version": "1.0"
 }

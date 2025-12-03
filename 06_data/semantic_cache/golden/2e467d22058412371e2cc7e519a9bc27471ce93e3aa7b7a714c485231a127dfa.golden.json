@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2e467d22058412371e2cc7e519a9bc27471ce93e3aa7b7a714c485231a127dfa",
-    "scan_timestamp": "2025-12-03T07:26:03.676449"
+    "scan_timestamp": "2025-12-03T08:04:48.181195"
   },
   "content_preview": "\"\"\"\nBatch processing interface for r\u00e9sum\u00e9 analysis across multiple job applications and candidates.\n\nImproves r\u00e9sum\u00e9 processing efficiency by coordinating parallel analysis workflows with consistent quality and telemetry.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport dataclasses\nfrom dataclasses import dataclass, asdict\nimport json\nimport os\nimport sys\nimport time\nimport uuid\nfrom concurrent.futures import ThreadPoolExecutor, as_completed\nfrom typing import Any, Dict, Iterable,...",
-  "creation_timestamp": "2025-12-03T07:26:11.594476",
+  "creation_timestamp": "2025-12-03T08:04:58.378459",
   "version": "1.0"
 }

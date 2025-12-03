@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: validation.py\n# Description: Validation agents, rules, and utilities for the LIC workflow.\n# REFACTOR: v12.0 - Added Strategic Alignment validation and Voice Profile validation\n\n__version__ = \"12.0\"\n\nimport re\nimport json\nimport os\nfrom typing import Dict, List, Any, Tuple, Optional\nfrom pathlib import Path\nimport numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nfrom models_LIC import (\n    ValidationSeverity, ValidationResult, GeneratedMessage, \n    ResearchContext, MessageClaim, RAGResult\n)\n\n# ============================================================================\n# NEW v11.6: GLOBAL ERROR CODE REGISTRY (GAP 6.1)\n# ============================================================================\n\nclass ErrorCodeRegistry:\n    \"\"\"Centralized error codes with remediation guidance\"\"\"\n    \n    CODES = {\n        \"LIC-E001\": {\n            \"severity\": \"CRITICAL\",\n            \"description\": \"Placeholder det",
-  "full_hash": "bd9370f4d90a1c7b70ccda8ebaab20bc4ee71553d86ab3b197cf90e69be57ad4",
-  "generated_at": 1764728340.877533,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\validation_LIC_v_12.py"
-}

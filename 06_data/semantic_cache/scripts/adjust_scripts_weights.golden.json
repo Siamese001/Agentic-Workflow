@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - adjust_scripts_weights\nImplements L1 Cognitive Planning Layer for adjust scripts weights operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass AdjustScriptsWeightsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass AdjustScriptsWeightsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass AdjustScriptsWeightsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succe",
-  "full_hash": "e1d1ff2d2f9d1a9ceb5e4e3ffb378ccc0c7f93652cccf14e9e8283367fe1d612",
-  "generated_at": 1764728352.2819922,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\adjust_scripts_weights.py"
-}

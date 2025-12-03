@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - format_resume_context\nImplements L1 Cognitive Planning Layer for format resume context operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FormatResumeContextOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FormatResumeContextOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FormatResumeContextOrchestratorResult:\n    \"\"\"L5 Result structure with full type ",
-  "full_hash": "37c0c6d5afb213ad4d4d29bfee91023c2730fa32a52da3088cb6ba9b0827b29f",
-  "generated_at": 1764728353.0323668,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\plan-phase\\get-resume-info\\utility\\prepare-information\\format_resume_context.py"
-}

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 141,
-  "generated_at": 1764728328.1572893,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\master_resume.json"
-}

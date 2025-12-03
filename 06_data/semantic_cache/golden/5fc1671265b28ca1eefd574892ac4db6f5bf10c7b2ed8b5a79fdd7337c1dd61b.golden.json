@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
-    "scan_timestamp": "2025-12-03T07:26:03.618605"
+    "scan_timestamp": "2025-12-03T08:04:48.126584"
   },
   "content_preview": "# Testing Framework Regeneration - Current Status\n\n## Problem Identification\n**Issue**: I delivered incomplete testing framework work and am now encountering fundamental import errors because I wrote tests based on assumptions about interfaces without investigating the actual implementation.\n\n## What I've Discovered\n\n### Actual vs Assumed Architecture\n**Assumed**: Async orchestrator with planning_engine, execution_engine, safety_engine, state_manager parameters\n**Actual**: Synchronous orchestrat...",
-  "creation_timestamp": "2025-12-03T07:26:09.089896",
+  "creation_timestamp": "2025-12-03T08:04:55.716882",
   "version": "1.0"
 }

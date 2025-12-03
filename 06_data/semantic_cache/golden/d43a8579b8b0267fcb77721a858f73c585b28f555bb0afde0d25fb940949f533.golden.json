@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "d43a8579b8b0267fcb77721a858f73c585b28f555bb0afde0d25fb940949f533",
-    "scan_timestamp": "2025-12-03T07:26:03.963995"
+    "scan_timestamp": "2025-12-03T08:04:48.470127"
   },
   "content_preview": "{\n  \"1.role\": {\n    \"standards\": {\n      \"audit_ready_qa\": {\n        \"end_to_end\": true,\n        \"enforce\": [\n          \"QA Tables\",\n          \"Schema Enforcement\"\n        ]\n      },\n      \"reasoning_isolation\": {\n        \"confined_to_section\": 4,\n        \"enforced\": true,\n        \"methods_allowed\": [\n          \"CoT\",\n          \"ToT\",\n          \"Self-Consistency\",\n          \"Reflexion\"\n        ]\n      },\n      \"strict_mzlo\": {\n        \"record_conformance\": true,\n        \"requirements\": [\n       ...",
-  "creation_timestamp": "2025-12-03T07:26:36.776880",
+  "creation_timestamp": "2025-12-03T08:05:23.244162",
   "version": "1.0"
 }

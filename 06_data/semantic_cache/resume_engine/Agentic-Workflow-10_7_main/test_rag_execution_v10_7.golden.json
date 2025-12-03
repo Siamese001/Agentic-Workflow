@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\n\nfrom stacks_v10_8.rag_execution import RAGExecutionStack\n\n\n@pytest.mark.asyncio\nasync def test_run_from_state_async_returns_patch(monkeypatch, workflow_context):\n    state = {\"metadata\": {\"workflow_id\": \"wf-rag\"}}\n    stack = RAGExecutionStack(workflow_context)\n\n    async def fake_run_async(state_arg, workflow_id_arg):\n        assert workflow_id_arg == \"wf-rag\"\n        assert state_arg is state\n        return {\"resume\": {\"experience_bullets\": [\"x\"]}, \"rag\": {\"plan\": {}, \"metadata\": {}}}\n\n    monkeypatch.setattr(stack, \"run_async\", fake_run_async)  # type: ignore[arg-type]\n    patch = await stack.run_from_state_async(state, None)\n\n    assert patch[\"resume\"][\"experience_bullets\"] == [\"x\"]\n",
-  "full_hash": "57602cfadfde381e2201f4099def31c078743a8cc6bb473afe1e1885b0479c71",
-  "generated_at": 1764728230.7529697,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_rag_execution_v10_7.py"
-}

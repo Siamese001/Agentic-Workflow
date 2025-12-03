@@ -1,6 +1,0 @@
-{
-  "golden_content": "from infra.sandbox.models import ToolCallRequest, ToolCallResult, SandboxEvent\n\n\ndef test_tool_call_request_defaults():\n    req = ToolCallRequest(tool_name=\"echo\")\n    assert req.tool_name == \"echo\"\n    assert req.args == []\n    assert isinstance(req.env, dict)\n    assert req.timeout_s > 0\n\n\ndef test_tool_call_result_defaults():\n    res = ToolCallResult(success=True)\n    assert res.success is True\n    assert res.exit_code == 0\n\n\ndef test_sandbox_event_structure():\n    evt = SandboxEvent(name=\"sandbox_start\", ts_ms=1234, vm_id=\"vm1\", tool_name=None)\n    assert evt.name == \"sandbox_start\"\n    assert evt.ts_ms == 1234\n    assert evt.vm_id == \"vm1\"\n\n\n\n\n\n\n",
-  "full_hash": "c7ea402be4d44888ec79f4329463d2c4048da71831a826ef4daf2ad63bebd912",
-  "generated_at": 1764728227.4769685,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_models.py"
-}

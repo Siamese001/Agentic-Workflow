@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: core.py\n# Zero-Loss Consolidation - The Foundation\n# Merges: models_RES.py \u2192 config_RES.py \u2192 utils_RES.py \u2192 prompts_RES.py\n# Version: 6.0 (Telemetry, Circuit Breaker, Cost Tracking, Structured I/O)\n# v6.0 CHANGES:\n# - Added CircuitBreakerOpenError exception handling\n# - Enhanced Configuration for telemetry and cost tracking\n# - Added meta_loop_config and cost_config sections\n# - Ready for JSON structured logging\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ============================================================================\nimport copy\nimport hashlib\nimport json\nimport logging\nimport os\nimport re\nimport subprocess\nimport uuid\nfrom collections import defaultdict\nfrom dataclasses import asdict, dataclass, field\nfrom datetime import datetime\nfrom enum import Enum, auto\nfrom pathlib import Path\nfrom typing import (\n    Any, Callable, ClassVar, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING\n)\n\n# O",
-  "full_hash": "13a0b9182178bee7888ae05a9c02c843bbc493daf098d43f73c81e3ce86b4e7a",
-  "generated_at": 1764728327.5189986,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\core_v6_0.py"
-}

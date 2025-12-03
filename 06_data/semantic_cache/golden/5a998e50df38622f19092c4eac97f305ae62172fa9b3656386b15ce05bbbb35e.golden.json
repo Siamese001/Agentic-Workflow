@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "5a998e50df38622f19092c4eac97f305ae62172fa9b3656386b15ce05bbbb35e",
-    "scan_timestamp": "2025-12-03T07:26:03.608641"
+    "scan_timestamp": "2025-12-03T08:04:48.115397"
   },
   "content_preview": "# Phase B Completion Report\n\n## Objective\nRefactor all cognitive agents to be pure L1\u2192L2 shims following OpenAI agentic layering.\n\n## Changes Implemented\n\n### 1. Import Path Updates\n- **cognitive_agents.py**: Updated `import l1` \u2192 `import l1_planning`\n- **l2.py**: Updated `import l1` \u2192 `import l1_planning`\n- **core/__init__.py**: Updated documentation to reference `l1_planning`\n\n### 2. Agent Refactoring (cognitive_agents.py)\nAll agents now delegate to L1 (planning) and L2 (execution):\n\n#### Stra...",
-  "creation_timestamp": "2025-12-03T07:26:08.800187",
+  "creation_timestamp": "2025-12-03T08:04:55.423401",
   "version": "1.0"
 }

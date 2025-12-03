@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "9ffe7ee4bef30a07d118c931755afd53357a3992d11047a46ef972454af645ce",
-    "scan_timestamp": "2025-12-03T07:26:03.814371"
+    "scan_timestamp": "2025-12-03T08:04:48.320540"
   },
   "content_preview": "# File: models.py\n# Data Models module for Resume Workflow\n# Contains all data structures, enumerations, model classes, and custom exceptions\n\nimport logging\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum, auto\nfrom typing import Any, ClassVar, Dict, List, Optional, Set\nimport copy\n\n# ============================================================================\n# CUSTOM EXCEPTIONS\n# =====================================================================...",
-  "creation_timestamp": "2025-12-03T07:26:25.579741",
+  "creation_timestamp": "2025-12-03T08:05:12.135726",
   "version": "1.0"
 }

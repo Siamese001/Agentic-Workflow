@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 injection detection for resume job alignment workflows.\n\nDetects and prevents injection attacks for resume enhancement processing.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\nimport base64\nfrom typing import List, Optional\nfrom dataclasses import dataclass\nfrom enum import Enum\nimport logging\n\nfrom .types import SafetyContext, SafetyFinding, PolicyDecision, Verdict, Severity\n\nlogger = logging.getLogger(__name__)\n\n\nclass InjectionType(str, Enum):\n    \"\"\"Types of injection attacks for resume workflow safety.\"\"\"\n    \n    PROMPT_INJECTION = \"prompt_injection\"\n    INDIRECTION_INJECTION = \"indirection_injection\"\n    TOOL_INJECTION = \"tool_injection\"\n    STATE_INJECTION = \"state_injection\"\n    BIAS_INJECTION = \"bias_injection\"\n\n\n@dataclass\nclass InjectionPattern:\n    \"\"\"Pattern for detecting resume workflow injection attacks.\"\"\"\n    \n    injection_type: InjectionType\n    pattern: str\n    description: str\n    severity: Severity\n    examples: Optional[List[str]] = None\n\n\nclass Inj",
-  "full_hash": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
-  "generated_at": 1764728225.410512,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\injection_detection(1).py"
-}

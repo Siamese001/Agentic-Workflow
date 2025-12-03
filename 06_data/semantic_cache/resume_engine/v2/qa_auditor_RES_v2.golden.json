@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: qa_auditor_RES_v2.py\n# QA Auditor Tool Module - V17 Architecture\n# Version: 17.00 (Extracted from validation_RES_v2.py)\n# This tool's job is to generate a report (an audit), not to validate content for a GateDecision\n\nimport logging\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Any, Tuple\n\n# Import dependencies from new modules\nfrom models_RES import (\n    ValidationResult, ValidationSeverity, \n    ThematicAnalysis, ImmutableStagingBuffer\n)\n# --- FIX: (Role Confusion) Import Validator ---\nfrom validator_RES_v2 import AppTrackerQAValidator\nimport json\n# --- END FIX ---\n\n# ==============================================================================\n# QA AUDITOR TOOL\n# ==============================================================================\n\nclass QAReportGenerator:\n    \"\"\"\n    Generates comprehensive QA reports for resume workflow output.\n    This tool generates a report (an audit) rather than validating content for GateDecisions.\n    It is correc",
-  "full_hash": "33ef22e909bedc119d967a3411499e6adf6dbef60770be1b3290a12c2b1a5950",
-  "generated_at": 1764728327.1949103,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\qa_auditor_RES_v2.py"
-}

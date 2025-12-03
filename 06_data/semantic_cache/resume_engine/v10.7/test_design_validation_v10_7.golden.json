@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.graph import get_nodes, get_edges\n\n# Minimal but concrete: assert core safety and qa nodes exist across many ids\n@pytest.mark.parametrize(\"node\", [\n    \"PromptInjectionDetector\",\"PIISanitizerAgent\",\"QAAgent\",\n    \"StrategyAgent\",\"RAGAgent\",\"DraftingAgent\"\n])\ndef test_required_nodes_present(node):\n    assert node in set(get_nodes())\n\n@pytest.mark.parametrize(\"edge_contains\", [\"->\"])\ndef test_edges_render(edge_contains):\n    edges = get_edges()\n    assert edges and all(edge_contains in e for e in edges)\n",
-  "full_hash": "8e072440e77fc2e5a7b8b2a2239b06194d416220b6c8a0070185977ffc62b6fa",
-  "generated_at": 1764728329.9537368,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_design_validation_v10_7.py"
-}

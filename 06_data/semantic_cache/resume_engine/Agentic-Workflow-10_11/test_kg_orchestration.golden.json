@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nTest L3 Orchestration\n\nTests L3 orchestration functionality for actual modules that exist.\n\"\"\"\n\nimport pytest\nfrom datetime import datetime, UTC\n\n# L3 Components\nfrom l3.unified_workflow_orchestrator import (\n    UnifiedWorkflowOrchestrator,\n)\n\n# Mark all tests as L3 orchestration tests\npytestmark = [pytest.mark.unit, pytest.mark.l3, pytest.mark.orchestration]\n\n\nclass TestL3Orchestration:\n    \"\"\"Test L3 orchestration functionality.\"\"\"\n    \n    def test_orchestrator_initialization(self):\n        \"\"\"Test orchestrator can be initialized with required dependencies.\"\"\"\n        # Create mock dependencies\n        mock_routing_policy = Mock()\n        mock_sandbox = Mock()\n        mock_state_manager = Mock()\n        mock_safety_validator = Mock()\n        \n        # Configure mock interfaces\n        mock_state_manager.save_state = Mock()\n        mock_state_manager.load_state = Mock(return_value={})\n        mock_safety_validator.is_safe = Mock(return_value=True)\n        mock_safety_validator.",
-  "full_hash": "e7ec563f71204aeaaa4d2743118ee9d3576e68b211ac36eed7d5bb8167772ab7",
-  "generated_at": 1764728227.0374386,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\unit\\test_kg_orchestration.py"
-}

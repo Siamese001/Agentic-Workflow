@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nIdentify and flatten verb_groups with only one file to reduce single-child count\n\"\"\"\n\nimport yaml\nfrom pathlib import Path\nfrom collections import defaultdict\n\ndef find_flattenable_verb_groups(tree, domains, layers, phases, intents, axes, verb_groups):\n    \"\"\"Find verb_groups that contain only one file (excluding __init__.py)\"\"\"\n    \n    flattenable_candidates = []\n    \n    def traverse_tree(node, path):\n        if not isinstance(node, dict):\n            return\n        \n        # Skip __init__.py files\n        if '__init__.py' in node:\n            node_copy = {k: v for k, v in node.items() if k != '__init__.py'}\n            if len(node_copy) == 1:\n                node = node_copy\n            elif len(node_copy) == 0:\n                return\n        \n        # Check if we're at verb_group level (path has domain/layer/phase/intent/axis/verb_group)\n        if len(path) >= 6:\n            domain, layer, phase, intent, axis, verb_group = path[:6]\n            \n      ",
-  "full_hash": "56639bcb0188d09556bd21efc8bab728563f51a69ece7bd4da598bbe0a33c894",
-  "generated_at": 1764728352.579825,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\validation_tools\\flatten_k20.py"
-}

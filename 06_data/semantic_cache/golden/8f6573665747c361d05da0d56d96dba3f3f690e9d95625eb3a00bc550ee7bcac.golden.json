@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8f6573665747c361d05da0d56d96dba3f3f690e9d95625eb3a00bc550ee7bcac",
-    "scan_timestamp": "2025-12-03T07:26:03.709539"
+    "scan_timestamp": "2025-12-03T08:04:48.219218"
   },
   "content_preview": "\"\"\"Compatibility shim that re-exports the v10.8 Bullet execution stack.\"\"\"\n\nfrom stacks_v10_8.bullet_execution import BulletExecutionStack\n\n__all__ = [\"BulletExecutionStack\"]\n",
-  "creation_timestamp": "2025-12-03T07:26:15.246101",
+  "creation_timestamp": "2025-12-03T08:05:02.673326",
   "version": "1.0"
 }

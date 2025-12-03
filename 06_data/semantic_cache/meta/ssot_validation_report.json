@@ -8,55 +8,55 @@
       "key": "K1",
       "status": "PASS",
       "message": "unified_structure_subatomic.yaml exists",
-      "timestamp": "2025-12-03T07:26:03.361556"
+      "timestamp": "2025-12-03T08:04:47.862832"
     },
     {
       "key": "K1b",
       "status": "PASS",
       "message": "unified_structure_subatomic_meta.yaml exists",
-      "timestamp": "2025-12-03T07:26:03.361724"
+      "timestamp": "2025-12-03T08:04:47.862958"
     },
     {
       "key": "K1c",
       "status": "PASS",
       "message": "Meta YAML parsed successfully",
-      "timestamp": "2025-12-03T07:26:03.522398"
+      "timestamp": "2025-12-03T08:04:48.033310"
     },
     {
       "key": "K1d",
       "status": "PASS",
       "message": "SSoT canonical = MERGE(SSoT_YAML, META_YAML)",
-      "timestamp": "2025-12-03T07:26:03.522597"
+      "timestamp": "2025-12-03T08:04:48.033538"
     },
     {
       "key": "KX_CANONICAL_GRAMMAR",
       "status": "PASS",
       "message": "Canonical SSoT path grammar validated",
-      "timestamp": "2025-12-03T07:26:03.522731"
+      "timestamp": "2025-12-03T08:04:48.033673"
     },
     {
       "key": "KX_META_INTENTS",
       "status": "PASS",
       "message": "Found 42 intents",
-      "timestamp": "2025-12-03T07:26:03.522909"
+      "timestamp": "2025-12-03T08:04:48.033785"
     },
     {
       "key": "KX_META_AXES",
       "status": "PASS",
       "message": "Found 17 axes",
-      "timestamp": "2025-12-03T07:26:03.523048"
+      "timestamp": "2025-12-03T08:04:48.033891"
     },
     {
       "key": "KX_META_PROTECTED",
       "status": "PASS",
       "message": "Found 2 protected paths",
-      "timestamp": "2025-12-03T07:26:03.523171"
+      "timestamp": "2025-12-03T08:04:48.033957"
     },
     {
       "key": "KX_META_DRIVES_MAPPING",
       "status": "PASS",
       "message": "META drives canonical path mapping",
-      "timestamp": "2025-12-03T07:26:03.523237"
+      "timestamp": "2025-12-03T08:04:48.034058"
     }
   ]
 }

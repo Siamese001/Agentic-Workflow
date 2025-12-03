@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Agent base classes for v10.7.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport os\nfrom datetime import datetime\nfrom typing import TYPE_CHECKING, Any, Dict, Optional\n\nfrom .constants import legacy_model_alias\nfrom .services import track_metrics\n\nif TYPE_CHECKING:  # pragma: no cover - typing helpers\n    from .clients import AsyncBaseModelClient\n    from .context import WorkflowContext\n\nlogger = logging.getLogger(\"core_v10_7\")\n\n\nclass BaseAgent:\n    \"\"\"Base class for all agents with v10.7 context injection\"\"\"\n    \n    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):\n        self.context = context\n        self.config = context.config\n        self.debug_mode = debug_mode\n        self.logger = logging.getLogger(f\"{__name__}.{self.__class__.__name__}\")\n\n        self.prompt_manager = context.prompt_manager\n        self.validator = context.response_validator\n        self.budget_manager = context.context_budget_manager\n        self.metrics =",
-  "full_hash": "f19e23abbc46dd07ad9295da6b74577037f3fd83ed3912f6fa1ec4a59009a847",
-  "generated_at": 1764728328.35314,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\agents.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3884704b5ad9547fa76c7329baa9a6db3baab3db66d80ba8d4d026f3b9684cc7",
-    "scan_timestamp": "2025-12-03T07:26:03.733636"
+    "scan_timestamp": "2025-12-03T08:04:48.244091"
   },
   "content_preview": "\"\"\"Deterministic Level-1 planner for the drafting stack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import BaseAgent, DraftPlan\n\nfrom .planning_utils import (\n    collect_sections,\n    describe_experience,\n    extract_job_profile,\n    extract_resume_profile,\n    missing_requirements,\n)\n\n\nclass DraftPlanningStack(BaseAgent):\n    \"\"\"Creates a low-latency drafting plan using only state inspection.\"\"\"\n\n    def __init__(self, context: Any, de...",
-  "creation_timestamp": "2025-12-03T07:26:17.936858",
+  "creation_timestamp": "2025-12-03T08:05:04.998569",
   "version": "1.0"
 }

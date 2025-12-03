@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.18 - QA REPORT RESTRUCTURE (SIGNAL-FIRST)\n================================================================================\nPATCH NOTES v5.18 (October 2025):\n\u2713 QA Report: DESTRUCTIVE OVERWRITE - 13 sections \u2192 8 sections (signal-first priority)\n\u2713 Section 1: Signal Quality & RAG Performance with ASCII bar charts (100 chars = 100%)\n  - Overall signal score with bar visualization\n  - Per-section signal distribution (Headline, Exec Summary, Unify, IBM, TraderSense, EY)\n  - Weighted signal score breakdown\n  - Competitive intelligence (top differentiators, theme alignment)\n\u2713 Section 2: Industry-First & Thematic Compliance\n\u2713 Section 3: Content Authenticity (quantitative claims, hallucination checks)\n\u2713 Section 4: AI Detection Defense\n\u2713 Section 5: Pipeline Health (all 10 hops: HOP-0 through HOP-8 + HOP-4.5)\n\u2713 Section 6: Word Count Compliance (consolidated from old sections 2, 3, 4)\n\u2713 Section 7: Structural & Formatting (deduplication, bullets, hyphenation)\n\u2713 Section",
-  "full_hash": "bc0ec2a1e745ef0ae6c709ee4a90ae1530baf85c2353fe8b209204e607fa415d",
-  "generated_at": 1764728300.8628578,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_18_full.py"
-}

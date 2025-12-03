@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c46be1c99506d4d1fe2baafeaac880e0c3a2d2625b0a0240674c9c63ce5f7310",
-    "scan_timestamp": "2025-12-03T07:26:03.817287"
+    "scan_timestamp": "2025-12-03T08:04:48.323264"
   },
   "content_preview": "# File: state_manager_RES_v2.py\n# Version: 18.00 - V2 Agentic Architecture with Validation Removed (Refactored)\n# State serialization and deserialization layer for workflow hops\n\"\"\"\nV2 Refactor with Backward Compatibility\n================================================================================\nThe StateSerializer class (formerly in this file) is no longer used for\nhop-to-hop state management, which is now handled in-memory by the Governor.\n\nThe ManifestManager is the primary persistence ...",
-  "creation_timestamp": "2025-12-03T07:26:26.093636",
+  "creation_timestamp": "2025-12-03T08:05:12.582454",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nInstructional Injection v6 for resume generation prompt engineering.\n\nImplements layered framework for robust, context-aware prompts\nto improve resume quality and job alignment.\n\"\"\"\n\n## 30 Base Layers (Core Foundation)\n\n### Identity & Role (Layers 1-3)\n1. Agent Identity: Who the agent is\n2. Role Definition: What the agent does\n3. Capability Scope: What the agent can/cannot do\n\n### Context & Environment (Layers 4-7)\n4. Domain Context: Business domain and terminology\n5. Temporal Context: Time-aware reasoning\n6. Spatial Context: Location/structure awareness\n7. Relational Context: Entity relationships\n\n### Task & Objectives (Layers 8-11)\n8. Primary Objective: Main goal\n9. Success Criteria: How to measure success\n10. Constraints: Hard limits and boundaries\n11. Preferences: Soft preferences and priorities\n\n### Reasoning & Logic (Layers 12-15)\n12. Reasoning Mode: How to think (analytical, creative, etc.)\n13. Logic Framework: Deductive, inductive, abductive\n14. Uncertainty Handling: How to",
-  "full_hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
-  "generated_at": 1764728224.4517362,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\instructional_injection_v6.py"
-}

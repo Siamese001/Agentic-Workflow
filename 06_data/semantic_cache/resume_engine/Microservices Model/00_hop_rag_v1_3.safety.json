@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 742,
-  "generated_at": 1764728231.92833,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\00_hop_rag_v1_3.py"
-}

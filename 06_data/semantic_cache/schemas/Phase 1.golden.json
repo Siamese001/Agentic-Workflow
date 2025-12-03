@@ -1,6 +1,0 @@
-{
-  "golden_content": "# =====================================================================\n\n# PHASE 1 \u2014 STRUCTURAL ENFORCEMENT & NORMALIZATION (ZERO-LOSS)\n\n# =====================================================================\n\n# PURPOSE:\n\n#   Ensure the live filesystem under <TARGET_ROOT>/ EXACTLY matches\n\n#   the SSoT YAML structure \u2014 directory-by-directory, file-by-file,\n\n#   with no deviations, no extras, no omissions.\n#\n\n#   Phase 1 performs ALL STRUCTURAL MUTATION:\n\n#       \u2022 create    (missing YAML paths)\n\n#       \u2022 delete    (obsolete FS paths)\n\n#       \u2022 move      (misplaced FS paths)\n\n#       \u2022 rename    (non-matching FS names)\n\n#       \u2022 merge     (legacy folder structures)\n#\n\n#   Phase 1 NEVER edits code content (semantic mutation is Phase 3).\n#\n\n#   Phase 1 is NOT ATOMIC:\n\n#       - All destructive/semantic operations will happen in Phase 3.\n\n#       - Phase 1 is allowed to mutate the FS directly.\n#\n\n#   Phase 1 COMPLETES ONLY IF:\n\n#       Canonical(FS) == Canonical(YAML)\n#\n\n#   If ANY diff",
-  "full_hash": "f4ff65f0536d718d10e7cae41df8c941171688a3ebe9716d18f65912514da998",
-  "generated_at": 1764728346.4736302,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\Phase 1.md"
-}

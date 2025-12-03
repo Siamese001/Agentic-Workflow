@@ -1,7 +1,0 @@
-{
-  "baseline_hash": "",
-  "current_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
-  "diff_type": "initial",
-  "generated_at": 1764728351.649627,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\safety-guard-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\span_config.py"
-}

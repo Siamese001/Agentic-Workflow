@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Retrieval orchestration\nfrom typing import Any\nfrom runtime.core.models import Evidence, RAGResult\n\ndef orchestrate_retrieval(query: str, ctx: Any, cfg: Any, hyde_query: Any = None, council_vote: Any = None) -> RAGResult:\n    \"\"\"Orchestrate retrieval across multiple sources\"\"\"\n    # Stub implementation - simulate retrieval\n    evidence = [\n        Evidence(text=f\"Evidence for {query}\", score=0.8, source=\"mock\", metadata={})\n    ]\n    \n    return RAGResult(\n        plan_name=\"retrieval\",\n        success=True,\n        evidence=evidence,\n        used_hyde=False,\n        answer=f\"Mock answer for {query}\"\n    )\n",
-  "full_hash": "cc0fbefa608d930d21b623bf953fae77c4f8537277f501b4e3842368e2b0030f",
-  "generated_at": 1764728346.707459,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\budget-manager-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\orchestrate.py"
-}

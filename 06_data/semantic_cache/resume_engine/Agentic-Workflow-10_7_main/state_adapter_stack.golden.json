@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Layer-4 state adapter responsible for applying typed patches.\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nimport copy\nfrom dataclasses import asdict, is_dataclass\nfrom typing import Any, Dict, Iterable, Mapping, MutableMapping\n\nfrom pydantic import BaseModel, ConfigDict\n\nfrom core_v10_7 import (\n    A2AMessage,\n    EphemeralState,\n    EpisodicMemory,\n    MainGraphState,\n    MemoryState,\n    SemanticMemoryRef,\n    WorkflowPhase,\n)\n\nlogger = logging.getLogger(__name__)\n\n\nclass StatePatch(BaseModel):\n    resume: dict | None = None\n    strategy: dict | None = None\n    rag: dict | None = None\n    bullets: dict | None = None\n    drafting: dict | None = None\n    qa: dict | None = None\n    artifacts: dict | None = None\n    safety_report: dict | None = None\n    policy_decision: dict | None = None\n    constitutional_review: dict | None = None\n    memory: MemoryState | None = None\n    ephemeral: EphemeralState | None = None\n    extra: dict | None = None\n\n    model_config = ConfigDic",
-  "full_hash": "d78e646ebb2fe185a30b279c113613ae5e4507da7889bd8b662e5f2884841124",
-  "generated_at": 1764728230.2774966,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\state_adapter_stack.py"
-}

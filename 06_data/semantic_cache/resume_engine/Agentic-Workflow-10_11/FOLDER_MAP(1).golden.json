@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FOLDER_MAP.md  \n# Agentic-Workflow-10_10  \nA learnability-first map of every meaningful folder in the project, explaining  \nwhat each folder does, how it fits into the OpenAI L1\u2013L5 agentic architecture,  \nand where documentation for each layer must live.\n\nThis version includes the rule:  \n**Each major folder must contain a `docs/` subfolder where ALL local documentation, READMEs, reports, and summaries for that folder must go.**  \nNo documentation is permitted at the repo root.\n\n---\n\n# ======================\n# TOP-LEVEL STRUCTURE\n# ======================\n\nYour real project code lives in the following major folders:\n\n```\nconfig/\ncore/\neval/\ninfra/\ninfrastructure/        \u2190 legacy (to be merged into infra)\nl1/\nl2/\nl4/\nl5/\nmeta/\norchestration/\nproviders/\nretrievers/\nruntime/\ntools/\n```\n\nEach of these MUST contain:\n```\ndocs/\n    README.md\n    layer_notes.md\n    design_reports/\n    schema_docs/\n    evaluations/\n```\n\nExample:\n```\nl1/\n   docs/\n      README.md\n      planning_overview.md\n```\n\n",
-  "full_hash": "e695ecf6382600ec52cdce848943824e91af7ee5c864c7b896a9eb2dd5194c44",
-  "generated_at": 1764728226.1518507,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\FOLDER_MAP(1).md"
-}

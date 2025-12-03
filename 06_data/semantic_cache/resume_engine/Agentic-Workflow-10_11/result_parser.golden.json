@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL1 Result Parser for resume generation result processing.\n\nParses and structures results for consistent resume improvement\nand job alignment validation.\n\"\"\"\n\nfrom dataclasses import dataclass\n\n@dataclass\nclass StrategyResult:\n    \"\"\"\n    Strategy result data for resume improvement planning.\n\n    Ensures structured strategy output for optimal resume job alignment.\n    \"\"\"\n    strategy: str\n    confidence: float\n\n@dataclass\nclass DraftResult:\n    \"\"\"\n    Draft result data for resume content creation.\n\n    Ensures structured draft output for professional resume enhancement.\n    \"\"\"\n    sections: list\n    content: str\n\n@dataclass\nclass QAResult:\n    \"\"\"\n    QA result data for resume quality validation.\n\n    Ensures structured QA output for resume accuracy assessment.\n    \"\"\"\n    findings: str\n    confidence: float\n\n@dataclass\nclass SafetyResult:\n    \"\"\"\n    Safety result data for resume compliance checking.\n\n    Ensures structured safety output for professional standards.\n    \"\"\"\n    v",
-  "full_hash": "79ef37bacfd5a77fe67d64fe6df58c28f2f380ef5d208ea565ba53aa1a0c6f1e",
-  "generated_at": 1764728224.7403958,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\result_parser.py"
-}

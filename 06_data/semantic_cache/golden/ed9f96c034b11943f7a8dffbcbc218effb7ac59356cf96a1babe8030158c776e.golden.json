@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ed9f96c034b11943f7a8dffbcbc218effb7ac59356cf96a1babe8030158c776e",
-    "scan_timestamp": "2025-12-03T07:26:03.596503"
+    "scan_timestamp": "2025-12-03T08:04:48.103434"
   },
   "content_preview": "\"\"\"\nL3 orchestration layer for r\u00e9sum\u00e9 workflow coordination.\n\nManages workflow execution and correction loops to ensure comprehensive r\u00e9sum\u00e9 improvement.\n\"\"\"\n\n# FILE: l3/workflow_graph.py\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Optional, Callable, Awaitable\n\nfrom core.models.models import (\n    WorkflowPlanBundle,\n    ExecutionContext,\n    RAGResult,\n    StrategyResult,\n    DraftingResult,\n    QAResult,\n    SafetyResult,\n    L2ResultBundle,\n)\nfrom runtime.observabi...",
-  "creation_timestamp": "2025-12-03T07:26:08.565651",
+  "creation_timestamp": "2025-12-03T08:04:55.153793",
   "version": "1.0"
 }

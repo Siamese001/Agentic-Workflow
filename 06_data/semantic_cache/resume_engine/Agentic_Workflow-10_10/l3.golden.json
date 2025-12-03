@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: 10_10/l3.py\n\"\"\"\nL3 Orchestration Layer (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n==================================================\n\nResponsibilities (strict L3-only):\n\n    \u2022 Orchestrate the end-to-end workflow at the L3 layer.\n    \u2022 Delegate all DAG execution and correction-loop logic to workflow_graph.\n    \u2022 Wrap orchestration in deterministic spans and node-level telemetry.\n    \u2022 Coordinate with L2 (execution) and L4/L5 (state, safety) through typed\n      result bundles only.\n\nThis module MUST NOT:\n    \u2022 Call LLMs directly (L2-only, via cognitive_agents).\n    \u2022 Perform retrieval, ranking, or prompting (RAG stack only).\n    \u2022 Mutate persisted state (L4-only via StateTransitionEvent).\n    \u2022 Enforce safety policies (L5-only via SafetyPolicy / PolicyDecisionEvent).\n\nPublic API:\n\n    async def orchestrate_execution(plans, ctx) -> L2ResultBundle\n        Canonical Phase-3 orchestration entrypoint.\n\n    async def run_l3_workflow(plans, ctx) -> L2ResultBundle\n        Backward-compatible alias prese",
-  "full_hash": "940235d1729be0988ef0ec71433d29dc7f70c462942a5de10cc6d5d0d1427b9a",
-  "generated_at": 1764728228.2823422,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\l3.py"
-}

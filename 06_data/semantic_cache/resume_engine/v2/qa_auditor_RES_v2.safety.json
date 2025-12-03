@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 243,
-  "generated_at": 1764728327.2021043,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\qa_auditor_RES_v2.py"
-}

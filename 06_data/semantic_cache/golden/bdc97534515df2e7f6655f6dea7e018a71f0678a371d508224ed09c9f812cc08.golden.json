@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "bdc97534515df2e7f6655f6dea7e018a71f0678a371d508224ed09c9f812cc08",
-    "scan_timestamp": "2025-12-03T07:26:03.733875"
+    "scan_timestamp": "2025-12-03T08:04:48.244342"
   },
   "content_preview": "\"\"\"Shared helpers for lightweight L1 planning stacks.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Iterable, List\n\n\ndef extract_job_profile(state: Dict[str, Any]) -> Dict[str, Any]:\n    job = state.get(\"job\") or {}\n\n    def _first(*keys: str) -> str:\n        for key in keys:\n            value = job.get(key)\n            if value:\n                return str(value)\n        return \"\"\n\n    raw_requirements = (\n        job.get(\"top_requirements\")\n        or job.get(\"required_s...",
-  "creation_timestamp": "2025-12-03T07:26:17.961502",
+  "creation_timestamp": "2025-12-03T08:05:05.016477",
   "version": "1.0"
 }

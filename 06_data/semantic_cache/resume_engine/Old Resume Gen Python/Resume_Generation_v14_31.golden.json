@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v14.31\n\nEnhanced Logging & Observability Update\n\nThis version implements 5 comprehensive logging enhancements for improved debugging,\nmonitoring, and workflow observability:\n\n1. Enhanced API Call Logging (Retries, Parameters, Latency):\n   - Logs key generation_config parameters (temp, max_tokens) before each API call\n   - Logs finish_reason, block_reason, and call duration on completion\n   - Logs specific error types and problematic text snippets for JSON parse failures\n   - Distinguishes between timeout, JSON parse, and HopExecutionError types\n   \n2. Configuration Context Logging:\n   - Logs all reasoning parameters (cot, tot_b, tot_d, sc, reflexion, max_loops)\n   - Logs calculated intensity scores and reasoning levels\n   - Logs temperature and token allocations for each API call\n   - Makes configuration decisions transparent and traceable\n   \n3. Data Flow & Transformation Snapshots:\n   - Logs key summary data after each HOP completion\n   - HOP-0: Signal sc",
-  "full_hash": "9b9f087e9e1ce48a87e7b9804130e224feb29ab8ec20fb7b5e4f3caf64f5acb5",
-  "generated_at": 1764728279.7019486,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_31.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5c50d631a3083f0832541f13a77eb686a98788df0bf6cc6f44c959569805c845",
-    "scan_timestamp": "2025-12-03T07:26:03.743955"
+    "scan_timestamp": "2025-12-03T08:04:48.253050"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\nfrom schema import ResumeOutputSchema\n\n@pytest.mark.parametrize(\"jd\", [\"AWS\",\"Anthropic\",\"Databricks\",\"CoreWeave\",\"Citi\"])\ndef test_resume_schema_compliance(jd):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\":\"AI Exec\", \"jd\": jd})\n    ResumeOutputSchema(**out[\"resume\"])  # raises if invalid\n\n@pytest.mark.parametrize(\"repeat\", [1,2,3,4,5])\ndef test_idempotency(repeat):\n    ctx={\"compat_mode\": \"v10_7\", \"resume\":\"repeatable\",\"jd\":\"sam...",
-  "creation_timestamp": "2025-12-03T07:26:18.546526",
+  "creation_timestamp": "2025-12-03T08:05:05.682607",
   "version": "1.0"
 }

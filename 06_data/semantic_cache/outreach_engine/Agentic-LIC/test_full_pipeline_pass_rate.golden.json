@@ -1,6 +1,0 @@
-{
-  "golden_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_full_pipeline_pass_rate():\n    stack = OutreachStack(ReasoningToggles())\n    samples = [\n        SimpleNamespace(prompt=\"Excited to connect\", company_id=\"ACME\", contact_id=\"C1\"),\n        SimpleNamespace(prompt=\"Shared interest in innovation\", company_id=\"OMEGA\", contact_id=\"C2\"),\n        SimpleNamespace(prompt=\"Curious about collaboration\", company_id=\"BETA\", contact_id=\"C3\"),\n    ]\n    passes = 0\n    for sample in samples:\n        outcome = stack.run(sample)\n        verdict = outcome[\"verdict\"]\n        if verdict.passed:\n            passes += 1\n        assert \"[artifact_id:\" in outcome[\"draft\"]\n    assert passes / len(samples) >= 0.85\n    assert stack.validator.metrics.pass_rate() >= 0.85\n    failing_drafts = [\n        \"Subject: Follow up\\n\\n\" +\n        \" \".join(\n            [\n                \"This detailed note ma",
-  "full_hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
-  "generated_at": 1764728330.9404454,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_full_pipeline_pass_rate.py"
-}

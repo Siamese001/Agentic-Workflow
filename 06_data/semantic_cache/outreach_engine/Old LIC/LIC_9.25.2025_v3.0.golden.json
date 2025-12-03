@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"metadata\": {\n    \"version\": \"v3.0\",\n    \"patched_from\": \"v3.1-MZLO\",\n    \"patched_at\": \"2025-09-23T22:19:27.553463+00:00\",\n    \"governance_alignment\": \"[REMOVED_LEGACY_REFERENCE]\",\n    \"smoke_test_pass\": true,\n    \"smoke_test_failures\": [],\n    \"patch_notes\": [\n      \"ensured six-section shell\",\n      \"role standards expanded\",\n      \"task success criteria hardened\",\n      \"context retrieval and toggles set\",\n      \"reasoning hybrid, QA, and mirror keys added\",\n      \"output mirroring and hygiene guard set\",\n      \"conditions blockers expanded\",\n      \"top-level enforcement and smoke tests added\",\n      \"v4.0: Decoding best-practice profiles + per-K mapping; decoding toggles in 3A; QA hardening; per-K decoding compliance; Output echo.\"\n    ],\n    \"last_saved\": \"2025-09-25T02:36:07.267462Z\",\n    \"rebaselined_on\": \"2025-09-25T12:37:15.026615\",\n    \"rebaselined_by\": \"assistant\",\n    \"notes\": \"Re-baselined 2025-09-25 as fully self-contained baseline (v1). External references removed, ",
-  "full_hash": "c1ec285987bd84d4b1fa15b87103fd9a4769117690800106806057730a0a3aec",
-  "generated_at": 1764728338.1743135,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.25.2025_v3.0.json"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "9320655e5293f0dec64dccccd40b1b58baf8cfdb266e3bff2e8bb468cc091a85",
-    "scan_timestamp": "2025-12-03T07:26:03.812078"
+    "scan_timestamp": "2025-12-03T08:04:48.318244"
   },
   "content_preview": "{\n  \"canonical_verbs\": {\n    \"LED\": [\n      \"led\",\n      \"spearheaded\",\n      \"directed\",\n      \"managed\",\n      \"governed\",\n      \"oversaw\"\n    ],\n    \"DEVELOPED\": [\n      \"developed\",\n      \"architected\",\n      \"built\",\n      \"created\",\n      \"designed\",\n      \"engineered\",\n      \"implemented\"\n    ],\n    \"IMPROVED\": [\n      \"improved\",\n      \"enhanced\",\n      \"optimized\",\n      \"accelerated\",\n      \"streamlined\",\n      \"increased\",\n      \"boosted\",\n      \"revitalized\"\n    ],\n    \"REDUCED\": [\n ...",
-  "creation_timestamp": "2025-12-03T07:26:25.266302",
+  "creation_timestamp": "2025-12-03T08:05:11.885382",
   "version": "1.0"
 }

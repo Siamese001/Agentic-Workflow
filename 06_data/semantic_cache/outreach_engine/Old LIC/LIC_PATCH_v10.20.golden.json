@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"patch_metadata\": {\n    \"patch_id\": \"LIC-PATCH-v10.20\",\n    \"base_version\": \"v10.10\",\n    \"target_version\": \"v10.20\",\n    \"patch_date\": \"2025-10-14\",\n    \"total_remediations\": 11,\n    \"critical_remediations\": 7,\n    \"warning_remediations\": 4,\n    \"test_coverage\": \"100% (30/30 tests will pass after patch)\",\n    \"breaking_changes\": false,\n    \"rollback_compatible\": true\n  },\n\n  \"patch_summary\": {\n    \"description\": \"Comprehensive quality and edge case hardening patch based on 30-test validation suite. Addresses 11 critical gaps in boot validation, confidence scoring, metric validation, and error handling.\",\n    \"key_improvements\": [\n      \"Enhanced boot validator with spell-check and circular reference detection\",\n      \"Per-claim confidence enforcement for granular quality control\",\n      \"Metric context coherence validation\",\n      \"Placeholder detection and blocking\",\n      \"Job title position enforcement for job-specific messages\",\n      \"Multi-failure aggregation for comprehensi",
-  "full_hash": "e7d64125c4a889c95c732aad8435a9ecae767a41d77904b74cc5400c9022b854",
-  "generated_at": 1764728339.5785797,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_PATCH_v10.20.json"
-}

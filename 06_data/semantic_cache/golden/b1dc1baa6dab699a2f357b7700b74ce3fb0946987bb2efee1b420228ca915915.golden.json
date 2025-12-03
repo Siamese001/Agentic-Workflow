@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b1dc1baa6dab699a2f357b7700b74ce3fb0946987bb2efee1b420228ca915915",
-    "scan_timestamp": "2025-12-03T07:26:03.582945"
+    "scan_timestamp": "2025-12-03T08:04:48.091360"
   },
   "content_preview": "\"\"\"\nProvides access to specialized AI agents for r\u00e9sum\u00e9 analysis and job matching optimization.\n\nImproves r\u00e9sum\u00e9 quality by coordinating strategy, drafting, QA, and safety agents for comprehensive career analysis.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom l2.agents import (\n    LLMBaseAgent,\n    StrategyLLMAgent,\n    DraftingGuild,\n    SemanticQAAgent,\n    ConstitutionalSafetyAgent,\n    HYDEQueryAgent,\n    QACouncilAgent,\n)\n\n__all__ = [\n    \"LLMBaseAgent\",\n    \"StrategyLLMAgent\",\n    \"Drafti...",
-  "creation_timestamp": "2025-12-03T07:26:07.637806",
+  "creation_timestamp": "2025-12-03T08:04:53.898071",
   "version": "1.0"
 }

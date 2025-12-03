@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Layer-3 orchestration for the v10.8 RAG workflow.\"\"\"\n\nfrom __future__ import annotations\n\nfrom datetime import datetime\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import BaseAgent\n\nfrom .rag_execution import RAGExecutionStack\nfrom .rag_planning import RAGPlanningStack\n\n\nclass RAGOrchestratorStack(BaseAgent):\n    \"\"\"Coordinates RAG planning and execution without adding new heuristics.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        super().__init__(context, debug_mode)\n        self._adapter = StateAdapterStack(context, debug_mode)\n        self._planning = RAGPlanningStack(context, debug_mode)\n        self._execution = RAGExecutionStack(context, debug_mode)\n        self.safety_policy = getattr(context, \"safety_policy\", None)\n        self.policy_stack = getattr(context, \"policy_stack\", None)\n        self.constitutional_engine = getattr(context, \"constitutional_engine\", ",
-  "full_hash": "2a9773e1f4bbae8c1140b4f5122b0a990a13f1c5bf41e2a3fa58cbea3e27ca19",
-  "generated_at": 1764728230.2514725,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\rag_orchestration.py"
-}

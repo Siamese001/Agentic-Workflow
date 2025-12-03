@@ -1,6 +1,0 @@
-{
-  "golden_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_token_drift_guard():\n    stack = OutreachStack(ReasoningToggles())\n    sample = SimpleNamespace(prompt=\"Checking drift bounds\", company_id=\"ACME\", contact_id=\"C1\")\n    outcome = stack.run(sample)\n    verdict = outcome[\"verdict\"]\n    assert verdict.passed\n    drift = stack.validator.metrics.token_drift()\n    assert drift <= 0.1\n",
-  "full_hash": "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776",
-  "generated_at": 1764728350.4423144,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\safety-guard-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\token_budget_inspector.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nSchema definitions for schema ranking refinement and optimization.\nContains only type definitions and data models - no execution logic.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Any, List\nfrom enum import Enum\n\n\nclass RefinementStrategy(Enum):\n    \"\"\"Ranking refinement strategies.\"\"\"\n    ITERATIVE_IMPROVEMENT = \"iterative_improvement\"\n    GENETIC_ALGORITHM = \"genetic_algorithm\"\n    SIMULATED_ANNEALING = \"simulated_annealing\"\n    GRADIENT_DESCENT = \"gradient_descent\"\n\n\nclass OptimizationObjective(Enum):\n    \"\"\"Optimization objectives for ranking.\"\"\"\n    MAXIMIZE_RELEVANCE = \"maximize_relevance\"\n    MINIMIZE_BIAS = \"minimize_bias\"\n    BALANCE_DIVERSITY = \"balance_diversity\"\n    OPTIMIZE_PERFORMANCE = \"optimize_performance\"\n\n\n@dataclass\nclass RefinementConfiguration:\n    \"\"\"Schema for ranking refinement configuration.\"\"\"\n    strategy: RefinementStrategy\n    objective: OptimizationObjective\n    max_iterations: int = 100\n    convergence_threshold: float = 0.001\n   ",
-  "full_hash": "5aa55609085fd37c7ca1389659653b1f0cb5b3a0dcd7da81a3bc3b7d39f2ccf8",
-  "generated_at": 1764728343.2028759,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\refine_schema_ranking.py"
-}

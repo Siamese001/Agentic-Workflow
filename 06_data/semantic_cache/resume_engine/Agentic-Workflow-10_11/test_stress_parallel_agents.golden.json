@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Stress Tests for Parallel Agents.\"\"\"\n\nclass TestStressParallelAgents:\n    \"\"\"Stress tests for parallel agent execution.\"\"\"\n    \n    def test_many_parallel_agents(self):\n        \"\"\"Test many parallel agents.\"\"\"\n        agent_count = 50\n        results = [{\"agent\": f\"agent_{i}\", \"done\": True} for i in range(agent_count)]\n        assert len(results) == 50\n        assert all(r[\"done\"] for r in results)\n    \n    def test_parallel_agent_resource_usage(self):\n        \"\"\"Test parallel agent resource usage.\"\"\"\n        agents = 20\n        memory_per_agent = 10\n        total_memory = agents * memory_per_agent\n        assert total_memory == 200\n",
-  "full_hash": "976352a8576b3e8cc92003dc82f2d5bf83496fce27f8405db48fd27fd697202e",
-  "generated_at": 1764728227.6493719,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\parallel_agents\\test_stress_parallel_agents.py"
-}

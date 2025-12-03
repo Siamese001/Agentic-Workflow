@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a",
-    "scan_timestamp": "2025-12-03T07:26:03.542719"
+    "scan_timestamp": "2025-12-03T08:04:48.054148"
   },
   "content_preview": "\"\"\"\nPinned context management for r\u00e9sum\u00e9 processing workflows.\n\nManages essential context items that ensure consistent r\u00e9sum\u00e9 improvement prompt generation.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass PinnedItem:\n    \"\"\"\n    Represents pinned context item for r\u00e9sum\u00e9 processing.\n\n    Ensures critical information is always included in r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    id: str\n    text: str\n    metadata: Dict[str, Any]\n\n\ndef filter_pinned(ite...",
-  "creation_timestamp": "2025-12-03T07:26:05.052626",
+  "creation_timestamp": "2025-12-03T08:04:49.951457",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "from meta.metacognition.evaluator import evaluate_hypotheses\nfrom meta.metacognition.models import Hypothesis\n\n\ndef test_evaluate_penalizes_no_evidence():\n    h = Hypothesis(\n        id=\"h1\",\n        agent_id=\"a1\",\n        content=\"short\",\n        confidence=1.0,\n        evidence_ids=[],\n    )\n\n    evaluated = evaluate_hypotheses([h])[0]\n    assert evaluated.confidence < 1.0\n\n\ndef test_evaluate_clamps_confidence_range():\n    h = Hypothesis(\n        id=\"h1\",\n        agent_id=\"a1\",\n        content=\"x\" * 10,\n        confidence=10.0,\n        evidence_ids=[\"e1\"],\n    )\n\n    evaluated = evaluate_hypotheses([h])[0]\n    assert 0.0 <= evaluated.confidence <= 1.0\n\n\n\n\n\n\n",
-  "full_hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
-  "generated_at": 1764728227.2370489,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_hypothesis_evaluation.py"
-}

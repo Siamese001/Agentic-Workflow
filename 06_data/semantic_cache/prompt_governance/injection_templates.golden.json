@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nPrompt Injections\nSection 3: Prompt Governance - Injection prompt templates\n\"\"\"\n\n# This directory contains prompt injection templates including:\n# - Context injection prompts\n# - Framing injection prompts\n# - Safety injection prompts\n# - Output formatting injections\n# - Tool selection injections\n\n__all__ = [\n    'get_injection_prompt',\n    'apply_injection',\n    'list_injection_types'\n]\n\ndef get_injection_prompt(injection_type: str, context: dict):\n    \"\"\"Get injection prompt by type and context\"\"\"\n    pass\n\ndef apply_injection(base_prompt: str, injection: str):\n    \"\"\"Apply injection to base prompt\"\"\"\n    pass\n\ndef list_injection_types():\n    \"\"\"List available injection types\"\"\"\n    pass\n\n\n\n\n\n",
-  "full_hash": "c0c69b1ed6a67e015158ee02fa1427dd55a0ae5572ff0f480f323326f9d32523",
-  "generated_at": 1764728348.0354538,
-  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\observer-microagent-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\injection_templates.py"
-}

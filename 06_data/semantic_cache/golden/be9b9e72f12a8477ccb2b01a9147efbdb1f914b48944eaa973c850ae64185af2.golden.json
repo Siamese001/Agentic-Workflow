@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "be9b9e72f12a8477ccb2b01a9147efbdb1f914b48944eaa973c850ae64185af2",
-    "scan_timestamp": "2025-12-03T07:26:04.011377"
+    "scan_timestamp": "2025-12-03T08:04:48.518832"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-09 v2.83 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83  \nv2.83 consolidates three ZLOs into one upgrade from v2.82. It uplevels Senior TA messaging to executive-grade rigor, hardens routing so TA titles cannot be misclassified as Executive, and strictly enforces Entrance Gate sequencing, telemetry alignment, schema drift checks, and IVM timing. It preserves v2.82 scoring visibility discipline, Evidence minima, and AI FILTER v8...",
-  "creation_timestamp": "2025-12-03T07:26:39.680447",
+  "creation_timestamp": "2025-12-03T08:05:26.231668",
   "version": "1.0"
 }

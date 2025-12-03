@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Phase Status\n\n## Phase 1 \u2014 Agentic Core & Safety\n\nPhase 1 of the LIC agentic rollout is complete and the exit criteria are satisfied:\n\n- **Safety defenses**: High-risk prompt injections are blocked by the outreach stack via `detect_injection`, as exercised in the regression suite.\n- **Reasoning toggles**: `ReasoningToggles` enforces bounded CoT/ToT/reflexion settings with deterministic normalization and validation.\n- **End-to-end orchestration**: `OutreachStack` composes the router, architect, CTA, signature, and validator agents into a single pass that returns a draft or safety stop.\n- **Test coverage**: `tools/run_tests_with_coverage.py` enforces the 90% gate without third-party plugins; the latest run reports 90% coverage across `src/lic_agentic`.\n\n## Evidence\n\n- Unit, integration, e2e, and regression suites all pass with zero skips (see testing logs).\n- Coverage command: `tools/run_tests_with_coverage.py`.\n\nUse the commands documented in `TESTING.md` to rerun the verification flo",
-  "full_hash": "fcd2116e2289e317f0f3278191a352f7369bc1857caca8313fb16f695030eb22",
-  "generated_at": 1764728330.2724762,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\docs\\phase_status.md"
-}

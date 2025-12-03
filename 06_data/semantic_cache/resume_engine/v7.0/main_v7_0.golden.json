@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: main_v7_0.py\n# Overwrites: main_v6_5.py\n# Version: 7.0 (LangGraph + Redis)\n#\n# v7.0 (Phase 1) CHANGES:\n# - DELETED the 'WorkflowV65' class.\n# - Replaced 'CrewOrchestrator' import with 'get_graph_app'.\n# - Added setup for LangSmith (Observability)\n# - Added setup for RedisSaver (Persistence / Checkpointing)\n# - Main function now invokes the LangGraph app with a\n#   thread_id, enabling persistent, resumable, multi-job runs.\n\n# ============================================================================\n# EXTERNAL IMPORTS\n# ============================================================================\nimport argparse\nimport json\nimport logging\nimport logging.handlers\nimport os\nimport sys\nimport uuid\nimport re\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any, Dict, List, Optional, Tuple\n\n# Import from consolidated modules (v7.0)\nfrom core_v7_0 import (\n    CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR\n)\n\n# v7.0: Import from the new graph builder\nfrom agent_swar",
-  "full_hash": "486fb30260773f59419d55b22da7fad05dc53a310ffe7771b39b505e54ff3b96",
-  "generated_at": 1764728327.7162957,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\main_v7_0.py"
-}

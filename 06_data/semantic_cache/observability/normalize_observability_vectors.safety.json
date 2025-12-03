@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764728351.0090065,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\plan-layer\\expand-phase\\convert-observability-content\\embedding\\compare-meaning\\normalize_observability_vectors.py"
-}

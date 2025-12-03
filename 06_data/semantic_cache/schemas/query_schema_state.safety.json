@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 53,
-  "generated_at": 1764728342.7476108,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\mem-layer\\retrieve-phase\\get-schema-info\\general\\understand-request\\query_schema_state.py"
-}

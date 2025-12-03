@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nKnowledge graph retrieval planning for resume processing workflows.\n\nImplements L1 planning for multi-hop knowledge graph retrieval to support\ncomprehensive resume enhancement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set\nfrom datetime import datetime, UTC\nfrom enum import Enum\n\n\nclass HopDirection(str, Enum):\n    \"\"\"Direction of traversal in resume processing knowledge graph.\n\n    Ensures proper navigation through resume-related career data.\n    \"\"\"\n    OUTGOING = \"outgoing\"    # Subject -> Object\n    INCOMING = \"incoming\"    # Object <- Subject\n    BIDIRECTIONAL = \"both\"   # Both directions\n\n\nclass QueryType(str, Enum):\n    \"\"\"Type of resume processing KG query.\n\n    Defines query patterns for optimal resume data retrieval.\n    \"\"\"\n    ENTITY_FACTS = \"entity_facts\"           # All facts about an entity\n    PATH_FINDING = \"path_finding\"           # Find path between entities\n  ",
-  "full_hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
-  "generated_at": 1764728224.5490978,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_retrieval_planning(1).py"
-}

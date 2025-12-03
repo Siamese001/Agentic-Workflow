@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "601f6020fad60757ce948c587aafffa51cf8edf701489a6474763b30aac8f6ac",
-    "scan_timestamp": "2025-12-03T07:26:03.592297"
+    "scan_timestamp": "2025-12-03T08:04:48.099145"
   },
   "content_preview": "\"\"\"\nOrchestration layer integration utilities.\n\nThis module provides integration functionality for orchestration operations,\nconnecting different components and managing cross-cutting concerns.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\n# Import WorkflowExecutionConfig from core/integration for backward compatibility\nfrom core.integration import WorkflowExecutionConfig\n\n\n@dataclass\nclass IntegrationConfig:\n    \"\"\"Configuration for orchestration integrati...",
-  "creation_timestamp": "2025-12-03T07:26:08.122894",
+  "creation_timestamp": "2025-12-03T08:04:54.543383",
   "version": "1.0"
 }

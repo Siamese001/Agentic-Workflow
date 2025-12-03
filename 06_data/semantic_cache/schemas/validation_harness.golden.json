@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nValidation harness for unified_structure_subatomic.yaml\nCreates required validation report artifacts for K30-K32\n\"\"\"\n\nimport yaml\nimport json\nfrom pathlib import Path\nfrom datetime import datetime\n\ndef validate_yaml_structure(yaml_path):\n    \"\"\"Comprehensive validation of the unified structure YAML\"\"\"\n    \n    with open(yaml_path, 'r') as f:\n        content = f.read()\n    \n    # Split tree and meta sections\n    lines = content.split('\\n')\n    meta_start = None\n    for i, line in enumerate(lines):\n        if line.startswith('# unified_structure_subatomic_meta.yaml'):\n            meta_start = i + 1\n            break\n    \n    if meta_start is None:\n        raise ValueError(\"Meta section not found\")\n    \n    tree_content = '\\n'.join(lines[:meta_start-1])\n    meta_content = '\\n'.join(lines[meta_start:])\n    \n    tree_data = yaml.safe_load(tree_content)\n    meta_data = yaml.safe_load(meta_content)\n    \n    validation_results = {\n        'timestamp': datetime.now().",
-  "full_hash": "85ebb14ea7d853bfcfbd1dafc60c2d0f9e0455b490fa93a08ebd776efc0f395b",
-  "generated_at": 1764728346.292879,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\validation_tools\\validation_harness.py"
-}

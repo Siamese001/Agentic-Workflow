@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.31 - APP TRACKER QA V5 DESTRUCTIVE OVERWRITE\n================================================================================\nCRITICAL v5.31 UPDATE: Integrated App Tracker QA Spec v5 with complete validation\n\n\u2713 DESTRUCTIVE OVERWRITE: Applied App Tracker Consolidated & Hardened QA Spec v5\n\u2713 CORRECTED SCHEMA: 54 fields (not 56) - exact App Schema v4 compliance\n\u2713 NEW QA SYSTEM: Full R1-R23 validation rules integrated\n\u2713 VALIDATOR CLASS: AppTrackerQAValidator with PASSED/BLOCKED outcomes\n\u2713 PRESERVED: All v5.30 functionality + schema + core systems\n\nv5.31 CHANGES:\n\u2713 Integrated App Tracker QA Spec v5 (R1..R23 enforcement)\n\u2713 Added AppTrackerQAValidator class with full rule validation\n\u2713 Corrected documentation: 54 fields (was incorrectly stated as 56)\n\u2713 Added enum validation for Pipeline Status, Outreach Channel, Closure Reason\n\u2713 Added channel gating validation (R5a-R5d)\n\u2713 Added date semantics validation (R10-R12)\n\u2713 Added duplicate detection (R19) and filename va",
-  "full_hash": "b602242d3d5d89ff783416f5f874046086179bc63252eb95fcc27a14ecefe722",
-  "generated_at": 1764728303.0355036,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_31.py"
-}

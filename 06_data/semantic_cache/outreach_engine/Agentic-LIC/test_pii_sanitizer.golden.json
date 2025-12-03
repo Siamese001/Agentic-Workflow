@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.safety.pii_sanitizer import SanitizedInputs, sanitize_pii\n\n\nclass _Inputs:\n    def __init__(self, prompt: str, company_id: str | None = None, contact_id: str | None = None):\n        self.prompt = prompt\n        self.company_id = company_id\n        self.contact_id = contact_id\n\n\ndef test_email_and_phone_masking():\n    prompt = \"Reach out to alice@example.com or call +1 555 123 4567 for help\"\n    sanitized, mapping = sanitize_pii(_Inputs(prompt, company_id=\"ACME\", contact_id=\"C1\"))\n    assert isinstance(sanitized, SanitizedInputs)\n    assert sanitized.prompt.count(\"<PII_\") == 2\n    assert sanitized.company_id == \"ACME\"\n    assert sanitized.contact_id == \"C1\"\n    assert all(value in prompt for value in mapping.values())\n\n\ndef test_no_pii_returns_original_prompt():\n    prompt = \"Hello team\"\n    sanitized, mapping = sanitize_pii(_Inputs(prompt))\n    assert sanitized.prompt == prompt\n    assert mapping == {}\n",
-  "full_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "generated_at": 1764728331.1464503,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_pii_sanitizer.py"
-}

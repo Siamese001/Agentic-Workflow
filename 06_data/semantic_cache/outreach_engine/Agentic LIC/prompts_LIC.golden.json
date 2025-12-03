@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"schema_version\": \"13.0\",\n  \"description\": \"Externalized prompt templates for LIC v13.0 - All agent prompts, generation templates, and critique templates\",\n  \n  \"cta_templates\": {\n    \"CONNECTION_REQ\": {\n      \"default\": null,\n      \"_comment\": \"CONNECTION_REQ has no CTA per SPEC 3\"\n    },\n    \"INMAIL\": {\n      \"C_LEVEL\": \"Would you be open to a brief conversation about how [TOPIC] might align with your strategic priorities?\",\n      \"EXECUTIVE\": \"I'd welcome the chance to discuss how [TOPIC] could support your team's objectives.\",\n      \"SENIOR_TA\": {\n        \"direct\": \"Would you have 15 minutes to discuss [TECHNICAL_TOPIC]?\",\n        \"deferential\": \"If this aligns with your team's direction, I'd appreciate any guidance you could share.\"\n      },\n      \"RECRUITER\": \"Would you be open to a conversation about roles that might match your team's needs?\"\n    },\n    \"EMAIL\": {\n      \"C_LEVEL\": \"I'd value the opportunity to explore how [TOPIC] aligns with your vision for [COMPANY].\",\n    ",
-  "full_hash": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c",
-  "generated_at": 1764728331.4496517,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\prompts_LIC.json"
-}

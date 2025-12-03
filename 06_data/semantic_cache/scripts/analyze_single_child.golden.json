@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nAnalyze single-child directory chains to identify trivial wrappers vs semantically meaningful nodes\n\"\"\"\n\nimport yaml\nfrom pathlib import Path\nfrom collections import defaultdict\n\ndef analyze_single_child_chains(tree, domains, layers, phases, intents, axes, verb_groups):\n    \"\"\"Analyze single-child directory chains and categorize them\"\"\"\n    \n    semantic_levels = set(layers) | set(phases) | set(intents) | set(axes) | set(verb_groups)\n    \n    single_child_chains = []\n    trivial_candidates = []\n    semantic_single_children = []\n    \n    def traverse_tree(node, path, level=0):\n        if not isinstance(node, dict):\n            return\n        \n        # Skip __init__.py files\n        if '__init__.py' in node:\n            node_copy = {k: v for k, v in node.items() if k != '__init__.py'}\n            if len(node_copy) == 1:\n                node = node_copy\n            elif len(node_copy) == 0:\n                return\n        \n        # Check if this node has exactl",
-  "full_hash": "0c4106acd45484cb5b3663ee3daa63e130dd22bd988761bdd09869a6e2f81a83",
-  "generated_at": 1764728352.5517135,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\validation_tools\\analyze_single_child.py"
-}

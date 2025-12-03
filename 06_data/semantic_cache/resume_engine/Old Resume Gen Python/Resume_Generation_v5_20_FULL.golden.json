@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.20 - COMPLETE JD-DRIVEN PIPELINE\n================================================================================\nPATCH NOTES v5.20 (October 2025):\n\u2713 DESTRUCTIVE OVERWRITE - Complete JD ingestion pipeline\n\u2713 REMOVED all hardcoded mock JD analysis\n\u2713 ADDED JDParser class for actual job description parsing\n\u2713 FIXED all hops to reference actual JD (not mock data)\n\u2713 Master Resume = source data only (no generation logic)\n\u2713 Baseline Resume = word count reference only (framework included)\n\u2713 RAG Calls: 45-50 (maintained from v5.19)\n\u2713 RAG Hops: 24-26 (maintained from v5.19)\n\u2713 All v5.19 features preserved + JD ingestion fixes\n\u2713 Reasoning toggles exposed in config\n\u2713 6 output files with actual content generation\n\u2713 Complete validation framework (499 tests)\n\nCRITICAL FIXES FROM v5.19:\n- Line 1460-1477: Removed hardcoded JD analysis\n- Line 1489-1499: Removed mock content generation\n- Added JDParser class (lines 80-350)\n- All hops now JD-driven (verified hop-by-hop)\n\nVersi",
-  "full_hash": "1c9c03ad40747783f1c6f9fc2f9c2f43657d68f8f1fdac41219fcb27ab7f8f77",
-  "generated_at": 1764728301.0972707,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_20_FULL.py"
-}

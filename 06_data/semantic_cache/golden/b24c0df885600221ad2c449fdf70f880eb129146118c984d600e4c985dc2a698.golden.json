@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "b24c0df885600221ad2c449fdf70f880eb129146118c984d600e4c985dc2a698",
-    "scan_timestamp": "2025-12-03T07:26:03.652143"
+    "scan_timestamp": "2025-12-03T08:04:48.158633"
   },
   "content_preview": "from orchestration.model_routing import RoutingContext, choose_provider_and_model\n\n\ndef test_policy_selection_honors_requested_model():\n    ctx = RoutingContext(agent_id=\"agent\", task_type=\"llm_call\", execution_profile=None)\n\n    choice = choose_provider_and_model(ctx, requested_model=\"claude-3-haiku\")\n\n    assert choice.model_name == \"claude-3-haiku\"\n    assert choice.provider == \"anthropic\"\n\n\ndef test_policy_selection_defaults_when_no_model():\n    ctx = RoutingContext(agent_id=\"agent\", task_ty...",
-  "creation_timestamp": "2025-12-03T07:26:10.223356",
+  "creation_timestamp": "2025-12-03T08:04:56.958370",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: agent_swarm_v9_0.py\n# Overwrites: agent_swarm_v9_0.py\n# Version: 9.0 (Agentic Loops)\n#\n# v9.0 (Agentic Loops) CHANGES:\n# - RAG_SearchAgent: Upgraded to a full ReAct agent with an internal critique loop,\n#   graph search tools, and write-to-graph capabilities. (Req #1)\n# - BulletStack: Replaced BulletSwarmAgent with a new 'ProvenanceRouterAgent'\n#   that manages 'CustomizedBulletDrafterAgent' and 'SyntheticBulletDrafterAgent'\n#   to implement the 2/3/2 and 2/2/2 provenance plan. (Req #2)\n# - DraftingStack: Replaced AdversarialDraftingRouter with a 'DraftingConductorAgent'\n#   that dynamically routes between experts (MoE). (Req #1)\n# - QAStack: Replaced AtomicQASwarmLLM with a 'QAConductorAgent'\n#   that dynamically selects QA checks (MoE). (Req #1)\n\n# ============================================================================\n# EXTERNAL IMPORTS\n# ============================================================================\nimport copy\nimport difflib\nimport hashlib\nimport json\nim",
-  "full_hash": "bad41889d0f22794da886499f63982f6f2825ee34ae578bc6fef94fdce45a4bf",
-  "generated_at": 1764728328.0747197,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\agent_swarm_v9_0.py"
-}

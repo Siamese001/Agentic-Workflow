@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f7fee04ad72ab801bad0c19d6f8abc9eb367e6b3ad51fc9863203919351e90a0",
-    "scan_timestamp": "2025-12-03T07:26:03.599434"
+    "scan_timestamp": "2025-12-03T08:04:48.106620"
   },
   "content_preview": "\"\"\"Pinecone client wrapper for vector operations.\"\"\"\nfrom typing import Any, Dict, List, TypedDict\nimport os\nfrom pinecone import Pinecone\nfrom openai import OpenAI\n\n\nclass Vector(TypedDict):\n    id: str\n    values: List[float]\n    metadata: Dict[str, Any]\n\n\nclass PineconeClient:\n    \"\"\"A client for interacting with Pinecone's vector database.\n    \n    This client provides a simple interface for common vector operations\n    while abstracting away the underlying Pinecone SDK details.\n    \"\"\"\n    ...",
-  "creation_timestamp": "2025-12-03T07:26:08.652760",
+  "creation_timestamp": "2025-12-03T08:04:55.253733",
   "version": "1.0"
 }

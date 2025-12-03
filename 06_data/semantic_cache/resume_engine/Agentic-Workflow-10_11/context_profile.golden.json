@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ContextBudget\n\n\nclass ContextProfile(BaseModel):\n    \"\"\"Profile capturing context budget hints used by planning and routing.\"\"\"\n\n    context_budget: ContextBudget = Field(default_factory=ContextBudget)\n\n\n\n",
-  "full_hash": "0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4",
-  "generated_at": 1764728223.784377,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\context_profile.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "79d7b5c2fa4c781e7c36a32cd9803093a69c3e862ab0fa4ec82051550af379d5",
-    "scan_timestamp": "2025-12-03T07:26:03.810624"
+    "scan_timestamp": "2025-12-03T08:04:48.316670"
   },
   "content_preview": "# File: clerk_RES_v2.py\n# ClerkExtractor class - extracts data from master resume\n\nimport logging\nfrom typing import Dict, List, Tuple\n\nfrom models_RES import BulletProvenance, ValidationResult\n\nlogger = logging.getLogger(__name__)\n\n\nclass ClerkExtractor:\n\n    def __init__(self, master_resume: Dict):\n        self.master_resume = master_resume\n        self._validate_master_resume_structure()\n\n    def extract(self) -> Tuple[Dict, List[ValidationResult]]:\n        validation_results = []\n\n        ex...",
-  "creation_timestamp": "2025-12-03T07:26:25.012632",
+  "creation_timestamp": "2025-12-03T08:05:11.732780",
   "version": "1.0"
 }

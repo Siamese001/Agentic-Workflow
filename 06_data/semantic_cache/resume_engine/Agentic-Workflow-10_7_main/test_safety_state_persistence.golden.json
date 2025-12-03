@@ -1,6 +1,0 @@
-{
-  "golden_content": "from models import MainGraphState\nfrom state_adapter_stack import StateAdapterStack\n\n\ndef test_safety_fields_persist_via_patch():\n    base = MainGraphState()\n    patch = {\n        \"safety_report\": {\"is_safe\": True, \"findings\": []},\n        \"policy_decision\": {\"allowed\": True, \"reason\": None},\n        \"constitutional_review\": {\"passed\": True, \"violations\": []},\n    }\n\n    adapter = StateAdapterStack(context=None, debug_mode=False)\n    new_state = adapter.apply_patch(base, patch)\n\n    assert new_state.safety_report == patch[\"safety_report\"]\n    assert new_state.policy_decision == patch[\"policy_decision\"]\n    assert new_state.constitutional_review == patch[\"constitutional_review\"]\n",
-  "full_hash": "d1aa3696a6623b15fdcb20992e57a89cc181dbaa7fe34d7173a297f203c53094",
-  "generated_at": 1764728231.6126041,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state\\test_safety_state_persistence.py"
-}

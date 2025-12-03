@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - enforce_runtime_boundaries\nImplements L1 Cognitive Planning Layer for enforce runtime boundaries operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EnforceRuntimeBoundariesPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass EnforceRuntimeBoundariesPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EnforceRuntimeBoundariesPlanResult:\n    \"\"\"L5 Result structure with full type safety",
-  "full_hash": "1a04b5de36a51fbc10897de292b15aae3f4f4616588f315c22d8850e70ff8fc5",
-  "generated_at": 1764728347.3969,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\plan-phase\\check-runtime-rules\\policy\\check-safety\\enforce_runtime_boundaries.py"
-}

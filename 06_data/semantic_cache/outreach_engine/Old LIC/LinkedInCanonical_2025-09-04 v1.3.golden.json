@@ -1,6 +1,0 @@
-{
-  "golden_content": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-05 v1.3\n===============================================================================\n\n# SUMMARY\n- Full router with NEW vs EXISTING and SINGLE vs MULTIPLE batching.\n- Edge-case support (NEW full message): When Premium InMail/full-message is available for a NEW contact, route to the EXISTING Recruiter or EXISTING Contact-LightRAG shells with a salutation override (remove any \u201cThanks for connecting\u201d variants). Everything else remains identical to the EXISTING shells.\n- NEW | Short uses Light RAG to align content with current company strategic imperatives while preserving the 290\u2013310 character budget.\n- Visible output remains minimal and consistent: (1) Outreach Message body, (2) LinkedIn QA Grid, (3) AI Filter Canonical Table, (4) Message-Specific RAG QA Table \u2014 plus optional 2-row Evidence Pack when toggled ON fo",
-  "full_hash": "a27e2d09e4782b7aecbc4114503550e8f9ee1008cedc94364e69af616a102684",
-  "generated_at": 1764728339.8786952,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-04 v1.3.md"
-}

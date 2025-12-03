@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175",
-    "scan_timestamp": "2025-12-03T07:26:03.855246"
+    "scan_timestamp": "2025-12-03T08:04:48.359083"
   },
   "content_preview": "from src.lic_agentic.telemetry import PolicyController\n\n\ndef test_autotune_reacts_to_latency_changes():\n    controller = PolicyController()\n    controller.register_tool(\"web_search_v1\", quarantined=False)\n    before = controller.budget_multiplier\n    controller.update(latency_p95_ms=4800, qa_pass_rate=0.9)\n    after_high_latency = controller.budget_multiplier\n    assert after_high_latency <= before\n\n    controller.update(latency_p95_ms=2000, qa_pass_rate=0.95)\n    assert controller.budget_multip...",
-  "creation_timestamp": "2025-12-03T07:26:32.199714",
+  "creation_timestamp": "2025-12-03T08:05:18.265873",
   "version": "1.0"
 }

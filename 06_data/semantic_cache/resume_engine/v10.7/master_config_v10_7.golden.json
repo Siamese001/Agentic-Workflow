@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"schema_version\": \"master_config_v10.7\",\n  \"description\": \"v10.7: Implements 15 new enhancements including Semantic Caching, Idempotency Validation, Concurrent Node Execution, Constitutional AI, and Agent-to-Agent (A2A) Comms.\",\n  \"version_notes\": {\n    \"v10_5_changes\": [\n      \"Inherits all v10.5 features: Dynamic Model Routing, Tool Caching, Node Timeouts, Tool Generation, Agent Metrics, Self-Consistency Voting, Curriculum Prompting, PI Detection, and Semantic Validation.\"\n    ],\n    \"v10_7_changes\": [\n      \"SCHEMA_VERSION: Updated to v10.7\",\n      \"MCP_WRAPPER: Added wrap_mcp capability with configurable client registry.\",\n      \"MCP_DEFAULT: MCP wrapping enabled by default for orchestration and tools.\"\n    ]\n  },\n  \"logging_config\": {\n    \"log_level\": \"INFO\",\n    \"debug_log_level\": \"DEBUG\",\n    \"log_file\": \"./logs/workflow_v10_7.log\",\n    \"metrics_log_path\": \"./logs/metrics_v10_7.jsonl\",\n    \"log_format\": \"json\",\n    \"correlation_ids\": true\n  },\n  \"redis_config\": {\n    \"host\":",
-  "full_hash": "d705b3573a706e5a2218469ce2d33f09b9c142c6321d8c042c952dc020350321",
-  "generated_at": 1764728329.476917,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\master_config_v10_7.json"
-}

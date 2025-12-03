@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0",
-    "scan_timestamp": "2025-12-03T07:26:03.544570"
+    "scan_timestamp": "2025-12-03T08:04:48.056269"
   },
   "content_preview": "\"\"\"\nControl plane models for r\u00e9sum\u00e9 processing safety and policy management.\n\nProvides structured data models for comprehensive r\u00e9sum\u00e9 improvement workflow control.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional, Literal\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ExecutionProfile\n\n\nclass SafetyContext(BaseModel):\n    \"\"\"\n    Provides safety context for r\u00e9sum\u00e9 processing control plane operations.\n\n    Ensures secure and compliant execution of comprehensive r\u00e9sum\u00e9 en...",
-  "creation_timestamp": "2025-12-03T07:26:05.094362",
+  "creation_timestamp": "2025-12-03T08:04:50.008566",
   "version": "1.0"
 }

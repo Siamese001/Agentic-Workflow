@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Observability Telemetry Tests.\"\"\"\n\nclass TestObservabilityTelemetry:\n    \"\"\"Tests for observability telemetry.\"\"\"\n    \n    def test_metric_collection(self):\n        \"\"\"Test metric collection.\"\"\"\n        metrics = {\n            \"latency_ms\": 150,\n            \"token_count\": 500,\n            \"request_count\": 10\n        }\n        assert metrics[\"latency_ms\"] > 0\n        assert metrics[\"token_count\"] > 0\n",
-  "full_hash": "7750e74ea9cb18dfa30bccb88bdb4169cddac505f496e5f40a20b2887117a31a",
-  "generated_at": 1764728227.381682,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\telemetry\\test_obs_telemetry.py"
-}

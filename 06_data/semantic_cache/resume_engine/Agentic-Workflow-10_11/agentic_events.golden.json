@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyEvent(BaseModel):\n    \"\"\"Observability event capturing safety-related activity.\n\n    This is intentionally lightweight and does not depend on higher-level\n    orchestration types; callers pass identifiers and structured payloads.\n    \"\"\"\n\n    name: str = \"safety_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    stage: Optional[str] = None\n    payload: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass DecisionEvent(BaseModel):\n    \"\"\"Event describing an applied safety / routing decision.\"\"\"\n\n    name: str = \"decision_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    decision_type: str\n    action: str\n    reason: str\n    metadata: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass CostEvent(BaseModel):\n    \"\"\"Event capturing per-call cost/latency for observabil",
-  "full_hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
-  "generated_at": 1764728226.3896153,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_events.py"
-}

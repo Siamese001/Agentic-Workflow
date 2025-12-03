@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Semantic Cache Leaf Map - Phase 0.5\n# Maps directory structure and artifact types for the semantic cache system\n\n# Engine Separation\nengines:\n  resume_engine:\n    description: \"Resume Engine (RG) semantic cache artifacts\"\n    path: \"resume_engine/\"\n    artifact_types:\n      - ast\n      - embedding  \n      - golden\n      - safety\n  outreach_engine:\n    description: \"Outreach Engine (LIC) semantic cache artifacts\"\n    path: \"outreach_engine/\"\n    artifact_types:\n      - ast\n      - embedding\n      - golden\n      - safety\n\n# Version Folder Structure\nversion_structure:\n  pattern: \"{version_name}/\"\n  examples:\n    - \"v2/\"\n    - \"v6.0/\"\n    - \"v7.0/\"\n    - \"v8.0/\"\n    - \"v9.0/\"\n    - \"v10.7/\"\n    - \"Agentic-Workflow-10_11/\"\n    - \"Microservices Model/\"\n\n# Artifact Types\nartifacts:\n  ast:\n    extension: \".ast\"\n    description: \"Abstract Syntax Tree representation\"\n    metadata: \".ast.meta.json\"\n  embedding:\n    extension: \".embedding\"\n    description: \"64-dimensional embedding vectors\"\n    ",
-  "full_hash": "cef715263f812a5619be1eb0c14ea41022646e14b72843fc01fb51584b6ee0a3",
-  "generated_at": 1764728350.2913349,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\semantic_cache_leaf_map.yaml"
-}

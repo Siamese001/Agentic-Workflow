@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "24a914d984ae117f6bb29545116622ea7a11bd81cec95671b7d1d1a2fa9ef4a6",
-    "scan_timestamp": "2025-12-03T07:26:03.840662"
+    "scan_timestamp": "2025-12-03T08:04:48.345445"
   },
   "content_preview": "\"\"\"Interfaces for MCP tool discovery and invocation.\"\"\"\nfrom .registry_client import MCPClient, ToolSpec\n\n__all__ = [\"MCPClient\", \"ToolSpec\"]\n\n\ndef _touch_exports() -> tuple[str, ...]:\n    \"\"\"Return the exported symbol names (helps coverage account for this module).\"\"\"\n\n    return tuple(__all__)\n\n\n_touch_exports()\n",
-  "creation_timestamp": "2025-12-03T07:26:31.580705",
+  "creation_timestamp": "2025-12-03T08:05:17.671621",
   "version": "1.0"
 }

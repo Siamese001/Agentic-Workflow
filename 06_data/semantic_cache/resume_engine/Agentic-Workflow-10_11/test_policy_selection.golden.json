@@ -1,6 +1,0 @@
-{
-  "golden_content": "from orchestration.model_routing import RoutingContext, choose_provider_and_model\n\n\ndef test_policy_selection_honors_requested_model():\n    ctx = RoutingContext(agent_id=\"agent\", task_type=\"llm_call\", execution_profile=None)\n\n    choice = choose_provider_and_model(ctx, requested_model=\"claude-3-haiku\")\n\n    assert choice.model_name == \"claude-3-haiku\"\n    assert choice.provider == \"anthropic\"\n\n\ndef test_policy_selection_defaults_when_no_model():\n    ctx = RoutingContext(agent_id=\"agent\", task_type=\"llm_call\", execution_profile=None)\n\n    choice = choose_provider_and_model(ctx, requested_model=None)\n\n    assert choice.model_name\n    assert choice.provider in {\"openai\", \"anthropic\", \"google\"}\n\n\n\n\n\n\n\n",
-  "full_hash": "b24c0df885600221ad2c449fdf70f880eb129146118c984d600e4c985dc2a698",
-  "generated_at": 1764728227.3053346,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\model_routing\\test_policy_selection.py"
-}

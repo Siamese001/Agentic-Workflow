@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "957f7918efa720d268ac3ff56350bc54e7d3c0424deca9c1f2de7c0d0ebd5634",
-    "scan_timestamp": "2025-12-03T07:26:03.616683"
+    "scan_timestamp": "2025-12-03T08:04:48.124685"
   },
   "content_preview": "\"\"\"Snapshot-local runtime package shim for v10_10 tests.\n\nWhen tests are run with rootdir=Agentic-Workflow-10_10, the name ``runtime``\nresolves to this package. This shim ensures that imports like\n``from runtime.observability import start_span`` are forwarded to the real\nruntime package defined at the repo root.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport importlib\nimport os\nimport sys\n\n# Ensure the repo root (parent of Agentic-Workflow-10_10) is on sys.path\n_PARENT = os.path.dirname(os.path...",
-  "creation_timestamp": "2025-12-03T07:26:08.972839",
+  "creation_timestamp": "2025-12-03T08:04:55.614818",
   "version": "1.0"
 }

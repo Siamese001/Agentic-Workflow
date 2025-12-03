@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - retrieve_tests_similarity\nImplements L1 Cognitive Planning Layer for retrieve tests similarity operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RetrieveTestsSimilarityMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RetrieveTestsSimilarityMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RetrieveTestsSimilarityMemoryResult:\n    \"\"\"L5 Result structure with full typ",
-  "full_hash": "b68dc7987a6604d8b4606322a2fa25a3d98c4c954e95c9bc4833e2493afd247a",
-  "generated_at": 1764728354.0812545,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\mem-layer\\retrieve-phase\\get-tests-info\\embedding\\compare-meaning\\retrieve_tests_similarity.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.34 - WORD COUNT VALIDATION FIX\n\nv5.34 CHANGES FROM v5.33:\n\u2713 REMOVED: Mock SECTION_BASELINES constant (20 lines) - was causing QA confusion\n\u2713 FIXED: _render_word_table now calculates ACTUAL word counts from generated content\n\u2713 FIXED: _validate_word_counts properly counts all words in staging buffer\n\u2713 FIXED: Word table now dynamically matches actual resume sections (not static template)\n\u2713 IMPROVED: All word length enforcements based on embedded master resume (\u00b120%)\n\u2713 BUG FIX: Eliminated false positives in QA validation that allowed under-limit resumes\n\nCritical Fixes:\n- Bug 1: Output 4 word table now shows real data (not placeholder baseline values)\n- Bug 2: PreFlightValidator correctly calculates total word count (was incorrectly passing validation)\n- Output 4 rows now match actual generated sections (K.1, K.5A, K.5B, etc.)\n- All baseline calculations derive from master resume, not mock data\n\nAll v5.33 functionality maintained:\n\u2713 JD Enforcement System (E1",
-  "full_hash": "805ec2b59e09fc2673b61fb063be0c169e102854941e56a1326266b7b88150e4",
-  "generated_at": 1764728303.6253655,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_34_Complete.py"
-}

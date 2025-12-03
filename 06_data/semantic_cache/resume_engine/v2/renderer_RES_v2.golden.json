@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: renderer_RES_v2.py\n# FileRenderer class - renders final resume artifacts to files\n# Version: 17.01 (Patched)\n\nimport copy\nimport functools\nimport json\nimport logging\nimport os\nimport re\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING\n\nfrom models_RES import ResumeSection, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, ValidationSeverity\nfrom config_RES_v2 import AppConfig, DATA_DIR, CONFIG\nfrom utils_RES_v2 import text_utils, sanitize_filename\n# --- V18 REFACTOR: Import consolidated validator ---\nfrom validator_RES_v2 import AppTrackerQAValidator\n# --- END V18 REFACTOR ---\n\nif TYPE_CHECKING:\n    from workflow_RES_v2 import WorkflowOrchestrator\n\nlogger = logging.getLogger(__name__)\n# text_utils is imported from utils_RES_v2\n\n\nclass FileRenderer:\n\n    def __init__(self, master_resume: Dict, orchestrator: 'WorkflowOrchestrator', company_name: str, job_title: str, config: AppConfig):\n        self.master_resume = master",
-  "full_hash": "d1d4ca8c3241b93409dc8302890ffb8f71f1b7857aaed9ad0e835ad70108bb48",
-  "generated_at": 1764728327.300829,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\renderer_RES_v2.py"
-}

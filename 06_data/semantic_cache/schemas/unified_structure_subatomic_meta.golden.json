@@ -1,6 +1,0 @@
-{
-  "golden_content": "structure_version: '1.0'\ndescription: Single Source of Truth for Agentic Workflow Architecture\nbinds_to: unified_structure_subatomic.yaml\ncanonical_role: \"Defines vocab constraints: domains, layers, phases, intents, axes, verb_groups, protected_paths\"\n\n# Add protected path rules if missing\nprotected_paths:\n  - \"**/__init__.py\"\n  - \"**/*.md\"\n\ndomains:\n  agentic_core: Core reasoning, decision making, and autonomous logic engine.\n  apps_rg: Resume Generation Application specific logic.\n  apps_lic: LinkedIn Outreach Application specific logic.\n  shared: Cross-domain shared utilities, base classes, and common logic.\n  config: Configuration management, registry settings, and environment variables.\n  data: Data persistence, retrieval, storage management, and database connectors.\n  observability: System monitoring, logging, metrics collection, and diagnostics.\n  prompt_governance: Management of prompt templates, versioning, and safety checks.\n  runtime: Runtime execution environment, job sched",
-  "full_hash": "8ce51badfcc5416aa66a967da51a47b028210042123775e15abe40dd51e9fec2",
-  "generated_at": 1764728346.5384846,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\unified_structure_subatomic_meta.yaml"
-}

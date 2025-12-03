@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fa1c7781ef335ffd299dd5c2b2891ea39248d4286042b43014acadc5a0fa1e21",
-    "scan_timestamp": "2025-12-03T07:26:03.729083"
+    "scan_timestamp": "2025-12-03T08:04:48.239839"
   },
   "content_preview": "\"\"\"Safety guard stack agents.\"\"\"\n\nimport json\nimport re\nfrom typing import Any, Dict, Optional\n\nfrom pydantic import BaseModel, Field\n\nfrom core_v10_7 import (\n    BaseAgent,\n    ConstitutionalReviewResult,\n    track_metrics,\n    _format_prompt_with_defaults,\n    detect_bias,\n)\n\n\nclass PIISanitizerAgent(BaseAgent):\n    \"\"\"Performs local PII detection using regex heuristics.\"\"\"\n\n    PII_PATTERNS = {\n        \"EMAIL\": re.compile(r\"\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b\"),\n        \"PHON...",
-  "creation_timestamp": "2025-12-03T07:26:17.275780",
+  "creation_timestamp": "2025-12-03T08:05:04.474591",
   "version": "1.0"
 }

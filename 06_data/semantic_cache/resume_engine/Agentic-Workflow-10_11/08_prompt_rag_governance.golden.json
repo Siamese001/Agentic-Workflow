@@ -1,6 +1,0 @@
-{
-  "golden_content": "# /windsurf_rules/08_prompt_rag_governance.md\n## Prompt Governance, RAG Determinism, and High-Signal Drafting Rules\n\n### 1. Prompt Governance\n- All prompts must be stored in a prompt registry.\n- Each prompt defines: ID, version, schema, owner, change log.\n- Placeholders must be used exactly as declared.\n\n### 2. RAG Determinism\n- Same query + same corpus = same retrieval.\n- BM25, dense retrieval, and RRF must be deterministic.\n- Golden offline datasets required.\n\n### 3. Drafting Rules & High-Signal Requirements\n- Drafting stack: Planner(L1) \u2192 Executor(L2) \u2192 Critic(L1) \u2192 Fix(L1) \u2192 DAG(L3)\n- High-signal outputs require:\n  - No fluff\n  - Metric injection\n  - Persona/company alignment\n  - Strict context relevance enforcement\n",
-  "full_hash": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4",
-  "generated_at": 1764728228.1818583,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\08_prompt_rag_governance.md"
-}

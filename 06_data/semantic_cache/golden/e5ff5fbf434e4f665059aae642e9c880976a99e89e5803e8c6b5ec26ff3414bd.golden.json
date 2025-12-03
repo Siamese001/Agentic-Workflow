@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e5ff5fbf434e4f665059aae642e9c880976a99e89e5803e8c6b5ec26ff3414bd",
-    "scan_timestamp": "2025-12-03T07:26:03.565613"
+    "scan_timestamp": "2025-12-03T08:04:48.075597"
   },
   "content_preview": "\"\"\"\nV6 Prompt Adapter for strategy planning.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, Optional\n\n\n@dataclass\nclass V6PromptConfig:\n    \"\"\"Configuration for V6 prompt building.\"\"\"\n    max_context_length: int = 4000\n    include_safety_checks: bool = True\n    include_examples: bool = True\n\n\nclass ExecutionContext:\n    \"\"\"Mock execution context for compatibility.\"\"\"\n    pass\n\n\ndef build_v6_strategy_prompt(\n    ctx: ExecutionContext,\n    ...",
-  "creation_timestamp": "2025-12-03T07:26:06.071006",
+  "creation_timestamp": "2025-12-03T08:04:51.464085",
   "version": "1.0"
 }

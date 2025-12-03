@@ -1,6 +1,0 @@
-{
-  "golden_content": "# MCP SERVER INSTALLATION GUIDE\n## Agentic-Workflow-10_10 Architecture\n\nThis document provides complete installation and validation instructions for all MCP servers required by the Agentic-Workflow-10_10 system.\n\n---\n\n## RECOMMENDED MCP SERVERS\n\nBased on the SDK vs MCP analysis, the following MCP servers should be installed:\n\n### 1. **Filesystem MCP Server** (REQUIRED)\n- **Purpose**: Agent-visible file operations for L2 execution layer\n- **Use Cases**: Prompt CMS, journal persistence, golden datasets\n- **Installation**:\n  ```bash\n  npm install -g @modelcontextprotocol/server-filesystem\n  ```\n- **Configuration**: Add to MCP settings\n  ```json\n  {\n    \"mcpServers\": {\n      \"filesystem\": {\n        \"command\": \"npx\",\n        \"args\": [\"-y\", \"@modelcontextprotocol/server-filesystem\", \"/path/to/allowed/directory\"]\n      }\n    }\n  }\n  ```\n\n### 2. **SQLite MCP Server** (RECOMMENDED)\n- **Purpose**: Agent-queryable metadata store for temporal graphs\n- **Use Cases**: L4 state layer metadata queries",
-  "full_hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
-  "generated_at": 1764728226.3275845,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\MCP_SERVER_INSTALLATION.md"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: validation/engine.py\n# Validation Engine Module - V18 Architecture\n# Version: 18.00\n# Contains the core validation engine, rule, and classifier classes.\n# Refactored from validator_RES_v2.py\n\nimport logging\nfrom typing import Dict, List, Optional, Any, Callable, Union\nfrom collections import defaultdict\nfrom models_RES import ValidationResult, ValidationSeverity\n\n\nclass ValidationRule:\n    \"\"\"\n    Represents a single executable validation rule.\n    (Extracted from resume_workflow_v16_20.py)\n    \"\"\"\n    def __init__(self, rule_id: str, severity: ValidationSeverity, validator: Any, error_message: Union[str, Callable[[Dict], str]], category: str = \"general\"):\n        self.rule_id = rule_id\n        self.severity = severity\n        self.validator = validator\n        self.error_message = error_message\n        self.category = category\n\n    def execute(self, data: Dict) -> ValidationResult:\n        \"\"\"\n        Executes the validation rule against the provided data.\n        Now accepts ",
-  "full_hash": "f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1",
-  "generated_at": 1764728326.983434,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\engine.py"
-}

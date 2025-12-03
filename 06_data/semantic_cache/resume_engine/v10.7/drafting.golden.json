@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Drafting guild stack with specialist agents.\"\"\"\n\nimport json\nfrom typing import Any, Dict, List\n\nfrom core_v10_7 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics\nfrom agent_tools_v10_7 import (\n    EvidenceBriefAssemblerTool,\n    EvidenceClarificationTool,\n)\n\nfrom .models import (\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n    EvidenceBriefRecord,\n    EvidenceClarificationRecord,\n    EvidenceLiaisonPacket,\n    SpecialistDraftPacket,\n)\n\n\nclass StructureLeadAgent(BaseAgent):\n    \"\"\"Produces the structural outline for the draft.\"\"\"\n\n    @track_metrics(\"run_structure_lead\")\n    async def run_async(\n        self,\n        bullets: List[Dict[str, Any]],\n        strategy: StrategyPlan,\n        workflow_id: str,\n    ) -> SpecialistDraftPacket:\n        self.log_info(\"Drafting Guild >> Structure Lead assembling sections...\")\n\n        summary_pivots = (\n            strategy.key_achievements_to_highlight[:3]\n            if strategy.key_achievements_to_highlight\n           ",
-  "full_hash": "3e437966f26266264055f3e144d9408649e3eab03915364282cba07009882afb",
-  "generated_at": 1764728329.6669068,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\stacks_v10_7\\drafting.py"
-}

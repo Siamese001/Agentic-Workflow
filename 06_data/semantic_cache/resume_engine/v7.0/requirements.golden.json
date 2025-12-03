@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: requirements.txt\n# v7.0 Dependencies\n\n# --- Core Libraries ---\ngoogle-generativeai\nanthropic\nopenai\nscikit-learn\nnumpy\npandas\n\n# --- Phase 1 Additions (v7.0) ---\nlanggraph\nlangchain-redis\nlangsmith\nredis\n",
-  "full_hash": "17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5",
-  "generated_at": 1764728327.788385,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\Testing\\requirements.txt"
-}

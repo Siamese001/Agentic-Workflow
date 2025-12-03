@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453",
-    "scan_timestamp": "2025-12-03T07:26:03.832118"
+    "scan_timestamp": "2025-12-03T08:04:48.337164"
   },
   "content_preview": "class Client:  # pragma: no cover - stub for tests\n    \"\"\"Minimal ChromaDB client stub.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        pass\n\n    def get_or_create_collection(self, *args, **kwargs):\n        raise NotImplementedError\n\n    def get_collection(self, *args, **kwargs):\n        raise NotImplementedError\n",
-  "creation_timestamp": "2025-12-03T07:26:30.875897",
+  "creation_timestamp": "2025-12-03T08:05:17.070978",
   "version": "1.0"
 }

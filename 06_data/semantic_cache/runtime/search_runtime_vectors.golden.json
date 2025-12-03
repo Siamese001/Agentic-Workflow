@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - search_runtime_vectors\nImplements L1 Cognitive Planning Layer for search runtime vectors operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass SearchRuntimeVectorsMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass SearchRuntimeVectorsMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass SearchRuntimeVectorsMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succes",
-  "full_hash": "e98b553838878e7dde34c8722739ce02bcbad2ed486e9d225303029eea96ee6e",
-  "generated_at": 1764728346.9268322,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\mem-layer\\retrieve-phase\\get-runtime-info\\embedding\\compare-meaning\\search_runtime_vectors.py"
-}

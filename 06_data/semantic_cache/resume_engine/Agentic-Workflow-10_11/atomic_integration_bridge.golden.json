@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Bridges OpenAI structure to atomic L1-L5 layers with strict boundaries.\n\nEnsures resume generation follows a clean, maintainable architecture that improves\noutput consistency and makes it easier to enhance resume quality over time.\n\"\"\"\n\nfrom typing import Any, Dict, Optional\nfrom pathlib import Path\n\n# Import concrete implementations to be wrapped\nfrom l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator\nfrom l4.state_manager import StateManager\nfrom l5.safety_validator import SafetyValidator\n\n# Import core types and configurations\nfrom core.routing import RoutingPolicy\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.runtime_utils import SandboxConfig\n\nclass AtomicWorkflowBridge:\n    \"\"\"Coordinates resume generation across specialized atomic layers.\n    \n    Ensures each resume section is processed with the right balance of\n    planning, execution, and safety checks for optimal job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: Routing",
-  "full_hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-  "generated_at": 1764728224.3735516,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\integration\\atomic_integration_bridge.py"
-}

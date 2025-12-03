@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
-    "scan_timestamp": "2025-12-03T07:26:03.589653"
+    "scan_timestamp": "2025-12-03T08:04:48.097624"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import List\n\nfrom config.agent_profile import AgentCard\nfrom orchestration.agent_registry import AgentRegistry\n\n\"\"\"Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise.\"\"\"\n\n\ndef choose_agents_for_task(task_type: str, registry: AgentRegistry) -> List[AgentCard]:\n    \"\"\"Chooses agents for a given task type so planning, retrieval, drafting, QA, a...",
-  "creation_timestamp": "2025-12-03T07:26:07.971907",
+  "creation_timestamp": "2025-12-03T08:04:54.395539",
   "version": "1.0"
 }

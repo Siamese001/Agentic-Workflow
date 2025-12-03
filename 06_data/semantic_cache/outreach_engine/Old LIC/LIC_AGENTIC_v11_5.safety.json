@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 2086,
-  "generated_at": 1764728339.0780342,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_5.py"
-}

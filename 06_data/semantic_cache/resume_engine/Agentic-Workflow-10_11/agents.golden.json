@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nLegacy agents wrapper for resume processing workflow execution.\n\nProvides backward compatibility by delegating operations to atomic\nL1-L5 architecture for resume enhancement and job alignment.\n\"\"\"\n\nfrom typing import Any, Optional, TYPE_CHECKING\nfrom core.models.models import (\n    AgentCard,\n    AgentRole,\n)\nfrom core.routing import RoutingPolicy\nfrom runtime.runtime_utils import SandboxConfig\nfrom config.meta_profile import MetaProfileSnapshot\n\n# Placeholder for missing record_event function\ndef record_event(event_name: str, data: dict) -> None:\n    \"\"\"Placeholder function for resume processing event recording.\"\"\"\n    pass\n\n# Use TYPE_CHECKING to avoid circular imports\nif TYPE_CHECKING:\n    from atomic_integration_bridge import (\n        AtomicStrategyAgent,\n        AtomicDraftingAgent,\n        AtomicQAAgent,\n        AtomicSafetyAgent,\n    )\n\n# Legacy agent classes that delegate to atomic layers\nclass StrategyLLMAgent:\n    \"\"\"\n    Legacy strategy agent wrapper for resume processi",
-  "full_hash": "eacc391f3053fe4d28e64712f691973ba4fa52959a264090c32f12699c9c7a55",
-  "generated_at": 1764728224.917436,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\agents.py"
-}

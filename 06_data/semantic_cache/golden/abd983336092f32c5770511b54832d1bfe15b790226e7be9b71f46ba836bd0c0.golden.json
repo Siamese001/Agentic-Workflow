@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "abd983336092f32c5770511b54832d1bfe15b790226e7be9b71f46ba836bd0c0",
-    "scan_timestamp": "2025-12-03T07:26:03.795416"
+    "scan_timestamp": "2025-12-03T08:04:48.301400"
   },
   "content_preview": "\"\"\"Public entry points for the vendored Pydantic shim.\"\"\"\nfrom .main import BaseModel, ConfigDict, Field, ValidationError\n\n__all__ = [\"BaseModel\", \"ConfigDict\", \"Field\", \"ValidationError\"]\n",
-  "creation_timestamp": "2025-12-03T07:26:20.681632",
+  "creation_timestamp": "2025-12-03T08:05:07.900857",
   "version": "1.0"
 }

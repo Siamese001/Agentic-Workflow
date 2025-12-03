@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - enforce_tests_boundaries\nImplements L1 Cognitive Planning Layer for enforce tests boundaries operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EnforceTestsBoundariesPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass EnforceTestsBoundariesPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EnforceTestsBoundariesPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"",
-  "full_hash": "789e44a2b64093a7e356042e3e07ace881da8f6e135d4fcd5e424ab771be417d",
-  "generated_at": 1764728354.498297,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\plan-phase\\check-tests-rules\\policy\\check-safety\\enforce_tests_boundaries.py"
-}

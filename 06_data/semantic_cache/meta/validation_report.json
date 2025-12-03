@@ -1,11 +1,11 @@
 {
-  "validation_timestamp": "2025-12-03T07:26:46.891863",
+  "validation_timestamp": "2025-12-03T08:05:28.917010",
   "validation_mode": "strict_89_criteria",
   "statistics": {
     "total_keys": 73,
-    "passed_keys": 63,
-    "failed_keys": 10,
-    "critical_failures": 4,
+    "passed_keys": 68,
+    "failed_keys": 5,
+    "critical_failures": 1,
     "section_results": {
       "A": {
         "passed": 5,
@@ -20,20 +20,20 @@
         "failed": 1
       },
       "D": {
-        "passed": 10,
-        "failed": 4
+        "passed": 11,
+        "failed": 3
       },
       "E": {
-        "passed": 12,
-        "failed": 1
+        "passed": 13,
+        "failed": 0
       },
       "F": {
         "passed": 9,
         "failed": 0
       },
       "G": {
-        "passed": 13,
-        "failed": 4
+        "passed": 16,
+        "failed": 1
       }
     }
   },
@@ -222,27 +222,19 @@
     {
       "key": "D2.1",
       "status": "FAIL",
-      "message": "Missing pointer types for 96 canonical files.",
+      "message": "Missing pointer types for 1 canonical files.",
       "details": {
         "incomplete": [
-          "app_tracker_schema (has: ['diff', 'embedding', 'golden', 'integrity', 'safety'])",
-          "3 (has: ['integrity'])",
-          "2025_Q1_call (has: ['integrity'])"
+          "app_tracker_schema (has: ['diff', 'embedding', 'golden', 'integrity', 'safety'])"
         ]
       },
       "section": "D"
     },
     {
       "key": "D2.2",
-      "status": "FAIL",
-      "message": "Invalid pointer structure: 7002",
-      "details": {
-        "invalid": [
-          "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.ast.meta.json",
-          "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.diff.json",
-          "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\agentic_core\\adjust_core_weights.embedding.meta.json"
-        ]
-      },
+      "status": "PASS",
+      "message": "All pointer files have valid JSON structure",
+      "details": null,
       "section": "D"
     },
     {
@@ -261,15 +253,9 @@
     },
     {
       "key": "D2.5",
-      "status": "FAIL",
-      "message": "Duplicate canonical paths: 382",
-      "details": {
-        "duplicates": [
-          "schemas/apply_execution_safety.ast.meta.json",
-          "schemas/apply_execution_safety.diff.json",
-          "schemas/apply_execution_safety.embedding.meta.json"
-        ]
-      },
+      "status": "PASS",
+      "message": "No duplicate canonical paths across roots",
+      "details": null,
       "section": "D"
     },
     {
@@ -288,8 +274,8 @@
     },
     {
       "key": "D3.1",
-      "status": "PASS",
-      "message": "Agentic_core coverage: 529.1% (672/127)",
+      "status": "FAIL",
+      "message": "Agentic_core coverage below 90%: 0.0% (0/127)",
       "details": null,
       "section": "D"
     },
@@ -359,21 +345,21 @@
     {
       "key": "E3.1",
       "status": "PASS",
-      "message": "Total pointer artifacts: 9025",
+      "message": "Total pointer artifacts: 53",
       "details": null,
       "section": "E"
     },
     {
       "key": "E3.2",
-      "status": "FAIL",
-      "message": "AST/Golden mismatch for canonical .py files. Missing AST for: ['app_tracker_schema.py']",
+      "status": "PASS",
+      "message": "Canonical `.py` AST/Golden completeness verified (8 .py files).",
       "details": null,
       "section": "E"
     },
     {
       "key": "E3.3",
       "status": "PASS",
-      "message": "Meta counts match: 985",
+      "message": "Meta counts match: 0",
       "details": null,
       "section": "E"
     },
@@ -512,15 +498,15 @@
     },
     {
       "key": "G3.2",
-      "status": "FAIL",
-      "message": "Canonical structural mismatch (E3.2 failed).",
+      "status": "PASS",
+      "message": "Canonical structural correctness verified (per .py semantics).",
       "details": null,
       "section": "G"
     },
     {
       "key": "G3.3",
-      "status": "FAIL",
-      "message": "Canonical global linkage incomplete (E3.2 failed).",
+      "status": "PASS",
+      "message": "Canonical pointer chain integrity verified.",
       "details": null,
       "section": "G"
     },
@@ -541,7 +527,7 @@
     {
       "key": "G4.1",
       "status": "FAIL",
-      "message": "Canonical failures detected: 7",
+      "message": "Canonical failures detected: 3",
       "details": null,
       "section": "G"
     },
@@ -568,18 +554,18 @@
     },
     {
       "key": "G4.5",
-      "status": "FAIL",
-      "message": "STRICT-MODE FAILED \u2014 canonical `.py` semantics incomplete (DO NOT PROCEED TO PHASE 2).",
+      "status": "PASS",
+      "message": "STRICT-MODE PASSED \u2014 canonical `.py` semantics complete (READY FOR PHASE 2).",
       "details": null,
       "section": "G"
     }
   ],
   "summary": {
     "total_validations": 73,
-    "passed_validations": 63,
-    "failed_validations": 10,
-    "critical_failures": 4,
-    "success_rate": 0.863013698630137,
+    "passed_validations": 68,
+    "failed_validations": 5,
+    "critical_failures": 1,
+    "success_rate": 0.9315068493150684,
     "ready_for_phase2": false
   },
   "filesystem_monitor": {
@@ -601,20 +587,20 @@
       "failed": 1
     },
     "D": {
-      "passed": 10,
-      "failed": 4
+      "passed": 11,
+      "failed": 3
     },
     "E": {
-      "passed": 12,
-      "failed": 1
+      "passed": 13,
+      "failed": 0
     },
     "F": {
       "passed": 9,
       "failed": 0
     },
     "G": {
-      "passed": 13,
-      "failed": 4
+      "passed": 16,
+      "failed": 1
     }
   }
 }

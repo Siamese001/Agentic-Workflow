@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nTest Workflow Planning\n\nTests comprehensive workflow planning functionality for r\u00e9sum\u00e9 optimization,\nincluding profile inference, complexity classification, and workflow bundle creation.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch\n\n# Import actual workflow planning components\ntry:\n    from l1.workflow_planning import (\n        build_workflow_plan_bundle,\n        _normalize_text,\n        _map_meta_profile_to_routing_hint,\n        _infer_seniority,\n        _infer_domains,\n        _infer_skill_clusters,\n        _classify_complexity,\n        _choose_reasoning_mode,\n        _to_execution_profile,\n    )\n    from core.models.models import (\n        JobInput,\n        ResumeInput,\n        WorkflowConfig,\n        ComplexityLevel,\n        ReasoningMode,\n        SeniorityClassifierResult,\n        DomainClassifierResult,\n        SkillClusterResult,\n        ProfileInferenceResult,\n        WorkflowPlanBundle,\n        ExecutionProfile,\n        RetrievalConfig,\n    )\n    from config.co",
-  "full_hash": "2a4c5f8eba7e968e2afd4cecb418e3e499e235c9b6e11882b27a542a3171decf",
-  "generated_at": 1764728226.924419,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_workflow_planning.py"
-}

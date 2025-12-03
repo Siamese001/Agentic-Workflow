@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fda0a812d8977115f52f6a7525dfb28ac2bf6faa4ddab2d3a51c13fc63b2e21a",
-    "scan_timestamp": "2025-12-03T07:26:03.861936"
+    "scan_timestamp": "2025-12-03T08:04:48.365851"
   },
   "content_preview": "from src.lic_agentic.rag.content_store import ContentStore\nfrom src.lic_agentic.rag.retrieval_planner import RetrievalPlan\nfrom src.lic_agentic.rag.tool_registry import ToolRegistry\n\n\ndef test_dedupe_and_budget():\n    plan = RetrievalPlan([], {\"ttl_s\": 3600, \"company_id\": \"ACME\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.add({\"tool\": \"news\", \"query\": \"ACME earnings\"})\n    plan.dedupe()\n    plan.budget(max...",
-  "creation_timestamp": "2025-12-03T07:26:32.424592",
+  "creation_timestamp": "2025-12-03T08:05:18.489786",
   "version": "1.0"
 }

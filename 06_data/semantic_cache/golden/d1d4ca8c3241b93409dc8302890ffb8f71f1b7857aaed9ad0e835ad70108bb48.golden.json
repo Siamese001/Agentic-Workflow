@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d1d4ca8c3241b93409dc8302890ffb8f71f1b7857aaed9ad0e835ad70108bb48",
-    "scan_timestamp": "2025-12-03T07:26:03.816354"
+    "scan_timestamp": "2025-12-03T08:04:48.322403"
   },
   "content_preview": "# File: renderer_RES_v2.py\n# FileRenderer class - renders final resume artifacts to files\n# Version: 17.01 (Patched)\n\nimport copy\nimport functools\nimport json\nimport logging\nimport os\nimport re\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING\n\nfrom models_RES import ResumeSection, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, ValidationSeverity\nfrom config_RES_v2 import AppConfig, DATA_DIR, CONFIG\nfrom utils_RES_v2 import text_utils...",
-  "creation_timestamp": "2025-12-03T07:26:25.959219",
+  "creation_timestamp": "2025-12-03T08:05:12.470310",
   "version": "1.0"
 }

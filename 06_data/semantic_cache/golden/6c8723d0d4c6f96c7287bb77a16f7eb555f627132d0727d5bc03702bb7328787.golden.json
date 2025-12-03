@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6c8723d0d4c6f96c7287bb77a16f7eb555f627132d0727d5bc03702bb7328787",
-    "scan_timestamp": "2025-12-03T07:26:03.742490"
+    "scan_timestamp": "2025-12-03T08:04:48.251711"
   },
   "content_preview": "import logging\nfrom types import MethodType, SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.services import AutonomyEngine\nfrom agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator\n\n\nclass _DummyMetrics:\n    def record(self, *_, **__):\n        return None\n\n    def get_average_latency(self, *_, **__):\n        return None\n\n\ndef _build_agent(agent_cls, context):\n    agent = agent_cls.__new__(agent_cls)\n    agent.context = context\n    agent.config = context.config\n    agent.logger...",
-  "creation_timestamp": "2025-12-03T07:26:18.494184",
+  "creation_timestamp": "2025-12-03T08:05:05.601616",
   "version": "1.0"
 }

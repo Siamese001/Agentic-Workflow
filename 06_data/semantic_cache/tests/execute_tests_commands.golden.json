@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - execute_tests_commands\nImplements L1 Cognitive Planning Layer for execute tests commands operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ExecuteTestsCommandsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ExecuteTestsCommandsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ExecuteTestsCommandsOrchestratorResult:\n    \"\"\"L5 Result structure with full ",
-  "full_hash": "0eea456a3aab0ff4675d78f8dcad503f1b5d4c0eea1c9e6b719be444223e06fb",
-  "generated_at": 1764728354.2458937,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\orc-layer\\act-phase\\use-tests-tools\\general\\use-a-tool\\execute_tests_commands.py"
-}

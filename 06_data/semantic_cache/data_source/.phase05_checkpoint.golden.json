@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"processed_roots\": [\n    \"resume_engine/Monolithic\",\n    \"resume_engine/v6.0\",\n    \"observability\",\n    \"resume_engine/v10.7\",\n    \"resume_engine/Monolith\",\n    \"data_source\",\n    \"config\",\n    \"resume_engine/Agentic_Workflow-10_10\",\n    \"resume_engine/v7.0\",\n    \"resume_engine/v9.0\",\n    \"prompt_governance\",\n    \"resume_engine/Old Resume Gen Python\",\n    \"schemas\",\n    \"agentic_core\",\n    \"resume_engine/Agentic-Workflow-10_8_core\",\n    \"resume_engine/Agentic-Workflow-10_9\",\n    \"outreach_engine/Agentic-LIC\",\n    \"resume_engine/Microservices Model\",\n    \"resume_engine/v2\",\n    \"resume_engine/Agentic-Workflow-10_7_main\",\n    \"outreach_engine/Old LIC\",\n    \"resume_engine/Agentic-Workflow-10_11\",\n    \"outreach_engine/Agentic LIC\",\n    \"runtime\",\n    \"apps\",\n    \"tests\",\n    \"outreach_engine/deprecated in v13\",\n    \"outreach_engine/Monolithic\",\n    \"resume_engine/v8.0\",\n    \"scripts\"\n  ],\n  \"timestamp\": 1764728223.7411838\n}",
-  "full_hash": "9facea291e0012a56c42bf846ad68a0c78e2eb6a48f1de514de4e9de3203349e",
-  "generated_at": 1764728350.2764444,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\.phase05_checkpoint.json"
-}

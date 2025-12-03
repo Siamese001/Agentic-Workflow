@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c",
-    "scan_timestamp": "2025-12-03T07:26:03.790603"
+    "scan_timestamp": "2025-12-03T08:04:48.296897"
   },
   "content_preview": "#!/usr/bin/env python3\n\"\"\"Concatenate repository code into consolidated text bundles.\n\nThe script walks tracked text files in the repository and writes them into a\nhandful of consolidated parts for easier upload to ChatGPT. Files are grouped\nsequentially based on their line counts so that the total set fits into at most\n``max_parts`` outputs.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport math\nimport os\nfrom pathlib import Path\nfrom typing import Iterable, List\n\nROOT = Path(__fi...",
-  "creation_timestamp": "2025-12-03T07:26:20.478421",
+  "creation_timestamp": "2025-12-03T08:05:07.674119",
   "version": "1.0"
 }

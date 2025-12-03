@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: workflow_LIC.py\n# Description: Complete workflow orchestration with live API integration\n# Version: 12.0 - Strategic Alignment Engine\n\n__version__ = \"12.0\"\n\nimport asyncio\nimport hashlib\nimport json\nimport os\nfrom datetime import datetime, timedelta\nfrom pathlib import Path\nfrom typing import Dict, List, Optional, Any, Tuple\n\n# Live API clients\nfrom llm_clients import GeminiLLMClient\nfrom retrieval_clients import GoogleSearchClient\n\n# RAG agents (FIXED: import from rag_LIC, not rag_LIC_LIVE)\nfrom rag_LIC import S2_SupervisorAgent\n\n# Core models and utilities\nfrom models_LIC import (\n    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,\n    GeneratedMessage, ValidationResult, QAReport, Archetype, Route,\n    AgentStatus, ValidationSeverity, FactualGapError, FailureClassifier\n)\nfrom utils_LIC import CircuitBreaker, AdaptiveTemperatureController\nfrom config_LIC import CONFIG_REGISTRY\nfrom validation_LIC import ValidationAgent\n\n# ===================================",
-  "full_hash": "1dff3193f4db829e6cf20e3643589fb75327f40eb860b735606075d71b97ad2b",
-  "generated_at": 1764728340.9823842,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\workflow_LIC_v12.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Architecture regression tests to enforce v10.8 stack usage.\"\"\"\n\nfrom __future__ import annotations\n\nfrom pathlib import Path\n\n\ndef test_no_v10_7_stack_imports_outside_legacy_dirs():\n    repo_root = Path(__file__).resolve().parents[1]\n    offenders: list[Path] = []\n\n    for path in repo_root.rglob(\"*.py\"):\n        text = path.read_text(encoding=\"utf-8\")\n        if \"agent_stacks_v10_7\" in text or \"stacks_v10_7\" in text:\n            offenders.append(path.relative_to(repo_root))\n\n    assert offenders == [], f\"Found legacy stack imports in: {offenders}\"\n",
-  "full_hash": "95f62788b075e8f224da0d33e6fee39f34aa1a20ee4a777b5a044d53107484c6",
-  "generated_at": 1764728231.4396524,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\architecture\\test_no_legacy_stack_imports.py"
-}

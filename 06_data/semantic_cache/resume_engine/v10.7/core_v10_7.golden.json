@@ -1,6 +1,0 @@
-{
-  "golden_content": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: core_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context() helper to handle circular\n#   dependencies (e.g., ContextBudgetManager needing a client getter).\n# - ADDED: MCP client registry and wrap_mcp helper to thread MCP\n#   integrations through orchestration layers.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #10): Added A2AMessage and A2AContext to MainGraphState\n#   to support agent-to-agent messaging.\n# - IMPLEMENTED (Fix #13): CacheManager (LLM) refactored for Semantic Caching.\n#   It now uses ChromaDB to find and retrieve semantically similar prompts.\n# - IMPLEMENTED (Fix #14): ContextBudgetManager refactored for Smarter Pruning.\n#   It now uses an agentic 'summarizer_m",
-  "full_hash": "bd933a45f0dce03fa69aba722c337d2c85facc607eec3dc02dfd6c32ecb0a4b3",
-  "generated_at": 1764728329.3890405,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\core_v10_7.py"
-}

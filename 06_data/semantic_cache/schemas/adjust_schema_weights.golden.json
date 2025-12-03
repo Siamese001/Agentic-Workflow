@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nSchema definitions for schema weight adjustment and optimization.\nContains only type definitions and data models - no execution logic.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Dict, List\nfrom enum import Enum\n\n\nclass WeightAdjustmentMethod(Enum):\n    \"\"\"Weight adjustment methods.\"\"\"\n    GRADIENT_BASED = \"gradient_based\"\n    GENETIC_OPTIMIZATION = \"genetic_optimization\"\n    BAYESIAN_OPTIMIZATION = \"bayesian_optimization\"\n    REINFORCEMENT_LEARNING = \"reinforcement_learning\"\n\n\nclass AdjustmentFrequency(Enum):\n    \"\"\"Weight adjustment frequency.\"\"\"\n    STATIC = \"static\"\n    DYNAMIC_PER_BATCH = \"dynamic_per_batch\"\n    ADAPTIVE_PERFORMANCE = \"adaptive_performance\"\n    USER_FEEDBACK_DRIVEN = \"user_feedback_driven\"\n\n\n@dataclass\nclass WeightAdjustmentConfig:\n    method: WeightAdjustmentMethod\n    frequency: AdjustmentFrequency\n    convergence_criteria: Dict[str, float]\n    learning_rate: float = 0.01\n    regularization_strength: float = 0.1\n    \"\"\"Schema for weight adjustm",
-  "full_hash": "4f4f5c4034f25ca1f363775640febbc2ac2131690bb307fbbf5b9ade4ae3a9c4",
-  "generated_at": 1764728343.1863368,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\adjust_schema_weights.py"
-}

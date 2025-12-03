@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Stack-specific agent implementations for v10.7.\"\"\"\n\nfrom .models import (\n    SpecialistDraftPacket,\n    EvidenceClarificationRecord,\n    EvidenceBriefRecord,\n    EvidenceLiaisonPacket,\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n)\n\nfrom .safety import (\n    PIISanitizerAgent,\n    BiasDetectorAgent,\n    PromptInjectionDetectorAgent,\n    ConstitutionalReviewerAgent,\n)\n\nfrom .strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\n\nfrom .prompting import PromptEngineerAgent\nfrom .rag import RAG_SearchAgent\nfrom .drafting import (\n    StructureLeadAgent,\n    NarrativeStylistAgent,\n    ComplianceEditorAgent,\n    EvidenceLiaisonAgent,\n    CritiqueRoutingPanel,\n    DraftingGuildCoordinator,\n)\n\nfrom .bullet import (\n    BulletEntityExtractionAgent,\n    BulletMetricsEnrichmentAgent,\n    BulletNarrativeSynthesisAgent,\n    BulletEvidenceLinkerAgent,\n    BulletConfidenceScoringAgent,\n    BulletCoordinatorAgent,\n    BulletProvenanceAuditorAgent,\n    AsyncBulletGenerat",
-  "full_hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-  "generated_at": 1764728330.8878615,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\__init__.py"
-}

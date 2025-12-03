@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: agent_tools_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - REFACTORED (Fix #14, #17, #19, #20, #24): All tools (Drafting, RAG, QA)\n#   refactored to use the new *asynchronous* _format_prompt_with_defaults\n#   from core_v10_7. This correctly injects Goal State, Top Failures,\n#   Cognitive Modes, Reflection steps, and uses agentic pruning.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #8): Added new stubbed tools 'UIUpdateElementTool'\n#   and 'UIFireEventTool' for UI control.\n# - FIXED: All v10_5 imports and class names updated to v10_7.\n# - FIXED (Bug): QABiasDetectorTool now correctly calls the synchronous\n#   'bias_agent.run' method from within its async method using\n#   'asyncio.to_thread' to prevent blocking the event loop.\n\nimport json\nimport logging\nimport asyncio\nimport uuid\nfrom typing import Dict, Any, List, Type, Optional\n\nfrom pydantic import BaseModel, Field\nfrom chromadb.utils import embedding_functions\ntr",
-  "full_hash": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
-  "generated_at": 1764728330.138825,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_tools_v10_7.py"
-}

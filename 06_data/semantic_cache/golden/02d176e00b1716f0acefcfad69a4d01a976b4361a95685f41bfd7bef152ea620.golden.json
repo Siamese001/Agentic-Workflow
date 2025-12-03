@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "02d176e00b1716f0acefcfad69a4d01a976b4361a95685f41bfd7bef152ea620",
-    "scan_timestamp": "2025-12-03T07:26:03.590974"
+    "scan_timestamp": "2025-12-03T08:04:48.098609"
   },
   "content_preview": "\"\"\"\nOrchestration layer error definitions.\n\nThis module provides error classes specific to orchestration operations,\nmoved from core/errors.py during canonical structure cleanup.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom typing import Any, Dict, Optional\nfrom dataclasses import dataclass\n\n\nclass ErrorSeverity(str, Enum):\n    \"\"\"Severity levels for workflow errors.\"\"\"\n    LOW = \"low\"\n    MEDIUM = \"medium\"\n    HIGH = \"high\"\n    CRITICAL = \"critical\"\n\n\nclass WorkflowErrorC...",
-  "creation_timestamp": "2025-12-03T07:26:08.004243",
+  "creation_timestamp": "2025-12-03T08:04:54.430743",
   "version": "1.0"
 }

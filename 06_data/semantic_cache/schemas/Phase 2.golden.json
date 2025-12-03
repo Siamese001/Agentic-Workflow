@@ -1,6 +1,0 @@
-{
-  "golden_content": "# =====================================================================\n\n# PHASE 2 \u2014 SEMANTIC STRUCTURAL & CODE DIFF PLANNING (ZERO-LOSS)\n\n# =====================================================================\n\n# PURPOSE:\n\n#   Produce a COMPLETE, DETERMINISTIC migration + rewrite plan combining:\n#\n\n#      1. Structural DIFF (FS \u2194 SSoT YAML)\n\n#      2. Semantic DIFF (FS code \u2194 Full Phase 0.5 Semantic Cache)\n#\n\n#   Phase 2 performs NO mutations. It only outputs:\n#\n\n#     02_schemas/<TARGET_ROOT>_migration_and_rewrite_plan.json\n#\n\n#   Phase 3 will consume this plan.\n\n# =====================================================================\n\n# =====================================================================\n\n# 0. REQUIRED SEMANTIC CACHE LAYOUT (PHASE 0.5 v2)\n\n# =====================================================================\n\n# Phase 2 MUST use the following directories built by Phase 0.5:\n#\n\n#   06_data/semantic_cache/\n\n#       resume_engine/\n\n#       outreach_engine/\n\n#       ag",
-  "full_hash": "d1695f021f9b4e103a47672db5acc841e0a929f586cabc79f2ec7bf69ed3dbb6",
-  "generated_at": 1764728346.4858997,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\Phase 2.md"
-}

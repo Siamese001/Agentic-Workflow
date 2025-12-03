@@ -1,6 +1,0 @@
-{
-  "golden_content": "================================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-02 v1.5.1\n================================================================================\n\n# SUMMARY\n- Full functionality with the New vs Existing decision router and Single or Multiple batching.\n- All prompt sections use the Six Sections Prompt Shell v1 format: Role, Task, Context, Retrieval Plan, Reasoning, Output (strict).\n- Rendered output is minimal and consistent: (1) Outreach Message body, (2) LinkedIn QA Grid, (3) AI Filter Canonical Table \u2014 nothing else, except the optional Evidence Pack for Contact/Executive when explicitly toggled ON.\n- All validation, dedup, storage, and evidence steps execute internally and MUST NOT be rendered.\n\n--------------------------------------------------------------------------------\nVISIBLE OUTPUT CONTRACT \u2014 RENDER ONLY THIS\n------------------------------------------------",
-  "full_hash": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75",
-  "generated_at": 1764728339.798147,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-02 v1.5.md"
-}

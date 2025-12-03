@@ -1,6 +1,0 @@
-{
-  "golden_content": "from orchestration.model_routing import RoutingContext, select_model\n\n\ndef test_selector_integration_uses_cache_for_generic_calls():\n    ctx = RoutingContext(agent_id=\"agent1\", task_type=\"llm_call\", execution_profile=None)\n\n    first = select_model(ctx, requested_model=None, execution_profile=None)\n    second = select_model(ctx, requested_model=None, execution_profile=None)\n\n    assert first.provider == second.provider\n    assert first.model_name == second.model_name\n\n\n\n\n\n\n\n",
-  "full_hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
-  "generated_at": 1764728227.3124356,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\model_routing\\test_selector_integration.py"
-}

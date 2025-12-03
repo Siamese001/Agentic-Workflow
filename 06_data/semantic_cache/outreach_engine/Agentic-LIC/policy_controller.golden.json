@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Telemetry policy controller for adaptive tuning.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Mapping\n\n\ndef _clamp(value: float, minimum: float, maximum: float) -> float:\n    return max(minimum, min(value, maximum))\n\n\n@dataclass(frozen=True)\nclass PolicyUpdate:\n    \"\"\"Return value describing the latest policy adjustments.\"\"\"\n\n    budget_multiplier: float\n    temperature_cap: float\n    tot_branches: int\n    tool_weights: Dict[str, float]\n\n\nclass PolicyController:\n    \"\"\"Maintain bounded policy parameters using telemetry feedback.\"\"\"\n\n    TARGET_LATENCY_MS = 3500\n    TARGET_PASS_RATE = 0.85\n\n    def __init__(self) -> None:\n        self.budget_multiplier = 1.0\n        self.temperature_cap = 0.5\n        self.tot_branches = 3\n        self.tool_weights: Dict[str, float] = {}\n        self._latency_error_integral = 0.0\n        self._registered_quarantine: Dict[str, bool] = {}\n\n    def register_tool(self, tool_id: str, *, quarantined: bool",
-  "full_hash": "8510162ce2c4e0d67634acd3d2d04655100284931bbaf4c297bad09b2349b54c",
-  "generated_at": 1764728330.74175,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\telemetry\\policy_controller.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"L2 Execution Tools Tests.\"\"\"\n\nclass TestL2Tools:\n    \"\"\"Tests for L2 execution tools.\"\"\"\n    \n    def test_search_tool(self):\n        \"\"\"Test search tool functionality.\"\"\"\n        query = \"python developer\"\n        results = [\"result1\", \"result2\"]\n        assert len(results) > 0\n    \n    def test_extraction_tool(self):\n        \"\"\"Test extraction tool functionality.\"\"\"\n        text = \"Skills: Python, AWS\"\n        extracted = [\"Python\", \"AWS\"]\n        assert \"Python\" in extracted\n",
-  "full_hash": "c5c0e6b59032e51f4d490a4d8d2e30aa3364af348bcf2934486c9f143b34dd3f",
-  "generated_at": 1764728226.9666152,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\tools\\test_l2_tools.py"
-}

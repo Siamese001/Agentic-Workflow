@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom agents import PIISanitizerAgent, QAAgent\n\n\n@pytest.mark.data\ndef test_structure_preserved_after_sanitization():\n    inp = {\"email\": \"a@b.com\", \"name\": \"John\"}\n    out = PIISanitizerAgent().sanitize(inp)\n    assert set(inp.keys()) == set(out.keys())\n\n\n@pytest.mark.data\ndef test_analyzer_adds_confidence_field():\n    out = QAAgent().evaluate(\"sample\")\n    assert \"confidence\" in out\n\n\n@pytest.mark.xfail(\n    reason=\"Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator\",\n    strict=False,\n)\ndef test_placeholder():\n    pytest.xfail(\n        \"Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator\"\n    )\n",
-  "full_hash": "7c51adae7c6790bb59d0078cf9d1414f4fbf16dd35a91035cb700517ef0d27be",
-  "generated_at": 1764728329.885285,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_data_transformation_v10_7.py"
-}

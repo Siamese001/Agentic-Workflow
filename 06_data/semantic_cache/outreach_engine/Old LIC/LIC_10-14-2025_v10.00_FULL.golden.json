@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.00\",\n    \"base_version\": \"v9.22\",\n    \"patch_date\": \"2025-10-13\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"description\": \"Production-ready release with 38 critical gap remediations. Maintains v9.22 architecture while adding boot validation, enhanced RAG pipeline, deterministic classification, and complete QA rule coverage.\",\n    \"changes_summary\": {\n      \"high_priority\": 14,\n      \"medium_priority\": 20,\n      \"low_priority\": 4,\n      \"total_remediations\": 38\n    }\n  },\n  \"1.role\": {\n    \"description\": \"Defines the AI's role under the hardened architecture.\",\n    \"persona\": \"LIC (Lifecycle Integration Catalyst)\",\n    \"objective\": \"To first act as a deterministic 'Clerk' to extract and scaffold all factual data, then act as a creative 'Artist' to generate compelling prose strictly within the bounds of the factual scaffold and the codified Creative Brief.\"\n  },\n  \"2.input\": {\n    \"description\": \"Defines ",
-  "full_hash": "b28b8b83634e1f8585e65d88839bed32c6fa9e2122ea1104e8d9980c17d6fb27",
-  "generated_at": 1764728337.017964,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-14-2025_v10.00_FULL.json"
-}

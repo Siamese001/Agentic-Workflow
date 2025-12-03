@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"L3 Orchestration Workflow Graphs Tests.\"\"\"\n\nclass TestL3WorkflowGraphs:\n    \"\"\"Tests for L3 workflow graphs.\"\"\"\n    \n    def test_workflow_graph_construction(self):\n        \"\"\"Test workflow graph construction.\"\"\"\n        nodes = [\"start\", \"process\", \"end\"]\n        edges = [(\"start\", \"process\"), (\"process\", \"end\")]\n        assert len(nodes) == 3\n        assert len(edges) == 2\n    \n    def test_workflow_graph_validation(self):\n        \"\"\"Test workflow graph validation.\"\"\"\n        graph = {\"nodes\": 3, \"edges\": 2, \"valid\": True}\n        assert graph[\"valid\"] is True\n    \n    def test_workflow_graph_execution(self):\n        \"\"\"Test workflow graph execution.\"\"\"\n        executed_nodes = []\n        for node in [\"a\", \"b\", \"c\"]:\n            executed_nodes.append(node)\n        assert len(executed_nodes) == 3\n",
-  "full_hash": "632ab73f9a2e7699ee540ff919ace4442fa1a7f819038e99352078dfa6553048",
-  "generated_at": 1764728227.0660348,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\workflow_graphs\\test_l3_workflow_graphs.py"
-}

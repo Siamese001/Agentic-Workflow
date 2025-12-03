@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "6171a881054193b78ddff9e3cd69d2e2edc7063bc609bc0a1bc0f9d3563ce734",
-    "scan_timestamp": "2025-12-03T07:26:04.013005"
+    "scan_timestamp": "2025-12-03T08:04:48.520651"
   },
   "content_preview": "Understood. Full, zero-loss LIC v2.86 below \u2014 single continuous fenced block.\n\n````markdown\n# LinkedInCanonical \u2014 2025-09-09 v2.86 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> **v2.86**\n\nv2.86 is a versioned zero-loss overwrite that **fully decouples mandatory profile-derived RAG enrichment from JD availability** for Senior TA. Profile/About RAG is now enforced unconditionally; JD-driven semantic matching is a separate step ...",
-  "creation_timestamp": "2025-12-03T07:26:39.716884",
+  "creation_timestamp": "2025-12-03T08:05:26.267498",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "6e748cd451aada5ddee62465c7a15f1b0e21f3eeee4eaf53bab45379fb5d9f17",
-    "scan_timestamp": "2025-12-03T07:26:03.974044"
+    "scan_timestamp": "2025-12-03T08:04:48.483819"
   },
   "content_preview": "{\n  \"metadata\": {\n    \"template_id\": \"LIC-FULL-v10.24\",\n    \"template_name\": \"LinkedIn InMail Cold Outreach - Complete with Hardened Enforcement\",\n    \"version\": \"10.24\",\n    \"base_version\": \"10.23.1\",\n    \"patches_applied\": [\n      \"v10.23: Staging Buffer Integration\",\n      \"v10.23.1: Scope Isolation Fix\",\n      \"v10.24: Complete Enforcement Hardening (59 new rules, 2 new batches)\"\n    ],\n    \"created_date\": \"2025-10-15\",\n    \"status\": \"PRODUCTION_READY\",\n    \"changelog\": {\n      \"v10.22\": \"Ba...",
-  "creation_timestamp": "2025-12-03T07:26:38.943603",
+  "creation_timestamp": "2025-12-03T08:05:25.452610",
   "version": "1.0"
 }

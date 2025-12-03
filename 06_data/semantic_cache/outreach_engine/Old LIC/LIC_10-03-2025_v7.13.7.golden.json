@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-03-2025_v7.5\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-03-2025_v7.13.7\",\n    \"last_updated\": \"10-03-2025\",\n    \"description\": \"Orchestration system for LinkedIn outreach with unified RAG, claim verification, job application linkage, Unicode filtering, enhanced reasoning toggles\",\n    \"changelog\": [\n      {\n        \"version\": \"v7.9_C043\",\n        \"date\": \"2025-10-03\",\n        \"changes\": [\n          \"C043: Direct App_Schema_v4.json integration for tracker field names and order\",\n          \"C043b: Post-execution confirmation - ask 'Did you send? (Y/N)' before tracker update\",\n          \"C043c: Display only new/updated fields in fenced JSON block after Y confirmation\",\n          \"C043d: Field order matches App Schema v4 exactly\"\n        ]\n      },\n      {\n        \"version\": \"v7.9_C042\",\n        \"date\": \"2025-10-03\",\n        \"changes\": [\n          \"C042: 16-column r",
-  "full_hash": "0d8b04a4f287335c2688da592fbfed54ef7c9d445f78228655d62f60a6d7482a",
-  "generated_at": 1764728334.3309786,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v7.13.7.json"
-}

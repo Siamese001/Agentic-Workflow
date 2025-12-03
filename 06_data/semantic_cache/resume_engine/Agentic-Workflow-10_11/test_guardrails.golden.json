@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"L5 Safety Guardrails Tests.\"\"\"\n\nclass TestGuardrails:\n    \"\"\"Tests for L5 safety guardrails.\"\"\"\n    \n    def test_content_guardrail(self):\n        \"\"\"Test content guardrail enforcement.\"\"\"\n        content = \"safe content\"\n        assert \"unsafe\" not in content\n    \n    def test_pii_guardrail(self):\n        \"\"\"Test PII detection guardrail.\"\"\"\n        text = \"Hello World\"\n        has_ssn = \"SSN\" in text\n        assert not has_ssn\n",
-  "full_hash": "007716f0815427d43c87cfe30befbe8ad1f6d1871e72316b06bf306c8baa9d0f",
-  "generated_at": 1764728227.1865077,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L5_safety_policy\\guardrails\\test_guardrails.py"
-}

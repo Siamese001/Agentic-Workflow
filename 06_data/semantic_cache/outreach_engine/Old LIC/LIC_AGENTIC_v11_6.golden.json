@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.6\n====================================================\n\nCHANGELOG v11.6 (CRITICAL - Full Implementation of v10.22 Gaps & v16.20 Features):\n---------------------------------------------------------\n\u2728 NEW: S1 - Hardened Archetype Classification\n- Implemented v10.22 4-archetype static classification logic (C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER).\n- Modified Archetype enum to match v10.22 standard (removed HIRING_MANAGER, PEER; added SENIOR_TA).\n- Manual override for low-confidence classifications (<0.85).\n\n\u2728 NEW: S1/S2 - Agentic Archetype Self-Correction\n- S1 makes a provisional classification.\n- S2 uses RAG data to critique and correct the archetype.\n\n\u2728 NEW: S2 - Agentic RAG Reflexion Loop\n- Implemented RAGCritiqueReflexionLoop (FEATURE 1.4) for iterative research.\n- Implemented WeightedSignalQualityScoring (FEATURE 1.1) to trigger reflexion.\n- Job tracker integration for prior application context.\n\n\u2728 NEW: S3 - Hardened Determinist",
-  "full_hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
-  "generated_at": 1764728339.1324131,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_6.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
-    "scan_timestamp": "2025-12-03T07:26:03.864633"
+    "scan_timestamp": "2025-12-03T08:04:48.368443"
   },
   "content_preview": "# File: hop_agents_LIC.py\n# Description: Refactored HOP agents for v13.0 pure agentic architecture\n# Demonstrates state-based I/O, single responsibility, and tool augmentation\n\n__version__ = \"13.0\"\n\nimport json\nimport os\nfrom typing import Dict, List, Any, Optional\nfrom datetime import datetime\n\nfrom models_LIC import (\n    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,\n    Route, Archetype, ValidationResult, ValidationSeverity, RAGResult,\n    SenderGroundingWhitelists, Fact...",
-  "creation_timestamp": "2025-12-03T07:26:32.629775",
+  "creation_timestamp": "2025-12-03T08:05:18.716902",
   "version": "1.0"
 }

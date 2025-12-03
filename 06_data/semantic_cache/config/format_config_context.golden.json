@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - format_config_context\nImplements L1 Cognitive Planning Layer for format config context operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FormatConfigContextOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FormatConfigContextOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FormatConfigContextOrchestratorResult:\n    \"\"\"L5 Result structure with full type ",
-  "full_hash": "16f29e296dac416cd6f642ca91b0d2b415051f4d1752a09c6b40b6019accc5cb",
-  "generated_at": 1764728348.7277112,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\plan-phase\\get-config-info\\utility\\prepare-information\\format_config_context.py"
-}

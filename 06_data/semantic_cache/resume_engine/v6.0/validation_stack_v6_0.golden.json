@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: validation_stack.py\n# Version: 5.9 (Batch Harness)\n# Zero-Loss Consolidation - The V18 Engine with MoE Architecture\n# Merges: validation_context.py \u2192 validation_rules.py \u2192 validation_engine.py \u2192 validator_RES.py\n# REFACTORED: Removed all hard-coded agent maps, fallback constraints, magic numbers, and rule lists.\n# All configuration is now read from the central CONFIG object.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ============================================================================\nimport json\nimport logging\nimport re\nimport time\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union\n\n# Import from core.py\nfrom core_v6_0 import (\n    # Models\n    ImmutableStagingBuffer, ThematicAnalysis, ResumeSection, ValidationResult,\n    ValidationSeverity, FactualFailureException, GenerationAttempt,\n    MechanicalFailureErro",
-  "full_hash": "9368537f3676b323020de0e99d8741c386f06cb9252c0c2e04a14d1b2c237b59",
-  "generated_at": 1764728327.624951,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\validation_stack_v6_0.py"
-}

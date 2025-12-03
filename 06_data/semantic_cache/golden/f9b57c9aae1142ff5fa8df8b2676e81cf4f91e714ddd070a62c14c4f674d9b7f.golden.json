@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f9b57c9aae1142ff5fa8df8b2676e81cf4f91e714ddd070a62c14c4f674d9b7f",
-    "scan_timestamp": "2025-12-03T07:26:03.787567"
+    "scan_timestamp": "2025-12-03T08:04:48.293970"
   },
   "content_preview": "import ast\nimport pathlib\n\nTARGET_FILES = [\n    \"rag_execution_stack.py\",\n    \"bullet_execution_stack.py\",\n    \"drafting_execution_stack.py\",\n    \"rag_orchestration.py\",\n    \"draft_orchestration.py\",\n]\n\nKEYS = [\"safety_report\", \"policy_decision\", \"constitutional_review\"]\n\ndef test_uniform_keys_present():\n    for fname in TARGET_FILES:\n        code = pathlib.Path(fname).read_text()\n        for key in KEYS:\n            assert key in code, f\"{key} missing in {fname}\"\n",
-  "creation_timestamp": "2025-12-03T07:26:20.382437",
+  "creation_timestamp": "2025-12-03T08:05:07.566830",
   "version": "1.0"
 }

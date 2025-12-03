@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a2ad5d393e18d8f010170a74da36a48df569c9f0e11fc3bda2c37315fc2427d6",
-    "scan_timestamp": "2025-12-03T07:26:03.917409"
+    "scan_timestamp": "2025-12-03T08:04:48.426543"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.1\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.1\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.1: Implemented Quality Control Triad. Added K.3 entity grounding validation, enforced Section 4 K-node header format, and enabled dynamic toggle table schema sourcing.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.5.1\",\n        \"date\"...",
-  "creation_timestamp": "2025-12-03T07:26:35.525781",
+  "creation_timestamp": "2025-12-03T08:05:21.688952",
   "version": "1.0"
 }

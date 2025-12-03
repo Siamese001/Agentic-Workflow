@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 9,
-  "generated_at": 1764728355.045111,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\safety-guard-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\sample_lic_outreach_input.json"
-}

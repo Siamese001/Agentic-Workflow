@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d5630a178eab54fa8ed9b8bc08721eb06b7d426fa56ee4fa8f6c65bcb652216a",
-    "scan_timestamp": "2025-12-03T07:26:03.721776"
+    "scan_timestamp": "2025-12-03T08:04:48.233451"
   },
   "content_preview": "\"\"\"Prompt engineering stack.\"\"\"\n\nimport json\nfrom typing import Any, Dict, Optional, Tuple\n\nfrom core_v10_7 import (\n    BaseAgent,\n    GeneratedPrompts,\n    StrategyPlan,\n    ValidationError,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\n\n\nclass PromptEngineerAgent(BaseAgent):\n    \"\"\"LLM-driven prompt engineering that adapts to task complexity.\"\"\"\n\n    @track_metrics(\"run_prompt_engineer\")\n    async def run_async(\n        self,\n        strategy: StrategyPlan,\n        complexity: str,\n ...",
-  "creation_timestamp": "2025-12-03T07:26:16.802115",
+  "creation_timestamp": "2025-12-03T08:05:04.031949",
   "version": "1.0"
 }

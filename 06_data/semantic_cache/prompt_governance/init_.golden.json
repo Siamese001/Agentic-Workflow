@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: validation/__init__.py\n# Validation Package - V18 Architecture\n# Version: 18.00\n# Exports all validation components for easy import\n\nfrom .engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier\nfrom .context import ValidationContext\nfrom .external import JDEnforcementValidator, AppTrackerQAValidator\n\n__all__ = [\n    'ValidationEngine',\n    'ValidationRule', \n    'ConstraintFailureClassifier',\n    'ValidationContext',\n    'JDEnforcementValidator',\n    'AppTrackerQAValidator'\n]\n",
-  "full_hash": "9e2bd957a76477b5ca8b7dfab222532f3fd094ee5977414f1c61783c438d2e5e",
-  "generated_at": 1764728348.2459083,
-  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\templates\\retriever-microagent-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\init_.py"
-}

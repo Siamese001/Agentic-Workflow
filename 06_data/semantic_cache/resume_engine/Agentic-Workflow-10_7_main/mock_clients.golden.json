@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nimport json\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional, Tuple\n\nfrom chromadb.utils import embedding_functions\n\n\nclass DeterministicEmbeddingFunction(embedding_functions.EmbeddingFunction):\n    \"\"\"Predictable embedding function leveraged by caching fixtures.\"\"\"\n\n    def __call__(self, prompts: List[str]) -> List[List[float]]:\n        return [[float(len(prompt))] for prompt in prompts]\n\n\nclass DummyEmbeddingFunction:\n    def __call__(self, prompts: List[str]) -> List[List[float]]:\n        return [[float(len(p))] for p in prompts]\n\n\nclass FakeRedisClient:\n    def __init__(self) -> None:\n        self.store: Dict[str, Tuple[str, int]] = {}\n\n    def setex(self, name: str, ttl: int, value: str) -> None:\n        self.store[name] = (value, ttl)\n\n    def get(self, name: str) -> str | None:\n        return (self.store.get(name) or (None, 0))[0]\n\n    def delete(self, name: str) -> None:\n        self.store.pop(name, None)\n\n    d",
-  "full_hash": "e07c568effad591cc8367524016a5e9bca707c30835e19022f5beb0f85721a12",
-  "generated_at": 1764728230.3738058,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\shared\\mock_clients.py"
-}

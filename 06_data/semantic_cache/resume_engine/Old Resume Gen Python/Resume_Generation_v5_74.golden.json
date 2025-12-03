@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.74 - REASONING TOGGLES HARDENED PATCH\n\nv5.71 CHANGES - REASONING TOGGLES TO LLM (HARDENED):\n\u2705 PATCH: REASONING CONFIG TO API PARAMETERS\n   - reasoning_config_to_api_params() translates toggles to temperature/tokens\n   - enhance_system_prompt_with_reasoning() adds reasoning directives\n   - All K-node generation methods updated to use reasoning config\n   - Graceful fallback with sensible defaults\n   - Temperature mapped: high intensity = low temp, low intensity = high temp\n   - Token allocation: 400-800 based on reasoning depth\n   - System prompt enhanced with mandatory reasoning directives\n   - QA Section 10 documents reasoning configurations used\n   - Extensive logging for debugging/audit trail\n\n\nv5.74 CHANGES - WORD COUNT VALIDATION HARDENED (CRITICAL FIX):\n\u2705 CRITICAL RCA ADDRESSED: Word count validation now ALWAYS uses staging_buffer\n   - Root Cause: v5.73 attempted to parse validation messages, missing actual content\n   - Issue: Staging buffer designe",
-  "full_hash": "1e397206d34f9613e92f022b1a109b0309582a41e251677c63d3b17962913f85",
-  "generated_at": 1764728311.6700695,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_74.py"
-}

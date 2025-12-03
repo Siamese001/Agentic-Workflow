@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.0 - ULTIMATE OPTIMIZATION (ALL v4.2 FEATURES)\n===========================================================================\nCombines v4.9.0's JSON modularity with v4.2's advanced optimization:\n- SignalElasticityModel (non-linear curves)\n- PerSectionTolerance (granular bands per section)\n- SectionPriorityAllocator (dynamic priority matrix)\n- SignalPreservationScorer (smart bullet selection)\n- SectionCoherenceScorer (CV-based penalties)\n- Enhanced QA gates (6 comprehensive checks)\n- Temperature bonus application (BALANCED: +0.02, CREATIVE: +0.05)\n- Ratio penalty enforcement (Unify/IBM 1.20-1.50 soft band)\n- Coherence penalty applied to final signals\n- Role-aware headline generation\n- 4 outputs only (no 5th output)\n- v4.9.0 word limits (150 exec, 265 Unify, 195 IBM)\n\nVersion: 5.0\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nimport random\nfrom datetime import datetime\nfrom dataclas",
-  "full_hash": "42470f4a8613b5d317647a544661492ee801307db0ad995dca6dfadfe1d1fe59",
-  "generated_at": 1764728297.3830283,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.1.py"
-}

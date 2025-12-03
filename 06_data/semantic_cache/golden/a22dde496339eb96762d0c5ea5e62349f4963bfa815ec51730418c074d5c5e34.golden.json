@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a22dde496339eb96762d0c5ea5e62349f4963bfa815ec51730418c074d5c5e34",
-    "scan_timestamp": "2025-12-03T07:26:03.629774"
+    "scan_timestamp": "2025-12-03T08:04:48.135344"
   },
   "content_preview": "from eval.golden_state.models import GoldenStateTestCase\nfrom eval.golden_state.judge import evaluate_output\n\n\ndef test_judge_empty_output_fails():\n    tc = GoldenStateTestCase(id=\"t1\", input_text=\"x\", expected_behavior=\"\", metadata={})\n    verdict = evaluate_output(tc, \"\")\n    assert verdict.rating == \"fail\"\n    assert verdict.score == 0.0\n\n\ndef test_judge_detects_key_behavior():\n    tc = GoldenStateTestCase(\n        id=\"t2\",\n        input_text=\"x\",\n        expected_behavior=\"Summary should be ...",
-  "creation_timestamp": "2025-12-03T07:26:09.567601",
+  "creation_timestamp": "2025-12-03T08:04:56.212890",
   "version": "1.0"
 }

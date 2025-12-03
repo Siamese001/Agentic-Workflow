@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.4 - FULL RAG INTEGRATION\n=====================================================\nDeep merge with Job_Workflow_v1.9.2 RAG architecture:\n\u2713 K.0: Thematic analysis with peer JD retrieval and competitive intelligence\n\u2713 HOP-2 Data Enrichment: Peer JD tier-matching, signal quality scoring\n\u2713 Retrieval schema: retrieval_source, peer_jds_analyzed, retrieval_confidence\n\u2713 Multi-source fallback (FULL_MASTER | FALLBACK | DEGRADED)\n\u2713 Competitive intelligence extraction with differentiator keywords\n\u2713 Signal quality threshold (min 0.45 to proceed)\n\u2713 All v5.3 elasticity features maintained\n\u2713 4 outputs only (Resume, Cover Letter, QA Report, CoC Ledger)\n\nVersion: 5.4\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nfrom dataclasses import dataclass, field\nimport math\nimport hashlib\n\n__version__ = \"5.4\"\n\n# ===================================================================",
-  "full_hash": "0694d3e8ab8e25189df3dde642befb48858995d1157599fddf8e28da3bbad226",
-  "generated_at": 1764728297.7541435,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.4.py"
-}

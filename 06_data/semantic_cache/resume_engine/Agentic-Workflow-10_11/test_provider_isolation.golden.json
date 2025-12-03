@@ -1,6 +1,0 @@
-{
-  "golden_content": "from pathlib import Path\nimport re\n\nimport pytest\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef test_only_providers_contain_provider_sdks() -> None:\n    \"\"\"Verify that only providers/ directory contains external SDK imports.\n    \n    This enforces architectural separation where concrete SDK dependencies\n    (openai, anthropic, redis, chromadb, pinecone, etc.) are isolated\n    to the providers layer only.\n    \"\"\"\n    \n    # External SDKs that should be isolated to providers/ only\n    external_sdks = {\n        'openai', 'anthropic', 'redis', 'chromadb', 'pinecone',\n        'google.generativeai', 'transformers', 'torch', 'numpy',\n        'pandas', 'sklearn', 'matplotlib', 'seaborn'\n    }\n    \n    # Find all Python files and check for SDK imports\n    violations = []\n    \n    # Check non-provider directories for SDK imports\n    exclude_dirs = {'providers', 'tests', '__pycache__', '.venv', '.pytest_cache'}\n    \n    for py_file in PROJECT_ROOT.rglob('*.py'):\n        # Skip files ",
-  "full_hash": "e55745e9571876ad6a579f333ef234645bedfa840f7b54cee94eaf041ec72980",
-  "generated_at": 1764728227.3533838,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_provider_isolation.py"
-}

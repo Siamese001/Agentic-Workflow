@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nRules engine for r\u00e9sum\u00e9 processing safety policy enforcement.\n\nProvides deterministic rule evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nimport re\nfrom typing import List\n\nfrom .decisions import RuleMatch, RulesEngineResult, aggregate_severity\nfrom .models import PolicyRule, SafetyContext\n\n\n_PII_REGEXES = [\n    # Email addresses\n    re.compile(r\"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\", re.IGNORECASE),\n    # Simple phone number patterns (international and local)\n    re.compile(r\"(?:(?:\\+?\\d{1,3})?[\\s-]?)?(?:\\d{3}[\\s-]?\\d{3}[\\s-]?\\d{4})\"),\n]\n\n\ndef _detect_pii(text: str) -> bool:\n    \"\"\"\n    Detects personally identifiable information in r\u00e9sum\u00e9 processing text.\n\n    Ensures privacy protection for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n    for rx in _PII_REGEXES:\n        if rx.search(text):\n            return True\n    return False\n\n\ndef evaluate_rules(context: SafetyContext, rules: List[PolicyRule]) -> RulesEngineResult:\n    \"\"\"\n    Evaluates safe",
-  "full_hash": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
-  "generated_at": 1764728224.1675653,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\rules_engine.py"
-}

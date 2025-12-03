@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9",
-    "scan_timestamp": "2025-12-03T07:26:03.800041"
+    "scan_timestamp": "2025-12-03T08:04:48.305683"
   },
   "content_preview": "# hops/hop_3_artist.py\n\"\"\"\nHop 3: Content Generation (Artist) - HIGH-SIGNAL OVERWRITE\n\nThis advanced Artist implements a \"Select, then Synthesize\" strategy.\n1.  It uses vector embeddings from HOP-1 (via HOP-2 scaffold) and thematic\n    targets from HOP-0 to perform multi-criteria semantic scoring and\n    *selection* of the best bullets from the master pool.\n2.  It then uses the LLM (Gemini) for its true strength: *synthesis* and\n    *rewriting*, by feeding it the pre-selected content with high-s...",
-  "creation_timestamp": "2025-12-03T07:26:21.082007",
+  "creation_timestamp": "2025-12-03T08:05:08.406778",
   "version": "1.0"
 }

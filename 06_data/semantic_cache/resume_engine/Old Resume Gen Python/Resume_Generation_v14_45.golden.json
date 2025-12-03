@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nimport copy\nimport functools\nimport hashlib\nimport json\nimport logging\nimport math\nimport os\nimport random\nimport re\nimport shutil\nimport signal\nimport textwrap\nimport time\nimport uuid\nfrom collections import Counter, defaultdict\nfrom collections.abc import Mapping, Sequence\nfrom datetime import datetime, timedelta\nfrom enum import Enum, auto\nfrom typing import (\n    Any, Callable, ClassVar, Dict, List, \n    Optional, Set, Tuple, TypeVar, Union\n)\n\nT = TypeVar('T')\n\nfrom dataclasses import asdict, dataclass, field, is_dataclass\nfrom functools import partial\n\nfrom dotenv import load_dotenv\nload_dotenv()\n\n__version__ = \"14_45\"\n\n# Configure Gemini API at module initialization\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\n\n    # Explicit API key configuration\n    api_key = os.environ.get(\"GEMINI_API_KEY\")\n    if api_key:\n        genai.configure(api_key=api_key)\n        logging.info(\"\u2713 Gemini API configured successfully at module",
-  "full_hash": "76c141bf1ec63d2af4a85016ab14b328b83db75d28c723c3d385f3845b096d83",
-  "generated_at": 1764728291.3213246,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_45.py"
-}

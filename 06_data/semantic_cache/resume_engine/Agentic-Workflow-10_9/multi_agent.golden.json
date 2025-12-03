@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: multi_agent.py\n\"\"\"\nMulti-Agent Coordination Patterns (v10_9_REFACTORED) \u2014 META LAYER ONLY\n\nThis module provides reusable multi-agent coordination primitives\n(governance graphs, pipeline shapes, councils, committees) strictly\nwithin the META layer.\n\nSTRICT LAYER BOUNDARIES:\n    \u2022 NO L1 planning\n    \u2022 NO L2 execution\n    \u2022 NO L3 orchestration\n    \u2022 NO L4 state mutation\n    \u2022 NO L5 safety/policy decisions\n    \u2022 PURE advisory logic only\n    \u2022 SAFE to call anywhere\n\nThis refactor:\n    \u2022 Fixes broken node construction (original used AgentNode(role,...)\n      instead of AgentNode(role=<role_name>, config=...))\n    \u2022 Normalizes to use modern AgentNode + AgentGraph from agents.py\n    \u2022 Integrates fully with meta_profile (for future weighted patterns)\n    \u2022 Returns patch-ready structures for L4, but does not mutate\n    \u2022 Deterministic voting + routing consistent with agents.py\n    \u2022 Aligns committee, council, pipeline, star graphs to new schema\n\"\"\"\n\nfrom __future__ import annotations\n\nfr",
-  "full_hash": "482944bc534d5f2bfccd8f97c83c68136efcf4ed90f7ce18197d7047e774d7a1",
-  "generated_at": 1764728228.69942,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\multi_agent.py"
-}

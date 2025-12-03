@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: l2.py\n\"\"\"\nUnified L2 Execution Layer (v10_9) \u2014 ENTERPRISE REFINEMENT (META-AWARE)\n\nThis module implements ALL L2 responsibilities for the v10_9 agentic\nworkflow. It is strictly *execution-only*:\n\n    \u2022 Executes PlanObjects produced by L1 (one domain per executor).\n    \u2022 Performs retrieval, ranking, and evidence fusion (RAG).\n    \u2022 Generates bullets based on planning hints and resume metrics.\n    \u2022 Produces drafting outputs (multi-section drafts, evidence-weighted).\n    \u2022 Runs QA checks according to L1 QA plans (including shadow validation).\n    \u2022 Performs safety evaluation (PII, forbidden content, toxicity).\n    \u2022 Prepares HIL prompts and consumes HIL responses.\n    \u2022 Prepares prompt envelope metadata for the prompt layer.\n    \u2022 Produces meta-learning snapshots from logs/state.\n    \u2022 Returns ExecutionResult[TypedPayload], never raw untyped blobs.\n\nL2 DOES NOT:\n\n    \u2022 Perform planning (L1 cognition).\n    \u2022 Own graph orchestration or control flow (L3).\n    \u2022 Mutate durable state ",
-  "full_hash": "3f459f9fe689d25afb29086e6e8242bc941b439c8448893d3b771e2e6af126e9",
-  "generated_at": 1764728228.5777736,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l2.py"
-}

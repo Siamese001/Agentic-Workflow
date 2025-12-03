@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom runtime.observability.spans import start_span, end_span\n\n\ndef start_agent_span(name: str, meta: Dict[str, Any]) -> str:\n    \"\"\"Start an agent-level span and return its span identifier.\n\n    This is a thin convenience wrapper over the core spans module so that\n    higher layers have a semantic home for agent-centric tracing.\n    \"\"\"\n\n    ctx = meta if isinstance(meta, dict) else {\"meta\": str(meta)}\n    span_id = start_span(name, ctx=ctx)\n    return span_id\n\n\ndef end_agent_span(span_id: str) -> None:\n    \"\"\"End a previously-started agent span.\n\n    The span identifier is passed straight through to the spans module.\n    \"\"\"\n\n    end_span(span_id)\n\n\n\n",
-  "full_hash": "59a845181c098d272fb3c9402906bd0a2fd4adcbd9aa376738d08c8ee28ae369",
-  "generated_at": 1764728226.397441,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_spans.py"
-}

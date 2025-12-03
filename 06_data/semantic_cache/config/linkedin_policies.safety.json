@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 107,
-  "generated_at": 1764728349.2143064,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\retriever-microagent-layer\\retry-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\linkedin_policies.yaml"
-}

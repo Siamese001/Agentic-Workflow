@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Redis-backed caching utilities (v10_10 \u00b7 META cache layer).\n\nThis module encapsulates all direct interactions with Redis so that\ncore layers and agents remain pure. It is safe to import even if the\n`redis` package is not installed: imports are performed lazily inside\nhelper functions and surfaced as explicit errors.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport os\nfrom typing import Any, Optional\n\n\nclass RedisNotConfiguredError(RuntimeError):\n    \"\"\"Raised when Redis usage is requested but not configured/enabled.\"\"\"\n\n\nclass RedisClientError(RuntimeError):\n    \"\"\"Raised when the underlying Redis client cannot be created or used.\"\"\"\n\n\ndef _import_redis():\n    \"\"\"Import the redis package using provider isolation.\n\n    This helper ensures the module uses the provider layer instead of direct SDK imports.\n    \"\"\"\n    from providers.redis_client import RedisClient\n    return RedisClient\n\n\ndef init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):\n    \"\"\"Init",
-  "full_hash": "f9b45a973bffd319a218a540b91055374ffb6bc4d4c2aaae1450ceb9511c53b8",
-  "generated_at": 1764728225.55299,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\cache\\redis_cache.py"
-}

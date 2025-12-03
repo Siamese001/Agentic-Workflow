@@ -1,6 +1,0 @@
-{
-  "golden_content": "from core.models.models import ExecutionProfile, RetrievalConfig\nfrom orchestration.model_routing import ModelChoice, enforce_budget\n\n\ndef test_budget_enforcement_downgrades_cost_tier():\n    choice = ModelChoice(\n        provider=\"openai\",\n        model_name=\"gpt-5.1-codex\",\n        cost_tier=\"high\",\n        estimated_cost=0.004,\n        latency_ms=1200,\n    )\n\n    profile = ExecutionProfile(\n        name=\"test_profile\",\n        description=\"test\",\n        retrieval=RetrievalConfig(),\n        metadata={\"max_cost_tier\": \"medium\"},\n    )\n\n    adjusted = enforce_budget(choice, profile)\n\n    assert adjusted.cost_tier in {\"low\", \"medium\"}\n    assert adjusted.estimated_cost <= choice.estimated_cost\n\n\n\n\n\n\n",
-  "full_hash": "135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764",
-  "generated_at": 1764728227.2953494,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\model_routing\\test_budget_enforcement.py"
-}

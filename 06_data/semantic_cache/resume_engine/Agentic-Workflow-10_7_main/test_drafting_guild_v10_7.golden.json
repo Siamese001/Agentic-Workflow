@@ -1,6 +1,0 @@
-{
-  "golden_content": "from types import SimpleNamespace\nfrom typing import Any, Dict\n\nfrom typing import Any, Dict\n\nimport pytest\nimport agent_stacks_v10_8.components.drafting as drafting_module\nfrom agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool\nfrom agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator\n\n\n@pytest.fixture\ndef strategy_payload() -> Dict[str, Any]:\n    return {\n        \"strategy_name\": \"AI Trailblazer\",\n        \"focus_areas\": [\"automation\", \"scalability\"],\n        \"key_achievements_to_highlight\": [\"Scaled platform adoption\"],\n        \"tone\": \"executive\",\n    }\n\n\n@pytest.fixture\ndef guild_coordinator(workflow_context, monkeypatch):\n    original_dumps = drafting_module.json.dumps\n\n    def safe_dumps(obj, *args, **kwargs):\n        def default_serializer(value):\n            if hasattr(value, \"model_dump\"):\n                return value.model_dump()\n            if hasattr(value, \"__dict__\"):\n                return {k: v for k, v in value.__dict__.ite",
-  "full_hash": "d4bac3c7a68091749646fbe1b1fa8dafcaba9325034f66c85e75ea20ffc33209",
-  "generated_at": 1764728230.539892,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\drafting\\test_drafting_guild_v10_7.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# V2 Architecture - All Imports Fixed to Use _v2 Suffix\n\n## What Was Changed\n\nAll supporting modules now use `_v2` suffix consistently across all imports.\n\n## File Structure (Final)\n\n### Main Orchestration (WITH _v2):\n- workflow_RES_v2.py\n- run_workflow_RES_v2.py\n\n### Supporting Modules (WITH _v2):\n- config_RES_v2.py (v17.00) - Configuration + GovernorConfig\n- utils_RES_v2.py (v17.00) - Utilities + V2 tools\n- rag_RES_v2.py (v17.00) - RAG + LibrarianAgent\n- prompts_RES_v2.py (v17.00) - Prompt templates\n- validation_RES_v2.py (v17.00) - Validation system\n- state_manager_RES_v2.py (v17.00) - State persistence\n\n### Base Modules (NO _v2):\n- models_RES.py - Data models (version-agnostic)\n- governor.py (v17.00) - Governor agents\n\n## Import Changes Made\n\n### workflow_RES_v2.py\n```python\n# BEFORE:\nfrom config_RES import CONFIG, AppConfig, ...\nfrom utils_RES import TextUtils, ...\nfrom validation_RES import PreFlightValidator, ...\nfrom rag_RES import EnhancedJobDescriptionAnalyzer, ...\nfrom state",
-  "full_hash": "d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414",
-  "generated_at": 1764728327.379324,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\V2_IMPORTS_FIXED.md"
-}

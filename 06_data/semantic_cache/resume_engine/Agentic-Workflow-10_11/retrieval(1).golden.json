@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nRetrieval system for r\u00e9sum\u00e9 evidence gathering.\n\nProvides access to RAG retrieval functions to support comprehensive r\u00e9sum\u00e9 improvement with relevant data.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom meta.retrieval.retrieval import run_rag_retrieval  # noqa: F401\n\n__all__ = [\"run_rag_retrieval\"]\n\n\n\n",
-  "full_hash": "e3804a20fdfd5b07998a3bee81794a0e067dbf5f8df3eec798c8f9e0e6ea97e5",
-  "generated_at": 1764728226.1043184,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\retrieval(1).py"
-}

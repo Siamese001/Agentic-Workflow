@@ -1,6 +1,0 @@
-{
-  "golden_content": "--- LIC_10-03-2025_v6.7.json\n+++ LIC_10-03-2025_v6.8.json\n@@ -2,7 +2,7 @@\n   \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n   \"version\": \"LIC_10-01-2025_v4\",\n   \"metadata\": {\n-    \"version\": \"LIC_10-03-2025_v6.7\",\n+    \"version\": \"LIC_10-03-2025_v6.8\",\n     \"patches\": [\n       \"C001\",\n       \"C002\",\n@@ -17,7 +17,9 @@\n       \"C011\",\n       \"C012\",\n       \"C013\",\n-      \"C014\"\n+      \"C014\",\n+      \"C015\",\n+      \"C016\"\n     ],\n     \"changelog\": \"external://CHANGELOG.md\",\n     \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\",\n@@ -806,6 +808,24 @@\n         }\n       ],\n       \"blocking\": false\n+    },\n+    \"job_workflow_tracker_integration\": {\n+      \"trigger_point\": \"Section 3, Step 4: Job Application Context\",\n+      \"if_tracker_exists\": {\n+        \"action\": \"Parse tracker for applications to recipient company; present numbered list\",\n+        \"on_selection\": \"Load job details into context\"\n+      },\n+      \"formats\": [\n+        \"CSV\",\n+        \"JSON\",\n+",
-  "full_hash": "15c087b08aa9f36610b85f03022a70325dff269d7c62f20ab647d99be2f5ca03",
-  "generated_at": 1764728333.4624226,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.8_diff.txt"
-}

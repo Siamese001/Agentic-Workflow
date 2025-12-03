@@ -1,6 +1,0 @@
-{
-  "golden_content": "from infra.sandbox.fs_template import build_ephemeral_rootfs\n\n\ndef test_build_ephemeral_rootfs_shape():\n    fs = build_ephemeral_rootfs()\n\n    assert fs.get(\"tmpfs\") is True\n    assert \"/\" in fs.get(\"restricted_paths\", [])\n    assert \"/tmp\" in fs.get(\"writable_paths\", [])\n\n\n\n\n\n\n",
-  "full_hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
-  "generated_at": 1764728227.4617643,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_fs_isolation.py"
-}

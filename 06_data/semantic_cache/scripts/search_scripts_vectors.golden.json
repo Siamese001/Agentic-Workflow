@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - search_scripts_vectors\nImplements L1 Cognitive Planning Layer for search scripts vectors operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass SearchScriptsVectorsMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass SearchScriptsVectorsMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass SearchScriptsVectorsMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n   ",
-  "full_hash": "039805810e58c6ed36ad6e7d68d926488a00060b083172c50a63924cc8bfb04b",
-  "generated_at": 1764728351.7926412,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\embedding\\compare-meaning\\search_scripts_vectors.py"
-}

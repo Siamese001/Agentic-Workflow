@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c660b80e90c1b60c106f2881c574ebbebf39be938502a46713eb949d981df0f1",
-    "scan_timestamp": "2025-12-03T07:26:03.530723"
+    "scan_timestamp": "2025-12-03T08:04:48.040145"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Optional\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ReasoningMode\n\n\nclass LLMProfile(BaseModel):\n    \"\"\"LLM configuration profile used by execution profiles.\n\n    This model is intentionally minimal and mirrors the knobs already\n    present in ExecutionProfileSpec: reasoning_mode, model_tier,\n    max_cost_usd, max_latency_ms.\n    \"\"\"\n\n    reasoning_mode: ReasoningMode = ReasoningMode.COT\n    model_tier: str = Fiel...",
-  "creation_timestamp": "2025-12-03T07:26:04.640406",
+  "creation_timestamp": "2025-12-03T08:04:49.448418",
   "version": "1.0"
 }

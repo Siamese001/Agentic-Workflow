@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764728351.0625644,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\plan-layer\\plan-phase\\check-observability-rules\\policy\\check-safety\\enforce_observability_boundaries.py"
-}

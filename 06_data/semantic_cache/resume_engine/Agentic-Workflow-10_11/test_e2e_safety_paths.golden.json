@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"E2E Safety Enforced Path Tests.\"\"\"\n\nclass TestE2ESafetyPaths:\n    \"\"\"E2E tests for safety enforced paths.\"\"\"\n    \n    def test_pii_blocked_workflow(self):\n        \"\"\"Test PII is blocked in complete workflow.\"\"\"\n        content = \"safe resume without PII\"\n        pii_patterns = [\"SSN:\", \"DOB:\"]\n        is_blocked = any(p in content for p in pii_patterns)\n        assert is_blocked is False\n    \n    def test_injection_prevented_workflow(self):\n        \"\"\"Test injection is prevented in workflow.\"\"\"\n        prompt = \"normal user prompt\"\n        injection_patterns = [\"ignore previous\", \"system override\"]\n        is_safe = not any(p in prompt.lower() for p in injection_patterns)\n        assert is_safe is True\n",
-  "full_hash": "c7c19c0b9b5edf6c4e169eb9b200ae0c96817088771905d65366d84915e2cc3e",
-  "generated_at": 1764728226.5906935,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\safety_enforced_paths\\test_e2e_safety_paths.py"
-}

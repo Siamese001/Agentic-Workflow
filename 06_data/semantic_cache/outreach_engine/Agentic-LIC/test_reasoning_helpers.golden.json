@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.reasoning import cot, reflexion\n\n\ndef test_cot_expand_guarantees_minimum_step():\n    steps = cot.expand(\"Consider options\", steps=0)\n    assert steps == [\"Step 1: Consider options\"]\n\n\ndef test_cot_expand_respects_requested_steps():\n    steps = cot.expand(\"Consider options\", steps=2)\n    assert len(steps) == 2\n\n\ndef test_reflexion_apply_feedback_appends_insight():\n    updated = reflexion.apply_feedback(\"Draft body\", \"Focus on product value\")\n    assert \"Reflexion:\" in updated\n    assert updated.startswith(\"Draft body\")\n\n\ndef test_reflexion_no_insight_returns_original():\n    updated = reflexion.apply_feedback(\"Draft body\", \"\")\n    assert updated == \"Draft body\"\n",
-  "full_hash": "cbfbcafed7d13936bf1b9addd52b87fcdddd66497700e09a5a176dd34e246f04",
-  "generated_at": 1764728331.198881,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_reasoning_helpers.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "25023ee73b834137016dba40942f0982e7dc95b416fd4269005eb5d370c11878",
-    "scan_timestamp": "2025-12-03T07:26:03.995737"
+    "scan_timestamp": "2025-12-03T08:04:48.505720"
   },
   "content_preview": "\n# LinkedInCanonical \u2014 2025-09-06 v2.7 (DESTRUCTIVE OVERWRITE derived from v2.6 + Harsh Grader ND Patch)\nGenerated: 2025-09-06T22:40:58.412468\nSource SHA256 (v2.6): 06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c\n\n# LinkedInCanonical \u2014 2025-09-06 v2.6 (Content Hardening ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.5 (Merged Enforcement ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.4 (ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.3.4 (ND Patch applied)...",
-  "creation_timestamp": "2025-12-03T07:26:39.380107",
+  "creation_timestamp": "2025-12-03T08:05:25.910821",
   "version": "1.0"
 }

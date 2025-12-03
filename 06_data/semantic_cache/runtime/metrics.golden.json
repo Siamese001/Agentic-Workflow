@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"timestamp\": \"2025-11-30T08:41:59.301776\",\n  \"total_metrics\": 3,\n  \"metrics\": {\n    \"system_uptime\": [\n      {\n        \"name\": \"system_uptime\",\n        \"value\": 0.0,\n        \"metric_type\": \"gauge\",\n        \"timestamp\": \"2025-11-30T08:41:59.301398\",\n        \"labels\": {},\n        \"unit\": \"\"\n      }\n    ],\n    \"system_startups\": [\n      {\n        \"name\": \"system_startups\",\n        \"value\": 1.0,\n        \"metric_type\": \"counter\",\n        \"timestamp\": \"2025-11-30T08:41:59.301434\",\n        \"labels\": {},\n        \"unit\": \"\"\n      }\n    ],\n    \"active_connections\": [\n      {\n        \"name\": \"active_connections\",\n        \"value\": 0,\n        \"metric_type\": \"gauge\",\n        \"timestamp\": \"2025-11-30T08:41:59.301443\",\n        \"labels\": {},\n        \"unit\": \"\"\n      }\n    ]\n  }\n}",
-  "full_hash": "48f930328d68e05c7fcb9a6b1faf3319e2ab701f886c7ce274dbd8eed56b81a7",
-  "generated_at": 1764728347.6469576,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\planner-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\metrics.json"
-}

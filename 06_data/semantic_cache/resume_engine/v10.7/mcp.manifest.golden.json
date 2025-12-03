@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"$schema\": \"https://openai.com/mcp/manifest/schema-v1.json\",\n  \"name\": \"Agentic Workflow v10.7\",\n  \"description\": \"MCP-compliant orchestration of multi-agent LLM stacks.\",\n  \"version\": \"10.7.1\",\n  \"tools\": [\n    { \"id\": \"redis\", \"path\": \"redis\", \"type\": \"cache\" },\n    { \"id\": \"chromadb\", \"path\": \"chromadb\", \"type\": \"vectorstore\" },\n    { \"id\": \"openai\", \"path\": \"openai\", \"type\": \"llm\" }\n  ],\n  \"schemas\": [\n    \"master_config_v10_7.json\",\n    \"job_input.json\"\n  ],\n  \"agents\": [\n    \"SafetyGuardStack\",\n    \"StrategyStack\",\n    \"RAGStack\",\n    \"DraftingStack\",\n    \"QAStack\",\n    \"HILStack\",\n    \"MetaLearningLoop\"\n  ],\n  \"telemetry\": { \"endpoint\": \"/metrics\", \"mode\": \"emit\" },\n  \"governance\": { \"validator\": \"core_v10_7.validate_schema\" }\n}\n",
-  "full_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-  "generated_at": 1764728329.5212085,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\mcp.manifest.json"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e24fab01e678474dc52f33fe4b81211b203ea5e33c2ceab805fe7748a1302550",
-    "scan_timestamp": "2025-12-03T07:26:03.752688"
+    "scan_timestamp": "2025-12-03T08:04:48.258582"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n\n@pytest.mark.performance\ndef test_batch_performance(benchmark):\n    ctx = {\"compat_mode\": \"v10_7\", \"resume\": \"BatchCase\", \"jd\": \"AI Director\"}\n    result = benchmark(lambda: run_workflow(ctx))\n    assert result[\"status\"] == \"success\"\n\n\n@pytest.mark.performance\ndef test_latency_under_3s(benchmark):\n    ctx = {\"compat_mode\": \"v10_7\", \"resume\": \"SpeedTest\"}\n    result = benchmark(lambda: run_workflow(ctx))\n    assert result is not None\n\n\ndef ...",
-  "creation_timestamp": "2025-12-03T07:26:18.786040",
+  "creation_timestamp": "2025-12-03T08:05:05.972549",
   "version": "1.0"
 }

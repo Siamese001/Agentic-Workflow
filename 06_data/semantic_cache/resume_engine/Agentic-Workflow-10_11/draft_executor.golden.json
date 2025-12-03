@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL2 execution layer for resume draft generation.\n\nExecutes model calls to create compelling resume content\naligned with job requirements for better applications.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass DraftExecutor:\n    \"\"\"\n    Executes resume draft generation with optimal model selection.\n\n    Ensures consistent quality and proper formatting for professional\n    resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def execute_draft(self, prompt: str) -> str:\n        \"\"\"\n",
-  "full_hash": "c78647f074a172ca38a09bf690ea3f4d29f468159247a7f2a73ba66680bef6c4",
-  "generated_at": 1764728224.9247801,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\draft_executor.py"
-}

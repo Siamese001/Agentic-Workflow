@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a1038dc626e9c0852f6846ddca6b47b5753bb636d9e2b468842ac2c8b5c60e99",
-    "scan_timestamp": "2025-12-03T07:26:03.632626"
+    "scan_timestamp": "2025-12-03T08:04:48.138561"
   },
   "content_preview": "\"\"\"\nTest KG Retrieval Planning\n\nTests knowledge graph retrieval planning functionality extracted from working legacy tests.\n\"\"\"\n\nimport pytest\nfrom datetime import datetime, UTC\n\n# L1 Components\nfrom l1.kg_retrieval_planning import (\n    KGRetrievalPlanner,\n    KGQueryPlan,\n    QueryType,\n    HopDirection,\n    plan_entity_retrieval,\n)\n\n# Mark all tests as L1 planning tests\npytestmark = [pytest.mark.unit, pytest.mark.l1, pytest.mark.planning]\n\n\nclass TestKGRetrievalPlanning:\n    \"\"\"Test KG retrie...",
-  "creation_timestamp": "2025-12-03T07:26:09.639088",
+  "creation_timestamp": "2025-12-03T08:04:56.297710",
   "version": "1.0"
 }

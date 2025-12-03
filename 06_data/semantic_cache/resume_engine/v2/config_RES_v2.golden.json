@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: config_RES_v2.py\n# Version: 19.0.0 (High Priority Consolidation)\n# Centralized configuration for Resume Generation Engine V2\n# ALL CONSTANTS CONSOLIDATED - NO MAGIC NUMBERS IN CODE\n\nimport os\nimport json\nimport logging\nfrom pathlib import Path\nfrom typing import Dict, List, Optional, Set, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nfrom models_RES import ReasoningConfig\n\n# Configure logging\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\n# ============================================================================\n# PATH CONFIGURATION\n# ============================================================================\n\n# Get absolute paths\nPROJECT_ROOT = Path(__file__).parent.absolute()\nDATA_DIR = PROJECT_ROOT\nOUTPUT_DIR = PROJECT_ROOT / \"workflow_outputs\"\nBACKUP_DIR = PROJECT_ROOT / \"backups\"\nLOGS_DIR = PROJECT_ROOT / \"logs\"\nCACHE_DIR = PROJECT_ROOT / \"cache\"\n\n# Create directories if they don't exist\nfor dir_path in [DATA_DIR, OU",
-  "full_hash": "107314a993d6225db09563795fad385c87899ee369140300199f420a492e51af",
-  "generated_at": 1764728326.9419472,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\config_RES_v2.py"
-}

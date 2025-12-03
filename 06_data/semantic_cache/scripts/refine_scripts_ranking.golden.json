@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - refine_scripts_ranking\nImplements L1 Cognitive Planning Layer for refine scripts ranking operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RefineScriptsRankingPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RefineScriptsRankingPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RefineScriptsRankingPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succe",
-  "full_hash": "ff83fe5f12ed3c3f2eeed00e3f2688323825c5d6a038b6c0fa5003404f3d9ea6",
-  "generated_at": 1764728352.3023262,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\refine_scripts_ranking.py"
-}

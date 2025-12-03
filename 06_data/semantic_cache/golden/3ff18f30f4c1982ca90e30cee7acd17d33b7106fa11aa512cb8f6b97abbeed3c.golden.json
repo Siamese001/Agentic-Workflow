@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3ff18f30f4c1982ca90e30cee7acd17d33b7106fa11aa512cb8f6b97abbeed3c",
-    "scan_timestamp": "2025-12-03T07:26:03.786125"
+    "scan_timestamp": "2025-12-03T08:04:48.292419"
   },
   "content_preview": "\"\"\"Tests for RAG simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.rag_sim import RAGSimulator\nfrom simulations.models import RAGSimRequest\n\n\n@pytest.mark.asyncio\nasync def test_rag_simulator_returns_result():\n    simulator = RAGSimulator()\n    request = RAGSimRequest(\n        simulation_id=\"sim-rag\",\n        payload={},\n        query=\"test\",\n        documents=[\"doc1\", \"doc2\", \"doc3\"],\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <= result...",
-  "creation_timestamp": "2025-12-03T07:26:20.324706",
+  "creation_timestamp": "2025-12-03T08:05:07.491905",
   "version": "1.0"
 }

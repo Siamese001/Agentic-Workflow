@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "44c28765ee6fcf7b783c6acc5973a5d3d7abc08d69bae7140920a53741b4af60",
-    "scan_timestamp": "2025-12-03T07:26:03.678911"
+    "scan_timestamp": "2025-12-03T08:04:48.183662"
   },
   "content_preview": "# /windsurf_rules/03_dag_workflow_topology.md\n## DAG, Workflow, and Module Topology Rules (Condensed)\n\n### 1. DAG Orchestration (L3 Only)\n- DAG must be typed, acyclic, resumable.\n- All node transitions validate OutputSchema \u2192 InputSchema.\n- Only L3 may orchestrate; agents must not self-route.\n- Branching must be explicit and validated.\n\n### 2. Module & Folder Topology\n- /l1 = planning  \n- /l2 = tools  \n- /l3 = orchestration  \n- /l4 = state/memory  \n- /l5 = safety  \n- /prompts = templates & const...",
-  "creation_timestamp": "2025-12-03T07:26:11.891353",
+  "creation_timestamp": "2025-12-03T08:04:58.632844",
   "version": "1.0"
 }

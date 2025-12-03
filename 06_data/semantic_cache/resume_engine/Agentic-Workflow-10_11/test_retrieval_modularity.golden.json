@@ -1,6 +1,0 @@
-{
-  "golden_content": "from pathlib import Path\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef test_retrieval_directory_structure_exists() -> None:\n    \"\"\"Ensure META retrieval directory tree exists.\"\"\"\n    expected_dirs = [\n        PROJECT_ROOT / \"meta\",\n        PROJECT_ROOT / \"meta\" / \"retrieval\",\n        PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrievers\",\n    ]\n    for d in expected_dirs:\n        assert d.exists(), f\"Expected directory missing: {d}\"\n\n\ndef test_retriever_placeholders_present() -> None:\n    \"\"\"Ensure placeholder retriever modules exist for future implementation.\"\"\"\n    expected_files = [\n        PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrievers\" / \"bm25.py\",\n        PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrievers\" / \"dense.py\",\n    ]\n    for f in expected_files:\n        assert f.exists(), f\"Expected retriever module missing: {f}\"\n\n\ndef test_meta_ranking_and_hybrid_ranker_present() -> None:\n    \"\"\"Ensure META ranking + hybrid ranker modules exist and are wired.\"\"\"\n    ranking_f",
-  "full_hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
-  "generated_at": 1764728227.361966,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_retrieval_modularity.py"
-}

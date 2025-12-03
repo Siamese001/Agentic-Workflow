@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": true,
-  "has_system_calls": true,
-  "line_count": 1089,
-  "generated_at": 1764728328.1088367,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\core_v9_0.py"
-}

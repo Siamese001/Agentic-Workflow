@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: state_manager_LIC.py\n# Description: State Manager for HOP-based architecture - v13.0\n# Manages explicit state files for auditable, debuggable, resumable workflow\n\n__version__ = \"13.0\"\n\nimport json\nimport os\nimport hashlib\nfrom pathlib import Path\nfrom typing import Dict, List, Any, Optional\nfrom datetime import datetime\nimport shutil\n\n\nclass StateManager:\n    \"\"\"\n    v13.0: Explicit state management for HOP architecture\n    \n    Each HOP (single-responsibility agent) reads from and writes to the\n    state/ directory. This creates an auditable trail and enables:\n    - Debugging: Inspect state at any HOP\n    - Resumability: Re-run from any HOP\n    - Auditability: Complete record of workflow decisions\n    \"\"\"\n    \n    def __init__(\n        self,\n        mission_id: str,\n        state_directory: str = \"state\",\n        create_if_missing: bool = True\n    ):\n        \"\"\"\n        Initialize state manager for a mission\n        \n        Args:\n            mission_id: Unique mission identif",
-  "full_hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
-  "generated_at": 1764728331.4976192,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\state_manager_LIC.py"
-}

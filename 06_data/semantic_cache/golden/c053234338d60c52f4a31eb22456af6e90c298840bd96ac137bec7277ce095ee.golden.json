@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c053234338d60c52f4a31eb22456af6e90c298840bd96ac137bec7277ce095ee",
-    "scan_timestamp": "2025-12-03T07:26:03.708427"
+    "scan_timestamp": "2025-12-03T08:04:48.217968"
   },
   "content_preview": "\"\"\"v10.8 agent stack shims that delegate to the existing v10.7 agents.\"\"\"\n\nfrom .rag_execution_stack import RAGExecutionStack\nfrom .qa_validation_stack import QAValidationStack\nfrom .drafting_execution_stack import DraftingExecutionStack\nfrom .bullet_execution_stack import BulletExecutionStack\nfrom .prompt_builder_stack import PromptBuilderStack\nfrom .strategy_stack import StrategyStackV10_8\nfrom .safety_stack import SafetyStackV10_8\nfrom .hil_stack import HILStackV10_8\nfrom .state_adapter_stack...",
-  "creation_timestamp": "2025-12-03T07:26:15.001124",
+  "creation_timestamp": "2025-12-03T08:05:02.430489",
   "version": "1.0"
 }

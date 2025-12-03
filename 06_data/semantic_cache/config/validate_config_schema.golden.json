@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - validate_config_schema\nImplements L1 Cognitive Planning Layer for validate config schema operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ValidateConfigSchemaPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ValidateConfigSchemaPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ValidateConfigSchemaPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succe",
-  "full_hash": "4921d243c3a7c38f9d2961eb5f34b0c83d0fd4641e2e76ad2f8957bd45b2b169",
-  "generated_at": 1764728349.0473638,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\validate-phase\\check-config-structure\\policy\\check-safety\\validate_config_schema.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "874b9b7be0f4c55b943e6c3c076d99b18d95ca130b67ad97e7ad7cf94e1fe246",
-    "scan_timestamp": "2025-12-03T07:26:03.752422"
+    "scan_timestamp": "2025-12-03T08:04:48.258340"
   },
   "content_preview": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"case\", [\"fast\",\"e2e\",\"rag-heavy\",\"qa-heavy\"])\ndef test_latency_smoke(benchmark, case):\n    out = benchmark(lambda: run_workflow({\"compat_mode\": \"v10_7\", \"resume\": case, \"jd\":\"perf\"}))\n    assert out is not None\n",
-  "creation_timestamp": "2025-12-03T07:26:18.780432",
+  "creation_timestamp": "2025-12-03T08:05:05.964715",
   "version": "1.0"
 }

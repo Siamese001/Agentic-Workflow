@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v4.1 - COMPLETE QA GATE FIX + PENALTY ENFORCEMENT\n============================================================================\n\nUPGRADE FROM v4.0:\n\u2713 FIXED BUG-1: Gate 1 (Signal Health) \u2014 Now validates and rejects\n\u2713 FIXED BUG-2: Gate 4 (Production Readiness) \u2014 Implements all 5 checks\n\u2713 FIXED BUG-3: Gate 6 (Coherence) \u2014 Penalties now enforced\n\u2713 FIXED BUG-4: Temperature Mode Bonus \u2014 Applied to final signal\n\u2713 FIXED BUG-5: Unify/IBM Ratio Penalty \u2014 Applied to final signal\n\nCOMPLETE REWRITE WITH 8 OPTIMIZATIONS (+ 3 NEW QA FIXES):\n\u2713 OPT 1: Per-Section Tolerance Bands (replaces global \u00b150)\n\u2713 OPT 2: Signal-to-Word-Count Elasticity Curve (words drive signal up to cap)\n\u2713 OPT 3: Section-Priority Allocation Matrix (dynamic based on signal deficit)\n\u2713 OPT 4: Unify/IBM Ratio Soft Band (1.15\u20131.35 with penalty, hard fail <1.1 or >1.4)\n\u2713 OPT 5: Section-Length Coherence Score (CV <0.18 target, penalize outliers)\n\u2713 OPT 6: Temperature Mode Knob (Conservative/Balanced/Creative)\n",
-  "full_hash": "4f33fe6bb4ae663ce93e06d6fa0e77108bfc8b44c11b74bb47cd6a4bd043024d",
-  "generated_at": 1764728296.779295,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_3.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nExtract all actual intents, axes, and verb_groups from unified_structure_subatomic.yaml\n\"\"\"\n\nimport yaml\nfrom pathlib import Path\n\ndef extract_vocab_from_tree(tree, domains, layers, phases):\n    \"\"\"Extract all unique intents, axes, and verb_groups from the tree structure\"\"\"\n    \n    intents = set()\n    axes = set()\n    verb_groups = set()\n    \n    for domain_name, domain_content in tree.items():\n        if domain_name not in domains:\n            continue\n            \n        for layer_name, layer_content in domain_content.items():\n            if layer_name not in layers:\n                continue\n                \n            for phase_name, phase_content in layer_content.items():\n                if phase_name not in phases:\n                    continue\n                    \n                # Skip __init__.py files (they're leaves, not structural nodes)\n                if isinstance(phase_content, dict):\n                    for intent_name, intent_content in pha",
-  "full_hash": "59d3f92cd742aad93716a7f0b14d63a1b2c73a44c65b360bc2cc73fbe4c98b7b",
-  "generated_at": 1764728352.564296,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\validation_tools\\extract_vocab.py"
-}

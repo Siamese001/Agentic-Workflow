@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398",
-    "scan_timestamp": "2025-12-03T07:26:03.611022"
+    "scan_timestamp": "2025-12-03T08:04:48.118486"
   },
   "content_preview": "# Agentic Workflow 10_10 Reorganization Plan\n\n## Current Structure Issues\n\n- Agents scattered across `l2/`, `core/`, and `meta/`\n- Infrastructure mixed across `infra/`, `core/`, and `runtime/`\n- Prompts split between `prompts/` and various layer directories\n- Tools and utilities fragmented throughout the codebase\n- Layer-based organization (L1-L5) makes navigation difficult for developers\n\n## Target OpenAI-Style Structure\n\n```text\nAgentic-Workflow-10_10/\n\u251c\u2500\u2500 agents/                    # All agen...",
-  "creation_timestamp": "2025-12-03T07:26:08.828372",
+  "creation_timestamp": "2025-12-03T08:04:55.466658",
   "version": "1.0"
 }

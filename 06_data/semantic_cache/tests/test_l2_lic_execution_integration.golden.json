@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs\n\n\nclass _Inputs:\n    prompt = \"Hello\"\n    company_id = \"ACME\"\n    contact_id = \"C1\"\n\n\ndef test_safe_route_equivalence():\n    stack = OutreachStack(ReasoningToggles())\n    out = stack.run(StackInputs(prompt=\"Hello\", company_id=\"ACME\", contact_id=\"C1\"))\n    assert \"draft\" in out\n    assert out[\"verdict\"].passed\n",
-  "full_hash": "10c6c4333ba978c76470d0aebd4d5847994e3f04a2fcd912b3168919345577a0",
-  "generated_at": 1764728354.8548474,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\router-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\test_l2_lic_execution_integration.py"
-}

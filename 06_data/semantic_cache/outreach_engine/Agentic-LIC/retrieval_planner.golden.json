@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Retrieval planning utilities.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Sequence\n\n\n@dataclass\nclass RetrievalJob:\n    tool: str\n    query: str\n    scope: str = \"outreach\"\n    section: str = \"value_wedge\"\n\n\n@dataclass\nclass RetrievalPlan:\n    wants: Sequence[str]\n    context: Dict[str, str]\n    jobs: List[RetrievalJob] = field(default_factory=list)\n\n    def add(self, job: Dict[str, str] | RetrievalJob) -> None:\n        if isinstance(job, RetrievalJob):\n            self.jobs.append(job)\n        else:\n            self.jobs.append(RetrievalJob(**job))\n\n    def dedupe(self) -> None:\n        unique: Dict[tuple[str, str], RetrievalJob] = {}\n        for job in self.jobs:\n            key = (job.tool, job.query)\n            unique[key] = job\n        self.jobs = list(unique.values())\n\n    def budget(self, max_calls: int = 6) -> None:\n        self.jobs = self.jobs[: max(0, max_calls)]\n\n    def execute(self, registry, store) ->",
-  "full_hash": "0e0205964483d822347f1863e69e0722ff09e548b7c2216e393514d8e497ee6d",
-  "generated_at": 1764728330.621655,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\retrieval_planner.py"
-}

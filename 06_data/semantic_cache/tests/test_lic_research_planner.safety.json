@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 432,
-  "generated_at": 1764728353.743406,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\budget-manager-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\test_lic_research_planner.py"
-}

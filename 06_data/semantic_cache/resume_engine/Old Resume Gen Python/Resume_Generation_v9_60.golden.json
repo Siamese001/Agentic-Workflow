@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\n\nimport json\nimport re\nimport hashlib\nimport math\nimport logging\nimport os\nimport time\nimport requests\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nimport argparse\nimport sys\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\nimport copy\n\n__version__ = \"9.70\" # Corrected Markdown rendering for Output 1 (Headers, Spacing, Bullets, Section Order).\n# v9.70: Corrected Markdown rendering for Output 1 (Headers, Spacing, Bullets, Section Order).\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    print(\"Warning: google-generativeai package not installed. Web RAG disabled.\")\n\n# v5.90: Switched to scikit-learn for robust cosine similarity\ntry:\n    from sklearn.feature_extraction.text import TfidfVectorizer\n    from sklearn.metrics.pairwise import cosine_similarity\n    SKLEARN_AVAILABLE = True\nexcept I",
-  "full_hash": "65b277390d16681f7bde104bd236b4403bff031d69ed2c1d203e89aed22a0b8b",
-  "generated_at": 1764728322.2081306,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v9_60.py"
-}

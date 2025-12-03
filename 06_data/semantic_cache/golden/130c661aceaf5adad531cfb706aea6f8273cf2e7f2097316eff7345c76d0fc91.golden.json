@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91",
-    "scan_timestamp": "2025-12-03T07:26:03.598592"
+    "scan_timestamp": "2025-12-03T08:04:48.105616"
   },
   "content_preview": "\"\"\"\nChromaDB client provider for vector storage operations.\n\nIsolates ChromaDB SDK dependencies to the providers layer\nand provides a clean interface for vector store operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Optional, List, Dict, Any\n\ntry:\n    import chromadb  # type: ignore\nexcept ImportError as exc:\n    raise ImportError(\"chromadb package not installed. Install with: pip install chromadb\") from exc\n\n\nclass ChromaClient:\n    \"\"\"Pr...",
-  "creation_timestamp": "2025-12-03T07:26:08.629079",
+  "creation_timestamp": "2025-12-03T08:04:55.222290",
   "version": "1.0"
 }

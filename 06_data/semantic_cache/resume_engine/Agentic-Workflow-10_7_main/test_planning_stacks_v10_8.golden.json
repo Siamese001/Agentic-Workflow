@@ -1,6 +1,0 @@
-{
-  "golden_content": "import copy\n\nimport pytest\n\nfrom core_v10_7 import BulletPlan, DraftPlan, RAGPlan\nfrom stacks_v10_8 import BulletPlanningStack, DraftPlanningStack, RAGPlanningStack\n\n\n@pytest.fixture()\ndef planning_state() -> dict:\n    return {\n        \"metadata\": {\"workflow_id\": \"wf-plan\"},\n        \"job\": {\n            \"job_title\": \"Senior Data Scientist\",\n            \"company\": \"Acme Robotics\",\n            \"summary\": \"Build decision systems that power autonomous fulfillment\",\n            \"top_requirements\": [\"machine learning\", \"experimentation\", \"analytics\"],\n            \"team\": \"Intelligent Automation\",\n            \"location\": \"Remote\",\n        },\n        \"resume\": {\n            \"master_resume\": {\n                \"summary\": \"Led ML programs across logistics and marketplaces\",\n                \"professional_experience\": [\n                    {\n                        \"title\": \"Head of ML\",\n                        \"company\": \"OmniCommerce\",\n                        \"impact_summary\": \"Scaled experimenta",
-  "full_hash": "07a86cbf81b19c06185f92ec6b4df3eac6386df3a38938b779b89bdc421ad692",
-  "generated_at": 1764728231.5941744,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\stacks\\test_planning_stacks_v10_8.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nimport asyncio\nfrom typing import Any, Dict\n\nfrom orchestration.dag_engine import Graph, Node, Edge, DAGExecutor\n\n\nasync def _noop_node(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    ctx = dict(ctx)\n    ctx.setdefault(\"steps\", []).append(\"noop\")\n    return ctx\n\n\nasync def _set_value(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    ctx = dict(ctx)\n    ctx[\"value\"] = 42\n    return ctx\n\n\ndef test_graph_successors_and_predecessors():\n    nodes = {\n        \"a\": Node(id=\"a\", fn=_noop_node, metadata={}),\n        \"b\": Node(id=\"b\", fn=_set_value, metadata={}),\n    }\n    edges = [Edge(source=\"a\", target=\"b\")]\n    graph = Graph(nodes=nodes, edges=edges)\n\n    succ = [n.id for n in graph.successors(\"a\")]\n    preds = [n.id for n in graph.predecessors(\"b\")]\n\n    assert succ == [\"b\"]\n    assert preds == [\"a\"]\n\n\ndef test_dag_executor_linear_graph():\n    nodes = {\n        \"a\": Node(id=\"a\", fn=_noop_node, metadata={}),\n        \"b\": Node(id=\"b\", fn=_set_value, metadata={}),\n   ",
-  "full_hash": "e2520eb62c21585aad9c73ca99d7464c9b2d692129f36c4e04295ef1faf30a63",
-  "generated_at": 1764728226.53911,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\dag\\test_dag_models.py"
-}

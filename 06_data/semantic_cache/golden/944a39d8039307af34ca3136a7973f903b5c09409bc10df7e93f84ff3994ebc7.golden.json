@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "944a39d8039307af34ca3136a7973f903b5c09409bc10df7e93f84ff3994ebc7",
-    "scan_timestamp": "2025-12-03T07:26:03.677708"
+    "scan_timestamp": "2025-12-03T08:04:48.182449"
   },
   "content_preview": "[\n  {\n    \"sdk_name\": \"pydantic\",\n    \"install_status\": \"SUCCESS\",\n    \"test_results\": \"PASS\",\n    \"details\": \"Version check passed, schema validation working\",\n    \"error\": \"\",\n    \"follow_up\": \"\"\n  },\n  {\n    \"sdk_name\": \"numpy\",\n    \"install_status\": \"SUCCESS\",\n    \"test_results\": \"PASS\",\n    \"details\": \"Version: 2.3.5, operations working\",\n    \"error\": \"\",\n    \"follow_up\": \"\"\n  },\n  {\n    \"sdk_name\": \"pandas\",\n    \"install_status\": \"SUCCESS\",\n    \"test_results\": \"PASS\",\n    \"details\": \"Versi...",
-  "creation_timestamp": "2025-12-03T07:26:11.838827",
+  "creation_timestamp": "2025-12-03T08:04:58.556518",
   "version": "1.0"
 }

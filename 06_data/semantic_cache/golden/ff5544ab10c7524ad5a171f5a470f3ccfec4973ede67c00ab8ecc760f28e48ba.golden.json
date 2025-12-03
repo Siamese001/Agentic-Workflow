@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ff5544ab10c7524ad5a171f5a470f3ccfec4973ede67c00ab8ecc760f28e48ba",
-    "scan_timestamp": "2025-12-03T07:26:03.794783"
+    "scan_timestamp": "2025-12-03T08:04:48.300731"
   },
   "content_preview": "\"\"\"Compatibility shim that exposes the vendored stub as \"pydantic\".\"\"\"\nfrom pydantic_stub import *  # noqa: F401,F403\n",
-  "creation_timestamp": "2025-12-03T07:26:20.609591",
+  "creation_timestamp": "2025-12-03T08:05:07.809005",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nEnd-to-End Tests - Full Agent Workflows\n\nTests complete agentic workflows from mission to final answer with all layers working together.\nAll external systems are mocked to ensure deterministic, repeatable tests.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import patch\n\n# Mark all tests in this module as end-to-end tests\npytestmark = [pytest.mark.e2e, pytest.mark.integration]\n\n\nclass TestResumeJobMatchingWorkflow:\n    \"\"\"Test complete resume-to-job matching workflow across all L1-L5 layers.\"\"\"\n    \n    @patch('l2.execution.execute_workflow_plans')\n    @patch('l4.triplet_store.TripletStore')\n    @patch('l5.policy.SafetyPolicy')\n    async def test_complete_resume_analysis_workflow(self, mock_safety, mock_triplet_store, mock_execution):\n        \"\"\"Test complete workflow: Resume analysis for job matching.\"\"\"\n        \n        # Mock L1 Planning output\n        mock_plan = {\n            \"plan_id\": \"resume_analysis_plan_001\",\n            \"mission\": \"Analyze resume against job requirements\",\n     ",
-  "full_hash": "e17814cad0522af053fc56d358154ff8fa10fc0d5706e650a444237a4ecce738",
-  "generated_at": 1764728226.5676231,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\full_agent_workflows\\test_resume_job_matching.py"
-}

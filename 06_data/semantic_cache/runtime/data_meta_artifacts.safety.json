@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 55,
-  "generated_at": 1764728346.8347979,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\executor-microagent-layer\\act-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\ltstar_data_json\\data_meta_artifacts.json"
-}

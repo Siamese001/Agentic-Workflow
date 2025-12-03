@@ -1,6 +1,0 @@
-{
-  "golden_content": "import importlib\n\n\ndef test_rag_package_exports_expected_symbols():\n    module = importlib.import_module(\"src.lic_agentic.rag\")\n    for symbol in [\n        \"ContentStore\",\n        \"EvidenceRegistry\",\n        \"RetrievalPlan\",\n        \"ToolRegistry\",\n        \"ToolResult\",\n    ]:\n        assert hasattr(module, symbol)\n",
-  "full_hash": "4d164705dee775c2dcd7acf5f843c65aaf4908173cb34ec70cccc22d0c95f620",
-  "generated_at": 1764728331.189636,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_rag_init.py"
-}

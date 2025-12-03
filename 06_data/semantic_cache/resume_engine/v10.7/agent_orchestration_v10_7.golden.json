@@ -1,6 +1,0 @@
-{
-  "golden_content": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: agent_orchestration_v10_7.py\n# Version: 10.7 (Refactored - CORRECTED)\n#\n# v10.7 REFACTOR (CORRECTION):\n# - RE-ADDED: Restored the `StrategyPlan.model_validate(...)` calls\n#   inside nodes. Removing them was an error and broke the agent\n#   contracts, which expect Pydantic objects, not dicts.\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #5): Graph now runs run_prompt_engineering and\n#   run_rag_stack in parallel using a fork/join pattern.\n# - IMPLEMENTED (Fix #7): Added load_dynamic_tools() to dynamically load\n#   tools from the generated_tools_v10_7 directory at runtime.\n#   Conductors now call this to update their tool lists.\n# - IMPLEMENTED (Fix #8): QAConductor now loads UI tools (stubs).\n# - IMP",
-  "full_hash": "e7b3d032ca18fe23773aace6301736fb49a255d19eae4d4adf4953cef12893a6",
-  "generated_at": 1764728329.2135503,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\agent_orchestration_v10_7.py"
-}

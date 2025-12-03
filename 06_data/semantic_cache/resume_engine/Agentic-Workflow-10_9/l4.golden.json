@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: l4.py\n\"\"\"\nUnified L4 State Layer (v10_9) \u2014 PURE STATE / MEMORY MANAGEMENT (RESTORED)\n\nThis module implements ALL state-related responsibilities for the v10_9\nagentic architecture, with strict L1\u2013L5 separation:\n\n    \u2022 Context-budget-aware memory management.\n    \u2022 World-model normalization (facts, origins, categories).\n    \u2022 State validation helpers (type + structural checks).\n    \u2022 State views (conversational, retrieval, prompt-context).\n    \u2022 Unified StateAdapter:\n        - apply patches (StatePatch)\n        - reconcile memory via MemoryManager\n        - maintain phase metadata (for observability only)\n        - attach validation metadata\n        - persist episodic events and checkpoints\n        - provide explicit state mutators (add_message, add_rag_item, etc.)\n        - record correction events (CORRECTION_JOURNAL behavior)\n\nL4 DOES NOT:\n\n    \u2022 Perform planning (L1).\n    \u2022 Call tools or LLMs (L2).\n    \u2022 Orchestrate DAGs or control flow (L3).\n    \u2022 Evaluate safety/policy rules",
-  "full_hash": "646c18f9b716dc6af0d1fda5feecdf69bd5a3c7f0584e29e8ff233a4d7fc2d83",
-  "generated_at": 1764728228.6228118,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l4.py"
-}

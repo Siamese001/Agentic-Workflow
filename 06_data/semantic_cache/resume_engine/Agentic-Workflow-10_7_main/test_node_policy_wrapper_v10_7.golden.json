@@ -1,6 +1,0 @@
-{
-  "golden_content": "import asyncio\nfrom types import SimpleNamespace\n\nimport pytest\n\nimport agent_orchestration_v10_7 as orchestration\nfrom agent_orchestration_v10_7 import add_node_with_policies\nfrom core_v10_7 import WorkflowTimeoutError\nfrom core_v10_7.models import NodeStatus\nfrom agent_orchestration_v10_7 import node_success\nfrom langgraph.graph import StateGraph, END\n\n\nclass DummyWorkflow:\n    def __init__(self) -> None:\n        self.nodes = {}\n        self.added = []\n\n    def add_node(self, name, func):\n        self.nodes[name] = func\n        self.added.append(name)\n\n\ndef make_context(*, wrap_mcp_nodes: bool = True, timeout: float = 0.05):\n    performance_config = SimpleNamespace(workflow_node_timeout_seconds=timeout)\n    config = SimpleNamespace(performance_config=performance_config)\n    return SimpleNamespace(config=config, wrap_mcp_nodes=wrap_mcp_nodes)\n\n\n@pytest.mark.asyncio\nasync def test_wrapper_applies_timeout(monkeypatch):\n    workflow = DummyWorkflow()\n    workflow_context = make_context(w",
-  "full_hash": "7ed165ac69eaabc91265376c76b7c9e160ca5398caecf26f7862606df95afe52",
-  "generated_at": 1764728230.415122,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\architecture\\test_node_policy_wrapper_v10_7.py"
-}

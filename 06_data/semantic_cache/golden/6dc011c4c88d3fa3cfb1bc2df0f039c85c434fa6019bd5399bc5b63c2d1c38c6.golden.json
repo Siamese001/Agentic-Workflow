@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
-    "scan_timestamp": "2025-12-03T07:26:03.545030"
+    "scan_timestamp": "2025-12-03T08:04:48.056790"
   },
   "content_preview": "\"\"\"\nRules engine for r\u00e9sum\u00e9 processing safety policy enforcement.\n\nProvides deterministic rule evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nimport re\nfrom typing import List\n\nfrom .decisions import RuleMatch, RulesEngineResult, aggregate_severity\nfrom .models import PolicyRule, SafetyContext\n\n\n_PII_REGEXES = [\n    # Email addresses\n    re.compile(r\"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\", re.IGNORECASE),\n    # Simple phone number patterns (international and local)\n    ...",
-  "creation_timestamp": "2025-12-03T07:26:05.112937",
+  "creation_timestamp": "2025-12-03T08:04:50.033131",
   "version": "1.0"
 }

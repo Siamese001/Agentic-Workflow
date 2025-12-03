@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
-    "scan_timestamp": "2025-12-03T07:26:03.539177"
+    "scan_timestamp": "2025-12-03T08:04:48.049410"
   },
   "content_preview": "from __future__ import annotations\n\n\"\"\"AIS health metrics helpers.\n\nSimple aggregation utilities over error / success events that can be\nused by tests or higher-level evaluation code.\n\"\"\"\n\nfrom typing import Dict, List, Any\n\n\ndef compute_error_rate(events: List[Dict[str, Any]]) -> float:\n    \"\"\"Return fraction of events marked as errors.\n\n    Events are dicts with an optional \"event_type\" == \"error\" flag.\n    \"\"\"\n\n    if not events:\n        return 0.0\n\n    errors = sum(1 for evt in events if evt...",
-  "creation_timestamp": "2025-12-03T07:26:04.992367",
+  "creation_timestamp": "2025-12-03T08:04:49.866895",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "a3a565bbda1ae79d33b85c4892addd99054d89fe3b41c5915d79870f4ed0d28d",
-    "scan_timestamp": "2025-12-03T07:26:03.939166"
+    "scan_timestamp": "2025-12-03T08:04:48.446659"
   },
   "content_preview": "Version: LIC v3.4 (Functional-Parity Overwrite of v3.3; Prompt Shell v1.4\u2013compliant)\n\n## ROLE\n\nGovernance toggles:\n* METRICS_OVERLAY -> enforce overlay and BLOCK JSON on breach.\n* APP_TRACKER_MODE -> enforce App Tracker Hardened QA Spec R1\u2013R23.\n* SHOW_REASONING (default false) -> expose CoT and ToT in OUTPUT when true.\n* TRACE_TRANSFORMER (default false) -> add labeled transformer-phase notes when true.\n\nAllowed tools: web.run, program-aided reasoning, calculators, simple transforms.\nProhibited:...",
-  "creation_timestamp": "2025-12-03T07:26:36.134611",
+  "creation_timestamp": "2025-12-03T08:05:22.487090",
   "version": "1.0"
 }

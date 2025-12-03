@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.42 - MASTER RESUME DATA SYNC\n\nv5.42 CHANGES - EMBEDDED MASTER RESUME UPDATE:\n\u2713 UPDATED: Embedded MASTER_RESUME_JSON with actual Master_Resume_V2.15.json data\n\u2713 FIXED: Contact information (correct email, phone, linkedin)\n\u2713 FIXED: Education (MS Biostatistics Columbia, BA Biology Brown)\n\u2713 FIXED: Certifications (AWS ML Engineer, Databricks, Fellow of Society of Actuaries)\n\u2713 FIXED: Professional experience (accurate titles, dates, locations, bullets)\n\u2713 FIXED: Strategic and technical competencies (actual competency text)\n\u2713 Result: Embedded resume now matches external Master_Resume_V2.15.json\n\nv5.41 CHANGES - MULTI-LLM INTEGRATION:\n\u2713 NEW: Support for both Claude and Gemini APIs\n\u2713 NEW: LLM_PROVIDER configuration variable\n\u2713 NEW: _call_gemini_api() method\n\u2713 All v5.40 functionality maintained\n\nv5.40 CHANGES - CRITICAL ARCHITECTURE FIX:\n\u2713 FIXED: \"Only resume should be master resume\" principle enforced\n  - REMOVED: load_master_resume() function and file loading\n  - RE",
-  "full_hash": "8a5aac876b83a6bf7c3a0aed37a8aee80564994677d55b5c8bfbf87ce4c17961",
-  "generated_at": 1764728304.1274135,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_42.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4a0f7aca97e4a5e57210853ec21de20bc71f4d8c2c6a22ddcf857ce677b335c5",
-    "scan_timestamp": "2025-12-03T07:26:03.615119"
+    "scan_timestamp": "2025-12-03T08:04:48.123109"
   },
   "content_preview": "from __future__ import annotations\n\n# In this codebase, event dataclasses live in models.py. This module exists\n# primarily as a semantic home for event types at the observability layer.\n\nfrom core.models.models import (\n    TelemetryEvent,\n    RetrievalAttemptEvent,\n    RetrievalSuccessEvent,\n    RetrievalFailureEvent,\n    RankingEvent,\n    CostSnapshot,\n)\n\n__all__ = [\n    \"TelemetryEvent\",\n    \"RetrievalAttemptEvent\",\n    \"RetrievalSuccessEvent\",\n    \"RetrievalFailureEvent\",\n    \"RankingEvent\"...",
-  "creation_timestamp": "2025-12-03T07:26:08.931113",
+  "creation_timestamp": "2025-12-03T08:04:55.575315",
   "version": "1.0"
 }

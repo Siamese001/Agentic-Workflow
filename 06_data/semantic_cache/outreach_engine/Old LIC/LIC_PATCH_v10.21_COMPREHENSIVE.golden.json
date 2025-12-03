@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"metadata\": {\n    \"patch_series\": \"v10.21\",\n    \"base_version\": \"v10.20\",\n    \"target_version\": \"v10.21\",\n    \"release_date\": \"2025-10-15\",\n    \"patch_count\": 3,\n    \"severity\": \"ARCHITECTURAL_REFACTORING\",\n    \"breaking_changes\": false,\n    \"rollback_compatible\": true,\n    \"description\": \"Architectural refactoring to centralize message length constraints, consolidate routes, and migrate archetype configurations to reference global constraints. Zero functional changes to output.\",\n    \"total_changes\": {\n      \"new_sections\": 1,\n      \"modified_sections\": 4,\n      \"removed_routes\": 2,\n      \"centralized_constraints\": 18,\n      \"api_functions_added\": 3\n    }\n  },\n\n  \"patches\": [\n    {\n      \"patch_id\": \"PATCH-v10.21-001\",\n      \"title\": \"Centralized Global Message Constraints\",\n      \"severity\": \"CRITICAL_REFACTORING\",\n      \"category\": \"ARCHITECTURAL\",\n      \"description\": \"Create single source of truth for all message length constraints in new section 2.5.global_message_constraints",
-  "full_hash": "ebe13ceb623d40d8b4169ae05080ea9f113f811c85715e235072117848abcb3f",
-  "generated_at": 1764728339.606358,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_PATCH_v10.21_COMPREHENSIVE.json"
-}

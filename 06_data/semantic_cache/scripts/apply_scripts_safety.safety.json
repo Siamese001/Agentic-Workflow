@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": true,
-  "line_count": 307,
-  "generated_at": 1764728352.4282298,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\apply_scripts_safety.py"
-}

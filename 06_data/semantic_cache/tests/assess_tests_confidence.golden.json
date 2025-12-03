@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - assess_tests_confidence\nImplements L1 Cognitive Planning Layer for assess tests confidence operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass AssessTestsConfidencePlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass AssessTestsConfidencePlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass AssessTestsConfidencePlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    ",
-  "full_hash": "cbca64baa2bf78a4316f3f44968cb42984d4331959d27adf4369669b5afa4bd9",
-  "generated_at": 1764728354.666283,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\validate-phase\\check-tests-structure\\semantic\\adjust-scores\\assess_tests_confidence.py"
-}

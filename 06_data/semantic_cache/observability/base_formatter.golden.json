@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Base schema classes\nfrom pydantic import BaseModel\nfrom typing import Dict, Any, Optional\n\nclass BaseSchema(BaseModel):\n    \"\"\"Base schema for all components\"\"\"\n    name: str\n    version: str = \"1.0.0\"\n    metadata: Optional[Dict[str, Any]] = None\n",
-  "full_hash": "889ee8163a8a59f3033bcd15da9a68196cea6f9c24b9cc3810d979c34767761c",
-  "generated_at": 1764728351.3121977,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\planner-microagent-layer\\refine-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\base_formatter.py"
-}

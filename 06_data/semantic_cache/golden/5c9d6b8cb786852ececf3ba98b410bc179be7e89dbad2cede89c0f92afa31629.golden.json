@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-    "scan_timestamp": "2025-12-03T07:26:03.612172"
+    "scan_timestamp": "2025-12-03T08:04:48.120154"
   },
   "content_preview": "# PHASE A: DISCOVERY & MAPPING RESULTS\n\n## Agent Architecture Map\n\n### L1 (Planning/Cognition) - PURE REASONING\n**Current State**: \u2705 Well-separated\n- `l1/strategy_planning.py`: StrategyPlan, DraftPlan, LatentThinkingPlan\n- `l1/rag_planning.py`: RAGReasoningPlan, HydePlan\n- `l1/qa_planning.py`: SemanticQAPlan, CouncilPlan\n- `l1/safety_planning.py`: SafetyPlan\n- `l1/vector_search_planning.py`: VectorSearchPlan\n- `l1/workflow_planning.py`: WorkflowPlanBundle orchestration\n\n**Issues Found**:\n- \u274c No ...",
-  "creation_timestamp": "2025-12-03T07:26:08.848347",
+  "creation_timestamp": "2025-12-03T08:04:55.489885",
   "version": "1.0"
 }

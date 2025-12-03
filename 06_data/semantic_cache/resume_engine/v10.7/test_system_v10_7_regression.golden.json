@@ -1,6 +1,0 @@
-{
-  "golden_content": "<<<<<<< HEAD\n\"\"\"Focused regression tests for the v10.7 core components.\n=======\n<<<<<<< HEAD\n\"\"\"Focused regression tests for the v10.7 core components.\n=======\n<<<<<<< HEAD\n<<<<<<<< HEAD:tests/regression/test_system_v10_7_regression.py\n\"\"\"Focused regression tests for the v10.7 core components.\n========\n# ruff: noqa\n\"\"\"Focused regression tests for the v10.6 core components.\n>>>>>>>> main:test_system_v10_6.py\n=======\n\"\"\"Focused regression tests for the v10.7 core components.\n>>>>>>> main\n>>>>>>> main\n>>>>>>> main\n\nThe original suite attempted to exercise the entire orchestration graph\nwhich made the tests brittle and slow.  These replacements target the parts\nof the system that provide configuration, resiliency and caching guarantees,\ncovering the behaviours that downstream components rely on.\n\"\"\"\n\nimport asyncio\nimport json\nimport time\nfrom typing import Any, Dict, List\nfrom unittest.mock import ANY, AsyncMock, MagicMock, patch\n\nimport pytest\n\nfrom core_v10_7 import (\n    BaseAgent,\n   ",
-  "full_hash": "d26bbe61159f4eae1221752dc0013318bf5a305a4ea84355b784c670e7a331c9",
-  "generated_at": 1764728329.907738,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_system_v10_7_regression.py"
-}

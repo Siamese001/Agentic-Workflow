@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: retrieval_clients.py\n# Description: Centralized retrieval client for all Google Search API calls\n\n__version__ = \"12.0\"\n\nimport os\nfrom googleapiclient.discovery import build\nfrom utils_LIC import CircuitBreaker, CircuitBreakerOpenError\n\nclass GoogleSearchClient:\n    \"\"\"\n    Centralized client for all Google Custom Search API calls with circuit breaker protection\n    \"\"\"\n    \n    def __init__(self, circuit_breaker: CircuitBreaker):\n        self.api_key = os.environ.get(\"GOOGLE_API_KEY\")\n        self.cse_id = os.environ.get(\"GOOGLE_CSE_ID\")\n        if not (self.api_key and self.cse_id):\n            raise ValueError(\"GOOGLE_API_KEY or GOOGLE_CSE_ID not found in environment\")\n        self.service = build(\"customsearch\", \"v1\", developerKey=self.api_key)\n        self.circuit_breaker = circuit_breaker\n\n    def _execute_search_call(self, query: str, num_results: int = 5) -> list:\n        \"\"\"Execute the actual search API call\"\"\"\n        res = self.service.cse().list(q=query, cx=self.cse",
-  "full_hash": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927",
-  "generated_at": 1764728331.4599817,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\retrieval_clients.py"
-}

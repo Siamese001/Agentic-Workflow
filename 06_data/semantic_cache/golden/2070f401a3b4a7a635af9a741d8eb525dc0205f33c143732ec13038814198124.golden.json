@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124",
-    "scan_timestamp": "2025-12-03T07:26:03.732904"
+    "scan_timestamp": "2025-12-03T08:04:48.243321"
   },
   "content_preview": "\"\"\"Deterministic Level-1 plan for bullet generation.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import BaseAgent, BulletPlan\n\nfrom .planning_utils import (\n    collect_sections,\n    describe_experience,\n    detect_metrics,\n    extract_job_profile,\n    extract_resume_profile,\n)\n\n\nclass BulletPlanningStack(BaseAgent):\n    \"\"\"Outlines which bullets to generate before invoking execution stacks.\"\"\"\n\n    def __init__(self, context: Any, debug_...",
-  "creation_timestamp": "2025-12-03T07:26:17.833984",
+  "creation_timestamp": "2025-12-03T08:05:04.893952",
   "version": "1.0"
 }

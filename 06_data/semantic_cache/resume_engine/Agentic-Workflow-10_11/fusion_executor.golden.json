@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nExecutes resume analysis steps for job matching and enhancement.\n\nImproves resume targeting by processing career data and job requirements\nto identify optimal job alignment opportunities.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\nfrom datetime import datetime, UTC\nimport logging\n\nfrom l1.kg_rag_fusion_planning import (\n    RetrievalStepType,\n    FusionPlanStep,\n    KGRAGFusionPlan,\n    RAGRetrievalStep,\n)\nfrom l4.temporal_schemas import (\n    TemporalTriplet,\n    TemporalRange,\n)\nfrom l4.temporal_kg import TemporalKG, TemporalQuery\n\n\nlogger = logging.getLogger(__name__)\n\n\n@dataclass\nclass FusionStepResult:\n    \"\"\"\n    Contains results from resume analysis processing steps.\n\n    Tracks success and data for resume enhancement and job alignment.\n    \"\"\"\n    \n    step_number: int\n    step_type: RetrievalStepType\n    success: bool\n    data: Any = None\n    error: Optional[str] = None\n    execution_time_m",
-  "full_hash": "741af180908ac64fb1964705420712402c32c5d8e2cb2493e5b8fab6fd8068e9",
-  "generated_at": 1764728224.9748385,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\fusion_executor.py"
-}

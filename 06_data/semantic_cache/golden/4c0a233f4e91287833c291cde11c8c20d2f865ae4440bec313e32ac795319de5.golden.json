@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4c0a233f4e91287833c291cde11c8c20d2f865ae4440bec313e32ac795319de5",
-    "scan_timestamp": "2025-12-03T07:26:03.566174"
+    "scan_timestamp": "2025-12-03T08:04:48.076105"
   },
   "content_preview": "\"\"\"\nVector search planning for resume evidence retrieval and semantic matching.\n\nCreates structured plans to support comprehensive resume improvement\nthrough semantic search and job alignment.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Dict, Any, Optional\n\n\n@dataclass\nclass VectorSearchPlan:\n    \"\"\"\n    Defines vector search structure for resume evidence gathering.\n\n    Ensures systematic retrieval of relevant data for comprehensive\n    resume enhancement and job alignment.\n    \"\"\"...",
-  "creation_timestamp": "2025-12-03T07:26:06.099941",
+  "creation_timestamp": "2025-12-03T08:04:51.499115",
   "version": "1.0"
 }

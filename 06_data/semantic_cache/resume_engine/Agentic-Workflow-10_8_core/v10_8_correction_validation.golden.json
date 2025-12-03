@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nV10.8 Consolidated Module: Correction Validation\nMerged from 4 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom enum import Enum\nfrom self_correction import SelfCorrectionSurface, should_retry\nfrom typing import Any, Dict\nfrom typing import Dict, Any\n\n\n# ============================================================\n# From v10_8_self_correction.py\n# ============================================================\n\nclass SelfCorrectionSurface(str, Enum):\n    RAG_RETRY = \"rag_retry\"\n    DRAFT_RETRY = \"draft_retry\"\n    QA_RECHECK = \"qa_recheck\"\n    STRATEGY_REPLAN = \"strategy_replan\"\n\n\ndef all_surfaces() -> Dict[str, str]:\n    return {s.name: s.value for s in SelfCorrectionSurface}\n\n\ndef should_retry(surface: SelfCorrectionSurface, state: Dict[str, Any], last_result: Dict[str, Any]) -> bool:\n    \"\"\"\n    Deterministic stub to indicate whether a local retry is warranted.\n\n    For v10.8, logic must be simple:\n      - If surface is QA_RECHECK and last_result cont",
-  "full_hash": "c39bc6090ee54a7f0d10775c6b205c11b9eed6d5f9814cc75fe21470b5976723",
-  "generated_at": 1764728228.8693092,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_correction_validation.py"
-}

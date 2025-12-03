@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Integration tests for the async conductor.\"\"\"\nfrom __future__ import annotations\n\nfrom src.lic_agentic.orchestration import Conductor\n\n\ndef test_conductor_preserves_order_under_concurrency():\n    conductor = Conductor(concurrency=2, seed=11)\n    factories = [\n        conductor.wrap_tool_call(i, lambda value=value, index=i: (value * 2, 25 + index * 5))\n        for i, value in enumerate((2, 3, 5))\n    ]\n    results = conductor.run(factories)\n    assert results == [(0, 4), (1, 6), (2, 10)]\n\n\ndef test_conductor_artifact_ids_are_deterministic():\n    conductor = Conductor(seed=5)\n    first = conductor.make_artifact_id(\"outreach\", \"ACME\")\n    second = conductor.make_artifact_id(\"outreach\", \"ACME\")\n    conductor.reset()\n    replay = conductor.make_artifact_id(\"outreach\", \"ACME\")\n    assert first != second\n    assert first == replay\n",
-  "full_hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
-  "generated_at": 1764728330.9796987,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_async_idempotence.py"
-}

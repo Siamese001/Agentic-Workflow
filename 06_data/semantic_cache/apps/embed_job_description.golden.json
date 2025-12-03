@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - embed_job_description\nImplements L1 Cognitive Planning Layer for embed job description operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EmbedJobDescriptionPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass EmbedJobDescriptionPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EmbedJobDescriptionPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: b",
-  "full_hash": "5c366016535fe3b09a557a9b5a3d2c0590d9b09e729667f1e057ea8bb41a718b",
-  "generated_at": 1764728353.2424104,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\expand-phase\\vectorize-resume\\embedding\\compare-meaning\\embed_job_description.py"
-}

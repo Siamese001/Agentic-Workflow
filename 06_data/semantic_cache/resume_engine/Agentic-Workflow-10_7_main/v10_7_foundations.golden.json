@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: v10_7_foundations.py\n# CONSOLIDATED: Core Infrastructure (Exceptions, Models, Config, MCP, Services, Context)\n# STATUS: Production Ready (v10.7 Baseline)\n\nimport asyncio\nimport copy\nimport hashlib\nimport importlib\nimport json\nimport logging\nimport math\nimport os\nimport random\nimport re\nimport time\nimport uuid\nfrom abc import ABC, abstractmethod\nfrom collections import Counter, defaultdict\nfrom dataclasses import asdict, dataclass, field, is_dataclass\nfrom datetime import datetime\nfrom functools import wraps\nfrom pathlib import Path\nfrom typing import (\n    TYPE_CHECKING,\n    Any,\n    Awaitable,\n    Callable,\n    Dict,\n    Iterable,\n    List,\n    Mapping,\n    MutableMapping,\n    Optional,\n    Sequence,\n    Tuple,\n    Type,\n    Union,\n)\n\n# External Dependencies (must be installed via requirements.txt)\ntry:\n    from pydantic import BaseModel, ConfigDict, Field, ValidationError as PydanticValidationError\n    import chromadb\n    from chromadb.utils import embedding_functions\n    imp",
-  "full_hash": "f5779804055eb8e71ab28adf5dd245c336b2cb0419785b7cacd615c6d0d4a8fe",
-  "generated_at": 1764728229.0406575,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_foundations.py"
-}

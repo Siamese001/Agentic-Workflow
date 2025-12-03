@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - match_scripts_context\nImplements L1 Cognitive Planning Layer for match scripts context operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass MatchScriptsContextMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass MatchScriptsContextMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass MatchScriptsContextMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succ",
-  "full_hash": "16b9654e52b62e17444ca7f5e4d2a65dd82bc1c086d8a9feabfe02c1902e6b51",
-  "generated_at": 1764728351.7708137,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\embedding\\compare-meaning\\match_scripts_context.py"
-}

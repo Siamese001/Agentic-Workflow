@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: intelligence_service_LIC.py\n# Description: Persistent Intelligence Service (\"The Librarian\") - v13.0\n# Runs offline/async to pre-compute deep research and store in vector database\n\n__version__ = \"13.0\"\n\nimport asyncio\nimport json\nimport os\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Any, Optional, Tuple\nfrom pathlib import Path\n\n# PDF parsing\ntry:\n    import fitz  # PyMuPDF\n    PDF_SUPPORT = True\nexcept ImportError:\n    PDF_SUPPORT = False\n    print(\"WARNING: PyMuPDF not installed. PDF support disabled.\")\n\n# Embedding and vector store\nimport google.generativeai as genai\n\nfrom models_LIC import RAGResult\nfrom retrieval_clients import GoogleSearchClient\nfrom llm_clients import GeminiLLMClient\nfrom utils_LIC import CircuitBreaker\nfrom memory_LIC import VectorMemoryStore\n\n\nclass IntelligenceLibrarian:\n    \"\"\"\n    v13.0: Offline research agent that pre-computes intelligence\n    \n    The Librarian runs asynchronously (e.g., nightly via cron) to:\n    1. Res",
-  "full_hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-  "generated_at": 1764728331.3745296,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\intelligence_service_LIC.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "6f9e6c32d832278febdf1c4b6517a63dd79b32066fd008395ffce017e9863777",
-    "scan_timestamp": "2025-12-03T07:26:03.676134"
+    "scan_timestamp": "2025-12-03T08:04:48.180888"
   },
   "content_preview": "\"\"\"Runtime Utilities - Infrastructure Layer\n\nThis module provides core runtime infrastructure.\n\nLayer: Runtime/Infrastructure\nResponsibilities:\n- Exception hierarchy\n- SandboxConfig and isolation\n- PredictiveCacheManager\n- invoke_model() LLM gateway\n- Provider routing\n\nNon-responsibilities:\n- Planning (L1)\n- Tool execution logic (L2)\n- DAG/orchestration (L3)\n- State mutation (L4)\n- Safety/policy (L5)\n\"\"\"\n\n# FILE: runtime_utils.py\n\nfrom __future__ import annotations\n\nimport asyncio\nimport hashlib...",
-  "creation_timestamp": "2025-12-03T07:26:11.519083",
+  "creation_timestamp": "2025-12-03T08:04:58.286583",
   "version": "1.0"
 }

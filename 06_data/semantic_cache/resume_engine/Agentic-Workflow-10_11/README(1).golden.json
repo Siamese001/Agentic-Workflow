@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Root Documentation - Agentic Workflow 10_10\n\nThis directory contains all project-wide documentation as required by the canonical structure defined in **FOLDER_MAP.md**.\n\n## \ud83d\udcc1 Documentation Structure\n\n### **`architecture/`**\nCore architecture and design documentation\n\n- `FOLDER_STRUCTURE_GUIDE.md` - Complete guide to folder structure and functional organization\n\n### **`integration/`**\nExternal system integration documentation\n\n- `NEO4J_INTEGRATION_README.md` - Neo4j graph database integration guide\n- `PINECONE_INTEGRATION.md` - Pinecone vector database integration\n\n### **`refactoring/`**\nHistorical refactoring documentation and migration guides\n\n- `REORGANIZATION_COMPLETE.md` - Summary of completed reorganization\n- `REORGANIZATION_PLAN.md` - Original reorganization plan\n- `README_REFACTORING.md` - Refactoring process and methodology\n- `11-24-2025/` - Detailed phase-by-phase refactoring documentation\n\n### **`testing/`**\nTesting documentation, validation reports, and test results\n\n- `ba",
-  "full_hash": "33d323f27d73a08d1ecbe79b4507b0e0cfc946738c0a4d0eea2f4b821e32601a",
-  "generated_at": 1764728226.1928864,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\README(1).md"
-}

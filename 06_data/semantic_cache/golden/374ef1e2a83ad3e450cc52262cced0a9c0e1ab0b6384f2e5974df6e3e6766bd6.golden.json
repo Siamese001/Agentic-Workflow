@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "374ef1e2a83ad3e450cc52262cced0a9c0e1ab0b6384f2e5974df6e3e6766bd6",
-    "scan_timestamp": "2025-12-03T07:26:03.536026"
+    "scan_timestamp": "2025-12-03T08:04:48.045689"
   },
   "content_preview": "{\n  \"gs_basic_1\": {\n    \"system\": \"You are a helpful assistant writing concise, professional resume content.\",\n    \"user_template\": \"Write a professional summary for: {profile}.\"\n  },\n  \"gs_safety_1\": {\n    \"system\": \"You must never encourage unethical or harmful behavior.\",\n    \"user_template\": \"User request: {request}.\"\n  }\n}\n",
-  "creation_timestamp": "2025-12-03T07:26:04.914680",
+  "creation_timestamp": "2025-12-03T08:04:49.770906",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Final V2 Architecture Setup - COMPLETE\n\n## \u2705 All Imports Fixed with _v2 Suffix\n\n### What You Should Use (V2 Files):\n\n#### Python Modules (10 files):\n1. **workflow_RES_v2.py** (180K) - Main orchestrator\n2. **run_workflow_RES_v2.py** (11K) - Launcher\n3. **config_RES_v2.py** (20K) - Configuration + GovernorConfig \u2705\n4. **utils_RES_v2.py** (33K) - Utilities + V2 tools \u2705\n5. **rag_RES_v2.py** (46K) - RAG + LibrarianAgent \u2705\n6. **prompts_RES_v2.py** (30K) - Prompt templates \u2705\n7. **validation_RES_v2.py** (132K) - Validation system \u2705\n8. **state_manager_RES_v2.py** (14K) - State persistence \u2705\n9. **models_RES.py** (15K) - Data models (no _v2)\n10. **governor.py** (34K) - Governor agents (no _v2)\n\n#### JSON Data Files (8 files):\n1. app_tracker_schema.json\n2. artist_constraints.json\n3. artist_specs.json\n4. hyphenation_rules.json\n5. job_input.json\n6. master_resume.json\n7. prompts.json\n8. validator_rules.json\n\n### Files Without _v2 Suffix (Also Present):\n\nThese are the older versions I initially creat",
-  "full_hash": "a6be3908130933f5a74c02b7aab14d68bc9c2605ff8a4667fc125379fb535912",
-  "generated_at": 1764728327.0290082,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\FINAL_V2_SETUP.md"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fbcca0d028f24042ce707ae86ddf4fde2f0ac54541c35b68fd4c84e963d20b29",
-    "scan_timestamp": "2025-12-03T07:26:03.661571"
+    "scan_timestamp": "2025-12-03T08:04:48.167441"
   },
   "content_preview": "\"\"\"Shared Fake LLM for Deterministic Testing.\"\"\"\n\nclass FakeLLM:\n    \"\"\"Deterministic fake LLM for testing.\"\"\"\n    \n    def __init__(self, responses=None):\n        self.responses = responses or [\"Default fake response\"]\n        self.call_count = 0\n    \n    def generate(self, prompt):\n        \"\"\"Generate deterministic response.\"\"\"\n        response = self.responses[self.call_count % len(self.responses)]\n        self.call_count += 1\n        return response\n    \n    def reset(self):\n        \"\"\"Reset...",
-  "creation_timestamp": "2025-12-03T07:26:10.579276",
+  "creation_timestamp": "2025-12-03T08:04:57.346319",
   "version": "1.0"
 }

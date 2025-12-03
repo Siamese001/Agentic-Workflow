@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL2 KG Writer for resume temporal graph data.\n\nWrites entities, relations, and events to Neo4jGraphStore\nto support resume timeline analysis and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import List, Optional\nfrom datetime import datetime\n\ntry:\n    from graph_store_neo4j import Neo4jGraphStore\n    _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()\n    _NEO4J_AVAILABLE = True\nexcept ImportError:\n    _neo4j_graph = None\n    _NEO4J_AVAILABLE = False\n\nfrom l4.temporal_schemas import (\n    TemporalEntity,\n    TemporalTriplet,\n    TemporalEvent,\n)\n\n\nasync def insert_entity(entity: TemporalEntity) -> None:\n    \"\"\"\n    Inserts resume entity into Neo4j for timeline analysis.\n\n    Mirrors canonical entity data to support resume job alignment.\n    \"\"\"\n    if not _NEO4J_AVAILABLE:\n        return\n        \n    try:\n        if _neo4j_graph is not None:\n            _neo4j_graph.upsert_entity(\n                entity_id=entity.entity_id,\n                etype=entity",
-  "full_hash": "00c12ad8f0b89c1364a4c1c99d9d6c53ca231de7177cc33722e100239bfa8c81",
-  "generated_at": 1764728225.022224,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\kg_writer.py"
-}

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 552,
-  "generated_at": 1764728329.6449184,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\stacks_v10_7\\bullet.py"
-}

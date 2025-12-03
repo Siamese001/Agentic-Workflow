@@ -1,6 +1,0 @@
-{
-  "golden_content": "import hashlib\nimport os\nimport re\nimport shutil\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, List, Tuple\n\nREPO_ROOT = Path(__file__).resolve().parent\nEXTRACT_DIR = REPO_ROOT / \"_latest_extract\"\nCONSOLIDATED_DIR = REPO_ROOT / \"consolidated_v10_7_Chat_GPT\"\n\nWHITELIST_FILENAMES = {\n    \"models.py\",\n    \"state_adapter_stack.py\",\n    \"context.py\",\n    \"config.py\",\n    \"constants.py\",\n    \"exceptions.py\",\n    \"services.py\",\n    \"clients.py\",\n    \"resilience.py\",\n    \"robustness_stack.py\",\n    \"agents.py\",\n}\n\nWHITELIST_PREFIXES = [\n    \"telemetry\",  # telemetry*.py\n    \"agent_orchestration_v\",\n    \"rag_orchestration\",\n    \"draft_orchestration\",\n    \"main_v\",\n    \"run_batch_v\",\n    \"run_learning_v\",\n]\n\nSTACK_DIR_WHITELIST = {\"stacks_v10_8\", \"stacks_v10_7\", \"stacks_common\"}\nEXCLUDED_DIRS = {\".git\", \"tests\", \"tests_flat\", \"notebooks\", \"examples\", \"tmp\", \"old\", \"backup\", \"venv\", \"__pycache__\"}\n\nVERSION_PRIORITY = {\"10_8\": 2, \"10_7\": 1, None: 0}\n\nBUCKET_ORDER = ",
-  "full_hash": "b86e41fe20bfa1aa01d4b4d639da2ea573c14980de6978677dc39a9e9b0c6718",
-  "generated_at": 1764728229.426333,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\consolidate_core.py"
-}

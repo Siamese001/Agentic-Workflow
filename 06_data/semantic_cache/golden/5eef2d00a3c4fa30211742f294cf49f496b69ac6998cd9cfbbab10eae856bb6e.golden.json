@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e",
-    "scan_timestamp": "2025-12-03T07:26:03.604547"
+    "scan_timestamp": "2025-12-03T08:04:48.112148"
   },
   "content_preview": "| Injection Type                                | Category                    | Purpose / Meaning                                                                                                        | Applies To                                             | Good or Bad?                                  | Example                                                |\n| --------------------------------------------- | --------------------------- | -------------------------------------------------------...",
-  "creation_timestamp": "2025-12-03T07:26:08.758651",
+  "creation_timestamp": "2025-12-03T08:04:55.380818",
   "version": "1.0"
 }

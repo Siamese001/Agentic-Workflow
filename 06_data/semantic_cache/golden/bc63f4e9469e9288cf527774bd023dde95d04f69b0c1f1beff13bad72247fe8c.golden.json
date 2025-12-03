@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "bc63f4e9469e9288cf527774bd023dde95d04f69b0c1f1beff13bad72247fe8c",
-    "scan_timestamp": "2025-12-03T07:26:03.727083"
+    "scan_timestamp": "2025-12-03T08:04:48.237778"
   },
   "content_preview": "\"\"\"RAG simulation models.\"\"\"\n\nfrom typing import List\n\nfrom pydantic import BaseModel\n\nfrom .simulation_base import SimulationInput, SimulationResult\n\n\nclass RAGSimRequest(SimulationInput):\n    \"\"\"Input payload for RAG simulation.\"\"\"\n\n    query: str\n    documents: List[str]\n\n\nclass RAGSimMetrics(BaseModel):\n    \"\"\"Metrics produced by the RAG simulation.\"\"\"\n\n    recall: float\n    precision: float\n    redundancy: float\n\n\nclass RAGSimResult(SimulationResult):\n    \"\"\"Result model for RAG simulations...",
-  "creation_timestamp": "2025-12-03T07:26:17.045114",
+  "creation_timestamp": "2025-12-03T08:05:04.276185",
   "version": "1.0"
 }

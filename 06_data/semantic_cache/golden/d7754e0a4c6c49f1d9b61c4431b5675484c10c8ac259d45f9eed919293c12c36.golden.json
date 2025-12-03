@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d7754e0a4c6c49f1d9b61c4431b5675484c10c8ac259d45f9eed919293c12c36",
-    "scan_timestamp": "2025-12-03T07:26:03.654524"
+    "scan_timestamp": "2025-12-03T08:04:48.161232"
   },
   "content_preview": "\"\"\"Observability Cost Budget Tests.\"\"\"\n\nclass TestObservabilityCostBudget:\n    \"\"\"Tests for cost budget tracking.\"\"\"\n    \n    def test_budget_tracking(self):\n        \"\"\"Test budget tracking logic.\"\"\"\n        budget = {\"max_usd\": 1.0, \"spent_usd\": 0.25}\n        remaining = budget[\"max_usd\"] - budget[\"spent_usd\"]\n        assert remaining == 0.75\n        assert remaining > 0\n",
-  "creation_timestamp": "2025-12-03T07:26:10.344345",
+  "creation_timestamp": "2025-12-03T08:04:57.057904",
   "version": "1.0"
 }

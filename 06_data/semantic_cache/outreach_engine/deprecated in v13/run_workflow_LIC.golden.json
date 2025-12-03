@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: run_workflow_LIC.py\n# Description: Main executable for the LIC agentic workflow.\n\n__version__ = \"12.0\"\n\nimport asyncio\nimport json\nimport sys\nimport os\nfrom uuid import uuid4\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any\n\nfrom models_LIC import OutreachMission\n\n__version__ = \"12.0\"\n\ndef load_mission_input(filename: str = \"mission_input_LIC.json\") -> Dict[str, Any]:\n    \"\"\"\n    Loads the mission input JSON file.\n    \n    Args:\n        filename: Path to mission input JSON file\n    \n    Returns:\n        Dictionary containing mission parameters\n    \n    Raises:\n        SystemExit: If file not found or invalid JSON\n    \"\"\"\n    if not os.path.exists(filename):\n        print(f\"FATAL: {filename} not found. Please create it.\")\n        print(f\"\\nExpected location: {os.path.abspath(filename)}\")\n        print(\"\\nThe file should contain:\")\n        print(\"- sender_profile: Your profile information\")\n        print(\"- recipient_profile: Target recipient in",
-  "full_hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
-  "generated_at": 1764728341.027603,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\run_workflow_LIC.py"
-}

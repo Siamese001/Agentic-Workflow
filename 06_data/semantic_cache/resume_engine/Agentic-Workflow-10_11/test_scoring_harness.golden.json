@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nScoring Harness for Quality Evaluation\n\nDeterministic quantitative metrics for resume analysis, job matching, and skill extraction.\nFocuses on structural completeness, content coverage, and format validation without LLM dependencies.\n\"\"\"\n\nimport pytest\nimport re\nfrom typing import Dict, Any, List\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport time\n\n# Mark all tests as golden evaluation tests\npytestmark = [pytest.mark.golden, pytest.mark.integration]\n\n\nclass ScoreLevel(Enum):\n    \"\"\"Quality score levels.\"\"\"\n    EXCELLENT = \"excellent\"\n    GOOD = \"good\"\n    ACCEPTABLE = \"acceptable\"\n    POOR = \"poor\"\n    CRITICAL = \"critical\"\n\n\n@dataclass(frozen=True)\nclass QualityScore:\n    \"\"\"Individual quality score component.\"\"\"\n    metric_name: str\n    score: float  # 0.0 to 1.0\n    weight: float\n    level: ScoreLevel\n    details: Dict[str, Any] = field(default_factory=dict)\n\n\n@dataclass(frozen=True)\nclass ScoringResult:\n    \"\"\"Complete scoring result for evaluation.\"\"\"\n  ",
-  "full_hash": "14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632",
-  "generated_at": 1764728226.7327797,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\test_scoring_harness.py"
-}

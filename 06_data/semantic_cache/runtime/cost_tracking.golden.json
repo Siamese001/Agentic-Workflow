@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"enabled\": true,\n  \"model_costs\": {\n    \"gpt-3.5-turbo\": 0.002,\n    \"gpt-4\": 0.03,\n    \"claude-3\": 0.015\n  },\n  \"tracking_enabled\": true\n}",
-  "full_hash": "c3629d36015800af5e3a437507cbb9b8616e04e5fa7f58f9c2f35bbdf3e1e80b",
-  "generated_at": 1764728347.7164514,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\validate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\cost_tracking.json"
-}

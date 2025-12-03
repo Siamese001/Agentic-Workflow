@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
-    "scan_timestamp": "2025-12-03T07:26:03.594134"
+    "scan_timestamp": "2025-12-03T08:04:48.100773"
   },
   "content_preview": "from __future__ import annotations\n\n\"\"\"Facade for model routing functions used by orchestration layers.\n\nThis package re-exports the existing infra.model_routing primitives so\ncallers can depend on a stable ``orchestration.model_routing``\nnamespace without changing the underlying implementation.\n\"\"\"\n\nfrom infra.model_routing.models import RoutingContext, ModelChoice  # noqa: F401\nfrom infra.model_routing.policies import (  # noqa: F401\n    choose_provider_and_model,\n    enforce_budget,\n)\nfrom in...",
-  "creation_timestamp": "2025-12-03T07:26:08.295781",
+  "creation_timestamp": "2025-12-03T08:04:54.816512",
   "version": "1.0"
 }

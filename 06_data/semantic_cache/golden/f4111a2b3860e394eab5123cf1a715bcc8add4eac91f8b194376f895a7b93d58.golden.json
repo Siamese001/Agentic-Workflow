@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f4111a2b3860e394eab5123cf1a715bcc8add4eac91f8b194376f895a7b93d58",
-    "scan_timestamp": "2025-12-03T07:26:03.728299"
+    "scan_timestamp": "2025-12-03T08:04:48.239003"
   },
   "content_preview": "\"\"\"Simulation runner utilities.\"\"\"\n\nimport asyncio\nfrom typing import Any, Dict, List\n\nfrom simulations.models import (\n    DraftSimRequest,\n    RAGSimRequest,\n    SafetySimRequest,\n    SimulationBatchResult,\n    SimulationResult,\n    StrategySimRequest,\n)\nfrom simulations.registry import get_simulator\n\n\nREQUEST_MODEL_MAP = {\n    \"strategy\": StrategySimRequest,\n    \"rag\": RAGSimRequest,\n    \"draft\": DraftSimRequest,\n    \"safety\": SafetySimRequest,\n}\n\n\nasync def run_simulation(sim_type: str, payl...",
-  "creation_timestamp": "2025-12-03T07:26:17.111418",
+  "creation_timestamp": "2025-12-03T08:05:04.333155",
   "version": "1.0"
 }

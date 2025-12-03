@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a355da515dba6ff1a605b4dc211dff18311516efbf3c3ad26f57d61b320f9325",
-    "scan_timestamp": "2025-12-03T07:26:03.581860"
+    "scan_timestamp": "2025-12-03T08:04:48.090322"
   },
   "content_preview": "\"\"\"\nL5 safety and policy types for resume job alignment workflows.\n\nDefines fundamental types for safety and policy enforcement in resume enhancement.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Optional, Union, TypeVar\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, timezone\nfrom enum import Enum\nfrom typing_extensions import Protocol, runtime_checkable\n\nT = TypeVar('T')\n\n@runtime_checkable\nclass SafetyPolicy(Protocol):\n    \"\"\"Protocol that...",
-  "creation_timestamp": "2025-12-03T07:26:07.597500",
+  "creation_timestamp": "2025-12-03T08:04:53.838698",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nTriplet extraction executor for resume processing knowledge graphs.\n\nTransforms unstructured text into structured knowledge graph triplets\nto support resume enhancement and job alignment workflows.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Tuple\nfrom datetime import datetime, UTC\nimport json\nimport re\n\nfrom l4.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES\nfrom l4.entity_resolution import (\n    EntityRegistry,\n    EntityType,\n    EntityMention,\n    create_mention,\n)\n\n\n@dataclass\nclass ExtractionPlan:\n    \"\"\"\n    Plan for triplet extraction in resume processing workflows.\n\n    Defines extraction strategy for converting resume text to\n    knowledge graph data for job alignment.\n    \"\"\"\n    \n    source_text: str\n    source_id: str\n    extraction_type: str = \"general\"  # general, resume, job_posting\n    \n    # Configuration\n    extract_skills: bool = True\n    extract_experience",
-  "full_hash": "84f0b20dba4693fa2ace9f6ad27a5e709bcce5d1c7caf69e70075987d686c429",
-  "generated_at": 1764728225.0810397,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\triplet_extraction_executor.py"
-}

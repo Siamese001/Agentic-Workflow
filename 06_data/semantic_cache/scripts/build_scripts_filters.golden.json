@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - build_scripts_filters\nImplements L1 Cognitive Planning Layer for build scripts filters operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass BuildScriptsFiltersPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass BuildScriptsFiltersPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass BuildScriptsFiltersPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: b",
-  "full_hash": "fefecc84fab811ce3661144bb0e19247ac14df5061f4f2d8f91cd3674f69bcd2",
-  "generated_at": 1764728352.2175453,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\build_scripts_filters.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "68c878b006ab5044b1ac0b087b6d8a3bca8603bea5a3c3394cf664e593fc657c",
-    "scan_timestamp": "2025-12-03T07:26:03.636428"
+    "scan_timestamp": "2025-12-03T08:04:48.142759"
   },
   "content_preview": "\"\"\"\nTest KG Retrieval Executor\n\nTests knowledge graph retrieval execution functionality extracted from working legacy tests.\n\"\"\"\n\nimport pytest\n\n# L2 Components\nfrom l2.kg_retrieval_executor import (\n    KGRetrievalResult,\n    execute_entity_query,\n    execute_multi_hop_query,\n)\n\n# L4 Components (for storage)\nfrom l4.triplet_store import (\n    TripletStore,\n    create_triplet,\n)\n\n# Mark all tests as L2 execution tests\npytestmark = [pytest.mark.unit, pytest.mark.l2, pytest.mark.execution]\n\n\nclass...",
-  "creation_timestamp": "2025-12-03T07:26:09.800361",
+  "creation_timestamp": "2025-12-03T08:04:56.494632",
   "version": "1.0"
 }

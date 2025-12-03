@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: v10_7_execution.py\n# CONSOLIDATED: L2 Execution Layer (Clients, Tools, RAG, Drafting, Bullets)\n# STATUS: Production Ready (v10.7 Baseline)\n\nfrom __future__ import annotations\nimport asyncio\nimport json\nimport logging\nimport os\nimport re\nimport uuid\nimport time\nimport math\nfrom typing import (\n    Any, Dict, List, Type, Optional, Tuple, Iterable, Sequence, Callable, Awaitable, Mapping,\n    TypeVar\n)\nfrom functools import wraps\nfrom collections import Counter, defaultdict\n\n# Assuming Pydantic, Chromadb, Rank-BM25, and Core Classes are available\n# from the V10_7_FOUNDATIONS scope.\n# Note: Full Pydantic definitions (BaseToolOutput, StrategyPlan, etc.) are omitted\n# here for brevity in the final consolidated file structure, but their original\n# import locations are maintained via comments for reference integrity.\n\n# Placeholder for necessary external libraries used in source files\ntry:\n    from pydantic import BaseModel, Field\n    # from rank_bm25 import BM25Okapi # Assuming this is",
-  "full_hash": "ccdf8326f25cc2c93b895170604643f84c51a687b178f708692e051fdbf6ca33",
-  "generated_at": 1764728228.9998453,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_execution.py"
-}

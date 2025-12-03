@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Runtime Utilities - Infrastructure Layer\n\nThis module provides core runtime infrastructure.\n\nLayer: Runtime/Infrastructure\nResponsibilities:\n- Exception hierarchy\n- SandboxConfig and isolation\n- PredictiveCacheManager\n- invoke_model() LLM gateway\n- Provider routing\n\nNon-responsibilities:\n- Planning (L1)\n- Tool execution logic (L2)\n- DAG/orchestration (L3)\n- State mutation (L4)\n- Safety/policy (L5)\n\"\"\"\n\n# FILE: runtime_utils.py\n\nfrom __future__ import annotations\n\nimport asyncio\nimport hashlib\nimport json\nimport os\nimport random\nimport time\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, Optional, Tuple, Callable, Awaitable\n\nfrom orchestration.model_routing import RoutingContext, select_model\nfrom runtime.observability.agentic_events import CostEvent\nfrom runtime.observability.agentic_collectors import append_event as append_agentic_event\nfrom core.models.models import (\n    ResilienceError,\n    TransientError,\n    PermanentError,\n    RetryExhaustedError,\n    C",
-  "full_hash": "6f9e6c32d832278febdf1c4b6517a63dd79b32066fd008395ffce017e9863777",
-  "generated_at": 1764728228.0511072,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\runtime_utils.py"
-}

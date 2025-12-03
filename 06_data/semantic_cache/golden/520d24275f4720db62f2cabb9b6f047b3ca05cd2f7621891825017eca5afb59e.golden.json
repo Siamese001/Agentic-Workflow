@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "520d24275f4720db62f2cabb9b6f047b3ca05cd2f7621891825017eca5afb59e",
-    "scan_timestamp": "2025-12-03T07:26:03.946348"
+    "scan_timestamp": "2025-12-03T08:04:48.453079"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v17\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v16 COMPLETE with execution refinements from real-world usage (zero-loss overwrite)\",\n    \"notes\": \"Added: job application context handling, explicit K-node skip notifications, reasoning toggle prompt placement, RAG pre-processing visualization guidance, execution flow clarity. ALL v16 content preserved in full.\",\n    \"sha256\": \"p...",
-  "creation_timestamp": "2025-12-03T07:26:36.310339",
+  "creation_timestamp": "2025-12-03T08:05:22.691165",
   "version": "1.0"
 }

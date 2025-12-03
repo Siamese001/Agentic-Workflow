@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"L4 Memory State Transitions Tests.\"\"\"\n\nclass TestL4StateTransitions:\n    \"\"\"Tests for L4 state transitions.\"\"\"\n    \n    def test_init_to_active_transition(self):\n        \"\"\"Test init to active state transition.\"\"\"\n        states = [\"init\", \"active\", \"completed\"]\n        current = 0\n        current += 1\n        assert states[current] == \"active\"\n    \n    def test_active_to_completed_transition(self):\n        \"\"\"Test active to completed state transition.\"\"\"\n        state = \"active\"\n        state = \"completed\"\n        assert state == \"completed\"\n    \n    def test_rollback_transition(self):\n        \"\"\"Test rollback state transition.\"\"\"\n        history = [\"s1\", \"s2\", \"s3\"]\n        rollback_to = history[-2]\n        assert rollback_to == \"s2\"\n",
-  "full_hash": "08815264e3074c46d41a1f99bb15b61d74f48e59005716a4716d53c7504b06a6",
-  "generated_at": 1764728227.0802348,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\integration\\state_transitions\\test_l4_state_transitions.py"
-}

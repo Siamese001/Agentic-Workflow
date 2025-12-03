@@ -1,1 +1,0 @@
-{"\"\"\"append":1,"signature":2,"information":1,"to":1,"the":1,"outreach":2,"draft.\"\"\"":1,"from":1,"__future__":1,"import":1,"annotations":1,"class":1,"signatureagent:":1,"def":1,"attach(self,":1,"draft:":1,"str,":1,"route_decision)":1,"->":1,"str:":1,"=":1,"\"best":1,"regards,\\nlic":1,"bot\"":1,"return":1,"f\"{draft}\\n\\n{signature}\"":1}

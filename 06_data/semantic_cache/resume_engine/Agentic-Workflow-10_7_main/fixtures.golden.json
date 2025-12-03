@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nimport asyncio\nimport json\nfrom pathlib import Path\nfrom typing import Any, Callable, Dict, List, Optional\nfrom unittest.mock import AsyncMock, MagicMock\n\nimport pytest\n\nfrom core_v10_7 import (\n    AdvancedMetaLearner,\n    ArbitrationEngine,\n    CacheManager,\n    ConfigV10_7,\n    ContextBudgetManager,\n    CostTracker,\n    FeedbackLogReader,\n    MetricsCollector,\n    PolicyAutoTuner,\n    PredictiveCacheManager,\n    PrecomputeEngine,\n    PromptTemplateManager,\n    ProposedRulesLoader,\n    ResponseValidator,\n    SemanticValidator,\n    TuningProfile,\n    WorkflowContext,\n)\nfrom tests.shared.mock_clients import (\n    DeterministicEmbeddingFunction,\n    DummyEmbeddingFunction,\n    FakeChromaClient,\n    FakeCollection,\n    FakeRedisClient,\n    InMemoryRedis,\n    TraceRecorder,\n)\n\n\n@pytest.fixture(scope=\"session\")\ndef config() -> ConfigV10_7:\n    return ConfigV10_7(\"master_config_v10_7.json\")\n\n\n@pytest.fixture()\ndef cache_manager(config: ConfigV10_7) -> Cac",
-  "full_hash": "1432686dbb65b412a5eac8eead63a358370e125fbdae1e913dc91e0696c4fb85",
-  "generated_at": 1764728230.363568,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\shared\\fixtures.py"
-}

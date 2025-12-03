@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "eafd9dd11fec0319ef48a45047f6b8493015781eb09e62a49150518ffdd7248d",
-    "scan_timestamp": "2025-12-03T07:26:03.683783"
+    "scan_timestamp": "2025-12-03T08:04:48.190033"
   },
   "content_preview": "# FILE: observability.py\n\"\"\"\nObservability / Telemetry Layer (v10_10 \u00b7 Phase 3)\n==================================================\n\nThis module provides:\n    \u2022 Structured spans (start_span / end_span)\n    \u2022 Structured events (emit_node_event, emit_telemetry_event)\n    \u2022 Typed retrieval + ranking events:\n          \u2013 RetrievalAttemptEvent\n          \u2013 RetrievalSuccessEvent\n          \u2013 RetrievalFailureEvent\n          \u2013 RankingEvent\n    \u2022 Cost snapshot emission\n    \u2022 Deterministic logging for DAG orc...",
-  "creation_timestamp": "2025-12-03T07:26:12.452914",
+  "creation_timestamp": "2025-12-03T08:04:59.301039",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: tests/golden_state/test_runner.py\n\nfrom core.models.models import ExecutionProfile, RetrievalConfig\n\nfrom eval.golden_state.runner import run_all_golden_tests\n\n\ndef test_run_all_golden_tests_returns_results():\n    profile = ExecutionProfile(\n        name=\"TEST\",\n        description=\"test profile\",\n        retrieval=RetrievalConfig(),\n        metadata={},\n    )\n\n    results = run_all_golden_tests(profile)\n\n    assert results\n    ids = {r.test_id for r in results}\n    assert \"gs_basic_1\" in ids\n    assert \"gs_safety_1\" in ids\n\n\n\n\n\n\n\n",
-  "full_hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-  "generated_at": 1764728226.784961,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_runner.py"
-}

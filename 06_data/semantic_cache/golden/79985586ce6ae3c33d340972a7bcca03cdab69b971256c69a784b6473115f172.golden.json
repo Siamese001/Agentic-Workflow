@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "79985586ce6ae3c33d340972a7bcca03cdab69b971256c69a784b6473115f172",
-    "scan_timestamp": "2025-12-03T07:26:03.779499"
+    "scan_timestamp": "2025-12-03T08:04:48.284677"
   },
   "content_preview": "import json\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.models import StrategyPlan\nfrom core_v10_7.services import WorldModelStore\nfrom agent_stacks_v10_8.components.strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\nfrom agent_stacks_v10_8.components.rag import RAG_SearchAgent\n\n\nclass _DummyRedis:\n    def __init__(self):\n        self.set_calls = []\n        self.get_calls = []\n        self.storage = {}\n\n    def setex(self, key, ttl, value):\n        s...",
-  "creation_timestamp": "2025-12-03T07:26:20.147340",
+  "creation_timestamp": "2025-12-03T08:05:07.284728",
   "version": "1.0"
 }

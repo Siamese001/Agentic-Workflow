@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FINAL SDK vs MCP ANALYSIS + INSTALLATION + VALIDATION REPORT\n## Agentic-Workflow-10_10 Complete Analysis\n\n**Date**: 2025-01-24  \n**Project**: Agentic-Workflow-10_10  \n**Status**: \u2705 COMPLETE - All SDKs Installed & Validated\n\n---\n\n## EXECUTIVE SUMMARY\n\nThis document provides the complete SDK vs MCP analysis, installation results, and validation outcomes for the Agentic-Workflow-10_10 system. All required Python packages have been successfully installed and validated. MCP server installation instructions are provided for optional agent-visible operations.\n\n### Key Findings:\n- **24 SDKs tested**: 22 PASSED, 2 with minor warnings (ChromaDB Python 3.14 compatibility, Pinecone deprecated package)\n- **All core dependencies**: \u2705 Installed and validated\n- **All LLM providers**: \u2705 OpenAI, Anthropic, Google Gemini ready\n- **All vector databases**: \u2705 Redis, ChromaDB, Pinecone, FAISS operational\n- **MCP servers**: Documentation provided for filesystem, SQLite, Brave, GitHub\n\n---\n\n## TASK 1 & 2: CO",
-  "full_hash": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4",
-  "generated_at": 1764728226.3197477,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\FINAL_SDK_MCP_ANALYSIS.md"
-}

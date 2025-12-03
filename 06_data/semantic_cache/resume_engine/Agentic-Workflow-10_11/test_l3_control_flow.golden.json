@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"L3 Orchestration Control Flow Tests.\"\"\"\n\nclass TestL3ControlFlow:\n    \"\"\"Tests for L3 orchestration control flow.\"\"\"\n    \n    def test_sequential_control_flow(self):\n        \"\"\"Test sequential control flow.\"\"\"\n        steps = [\"a\", \"b\", \"c\"]\n        executed = []\n        for step in steps:\n            executed.append(step)\n        assert executed == steps\n    \n    def test_conditional_branching(self):\n        \"\"\"Test conditional branching.\"\"\"\n        condition = True\n        branch = \"true_branch\" if condition else \"false_branch\"\n        assert branch == \"true_branch\"\n    \n    def test_loop_control(self):\n        \"\"\"Test loop control in workflow.\"\"\"\n        iterations = 0\n        max_iter = 3\n        while iterations < max_iter:\n            iterations += 1\n        assert iterations == 3\n",
-  "full_hash": "ca5f7b1911eeed0476c5d6d6b96fa007803739e1ed4edb6d785db4befce3ce39",
-  "generated_at": 1764728227.0076864,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\integration\\control_flow\\test_l3_control_flow.py"
-}

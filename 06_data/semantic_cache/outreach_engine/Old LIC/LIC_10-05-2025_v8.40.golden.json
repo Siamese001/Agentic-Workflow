@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.4.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.4.0\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.4.0: Integrated L-Series Dynamic Intelligence Framework for reasoning visualization, enforcing strict templates and high-signal content sourcing.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.4.0\",\n        \"date\": \"2025-10-07\",\n        \"author\": \"Gemini System Engineer\",\n        \"description\": \"Applied PATCH_LIC_8.3.1_D100. Replaced the Transformer v17 reasoning display (Dashboard, Summary, Detail) with the L1/L2/L3 dynamic intelligence framework. Enforces strict structural templates for all reasoning outputs and introduces conditional, high-signal ASCII diagram integration from Transformer Output v40 based on narrative relevance.\"\n      },\n      {\n        \"version\": \"v8.3.0\",\n        \"date\": \"2025-10-06\",\n        \"author\": \"L",
-  "full_hash": "d70c02abe1b79ffbd63bb3e0469ebff148483cff53c7dc15790800f8d0f4ab9e",
-  "generated_at": 1764728335.7947507,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.40.json"
-}

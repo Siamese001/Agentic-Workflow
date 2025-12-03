@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.33 - FILE SIZE OPTIMIZATION\n\nv5.33 CHANGES FROM v5.32:\n\u2713 REMOVED: 71 lines of non-functional header documentation (lines 2-72)\n\u2713 REMOVED: 112 lines of duplicate enum/dataclass definitions (lines 1099-1210)\n\u2713 REMOVED: 166 lines of dead code and version history prints (footer blocks)\n\u2713 SIZE REDUCTION: 349 lines removed (6,425 \u2192 6,076 lines)\n\u2713 FUNCTIONALITY: 100% preserved - all v5.32 features intact\n\nAll v5.32 functionality maintained:\n\u2713 JD Enforcement System (E1-E15 rules)\n\u2713 QA Gate Mapping (GATE-0 through GATE-8)\n\u2713 App Tracker QA Validator (R1-R23 rules)\n\u2713 Complete RAG pipeline (74 calls: K.0: 50 + K.2: 24)\n\u2713 All 50 classes from v5.32\n\"\"\"\n\nimport json\nimport re\nimport hashlib\nimport math\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\nimport copy\n\n__version__ = \"5.33\"\n\n\n# ==================================================",
-  "full_hash": "e26466b46e7c6fb518d41c1438edfcf8c6a95c08a3010837094f3afa9226bded",
-  "generated_at": 1764728303.4236927,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_33_Complete.py"
-}

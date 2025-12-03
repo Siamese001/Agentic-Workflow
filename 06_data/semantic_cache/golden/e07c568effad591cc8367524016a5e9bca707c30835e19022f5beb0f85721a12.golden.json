@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e07c568effad591cc8367524016a5e9bca707c30835e19022f5beb0f85721a12",
-    "scan_timestamp": "2025-12-03T07:26:03.738319"
+    "scan_timestamp": "2025-12-03T08:04:48.248968"
   },
   "content_preview": "from __future__ import annotations\n\nimport json\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional, Tuple\n\nfrom chromadb.utils import embedding_functions\n\n\nclass DeterministicEmbeddingFunction(embedding_functions.EmbeddingFunction):\n    \"\"\"Predictable embedding function leveraged by caching fixtures.\"\"\"\n\n    def __call__(self, prompts: List[str]) -> List[List[float]]:\n        return [[float(len(prompt))] for prompt in prompts]\n\n\nclass DummyEmbeddingFunction:\n    def _...",
-  "creation_timestamp": "2025-12-03T07:26:18.391115",
+  "creation_timestamp": "2025-12-03T08:05:05.473240",
   "version": "1.0"
 }

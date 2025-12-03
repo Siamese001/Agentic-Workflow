@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL4 state journal for resume job alignment workflows.\n\nImplements state change journal with corrections for resume enhancement.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Optional, TypeVar, Generic, Callable\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, UTC\nimport uuid\nimport logging\nfrom enum import Enum\n\nfrom .types import StateTransition, StateSnapshot, StatePath, StateOperation\n\nlogger = logging.getLogger(__name__)\n\nT = TypeVar('T')\n\nclass CorrectionType(str, Enum):\n    \"\"\"Correction types for resume workflow state management.\"\"\"\n    UNDO = \"undo\"\n    REDO = \"redo\"\n    AMEND = \"amend\"\n    COMPENSATE = \"compensate\"\n\n@dataclass\nclass JournalEntry(Generic[T]):\n    \"\"\"Single entry in resume workflow state journal.\"\"\"\n    entry_id: str\n    timestamp: datetime\n    transition: StateTransition[T]\n    snapshot_before: StateSnapshot[T]\n    snapshot_after: StateSnapshot[T]\n    correlation_id: str\n    metadata: Dict[str, Any] = field",
-  "full_hash": "4b906576c2c5194a52c1144af02ee4c777ac058a9dc70e845b33668db89a46a8",
-  "generated_at": 1764728225.234823,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\journal.py"
-}

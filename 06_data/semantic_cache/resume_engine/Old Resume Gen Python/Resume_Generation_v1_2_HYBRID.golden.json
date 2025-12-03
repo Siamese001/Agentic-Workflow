@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v1.2 - HYBRID (v2.1 Algorithm + v1.0 Outputs)\n\nCombines:\n\u2713 v2.1: SaaS role profiles, signal calibration, 9-HOP architecture, JD parsing\n\u2713 v1.0: 4-output structure, word count table, QA tables, resume formatter\n\nProduces 4 High-Signal Outputs:\n1. Complete Resume (formatted, submission-ready)\n2. Word Count Table (with baseline comparison)\n3. Signal Calibration (role-specific, with rationale)\n4. QA Validation Tables (5 gates: signal health, ratios, AI risk, readiness, baseline)\n\nAuthor: Resume Generation Team\nVersion: 1.2.0-HYBRID\nDate: October 2025\n\"\"\"\n\nimport re\nfrom typing import Dict, List, Tuple, Optional\nfrom dataclasses import dataclass\n\n__version__ = \"1.2.0-HYBRID\"\n\n\n# ============================================================================\n# SECTION 0: MASTER RESUME (FROM V1.0)\n# ============================================================================\n\nclass MasterResume:\n    \"\"\"Amit Ayer's embedded master resume.\"\"\"\n    \n    CONTACT = {\n     ",
-  "full_hash": "ad2d9c8168a2dd8af66cad6619ff09b9e72bfae9537f4ff6ff28a074f1053b2d",
-  "generated_at": 1764728296.5646276,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v1_2_HYBRID.py"
-}

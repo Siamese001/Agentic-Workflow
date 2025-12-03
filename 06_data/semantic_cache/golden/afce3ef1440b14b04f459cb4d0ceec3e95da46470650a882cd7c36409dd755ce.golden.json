@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "afce3ef1440b14b04f459cb4d0ceec3e95da46470650a882cd7c36409dd755ce",
-    "scan_timestamp": "2025-12-03T07:26:03.716857"
+    "scan_timestamp": "2025-12-03T08:04:48.227849"
   },
   "content_preview": "\"\"\"Compatibility shim that re-exports the v10.8 Draft execution stack.\"\"\"\n\nfrom stacks_v10_8.drafting_execution import DraftingExecutionStack\n\n__all__ = [\"DraftingExecutionStack\"]\n",
-  "creation_timestamp": "2025-12-03T07:26:16.426816",
+  "creation_timestamp": "2025-12-03T08:05:03.733998",
   "version": "1.0"
 }

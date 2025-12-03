@@ -1,7 +1,0 @@
-# Ignore only temporary/control files
-.phase05_checkpoint.json
-*.log
-*.tmp
-
-# Track all semantic cache artifacts
-# (These are static based on unchanging archives)

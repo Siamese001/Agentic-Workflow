@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Async model clients for the v10.7 runtime.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport logging\nimport os\nimport random\nfrom typing import Any, Dict, List, Optional\n\nfrom mcp import get_tool\n\nfrom .config import ConfigV10_7\nfrom .exceptions import ModelAPIError\nfrom .services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics\n\ntry:  # pragma: no cover - optional provider SDKs\n<<<<<<< HEAD\n    import anthropic\nexcept ImportError:  # pragma: no cover - provider optional\n    anthropic = None\n=======\n    from anthropic import AsyncAnthropic as _AsyncAnthropic\nexcept ImportError:  # pragma: no cover - provider optional\n    try:  # pragma: no cover - provider optional\n        import anthropic as _anthropic_module\n    except ImportError:  # pragma: no cover - provider optional\n        _anthropic_module = None\n    _AsyncAnthropic = getattr(_anthropic_module, \"AsyncAnthropic\", None)\nexcept AttributeError:  # pragma: no cover - provider op",
-  "full_hash": "0fa41f6dbdfc9219753bcc1a8ce4be0e1dcf39a367cae420eccba70ddd650c25",
-  "generated_at": 1764728328.362066,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\clients.py"
-}

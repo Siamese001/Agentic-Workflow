@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Bullet generation and review stack.\"\"\"\n\nimport asyncio\nimport json\nimport re\nfrom collections import Counter, defaultdict\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\nfrom core_v10_7 import (\n    BaseAgent,\n    BulletList,\n    CritiqueResult,\n    StrategyPlan,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\n\n\nclass BulletEntityExtractionAgent(BaseAgent):\n    \"\"\"Extracts key entities from bullet text.\"\"\"\n\n    class Output(BaseModel):\n        bullet_id: str\n        entities: List[Dict[str, Any]] = Field(default_factory=list)\n        raw_text: str\n        experience_id: Optional[str] = None\n\n    ENTITY_PATTERN = re.compile(r\"\\b([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+){0,3})\\b\")\n    ORGANIZATION_HINTS = {\"inc\", \"corp\", \"llc\", \"ltd\", \"company\", \"technologies\"}\n    TECHNOLOGY_HINTS = {\n        \"aws\",\n        \"gcp\",\n        \"azure\",\n        \"python\",\n        \"sql\",\n        \"spark\",\n        \"docker\",\n        \"kubernetes\",\n        \"hadoop\",\n        \"te",
-  "full_hash": "ae8a1afcbc63c423a41d927a5bd08cd2f8bffaeab382544da00d2eb80dbaaf5b",
-  "generated_at": 1764728330.7837253,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\bullet.py"
-}

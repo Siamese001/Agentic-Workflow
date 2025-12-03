@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-10-2025_v8.89\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-10-2025_v8.89\",\n    \"last_updated\": \"2025-10-10\",\n    \"description\": \"Applied patches P889 and P890. Hardened CTA date calculations, corrected configuration override precedence, increased sensitivity of role drift detector, and implemented graceful handling of null data in L-series trace generation.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.8.9\",\n        \"date\": \"2025-10-10\",\n        \"author\": \"Gemini System Engineer (Stress Test Analysis)\",\n        \"description\": \"Applied P890. Implemented graceful handling of null execution data in L-series trace generation to prevent crashes on deterministic K-nodes. Updated validation rule CFG-REALTIME-001 to permit specific fallback messages.\"\n      },\n      {\n        \"version\": \"v8.8.9\",\n        \"date\": \"2025-10-10\",\n        \"author\": \"Gemini System Enginee",
-  "full_hash": "f33a6a3fe2469dbd1821baf8e7ad7bc93c6205f109d2d361b0be7981fef31d29",
-  "generated_at": 1764728336.853984,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.89.json"
-}

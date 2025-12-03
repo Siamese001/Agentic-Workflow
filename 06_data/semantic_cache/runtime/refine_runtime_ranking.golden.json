@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - refine_runtime_ranking\nImplements L1 Cognitive Planning Layer for refine runtime ranking operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RefineRuntimeRankingPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RefineRuntimeRankingPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RefineRuntimeRankingPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: boo",
-  "full_hash": "2d7c80e673a92eb833a65cc1395671008c5928157d8d3244b808a2b136912905",
-  "generated_at": 1764728347.5264916,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\refine_runtime_ranking.py"
-}

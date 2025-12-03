@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 179,
-  "generated_at": 1764728348.1337109,
-  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\router-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\archetype.yaml"
-}

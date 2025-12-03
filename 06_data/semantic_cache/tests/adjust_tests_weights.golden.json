@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - adjust_tests_weights\nImplements L1 Cognitive Planning Layer for adjust tests weights operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass AdjustTestsWeightsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass AdjustTestsWeightsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass AdjustTestsWeightsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n ",
-  "full_hash": "40128db4d993387e6ac37d4fc3bb2abe0b639ea1319d3a0d6dd631a5770cd047",
-  "generated_at": 1764728354.6076121,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\adjust_tests_weights.py"
-}

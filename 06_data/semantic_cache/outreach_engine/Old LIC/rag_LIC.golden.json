@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: rag_LIC.py\n# Description: RAG (Retrieval-Augmented Generation) agents and utilities\n# REFACTOR: v12.0 - Strategic Alignment Engine (from tactical posts to strategic briefs)\n\n__version__ = \"12.0\"\n\nimport asyncio\nimport re\nimport json\nimport os\nimport glob\nfrom collections import defaultdict\nfrom typing import Dict, List, Any, Tuple, Optional\n\nimport numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\n# PDF parsing library\ntry:\n    import fitz  # PyMuPDF\n    PDF_SUPPORT = True\nexcept ImportError:\n    PDF_SUPPORT = False\n    print(\"WARNING: PyMuPDF not installed. PDF support disabled. Install with: pip install pymupdf\")\n\nfrom models_LIC import (\n    RAGResult, ResearchContext, ProfileAnalysis, Archetype, RAGCritique, \n    MessageClaim, OutreachMission, SenderGroundingWhitelists, AgentStatus\n)\nfrom utils_LIC import CircuitBreaker\n\n# NEW: Import live API clients\nfrom retrieval_clients import GoogleSearchClie",
-  "full_hash": "fe33b8588637e05984fb7b103885d507faf3749cfa81d6239f7b6dde4c80f785",
-  "generated_at": 1764728340.8112955,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\rag_LIC.py"
-}

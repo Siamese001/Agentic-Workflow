@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nOrchestrates automatic fixing of career timeline inconsistencies and job fact errors.\n\nImproves r\u00e9sum\u00e9 accuracy by detecting and resolving conflicting dates, overlapping jobs, and career data issues.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set, Callable\nfrom datetime import datetime, UTC, timedelta\nfrom enum import Enum\nimport asyncio\nimport logging\n\nfrom l4.temporal_schemas import (\n    TemporalTriplet,\n    TemporalEntity,\n    ConflictDetection,\n    ConflictType,\n    TemporalKGState,\n    TemporalEvent,\n)\nfrom infra.dag_engine.models import Node as DagNode, Edge as DagEdge, Graph as DagGraph\nfrom infra.dag_engine.executor import DAGExecutor\n\n\nlogger = logging.getLogger(__name__)\n\n\nclass HealingTrigger(str, Enum):\n    \"\"\"\n    Defines events that trigger automatic r\u00e9sum\u00e9 data consistency checks and repairs.\n\n    Improves r\u00e9sum\u00e9 reliability by ensuring career data is continuously monitored and corr",
-  "full_hash": "28d3bcf378da9163009f52588e58557da24d768422f0c2e0cc3b3e11f3127183",
-  "generated_at": 1764728225.9308717,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\temporal_kg_self_healing.py"
-}

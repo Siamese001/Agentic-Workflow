@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Pinecone client wrapper for vector operations.\"\"\"\nfrom typing import Any, Dict, List, TypedDict\nimport os\nfrom pinecone import Pinecone\nfrom openai import OpenAI\n\n\nclass Vector(TypedDict):\n    id: str\n    values: List[float]\n    metadata: Dict[str, Any]\n\n\nclass PineconeClient:\n    \"\"\"A client for interacting with Pinecone's vector database.\n    \n    This client provides a simple interface for common vector operations\n    while abstracting away the underlying Pinecone SDK details.\n    \"\"\"\n    \n    def __init__(self, api_key: str, index_name: str):\n        \"\"\"Initialize the Pinecone client.\n        \n        Args:\n            api_key: Pinecone API key\n            index_name: Name of the Pinecone index to use\n        \"\"\"\n        pc = Pinecone(api_key=api_key)\n        self.index = pc.Index(index_name)\n        self.openai_client = OpenAI(api_key=os.getenv(\"OPENAI_API_KEY\"))\n    \n    def upsert(\n        self, \n        namespace: str, \n        vectors: List[Vector],\n        **kwargs: Any\n  ",
-  "full_hash": "f7fee04ad72ab801bad0c19d6f8abc9eb367e6b3ad51fc9863203919351e90a0",
-  "generated_at": 1764728226.0466092,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\pinecone_client\\pinecone_client.py"
-}

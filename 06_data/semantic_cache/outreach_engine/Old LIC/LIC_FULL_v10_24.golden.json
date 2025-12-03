@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"metadata\": {\n    \"template_id\": \"LIC-FULL-v10.24\",\n    \"template_name\": \"LinkedIn InMail Cold Outreach - Complete with Hardened Enforcement\",\n    \"version\": \"10.24\",\n    \"base_version\": \"10.23.1\",\n    \"patches_applied\": [\n      \"v10.23: Staging Buffer Integration\",\n      \"v10.23.1: Scope Isolation Fix\",\n      \"v10.24: Complete Enforcement Hardening (59 new rules, 2 new batches)\"\n    ],\n    \"created_date\": \"2025-10-15\",\n    \"status\": \"PRODUCTION_READY\",\n    \"changelog\": {\n      \"v10.22\": \"Baseline - metadata-based validation\",\n      \"v10.23\": \"Added staging buffer for ground truth validation (DO NOT USE - has scope bug)\",\n      \"v10.23.1\": \"Fixed scope isolation bug - artist_output deleted before validation\",\n      \"v10.24\": \"Complete enforcement hardening - 100% coverage of all enforcement points\"\n    },\n    \"critical_enhancements\": [\n      \"Added BATCH_0_PRE_FLIGHT with 12 structural validation rules\",\n      \"Added BATCH_5_POST_VALIDATION with 10 monitoring rules\",\n      \"Added 3",
-  "full_hash": "6e748cd451aada5ddee62465c7a15f1b0e21f3eeee4eaf53bab45379fb5d9f17",
-  "generated_at": 1764728339.5368855,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_FULL_v10_24.json"
-}

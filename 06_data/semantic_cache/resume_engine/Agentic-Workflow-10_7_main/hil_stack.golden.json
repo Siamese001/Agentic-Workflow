@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Human-in-the-loop stack shim for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import PersonaConsensus, StrategyPlan\nfrom agent_stacks_v10_8.components.hil import (\n    HILAmbiguityDetectorAgent,\n    HILFeedbackRouterAgent,\n    HILFeedbackSummarizerAgent,\n    HILReconciliationAgent,\n    VirtualReviewerCouncilAgent,\n)\n\n\nclass HILStackV10_8:\n    \"\"\"Wrapper that exposes the HIL-only capabilities.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._summarizer = HILFeedbackSummarizerAgent(context, debug_mode)\n        self._ambiguity_detector = HILAmbiguityDetectorAgent(context, debug_mode)\n        self._router = HILFeedbackRouterAgent(context, debug_mode)\n        self._reconciliation_agent = HILReconciliationAgent(context, debug_mode)\n        self._virtual_council = VirtualReviewerCouncilAgent(context, debug_mode)\n\n    as",
-  "full_hash": "a6bad61471b34152cfde90cae13c92fc314ca06661147dda39c9113a711c4e48",
-  "generated_at": 1764728229.7642229,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\hil_stack.py"
-}

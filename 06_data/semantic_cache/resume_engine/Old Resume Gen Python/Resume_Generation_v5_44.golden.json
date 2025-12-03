@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.44 - CRITICAL WORD COUNT FIXES\n\nv5.44 CHANGES - CRITICAL FIXES:\n\u2713 FIXED: Markdown token counting - now strips ##, **, \u2022 before counting\n\u2713 FIXED: Baseline calculation - uses static constants (949 words) from clean master\n\u2713 FIXED: Total baseline - correct value 949 (was 1,184 with markdown)\n\u2713 FIXED: Executive summary target - 125 words (midpoint of 100-150)\n\u2713 FIXED: Content verbosity - enforces master bullet length constraints\n\u2713 FIXED: Output 4 table - correct row order (Name first, Contact between Headline/Exec)\n\u2713 NEW: count_words_clean() function - markdown-aware word counting\n\u2713 NEW: SECTION_BASELINES constants - static baseline specification\n\u2713 NEW: BULLET_TARGET_LENGTHS - per-section target lengths for generation\n\u2713 NEW: Bullet length validation - post-generation checks\n\u2713 Result: Accurate word counts, correct baselines, proper content length\n\nBREAKING CHANGES:\n- Word counts will decrease ~15-20% (now accurate)\n- Baseline changed from 1,184 to 949 words\n-",
-  "full_hash": "cca5e1d29132e1f43e10b2c7905e587a886b0a0bcd6abfb588917655164d04c1",
-  "generated_at": 1764728304.285819,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_44.py"
-}

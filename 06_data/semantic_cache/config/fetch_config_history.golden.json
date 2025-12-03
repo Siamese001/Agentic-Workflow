@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - fetch_config_history\nImplements L1 Cognitive Planning Layer for fetch config history operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FetchConfigHistoryMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FetchConfigHistoryMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FetchConfigHistoryMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: ",
-  "full_hash": "53532935547d0e4a405df414ae1e842afe2f619f90c33fd23199967f8efc5136",
-  "generated_at": 1764728348.544939,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\mem-layer\\retrieve-phase\\get-config-info\\general\\understand-request\\fetch_config_history.py"
-}

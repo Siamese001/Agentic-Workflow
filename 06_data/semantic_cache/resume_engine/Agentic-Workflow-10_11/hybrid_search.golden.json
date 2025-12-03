@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL4 hybrid search for resume job alignment workflows.\n\nCombines dense embeddings with sparse search for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Sequence\nfrom datetime import datetime, UTC\n\n\n@dataclass\nclass SearchFilter:\n    \"\"\"Metadata filter for resume workflow vector search.\"\"\"\n    \n    field: str\n    operator: str  # \"eq\", \"ne\", \"gt\", \"gte\", \"lt\", \"lte\", \"in\", \"nin\"\n    value: Any\n\n\n@dataclass\nclass TemporalFilter:\n    \"\"\"Temporal filter for resume workflow time-based queries.\"\"\"\n    \n    field: str = \"timestamp\"\n    start_time: Optional[datetime] = None\n    end_time: Optional[datetime] = None\n    recent_only: bool = False\n    recent_days: int = 90\n\n\n@dataclass\nclass HybridSearchConfig:\n    \"\"\"Configuration for resume workflow hybrid search.\"\"\"\n    \n    # Dense search config\n    dense_weight: float = 0.7\n    dense_top_k: int = 20\n    \n    # Sparse search config (BM25-style",
-  "full_hash": "ac84c107fd07d57df68edea75fe1491f2309b71d58489aba1fac2f0387d11944",
-  "generated_at": 1764728225.215544,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\hybrid_search.py"
-}

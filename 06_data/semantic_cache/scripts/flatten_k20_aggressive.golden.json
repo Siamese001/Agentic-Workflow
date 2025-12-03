@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nAggressive flattening of intent\u2192axis\u2192verb_group chains to reduce single-child count for K20\n\"\"\"\n\nimport yaml\nfrom pathlib import Path\nfrom collections import defaultdict\n\ndef analyze_intent_structure(tree, domains, layers, phases, intents, axes, verb_groups):\n    \"\"\"Analyze intent\u2192axis\u2192verb_group structures to find flattenable chains\"\"\"\n    \n    intent_analysis = {}\n    \n    def traverse_tree(node, path):\n        if not isinstance(node, dict):\n            return\n        \n        # Skip __init__.py files\n        if '__init__.py' in node:\n            node_copy = {k: v for k, v in node.items() if k != '__init__.py'}\n            if len(node_copy) == 1:\n                node = node_copy\n            elif len(node_copy) == 0:\n                return\n        \n        # Check if we're at intent level (path has domain/layer/phase/intent)\n        if len(path) >= 4:\n            domain, layer, phase, intent = path[:4]\n            \n            if (domain in domains and layer",
-  "full_hash": "1cadc044b5684ee4c65c8596bc2113d8f70085633e51fbbcddc7a656a9fd76b1",
-  "generated_at": 1764728352.5951114,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\validation_tools\\flatten_k20_aggressive.py"
-}

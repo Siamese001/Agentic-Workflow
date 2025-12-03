@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - execute_observability_commands\nImplements L1 Cognitive Planning Layer for execute observability commands operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ExecuteObservabilityCommandsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ExecuteObservabilityCommandsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ExecuteObservabilityCommandsOrchestratorResul",
-  "full_hash": "17055263abf5ab0301ffa66c49f31427888f77a15ba4cc93f454ccf945b8039d",
-  "generated_at": 1764728350.804182,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\orc-layer\\act-phase\\use-observability-tools\\general\\use-a-tool\\execute_observability_commands.py"
-}

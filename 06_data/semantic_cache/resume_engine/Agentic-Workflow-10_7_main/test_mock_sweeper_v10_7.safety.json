@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": true,
-  "line_count": 11,
-  "generated_at": 1764728230.6729116,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\mock_detection\\test_mock_sweeper_v10_7.py"
-}

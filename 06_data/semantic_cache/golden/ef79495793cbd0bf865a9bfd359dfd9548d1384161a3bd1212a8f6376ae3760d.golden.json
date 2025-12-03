@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
-    "scan_timestamp": "2025-12-03T07:26:03.578259"
+    "scan_timestamp": "2025-12-03T08:04:48.086982"
   },
   "content_preview": "\"\"\"\nL4 Triplet Store for resume job alignment workflows.\n\nMaintains efficient indexes for resume enhancement querying.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass\nfrom datetime import datetime, UTC\nfrom typing import Any, Dict, List, Optional, Set, Tuple\nfrom enum import Enum\n\n\nclass TemporalType(Enum):\n    \"\"\"Temporal classification of facts for resume job alignment workflows.\"\"\"\n    STATIC = \"static\"\n    DYNAMIC = \"dynamic\"\n    TEMPORARY = \"tempora...",
-  "creation_timestamp": "2025-12-03T07:26:07.113107",
+  "creation_timestamp": "2025-12-03T08:04:53.143075",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "ba423be65f4b9a802e4bd617564daa58cad89c8d084a3fa887935aacf7afbb6e",
-    "scan_timestamp": "2025-12-03T07:26:03.851605"
+    "scan_timestamp": "2025-12-03T08:04:48.356553"
   },
   "content_preview": "# Testing and Coverage\n\nTo run the full validation suite used by CI:\n\n```bash\npytest tests/unit -q\npytest tests/integration -q\npytest tests/e2e -q\npytest tests/regression -q\ntools/run_tests_with_coverage.py\n```\n\nThe `tools/run_tests_with_coverage.py` helper executes pytest under Python's\nstandard-library `trace` module so the 90% coverage gate can be enforced even in\nrestricted environments where third-party plugins cannot be installed. Pass\nadditional pytest arguments after ``--`` if you need t...",
-  "creation_timestamp": "2025-12-03T07:26:32.139198",
+  "creation_timestamp": "2025-12-03T08:05:18.211859",
   "version": "1.0"
 }

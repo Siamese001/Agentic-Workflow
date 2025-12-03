@@ -1,6 +1,0 @@
-{
-  "golden_content": "# =====================================================================\n\n# PHASE 3 \u2014 ATOMIC STRUCTURAL + CODE REWRITE EXECUTION (ZERO-LOSS)\n\n# =====================================================================\n\n# PURPOSE:\n\n#   Execute the unified migration + rewrite plan created in Phase 2.\n#\n\n#   Phase 3 MUST:\n\n#       \u2022 Apply ALL structural filesystem changes\n\n#       \u2022 Apply ALL code rewrite operations using FULL semantic cache:\n#\n\n#           06_data/semantic_cache/\n\n#               resume_engine/\n\n#               outreach_engine/\n\n#               agentic_core/\n\n#               schemas/\n\n#               runtime/\n\n#               prompt_governance/\n\n#               config/\n\n#               data_source/\n\n#               observability/\n\n#               scripts/\n\n#               apps/\n\n#               tests/\n\n#               ast/\n\n#               diffs/\n\n#               embeddings/\n\n#               meta/\n\n#               safety/\n\n#               golden/\n\n#               integrity/\n#",
-  "full_hash": "d03437fa845a5be1e71934b068162d515ad98def2fc11b51d554c8811ced396a",
-  "generated_at": 1764728346.4979146,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\Phase 3.md"
-}

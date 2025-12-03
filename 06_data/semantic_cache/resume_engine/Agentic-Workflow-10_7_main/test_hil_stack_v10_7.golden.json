@@ -1,6 +1,0 @@
-{
-  "golden_content": "import json\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7 import PersonaConsensus, StrategyPlan\nfrom core_v10_7.models import HILFeedbackIntent\nfrom agent_stacks_v10_8.components.hil import (\n    HILAmbiguityDetectorAgent,\n    HILFeedbackRouterAgent,\n    HILReconciliationAgent,\n)\n\n\nclass StubLLMClient:\n    def __init__(self, payload: dict):\n        self.payload = payload\n\n    async def chat_completion_async(self, *_, **__):\n        return {\"content\": json.dumps(self.payload)}\n\n\n@pytest.mark.asyncio\nasync def test_hil_ambiguity_detector_triggers_on_vague_strategy(workflow_context):\n    workflow_context.config.agent_stacks.enable_hil_stack = True\n    payload = {\n        \"ambiguity_detected\": True,\n        \"confidence\": 0.92,\n        \"reason\": \"Strategy missing focus areas\",\n        \"question_for_human\": \"Which team should we highlight?\",\n    }\n    workflow_context.get_model_client = lambda *_, **__: StubLLMClient(payload)\n\n    agent = HILAmbiguityDetectorAgent(workflo",
-  "full_hash": "8347f5d0a16cef33c06b41b9480bc969617f7bcf4d99c439625a1f108328b763",
-  "generated_at": 1764728230.558659,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\hil\\test_hil_stack_v10_7.py"
-}

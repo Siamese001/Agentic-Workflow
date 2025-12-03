@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.5\n====================================================\n\nCHANGELOG v11.5 (CRITICAL - Priorities 1-4 from v10.22):\n---------------------------------------------------------\n\u2728 NEW: Priority 1 - Archetype-Specific Reasoning Configurations\n- Added ARCHETYPE_REASONING_PARAMS with complete configs for all archetypes\n- C_LEVEL: 24 RAG calls, 6 max hops, temp=0.45, 12 self-consistency, 16 ToT branches\n- EXECUTIVE: 18 RAG calls, 4 max hops, temp=0.5, 5 self-consistency, 6 ToT branches\n- RECRUITER: 8 RAG calls, 2 max hops, temp=0.65, 3 self-consistency, NO ToT\n- 3x compute variance: CEO gets maximum investment, recruiters get efficiency\n- Integrated with ResearchOrchestrator and GenerationOrchestrator\n\n\u2728 NEW: Priority 2 - Global Constraints SSOT with API Access Layer\n- Created ConfigRegistry class as single source of truth for all parameters\n- Consolidated ROUTE_CONSTRAINTS, archetype word counts, RAG params, tone mappings\n- API functions: ge",
-  "full_hash": "8cd533b4657bebdc714645b05d5dfcaaed5e5d74385a4c6ea193615851d803e4",
-  "generated_at": 1764728339.0759432,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_5.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nRollback Engine for Agentic-Workflow\n\nImplements Phase 2 rollback capabilities for K26-K30 validation\n\nProvides rollback functionality, state restoration, and\noperation reversal for Phase 2 atomic operations.\n\"\"\"\n\nimport os\nimport sys\nimport json\nimport shutil\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Optional, Set, Tuple\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\n\n@dataclass\nclass RollbackPoint:\n    rollback_id: str\n    timestamp: str\n    description: str\n    operations_count: int\n    backup_location: str\n    can_rollback: bool\n\n\nclass RollbackEngine:\n    \"\"\"\n    Rollback engine for atomic operations\n    \n    Provides comprehensive rollback capabilities for Phase 2\n    atomic operations with full state restoration.\n    \"\"\"\n    \n    def __init__(self, workspace_root: Path):\n        self.workspace_root = Path(workspace_root)\n        self.rollback_points_dir = self.workspace_root / \"02_schemas\" / \"rollback_points\"\n      ",
-  "full_hash": "2fc12877c17d11928ed700b3077a3c81cfa306be63e96788466a6c66054e9db9",
-  "generated_at": 1764728345.729841,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\rollback_engine.py"
-}

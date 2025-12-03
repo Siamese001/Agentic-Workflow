@@ -1,6 +1,0 @@
-{
-  "golden_content": "# PHASE A: DISCOVERY & MAPPING RESULTS\n\n## Agent Architecture Map\n\n### L1 (Planning/Cognition) - PURE REASONING\n**Current State**: \u2705 Well-separated\n- `l1/strategy_planning.py`: StrategyPlan, DraftPlan, LatentThinkingPlan\n- `l1/rag_planning.py`: RAGReasoningPlan, HydePlan\n- `l1/qa_planning.py`: SemanticQAPlan, CouncilPlan\n- `l1/safety_planning.py`: SafetyPlan\n- `l1/vector_search_planning.py`: VectorSearchPlan\n- `l1/workflow_planning.py`: WorkflowPlanBundle orchestration\n\n**Issues Found**:\n- \u274c No Instructional Injection v6 prompts\n- \u274c Missing many-shot examples\n- \u274c No temporal reasoning layer\n- \u274c Limited Pinecone-specific planning\n\n### L2 (Execution/Action) - TOOL EXECUTION ONLY\n**Current State**: \u26a0\ufe0f Needs refinement\n- `l2/agents.py`: StrategyLLMAgent, DraftingGuild, SemanticQAAgent, ConstitutionalSafetyAgent, HYDEQueryAgent\n- `l2/execution.py`: Execution functions\n- `l2/vector_search_executor.py`: Pinecone executor\n\n**Issues Found**:\n- \u26a0\ufe0f L2 agents mix some reasoning with execution\n- \u274c ",
-  "full_hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-  "generated_at": 1764728226.335635,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\PHASE_A_DISCOVERY_MAP.md"
-}

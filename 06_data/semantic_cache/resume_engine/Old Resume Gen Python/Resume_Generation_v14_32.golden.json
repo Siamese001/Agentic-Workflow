@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v14.32\n\nCode Consolidation Update - Removed JSON Logging Layer\n\nThis version consolidates the codebase by removing the optional JSON logging\ninfrastructure that added ~350 lines with minimal production value.\n\nRetained enhancements from v14.31:\n1. Enhanced API Call Logging (parameters, latency, errors)\n2. Configuration Context Logging (reasoning params, intensity, temperature)\n3. Data Flow & Transformation Snapshots (HOP summaries)\n4. Intermediate Validation & Decision Logging (failures, rewrites, gates)\n\nRemoved:\n- JSONFormatter class (lines 154-186, ~33 lines)\n- setup_structured_logging() function (lines 187-217, ~31 lines)\n- enable_json_logging parameter from WorkflowOrchestrator.__init__\n- ENABLE_JSON_LOGGING environment variable references\n- All extra={} context dictionaries from logging calls (~200+ lines affected)\n\nNet reduction: ~350 lines (~3.7% of total codebase)\n\nUsage:\n    orchestrator = WorkflowOrchestrator(master_resume)\n    result = orchestra",
-  "full_hash": "ca9dbe9fefd6e9fade927e76bef378f33f0544c6e517498bb52129feb846a2d4",
-  "generated_at": 1764728280.4868245,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_32.py"
-}

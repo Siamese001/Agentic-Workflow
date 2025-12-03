@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: main_v9_0.py\n# Overwrites: main_v9_0.py\n# Version: 9.0 (Agentic Loops)\n#\n# v9.0 (Agentic Loops) CHANGES:\n# - Imports from v9_0 modules.\n# - Updated version string to 9.0.0-agentic-loops.\n\n# ============================================================================\n# EXTERNAL IMPORTS\n# ============================================================================\nimport argparse\nimport json\nimport logging\nimport logging.handlers\nimport os\nimport sys\nimport uuid\nimport re\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any, Dict, List, Optional, Tuple\n\n# Import from consolidated modules (v9.0)\nfrom core_v9_0 import (\n    CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR\n)\n\n# v9.0: Import from the new graph builder\nfrom agent_swarm_v9_0 import get_graph_app\n\n# v7.5: Import LangGraph + Redis\nfrom langgraph.checkpoint.redis import RedisSaver\n\nlogger = logging.getLogger(__name__)\n\n# Version info\n__version__ = \"9.0.0-agentic-loops\"\n\nclass JsonFormatter(logging.Formatte",
-  "full_hash": "7586b0f334916dafa6b802cd08229c0e9649e2cab4cded916c2d367b33c4232d",
-  "generated_at": 1764728328.1351018,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\main_v9_0.py"
-}

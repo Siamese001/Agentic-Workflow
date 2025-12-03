@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v4.9.0 - COMPLETE WITH ALL JSON RESOURCES\n==================================================================\nFINAL VERSION: Integrates ALL uploaded JSON resources\n- SaaS Roles: 1,993 roles for role-specific customization\n- App Tracker Schema: 54 fields for application tracking\n- App Tracker QA: R1-R23 validation rules\n- Hyphenation Rules: Style enforcement\n- BaselineResumeMetrics: Full validation\n- 9-HOP Pipeline: Complete execution\n\nVersion: 4.9.0\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nimport random\nfrom datetime import datetime\nfrom dataclasses import dataclass\nimport hashlib\nimport os\n\n__version__ = \"4.9.0\"\n\n# ============================================================================\n# LOAD ALL JSON RESOURCES\n# ============================================================================\n\ndef load_json_resources():\n    \"\"\"Load all uploaded JSON resources.\"\"\"\n    resour",
-  "full_hash": "f7fdacb4938d83cc5978b5322b495df46895ac0e859d8539e421634f6e18bf7e",
-  "generated_at": 1764728297.3349478,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_9_0_COMPLETE.py"
-}

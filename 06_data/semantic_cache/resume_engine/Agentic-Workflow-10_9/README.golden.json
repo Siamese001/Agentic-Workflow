@@ -1,6 +1,0 @@
-{
-  "golden_content": "# \ud83d\ude80 Agentic Workflow \u2014 v10.8 Core Architecture (Flat L1\u2013L5 Design)\n### Clean, Modern, Deterministic Agentic AI Architecture\n\nThis branch (`10_8_core`) contains the next-generation **v10.8 agentic architecture**, built cleanly from the ground up with **strict L1\u2013L5 layering**, a **flat file structure**, and **zero legacy contamination** from v10.7.\n\nThis structure is optimized for:\n- modularity  \n- testability  \n- safety  \n- state determinism  \n- ChatGPT/Codex ingestion  \n- flat repo portability  \n\nThe entire architecture is scaffolded and ready for **Priority 0\u20139 implementation**.\n\n---\n\n# \ud83e\uddf1 Architecture Overview (L1 \u2192 L5)\n\nv10.8 implements a layered agentic model:\n\n```\nL1 \u2014 Reasoning (Generate plans)\nL2 \u2014 Execution (Use tools, perform operations)\nL3 \u2014 Orchestration (Sequence actions, control flow)\nL4 \u2014 State (Memory, patching, deterministic state machine)\nL5 \u2014 Safety (Policy, constitutional checks, injection detection)\n```\n\nEach file in the repository is prefixed (`l1_`, `l2_`, etc.) t",
-  "full_hash": "40819043f010194dea6cb523550847c47acadb9c39da5fd3619cc06ec5f9069d",
-  "generated_at": 1764728228.7562153,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\README\\README.md"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nProvides Redis caching for r\u00e9sum\u00e9 analysis results to improve processing speed and reduce costs.\n\nImproves r\u00e9sum\u00e9 processing efficiency by storing LLM outputs and analysis results for fast retrieval across similar job queries.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Optional\n\n\nclass RedisNotConfiguredError(RuntimeError):\n    \"\"\"\n    Indicates r\u00e9sum\u00e9 caching is unavailable so analysis can continue without performance optimization.\n\n    Improves r\u00e9sum\u00e9 processing reliability by gracefully handling cache unavailability without breaking analysis workflows.\n    \"\"\"\n\n\nclass RedisClientError(RuntimeError):\n    \"\"\"\n    Wraps Redis connection issues to maintain r\u00e9sum\u00e9 analysis stability during cache failures.\n\n    Improves r\u00e9sum\u00e9 processing reliability by providing clear error handling for cache-related problems without disrupting workflows.\n    \"\"\"\n\n\ndef init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):\n    \"\"\"\n    Creates Redis c",
-  "full_hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-  "generated_at": 1764728224.3435502,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\storage\\cache_redis.py"
-}

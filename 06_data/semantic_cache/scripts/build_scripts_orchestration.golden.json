@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - build_scripts_orchestration\nImplements L1 Cognitive Planning Layer for build scripts orchestration operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass BuildScriptsOrchestrationOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass BuildScriptsOrchestrationOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass BuildScriptsOrchestrationOrchestratorResult:\n    \"\"\"L5 Re",
-  "full_hash": "48cab2d599aec2a80138c583bfb841852027997862b036db9520cdf574b844fe",
-  "generated_at": 1764728351.938556,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\build_scripts_orchestration.py"
-}

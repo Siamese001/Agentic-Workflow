@@ -1,6 +1,0 @@
-{
-  "golden_content": "import os\n\n\ndef test_test_suite_unified():\n    assert not os.path.exists(\"tests_flat\"), \"tests_flat should not exist\"\n    assert os.path.isdir(\"tests/v10_7\")\n    assert os.path.isdir(\"tests/v10_8\")\n",
-  "full_hash": "b02fb46180c23d1d7f7075ea6b68d58a7de41bb7fd20c8ec167fa952955c3f30",
-  "generated_at": 1764728230.3792198,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\shared\\test_suite_unified.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Configuration to prevent pytest from collecting deprecated tests.\"\"\"\n\n# Prevent pytest from collecting any test files in this directory\ncollect_ignore_glob = [\"*.py\"]\n",
-  "full_hash": "657aa86a47dee8f117bc46955596289206e5d165f883a2fc4e40e88cd0b54444",
-  "generated_at": 1764728227.6921756,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\conftest.py"
-}

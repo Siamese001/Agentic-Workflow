@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "17dbea375b57f7fcd05c69c9e1236624b832a8e32759ff1c34edfbff076e0d5a",
-    "scan_timestamp": "2025-12-03T07:26:03.737501"
+    "scan_timestamp": "2025-12-03T08:04:48.248171"
   },
   "content_preview": "{\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\", \"context\"],\n    \"version\": \"v10.7\",\n    \"notes\": \"Extended context to include orchestration metadata\"\n  },\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\", \"issues\"],\n    \"version\": \"v10.7\",\n    \"notes\": \"Includes structured issue reporting\"\n  }\n}\n",
-  "creation_timestamp": "2025-12-03T07:26:18.311318",
+  "creation_timestamp": "2025-12-03T08:05:05.409419",
   "version": "1.0"
 }

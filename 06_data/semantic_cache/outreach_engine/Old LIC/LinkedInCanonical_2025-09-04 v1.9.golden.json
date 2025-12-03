@@ -1,6 +1,0 @@
-{
-  "golden_content": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-04 v1.9\n===============================================================================\n\n# SUMMARY\n- Full router with NEW vs EXISTING and SINGLE vs MULTIPLE batching.\n- NEW \u2192 Full-message (Premium InMail) support hardened: if a NEW contact has Premium InMail available, send a full message (salutation override; resume-attachment sentence) with tone/length aligned to Executive or Contact by seniority (see Router R1/R2). Do not use messaging mechanics to decide seniority.\n- NEW | Short uses Light RAG to align to \u226412-month company imperatives while preserving the 290\u2013310 character budget. Abbreviation enforcement applies only to Short (NEW); it is prohibited in Recruiter/Contact/Executive shells. Length is validated with a LinkedIn-compatible character counter.\n- Visible output is fixed and minimal: message, then (1) ",
-  "full_hash": "f449a27700b15ffa91e470e465459d29bbf770d613c153a685b78d3bced261ca",
-  "generated_at": 1764728339.9644568,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-04 v1.9.md"
-}

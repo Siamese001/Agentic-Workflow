@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "06cf76ec5debff0240370230393af7ef45713c2d0dd946ddff7fb2c3d94cab34",
-    "scan_timestamp": "2025-12-03T07:26:03.815646"
+    "scan_timestamp": "2025-12-03T08:04:48.321774"
   },
   "content_preview": "# V2 Architecture Quick Reference\n\n## File Structure\n```\nresume_gen_files/\n\u251c\u2500\u2500 workflow_RES_v2.py      # Main orchestrator (180K)\n\u251c\u2500\u2500 run_workflow_RES_v2.py  # Launcher (11K)\n\u251c\u2500\u2500 governor.py             # V2 agents (34K)\n\u251c\u2500\u2500 config_RES.py           # Config + GovernorConfig (20K)\n\u251c\u2500\u2500 models_RES.py           # Data models (15K)\n\u251c\u2500\u2500 utils_RES.py            # Utilities (33K)\n\u251c\u2500\u2500 rag_RES.py              # RAG + LibrarianAgent (46K)\n\u251c\u2500\u2500 prompts_RES.py          # Prompt templates (30K)\n\u251c\u2500\u2500 validation_...",
-  "creation_timestamp": "2025-12-03T07:26:25.785985",
+  "creation_timestamp": "2025-12-03T08:05:12.313185",
   "version": "1.0"
 }

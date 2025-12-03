@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "faa0c0bdaac9b4f8d9ad6e14ecf844159f2e875ca772ed93954fd9a8299b3a9c",
-    "scan_timestamp": "2025-12-03T07:26:03.826974"
+    "scan_timestamp": "2025-12-03T08:04:48.332160"
   },
   "content_preview": "from __future__ import annotations\n\nfrom dotenv import load_dotenv\nload_dotenv() # This loads the variables from .env into os.environ\n\nimport json\nimport re # Added for truncation check logic and new validation rules\nimport hashlib\nimport math\nimport logging\nimport os\nimport time\n\n\n__version__ = \"11.40\"\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    print(\"Warning: google-generativeai package not installed. Web RAG di...",
-  "creation_timestamp": "2025-12-03T07:26:29.710738",
+  "creation_timestamp": "2025-12-03T08:05:15.970109",
   "version": "1.0"
 }

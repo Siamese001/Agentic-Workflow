@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - refine_resume_ranking\nImplements L1 Cognitive Planning Layer for refine resume ranking operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RefineResumeRankingPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RefineResumeRankingPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RefineResumeRankingPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: b",
-  "full_hash": "822686b730c00eeef8b2a6bdac490cde431d47fba3f0bd8077d910bd8a687039",
-  "generated_at": 1764728353.4570208,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\refine-phase\\pick-resume-content\\refinement\\adjust-scores\\refine_resume_ranking.py"
-}

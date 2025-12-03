@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: agent_swarm_v10_0.py\n# Version: 10.0 (Modularity, Caching, Async Performance)\n#\n# v10.0 MAJOR CHANGES:\n# ROW 4: All agents use dependency injection via WorkflowContext\n# ROW 5: All LLM calls go through cached async clients\n# ROW 6: Async agent execution with parallel bullet critique\n\nimport asyncio\nimport logging\nimport re\nfrom typing import Dict, Any, List, Optional\nfrom datetime import datetime\n\n# Local Presidio for PII (v9.9 security hardening preserved)\ntry:\n    from presidio_analyzer import AnalyzerEngine\n    from presidio_anonymizer import AnonymizerEngine\n    PRESIDIO_AVAILABLE = True\nexcept ImportError:\n    PRESIDIO_AVAILABLE = False\n\nfrom core_v10_0 import (\n    BaseAgent, WorkflowContext, MainGraphState,\n    ModelAPIError, JSONParsingError, CONFIG\n)\nfrom langgraph.graph import StateGraph, END\n\nlogger = logging.getLogger(\"agent_swarm_v10_0\")\n\n# ============================================================================\n# SAFETY STACK (Local processing - v9.9 security ",
-  "full_hash": "dbbda1d89ff938e2c5239b8254cdb1428c347904362b9c8df288ec1e1fc88179",
-  "generated_at": 1764728349.1623173,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\agent_boundary.yaml"
-}

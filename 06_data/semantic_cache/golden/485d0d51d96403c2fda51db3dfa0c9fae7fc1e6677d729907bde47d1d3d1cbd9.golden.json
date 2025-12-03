@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-    "scan_timestamp": "2025-12-03T07:26:03.553702"
+    "scan_timestamp": "2025-12-03T08:04:48.065513"
   },
   "content_preview": "\"\"\"Bridges OpenAI structure to atomic L1-L5 layers with strict boundaries.\n\nEnsures resume generation follows a clean, maintainable architecture that improves\noutput consistency and makes it easier to enhance resume quality over time.\n\"\"\"\n\nfrom typing import Any, Dict, Optional\nfrom pathlib import Path\n\n# Import concrete implementations to be wrapped\nfrom l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator\nfrom l4.state_manager import StateManager\nfrom l5.safety_validator import ...",
-  "creation_timestamp": "2025-12-03T07:26:05.347753",
+  "creation_timestamp": "2025-12-03T08:04:50.397573",
   "version": "1.0"
 }

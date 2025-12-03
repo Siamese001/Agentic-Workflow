@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - validate_config_ethics\nImplements L5 Safety/Policy Layer for validate config ethics operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ValidateConfigEthicsSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass ValidateConfigEthicsSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ValidateConfigEthicsSafetyResult:\n    \"\"\"L5 Safety resul",
-  "full_hash": "959a4769c3a0539c5c80703fd91cd1fb80c761f49c9bb59d8deecaf7bffb7d98",
-  "generated_at": 1764728349.3262146,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\check-config-rules\\policy\\check-safety\\validate_config_ethics.py"
-}

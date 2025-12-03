@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Test that all vector search modules can be imported.\"\"\"\nimport pytest\n\n\ndef _can_import_pinecone() -> bool:\n    \"\"\"Check if Pinecone SDK is properly installed.\"\"\"\n    try:\n        from pinecone import Pinecone  # noqa: F401\n        return True\n    except ImportError:\n        return False\n\n\ndef test_import_vector_modules():\n    \"\"\"Test that all vector search related modules can be imported.\"\"\"\n    # L1 Planning\n    import l2.agents.planning.vector_search_planning  # noqa: F401\n    \n    # L2 Execution\n    import l2.agents.execution.vector_search_executor  # noqa: F401\n    \n    # If we get here, core imports worked\n    assert True\n\n\n@pytest.mark.skipif(\n    not _can_import_pinecone(),\n    reason=\"Pinecone SDK not properly installed or incompatible version\"\n)\ndef test_import_pinecone_provider():\n    \"\"\"Test that pinecone provider can be imported when SDK is available.\"\"\"\n    import providers.pinecone_client  # noqa: F401\n    assert True\n\n\n\n\n\n\n",
-  "full_hash": "b777fbda3c7dd30fcfb1edd84c793cd5a23ddddeafe411dd604ff65534b51e11",
-  "generated_at": 1764728227.80162,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_vector_imports.py"
-}

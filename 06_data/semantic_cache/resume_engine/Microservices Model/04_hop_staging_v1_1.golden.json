@@ -1,6 +1,0 @@
-{
-  "golden_content": "# hops/04_hop_staging.py\n\"\"\"\nHop 4: Staging and Sanitization with Signal Score Calculation\n\nThis hop:\n1. Cleans and sanitizes LLM output\n2. Validates structural integrity\n3. Calculates per-section signal scores using ThematicAnalysis\n4. Creates ImmutableStagingBuffer\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Union\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components from helpers\nfrom helpers import (\n    setup_workflow_logging, HopExecutionError, default_serializer,\n    ImmutableStagingBuffer, ResumeSection, ThematicAnalysis, calculate_signal_score\n)\n\n# --- Content Sanitizer with Signal Scoring ---\n\nclass ContentSanitizer:\n    \"\"\"\n    Robust sanitizer that cleans LLM output and calculates signal quality scores\n    \"\"\"\n    \n    def __init__(se",
-  "full_hash": "d5d87f1271a2df4298e0c33098dcc3016c47225bc599e82a71ec4e9439801690",
-  "generated_at": 1764728232.0174093,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\04_hop_staging_v1_1.py"
-}

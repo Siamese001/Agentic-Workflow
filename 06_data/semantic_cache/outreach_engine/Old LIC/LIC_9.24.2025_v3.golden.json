@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"prompt_shell\": {\n    \"version\": \"3.5-MZLO\",\n    \"name\": \"Six-Section Canonical Prompt Shell\",\n    \"purpose\": \"Define authority, scope, enforceable rules, and non-negotiables for converting any prompt into the canonical six-section structure.\",\n    \"sections_required\": [\n      \"1.role\",\n      \"2.task\",\n      \"3.context\",\n      \"4.reasoning\",\n      \"5.output\",\n      \"6.conditions\"\n    ],\n    \"enforcement\": {\n      \"reject_out_of_order_emission\": true,\n      \"block_output_on_reasoning_qa_fail\": true,\n      \"block_output_on_mzlo_fail\": true,\n      \"enforce_decimal_numbering\": true,\n      \"enforce_subsection_alignment\": true,\n      \"forbid_unstructured_appendices\": true,\n      \"strict_ascii_hygiene\": true,\n      \"all_fields_present_block\": true,\n      \"block_on_mzlo_fail\": true,\n      \"require_markdown_escaping_in_tables\": true\n    },\n    \"constraints\": {\n      \"thresholds_audit\": {\n        \"avg_exec_score_min\": 0.9,\n        \"avg_s_score_min\": 0.9,\n        \"avg_answer_score_min\": 0.9,\n",
-  "full_hash": "3249d24a8b7edace1edcd73b48d829a49325d77f6360d17b5859d1e5ee3347a0",
-  "generated_at": 1764728338.0185971,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.24.2025_v3.json"
-}

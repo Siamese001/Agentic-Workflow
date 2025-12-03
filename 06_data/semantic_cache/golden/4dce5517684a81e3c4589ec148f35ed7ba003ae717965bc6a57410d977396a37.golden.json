@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4dce5517684a81e3c4589ec148f35ed7ba003ae717965bc6a57410d977396a37",
-    "scan_timestamp": "2025-12-03T07:26:03.711610"
+    "scan_timestamp": "2025-12-03T08:04:48.221763"
   },
   "content_preview": "\"\"\"Global pytest configuration that delegates to shared test utilities.\"\"\"\n\npytest_plugins = [\"tests.shared.conftest\"]\n",
-  "creation_timestamp": "2025-12-03T07:26:15.337088",
+  "creation_timestamp": "2025-12-03T08:05:02.799035",
   "version": "1.0"
 }

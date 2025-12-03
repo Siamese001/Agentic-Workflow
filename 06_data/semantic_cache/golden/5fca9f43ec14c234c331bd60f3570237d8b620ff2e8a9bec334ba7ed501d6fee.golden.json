@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
-    "scan_timestamp": "2025-12-03T07:26:03.583331"
+    "scan_timestamp": "2025-12-03T08:04:48.091722"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef evaluate_hypotheses(hypotheses: List[Hypothesis]) -> List[Hypothesis]:\n    \"\"\"Return a new list of hypotheses with adjusted confidence.\n\n    Heuristics (purely deterministic):\n    - penalize very long or very short content slightly.\n    - if a hypothesis has no evidence_ids, reduce confidence.\n    - clamp confidence to [0, 1].\n    \"\"\"\n\n    evaluated: List[Hypothesis] = []\n    for h...",
-  "creation_timestamp": "2025-12-03T07:26:07.641858",
+  "creation_timestamp": "2025-12-03T08:04:53.905743",
   "version": "1.0"
 }

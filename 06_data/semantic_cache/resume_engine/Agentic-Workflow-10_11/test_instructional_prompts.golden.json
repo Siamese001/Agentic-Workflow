@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Tests for Instructional Injection v6 Prompts and Many-Shot Examples\n\nThis module validates:\n- v6 prompt structure and completeness\n- Many-shot example quality\n- Prompt integration with agents\n- Layer and extension functionality\n\"\"\"\n\nimport pytest\nfrom l1.instructional_injection_v6 import (\n    InstructionalPrompt,\n    InstructionalLayer,\n    InstructionalExtension,\n    LayerContent,\n    ExtensionContent,\n    create_l1_planner_prompt,\n    create_l2_executor_prompt,\n    add_rag_extension,\n    add_cot_extension,\n)\nfrom l1.many_shot_examples import (\n    ExampleType,\n    get_examples,\n    format_examples_for_prompt,\n    STRATEGY_PLANNING_EXAMPLES,\n    RAG_PLANNING_EXAMPLES,\n)\nfrom l1.v6_prompt_integration import (\n    create_strategy_planner_prompt,\n    create_rag_planner_prompt,\n    create_qa_planner_prompt,\n    create_safety_planner_prompt,\n    create_strategy_executor_prompt,\n    validate_v6_prompt,\n)\n\n\nclass TestInstructionalPromptStructure:\n    \"\"\"Test v6 prompt structure and funct",
-  "full_hash": "f2c8b0420288e085a11a52308599f63db9328e3906934da0a9a3eadb01f5e74b",
-  "generated_at": 1764728227.7403972,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_instructional_prompts.py"
-}

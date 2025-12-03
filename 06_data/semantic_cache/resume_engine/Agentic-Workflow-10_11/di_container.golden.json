@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nInfrastructure dependency injection for r\u00e9sum\u00e9 processing workflows.\n\nProvides service management and dependency resolution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, TypeVar, Callable, Optional\nimport functools\n\nT = TypeVar('T')\n\n# Simple service registry for atomic architecture\n_services: Dict[str, Any] = {}\n\nclass SimpleDIContainer:\n    \"\"\"\n    Manages dependency injection services for r\u00e9sum\u00e9 processing architecture.\n\n    Ensures proper service resolution and lifecycle management for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    \n    def __init__(self):\n        self._services: Dict[str, Any] = {}\n    \n    def register(self, name: str, service: Any) -> None:\n        \"\"\"\n        Registers service for r\u00e9sum\u00e9 processing workflows.\n\n        Enables modular service management for comprehensive r\u00e9sum\u00e9 enhancement operations.\n        \"\"\"\n        if name in self._services:\n            raise ValueError(f\"Service '{name}' is already registered\")\n       ",
-  "full_hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
-  "generated_at": 1764728224.2322176,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\di_container.py"
-}

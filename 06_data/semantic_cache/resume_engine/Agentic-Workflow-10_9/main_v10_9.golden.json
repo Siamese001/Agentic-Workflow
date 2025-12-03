@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: main_v10_9.py\n\"\"\"\nMain Entry Point \u2014 v10_9 Agentic Workflow (META-AWARE, FULL STACK L1\u2013L5)\n\nThis module is the ONLY top-level orchestrator responsible for running\nthe entire agentic workflow end-to-end. It coordinates all layers:\n\n    \u2022 L1: Planning (strategy, rag, drafting, bullets, qa, safety, meta, prompt_eng)\n    \u2022 L2: Execution (retrieval, drafting, QA, safety evaluation, meta)\n    \u2022 L3: Orchestration (DAG execution)\n    \u2022 L4: State (memory, patches, correction logs)\n    \u2022 L5: Safety, Policy, Arbitration\n\nAdditionally, this refactored version fully incorporates the META\nprofile biasing layer based on 10_8 \u2192 10_9 restoration and the 14\nOpenAI agentic subdomain requirements.\n\nKEY FEATURES (UPGRADED):\n\n    \u2022 Fully typed PlanObject and ExecutionResult flows.\n    \u2022 Deterministic DAG-based execution via L3.\n    \u2022 Stream callbacks for observability (optional).\n    \u2022 Meta-profile integration (planning, routing, safety, correction).\n    \u2022 Safety + policy + arbitration pipeline at t",
-  "full_hash": "c0640851e530a56d5e46d7510ac8c40ca6717af7012df52351cfc78bfdbe9a51",
-  "generated_at": 1764728228.6574156,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\main_v10_9.py"
-}

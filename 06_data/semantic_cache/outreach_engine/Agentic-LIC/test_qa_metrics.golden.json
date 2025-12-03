@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.qa import MetricsTracker, QAResult\n\n\ndef test_metrics_aggregate_pass_rate_and_latency():\n    tracker = MetricsTracker()\n    tracker.record(\n        QAResult(True, ()),\n        latency_ms=1200,\n        token_count=120,\n        retry_attempted=True,\n        retry_succeeded=True,\n        token_drift=0.05,\n    )\n    tracker.record(\n        QAResult(False, (\"Missing signature\",)),\n        latency_ms=2000,\n        retry_attempted=True,\n        retry_succeeded=False,\n        token_drift=0.08,\n    )\n    assert tracker.pass_rate() == 0.5\n    assert tracker.latency_p95() == 2000\n    assert tracker.average_tokens() == 120.0\n    breakdown = tracker.failure_breakdown()\n    assert breakdown[\"Missing signature\"] == 1\n    assert tracker.retry_success_rate() == 0.5\n    assert tracker.token_drift() == 0.08\n    tracker.reset()\n    assert tracker.pass_rate() == 0.0\n    assert tracker.latency_p95() == 0\n    assert tracker.average_tokens() == 0.0\n    assert tracker.retry_success_rate() ",
-  "full_hash": "c2fb27f33029cc717535e00af832e8088ce54cc159876a9f4f84c8ab040e8329",
-  "generated_at": 1764728331.1728044,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_qa_metrics.py"
-}

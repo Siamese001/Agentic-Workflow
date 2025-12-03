@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - log_tests_metrics\nImplements L1 Cognitive Planning Layer for log tests metrics operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass LogTestsMetricsExecutorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass LogTestsMetricsExecutorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass LogTestsMetricsExecutorResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n    ",
-  "full_hash": "56452478174167302e97de75bb2805cef7ef6b4bcc0e4618c1e0dbd0bde43a08",
-  "generated_at": 1764728353.911689,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\exec-layer\\inspect-phase\\find-tests-problems\\general\\update-memory\\log_tests_metrics.py"
-}

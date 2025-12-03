@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5b1e07d266120c263fc50d60db07a8844db5b90a0ad0af63b0c1bc0efe9822de",
-    "scan_timestamp": "2025-12-03T07:26:03.797498"
+    "scan_timestamp": "2025-12-03T08:04:48.303083"
   },
   "content_preview": "\"\"\"Lightweight workflow graph for system tests.\"\"\"\nfrom __future__ import annotations\n\nfrom typing import Iterable, List\n\n_REQUIRED_NODES: List[str] = [\n    \"PromptInjectionDetector\",\n    \"PIISanitizerAgent\",\n    \"QAAgent\",\n    \"StrategyAgent\",\n    \"RAGAgent\",\n    \"DraftingAgent\",\n]\n\n_EDGES: List[str] = [\n    \"PromptInjectionDetector -> PIISanitizerAgent\",\n    \"PIISanitizerAgent -> StrategyAgent\",\n    \"StrategyAgent -> RAGAgent\",\n    \"RAGAgent -> DraftingAgent\",\n    \"DraftingAgent -> QAAgent\",\n]...",
-  "creation_timestamp": "2025-12-03T07:26:20.713545",
+  "creation_timestamp": "2025-12-03T08:05:07.943847",
   "version": "1.0"
 }

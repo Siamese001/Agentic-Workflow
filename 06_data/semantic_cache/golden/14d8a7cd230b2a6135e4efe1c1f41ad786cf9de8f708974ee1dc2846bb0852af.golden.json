@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "14d8a7cd230b2a6135e4efe1c1f41ad786cf9de8f708974ee1dc2846bb0852af",
-    "scan_timestamp": "2025-12-03T07:26:03.722558"
+    "scan_timestamp": "2025-12-03T08:04:48.234270"
   },
   "content_preview": "\"\"\"Local stub shim for pydantic imports in tests.\"\"\"\n\nfrom vendor.pydantic import *  # noqa: F401,F403\n",
-  "creation_timestamp": "2025-12-03T07:26:16.836196",
+  "creation_timestamp": "2025-12-03T08:05:04.066175",
   "version": "1.0"
 }

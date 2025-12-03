@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - query_scripts_store\nImplements L1 Cognitive Planning Layer for query scripts store operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass QueryScriptsStoreMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass QueryScriptsStoreMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass QueryScriptsStoreMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n",
-  "full_hash": "b4b8dc7eb403d3093b18fcf4328d1b98f4c9299af71d622e7709700f7bccf6a2",
-  "generated_at": 1764728351.814664,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\general\\understand-request\\query_scripts_store.py"
-}

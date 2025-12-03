@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2",
-    "scan_timestamp": "2025-12-03T07:26:03.802507"
+    "scan_timestamp": "2025-12-03T08:04:48.307854"
   },
   "content_preview": "# hops/hop_4_staging.py\n\"\"\"\nHop 4: Staging and Sanitization - HIGH-SIGNAL OVERWRITE\n\nThis hop is a deterministic \"data integrity\" layer. It cleans, validates,\nand finalizes the creative output from HOP-3 before it can be validated\nor rendered.\n\nIts responsibilities are:\n1.  Remove all AI/LLM generation artifacts (e.g., \"Certainly!\", markdown).\n2.  Perform structural unification (e.g., split string-based lists into List[str]).\n3.  Sanitize any remaining placeholders (e.g., \"[Insert Metric]\").\n4. ...",
-  "creation_timestamp": "2025-12-03T07:26:21.377603",
+  "creation_timestamp": "2025-12-03T08:05:08.737727",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Ensure the flattened test view stays synchronized with the source files.\"\"\"\nfrom __future__ import annotations\n\nimport ast\nimport json\nfrom pathlib import Path\nfrom typing import Dict, Iterable, List, Tuple\n\nimport pytest\n\nREPO_ROOT = Path(__file__).resolve().parents[1]\nMANIFEST_PATH = REPO_ROOT / \"tests_flat\" / \"manifest.json\"\n\n\ndef _load_manifest() -> List[Tuple[Path, Path]]:\n    manifest = json.loads(MANIFEST_PATH.read_text(encoding=\"utf-8\"))\n    return [\n        (Path(entry[\"flat\"]), Path(entry[\"source\"]))\n        for entry in manifest\n    ]\n\n\ndef _extract_embedded_sources(flat_path: Path) -> Dict[str, str]:\n    module_ast = ast.parse(flat_path.read_text(encoding=\"utf-8\"))\n    for node in module_ast.body:\n        if not isinstance(node, ast.Assign):\n            continue\n        for target in node.targets:\n            if isinstance(target, ast.Name) and target.id == \"EMBEDDED_SOURCES\":\n                embedded = ast.literal_eval(node.value)\n                if not isinstance(embed",
-  "full_hash": "e0876b6a67c26c50f3f086015fd37bd10e67898545612bec91e0afd742054a12",
-  "generated_at": 1764728230.7976477,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat_equivalence_v10_7.py"
-}

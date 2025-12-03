@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Tests for strategy simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.strategy_sim import StrategySimulator\nfrom simulations.models import StrategySimRequest\n\n\n@pytest.mark.asyncio\nasync def test_strategy_simulator_returns_result():\n    simulator = StrategySimulator()\n    request = StrategySimRequest(\n        simulation_id=\"sim-1\",\n        payload={},\n        job_title=\"Engineer\",\n        company=\"ACME\",\n        strategy_plan={\"strategy_name\": \"Focused\"},\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <= result.metrics[\"clarity_score\"] <= 1.0\n    assert 0.0 <= result.metrics[\"alignment_score\"] <= 1.0\n    assert 0.0 <= result.metrics[\"risk_score\"] <= 1.0\n    assert \"strategy_preview\" in result.details\n\n\ndef test_strategy_request_validation():\n    request = StrategySimRequest(\n        simulation_id=\"sim-validate\",\n        payload={\"foo\": \"bar\"},\n        job_title=\"Designer\",\n        company=\"Beta\",\n        strategy_plan={},\n    )\n ",
-  "full_hash": "1f6f2531bb4dd3a6442f69067e74fe6061439bff145b86402c592b41b92a8dc6",
-  "generated_at": 1764728231.5735524,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\simulations\\test_strategy_sim.py"
-}

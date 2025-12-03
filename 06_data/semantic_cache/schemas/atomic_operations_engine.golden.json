@@ -1,6 +1,0 @@
-{
-  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nAtomic Operations Engine for Agentic-Workflow\n\nImplements Phase 2 atomic operations for K21-K25 validation\n\nProvides atomic filesystem operations, snapshot/rollback capabilities,\nand target root isolation for Phase 2 compliance.\n\"\"\"\n\nimport os\nimport sys\nimport json\nimport shutil\nimport tempfile\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Optional, Set, Tuple\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\n\n@dataclass\nclass AtomicOperation:\n    operation_id: str\n    operation_type: str\n    target_path: str\n    backup_path: str\n    timestamp: str\n    status: str\n\n\n@dataclass\nclass Snapshot:\n    snapshot_id: str\n    timestamp: str\n    workspace_root: str\n    file_hashes: Dict[str, str]\n    total_files: int\n\n\nclass AtomicOperationsEngine:\n    \"\"\"\n    Atomic operations engine\n    \n    Provides atomic filesystem operations with rollback capabilities\n    for Phase 2 zero-loss transformations.\n    \"\"\"\n    \n    def __init__(self, wor",
-  "full_hash": "933c8d031b5284bc37245facef170c34fa1fe112d6b6b2dca67806ae1c2e1b06",
-  "generated_at": 1764728345.4058983,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\atomic_operations_engine.py"
-}

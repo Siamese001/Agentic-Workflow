@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom typing import List\nimport types\n\nfrom meta.retrieval import orchestrate_retrieval\nfrom core.models.models import Evidence, RetrievalConfig, CouncilVote, RAGResult\n\n\nclass _DummyCtx:\n    def __init__(self, workflow_id: str = \"wf-test\") -> None:\n        self.workflow_id = workflow_id\n\n\ndef _make_ev(text: str, score: float, source: str) -> Evidence:\n    return Evidence(text=text, score=score, source=source, metadata={})\n\n\ndef test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch) -> None:\n    # Arrange\n    import meta.retrieval as m\n\n    bm25_hits = [_make_ev(\"bm25-doc\", 1.0, \"bm25\")]\n    dense_hits = [_make_ev(\"dense-doc\", 0.5, \"dense\")]\n\n    def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001\n        return list(bm25_hits)\n\n    def _fake_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001\n        return list(dense_hits)\n\n    def _fake_chroma(query: ",
-  "full_hash": "15316eb8c2a8270ef98e8b544b68cd0175618a954ecda15786873ef58bca56c7",
-  "generated_at": 1764728227.2758346,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_retrieval_orchestrator.py"
-}

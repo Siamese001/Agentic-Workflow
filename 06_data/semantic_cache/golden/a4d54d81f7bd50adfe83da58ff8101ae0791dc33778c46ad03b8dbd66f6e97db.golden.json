@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "a4d54d81f7bd50adfe83da58ff8101ae0791dc33778c46ad03b8dbd66f6e97db",
-    "scan_timestamp": "2025-12-03T07:26:03.949935"
+    "scan_timestamp": "2025-12-03T08:04:48.458477"
   },
   "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v9\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v8 complete with routing decision tree, route-specific character limits, preserved all detail\",\n    \"notes\": \"Added Section 0 routing (Q1\u2192Q2\u2192Q3), route constraints, character limit enforcement. NO content removed from v8.\",\n    \"sha256\": \"pending_calculation\"\n  },\n  \"instructions\": [\n    \"Execute Pre-Section 3 Decision Tree (Q1, Q2...",
-  "creation_timestamp": "2025-12-03T07:26:36.423108",
+  "creation_timestamp": "2025-12-03T08:05:22.822375",
   "version": "1.0"
 }

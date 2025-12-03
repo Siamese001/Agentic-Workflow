@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Schema and evidence validation for outreach drafts.\"\"\"  # pragma: no cover\nfrom __future__ import annotations\n\nimport re\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, Sequence, Tuple\n\n\n@dataclass(frozen=True)\nclass QAResult:\n    \"\"\"Outcome of a QA validation pass.\"\"\"  # pragma: no cover\n\n    ok: bool\n    reasons: Tuple[str, ...]\n    missing_sections: Tuple[str, ...] = ()\n    missing_artifacts: Tuple[str, ...] = ()\n\n    def __bool__(self) -> bool:  # pragma: no cover - convenience\n        return self.ok\n\n\nclass QAValidator:\n    \"\"\"Check structural and evidence requirements for outreach drafts.\"\"\"  # pragma: no cover\n\n    _OPENER_KEYWORDS = (\"hello\", \"hi\", \"thanks\", \"thank you\", \"appreciate\")\n    _CTA_KEYWORDS = (\"cta:\", \"chat\", \"call\", \"meeting\", \"connect\")\n    _SIGNATURE_KEYWORDS = (\"regards\", \"sincerely\", \"cheers\", \"best\")\n\n    def __init__(self, *, max_body_chars: int = 1500) -> None:\n        self.max_body_chars = max_body_chars\n\n    def validate(\n        se",
-  "full_hash": "d7f03049b88ce057906630d819aeb69cd7df27cf8815112b722a4d1f0785abdc",
-  "generated_at": 1764728330.572623,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\qa\\qa_validator.py"
-}

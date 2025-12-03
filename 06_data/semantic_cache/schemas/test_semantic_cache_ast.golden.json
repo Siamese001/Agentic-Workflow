@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nTest suite for semantic cache AST extraction and validation\n\nTests AST extraction, signature generation, and validation components\nfor both Resume Engine (RG) and Outreach Engine (LIC) semantic processing.\n\"\"\"\n\nimport ast\nimport json\nimport pytest\nimport tempfile\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any\n\n# Add project paths for imports\nproject_root = Path(__file__).parent.parent\nsys.path.append(str(project_root / \"schemas\"))\nsys.path.append(str(project_root / \"runtime\"))\n\nfrom semantic_lineage import (\n    EngineType, ResponsibilityLevel, FileExtension, FileSignature,\n    ASTNode, ASTSignature, SemanticCacheEntry, SemanticLineageValidator\n)\nfrom semantic_scanner import ASTExtractor\n\n\nclass TestASTExtractor:\n    \"\"\"Test AST extraction functionality\"\"\"\n    \n    def test_extract_simple_function_signature(self):\n        \"\"\"Test extraction of simple function signature\"\"\"\n        python_code = '''\ndef hello_world():\n    \"\"\"Simple hell",
-  "full_hash": "12c7a7c27ba81e29353f8df2057b55b1e366e22771230c60cfed98c61b765bfb",
-  "generated_at": 1764728346.3449485,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\10_tests\\test_semantic_cache_ast.py"
-}

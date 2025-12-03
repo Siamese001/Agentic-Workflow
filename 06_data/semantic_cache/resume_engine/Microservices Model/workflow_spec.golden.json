@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"name\": \"resume_generation_pipeline\",\n  \"version\": \"16.0-winner\",\n  \"hops\": [\n    {\n      \"id\": \"hop_0_rag\",\n      \"script\": \"hop_0_rag_v1_2.py\",\n      \"description\": \"Job Description Analysis & RAG.\",\n      \"inputs\": [\n        { \"arg_name\": \"jd\", \"artifact_id\": \"static_jd\" },\n        { \"arg_name\": \"master-resume-path\", \"artifact_id\": \"static_master_resume\" }\n      ],\n      \"outputs\": [\n        { \"arg_name\": \"thematic-analysis\", \"artifact_id\": \"hop_0_thematic_analysis\" }\n      ],\n      \"retry_policy\": { \"attempts\": 3, \"delay_seconds\": 10, \"backoff_multiplier\": 2.0 },\n      \"extra_args\": []\n    },\n    {\n      \"id\": \"hop_1_clerk\",\n      \"script\": \"hop_1_clerk.py\",\n      \"description\": \"Master Resume Pre-processing.\",\n      \"inputs\": [\n        { \"arg_name\": \"master-resume-path\", \"artifact_id\": \"static_master_resume\" }\n      ],\n      \"outputs\": [\n        { \"arg_name\": \"clerk-output\", \"artifact_id\": \"hop_1_clerk_output\" }\n      ],\n      \"retry_policy\": { \"attempts\": 2, \"delay_seconds\": ",
-  "full_hash": "95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463",
-  "generated_at": 1764728232.2197826,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\workflow_spec.json"
-}

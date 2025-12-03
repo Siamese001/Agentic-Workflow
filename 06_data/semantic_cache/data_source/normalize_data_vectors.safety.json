@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764728349.8860655,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\expand-phase\\convert-data-content\\embedding\\compare-meaning\\normalize_data_vectors.py"
-}

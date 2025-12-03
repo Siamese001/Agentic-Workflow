@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import RetrievalConfig\n\n\nclass RetrievalProfile(BaseModel):\n    \"\"\"Retrieval configuration profile wrapping RetrievalConfig.\n\n    Kept as a thin wrapper so that higher-level profiles can evolve\n    without changing the RetrievalConfig schema used by META.\n    \"\"\"\n\n    retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)\n\n\n\n",
-  "full_hash": "31adee036103fecd79a25e9817d800b6bd496ff7e63d2d6b9d88f2bcd5da478a",
-  "generated_at": 1764728346.875768,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\executor-microagent-layer\\refine-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\retrieval_profile.py"
-}

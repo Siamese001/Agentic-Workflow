@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 518,
-  "generated_at": 1764728327.4822233,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\Change Log\\CHANGELOG_v6_0.md"
-}

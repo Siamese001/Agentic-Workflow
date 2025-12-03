@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "e2520eb62c21585aad9c73ca99d7464c9b2d692129f36c4e04295ef1faf30a63",
-    "scan_timestamp": "2025-12-03T07:26:03.619439"
+    "scan_timestamp": "2025-12-03T08:04:48.127387"
   },
   "content_preview": "from __future__ import annotations\n\nimport asyncio\nfrom typing import Any, Dict\n\nfrom orchestration.dag_engine import Graph, Node, Edge, DAGExecutor\n\n\nasync def _noop_node(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    ctx = dict(ctx)\n    ctx.setdefault(\"steps\", []).append(\"noop\")\n    return ctx\n\n\nasync def _set_value(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    ctx = dict(ctx)\n    ctx[\"value\"] = 42\n    return ctx\n\n\ndef test_graph_successors_and_predecessors():\n    nodes = {\n        \"a\": Node(id=\"a\"...",
-  "creation_timestamp": "2025-12-03T07:26:09.111338",
+  "creation_timestamp": "2025-12-03T08:04:55.745858",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: agent_swarm_v7_0.py\n# Overwrites: agent_swarm_v6_5.py\n# Version: 7.0 (LangGraph Refactor)\n#\n# v7.0 (LangGraph Refactor) CHANGES:\n# - DELETED the 'Governor' class.\n# - DELETED the 'CrewOrchestrator' class.\n# - Kept all agent classes (ThemeClassifierAgent...AtomicQASwarmLogic) as-is.\n# - Added new 'PART 8: V7.0 LANGGRAPH ORCHESTRATOR' section.\n# - This new section defines node wrappers, the conditional edge, and\n#   a 'get_graph_app' function to build the persistent graph.\n\n# Version: 6.5 (Monolithic Agent Architecture)\n# Overwrites: agent_swarm_v6_4.py\n#\n# v6.5 (Based on v7.0 Architecture) CHANGES:\n# - This is now a single, monolithic file containing all agents.\n# - Removed dependency on validation_stack_v6_4.py.\n# - Replaced the entire multi-agent \"Strategy Stack\" (JDParser, ThemeIdentifier, etc.)\n#   with a single new 'ThemeClassifierAgent' (Step 1).\n# - Updated RAG agents (Step 2) to use specified Tier 1 models.\n# - Updated Adversarial MoE Drafting agents (Step 3) with new ro",
-  "full_hash": "d55e7053b063cf27c210a99933cc8a8fda289f72b6892e57df01fc7ea44d00e1",
-  "generated_at": 1764728327.661498,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\agent_swarm_v7_0.py"
-}

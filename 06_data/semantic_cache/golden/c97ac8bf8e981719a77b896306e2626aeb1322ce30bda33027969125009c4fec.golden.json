@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c97ac8bf8e981719a77b896306e2626aeb1322ce30bda33027969125009c4fec",
-    "scan_timestamp": "2025-12-03T07:26:03.746864"
+    "scan_timestamp": "2025-12-03T08:04:48.255223"
   },
   "content_preview": "from core_v10_7 import MetricsCollector, SemanticValidator\n\n\ndef _validator() -> SemanticValidator:\n    metrics = MetricsCollector()\n    return SemanticValidator(metrics_collector=metrics)\n\n\ndef test_word_count_within_range_passes():\n    validator = _validator()\n    ok, message = validator.check_word_count(\"a b c d\", min_words=2, max_words=10)\n    assert ok is True\n    assert \"Word count OK\" in message\n\n\ndef test_word_count_out_of_range_fails():\n    validator = _validator()\n    ok, message = val...",
-  "creation_timestamp": "2025-12-03T07:26:18.638484",
+  "creation_timestamp": "2025-12-03T08:05:05.787544",
   "version": "1.0"
 }

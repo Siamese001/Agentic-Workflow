@@ -1,7 +1,0 @@
-{
-  "baseline_hash": "",
-  "current_hash": "302f2fd8f00a6a0b6970b1f6ab2c22be437ef32e59191c1f48c14e35fb4ab849",
-  "diff_type": "initial",
-  "generated_at": 1764728350.3908038,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\executor-microagent-layer\\act-phase-group\\tool-adapter-ops\\general-operations-ops\\dependency_check.py"
-}

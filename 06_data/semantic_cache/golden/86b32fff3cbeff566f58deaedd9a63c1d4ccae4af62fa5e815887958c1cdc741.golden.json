@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "86b32fff3cbeff566f58deaedd9a63c1d4ccae4af62fa5e815887958c1cdc741",
-    "scan_timestamp": "2025-12-03T07:26:03.550710"
+    "scan_timestamp": "2025-12-03T08:04:48.062485"
   },
   "content_preview": "from __future__ import annotations\n\nfrom typing import Dict, List\n\n\ndef build_ephemeral_rootfs() -> Dict[str, object]:\n    \"\"\"Return a deterministic description of an ephemeral rootfs.\n\n    This does not perform any real filesystem mutation; instead it\n    returns a structure that can be inspected in tests.\n    \"\"\"\n\n    return {\n        \"tmpfs\": True,\n        \"restricted_paths\": [\"/\", \"/etc\", \"/var\", \"/home\"],\n        \"writable_paths\": [\"/tmp\", \"/sandbox\"],\n    }\n\n\n\n",
-  "creation_timestamp": "2025-12-03T07:26:05.264164",
+  "creation_timestamp": "2025-12-03T08:04:50.263823",
   "version": "1.0"
 }

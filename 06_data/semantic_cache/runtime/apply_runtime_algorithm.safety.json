@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764728347.4757261,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\apply_runtime_algorithm.py"
-}

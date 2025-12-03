@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 11,
-  "generated_at": 1764728347.6614285,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\rest_interface.py"
-}

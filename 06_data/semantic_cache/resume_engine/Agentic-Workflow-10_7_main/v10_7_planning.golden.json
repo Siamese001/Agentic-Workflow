@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: v10_7_planning.py\n# CONSOLIDATED: L1 Cognition Layer (Strategy, RAG, Draft, Bullet Planners)\n# STATUS: Production Ready (v10.7 Baseline)\n\nfrom __future__ import annotations\nimport asyncio\nimport json\nimport logging\nimport os\nimport re\nimport uuid\nfrom typing import Any, Dict, List, Type, Optional, Tuple, Iterable, Sequence, Callable, Awaitable\nfrom functools import wraps\n\n# Assuming Core/Models/Clients are available from the V10_7_FOUNDATIONS scope.\n# Base classes and Pydantic models are redefined here for file self-sufficiency.\n\nclass BaseAgent:\n    \"\"\"Minimal BaseAgent to satisfy L1 Planner dependencies.\"\"\"\n    def __init__(self, context, debug_mode=False): \n        self.context = context\n        self.debug_mode = debug_mode\n        self.log_info = lambda msg: logging.getLogger(\"L1_PLAN\").info(msg)\n        self.log_warning = lambda msg: logging.getLogger(\"L1_PLAN\").warning(msg)\n        self.log_error = lambda msg: logging.getLogger(\"L1_PLAN\").error(msg)\n        self.get_model",
-  "full_hash": "d29a0bb6b9c1e3e19dde6755b3383e4bc5216e0ec8f76d2dc117f3b4367a6067",
-  "generated_at": 1764728229.0752964,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_planning.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - evaluate_data_compliance\nImplements L5 Safety/Policy Layer for evaluate data compliance operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EvaluateDataComplianceSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass EvaluateDataComplianceSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EvaluateDataComplianceSafetyResult:\n    \"\"\"L5 Sa",
-  "full_hash": "1f87ea5f3bf80b7cb18f149c953f15e25ae42bd1eacd518d73b0c680f2561a20",
-  "generated_at": 1764728350.2186055,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\safe-layer\\safety-phase\\check-data-rules\\semantic\\adjust-scores\\evaluate_data_compliance.py"
-}

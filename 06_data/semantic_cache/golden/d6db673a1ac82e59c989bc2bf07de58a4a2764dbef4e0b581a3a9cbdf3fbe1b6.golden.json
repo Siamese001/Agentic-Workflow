@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
-    "scan_timestamp": "2025-12-03T07:26:03.556361"
+    "scan_timestamp": "2025-12-03T08:04:48.068078"
   },
   "content_preview": "\"\"\"\nInstructional Injection v6 for resume generation prompt engineering.\n\nImplements layered framework for robust, context-aware prompts\nto improve resume quality and job alignment.\n\"\"\"\n\n## 30 Base Layers (Core Foundation)\n\n### Identity & Role (Layers 1-3)\n1. Agent Identity: Who the agent is\n2. Role Definition: What the agent does\n3. Capability Scope: What the agent can/cannot do\n\n### Context & Environment (Layers 4-7)\n4. Domain Context: Business domain and terminology\n5. Temporal Context: Time-...",
-  "creation_timestamp": "2025-12-03T07:26:05.457759",
+  "creation_timestamp": "2025-12-03T08:04:50.577941",
   "version": "1.0"
 }

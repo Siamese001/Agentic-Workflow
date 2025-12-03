@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "3b9c280da63ee80cca2f92060f1d3e47a93eb67cd60d8ecd3efb78f1797d2fc9",
-    "scan_timestamp": "2025-12-03T07:26:03.657965"
+    "scan_timestamp": "2025-12-03T08:04:48.164447"
   },
   "content_preview": "from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest\nfrom observability import get_all_events, clear_events\n\n\ndef test_microvm_create_exec_teardown_emits_events():\n    clear_events()\n\n    vm = create_vm({\"cpu_ms\": 1000})\n    req = ToolCallRequest(tool_name=\"echo\", args=[\"hello\"], timeout_s=1.0)\n\n    result = exec_in_vm(vm, req)\n    teardown_vm(vm)\n\n    assert result.success is True\n    assert \"TOOL echo\" in result.stdout\n\n    event...",
-  "creation_timestamp": "2025-12-03T07:26:10.511731",
+  "creation_timestamp": "2025-12-03T08:04:57.254088",
   "version": "1.0"
 }

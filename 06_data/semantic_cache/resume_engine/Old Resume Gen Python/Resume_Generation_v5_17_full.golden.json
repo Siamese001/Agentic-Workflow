@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.17 - SAAS ROLES UPDATE\n================================================================================\nPATCH NOTES v5.17 (October 2025):\n\u2713 SaaS Roles: Updated to use SaaS_Roles_v3.json (attached file)\n\u2713 All v5.16 functionality preserved\n\u2713 No changes to output count, logic, or constraints\n\nPATCH NOTES v5.16 (October 2025):\n\u2713 Master Resume: Destructive overwrite with V2.15 (from V2.14)\n  - Updated mock master resume fallback data with actual V2.15 schema\n  - Changed file reference from Master_Resume_V2_14.json to Master_Resume_V2_15.json\n  - Full bullet_pool arrays for Unify and IBM roles\n  - Updated owner contact info, education, certifications, and competencies\n\u2713 Note: SaaS_Roles_v3.json provided but not embedded (script uses external file reference)\n\u2713 No functional changes to engine logic or constraints\n\u2713 Data refresh only - all v5.15 logic preserved\n\nPATCH NOTES v5.15 (October 2025):\n\u2713 Competencies constraints: Bullet words \u00b13% of master resume avg pe",
-  "full_hash": "c4b1262f177d989a798e66d63ba6a14177140a9971cebf179a9ab8230adb25bc",
-  "generated_at": 1764728300.754425,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_17_full.py"
-}

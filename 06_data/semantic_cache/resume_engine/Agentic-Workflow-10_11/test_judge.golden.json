@@ -1,6 +1,0 @@
-{
-  "golden_content": "from eval.golden_state.models import GoldenStateTestCase\nfrom eval.golden_state.judge import evaluate_output\n\n\ndef test_judge_empty_output_fails():\n    tc = GoldenStateTestCase(id=\"t1\", input_text=\"x\", expected_behavior=\"\", metadata={})\n    verdict = evaluate_output(tc, \"\")\n    assert verdict.rating == \"fail\"\n    assert verdict.score == 0.0\n\n\ndef test_judge_detects_key_behavior():\n    tc = GoldenStateTestCase(\n        id=\"t2\",\n        input_text=\"x\",\n        expected_behavior=\"Summary should be professional\",\n        metadata={},\n    )\n    verdict = evaluate_output(tc, \"This is a professional summary.\")\n    assert verdict.rating == \"pass\"\n    assert verdict.score == 1.0\n\n\n\n\n\n\n",
-  "full_hash": "a22dde496339eb96762d0c5ea5e62349f4963bfa815ec51730418c074d5c5e34",
-  "generated_at": 1764728226.7767794,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_judge.py"
-}

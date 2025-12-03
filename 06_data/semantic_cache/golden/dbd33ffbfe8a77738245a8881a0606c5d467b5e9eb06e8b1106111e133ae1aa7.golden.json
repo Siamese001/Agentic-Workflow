@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "dbd33ffbfe8a77738245a8881a0606c5d467b5e9eb06e8b1106111e133ae1aa7",
-    "scan_timestamp": "2025-12-03T07:26:03.554631"
+    "scan_timestamp": "2025-12-03T08:04:48.066493"
   },
   "content_preview": "\"\"\"\nCMS compiler for resume generation prompt compilation.\n\nProvides prompt compilation functionality to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, Optional\n\n\ndef compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str:\n    \"\"\"\n    Compiles prompt template for resume generation.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    # Minimal implementation to unblock imports\n   ...",
-  "creation_timestamp": "2025-12-03T07:26:05.416864",
+  "creation_timestamp": "2025-12-03T08:04:50.505756",
   "version": "1.0"
 }

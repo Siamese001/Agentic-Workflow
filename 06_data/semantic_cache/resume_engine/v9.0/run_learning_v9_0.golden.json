@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: run_learning_v9_0.py\n# Overwrites: run_learning_v9_0.py\n# Version: 9.0 (Agentic Loops)\n#\n# v9.0 (Agentic Loops) CHANGES:\n# - Imports from core_v9_0.\n\n# - PatternFinderAgent now also reads 'preference_log.jsonl'.\n# - MetaPlannerAgent can now propose 'prompt_adjustment' rules.\nimport json\nimport logging\nimport os\nfrom datetime import datetime\nfrom typing import List, Dict, Any\nfrom collections import defaultdict\n\n# Imports from its *own* versioned files (v9.0)\nfrom core_v9_0 import CONFIG, setup_logging\n\nlogger = logging.getLogger(\"meta_learner_v9_0\")\n\n# --- AGENTS (Preserved from v6.4 structure) ---\n\nclass PatternFinderAgent:\n    \"\"\"Agent to find recurring failure patterns in feedback logs.\"\"\"\n    \n    def __init__(self, config):\n        self.config = config\n        self.logger = logging.getLogger(f\"{__name__}.PatternFinderAgent\")\n    \n    def find_failure_patterns(self, feedback_log_path: str) -> List[Dict[str, Any]]:\n        self.logger.info(f\"Analyzing feedback log: {feedback",
-  "full_hash": "5ae6115844baf91f09cfe9f8622287100f1dc7099e7376719a387aff8cdf5852",
-  "generated_at": 1764728328.1858158,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\run_learning_v9_0.py"
-}

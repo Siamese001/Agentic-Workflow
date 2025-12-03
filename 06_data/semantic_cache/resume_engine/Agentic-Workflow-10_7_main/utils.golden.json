@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Utility helpers for simulation subsystem.\"\"\"\n\nfrom typing import Any, Dict\n\n\ndef model_to_payload(model: Any) -> Dict[str, Any]:\n    \"\"\"Return a dict of public fields from a pydantic model.\"\"\"\n\n    if model is None:\n        return {}\n    data = {}\n    for key, value in getattr(model, \"__dict__\", {}).items():\n        if key.startswith(\"__\"):\n            continue\n        data[key] = value\n    return data\n",
-  "full_hash": "44ed4a8ab24af9556a8a4961d63f3cec0eab865b48d101e8b39d65c7333aaf05",
-  "generated_at": 1764728231.6961055,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\utils.py"
-}

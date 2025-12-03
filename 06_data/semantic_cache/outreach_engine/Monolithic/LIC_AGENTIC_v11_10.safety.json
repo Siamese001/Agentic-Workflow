@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 2908,
-  "generated_at": 1764728331.6608539,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Monolithic\\LIC_AGENTIC_v11_10.py"
-}

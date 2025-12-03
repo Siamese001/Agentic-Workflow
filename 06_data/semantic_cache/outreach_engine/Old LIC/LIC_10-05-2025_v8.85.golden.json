@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.85\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.85\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P885. Centralized all configuration and parameters into single 'central_config' section. Eliminated parameter drift by establishing single source of truth. All sections now reference central_config via $ref pointers. Applied P884. Enhanced L-series trace generation with real-time execution data capture, accurate reasoning path reflection, and interactive pause cycle management with user confirmation tracking.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.8.5\",\n        \"date\": \"2025-10-08\",\n        \"author\": \"Gemini System Engineer\",\n        \"description\": \"Applied P885. Centralized all configuration and parameters into single 'central_config' section. Eliminated parameter drift by establishing single source of truth. All se",
-  "full_hash": "55f92942d8cbaeac8166ee68fea79b5a9f57b105811c188c206173eeb62bab21",
-  "generated_at": 1764728336.7597928,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.85.json"
-}

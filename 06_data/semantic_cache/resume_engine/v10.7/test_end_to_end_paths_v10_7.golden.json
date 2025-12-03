@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"resume,jd,expect_keys\", [\n    (\"Jane Doe\",\"Chief AI Officer\", [\"summary\"]),\n    (\"John Smith\",\"Director, AI\", [\"summary\"]),\n    (\"LowConf\",\"Analyst\", [\"events\"]),\n    (\"Ambiguous\",\"Unknown\", [\"events\"]),\n])\ndef test_full_run_variants(resume,jd,expect_keys):\n    out = run_workflow({\"resume\": resume, \"jd\": jd})\n    for k in expect_keys: assert k in out\n\n@pytest.mark.parametrize(\"scenario\", [\"batch-small\",\"batch-large\",\"parallel-merge\",\"hil-trigger\"])\ndef test_scenarios_collectively(scenario):\n    out = run_workflow({\"resume\": scenario, \"jd\":\"scenario\"})\n    assert isinstance(out, dict)\n",
-  "full_hash": "d0c44d0b97461897b099e637b9776a28a0f3b0cb4be7fe3871fea0dba30c3622",
-  "generated_at": 1764728329.8267164,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\integration\\test_end_to_end_paths_v10_7.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Neo4j Integration for Temporal Knowledge Graph\n\nThis document describes the Neo4j integration that has been added to the temporal knowledge graph and multi-hop retrieval stack.\n\n## Overview\n\nNeo4j has been integrated as the graph database backing the graph data design (graph DD) for temporal knowledge graph operations. The integration is designed to be:\n\n- **Additive**: All existing SQLite/NetworkX logic is preserved\n- **Graceful**: System continues to work without Neo4j if driver is not installed\n- **Mirrored**: All graph writes are mirrored to Neo4j while maintaining existing storage\n- **Primary for reads**: factual_qa and trend_analysis use Neo4j as the primary source when available\n\n## Components Added\n\n### 1. Dependencies\n\n- `neo4j>=5.22.0` added to `requirements.txt`\n\n### 2. Core Modules\n\n#### `graph_store_neo4j.py`\n\n- `Neo4jGraphStore` class implementing L4 state layer\n- Connection via environment variables: `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`\n- Methods:\n  - `close",
-  "full_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-  "generated_at": 1764728226.178794,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\integration\\NEO4J_INTEGRATION_README.md"
-}

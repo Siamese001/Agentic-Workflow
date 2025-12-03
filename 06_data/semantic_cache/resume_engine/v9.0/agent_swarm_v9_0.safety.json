@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 1426,
-  "generated_at": 1764728328.0774467,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\agent_swarm_v9_0.py"
-}

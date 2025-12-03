@@ -11,9 +11,9 @@
     "file_extension": ".json",
     "is_eligible": true,
     "sha256_hash": "6b14c869c94bbac7d932bae8e017f587cee68e33d4d303f20c9357c95b984745",
-    "scan_timestamp": "2025-12-03T07:26:03.624419"
+    "scan_timestamp": "2025-12-03T08:04:48.131480"
   },
   "content_preview": "{\n  \"version\": \"1.0\",\n  \"description\": \"Expected outputs for resume improvement\",\n  \"outputs\": [\n    {\n      \"sample_id\": \"sample_001\",\n      \"expected_sections\": [\"summary\", \"experience\", \"skills\", \"education\"],\n      \"expected_keywords\": [\"software\", \"engineer\", \"python\"],\n      \"min_quality_score\": 0.80\n    },\n    {\n      \"sample_id\": \"sample_002\",\n      \"expected_sections\": [\"summary\", \"experience\", \"skills\", \"projects\"],\n      \"expected_keywords\": [\"data\", \"machine learning\", \"python\"],\n   ...",
-  "creation_timestamp": "2025-12-03T07:26:09.369309",
+  "creation_timestamp": "2025-12-03T08:04:56.021636",
   "version": "1.0"
 }

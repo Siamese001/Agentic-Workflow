@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Append signature information to the outreach draft.\"\"\"\nfrom __future__ import annotations\n\n\nclass SignatureAgent:\n    def attach(self, draft: str, route_decision) -> str:\n        signature = \"Best regards,\\nLIC Outreach Bot\"\n        return f\"{draft}\\n\\n{signature}\"\n",
-  "full_hash": "c35cbc50152b952b2f3fc225759c5ce1dce6e003b98aa8079673ad8ccbfbd759",
-  "generated_at": 1764728330.4926665,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k6_signature_agent.py"
-}

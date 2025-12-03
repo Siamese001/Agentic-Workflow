@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-    "scan_timestamp": "2025-12-03T07:26:03.630025"
+    "scan_timestamp": "2025-12-03T08:04:48.135673"
   },
   "content_preview": "# FILE: tests/golden_state/test_runner.py\n\nfrom core.models.models import ExecutionProfile, RetrievalConfig\n\nfrom eval.golden_state.runner import run_all_golden_tests\n\n\ndef test_run_all_golden_tests_returns_results():\n    profile = ExecutionProfile(\n        name=\"TEST\",\n        description=\"test profile\",\n        retrieval=RetrievalConfig(),\n        metadata={},\n    )\n\n    results = run_all_golden_tests(profile)\n\n    assert results\n    ids = {r.test_id for r in results}\n    assert \"gs_basic_1\" i...",
-  "creation_timestamp": "2025-12-03T07:26:09.572968",
+  "creation_timestamp": "2025-12-03T08:04:56.221295",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "2d8588c8087077deb97771c8b1ff4596df0681fe0232043d8c98c54a8ea46d56",
-    "scan_timestamp": "2025-12-03T07:26:03.801846"
+    "scan_timestamp": "2025-12-03T08:04:48.307094"
   },
   "content_preview": "# hops/hop_7_rendering.py\n\"\"\"\nHop 7: Document Rendering - HIGH-SIGNAL OVERWRITE\n\nThis is a spec-driven, context-aware renderer.\n1. It loads a \"render_spec\" (mocked inline) to define document\n   structure, order, and content sourcing.\n2. It dynamically sources content from the HOP-4 staging buffer\n   (for LLM content) AND the HOP-0 thematic analysis (for\n   guaranteed-alignment data like keywords).\n3. It generates a \"High-Signal App Tracker\" entry, which serves\n   as a performance snapshot of the...",
-  "creation_timestamp": "2025-12-03T07:26:21.293919",
+  "creation_timestamp": "2025-12-03T08:05:08.655989",
   "version": "1.0"
 }

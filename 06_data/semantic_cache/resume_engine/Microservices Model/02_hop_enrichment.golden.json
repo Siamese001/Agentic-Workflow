@@ -1,6 +1,0 @@
-{
-  "golden_content": "# hops/hop_2_enrichment.py\n\"\"\"\nHop 2: Data Enrichment.\nReads extracted clerk data and thematic analysis, enriches with canonical verbs\nand duplicate detection, writes enriched scaffold as JSON.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Tuple, List\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components\nfrom helpers import (\n    setup_workflow_logging, HopExecutionError, default_serializer,\n    ValidationResult, ValidationSeverity, ThematicAnalysis\n)\n\n# --- DataEnricher and Dependencies (Placeholder - Move to shared module) ---\nclass DuplicateDetector:\n    \"\"\"Placeholder duplicate detector\"\"\"\n    def detect(self, bullets: List[str]) -> List[ValidationResult]:\n        logging.warning(\"Using MOCK DuplicateDetector\")\n        return []\n\nclass DataEnricher:\n    \"\"\"HO",
-  "full_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
-  "generated_at": 1764728231.9541032,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\02_hop_enrichment.py"
-}

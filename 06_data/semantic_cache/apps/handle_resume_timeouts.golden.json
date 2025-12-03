@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - handle_resume_timeouts\nImplements L1 Cognitive Planning Layer for handle resume timeouts operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass HandleResumeTimeoutsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass HandleResumeTimeoutsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass HandleResumeTimeoutsOrchestratorResult:\n    \"\"\"L5 Result structure with full ",
-  "full_hash": "eb0bcbe5ec92a209dc13d5bd36249f7ab1ab52e2e08056957ba18fad44051912",
-  "generated_at": 1764728352.9506388,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\act-phase\\use-resume-tools\\routing\\retry-task\\handle_resume_timeouts.py"
-}

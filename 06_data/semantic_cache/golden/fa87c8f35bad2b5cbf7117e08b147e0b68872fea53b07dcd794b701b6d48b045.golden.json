@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
-    "scan_timestamp": "2025-12-03T07:26:03.555587"
+    "scan_timestamp": "2025-12-03T08:04:48.067514"
   },
   "content_preview": "\"\"\"\nL1 planning layer for resume drafting strategy and content optimization.\n\nCreates structured plans to guide comprehensive resume content\nimprovement and job alignment.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass DraftPlan:\n    \"\"\"\n    Defines resume drafting strategy and structure.\n\n    Ensures systematic approach to enhance resume alignment\n    with job requirements for better applications.\n    \"\"\"\n    sections: List[str]\n    tone: str\n    focus_are...",
-  "creation_timestamp": "2025-12-03T07:26:05.444703",
+  "creation_timestamp": "2025-12-03T08:04:50.554707",
   "version": "1.0"
 }

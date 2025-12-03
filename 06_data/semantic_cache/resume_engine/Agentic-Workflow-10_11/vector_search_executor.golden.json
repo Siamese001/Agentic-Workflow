@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nVector search execution layer for resume processing workflows.\n\nExecutes vector search operations to support comprehensive resume\nenhancement through semantic retrieval for job alignment.\n\"\"\"\n\nfrom typing import List, Dict, Any, Optional\nfrom dataclasses import dataclass\n\nfrom l4 import PineconeAdapter, VectorQueryResult\n\n\n@dataclass\nclass SearchResult:\n    \"\"\"\n    Container for resume processing vector search results.\n\n    Provides structured data retrieval for resume enhancement\n    and job alignment workflows.\n    \"\"\"\n    id: str\n    score: float\n    metadata: Dict[str, Any]\n\n\nclass VectorSearchExecutor:\n    \"\"\"\n    L2 executor for resume processing vector search operations.\n\n    Executes search plans from L1 via L4's PineconeAdapter for\n    resume enhancement and job alignment workflows.\n    \"\"\"\n    \n    def __init__(self, pinecone_adapter: PineconeAdapter):\n        \"\"\"\n        Initializes vector search executor for resume processing.\n\n        Args:\n            pinecone_adapter",
-  "full_hash": "c46a4e3622e4f411e9533800eb6adb56ce4efeac29e85e46e546424bd3cfe9e9",
-  "generated_at": 1764728225.0917456,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\vector_search_executor.py"
-}

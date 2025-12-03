@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Shared Test Stubs.\"\"\"\n\nclass StubSafetyEngine:\n    \"\"\"Stub safety engine for testing.\"\"\"\n    \n    def evaluate(self, context):\n        \"\"\"Stub evaluate method.\"\"\"\n        return StubPolicyResult()\n\nclass StubPolicyResult:\n    \"\"\"Stub policy result for testing.\"\"\"\n    \n    def __init__(self):\n        self.blocking_findings = []\n        self.warnings = []\n\ndef test_stub_safety_engine():\n    \"\"\"Test StubSafetyEngine.\"\"\"\n    engine = StubSafetyEngine()\n    result = engine.evaluate({})\n    assert result.blocking_findings == []\n",
-  "full_hash": "4d6d815492f51b3d12145388f5f4576a3e4c19fa282c603ef5ef564d7f53fdb4",
-  "generated_at": 1764728227.5910501,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\stubs\\test_stubs.py"
-}

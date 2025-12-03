@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: utils_LIC.py\n# Description: General-purpose utilities for the LIC workflow.\n# REFACTOR: v13.0 - This file has been slimmed down.\n# - AdaptiveTemperatureController: Removed. Logic moved to agent_specs_LIC.json and HOPOrchestrator.\n# - ContextManager: Removed. No longer needed in v13.0 HOP architecture.\n# - ValidationHelper: Removed. Replaced by tools_LIC.py (ValidationToolkit).\n\n__version__ = \"13.0\"\n\nimport re\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Optional, Any, Callable, Tuple\nfrom collections import defaultdict\n\n# Import models needed for CircuitBreaker\nfrom models_LIC import CircuitState, CircuitBreakerOpenError\n\n# ============================================================================\n# KEPT FOR v13.0: CIRCUIT BREAKER\n# ============================================================================\n\nclass CircuitBreaker:\n    \"\"\"\n    Circuit breaker for API calls - prevents cascade failures.\n    This is a core utility and remains in v13.0.\n",
-  "full_hash": "d3e1093af87483f21141c1b9ae51af4d396c83511e8ddcec11c706bb4408a62a",
-  "generated_at": 1764728331.5298977,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\utils_LIC.py"
-}

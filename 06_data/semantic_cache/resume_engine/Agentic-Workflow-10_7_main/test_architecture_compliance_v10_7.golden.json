@@ -1,6 +1,0 @@
-{
-  "golden_content": "import ast\nimport os\nfrom pathlib import Path\nimport pytest\n\n\n# ----------------------------------------------------------------------\n# Paths\n# ----------------------------------------------------------------------\nROOT = Path(__file__).resolve().parents[2]\nAGENTIC_ROOT = ROOT\nSTACKS_DIR = AGENTIC_ROOT / \"agent_stacks_v10_8\" / \"components\"\nTOOLS_DIR = AGENTIC_ROOT / \"tools_v10_7\"\n\n\n# ----------------------------------------------------------------------\n# Helper: Parse Python module into AST\n# ----------------------------------------------------------------------\ndef load_ast(path: Path) -> ast.Module:\n    with path.open(\"r\", encoding=\"utf-8\") as f:\n        return ast.parse(f.read())\n\n\n# ----------------------------------------------------------------------\n# 1. No global CONFIG imports anywhere in stacks or tools.\n# ----------------------------------------------------------------------\n@pytest.mark.architecture\n@pytest.mark.parametrize(\"path\", list(STACKS_DIR.rglob(\"*.py\")) + list(TO",
-  "full_hash": "1a2f90e446167d886b82b161351842e2e518728076271bdd4de8d8dd7f9d8f57",
-  "generated_at": 1764728230.396533,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\architecture\\test_architecture_compliance_v10_7.py"
-}

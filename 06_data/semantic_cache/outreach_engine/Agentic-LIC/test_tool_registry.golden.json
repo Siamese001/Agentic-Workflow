@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.rag.tool_registry import BaseTool, ToolRegistry, ToolResult, default_registry\n\n\nclass DummyTool(BaseTool):\n    name = \"dummy\"\n    cost = 0.1\n\n    def run(self, query: str, context):\n        return ToolResult(f\"answer for {query}\", [\"http://dummy\"], 42, 0.9)\n\n\ndef test_tool_registration_and_execution():\n    registry = ToolRegistry()\n    registry.register(DummyTool())\n    tool = registry.resolve(\"dummy\")\n    assert isinstance(tool, DummyTool)\n    result = tool.run(\"query\", {})\n    assert isinstance(result, ToolResult)\n    assert result.confidence >= 0.0\n\n\ndef test_default_registry_includes_builtin_tools():\n    registry = ToolRegistry.default_with_builtins()\n    for name in (\"web_search\", \"profile_lookup\", \"news\"):\n        assert name in registry.available()\n\n\ndef test_resolve_missing_tool_raises_key_error():\n    registry = ToolRegistry()\n    try:\n        registry.resolve(\"missing\")\n    except KeyError as exc:\n        assert \"missing\" in str(exc)\n    else:\n        rai",
-  "full_hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
-  "generated_at": 1764728331.009864,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_tool_registry.py"
-}

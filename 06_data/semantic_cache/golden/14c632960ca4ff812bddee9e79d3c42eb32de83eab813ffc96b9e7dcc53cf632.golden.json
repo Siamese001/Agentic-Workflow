@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632",
-    "scan_timestamp": "2025-12-03T07:26:03.627730"
+    "scan_timestamp": "2025-12-03T08:04:48.133261"
   },
   "content_preview": "\"\"\"\nScoring Harness for Quality Evaluation\n\nDeterministic quantitative metrics for resume analysis, job matching, and skill extraction.\nFocuses on structural completeness, content coverage, and format validation without LLM dependencies.\n\"\"\"\n\nimport pytest\nimport re\nfrom typing import Dict, Any, List\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport time\n\n# Mark all tests as golden evaluation tests\npytestmark = [pytest.mark.golden, pytest.mark.integration]\n\n\nclass ScoreLevel(...",
-  "creation_timestamp": "2025-12-03T07:26:09.434330",
+  "creation_timestamp": "2025-12-03T08:04:56.095713",
   "version": "1.0"
 }

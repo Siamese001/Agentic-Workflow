@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "db1bdd3b50b61f8a49db998f13138db583a20a147376e3bd245d28f0eaf2acfe",
-    "scan_timestamp": "2025-12-03T07:26:03.533639"
+    "scan_timestamp": "2025-12-03T08:04:48.043352"
   },
   "content_preview": "\"\"\"\nCore data models for r\u00e9sum\u00e9 improvement workflow.\n\nDefines structured types to ensure consistent data flow across all r\u00e9sum\u00e9 enhancement layers.\n\"\"\"\n\n# FILE: models.py\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional, Literal\nfrom datetime import datetime\n\nfrom pydantic import BaseModel, Field\n\n\n# ======================================================================\n# ENUMS USED ACROSS MODELS\n# ========...",
-  "creation_timestamp": "2025-12-03T07:26:04.793665",
+  "creation_timestamp": "2025-12-03T08:04:49.628101",
   "version": "1.0"
 }

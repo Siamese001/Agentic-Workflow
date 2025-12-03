@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "4d637289bbe7beb158ef5a0f159ac34126f3860572ef8bf43364aa8fdbd05dcb",
-    "scan_timestamp": "2025-12-03T07:26:03.578738"
+    "scan_timestamp": "2025-12-03T08:04:48.087465"
   },
   "content_preview": "\"\"\"\nL4 state management layer for resume job alignment workflows.\n\nHandles state operations for resume enhancement coordination.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import is_dataclass, replace\nfrom typing import Any, Dict, Optional\n\nfrom .types import (\n    StateOperation,\n    StateEventType,\n    StatePath,\n    StateTransition,\n    StateSnapshot,\n    StateError,\n    StateValidationError,\n    StateRollbackError,\n)\nfrom .manager import StateManager\nfrom .pinecone_adapter imp...",
-  "creation_timestamp": "2025-12-03T07:26:07.166463",
+  "creation_timestamp": "2025-12-03T08:04:53.233732",
   "version": "1.0"
 }

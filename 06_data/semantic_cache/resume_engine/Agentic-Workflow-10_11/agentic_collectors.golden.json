@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom typing import List, Any\n\n\nEVENTS: List[Any] = []\n\n\ndef append_event(event: Any) -> None:\n    \"\"\"Append a raw event object to the in-memory agentic event buffer.\"\"\"\n\n    EVENTS.append(event)\n\n\ndef get_events() -> List[Any]:\n    \"\"\"Return a snapshot of all collected agentic events.\"\"\"\n\n    return list(EVENTS)\n\n\ndef clear_events() -> None:\n    \"\"\"Clear all collected agentic events.\"\"\"\n\n    EVENTS.clear()\n\n\n\n",
-  "full_hash": "6bd01be0e0bb4c26aba7e0f22afe550fe5e32eabcaf5bc9172798f680eb83655",
-  "generated_at": 1764728226.3827047,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_collectors.py"
-}

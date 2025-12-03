@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 0,
-  "generated_at": 1764728341.4585717,
-  "source_file": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\orc-layer\\plan-phase\\get-core-info\\general\\understand-request\\orchestrate_core_planning.py"
-}

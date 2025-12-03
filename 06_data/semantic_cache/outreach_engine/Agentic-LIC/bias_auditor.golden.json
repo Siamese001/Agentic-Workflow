@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Minimal bias auditor stub used for safety-aware routing.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict\n\n\n@dataclass(frozen=True)\nclass BiasAssessment:\n    score: float\n    notes: str\n\n\ndef audit_bias(inputs) -> BiasAssessment:\n    \"\"\"Return a light-weight bias score for *inputs*.\"\"\"\n\n    prompt = getattr(inputs, \"prompt\", getattr(inputs, \"prompt\", \"\"))\n    if not prompt:\n        return BiasAssessment(0.0, \"Empty prompt, no bias risk\")\n    score = 0.1 if \"diversity\" in prompt.lower() else 0.0\n    notes = \"Detected inclusive language\" if score else \"No flagged bias\"\n    return BiasAssessment(score, notes)\n",
-  "full_hash": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
-  "generated_at": 1764728330.6891627,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\safety\\bias_auditor.py"
-}

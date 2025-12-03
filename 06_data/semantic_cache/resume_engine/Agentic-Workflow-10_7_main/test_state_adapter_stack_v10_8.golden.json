@@ -1,6 +1,0 @@
-{
-  "golden_content": "import copy\n\nimport pytest\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState, StrategyPlan\n\n\n@pytest.fixture\ndef base_state() -> dict:\n    state = MainGraphState()\n    state.metadata.workflow_id = \"wf-demo\"\n    state.resume.master_resume = {\"summary\": \"Original summary\"}\n    state.draft.sections = {\n        \"summary\": {\"draft\": \"v1\", \"tone\": \"Warm\"},\n        \"experience\": {\"entries\": [{\"company\": \"Acme\"}]},\n    }\n    return state.to_dict()\n\n\n@pytest.mark.state\ndef test_apply_patch_preserves_existing_keys(base_state):\n    adapter = StateAdapterStack(context=None)\n    patch = {\"resume\": {\"experience_bullets\": [{\"text\": \"Impact\", \"score\": 0.92}]}}\n\n    updated = adapter.apply_patch(copy.deepcopy(base_state), patch)\n\n    assert \"job\" in updated  # upstream keys must remain\n    assert updated[\"resume\"][\"experience_bullets\"][0][\"text\"] == \"Impact\"\n    assert updated[\"resume\"][\"master_resume\"] == base_state[\"resume\"][\"master_resume\"]\n\n",
-  "full_hash": "6e21ead8b9476c0b2e647be2452ae3eda6f96ac8ba8a7f36a93272da31b18b6c",
-  "generated_at": 1764728231.6208925,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state\\test_state_adapter_stack_v10_8.py"
-}

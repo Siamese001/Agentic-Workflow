@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Testing and Coverage\n\nTo run the full validation suite used by CI:\n\n```bash\npytest tests/unit -q\npytest tests/integration -q\npytest tests/e2e -q\npytest tests/regression -q\ntools/run_tests_with_coverage.py\n```\n\nThe `tools/run_tests_with_coverage.py` helper executes pytest under Python's\nstandard-library `trace` module so the 90% coverage gate can be enforced even in\nrestricted environments where third-party plugins cannot be installed. Pass\nadditional pytest arguments after ``--`` if you need to narrow the run.\n",
-  "full_hash": "ba423be65f4b9a802e4bd617564daa58cad89c8d084a3fa887935aacf7afbb6e",
-  "generated_at": 1764728330.9153135,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\TESTING.md"
-}

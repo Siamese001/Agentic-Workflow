@@ -1,6 +1,0 @@
-{
-  "golden_content": "\n\"\"\"Simple MCP registry client used for discovery and invocation stubs.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Sequence\n\n\n_TRUST_ORDER = {\"low\": 0, \"medium\": 1, \"high\": 2}\n\n\n@dataclass(frozen=True)\nclass ToolSpec:\n    \"\"\"Metadata describing a discoverable MCP tool.\"\"\"\n\n    id: str\n    name: str\n    capabilities: Sequence[str]\n    cost: float\n    trust_tier: str\n    latency_ms: int\n    description: str = \"\"\n\n    def trust_rank(self) -> int:\n        return _TRUST_ORDER.get(self.trust_tier.lower(), 0)\n\n\nclass MCPClient:\n    \"\"\"In-memory implementation of an MCP registry client.\"\"\"\n\n    def __init__(self, tools: Iterable[ToolSpec] | None = None) -> None:\n        self._tools: Dict[str, ToolSpec] = {}\n        for tool in tools or self._default_tools():\n            self.register(tool)\n        self._usage: Dict[str, int] = {}\n\n    def register(self, spec: ToolSpec) -> None:\n        self._tools[spec.id] = spec\n\n    def d",
-  "full_hash": "5c0a233c2522af46aaefb98c196b544e4763c70c06ad635e6ed1dfbbafaae23b",
-  "generated_at": 1764728330.525635,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\mcp\\registry_client.py"
-}

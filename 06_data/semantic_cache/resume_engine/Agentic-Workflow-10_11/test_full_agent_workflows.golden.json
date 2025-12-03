@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"E2E Full Agent Workflow Tests.\"\"\"\n\nclass TestFullAgentWorkflows:\n    \"\"\"E2E tests for full agent workflows.\"\"\"\n    \n    def test_resume_improvement_workflow(self):\n        \"\"\"Test complete resume improvement workflow.\"\"\"\n        workflow_steps = [\"analyze\", \"plan\", \"draft\", \"review\"]\n        assert len(workflow_steps) == 4\n    \n    def test_job_matching_workflow(self):\n        \"\"\"Test complete job matching workflow.\"\"\"\n        stages = [\"extract\", \"match\", \"rank\"]\n        assert \"match\" in stages\n",
-  "full_hash": "ff52c4abdb801e50b18762b3a381fa1fa6a2971fac0186cda97f683130e34c80",
-  "generated_at": 1764728226.5532124,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\full_agent_workflows\\test_full_agent_workflows.py"
-}

@@ -1,1 +1,0 @@
-{"\"\"\"simple":1,"reflexion":1,"scoring":1,"helpers.\"\"\"":1,"from":1,"__future__":1,"import":1,"annotations":1,"def":1,"apply_feedback(draft:":1,"str,":1,"insight:":2,"str)":1,"->":1,"str:":1,"if":1,"not":1,"return":2,"draft":1,"f\"{draft}\\n\\nreflexion:":1,"{insight}\"":1}

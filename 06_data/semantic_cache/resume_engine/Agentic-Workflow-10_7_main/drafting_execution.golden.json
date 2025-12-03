@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Pure action implementation of the v10.8 drafting execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict, Optional\n\nfrom core_v10_7 import BaseAgent, DraftPlan, StrategyPlan\nfrom agent_stacks_v10_8.components.drafting import (\n    ComplianceEditorAgent,\n    NarrativeStylistAgent,\n    StructureLeadAgent,\n)\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\n\n\nclass DraftingExecutionStack(BaseAgent):\n    \"\"\"Applies a DraftPlan by invoking deterministic drafting specialists.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        super().__init__(context, debug_mode)\n        self.structure_lead = StructureLeadAgent(context, debug_mode)\n        self.narrative_stylist = NarrativeStylistAgent(context, debug_mode)\n        self.compliance_editor = ComplianceEditorAgent(context, debug_mode)\n        self.safety_policy = getattr(context, \"safety_policy\", None)\n        self.policy_stack = getattr(context, \"po",
-  "full_hash": "cb0b7eb63324b79a2cf4e9edd22d8d071b3015610685b1681ca5eaa93cb2e7ed",
-  "generated_at": 1764728230.1892126,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\drafting_execution.py"
-}

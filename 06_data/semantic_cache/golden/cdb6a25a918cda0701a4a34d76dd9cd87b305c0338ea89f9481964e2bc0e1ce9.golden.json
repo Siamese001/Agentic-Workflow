@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cdb6a25a918cda0701a4a34d76dd9cd87b305c0338ea89f9481964e2bc0e1ce9",
-    "scan_timestamp": "2025-12-03T07:26:03.648923"
+    "scan_timestamp": "2025-12-03T08:04:48.155199"
   },
   "content_preview": "\"\"\"Unit Tests for Injection Detection System\n\nTests all injection detection patterns and validation rules\nto ensure security mechanisms work correctly.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch, AsyncMock\nfrom datetime import datetime\n\nfrom l5.injection_detection import (\n    InjectionDetector,\n    InjectionType,\n    InjectionSafetyPolicy,\n    create_injection_safety_policy\n)\nfrom l5.types import SafetyContext, SafetyFinding, Severity, Verdict\n\n\nclass TestInjectionDetector:\n    \"\"...",
-  "creation_timestamp": "2025-12-03T07:26:10.069298",
+  "creation_timestamp": "2025-12-03T08:04:56.822657",
   "version": "1.0"
 }

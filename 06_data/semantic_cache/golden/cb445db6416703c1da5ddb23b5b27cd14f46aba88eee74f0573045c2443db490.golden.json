@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cb445db6416703c1da5ddb23b5b27cd14f46aba88eee74f0573045c2443db490",
-    "scan_timestamp": "2025-12-03T07:26:03.681975"
+    "scan_timestamp": "2025-12-03T08:04:48.187567"
   },
   "content_preview": "# FILE: 10_10/l2.py\n\"\"\"\nUnified L2 Execution Layer (v10_10 \u00b7 Phase 3)\n=============================================\n\nResponsibilities:\n    \u2022 Execute StrategyPlan, RAGPlan, DraftingPlan, QAPlan, SafetyPlan.\n    \u2022 Perform all LLM calls (via cognitive_agents), plus retrieval hooks.\n    \u2022 Produce structured outputs:\n          \u2013 StrategyResult\n          \u2013 RAGResult (evidence + Phase-3 RAG reasoning signal)\n          \u2013 DraftingResult\n          \u2013 QAResult\n          \u2013 SafetyResult\n    \u2022 Wrap all computa...",
-  "creation_timestamp": "2025-12-03T07:26:12.247186",
+  "creation_timestamp": "2025-12-03T08:04:59.034948",
   "version": "1.0"
 }

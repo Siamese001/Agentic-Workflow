@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "e095fdb587e44cca20bcca46779772c167123a3753973be104189b6e2b778a59",
-    "scan_timestamp": "2025-12-03T07:26:04.022734"
+    "scan_timestamp": "2025-12-03T08:04:48.532356"
   },
   "content_preview": "```markdown\n# LinkedInCanonical \u2014 2025-09-10 v2.90 (FULL, ZLO-Consolidated)\n\n**Lineage:** v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> v2.86 -> v2.87 -> v2.88 -> **v2.90**\n\n**ZLO Method:** Versioned Zero-Loss Overwrite (Steps 1\u20135). v2.90 is an additive, zero-regression overwrite of v2.88. It clarifies and hardens archetype routing precedence for CXO-level tokens, strengthens the operator confirmation prompt, and tightens DRQ engagement prompts for C-Level. Al...",
-  "creation_timestamp": "2025-12-03T07:26:39.969517",
+  "creation_timestamp": "2025-12-03T08:05:26.526934",
   "version": "1.0"
 }

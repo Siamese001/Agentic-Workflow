@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "642fb23db353a2fcd2a2a95e0176e07d1cad2ad736e11220861d0f470369a21e",
-    "scan_timestamp": "2025-12-03T07:26:03.647876"
+    "scan_timestamp": "2025-12-03T08:04:48.153971"
   },
   "content_preview": "\"\"\"L5 Safety Guardrails Tests.\"\"\"\n\nclass TestL5Guardrails:\n    \"\"\"Tests for L5 safety guardrails.\"\"\"\n    \n    def test_content_guardrail(self):\n        \"\"\"Test content guardrail enforcement.\"\"\"\n        content = \"safe resume content\"\n        blocked_terms = [\"SSN\", \"password\"]\n        is_safe = not any(term in content for term in blocked_terms)\n        assert is_safe is True\n    \n    def test_pii_guardrail(self):\n        \"\"\"Test PII detection guardrail.\"\"\"\n        text = \"Hello World\"\n        ha...",
-  "creation_timestamp": "2025-12-03T07:26:10.038405",
+  "creation_timestamp": "2025-12-03T08:04:56.792369",
   "version": "1.0"
 }

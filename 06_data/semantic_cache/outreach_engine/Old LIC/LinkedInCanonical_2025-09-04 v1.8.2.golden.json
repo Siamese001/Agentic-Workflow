@@ -1,6 +1,0 @@
-{
-  "golden_content": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-05 v1.8.2\n===============================================================================\n\n# SUMMARY\n- Corrected routing with **seniority-only** inference (titles/scope), never based on messaging mechanics.\n- **Signature enforcement**: exact spacing/structure; one blank line after \u201cRegards,\u201d and no blanks between signature lines.\n- **AI FILTER harmonization**: phone number dash auto-whitelisted; no operator prompt.\n- **Operator prompts simplified**: only NEW/EXISTING, SINGLE/MULTIPLE (+2A when needed), bulk LinkedIn paste, and YES/NO confirmation of inferred type.\n- **Visible Output Contract tightened**: fixed order; QA tables are mandatory; Evidence Pack **always renders (2 rows)** by default.\n- **Reply-to-Short** redundancy guard retained (\u22640.40 Jaccard; one deterministic auto-rewrite).\n\n------------------------",
-  "full_hash": "01f63e32681da7d647b88aceb8a76eec92f9fb584e639498cf1e95424c2916e8",
-  "generated_at": 1764728339.9434764,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-04 v1.8.2.md"
-}

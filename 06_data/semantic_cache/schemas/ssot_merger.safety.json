@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 232,
-  "generated_at": 1764728346.6414552,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\ssot_merger.py"
-}

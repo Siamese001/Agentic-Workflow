@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL3 strategy orchestrator for resume job alignment workflows.\n\nCoordinates strategy planning and execution for resume enhancement.\n\"\"\"\n\nfrom typing import Any\nfrom l1.strategy_planning import plan_strategy\nfrom l2.strategy_executor import StrategyExecutor\nfrom runtime.observability import record_event\n\nclass StrategyOrchestrator:\n    \"\"\"Pure orchestration for resume strategy job alignment workflows.\"\"\"\n    \n    def __init__(self, strategy_executor: StrategyExecutor):\n        self.strategy_executor = strategy_executor\n    \n    def orchestrate_strategy(self, job: Any, resume: Any, config: Any) -> str:\n        \"\"\"Orchestrates resume strategy workflow for job alignment processing.\"\"\"\n        record_event(\"strategy_orchestration_start\", {})\n        \n        # L1: Pure planning\n        strategy_plan = plan_strategy(job, resume, config)\n        \n        # L2: Pure execution\n        result = self.strategy_executor.execute_strategy(\n            f\"Execute strategy for: {strategy_plan.reasonin",
-  "full_hash": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0",
-  "generated_at": 1764728225.1467144,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\strategy_orchestrator.py"
-}

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 16,
-  "generated_at": 1764728350.3974905,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\observer-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\time_profiler.py"
-}

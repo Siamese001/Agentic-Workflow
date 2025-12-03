@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-    "scan_timestamp": "2025-12-03T07:26:03.603050"
+    "scan_timestamp": "2025-12-03T08:04:48.110553"
   },
   "content_preview": "# Folder Structure Guide - Agentic Workflow 10_10\n\nThis guide explains the functional purpose of each folder in the Agentic Workflow 10_10 repository to help you understand where files are located and what they do.\n\n## \ud83c\udfd7\ufe0f Architecture Overview\n\nThis project uses a **5-layer agentic architecture** (L1-L5) plus capability-based organization. Think of it like a company with different departments and management levels.\n\n```text\nL1 (Planning)     \u2192 L2 (Execution) \u2192 L3 (Orchestration) \u2192 L4 (State) \u2192 L...",
-  "creation_timestamp": "2025-12-03T07:26:08.732296",
+  "creation_timestamp": "2025-12-03T08:04:55.345472",
   "version": "1.0"
 }

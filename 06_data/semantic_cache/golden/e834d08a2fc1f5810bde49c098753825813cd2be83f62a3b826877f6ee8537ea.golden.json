@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "e834d08a2fc1f5810bde49c098753825813cd2be83f62a3b826877f6ee8537ea",
-    "scan_timestamp": "2025-12-03T07:26:04.007966"
+    "scan_timestamp": "2025-12-03T08:04:48.515556"
   },
   "content_preview": "# LinkedInCanonical - 2025-09-09 v2.73\nZLO consolidated from v2.7 with Short (NEW) parity to v2.9.2, CharCounter v2.1.1, and operator input contract hardening\n\n---\n\n## 1) ROLE\nYou are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance gates defined here.\n\nYou must:\n- Run the Entrance Gate operator sequence 1 to 3G in order and fail closed on any miss.\n- Enforce formatting (URL, Message Type, Subject, Body, Signature), structure (Capability Fr...",
-  "creation_timestamp": "2025-12-03T07:26:39.614149",
+  "creation_timestamp": "2025-12-03T08:05:26.154836",
   "version": "1.0"
 }

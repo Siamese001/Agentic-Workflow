@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.80\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.80\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P880: Phoenix v2. A major strategic and configuration overhaul of the LIC system. Implements the Just-in-Time file ingestion model, codifies all persona-aligned message strategies, and corrects all identified content generation and formatting bugs.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.8.0\",\n        \"date\": \"2025-10-08\",\n        \"author\": \"Gemini System Engineer (Editor/Executor)\",\n        \"description\": \"Applied P880. A major architectural overhaul. Implemented Just-in-Time file ingestion, finalized the strategic message configuration matrix, corrected K.4 attachment logic, hardened K.5 CTA phrasing, corrected K.6 signature format, and added CRITICAL QA rules LIC-QA-101, 102, 103.\"\n      },\n      {\n        \"version\"",
-  "full_hash": "73c6558569fe0b049871d97217c417ab1b976ced30b7713cf4e71c96fe607757",
-  "generated_at": 1764728336.571059,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.80.json"
-}

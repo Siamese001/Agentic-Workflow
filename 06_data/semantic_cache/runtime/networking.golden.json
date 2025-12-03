@@ -1,6 +1,0 @@
-{
-  "golden_content": "from __future__ import annotations\n\nfrom typing import Dict, List\n\n\ndef default_network_policy() -> Dict[str, object]:\n    \"\"\"Return the default network policy for sandboxed execution.\n\n    By default all outbound network access is disabled.\n    \"\"\"\n\n    return {\n        \"allow_network\": False,\n        \"allowlist\": [],\n    }\n\n\ndef is_destination_allowed(policy: Dict[str, object], host: str) -> bool:\n    if not policy.get(\"allow_network\"):\n        return False\n    allowlist: List[str] = list(policy.get(\"allowlist\", []) or [])\n    return host in allowlist\n\n\n\n",
-  "full_hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
-  "generated_at": 1764728347.6745958,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\expand-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\networking.py"
-}

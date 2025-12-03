@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n@pytest.mark.performance\ndef test_batch_performance(benchmark):\n    ctx = {\"compat_mode\": \"v10_7\", \"resume\": \"BatchCase\", \"jd\": \"AI Director\"}\n    result = benchmark(lambda: run_workflow(ctx))\n    assert result[\"status\"] == \"success\"\n\n\n@pytest.mark.performance\ndef test_latency_under_3s(benchmark):\n    ctx = {\"compat_mode\": \"v10_7\", \"resume\": \"SpeedTest\"}\n    result = benchmark(lambda: run_workflow(ctx))\n    assert result is not None\n\n\ndef test_retry_context_emits_retry_event():\n    ctx = {\"compat_mode\": \"v10_7\", \"resume\": \"RetryCase\", \"low_confidence\": True}\n    result = run_workflow(ctx)\n    assert result[\"status\"] == \"success\"\n    assert \"retry\" in result[\"events\"]\n",
-  "full_hash": "e24fab01e678474dc52f33fe4b81211b203ea5e33c2ceab805fe7748a1302550",
-  "generated_at": 1764728230.6074438,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_sla_latency_v10_7.py"
-}

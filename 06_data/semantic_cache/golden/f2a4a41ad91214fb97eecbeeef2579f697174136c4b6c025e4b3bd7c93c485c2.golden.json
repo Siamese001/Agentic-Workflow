@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f2a4a41ad91214fb97eecbeeef2579f697174136c4b6c025e4b3bd7c93c485c2",
-    "scan_timestamp": "2025-12-03T07:26:03.753538"
+    "scan_timestamp": "2025-12-03T08:04:48.259223"
   },
   "content_preview": "import core_v10_7.context as context_module\nfrom core_v10_7 import MCPClientSpec, MCPClientStub\n\n\ndef test_ensure_mcp_clients_converts_optional_failures(monkeypatch, mock_workflow_context):\n    ctx = mock_workflow_context\n    ctx.reset_mcp_clients()\n    ctx._mcp_enabled = True\n    ctx._mcp_client_specs = [\n        MCPClientSpec(\n            name=\"optional_client\",\n            provider=\"custom\",\n            module=\"fake.module\",\n            class_name=\"FakeClient\",\n            optional=True,\n    ...",
-  "creation_timestamp": "2025-12-03T07:26:18.798288",
+  "creation_timestamp": "2025-12-03T08:05:05.992221",
   "version": "1.0"
 }

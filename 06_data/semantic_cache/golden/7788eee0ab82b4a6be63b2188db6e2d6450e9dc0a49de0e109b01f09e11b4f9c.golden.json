@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "7788eee0ab82b4a6be63b2188db6e2d6450e9dc0a49de0e109b01f09e11b4f9c",
-    "scan_timestamp": "2025-12-03T07:26:03.599078"
+    "scan_timestamp": "2025-12-03T08:04:48.106183"
   },
   "content_preview": "\"\"\"OpenAI client adapter for v10_10.\n\nThis module is the ONLY place where the OpenAI SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any\n\n\ndef run_llm_openai(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run an OpenAI chat completion and return the response text.\n\n    This helper performs no routing or caching; it is a th...",
-  "creation_timestamp": "2025-12-03T07:26:08.644448",
+  "creation_timestamp": "2025-12-03T08:04:55.244494",
   "version": "1.0"
 }

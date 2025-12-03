@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
-    "scan_timestamp": "2025-12-03T07:26:03.537511"
+    "scan_timestamp": "2025-12-03T08:04:48.047171"
   },
   "content_preview": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Literal\n\nfrom pydantic import BaseModel\n\n\n@dataclass\nclass GoldenStateTestCase:\n    \"\"\"Single golden-state test case.\n\n    `expected_behavior` is a free-form description used by judges.\n    `metadata` can hold scenario tags, severity, etc.\n    \"\"\"\n\n    id: str\n    input_text: str\n    expected_behavior: str\n    metadata: Dict[str, Any] = field(default_factory=dict)\n\n\n@dataclass\nclass J...",
-  "creation_timestamp": "2025-12-03T07:26:04.950593",
+  "creation_timestamp": "2025-12-03T08:04:49.823796",
   "version": "1.0"
 }

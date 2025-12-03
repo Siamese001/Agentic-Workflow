@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 453,
-  "generated_at": 1764728228.6584396,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\main_v10_9.py"
-}

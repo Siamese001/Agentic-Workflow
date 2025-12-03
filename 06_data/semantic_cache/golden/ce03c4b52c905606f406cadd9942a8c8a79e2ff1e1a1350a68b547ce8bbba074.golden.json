@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "ce03c4b52c905606f406cadd9942a8c8a79e2ff1e1a1350a68b547ce8bbba074",
-    "scan_timestamp": "2025-12-03T07:26:04.009598"
+    "scan_timestamp": "2025-12-03T08:04:48.517036"
   },
   "content_preview": "# LinkedInCanonical \u2014 2025-09-09 v2.80 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80. v2.80 adds a hardened C-Suite MPV-5 prompt, permits a Public Reasoning Appendix after QA blocks, reiterates the no em dash policy, and clarifies optional scheduling to reduce friction.\n\nZLO Method: Versioned Zero-Loss Overwrite per Steps 1-5 (identify, direct edit, diff QA, canonical QA, explicit changelog).\n\n-------------------------------------------------------------------------------\n## 1) ROLE...",
-  "creation_timestamp": "2025-12-03T07:26:39.642404",
+  "creation_timestamp": "2025-12-03T08:05:26.188660",
   "version": "1.0"
 }

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.39 - DATA INTEGRITY HARDENING\n\nv5.39 CHANGES FROM v5.38 - DATA INTEGRITY ENFORCEMENT:\n\u2713 HARDENED: Removed ALL hardcoded fallback values (master resume as sole source)\n  - Removed \"Amit Ayer\" name fallback (line 5113)\n  - Removed \"Risk Management\" theme fallback (lines 3232, 3303)\n  - Removed \"Technology\" theme fallback (lines 3565, 3635)\n  - Added fail-fast validation for required master resume fields\n\u2713 ADDED: Master resume validation at load time\n  - Validates header.name, email, phone, location\n  - Validates experience array has at least 2 entries\n  - Validates each experience has company, title, bullets\n  - Fails fast with clear error message if fields missing\n\u2713 IMPROVED: Company name constraints now dynamic\n  - Removed hardcoded \"Unify Consulting\", \"IBM\", \"TraderSense\"\n  - Validation now works for ANY master resume structure\n  - Uses tolerance percentages instead of specific company names\n\u2713 PRINCIPLE: \"Only resume should be master resume\"\n  - NO hard",
-  "full_hash": "7ebe0d82306fe9fd0a797a44b9186f88ca721b3a024bfdf1d9283f072d874cb4",
-  "generated_at": 1764728303.9255908,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_39_HARDENED.py"
-}

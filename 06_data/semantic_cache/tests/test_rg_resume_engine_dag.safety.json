@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 545,
-  "generated_at": 1764728355.0846171,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\safety-guard-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\test_rg_resume_engine_dag.py"
-}

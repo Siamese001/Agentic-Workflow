@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cb0b7eb63324b79a2cf4e9edd22d8d071b3015610685b1681ca5eaa93cb2e7ed",
-    "scan_timestamp": "2025-12-03T07:26:03.733147"
+    "scan_timestamp": "2025-12-03T08:04:48.243577"
   },
   "content_preview": "\"\"\"Pure action implementation of the v10.8 drafting execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict, Optional\n\nfrom core_v10_7 import BaseAgent, DraftPlan, StrategyPlan\nfrom agent_stacks_v10_8.components.drafting import (\n    ComplianceEditorAgent,\n    NarrativeStylistAgent,\n    StructureLeadAgent,\n)\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\n\n\nclass DraftingExecutionStack(BaseAgent):\n    \"\"\"Applies a DraftPlan by invoki...",
-  "creation_timestamp": "2025-12-03T07:26:17.855468",
+  "creation_timestamp": "2025-12-03T08:05:04.915638",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "bee74128187f59324a09eb3eec01984930413d760f21e35618d953bfed6f9d2d",
-    "scan_timestamp": "2025-12-03T07:26:03.610020"
+    "scan_timestamp": "2025-12-03T08:04:48.117045"
   },
   "content_preview": "# Refactoring Summary \u2014 11/24/2025\n\nAll refactoring work completed on November 24, 2025.\n\n## Directory Structure\n\n```\nrefactoring/11-24-2025/\n\u251c\u2500\u2500 README.md                           # This file\n\u251c\u2500\u2500 phase_a_l1_planning/                # Phase A: L1 Planning Layer\n\u2502   \u251c\u2500\u2500 PHASE_A_SUMMARY.md              # Phase A summary\n\u2502   \u251c\u2500\u2500 README.md                       # Phase A details\n\u2502   \u251c\u2500\u2500 test_l1_phase_a.py              # Phase A tests\n\u2502   \u2514\u2500\u2500 verify_phase_a.py               # Phase A verification\n\u251c\u2500...",
-  "creation_timestamp": "2025-12-03T07:26:08.814281",
+  "creation_timestamp": "2025-12-03T08:04:55.442062",
   "version": "1.0"
 }

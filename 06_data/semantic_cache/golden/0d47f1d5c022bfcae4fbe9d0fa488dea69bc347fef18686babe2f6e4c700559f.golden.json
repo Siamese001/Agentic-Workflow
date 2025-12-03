@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "0d47f1d5c022bfcae4fbe9d0fa488dea69bc347fef18686babe2f6e4c700559f",
-    "scan_timestamp": "2025-12-03T07:26:03.702186"
+    "scan_timestamp": "2025-12-03T08:04:48.211014"
   },
   "content_preview": "# FILE: v10_7_orchestration.py\n# CONSOLIDATED: L3/L5 Control Layer (LangGraph DAG, Safety, QA, HIL, Arbitration)\n# STATUS: Production Ready (v10.7 Baseline)\n\nfrom __future__ import annotations\nimport asyncio\nimport json\nimport logging\nimport os\nimport re\nimport importlib.util\nimport inspect\nfrom datetime import datetime\nfrom typing import Any, Dict, List, Type, Optional, Tuple, Callable, Awaitable, Sequence, Set, Iterable\nfrom functools import wraps, partial\n\n# Assuming Pydantic, LangGraph, and ...",
-  "creation_timestamp": "2025-12-03T07:26:14.341855",
+  "creation_timestamp": "2025-12-03T08:05:01.790846",
   "version": "1.0"
 }

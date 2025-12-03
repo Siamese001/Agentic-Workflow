@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "26720a1f42ae89a7fd51784c96bca85e5ece34620984e6b14eb7c196d9398b40",
-    "scan_timestamp": "2025-12-03T07:26:03.533869"
+    "scan_timestamp": "2025-12-03T08:04:48.043601"
   },
   "content_preview": "\"\"\"Core models package - re-exports all models for convenient imports.\"\"\"\n\nfrom .models import (\n    # Enums\n    ComplexityLevel,\n    DraftingMode,\n    ReasoningMode,\n    AgentRole,\n    # Agent models\n    AgentCard,\n    # State models\n    JobDescription,\n    ResumeProfile,\n    WorkflowState,\n    StateTransitionEvent,\n    Checkpoint,\n    RollbackRequest,\n    RollbackResult,\n    WorkflowStatePatch,\n    # Execution context\n    ExecutionContext,\n    ContextBudget,\n    ExecutionProfile,\n    RoutingHi...",
-  "creation_timestamp": "2025-12-03T07:26:04.863560",
+  "creation_timestamp": "2025-12-03T08:04:49.714660",
   "version": "1.0"
 }

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 450,
-  "generated_at": 1764728346.701298,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\budget-manager-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\config_profiles_v10_10.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f074ce53e164802ea823781575696c062838909c82466ef5261311542066940e",
-    "scan_timestamp": "2025-12-03T07:26:03.574533"
+    "scan_timestamp": "2025-12-03T08:04:48.083742"
   },
   "content_preview": "\"\"\"\nL4 adapter for resume job alignment state management.\n\nWraps StateManager to implement interface contracts for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\nfrom datetime import datetime, timedelta\n\nfrom l4.interfaces import (\n    L4StateManagerInterface,\n    L4MemoryManagerInterface,\n    L4VectorStoreInterface,\n    L4GraphStoreInterface,\n    L4TemporalKGInterface,\n    L4ProvenanceManagerInterface,\n...",
-  "creation_timestamp": "2025-12-03T07:26:06.693642",
+  "creation_timestamp": "2025-12-03T08:04:52.406792",
   "version": "1.0"
 }

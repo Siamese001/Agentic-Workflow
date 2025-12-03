@@ -1,6 +1,0 @@
-{
-  "golden_content": "=== SINGLE-CHILD CHAIN ANALYSIS ===\n\nTotal single-child directory nodes: 498\nSemantic single-children: 498\nTrivial wrapper candidates: 0\n\n=== SEMANTIC SINGLE-CHILDREN (TO KEEP) ===\n  agentic_core/L1_cognition/P1_retrieve/get_info/utility/prepare_information - semantic level: prepare_information\n  agentic_core/L1_cognition/P1_retrieve/get_info/embedding/compare_meaning - semantic level: compare_meaning\n  agentic_core/L1_cognition/P1_retrieve/check_rules/policy - semantic level: policy\n  agentic_core/L1_cognition/P1_retrieve/check_rules/policy/check_safety - semantic level: check_safety\n  agentic_core/L1_cognition/P2_inspect/convert_content/embedding/compare_meaning - semantic level: compare_meaning\n  agentic_core/L1_cognition/P2_inspect/convert_content/semantic/adjust_scores - semantic level: adjust_scores\n  agentic_core/L1_cognition/P2_inspect/check_structure/policy/check_safety - semantic level: check_safety\n  agentic_core/L1_cognition/P2_inspect/check_structure/semantic/adjust_scores",
-  "full_hash": "32762548859eb0d2fb80624fe6cbd5526d35dfa8e6175253f544dc2fdb8b822f",
-  "generated_at": 1764728346.2725601,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\validation_tools\\single_child_analysis.txt"
-}

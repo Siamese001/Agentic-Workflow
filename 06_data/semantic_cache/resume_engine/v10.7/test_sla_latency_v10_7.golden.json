@@ -1,6 +1,0 @@
-{
-  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n@pytest.mark.performance\ndef test_batch_performance(benchmark):\n    ctx = {\"resume\": \"BatchCase\", \"jd\": \"AI Director\"}\n    result = benchmark(lambda: run_workflow(ctx))\n    assert result[\"status\"] == \"success\"\n\n\n@pytest.mark.performance\ndef test_latency_under_3s(benchmark):\n    ctx = {\"resume\": \"SpeedTest\"}\n    result = benchmark(lambda: run_workflow(ctx))\n    assert result is not None\n\n\ndef test_retry_context_emits_retry_event():\n    ctx = {\"resume\": \"RetryCase\", \"low_confidence\": True}\n    result = run_workflow(ctx)\n    assert result[\"status\"] == \"success\"\n    assert \"retry\" in result[\"events\"]\n",
-  "full_hash": "7d451b3fcf96ab11b3e8268581e671ec80ffdc8d66fae1e78c7814726f535692",
-  "generated_at": 1764728329.8620071,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\performance\\test_sla_latency_v10_7.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Safety guard stack agents.\"\"\"\n\nimport json\nimport re\nfrom typing import Any, Dict, Optional\n\nfrom pydantic import BaseModel, Field\n\nfrom core_v10_7 import (\n    BaseAgent,\n    ConstitutionalReviewResult,\n    track_metrics,\n    _format_prompt_with_defaults,\n    detect_bias,\n)\n\n\nclass PIISanitizerAgent(BaseAgent):\n    \"\"\"Performs local PII detection using regex heuristics.\"\"\"\n\n    PII_PATTERNS = {\n        \"EMAIL\": re.compile(r\"\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b\"),\n        \"PHONE\": re.compile(r\"\\b(?:\\+?1[ -]?)?\\(?\\d{3}\\)?[ -]?\\d{3}[ -]?\\d{4}\\b\"),\n        \"NAME\": re.compile(r\"\\b[A-Z][a-z]+ [A-Z][a-z]+\\b\"),\n    }\n\n    @track_metrics(\"run_pii_sanitizer\")\n    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:\n        self.log_info(\"Sanitizing PII (local regex processing)...\")\n        sanitized_resume = json.loads(json.dumps(resume))\n\n        def sanitize_node(node: Any) -> Any:\n            if isinstance(node, dict):\n                return {k: sanitize_node(v) for k, ",
-  "full_hash": "fa1c7781ef335ffd299dd5c2b2891ea39248d4286042b43014acadc5a0fa1e21",
-  "generated_at": 1764728230.0467968,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\safety.py"
-}

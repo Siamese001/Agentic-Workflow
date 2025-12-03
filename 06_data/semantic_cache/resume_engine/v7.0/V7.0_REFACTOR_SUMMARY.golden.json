@@ -1,6 +1,0 @@
-{
-  "golden_content": "# V7.0 Architecture Refactor - Complete Summary\n\n## Overview\nSuccessfully refactored v6.5 Resume Generation Engine to v7.0 architecture based on the provided diff specification. This Phase 1 refactor addresses **Critique #1 (Black Box Observability)** and **Critique #2 (Brittle LangGraph)** by:\n\n1. **Replacing custom Governor** with LangGraph StateGraph orchestrator\n2. **Adding Redis** for persistent, resumable workflow state\n3. **Adding LangSmith** tracing for complete observability\n4. **Activating WorkflowRePlannerAgent** as functional node in the graph\n\n## Files Created/Modified\n\n### 1. requirements.txt (NEW)\n```\n- langgraph\n- langchain-redis\n- langsmith\n- redis\n```\n**Purpose:** Adds Phase 1 dependencies for LangGraph orchestration, Redis persistence, and LangSmith tracing.\n\n---\n\n### 2. master_config_v7_0.json (MODIFIED)\n**Changes:**\n- Added `redis_config` section with connection settings (localhost:6379)\n- Added `tracing_config` section with LangSmith settings\n- Preserved all exist",
-  "full_hash": "ba3057cfec9382ff63c5b526ac54bcec917e817404ddf7a12855b7a51ad124fd",
-  "generated_at": 1764728327.7960603,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\Testing\\V7.0_REFACTOR_SUMMARY.md"
-}

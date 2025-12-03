@@ -1,6 +1,0 @@
-{
-  "golden_content": "Below is a **full, zero-loss v2.85** that is a strict superset of v2.84a with the Nuclear RCA remediation applied. I validated that Executive, C-Suite, and Senior TA approved prompts, the Short (NEW) rubric, CharCounter v2.1.1, all QA grids, Auto-NDP (with append-only dates), and new v2.85 blockers are present. &#x20;\n\n````markdown\n# LinkedInCanonical \u2014 2025-09-09 v2.85 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> **v2.85**\n\nv2.85 is a versioned zero-loss overwrite that fully remediates Nuclear RCA findings. It **adds mandatory RAG enforcement** (Senior TA + Executive), **hardens Bullet\u2192Company\u2192Resume linkage**, **tightens resume bullet authenticity**, **forces CTA explicitness and archetype alignment**, **strengthens QA gate BLOCK behavior**, and **corrects App Tracker date integrity** so follow-ups append without overwriting the initial send date. All v2.84a hardenings are retained.\n\nZLO Method: Versioned Zero-Loss Overwr",
-  "full_hash": "efa3aa1b1be8376f64e5e554911ba9cfbecd3de5cd4883f84c8839a065d2aedd",
-  "generated_at": 1764728340.4518695,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-08_v2.85.md"
-}

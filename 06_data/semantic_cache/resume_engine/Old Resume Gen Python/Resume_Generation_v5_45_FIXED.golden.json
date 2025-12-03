@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.45 - QA HARDENING & WORD COUNT ENFORCEMENT\n\nv5.45 CHANGES - CRITICAL QUALITY FIXES:\n\u2713 FIXED: Word count enforcement in HOP-3 generation - now uses count_words_clean() in prompts\n\u2713 FIXED: QA output formatting - structured sections with clear separators\n\u2713 FIXED: Variance signal visibility - added Status column (\u2713/\u2717) to Output 4\n\u2713 NEW: QAFormatter class - structured markdown formatting for all 14 QA sections\n\u2713 NEW: Post-generation validation loop - ensures word counts match targets (\u00b15%)\n\u2713 NEW: Delta column in Output 4 - shows absolute word difference per section\n\u2713 NEW: Summary header in Output 4 - \"X passed, Y failed\" at top of table\n\u2713 NEW: Test suite - test_word_count_accuracy() and test_qa_structure()\n\u2713 Result: Accurate generation matching validation, readable QA reports, clear failure signals\n\nBREAKING CHANGES:\n- HOP-3 prompts now explicitly reference count_words_clean()\n- QA report format changed - no more mixed JSON/dict repr\n- Output 4 has new column",
-  "full_hash": "7d597980793a131b60847b93df720cd3860bf5a7ee94100adcab3bcfc4298621",
-  "generated_at": 1764728304.873163,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_45_FIXED.py"
-}

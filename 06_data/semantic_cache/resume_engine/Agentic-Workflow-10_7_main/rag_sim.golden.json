@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Synthetic RAG simulator.\"\"\"\n\nimport random\nfrom typing import List\n\nfrom simulations.models.rag_simulation import (\n    RAGSimMetrics,\n    RAGSimRequest,\n    RAGSimResult,\n)\nfrom simulations.utils import model_to_payload\n\n\nclass RAGSimulator:\n    \"\"\"Runs retrieval quality simulations.\"\"\"\n\n    async def run(self, request: RAGSimRequest) -> RAGSimResult:\n        doc_count = len(request.documents)\n        diversity_bonus = min(doc_count / 10.0, 0.3)\n        recall = round(min(1.0, 0.4 + diversity_bonus + random.uniform(0.0, 0.4)), 3)\n        precision = round(min(1.0, 0.5 + random.uniform(-0.2, 0.3)), 3)\n        redundancy = round(max(0.0, 0.2 + random.uniform(-0.1, 0.5)), 3)\n        metrics = RAGSimMetrics(\n            recall=max(0.0, recall),\n            precision=max(0.0, precision),\n            redundancy=min(1.0, redundancy),\n        )\n        top_docs: List[str] = request.documents[:3]\n        return RAGSimResult(\n            simulation_id=request.simulation_id,\n            succe",
-  "full_hash": "e985c7d82a793593e58b49e2f6094031eab4b99f180af3071a57b67c7845f19c",
-  "generated_at": 1764728229.9569693,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_sim.py"
-}

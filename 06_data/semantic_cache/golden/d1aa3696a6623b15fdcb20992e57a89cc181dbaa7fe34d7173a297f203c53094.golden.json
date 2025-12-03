@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "d1aa3696a6623b15fdcb20992e57a89cc181dbaa7fe34d7173a297f203c53094",
-    "scan_timestamp": "2025-12-03T07:26:03.788053"
+    "scan_timestamp": "2025-12-03T08:04:48.294482"
   },
   "content_preview": "from models import MainGraphState\nfrom state_adapter_stack import StateAdapterStack\n\n\ndef test_safety_fields_persist_via_patch():\n    base = MainGraphState()\n    patch = {\n        \"safety_report\": {\"is_safe\": True, \"findings\": []},\n        \"policy_decision\": {\"allowed\": True, \"reason\": None},\n        \"constitutional_review\": {\"passed\": True, \"violations\": []},\n    }\n\n    adapter = StateAdapterStack(context=None, debug_mode=False)\n    new_state = adapter.apply_patch(base, patch)\n\n    assert new_s...",
-  "creation_timestamp": "2025-12-03T07:26:20.393377",
+  "creation_timestamp": "2025-12-03T08:05:07.582329",
   "version": "1.0"
 }

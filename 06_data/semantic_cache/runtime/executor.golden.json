@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL2 quality assurance execution for resume validation workflows.\n\nExecutes comprehensive QA analysis to ensure resume accuracy\nand job alignment for better applications.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass QAExecutor:\n    \"\"\"\n    Executes resume quality assurance validation with optimal model selection.\n\n    Ensures accuracy, relevance, and professional standards for comprehensive\n    resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def execute_qa(self, prompt: str",
-  "full_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
-  "generated_at": 1764728346.6472259,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\budget-manager-layer\\act-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\executor.py"
-}

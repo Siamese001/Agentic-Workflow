@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 safety and policy interfaces for resume job alignment workflows.\n\nDefines abstract interfaces for safety and policy operations in resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom abc import ABC, abstractmethod\nfrom typing import Any, Dict, List, Optional\nfrom l5.types import Severity\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom datetime import datetime\n\nfrom core.models.models import (\n    ExecutionContext,\n    SafetyResult,\n    SafetyFinding,\n    RiskLevel,\n    PolicyViolation,\n    HitLRequest,\n)\nfrom .types import SafetyPolicy\n\n\nclass PolicyType(Enum):\n    \"\"\"Types of policies that can be enforced.\"\"\"\n    CONTENT_SAFETY = \"content_safety\"\n    DATA_PRIVACY = \"data_privacy\"\n    RESOURCE_LIMITS = \"resource_limits\"\n    ACCESS_CONTROL = \"access_control\"\n    COMPLIANCE = \"compliance\"\n    ETHICAL_GUIDELINES = \"ethical_guidelines\"\n\n\nclass Action(Enum):\n    \"\"\"Actions that can be taken by policy enforcement.\"\"\"\n    ALLOW = \"allow\"\n    BLOCK = \"block\"\n  ",
-  "full_hash": "3a627c38518409d0eba317765cda2a3b2a83ce96e3ac7d1551d362e718a75911",
-  "generated_at": 1764728225.4364731,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\interfaces(1).py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"L3 Orchestration Workflow Branching Tests.\"\"\"\n\nclass TestL3WorkflowBranching:\n    \"\"\"Tests for L3 workflow branching.\"\"\"\n    \n    def test_binary_branching(self):\n        \"\"\"Test binary branching in workflow.\"\"\"\n        condition = True\n        path = \"left\" if condition else \"right\"\n        assert path == \"left\"\n    \n    def test_multi_way_branching(self):\n        \"\"\"Test multi-way branching in workflow.\"\"\"\n        value = 2\n        if value == 1:\n            branch = \"one\"\n        elif value == 2:\n            branch = \"two\"\n        else:\n            branch = \"other\"\n        assert branch == \"two\"\n",
-  "full_hash": "0243859bf46932013b01262c26e4003ae6f87dd6b08910f984191720c62a1987",
-  "generated_at": 1764728227.059182,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\workflow_graphs\\branching\\test_l3_branching.py"
-}

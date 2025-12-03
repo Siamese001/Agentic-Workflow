@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"redis_config\": {\n    \"host\": \"localhost\",\n    \"port\": 6379,\n    \"db\": 0\n  },\n  \"tracing_config\": {\n    \"langsmith_enabled\": true,\n    \"langsmith_api_key\": \"YOUR_LANGSMITH_API_KEY_HERE\"\n  },\n  \"meta_loop_config\": {\n    \"enable_meta_learning\": true,\n    \"feedback_log_path\": \"feedback_log.jsonl\",\n    \"rules_registry_path\": \"rules_registry.json\",\n    \"pattern_confidence_threshold\": 0.75,\n    \"min_samples_for_learning\": 10\n  },\n  \"batch_config\": {\n    \"max_parallel_workers\": 8,\n    \"enable_online_learning\": true,\n    \"online_learning_failure_threshold\": 2\n  },\n  \"orchestration_config\": {\n    \"orchestration_mode\": \"dynamic_goal_driven\",\n    \"default_goal\": \"Produce a final_draft that passes all ValidationEngine checks\",\n    \"default_policy_fallback\": [\n      \"run_strategy_stack\",\n      \"run_rag_stack\",\n      \"run_prompt_stack\",\n      \"run_bullet_stack\",\n      \"run_drafting_stack\",\n      \"run_qa_stack\"\n    ]\n  },\n  \"governor_config\": {\n    \"max_retries_per_node\": 2,\n    \"veto_hierarchy\":",
-  "full_hash": "fe4db7d19e2456150c96db3dbe224ee5fb4cde3b7496d631d677dd53f5efc2eb",
-  "generated_at": 1764728327.7300386,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\master_config_v7_0.json"
-}

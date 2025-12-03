@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - format_runtime_context\nImplements L1 Cognitive Planning Layer for format runtime context operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FormatRuntimeContextPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FormatRuntimeContextPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FormatRuntimeContextPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: boo",
-  "full_hash": "097f9c5499c1e7f8002875f187f26746559c05583aa68a62e3fdd93de3db3943",
-  "generated_at": 1764728347.4543567,
-  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\plan-phase\\get-runtime-info\\utility\\prepare-information\\format_runtime_context.py"
-}

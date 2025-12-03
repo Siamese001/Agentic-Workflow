@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "099421777963df3509b70a38dfec3576ad5f38909d3a9156b8ecff6f9562cb0b",
-    "scan_timestamp": "2025-12-03T07:26:03.849888"
+    "scan_timestamp": "2025-12-03T08:04:48.355048"
   },
   "content_preview": "\"\"\"Agentic RAG conductor stack.\"\"\"\n\nimport asyncio\nimport json\nimport uuid\nfrom typing import Any, Dict, List\n\nfrom core_v10_7 import (\n    A2AMessage,\n    BaseAgent,\n    PydanticSchemaError,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\nfrom agent_tools_v10_7 import HyDETool, ChromaDBSearchTool, BM25SearchTool\n\n\nclass RAG_SearchAgent(BaseAgent):\n    \"\"\"Agentic RAG conductor that orchestrates resume search tooling.\"\"\"\n\n    def __init__(self, context: \"WorkflowContext\", debug_mode: bool ...",
-  "creation_timestamp": "2025-12-03T07:26:31.999452",
+  "creation_timestamp": "2025-12-03T08:05:18.071136",
   "version": "1.0"
 }

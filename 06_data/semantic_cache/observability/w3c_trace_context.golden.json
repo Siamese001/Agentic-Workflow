@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: validation/context.py\n# Validation Context Module - V18 Architecture\n# Version: 18.00\n# Contains the ValidationContext class and all its lazy-loading calculation methods.\n# Refactored from validator_RES_v2.py\n\nimport logging\nimport re\nfrom typing import Dict, List, Optional, Any, Tuple, Callable\nfrom models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection\nfrom config_RES_v2 import COVER_LETTER_SIGNATURE_TEMPLATE\nfrom utils_RES_v2 import text_utils, calculate_signal_score\n\nclass ValidationContext:\n    \"\"\"\n    Holds all necessary data for the ValidationEngine to run checks.\n    Uses lazy calculation for metrics.\n    (Extracted from resume_workflow_v16_20.py)\n    \"\"\"\n    def __init__(self, staging_buffer: ImmutableStagingBuffer, thematic_analysis: ThematicAnalysis, job_description: str, master_resume: Dict, app_config: Any):\n        self.staging_buffer = staging_buffer\n        self.thematic_analysis = thematic_analysis\n        self.job_description = job_descripti",
-  "full_hash": "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4",
-  "generated_at": 1764728351.2995343,
-  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\planner-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\w3c_trace_context.py"
-}

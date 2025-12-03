@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
-    "scan_timestamp": "2025-12-03T07:26:03.858149"
+    "scan_timestamp": "2025-12-03T08:04:48.361823"
   },
   "content_preview": "from src.lic_agentic.safety.bias_auditor import BiasAssessment, audit_bias\n\n\nclass _Inputs:\n    def __init__(self, prompt: str):\n        self.prompt = prompt\n\n\ndef test_bias_auditor_empty_prompt():\n    assessment = audit_bias(_Inputs(\"\"))\n    assert isinstance(assessment, BiasAssessment)\n    assert assessment.score == 0.0\n    assert \"no bias\" in assessment.notes.lower()\n\n\ndef test_bias_auditor_detects_inclusive_language():\n    assessment = audit_bias(_Inputs(\"We value diversity and inclusion\"))\n...",
-  "creation_timestamp": "2025-12-03T07:26:32.262554",
+  "creation_timestamp": "2025-12-03T08:05:18.327842",
   "version": "1.0"
 }

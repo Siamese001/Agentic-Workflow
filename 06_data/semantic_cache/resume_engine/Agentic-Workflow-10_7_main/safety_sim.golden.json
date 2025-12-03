@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"Synthetic safety simulator.\"\"\"\n\nimport random\n\nfrom simulations.models.safety_simulation import (\n    SafetySimMetrics,\n    SafetySimRequest,\n    SafetySimResult,\n)\nfrom simulations.utils import model_to_payload\n\n\nclass SafetySimulator:\n    \"\"\"Simulates safety assessments.\"\"\"\n\n    async def run(self, request: SafetySimRequest) -> SafetySimResult:\n        base_risk = 0.2 if len(request.text) < 100 else 0.4\n        pii_risk = round(min(1.0, base_risk + random.uniform(0.0, 0.4)), 3)\n        injection_risk = round(min(1.0, 0.1 + random.uniform(0.0, 0.5)), 3)\n        bias_risk = round(max(0.0, 0.05 + random.uniform(0.0, 0.4)), 3)\n        metrics = SafetySimMetrics(\n            pii_risk=pii_risk,\n            injection_risk=injection_risk,\n            bias_risk=bias_risk,\n        )\n        snippet = request.text[:100]\n        return SafetySimResult(\n            simulation_id=request.simulation_id,\n            success=True,\n            metrics=model_to_payload(metrics),\n            details=",
-  "full_hash": "77985dc2c2603073b35e1cd94e54c9628b861999081a80c37c75bbf3d36fc319",
-  "generated_at": 1764728230.054201,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\safety_sim.py"
-}

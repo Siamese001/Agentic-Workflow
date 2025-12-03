@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"ast_analysis_complete\": true,\n  \"layer_assignments\": 205,\n  \"name\": \"Semantic Rewrite & Mutation (Subatomic)\",\n  \"operation_log\": [\n    \"[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase3\",\n    \"[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\\\\\Git\\\\\\\\Agentic-Workflow\\\\\\\\04_prompt_governance\\\\\\\\windsurf_rules.md'\",\n    \"[OP] CLEANUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase3\"\n  ],\n  \"phase\": 3,\n  \"rewrite_plans_created\": 5,\n  \"safety_invariants_preserved\": true,\n  \"semantic_cache_loaded\": true,\n  \"semantic_equivalence_verified\": true,\n  \"target_root\": \"c:\\\\Git\\\\Agentic-Workflow\\\\01_agentic_core\",\n  \"timestamp\": \"2025-12-02T12:02:46.223908\",\n  \"transformations_applied\": 6,\n  \"validation_keys\": 236,\n  \"violations_detected\": 11\n}",
-  "full_hash": "0eb36328b5314434096684ef7f1bbd63328c9a0d55adca968fb8b93b955455c0",
-  "generated_at": 1764728345.6833606,
-  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\phase3_operations_log.json"
-}

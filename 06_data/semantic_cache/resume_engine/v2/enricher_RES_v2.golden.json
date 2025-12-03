@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: enricher_RES_v2.py\n# DataEnricher class - enriches extracted data with metadata\n\nimport logging\nfrom typing import Dict, List, Tuple\n\nfrom models_RES import ValidationResult, ValidationSeverity, ThematicAnalysis\n# --- REFACTOR: Import global CONFIG ---\nfrom config_RES_v2 import CONFIG\n# --- END REFACTOR ---\nfrom utils_RES_v2 import DuplicateDetector\n\nlogger = logging.getLogger(__name__)\n\n\nclass DataEnricher:\n\n    # --- REFACTOR: Remove config injection, use global CONFIG ---\n    def __init__(self):\n        self.duplicate_detector = DuplicateDetector()\n        \n        # --- BUG 2 FIX: Access canonical_verbs from CONFIG.enricher ---\n        if not hasattr(CONFIG, 'enricher') or not hasattr(CONFIG.enricher, 'canonical_verbs'):\n            logger.critical(\"FATAL: CONFIG.enricher.canonical_verbs not found. Enricher will fail.\")\n            raise AttributeError(\"CONFIG.enricher.canonical_verbs is not loaded. Check config_RES_v2.py.\")\n        \n        self.CANONICAL_VERBS = CONFIG.en",
-  "full_hash": "ff5b549427892fd2c1262018f3096b4baaca3f033cc5ac9f451d011f94029d21",
-  "generated_at": 1764728326.9922397,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\enricher_RES_v2.py"
-}

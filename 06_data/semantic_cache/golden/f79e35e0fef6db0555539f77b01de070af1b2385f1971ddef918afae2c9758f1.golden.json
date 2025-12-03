@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f79e35e0fef6db0555539f77b01de070af1b2385f1971ddef918afae2c9758f1",
-    "scan_timestamp": "2025-12-03T07:26:03.548346"
+    "scan_timestamp": "2025-12-03T08:04:48.060203"
   },
   "content_preview": "\"\"\"\nModel routing cache for r\u00e9sum\u00e9 processing workflows.\n\nProvides efficient model choice caching to optimize r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom typing import Dict, Tuple\n\nfrom .models import ModelChoice, RoutingContext\n\n\n_CACHE: Dict[Tuple[str, str, str], ModelChoice] = {}\n\n\ndef _key(ctx: RoutingContext) -> Tuple[str, str, str]:\n    \"\"\"\n    Generates cache key for r\u00e9sum\u00e9 processing model routing.\n\n    Ensures consistent cache indexing for optimal r\u00e9sum\u00e9 improvement performance.\n    \"\"\"\n ...",
-  "creation_timestamp": "2025-12-03T07:26:05.205745",
+  "creation_timestamp": "2025-12-03T08:04:50.159071",
   "version": "1.0"
 }

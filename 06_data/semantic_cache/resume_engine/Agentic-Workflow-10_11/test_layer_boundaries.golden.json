@@ -1,6 +1,0 @@
-{
-  "golden_content": "import ast\nfrom pathlib import Path\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef _iter_core_files():\n    core_root = PROJECT_ROOT / \"core\"\n    if not core_root.exists():\n        return\n    for path in core_root.rglob(\"*.py\"):\n        if path.name.startswith(\"test_\"):\n            continue\n        yield path\n\n\ndef _parse_calls(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename=str(path))\n    except SyntaxError:\n        return []\n\n    calls: list[str] = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Call):\n            func = node.func\n            if isinstance(func, ast.Attribute):\n                value = func.value\n                if isinstance(value, ast.Name):\n                    calls.append(f\"{value.id}.{func.attr}\")\n            elif isinstance(func, ast.Name):\n                calls.append(func.id)\n    return calls\n\n\ndef _parse_import_from_run",
-  "full_hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
-  "generated_at": 1764728227.330774,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_layer_boundaries.py"
-}

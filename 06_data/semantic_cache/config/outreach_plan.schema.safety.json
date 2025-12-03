@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 493,
-  "generated_at": 1764728349.1088495,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\expand-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\outreach_plan.schema.json"
-}

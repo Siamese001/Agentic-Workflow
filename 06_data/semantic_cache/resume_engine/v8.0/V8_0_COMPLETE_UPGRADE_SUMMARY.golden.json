@@ -1,6 +1,0 @@
-{
-  "golden_content": "# Resume Generation Engine v8.0 - Complete Upgrade Summary\n\n## Overview\n\nSuccessfully upgraded **all 7 files** from v7.5 to v8.0 (Agentic Upgrade), implementing requirements for \u226595 scores across RAG/Drafting/QA stacks and 2/3/2 & 2/2/2 bullet provenance plans.\n\n---\n\n## Files Created/Updated\n\n### 1. **core_v8_0.py** (40 KB)\n**Purpose:** Foundation module with models, config, utils, and prompt constants\n\n**Changes:**\n- Updated header to v8.0\n- Changed `CONFIG_PATH` from `master_config_v7_5.json` \u2192 `master_config_v8_0.json`\n- **Added 33 new prompt constants** (loaded from CONFIG.prompts):\n  - **v7.5 prompts** (20): Strategy, RAG, Drafting, QA system/user prompts\n  - **v8.0 new prompts** (13):\n    - `RAG_THOUGHT_SYSTEM_PROMPT` - ReAct thought generation\n    - `RAG_CRITIQUE_STEP_SYSTEM_PROMPT` - ReAct self-critique\n    - `BULLET_CUSTOMIZER_SYSTEM_PROMPT` / `_USER_PROMPT` - Customized bullets\n    - `BULLET_SYNTHETIC_SYSTEM_PROMPT` / `_USER_PROMPT` - Synthetic bullets\n    - `DRAFTING_CONDUCT",
-  "full_hash": "857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e",
-  "generated_at": 1764728328.009751,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v8.0\\Testing\\V8_0_COMPLETE_UPGRADE_SUMMARY.md"
-}

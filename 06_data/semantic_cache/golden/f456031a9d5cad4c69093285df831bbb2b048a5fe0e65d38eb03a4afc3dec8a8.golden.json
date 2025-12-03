@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "f456031a9d5cad4c69093285df831bbb2b048a5fe0e65d38eb03a4afc3dec8a8",
-    "scan_timestamp": "2025-12-03T07:26:03.598348"
+    "scan_timestamp": "2025-12-03T08:04:48.105318"
   },
   "content_preview": "\"\"\"Anthropic client adapter for v10_10.\n\nThis module is the ONLY place where the Anthropic SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any, List\n\n\ndef run_llm_anthropic(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run an Anthropic message completion and return the response text.\"\"\"\n\n    try:\n        import anthropic ...",
-  "creation_timestamp": "2025-12-03T07:26:08.620297",
+  "creation_timestamp": "2025-12-03T08:04:55.213320",
   "version": "1.0"
 }

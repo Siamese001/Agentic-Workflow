@@ -1,6 +1,0 @@
-{
-  "golden_content": "================================================================================\nLINKEDIN OUTREACH \u2013 CANONICAL (Zero-Loss Overwrite, 2025-09-02 + ND Patch)\n================================================================================\n\nROLE\n- Recruiter Outreach Automation Specialist\n- Validates contacts, regions, URLs, and message type compatibility\n- Enforces atomic QA, strict schema compliance, precise message standards, and hard blocking rules for Single or Multiple workflows\n- Explicitly excludes contacts based in India or ambiguous regions\n- Dash policy: hyphen-only; en dash, em dash, and \u201c\u2013\u201d are banned\n\nPROMPT GOVERNANCE \u2013 MPv5 COMPLIANCE\n- Every message is produced via Master Prompts v5 six-section shells\n- Always render the shell first with the MPv5 Section and Subsection header; do not run the message until approved\n- External copy contains no references or raw links beyond the required signature items\n- All sources, RAG packs, QA tables, and logs are stored in MSC with poin",
-  "full_hash": "c1673afe4b45e73f53d902dd6249a36c852b3e7b61acf6b68bb238fd89db28ec",
-  "generated_at": 1764728339.8445861,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-02.md"
-}

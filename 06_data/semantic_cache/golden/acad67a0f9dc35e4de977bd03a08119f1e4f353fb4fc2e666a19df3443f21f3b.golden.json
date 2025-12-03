@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "acad67a0f9dc35e4de977bd03a08119f1e4f353fb4fc2e666a19df3443f21f3b",
-    "scan_timestamp": "2025-12-03T07:26:03.577990"
+    "scan_timestamp": "2025-12-03T08:04:48.086706"
   },
   "content_preview": "\"\"\"\nL4 temporal schemas for resume job alignment workflows.\n\nDefines career timeline structures for resume enhancement processing.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set\nfrom datetime import datetime, UTC\nfrom enum import Enum\nimport hashlib\n\nfrom .types import StatePath\n\n\nclass TemporalFactStatus(str, Enum):\n    \"\"\"\n    Tracks validation status of career facts for resume job alignment.\n\n    Ensures only...",
-  "creation_timestamp": "2025-12-03T07:26:07.061717",
+  "creation_timestamp": "2025-12-03T08:04:53.063630",
   "version": "1.0"
 }

@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 167,
-  "generated_at": 1764728347.9647171,
-  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\budget-manager-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\messaging.yaml"
-}

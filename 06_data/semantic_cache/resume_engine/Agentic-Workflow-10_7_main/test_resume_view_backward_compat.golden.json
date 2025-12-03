@@ -1,6 +1,0 @@
-{
-  "golden_content": "from workflow.runner import run_workflow\n\n\ndef test_legacy_resume_view_is_filtered():\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\": \"CompatUser\", \"jd\": \"Engineer\"})\n\n    assert set(out[\"resume\"].keys()) == {\n        \"candidate\",\n        \"job_title\",\n        \"summary\",\n        \"highlights\",\n        \"skills\",\n        \"sections\",\n    }\n    assert \"state\" in out\n    assert \"master_resume\" not in out[\"resume\"]\n\n\ndef test_full_state_available_in_v10_8_mode():\n    out = run_workflow({\"resume\": \"CompatUser\", \"jd\": \"Engineer\"}, compat_mode=\"v10_8\")\n\n    assert \"master_resume\" in out[\"resume\"]\n    assert out[\"state\"][\"memory\"][\"episodic\"][\"conversation\"]\n    assert out[\"state\"][\"ephemeral\"][\"events\"]\n    assert out[\"resume\"][\"candidate\"] == \"CompatUser\"\n",
-  "full_hash": "bfde4746dc18166be2bcba99cb3a8d1dc3d77a073885459c09ce5d0886fe470d",
-  "generated_at": 1764728231.6428237,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state_v10_8\\test_resume_view_backward_compat.py"
-}

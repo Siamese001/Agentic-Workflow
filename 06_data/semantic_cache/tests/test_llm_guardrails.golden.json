@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nTest LLM Guardrails\nLEVEL 5 - Unit tests for LLM guardrails and safety enforcement functionality\n\"\"\"\n\nimport pytest\nfrom agentic_core.l5_safety.policies.policy_engine import PolicyEngine, PolicyRule, PolicyEngineConfig\n\n\nclass TestLLMGuardrails:\n    \"\"\"Test suite for LLM guardrails and safety enforcement\"\"\"\n    \n    def setup_method(self):\n        \"\"\"Setup test fixtures\"\"\"\n        self.config = PolicyEngineConfig()\n        self.engine = PolicyEngine(self.config)\n    \n    @pytest.mark.skip(reason=\"Placeholder test for zero-tolerance compliance\")\n    def test_llm_guardrails_initialization(self):\n        \"\"\"Test LLM guardrails initialization\"\"\"\n        # Placeholder implementation\n        assert self.engine is not None\n    \n    @pytest.mark.skip(reason=\"Placeholder test for zero-tolerance compliance\")\n    def test_content_filtering_guardrails(self):\n        \"\"\"Test content filtering guardrails\"\"\"\n        # Placeholder implementation\n        result = self.engine.check_content_safety(\"t",
-  "full_hash": "122ea586cc2e5d9afc418e4a90debd35b9836cc71c8950867b394652a6850a3d",
-  "generated_at": 1764728354.0509043,
-  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\l5_safety\\rules\\router-microagent-layer\\validate-phase-group\\state-management-ops\\test_llm_guardrails.py"
-}

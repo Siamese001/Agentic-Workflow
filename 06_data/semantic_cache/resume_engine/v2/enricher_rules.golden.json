@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_verbs\": {\n    \"LED\": [\n      \"led\",\n      \"spearheaded\",\n      \"directed\",\n      \"managed\",\n      \"governed\",\n      \"oversaw\"\n    ],\n    \"DEVELOPED\": [\n      \"developed\",\n      \"architected\",\n      \"built\",\n      \"created\",\n      \"designed\",\n      \"engineered\",\n      \"implemented\"\n    ],\n    \"IMPROVED\": [\n      \"improved\",\n      \"enhanced\",\n      \"optimized\",\n      \"accelerated\",\n      \"streamlined\",\n      \"increased\",\n      \"boosted\",\n      \"revitalized\"\n    ],\n    \"REDUCED\": [\n      \"reduced\",\n      \"cut\",\n      \"decreased\",\n      \"minimized\",\n      \"slashed\"\n    ],\n    \"PARTNERED\": [\n      \"partnered\",\n      \"collaborated\",\n      \"aligned\",\n      \"negotiated\",\n      \"secured\"\n    ],\n    \"AUTOMATED\": [\n      \"automated\",\n      \"orchestrated\"\n    ],\n    \"DEPLOYED\": [\n      \"deployed\",\n      \"launched\",\n      \"rolled out\"\n    ]\n  }\n}",
-  "full_hash": "9320655e5293f0dec64dccccd40b1b58baf8cfdb266e3bff2e8bb468cc091a85",
-  "generated_at": 1764728327.001087,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\enricher_rules.json"
-}

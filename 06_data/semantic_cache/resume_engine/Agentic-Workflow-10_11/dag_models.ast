@@ -1,9 +1,0 @@
-Module(
-  body=[
-    Expr(
-      value=Constant(value='\nOrchestration DAG models - re-exported from core.models for backward compatibility.\n\nThis module re-exports DAG models from core.models to maintain import compatibility\nduring the canonical structure cleanup.\n')),
-    ImportFrom(
-      module='core.models.dag_models',
-      names=[
-        alias(name='*')],
-      level=0)])

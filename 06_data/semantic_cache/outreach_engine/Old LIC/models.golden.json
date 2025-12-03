@@ -1,6 +1,0 @@
-{
-  "golden_content": "# File: models.py\n# Description: Data models, enumerations, and custom exceptions for the LIC workflow.\n\n__version__ = \"11.10\"\n\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum\nfrom typing import Dict, List, Optional, Any, Set, Tuple, Callable\n\n# ============================================================================\n# ENUMS & CONSTANTS\n# ============================================================================\n\nclass Route(Enum):\n    \"\"\"Message delivery routes\"\"\"\n    INMAIL = \"INMAIL\"\n    CONNECTION_REQ = \"CONNECTION_REQ\"\n    EMAIL = \"EMAIL\"\n    FOLLOW_UP = \"FOLLOW_UP\"\n\nclass Archetype(Enum):\n    \"\"\"Recipient archetypes for personalization - v11.6 4-archetype standard\"\"\"\n    C_LEVEL = \"C_LEVEL\"\n    EXECUTIVE = \"EXECUTIVE\"\n    SENIOR_TA = \"SENIOR_TA\"  # NEW v11.6: Technical Authority/Staff Engineer\n    RECRUITER = \"RECRUITER\"\n\nclass EventType(Enum):\n    \"\"\"Event types for message bus\"\"\"\n    WORKFLOW_STARTED = \"WORKFLOW_STARTED\"\n    WO",
-  "full_hash": "5631b031013fbe36368370a3531ac142d4ac5c1a1a4aec63077168601f92a9b2",
-  "generated_at": 1764728340.7304547,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\models.py"
-}

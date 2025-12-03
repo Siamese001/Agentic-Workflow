@@ -1,6 +1,0 @@
-{
-  "golden_content": "from src.lic_agentic.qa import QAValidator\n\n\ndef test_missing_subject_fails():\n    validator = QAValidator()\n    draft = \"Hello\\n\\nBody without subject\"\n    result = validator.validate(draft, {\"123\": \"summary\"})\n    assert not result.ok\n    assert \"subject\" in \" \".join(result.missing_sections)\n\n\ndef test_complete_message_passes():\n    validator = QAValidator()\n    draft = (\n        \"Subject: Update\\n\\nHello there\\n[artifact_id:123] summary\\nCTA: Can we connect?\\nBest regards,\\nLIC Outreach Bot\"\n    )\n    result = validator.validate(draft, {\"123\": \"summary\"})\n    assert result.ok\n\n\ndef test_unknown_and_missing_artifacts_are_reported():\n    validator = QAValidator()\n    draft = (\n        \"Subject: Proof\\n\\nHello\\n[artifact_id:known] data\\n[artifact_id:unknown] extra\\nCTA: Talk soon?\\nBest regards,\\nLIC Outreach Bot\"\n    )\n    artifacts = {\"known\": \"data\", \"missing\": \"oops\"}\n    result = validator.validate(draft, artifacts)\n    assert not result.ok\n    assert \"missing\" in \" \".join(result.",
-  "full_hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
-  "generated_at": 1764728331.1813133,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_qa_validator.py"
-}

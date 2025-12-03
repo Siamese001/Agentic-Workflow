@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": true,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 539,
-  "generated_at": 1764728341.0566132,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\validation_LIC.py"
-}

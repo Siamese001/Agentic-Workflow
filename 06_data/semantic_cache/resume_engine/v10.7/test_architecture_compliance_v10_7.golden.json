@@ -1,6 +1,0 @@
-{
-  "golden_content": "import subprocess\nimport pytest\n\n\n@pytest.mark.architecture\ndef test_no_global_config_usage():\n    r = subprocess.run([\"grep\", \"-R\", \"GLOBAL_CONFIG\", \"agentic_workflow/\"], capture_output=True, text=True)\n    assert \"GLOBAL_CONFIG\" not in r.stdout\n\n\n@pytest.mark.architecture\ndef test_dependency_injection_exists():\n    from inspect import signature\n    from agents import StrategyAgent\n\n    assert \"context\" in signature(StrategyAgent.__init__).parameters\n\n\n@pytest.mark.xfail(reason=\"Add 13 architecture compliance tests\", strict=False)\ndef test_placeholder():\n    pytest.xfail(\"Add 13 architecture compliance tests\")\n",
-  "full_hash": "8b3935168116d241caa17e24c89cd5acb9ff8b11edadade2fb17875a4afba35e",
-  "generated_at": 1764728329.869883,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_architecture_compliance_v10_7.py"
-}

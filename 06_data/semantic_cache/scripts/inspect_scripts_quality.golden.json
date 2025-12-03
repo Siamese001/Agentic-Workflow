@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - inspect_scripts_quality\nImplements L1 Cognitive Planning Layer for inspect scripts quality operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass InspectScriptsQualityExecutorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass InspectScriptsQualityExecutorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass InspectScriptsQualityExecutorResult:\n    \"\"\"L5 Result structure with full type sa",
-  "full_hash": "b991f67b024c494adbb1b0625a4fd1bc929b82d91ef9247c64150d1bd2c7a1c5",
-  "generated_at": 1764728351.7432773,
-  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\inspect-phase\\find-scripts-problems\\general\\update-memory\\inspect_scripts_quality.py"
-}

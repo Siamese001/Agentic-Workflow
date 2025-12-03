@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"BM25-based lexical retriever (v10_10 \u00b7 META layer).\n\nThis module wraps the ``rank-bm25`` library behind a simple function\nthat can be used by the retrieval layer. It is safe to import even if\n``rank_bm25`` is not installed: imports are performed lazily and\nexposed as explicit errors.\n\nResponsibilities:\n    \u2022 Provide a BM25Okapi-backed search over an in-memory corpus.\n    \u2022 Return results as simple dicts suitable for adaptation into\n      Evidence objects or other downstream structures.\n\nNon-responsibilities:\n    \u2022 No knowledge of prompts, agents, or workflow plans.\n    \u2022 No persistence or indexing beyond the in-memory corpus.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Sequence\n\n\nclass BM25ClientError(RuntimeError):\n    \"\"\"Raised when rank-bm25 cannot be imported or used.\"\"\"\n\n\ndef _import_bm25():\n    \"\"\"Import BM25Okapi lazily from rank_bm25.\"\"\"\n\n    try:  # pragma: no cover - import path is environment dependent\n   ",
-  "full_hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
-  "generated_at": 1764728226.0965817,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\bm25.py"
-}

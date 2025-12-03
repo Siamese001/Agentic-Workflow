@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v5.5 - COMPLETE JOB_WORKFLOW v1.9.2 PARITY\n====================================================================\nFULL IMPLEMENTATION - ALL 499 TESTS + ALL VALIDATION GATES + 10-HOP ARCHITECTURE\n\nThis version implements EVERY feature from Job_Workflow v1.9.2:\n\u2713 10-Hop Architecture (HOP-0 through HOP-8 + HOP-4.5)\n\u2713 499 Comprehensive Tests (100% pass rate required)\n\u2713 20+ Validation Gates (all v1.8.2 + v1.9.2 enhancements)\n\u2713 Feedback Loop (HOP-3 with 5 regeneration attempts)\n\u2713 Immutable Staging Buffer (locked after HOP-4.5)\n\u2713 Scope Isolation (artist_output + master_resume deletion)\n\u2713 Text Sanitization (Hyphenation_Rules.json from v1.9.2)\n\u2713 Gate Decision Logic (PROCEED vs ERROR_REPORT_ONLY)\n\u2713 Read-Back Verification (hash validation + rollback)\n\u2713 Hallucination Detection (HOP-1)\n\u2713 Enhanced Quantitative Validation (v1.9.2)\n\u2713 Industry Adjacency Validation (v1.9.2)\n\u2713 Complete K.0 RAG with peer JD retrieval\n\u2713 Complete HOP-2 data enrichment (verb canonicalization, dupli",
-  "full_hash": "49abc24bd9bd06d5b85f2d2ea6f10b0329416d24fd3a345a373021558829f413",
-  "generated_at": 1764728298.0954897,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.5.py"
-}

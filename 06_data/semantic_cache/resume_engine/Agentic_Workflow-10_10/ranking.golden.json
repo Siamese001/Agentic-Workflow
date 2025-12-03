@@ -1,6 +1,0 @@
-{
-  "golden_content": "# FILE: ranking.py\n\"\"\"\nRanking Utilities (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n============================================\n\nResponsibilities:\n    \u2022 Provide deterministic, side-effect-free ranking functions.\n    \u2022 Dict-based API (backward-compatible):\n          - bm25(items)\n          - dense(items)\n          - hybrid(items)\n          - fuse_ranked_groups(groups, ...)\n          - rank_documents(items, strategy=...)\n    \u2022 Evidence-based API (for RAG):\n          - normalize_evidence_scores(...)\n          - deduplicate_evidence(...)\n          - rank_evidence(...)\n          - fuse_evidence_groups_rrf(...)\n          - build_rag_result(...)\n\nThis module is intentionally \u201cMETA\u201d in the L1\u2013L5 model: it deals purely\nwith ranking, scoring, and evidence fusion. No LLM calls; no state mutation.\n\"\"\"\n\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom models import Evidence, RetrievalConfig, RAGPlan, RAGResult, RankingEvent\nfrom observability import emit_telemetry_event, emit_ranking_",
-  "full_hash": "91a5360a700e99114fa0a02dd610cc9a3ace3fca7f180a8b0b4e0553d87f2ec7",
-  "generated_at": 1764728228.3992891,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\ranking.py"
-}

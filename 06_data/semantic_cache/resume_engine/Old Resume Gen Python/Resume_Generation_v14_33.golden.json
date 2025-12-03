@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nResume Generation Engine v14.33\n\nExplicit API Key Configuration Update\n\nThis version adds explicit Gemini API key configuration at module initialization\nto ensure proper authentication and improve error visibility.\n\nKey Changes from v14.32:\n1. Added explicit genai.configure(api_key=...) call at module initialization\n2. Removed api_key parameter from GeminiWebSearchClient.__init__\n3. Removed api_key parameter from EnhancedJobDescriptionAnalyzer.__init__\n4. Removed test_mode parameter from WorkflowOrchestrator.__init__\n5. Enhanced API availability logging with explicit key detection status\n\nThe API key is now configured once globally at module import, and all classes\nrely on this pre-configured state. This follows Google's recommended pattern\nfor the generativeai library.\n\nAll functionality from v14.32 is retained:\n- Enhanced API Call Logging\n- Configuration Context Logging\n- Data Flow & Transformation Snapshots\n- Intermediate Validation & Decision Logging\n\nUsage:\n    orchestrator = ",
-  "full_hash": "8a4cf31b3736bbcf7b0946d3012ab25108cc50da657ca5fe93695f319ebe05fc",
-  "generated_at": 1764728281.251264,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_33.py"
-}

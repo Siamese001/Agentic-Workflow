@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"ValidatorAgent behavior tests.\"\"\"\nfrom src.lic_agentic.agents.k7_validator_agent import ValidationResult, ValidatorAgent\nfrom src.lic_agentic.qa import QAResult\n\n\nclass StubQAValidator:\n    def __init__(self, responses):\n        self._responses = iter(responses)\n\n    def validate(self, draft, artifacts, pii_placeholders):\n        return next(self._responses)\n\n\ndef test_validator_passes_with_subject_and_artifact():\n    draft = \"\"\"Subject: Hello\\n\\nHello there,\\nBody with [artifact_id:123] token\\nCTA: Let me know if next week works.\\nBest regards,\\nLIC Outreach Bot\"\"\"\n    verdict = ValidatorAgent().check(draft, route_decision=None, pii_map={}, artifacts={\"123\": \"token\"})\n    assert isinstance(verdict, ValidationResult)\n    assert verdict.passed\n    assert verdict.reasons == ()\n\n\ndef test_validator_flags_missing_placeholders():\n    draft = \"\"\"Subject: Hi\\n\\nHello there,\\nBody with [artifact_id:123] token\\nCTA: Can we connect?\\nBest regards,\\nLIC Outreach Bot\"\"\"\n    verdict = ValidatorA",
-  "full_hash": "65b44f9e4d27bfb386e2d8658f6eeb3e670fe980a760d29e498f619dce01fb9c",
-  "generated_at": 1764728331.2395618,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_validator_agent.py"
-}

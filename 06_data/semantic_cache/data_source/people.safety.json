@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 21,
-  "generated_at": 1764728349.662196,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\observer-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\people.json"
-}

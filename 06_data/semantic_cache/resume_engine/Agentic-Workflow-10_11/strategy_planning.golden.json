@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nStrategy planning for comprehensive resume improvement and job alignment.\n\nCreates targeted plans to enhance resume content and structure\nfor optimal job application success.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, List, Optional\n\nfrom config import config_profiles_v10_10 as config_profiles\nfrom core.models.models import (\n    DraftingPlan as WorkflowDraftingPlan,\n    ExecutionContext,\n    RAGResult,\n    StrategyPlan as WorkflowStrategyPlan,\n    StrategyResult,\n)\nfrom infra.reasoning.cot import expand_chain_of_thought\nfrom infra.reasoning.react import run_react_loop\nfrom infra.reasoning.reflexion import apply_reflexion\nfrom infra.reasoning.tot import tree_search\nfrom l1.builders.prompt_builder import (\n    PromptInstance,\n    build_drafting_prompt,\n)\nfrom l1.v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig\nfrom l5.injection_detection import InjectionDetector, SafetyContext\nfrom infra.di_container import get",
-  "full_hash": "2ef3f48c4f9d5f5885751a6e2749b6e0c4c46ec21b1e147f6e9a592eebe63528",
-  "generated_at": 1764728224.8102593,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\strategy_planning.py"
-}

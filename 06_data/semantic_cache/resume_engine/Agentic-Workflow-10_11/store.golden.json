@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass StoredPrompt:\n    \"\"\"\n    Represents a stored resume generation prompt with metadata.\n\n    Ensures prompt storage supports consistent resume improvement.\n    \"\"\"\n    id: str\n    content: str\n    template: Optional[str] = None\n    context_schema: Optional[Dict[str, Any]] = None\n    version: str = \"1.0\"\n    created_at: Optional[str] = None\n\n\nclass PromptStore:\n    \"\"\"\n    CMS prompt storage for resume generation.\n\n    Provides storage and retrieval for compiled prompts and templates\n    to ensure consistent resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self):\n        self._prompts: Dict[str, StoredPrompt] = {}\n    \n    def store(self, prompt: StoredPrompt) -> str:\n        \"\"\"S",
-  "full_hash": "8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2",
-  "generated_at": 1764728224.4167213,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\cms\\store.py"
-}

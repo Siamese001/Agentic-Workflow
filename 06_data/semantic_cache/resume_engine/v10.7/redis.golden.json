@@ -1,6 +1,0 @@
-{
-  "golden_content": "class Redis:  # pragma: no cover - stub for tests\n    \"\"\"Minimal Redis stub so the core module can be imported in tests.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        pass\n",
-  "full_hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "generated_at": 1764728329.5621266,
-  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\redis.py"
-}

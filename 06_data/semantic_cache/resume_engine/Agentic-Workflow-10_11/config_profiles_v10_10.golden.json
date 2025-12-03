@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nConfigures r\u00e9sum\u00e9 analysis execution profiles for optimizing reasoning, retrieval, cost, and safety parameters.\n\nImproves r\u00e9sum\u00e9 processing by defining tailored analysis configurations for different job matching scenarios and use cases.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom typing import Dict\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import (\n    RetrievalConfig,\n    ContextBudget,\n    ReasoningMode,\n    RedisCacheConfig,\n    ChromaVectorConfig,\n    GoogleGenAIConfig,\n    BM25BackendConfig,\n    ComplexityLevel,\n)\nfrom config.llm_profile import LLMProfile\nfrom config.retrieval_profile import RetrievalProfile\nfrom config.safety_profile import SafetyProfile\nfrom config.context_profile import ContextProfile\nfrom config.budget_profile import BudgetProfile\n\n\n# ======================================================================\n# ENUMS\n# ======================================================================\n\n\nclass SafetyTier(str, Enu",
-  "full_hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
-  "generated_at": 1764728223.7751484,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\config_profiles_v10_10.py"
-}

@@ -11,9 +11,9 @@
     "file_extension": ".md",
     "is_eligible": true,
     "sha256_hash": "fa72a9c6fcd94b7aba11b02a22a9657634ec2652315abe129de7542b1e5af58a",
-    "scan_timestamp": "2025-12-03T07:26:03.983779"
+    "scan_timestamp": "2025-12-03T08:04:48.496306"
   },
   "content_preview": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-04 v1.1\n===============================================================================\n\n# SUMMARY\n- Full router with NEW vs EXISTING and SINGLE vs MULTIPLE batching.\n- Edge-case support (NEW full message): When Premium InMail/full-message is available for a NEW contact, route to the EXISTING Recruiter or EXISTING Contact-L...",
-  "creation_timestamp": "2025-12-03T07:26:39.125010",
+  "creation_timestamp": "2025-12-03T08:05:25.673490",
   "version": "1.0"
 }

@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "cdd9549731616a12d5046578e7073ea7b312d069d7637a17d34e486e8153f211",
-    "scan_timestamp": "2025-12-03T07:26:03.649419"
+    "scan_timestamp": "2025-12-03T08:04:48.155737"
   },
   "content_preview": "\"\"\"L5 Safety Policy Unit Tests - Core.\"\"\"\n\nclass TestL5SafetyPolicyUnitCore:\n    \"\"\"Core unit tests for L5 safety policy layer.\"\"\"\n    \n    def test_policy_rule_creation(self):\n        \"\"\"Test policy rule creation.\"\"\"\n        rule = {\"id\": \"r1\", \"type\": \"block\", \"pattern\": \"SSN\"}\n        assert rule[\"type\"] == \"block\"\n    \n    def test_safety_check_initialization(self):\n        \"\"\"Test safety check initialization.\"\"\"\n        check = {\"name\": \"pii_check\", \"enabled\": True}\n        assert check[\"en...",
-  "creation_timestamp": "2025-12-03T07:26:10.102375",
+  "creation_timestamp": "2025-12-03T08:04:56.850954",
   "version": "1.0"
 }

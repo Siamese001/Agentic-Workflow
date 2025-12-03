@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nChromaDB client provider for vector storage operations.\n\nIsolates ChromaDB SDK dependencies to the providers layer\nand provides a clean interface for vector store operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Optional, List, Dict, Any\n\ntry:\n    import chromadb  # type: ignore\nexcept ImportError as exc:\n    raise ImportError(\"chromadb package not installed. Install with: pip install chromadb\") from exc\n\n\nclass ChromaClient:\n    \"\"\"Provider client for ChromaDB operations.\"\"\"\n    \n    def __init__(self, host: str = \"localhost\", port: int = 8000,\n                 path: Optional[str] = None, settings: Optional[Dict] = None):\n        \"\"\"Initialize ChromaDB client with connection parameters.\"\"\"\n        if path:\n            # Use persistent storage\n            self.client = chromadb.PersistentClient(path=path, settings=settings)\n        else:\n            # Use in-memory or remote client\n            self.client = chromadb.HttpClien",
-  "full_hash": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91",
-  "generated_at": 1764728226.0233674,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\chromadb_client.py"
-}

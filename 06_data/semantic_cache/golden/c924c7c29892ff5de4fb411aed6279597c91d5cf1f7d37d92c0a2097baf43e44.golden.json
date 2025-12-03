@@ -11,9 +11,9 @@
     "file_extension": ".py",
     "is_eligible": true,
     "sha256_hash": "c924c7c29892ff5de4fb411aed6279597c91d5cf1f7d37d92c0a2097baf43e44",
-    "scan_timestamp": "2025-12-03T07:26:03.532915"
+    "scan_timestamp": "2025-12-03T08:04:48.042601"
   },
   "content_preview": "\"\"\"\nIntegrates r\u00e9sum\u00e9 analysis workflow execution with state management and safety validation.\n\nImproves r\u00e9sum\u00e9 processing reliability by coordinating workflow execution, error handling, and safety checks across all layers.\n\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar\n\nfrom l4.manager import StateManager\nfrom l5 import SafetySystem\n\nfrom .errors import (\n    ErrorContext,\n    ErrorSeverity,\n  ...",
-  "creation_timestamp": "2025-12-03T07:26:04.718645",
+  "creation_timestamp": "2025-12-03T08:04:49.552867",
   "version": "1.0"
 }

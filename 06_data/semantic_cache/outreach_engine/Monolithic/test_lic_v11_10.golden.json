@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nLIC v11.10 - Complete Agentic Architecture Test Suite\n=====================================================\n\n__version__ = \"11.10\"\n\nRequirements:\n  pip install pytest pytest-asyncio pytest-mock\n\nRun tests:\n  pytest test_lic_v11_10.py -v\n  pytest test_lic_v11_10.py -k \"Enhancement1\" -v  # Run specific test group\n\nComprehensive tests for 4 key v11.10 enhancements:\n1. S2 Multi-Agent Specialization (Supervisor/Specialist pattern)\n2. S2 Internal \"Execute-Critique-Replan\" Loop\n3. S2 Adversarial Self-Verification (Red Team checks)\n4. S6 -> S2 \"Meta-Loop\" (Factual Failure Recovery)\n\nPlus regression tests for v11.9 features (Sender Grounding, Context-Aware CTAs).\n\"\"\"\n\nimport pytest\nimport asyncio\nfrom unittest.mock import MagicMock, AsyncMock, patch, call\nfrom datetime import datetime\n\n# Import from modular structure\nfrom models import *\nfrom workflow import *\nfrom validation import *\nfrom rag import *\nfrom utils import *\nfrom config import CONFIG_REGISTRY\n\n# ===============================",
-  "full_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-  "generated_at": 1764728331.6931508,
-  "source_file": "C:\\Git\\Reachout Engine Archive\\Monolithic\\test_lic_v11_10.py"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "from core_v10_7 import CostTracker\n\n\ndef test_cost_tracker_records_calls_and_sums():\n    tracker = CostTracker()\n    tracker.record_call(\"wf1\", \"google\", \"gemini-2.5-pro\", input_tokens=1000, output_tokens=500)\n    summary = tracker.get_cost_summary(\"wf1\")\n    assert abs(summary[\"total_workflow_cost\"] - 0.005) < 1e-9\n    assert summary[\"calls\"]\n\n\ndef test_unknown_provider_no_cost():\n    tracker = CostTracker()\n    tracker.record_call(\"wf2\", \"unknown\", \"mystery-model\", input_tokens=1000, output_tokens=1000)\n    summary = tracker.get_cost_summary(\"wf2\")\n    assert summary[\"total_workflow_cost\"] == 0\n\n\ndef test_multiple_calls_aggregated():\n    tracker = CostTracker()\n    tracker.record_call(\"wf3\", \"google\", \"gemini-2.5-flash\", input_tokens=500, output_tokens=500)\n    tracker.record_call(\"wf3\", \"google\", \"gemini-2.5-pro\", input_tokens=500, output_tokens=500)\n    summary = tracker.get_cost_summary(\"wf3\")\n    assert summary[\"total_workflow_cost\"] > 0\n    assert len(summary[\"calls\"]) == 2\n",
-  "full_hash": "ad123506cc5efea743595d1a80599b51ba7dd488475455dc20ffc14830af8b74",
-  "generated_at": 1764728230.476268,
-  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\core\\test_cost_tracker_v10_7.py"
-}
