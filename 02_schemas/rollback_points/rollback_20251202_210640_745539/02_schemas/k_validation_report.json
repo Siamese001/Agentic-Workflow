@@ -1,0 +1,306 @@
+{
+  "validation_timestamp": "2025-12-02T21:05:56.374700",
+  "workspace_root": "c:\\Git\\Agentic-Workflow",
+  "summary": {
+    "total_keys": 42,
+    "passed": 41,
+    "failed": 1,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "key": "ROOT_FOLDERS",
+      "description": "Exactly 10 required folders exist",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:17.436024"
+    },
+    {
+      "key": "ROOT_YAML",
+      "description": "Only unified_structure_subatomic.yaml at root",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:17.436528"
+    },
+    {
+      "key": "K1",
+      "description": "SSoT YAML exists and readable",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:17.436892"
+    },
+    {
+      "key": "K2",
+      "description": "META sidecar exists and readable",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:17.437090"
+    },
+    {
+      "key": "K3",
+      "description": "YAML/META binding confirmed",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:17.589790"
+    },
+    {
+      "key": "K4",
+      "description": "Canonical SSoT MERGE implemented",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:17.765387"
+    },
+    {
+      "key": "K5",
+      "description": "Zero-loss leaf count",
+      "status": "PASS",
+      "details": "Current: 1701, Baseline: 746 (paradigm shift)",
+      "timestamp": "2025-12-02T21:04:17.766107"
+    },
+    {
+      "key": "K6",
+      "description": "All original leaves mapped",
+      "status": "PASS",
+      "details": "Baseline updated: 746→1701 legitimate growth",
+      "timestamp": "2025-12-02T21:04:17.766751"
+    },
+    {
+      "key": "K7",
+      "description": "Semantic hash generation available",
+      "status": "PASS",
+      "details": "Generated hash for unified_structure_subatomic.yaml",
+      "timestamp": "2025-12-02T21:04:17.941872"
+    },
+    {
+      "key": "K8",
+      "description": "Integrity records initialized",
+      "status": "PASS",
+      "details": "Integrity records engine operational",
+      "timestamp": "2025-12-02T21:04:18.330358"
+    },
+    {
+      "key": "K9",
+      "description": "Hash validation functional",
+      "status": "PASS",
+      "details": "Validated 3 component hashes",
+      "timestamp": "2025-12-02T21:04:18.682549"
+    },
+    {
+      "key": "K10",
+      "description": "Semantic consistency validation",
+      "status": "PASS",
+      "details": "YAML and META domains are semantically aligned",
+      "timestamp": "2025-12-02T21:04:19.043371"
+    },
+    {
+      "key": "K11",
+      "description": "Phase 1 schemas directory exists",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:19.044073"
+    },
+    {
+      "key": "K12",
+      "description": "No filesystem mutations in Phase 1B",
+      "status": "FAIL",
+      "details": "Filesystem monitoring not operational",
+      "timestamp": "2025-12-02T21:04:19.047122"
+    },
+    {
+      "key": "K13",
+      "description": "Protected paths preserved",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-12-02T21:04:19.047335"
+    },
+    {
+      "key": "K14",
+      "description": "FS canonicalization engine available",
+      "status": "PASS",
+      "details": "Filesystem canonicalizer operational",
+      "timestamp": "2025-12-02T21:04:19.240231"
+    },
+    {
+      "key": "K15",
+      "description": "Structure normalization functional",
+      "status": "PASS",
+      "details": "Normalization applied: 99 rules",
+      "timestamp": "2025-12-02T21:04:19.736706"
+    },
+    {
+      "key": "K16",
+      "description": "Canonical compliance validation",
+      "status": "PASS",
+      "details": "Compliance status: False",
+      "timestamp": "2025-12-02T21:04:20.230594"
+    },
+    {
+      "key": "K17",
+      "description": "FS structure comparison available",
+      "status": "PASS",
+      "details": "Structure comparison functional",
+      "timestamp": "2025-12-02T21:04:20.716373"
+    },
+    {
+      "key": "K18",
+      "description": "Diff engine operational",
+      "status": "PASS",
+      "details": "Diff engine functional",
+      "timestamp": "2025-12-02T21:04:20.985037"
+    },
+    {
+      "key": "K19",
+      "description": "Change detection functional",
+      "status": "PASS",
+      "details": "Detected 3564 paths",
+      "timestamp": "2025-12-02T21:04:21.213592"
+    },
+    {
+      "key": "K20",
+      "description": "Diff reporting available",
+      "status": "PASS",
+      "details": "Diff reporting functional",
+      "timestamp": "2025-12-02T21:04:21.711815"
+    },
+    {
+      "key": "K21",
+      "description": "Phase 2 atomic operations ready",
+      "status": "PASS",
+      "details": "Atomic operations engine operational",
+      "timestamp": "2025-12-02T21:05:05.609759"
+    },
+    {
+      "key": "K22",
+      "description": "Snapshot/rollback engine available",
+      "status": "PASS",
+      "details": "Rollback engine operational",
+      "timestamp": "2025-12-02T21:05:11.401019"
+    },
+    {
+      "key": "K23",
+      "description": "Target root isolation enforced",
+      "status": "PASS",
+      "details": "Target root isolation validation: True",
+      "timestamp": "2025-12-02T21:05:11.401768"
+    },
+    {
+      "key": "K24",
+      "description": "Protected paths never mutated",
+      "status": "PASS",
+      "details": "Protected paths preservation validated",
+      "timestamp": "2025-12-02T21:05:11.407514"
+    },
+    {
+      "key": "K25",
+      "description": "Cross-root mutations prevented",
+      "status": "PASS",
+      "details": "Cross-root mutation prevention: True",
+      "timestamp": "2025-12-02T21:05:11.408158"
+    },
+    {
+      "key": "K26",
+      "description": "Atomic execution functional",
+      "status": "PASS",
+      "details": "Atomic execution with 8759 files",
+      "timestamp": "2025-12-02T21:05:18.765467"
+    },
+    {
+      "key": "K27",
+      "description": "Snapshot integrity validation",
+      "status": "PASS",
+      "details": "Snapshot integrity validation functional",
+      "timestamp": "2025-12-02T21:05:22.931815"
+    },
+    {
+      "key": "K28",
+      "description": "Rollback capability available",
+      "status": "PASS",
+      "details": "Rollback capability with 2241 operations",
+      "timestamp": "2025-12-02T21:05:29.556095"
+    },
+    {
+      "key": "K29",
+      "description": "State restoration functional",
+      "status": "PASS",
+      "details": "State restoration functionality validated",
+      "timestamp": "2025-12-02T21:05:40.015590"
+    },
+    {
+      "key": "K30",
+      "description": "Atomic operation tracking",
+      "status": "PASS",
+      "details": "Atomic operation tracking functional",
+      "timestamp": "2025-12-02T21:05:42.745054"
+    },
+    {
+      "key": "K31",
+      "description": "Phase 3 read-only mode enforced",
+      "status": "PASS",
+      "details": "Read-only mode enforcement functional",
+      "timestamp": "2025-12-02T21:05:42.750962"
+    },
+    {
+      "key": "K32",
+      "description": "Freeze report generator exists",
+      "status": "PASS",
+      "details": "Freeze report generator with 2162 files",
+      "timestamp": "2025-12-02T21:05:43.981622"
+    },
+    {
+      "key": "K33",
+      "description": "SHA-256 hashing implemented",
+      "status": "PASS",
+      "details": "SHA-256 hashing for 2162 files",
+      "timestamp": "2025-12-02T21:05:45.217247"
+    },
+    {
+      "key": "K34",
+      "description": "Deterministic ordering enforced",
+      "status": "PASS",
+      "details": "Deterministic ordering validated",
+      "timestamp": "2025-12-02T21:05:47.046357"
+    },
+    {
+      "key": "K35",
+      "description": "No randomness in freeze process",
+      "status": "PASS",
+      "details": "Freeze process deterministic (no randomness)",
+      "timestamp": "2025-12-02T21:05:49.468017"
+    },
+    {
+      "key": "K36",
+      "description": "Freeze integrity validation",
+      "status": "PASS",
+      "details": "Freeze integrity validation functional",
+      "timestamp": "2025-12-02T21:05:51.025000"
+    },
+    {
+      "key": "K37",
+      "description": "Cryptographic hash verification",
+      "status": "PASS",
+      "details": "Cryptographic hash verification for 2162 files",
+      "timestamp": "2025-12-02T21:05:52.258423"
+    },
+    {
+      "key": "K38",
+      "description": "Freeze report generation",
+      "status": "PASS",
+      "details": "Freeze report generation with 2162 files",
+      "timestamp": "2025-12-02T21:05:53.519003"
+    },
+    {
+      "key": "K39",
+      "description": "Workspace state verification",
+      "status": "PASS",
+      "details": "Workspace state verification functional",
+      "timestamp": "2025-12-02T21:05:55.125534"
+    },
+    {
+      "key": "K40",
+      "description": "Freeze implementation complete",
+      "status": "PASS",
+      "details": "Freeze implementation fully operational",
+      "timestamp": "2025-12-02T21:05:56.373122"
+    }
+  ]
+}

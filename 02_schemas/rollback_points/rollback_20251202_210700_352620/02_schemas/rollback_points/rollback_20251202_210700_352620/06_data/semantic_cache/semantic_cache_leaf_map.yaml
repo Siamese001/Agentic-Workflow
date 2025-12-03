@@ -1,0 +1,109 @@
+# Semantic Cache Leaf Map - Phase 0.5
+# Maps directory structure and artifact types for the semantic cache system
+
+# Engine Separation
+engines:
+  resume_engine:
+    description: "Resume Engine (RG) semantic cache artifacts"
+    path: "resume_engine/"
+    artifact_types:
+      - ast
+      - embedding  
+      - golden
+      - safety
+  outreach_engine:
+    description: "Outreach Engine (LIC) semantic cache artifacts"
+    path: "outreach_engine/"
+    artifact_types:
+      - ast
+      - embedding
+      - golden
+      - safety
+
+# Version Folder Structure
+version_structure:
+  pattern: "{version_name}/"
+  examples:
+    - "v2/"
+    - "v6.0/"
+    - "v7.0/"
+    - "v8.0/"
+    - "v9.0/"
+    - "v10.7/"
+    - "Agentic-Workflow-10_11/"
+    - "Microservices Model/"
+
+# Artifact Types
+artifacts:
+  ast:
+    extension: ".ast"
+    description: "Abstract Syntax Tree representation"
+    metadata: ".ast.meta.json"
+  embedding:
+    extension: ".embedding"
+    description: "64-dimensional embedding vectors"
+    metadata: ".embedding.meta.json"
+  golden:
+    extension: ".golden.json"
+    description: "Canonical projection and signatures"
+  safety:
+    extension: ".safety.json"
+    description: "Safety and policy compliance analysis"
+
+# Global Directories
+global_directories:
+  ast:
+    path: "ast/"
+    description: "Global AST aggregation"
+  embeddings:
+    path: "embeddings/"
+    description: "Global embedding index"
+  meta:
+    path: "meta/"
+    description: "Global metadata"
+  safety:
+    path: "safety/"
+    description: "Global safety analysis"
+  golden:
+    path: "golden/"
+    description: "Global golden projections"
+  diffs:
+    path: "diffs/"
+    description: "Version difference analysis"
+  integrity:
+    path: "integrity/"
+    description: "Integrity validation results"
+  logs:
+    path: "logs/"
+    description: "Processing logs"
+  reports:
+    path: "reports/"
+    description: "Comprehensive reporting"
+
+# File Processing Pipeline
+pipeline:
+  input:
+    - python_source_files
+  processing:
+    - ast_extraction
+    - embedding_generation
+    - safety_analysis
+    - golden_projection
+  output:
+    - semantic_artifacts
+    - integrity_reports
+    - lineage_metadata
+
+# Validation Keys Mapping
+validation_keys:
+  infrastructure: [68, 69, 70, 71, 72, 73, 74]
+  output_structure: [19, 20, 21, 22, 23, 24, 25, 26, 27]
+  artifact_generation: [28, 29, 30, 31, 32, 33, 34, 35, 36, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54]
+  integrity_reporting: [60, 61, 62, 63, 64]
+  engine_separation: [65, 66, 67]
+  code_quality: [75, 76, 77, 78]
+  archive_processing: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+  lineage_validation: [37, 38, 39, 40, 41, 42, 43, 44]
+  metadata_validation: [55, 56, 57, 58, 59]
+  architectural_purity: [79, 80, 81, 82, 83, 84]
+  zero_loss: [85, 86, 87, 88, 89, 90]
