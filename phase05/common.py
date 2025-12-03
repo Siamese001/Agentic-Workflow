@@ -106,6 +106,7 @@ class ValidationResult:
     message: str
     details: Optional[Dict] = None
     timestamp: str = ""
+    section: str = "K"
 
 @dataclass
 class PipelineStep:
