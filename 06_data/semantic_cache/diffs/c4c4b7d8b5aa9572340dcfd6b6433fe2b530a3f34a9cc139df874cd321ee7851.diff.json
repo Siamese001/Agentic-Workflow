@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/golden_state/test_gating.py",
-  "diff_content": "from eval.golden_state.gating import gate_experiment\n\n\ndef test_gate_experiment_allows_without_baseline():\n    assert gate_experiment({\"avg_score\": 0.5}, {}) is True\n\n\ndef test_gate_experiment_enforces_avg_and_pass_count():\n    baseline = {\"avg_score\": 0.8, \"pass_count\": 2}\n\n    better = {\"avg_score\": 0.9, \"pass_count\": 2}\n    worse_avg = {\"avg_score\": 0.7, \"pass_count\": 3}\n    worse_pass = {\"avg_score\": 0.9, \"pass_count\": 1}\n\n    assert gate_experiment(better, baseline) is True\n    assert gate_experiment(worse_avg, baseline) is False\n    assert gate_experiment(worse_pass, baseline) is False\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 23,
-    "lines_removed": 0,
-    "lines_changed": 23
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "c4c4b7d8b5aa9572340dcfd6b6433fe2b530a3f34a9cc139df874cd321ee7851",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_gating.py",
+  "generated_at": "2025-12-03T17:47:45.643201",
+  "diff_type": "baseline",
+  "changes": []
 }

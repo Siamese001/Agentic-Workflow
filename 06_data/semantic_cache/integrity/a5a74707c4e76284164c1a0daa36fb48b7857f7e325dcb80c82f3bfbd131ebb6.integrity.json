@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
-  "content_hash": "f2e40a601b762adc907a1751cc45d759c2bee1fe46300ffaa992bd584700d9f0",
+  "hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_retrieval_modularity.py",
+  "generated_at": "2025-12-03T17:47:45.722018",
   "file_size": 2481,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\modularity\\test_retrieval_modularity.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_retrieval_modularity.py",
-    "file_size": 2481,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
-    "scan_timestamp": "2025-12-03T08:04:48.160401"
-  },
-  "verification_timestamp": "2025-12-03T08:04:57.039803",
-  "checksums": {
-    "sha256": "f2e40a601b762adc907a1751cc45d759c2bee1fe46300ffaa992bd584700d9f0",
-    "md5": "94c5c53e91eb6ef59a5237e37ec9e7be"
-  }
+  "modified_time": 1764610059.4824195,
+  "sha256": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
+  "integrity_check": "passed"
 }

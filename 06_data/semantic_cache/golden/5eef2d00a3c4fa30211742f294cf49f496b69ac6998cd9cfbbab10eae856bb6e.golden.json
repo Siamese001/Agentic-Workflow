@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e",
-  "content_hash": "3c66bc841d416113594fac7ab4ec60383b69ce7466c892298d07148b49cb92d1",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\injection_types.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\injection_types.md",
-    "file_size": 5888,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e",
-    "scan_timestamp": "2025-12-03T08:04:48.112148"
-  },
-  "content_preview": "| Injection Type                                | Category                    | Purpose / Meaning                                                                                                        | Applies To                                             | Good or Bad?                                  | Example                                                |\n| --------------------------------------------- | --------------------------- | -------------------------------------------------------...",
-  "creation_timestamp": "2025-12-03T08:04:55.380818",
-  "version": "1.0"
+  "hash": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/injection_types(1).md",
+  "generated_at": "2025-12-03T17:47:45.454379",
+  "golden_status": "verified",
+  "checksum": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e"
 }

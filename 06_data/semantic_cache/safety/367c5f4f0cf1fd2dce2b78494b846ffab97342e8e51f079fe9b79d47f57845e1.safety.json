@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 8,
-    "complexity_score": 3.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.264739"
+  "hash": "367c5f4f0cf1fd2dce2b78494b846ffab97342e8e51f079fe9b79d47f57845e1",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/pinecone_client/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.925297",
+  "safety_score": 1.0,
+  "issues": []
 }

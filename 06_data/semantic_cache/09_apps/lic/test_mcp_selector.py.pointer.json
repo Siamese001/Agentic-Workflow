@@ -1,0 +1,9 @@
+{
+  "hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_mcp_selector.py",
+  "canonical_relative": "lic/test_mcp_selector.py",
+  "canonical_root": "09_apps",
+  "generated_at": "2025-12-03T17:47:48.331693"
+}

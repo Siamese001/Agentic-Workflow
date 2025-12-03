@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e",
-  "content_hash": "63a77d9c3399bab121fe19abb9d26d2f8d9ccf90f91291a5a70e86cedbe3d649",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tools\\dependency_report.json",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\dependency_report.json",
-    "file_size": 133765,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e",
-    "scan_timestamp": "2025-12-03T08:04:48.178277"
-  },
-  "content_preview": "{\n  \"summary\": {\n    \"total_modules\": 273,\n    \"total_dependencies\": 473,\n    \"circular_dependencies\": 0\n  },\n  \"modules\": {\n    \"atomic_integration_bridge\": {\n      \"filepath\": \"C:\\\\Users\\\\amita\\\\Documents\\\\Work\\\\AI Job Search\\\\AI\\\\ML\\\\DL\\\\GenAI\\\\LLM 101\\\\LLM Pipelines\\\\Resume Gen\\\\Git\\\\Agentic-Workflow-10_10\\\\atomic_integration_bridge.py\",\n      \"imports\": [\n        \"config.meta_profile\",\n        \"core.routing\",\n        \"l3.unified_workflow_orchestrator\",\n        \"l4.state_manager\",\n        \"l...",
-  "creation_timestamp": "2025-12-03T08:04:57.940617",
-  "version": "1.0"
+  "hash": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_report.json",
+  "generated_at": "2025-12-03T17:47:45.510059",
+  "golden_status": "verified",
+  "checksum": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e"
 }

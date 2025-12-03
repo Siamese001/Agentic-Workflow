@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "1bae92c12da4438ef2289d3d99d65a12bb618b345721f8d0f7ecac2cbe363e20",
-  "content_hash": "1bae92c12da4438ef2289d3d99d65a12bb618b345721f8d0f7ecac2cbe363e20",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "stacks_v10_7\\models.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\models.py",
-    "file_size": 2082,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "1bae92c12da4438ef2289d3d99d65a12bb618b345721f8d0f7ecac2cbe363e20",
-    "scan_timestamp": "2025-12-03T08:04:48.354560"
-  },
-  "content_preview": "\"\"\"Shared Pydantic data models for stack coordination.\"\"\"\n\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel, Field\n\n\nclass SpecialistDraftPacket(BaseModel):\n    \"\"\"Container for specialist drafting outputs.\"\"\"\n\n    specialist: str = Field(..., description=\"Name of the drafting specialist\")\n    focus_area: str = Field(..., description=\"Primary responsibility of the specialist\")\n    sections: Dict[str, Any] = Field(default_factory=dict, description=\"Section-level draft contributi...",
-  "creation_timestamp": "2025-12-03T08:05:18.047123",
-  "version": "1.0"
+  "hash": "1bae92c12da4438ef2289d3d99d65a12bb618b345721f8d0f7ecac2cbe363e20",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/models.py",
+  "generated_at": "2025-12-03T17:47:46.388969",
+  "golden_status": "verified",
+  "checksum": "1bae92c12da4438ef2289d3d99d65a12bb618b345721f8d0f7ecac2cbe363e20"
 }

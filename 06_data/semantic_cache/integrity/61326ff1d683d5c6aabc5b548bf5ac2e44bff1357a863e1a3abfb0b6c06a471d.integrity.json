@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
-  "content_hash": "e6e5739c286c014fb144611df603be06572477c6c08d04239e3276f51d3845f4",
+  "hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/invalidation_executor.py",
+  "generated_at": "2025-12-03T17:47:45.078184",
   "file_size": 13932,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l2\\invalidation_executor.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\invalidation_executor.py",
-    "file_size": 13932,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
-    "scan_timestamp": "2025-12-03T08:04:48.078686"
-  },
-  "verification_timestamp": "2025-12-03T08:04:51.864470",
-  "checksums": {
-    "sha256": "e6e5739c286c014fb144611df603be06572477c6c08d04239e3276f51d3845f4",
-    "md5": "5cdbd067ee9add672a0fd9e2bab266a2"
-  }
+  "modified_time": 1764610058.7728405,
+  "sha256": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+  "integrity_check": "passed"
 }

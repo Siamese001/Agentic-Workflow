@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "7827a629e226a996a78ba3894763a32a21b348921d2fde2db18bac744f4b936e",
-  "content_hash": "7827a629e226a996a78ba3894763a32a21b348921d2fde2db18bac744f4b936e",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-10_v3.00.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v3.00.md",
-    "file_size": 15158,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "7827a629e226a996a78ba3894763a32a21b348921d2fde2db18bac744f4b936e",
-    "scan_timestamp": "2025-12-03T08:04:48.443235"
-  },
-  "content_preview": "LinkedInCanonical \u2014 2025-09-11 v3.00 (FULL, ZLO \u2014 Lifecycle Autostart and Step Gating). v3.00 is a zero loss overwrite of v2.94.1 that binds \u201cRun LIC\u201d to start at the Lifecycle prompt and enforces step by step operator gating. All other v2.94.1 behaviors and archetype rules remain intact. Source baseline: LinkedInCanonical \u2014 2025-09-11 v2.94.1.&#x20;\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can ...",
-  "creation_timestamp": "2025-12-03T08:05:22.375640",
-  "version": "1.0"
+  "hash": "7827a629e226a996a78ba3894763a32a21b348921d2fde2db18bac744f4b936e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-10_v3.00.md",
+  "generated_at": "2025-12-03T17:47:47.132002",
+  "golden_status": "verified",
+  "checksum": "7827a629e226a996a78ba3894763a32a21b348921d2fde2db18bac744f4b936e"
 }

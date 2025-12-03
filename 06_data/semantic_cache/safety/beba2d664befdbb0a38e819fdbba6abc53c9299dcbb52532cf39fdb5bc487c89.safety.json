@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 59,
-    "complexity_score": 63.54
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:20.522019"
+  "hash": "beba2d664befdbb0a38e819fdbba6abc53c9299dcbb52532cf39fdb5bc487c89",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-03-2025_v6.9_diff.txt",
+  "generated_at": "2025-12-03T17:47:46.778825",
+  "safety_score": 1.0,
+  "issues": []
 }

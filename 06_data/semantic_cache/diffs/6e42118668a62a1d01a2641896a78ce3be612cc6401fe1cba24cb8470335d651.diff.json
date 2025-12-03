@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l3/qa_orchestrator.py",
-  "diff_content": "\"\"\"\nL3 QA orchestrator for resume job alignment workflows.\n\nCoordinates QA planning and execution for resume enhancement.\n\"\"\"\n\nfrom typing import Any\nfrom l1.qa_planning import plan_qa\nfrom l2.qa_executor import QAExecutor\nfrom runtime.observability import record_event\n\nclass QAOrchestrator:\n    \"\"\"Pure orchestration for resume QA job alignment workflows.\"\"\"\n    \n    def __init__(self, qa_executor: QAExecutor):\n        self.qa_executor = qa_executor\n    \n    def orchestrate_qa(self, draft: Any, job: Any, resume: Any) -> str:\n        \"\"\"Orchestrates resume QA workflow for job alignment processing.\"\"\"\n        record_event(\"qa_orchestration_start\", {})\n        \n        # L1: Pure planning\n        qa_plan = plan_qa(draft, job, resume)\n        \n        # L2: Pure execution\n        result = self.qa_executor.execute_qa(\n            f\"Execute QA for areas: {qa_plan.focus_areas}\"\n        )\n        \n        record_event(\"qa_orchestration_complete\", {})\n        return result\n",
-  "statistics": {
-    "lines_added": 31,
-    "lines_removed": 0,
-    "lines_changed": 31
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "6e42118668a62a1d01a2641896a78ce3be612cc6401fe1cba24cb8470335d651",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/qa_orchestrator.py",
+  "generated_at": "2025-12-03T17:47:45.139600",
+  "diff_type": "baseline",
+  "changes": []
 }

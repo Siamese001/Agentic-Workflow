@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
-  "content_hash": "fbad5fb4e7cd916ad5f016bcacdd4f39dacc30c95a0a2814ad12f94c6d285a3f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\context_engine\\slots.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\slots.py",
-    "file_size": 854,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
-    "scan_timestamp": "2025-12-03T08:04:48.054756"
-  },
-  "content_preview": "\"\"\"\nContext slot management for r\u00e9sum\u00e9 processing workflows.\n\nDefines logical sections for organizing information in r\u00e9sum\u00e9 improvement prompts.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass ContextSlot:\n    \"\"\"\n    Represents context slot for r\u00e9sum\u00e9 processing prompt organization.\n\n    Enables structured information placement for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n    id: str\n    max_items: int\n    metadata: Dict[str, Any]\n\n\ndef as...",
-  "creation_timestamp": "2025-12-03T08:04:49.968047",
-  "version": "1.0"
+  "hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/slots.py",
+  "generated_at": "2025-12-03T17:47:46.021078",
+  "golden_status": "verified",
+  "checksum": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063"
 }

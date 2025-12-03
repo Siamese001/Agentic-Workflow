@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-  "content_hash": "71a07cc9783b9e2654022fc94e18318cc632fcc2808f1fc85566c05e188499a3",
+  "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/NEO4J_INTEGRATION_README.md",
+  "generated_at": "2025-12-03T17:47:45.868645",
   "file_size": 6608,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\integration\\NEO4J_INTEGRATION_README.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\integration\\NEO4J_INTEGRATION_README.md",
-    "file_size": 6608,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-    "scan_timestamp": "2025-12-03T08:04:48.112533"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.387593",
-  "checksums": {
-    "sha256": "71a07cc9783b9e2654022fc94e18318cc632fcc2808f1fc85566c05e188499a3",
-    "md5": "438db1d267565f0de2f2f94667f0ed79"
-  }
+  "modified_time": 1764610059.0164175,
+  "sha256": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "integrity_check": "passed"
 }

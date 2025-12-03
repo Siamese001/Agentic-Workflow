@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca",
-  "content_hash": "eb09741ef474949de2853161d55721ef43867385b30db78172b7110a1948efc1",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\modularity\\test_import_rules.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_import_rules.py",
-    "file_size": 2945,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca",
-    "scan_timestamp": "2025-12-03T08:04:48.159297"
-  },
-  "content_preview": "import ast\nfrom pathlib import Path\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef _iter_py_files(root: Path):\n    if not root.exists():\n        return\n    for path in root.rglob(\"*.py\"):\n        if path.name.startswith(\"test_\"):\n            continue\n        yield path\n\n\ndef _parse_imports(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename=str(path))\n    except SyntaxError:\n ...",
-  "creation_timestamp": "2025-12-03T08:04:56.975300",
-  "version": "1.0"
+  "hash": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_import_rules.py",
+  "generated_at": "2025-12-03T17:47:45.705410",
+  "golden_status": "verified",
+  "checksum": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca"
 }

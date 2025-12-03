@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
-  "content_hash": "a9e325d9c0d9fd8cd2248d5d858c98ece36d5f8ae2b1dafbeda040aa058d7a39",
+  "hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/decisions.py",
+  "generated_at": "2025-12-03T17:47:46.028985",
   "file_size": 2643,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\control_plane\\decisions.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\decisions.py",
-    "file_size": 2643,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
-    "scan_timestamp": "2025-12-03T08:04:48.055723"
-  },
-  "verification_timestamp": "2025-12-03T08:04:49.989564",
-  "checksums": {
-    "sha256": "a9e325d9c0d9fd8cd2248d5d858c98ece36d5f8ae2b1dafbeda040aa058d7a39",
-    "md5": "3bf0db126f9a287b06ed53ef38e1c1a2"
-  }
+  "modified_time": 1764610058.703501,
+  "sha256": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
+  "integrity_check": "passed"
 }

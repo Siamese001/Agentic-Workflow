@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-  "content_hash": "bec43fe35bda92a8bb7e6da13b74c6767ad0efb34bfa24ce28be2315288d5e44",
+  "hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_runner.py",
+  "generated_at": "2025-12-03T17:47:45.654098",
   "file_size": 573,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\golden_state\\test_runner.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_runner.py",
-    "file_size": 573,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-    "scan_timestamp": "2025-12-03T08:04:48.135673"
-  },
-  "verification_timestamp": "2025-12-03T08:04:56.221305",
-  "checksums": {
-    "sha256": "bec43fe35bda92a8bb7e6da13b74c6767ad0efb34bfa24ce28be2315288d5e44",
-    "md5": "5e3cd5d255e9a4be822e277eec6172bb"
-  }
+  "modified_time": 1764610060.312401,
+  "sha256": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
+  "integrity_check": "passed"
 }

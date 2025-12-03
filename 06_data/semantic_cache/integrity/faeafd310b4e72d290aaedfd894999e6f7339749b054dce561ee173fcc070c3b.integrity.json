@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
-  "content_hash": "97b419468e3e0f5fd9c2500caf399fc8d72ef4afbfade5b126af6ee63c98b1fe",
+  "hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/vector_store_chroma.py",
+  "generated_at": "2025-12-03T17:47:45.984789",
   "file_size": 1358,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "meta\\retrieval\\vector_store_chroma.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\retrieval\\vector_store_chroma.py",
-    "file_size": 1358,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
-    "scan_timestamp": "2025-12-03T08:04:48.095206"
-  },
-  "verification_timestamp": "2025-12-03T08:04:54.218429",
-  "checksums": {
-    "sha256": "97b419468e3e0f5fd9c2500caf399fc8d72ef4afbfade5b126af6ee63c98b1fe",
-    "md5": "f39c9519827a8b2cf187a5bb598bb52f"
-  }
+  "modified_time": 1764610059.190097,
+  "sha256": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
+  "integrity_check": "passed"
 }

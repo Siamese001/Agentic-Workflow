@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "orchestration/models/dag_models.py",
-  "diff_content": "\"\"\"\nOrchestration DAG models - re-exported from core.models for backward compatibility.\n\nThis module re-exports DAG models from core.models to maintain import compatibility\nduring the canonical structure cleanup.\n\"\"\"\n\n# Re-export all DAG models from core.models\nfrom core.models.dag_models import *\n",
-  "statistics": {
-    "lines_added": 9,
-    "lines_removed": 0,
-    "lines_changed": 9
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/models/dag_models.py",
+  "generated_at": "2025-12-03T17:47:45.935852",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,20 +1,9 @@
 {
-  "safety_score": 55,
-  "risk_level": "medium",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": true,
-    "has_system_operations": true,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 541,
-    "complexity_score": 462.04
-  },
-  "recommendations": [
-    "Review system operations for security implications",
-    "Validate network operations and endpoints",
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:53.388581"
+  "hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/adapters(1).py",
+  "generated_at": "2025-12-03T17:47:45.231745",
+  "safety_score": 1.0,
+  "issues": []
 }

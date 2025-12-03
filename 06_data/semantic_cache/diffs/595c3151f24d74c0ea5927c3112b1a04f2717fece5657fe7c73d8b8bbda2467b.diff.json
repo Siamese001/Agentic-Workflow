@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "config/__init__.py",
-  "diff_content": "\"\"\"Configuration module for Agentic Workflow v10_10.\"\"\"\n\n\n\n",
-  "statistics": {
-    "lines_added": 4,
-    "lines_removed": 0,
-    "lines_changed": 4
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "595c3151f24d74c0ea5927c3112b1a04f2717fece5657fe7c73d8b8bbda2467b",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/__init__.py",
+  "generated_at": "2025-12-03T17:47:44.760588",
+  "diff_type": "baseline",
+  "changes": []
 }

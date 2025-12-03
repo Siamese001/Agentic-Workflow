@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-  "content_hash": "d4c664cade66c08b76dbd029db7be9f467814f276e11411808cc1177380549f2",
+  "hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/tot.py",
+  "generated_at": "2025-12-03T17:47:46.114622",
   "file_size": 1301,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\reasoning\\tot.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\tot.py",
-    "file_size": 1301,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-    "scan_timestamp": "2025-12-03T08:04:48.062093"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.252450",
-  "checksums": {
-    "sha256": "d4c664cade66c08b76dbd029db7be9f467814f276e11411808cc1177380549f2",
-    "md5": "8206cf26f04c00d60bc664c115206bfc"
-  }
+  "modified_time": 1764610058.4487784,
+  "sha256": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
+  "integrity_check": "passed"
 }

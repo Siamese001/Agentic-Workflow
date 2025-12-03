@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 11,
-    "complexity_score": 15.22
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.289300"
+  "hash": "bf20c0b9f631cc139ee7d4d7143eeeab6e6d0651fbe1660510b7ef1fae9f718a",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_autotune_regression.py",
+  "generated_at": "2025-12-03T17:47:46.474381",
+  "safety_score": 1.0,
+  "issues": []
 }

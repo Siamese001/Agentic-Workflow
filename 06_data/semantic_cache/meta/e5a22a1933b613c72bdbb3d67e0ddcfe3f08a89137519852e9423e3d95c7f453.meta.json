@@ -1,25 +1,11 @@
 {
-  "meta_type": "artifact_manifest",
-  "file_hash": "e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "chromadb\\__init__.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\chromadb\\__init__.py",
-    "file_size": 320,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453",
-    "scan_timestamp": "2025-12-03T08:04:48.337164"
-  },
-  "artifacts": {
-    "ast": "ast/e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453.ast",
-    "embedding": "embeddings/e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453.embedding",
-    "diff": "diffs/e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453.diff.json",
-    "safety": "safety/e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453.safety.json",
-    "golden": "golden/e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453.golden.json",
-    "integrity": "integrity/e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453.integrity.json"
-  },
-  "generation_timestamp": "2025-12-03T08:05:17.070998",
-  "artifact_count": 6
+  "hash": "e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453",
+  "type": "meta",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/chromadb/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.354197",
+  "file_type": "LIC",
+  "file_extension": ".py",
+  "file_size": 320,
+  "processing_stage": "phase_0_5"
 }

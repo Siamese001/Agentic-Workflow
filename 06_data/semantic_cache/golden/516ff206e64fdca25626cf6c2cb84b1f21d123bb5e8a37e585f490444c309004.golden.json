@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004",
-  "content_hash": "8edb877979389a3626b160ddb6346f6a632573ec1b1f3cf66d902d5b3c3badf2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "core\\errors.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\core\\errors.py",
-    "file_size": 5314,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004",
-    "scan_timestamp": "2025-12-03T08:04:48.042303"
-  },
-  "content_preview": "\"\"\"\nError hierarchy and utilities for workflow execution.\n\"\"\"\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom typing import Any, Dict, Optional, Type, TypeVar\n\n\nT = TypeVar(\"T\")\n\n\nclass ErrorSeverity(str, Enum):\n    \"\"\"Severity levels for workflow errors.\"\"\"\n\n    INFO = \"info\"\n    WARNING = \"warning\"\n    ERROR = \"error\"\n    CRITICAL = \"critical\"\n\n\nclass WorkflowErrorCode(str, Enum):\n    \"\"\"Standard error codes for workflow execution.\"\"\"\n\n    # General errors\n    UNKNOWN_ERROR = \"unk...",
-  "creation_timestamp": "2025-12-03T08:04:49.531699",
-  "version": "1.0"
+  "hash": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/errors.py",
+  "generated_at": "2025-12-03T17:47:44.778556",
+  "golden_status": "verified",
+  "checksum": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004"
 }

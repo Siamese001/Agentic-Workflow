@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
-  "content_hash": "a393e973a753c6fb29e4db85847508d9171bab8aed14ae16ebd0659f2a6b8f29",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\07_concurrency_parallelism.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\07_concurrency_parallelism.md",
-    "file_size": 743,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
-    "scan_timestamp": "2025-12-03T08:04:48.184613"
-  },
-  "content_preview": "# /windsurf_rules/07_concurrency_parallelism.md\n## Concurrency, Parallel DAG Execution, and Shared Resource Governance\n\n### 1. Parallel Execution Isolation\n- Each DAG run must be fully isolated.\n- No DAG run may share global mutable state.\n\n### 2. Concurrency Limits\n- Maximum parallel DAGs = min(CPU_CORES, CONFIG_LIMIT).\n- No unbounded async spawning.\n- L2 tools must declare concurrency and rate limits.\n\n### 3. Shared Resource Governance\n- Vector-store writes must be serialized.\n- Reads may be p...",
-  "creation_timestamp": "2025-12-03T08:04:58.653168",
-  "version": "1.0"
+  "hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/07_concurrency_parallelism.md",
+  "generated_at": "2025-12-03T17:47:45.591800",
+  "golden_status": "verified",
+  "checksum": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69"
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 52,
-    "complexity_score": 48.74
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:49.999591"
+  "hash": "fb76365ff1a092acf93f31ecfc813a6381c0624db9cd2488b9a8450e1e8373e3",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/judge_engine.py",
+  "generated_at": "2025-12-03T17:47:46.032617",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0",
-  "content_hash": "009558e4fb22e33c1d736ef678a57e01b93782ffa855fd298710d7ca130dcf82",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\05_tooling_mcp_observability.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\05_tooling_mcp_observability.md",
-    "file_size": 822,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0",
-    "scan_timestamp": "2025-12-03T08:04:48.184140"
-  },
-  "content_preview": "# /windsurf_rules/05_tooling_mcp_observability.md\n## Tooling, MCP, SDK, and Observability Rules (Condensed)\n\n### 1. L2 Tooling Rules\n- Only L2 may execute tools.\n- Tools require explicit schemas (input/output).\n- Must implement retries, backoff, timeouts, circuit breakers.\n- No tool logic allowed in L1, L3, L4, or L5.\n\n### 2. MCP vs SDK\n- MCP MUST be used when available.\n- SDK allowed only when MCP unavailable.\n- SDK usage must remain in L2 and be sandboxed.\n\n### 3. Execution Sandbox\n- Tools mus...",
-  "creation_timestamp": "2025-12-03T08:04:58.642837",
-  "version": "1.0"
+  "hash": "daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/05_tooling_mcp_observability.md",
+  "generated_at": "2025-12-03T17:47:45.584696",
+  "golden_status": "verified",
+  "checksum": "daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0"
 }

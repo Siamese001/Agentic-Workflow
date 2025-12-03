@@ -1,0 +1,10 @@
+{
+  "hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/intelligence_service_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.605152",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

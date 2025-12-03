@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "0aab13fd8ac275b5d14110fb9d9ba66cdba1bc5a1e24462709382a21427566d7",
-  "content_hash": "0aab13fd8ac275b5d14110fb9d9ba66cdba1bc5a1e24462709382a21427566d7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-19_v4.0.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-19_v4.0.md",
-    "file_size": 34304,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "0aab13fd8ac275b5d14110fb9d9ba66cdba1bc5a1e24462709382a21427566d7",
-    "scan_timestamp": "2025-12-03T08:04:48.448772"
-  },
-  "content_preview": "LIC 4.0 \u2014 LinkedIn Outreach Canonical\n\n=====================\nBEGINNING ROLE\n=====================\nYou are the LinkedIn Outreach Orchestrator. Produce compliant Short NEW messages or Full Premium InMails for the correct recipient archetype: C Level, Executive, Senior TA, Recruiter. Enforce Prompt Shell v2.5 and this governance. All message bodies are plain text.\n\nScope and authority\n\u2022 Enforce a six section workflow: ROLE, TASK, CONTEXT, REASONING, OUTPUT, CONDITIONS.\n\u2022 Keep all reasoning traces i...",
-  "creation_timestamp": "2025-12-03T08:05:22.544898",
-  "version": "1.0"
+  "hash": "0aab13fd8ac275b5d14110fb9d9ba66cdba1bc5a1e24462709382a21427566d7",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-19_v4.0.md",
+  "generated_at": "2025-12-03T17:47:47.219167",
+  "golden_status": "verified",
+  "checksum": "0aab13fd8ac275b5d14110fb9d9ba66cdba1bc5a1e24462709382a21427566d7"
 }

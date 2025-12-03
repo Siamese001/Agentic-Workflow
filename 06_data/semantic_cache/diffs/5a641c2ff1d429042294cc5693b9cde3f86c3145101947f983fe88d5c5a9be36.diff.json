@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "orchestration/model_routing/__init__.py",
-  "diff_content": "from __future__ import annotations\n\n\"\"\"Facade for model routing functions used by orchestration layers.\n\nThis package re-exports the existing infra.model_routing primitives so\ncallers can depend on a stable ``orchestration.model_routing``\nnamespace without changing the underlying implementation.\n\"\"\"\n\nfrom infra.model_routing.models import RoutingContext, ModelChoice  # noqa: F401\nfrom infra.model_routing.policies import (  # noqa: F401\n    choose_provider_and_model,\n    enforce_budget,\n)\nfrom infra.model_routing.selector import select_model  # noqa: F401\n\n__all__ = [\n    \"RoutingContext\",\n    \"ModelChoice\",\n    \"choose_provider_and_model\",\n    \"enforce_budget\",\n    \"select_model\",\n]\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 27,
-    "lines_removed": 0,
-    "lines_changed": 27
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/model_routing/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.942908",
+  "diff_type": "baseline",
+  "changes": []
 }

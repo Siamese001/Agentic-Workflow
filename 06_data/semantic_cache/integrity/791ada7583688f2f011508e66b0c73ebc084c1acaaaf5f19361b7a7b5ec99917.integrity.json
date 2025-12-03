@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-  "content_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+  "hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_retrieval_latency_slo.py",
+  "generated_at": "2025-12-03T17:47:46.486120",
   "file_size": 1217,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\regression\\test_retrieval_latency_slo.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_retrieval_latency_slo.py",
-    "file_size": 1217,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-    "scan_timestamp": "2025-12-03T08:04:48.360686"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.300656",
-  "checksums": {
-    "sha256": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-    "md5": "eba8813aa0c2a07a60053c4e9e9600c2"
-  }
+  "modified_time": 1764609961.5604994,
+  "sha256": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+  "integrity_check": "passed"
 }

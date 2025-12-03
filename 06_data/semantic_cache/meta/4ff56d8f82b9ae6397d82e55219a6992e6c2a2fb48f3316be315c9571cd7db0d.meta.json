@@ -1,25 +1,11 @@
 {
-  "meta_type": "artifact_manifest",
-  "file_hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\health\\health_metrics.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\health_metrics.py",
-    "file_size": 990,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
-    "scan_timestamp": "2025-12-03T08:04:48.049410"
-  },
-  "artifacts": {
-    "ast": "ast/4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d.ast",
-    "embedding": "embeddings/4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d.embedding",
-    "diff": "diffs/4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d.diff.json",
-    "safety": "safety/4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d.safety.json",
-    "golden": "golden/4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d.golden.json",
-    "integrity": "integrity/4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d.integrity.json"
-  },
-  "generation_timestamp": "2025-12-03T08:04:49.866933",
-  "artifact_count": 6
+  "hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
+  "type": "meta",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/health_metrics.py",
+  "generated_at": "2025-12-03T17:47:46.207834",
+  "file_type": "RG",
+  "file_extension": ".py",
+  "file_size": 990,
+  "processing_stage": "phase_0_5"
 }

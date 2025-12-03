@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "6c21323ad5bdca5e7040f3dd1a7d9c8825ff31bce5653e6bebb3898ea7d2c94e",
-  "content_hash": "6c21323ad5bdca5e7040f3dd1a7d9c8825ff31bce5653e6bebb3898ea7d2c94e",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "validator_rules_LIC.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\validator_rules_LIC.json",
-    "file_size": 10589,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "6c21323ad5bdca5e7040f3dd1a7d9c8825ff31bce5653e6bebb3898ea7d2c94e",
-    "scan_timestamp": "2025-12-03T08:04:48.372873"
-  },
-  "content_preview": "{\n  \"schema_version\": \"13.0\",\n  \"description\": \"Externalized validation rules for LIC v13.0 - All error codes, thresholds, and validation logic\",\n  \n  \"error_code_registry\": {\n    \"LIC-E001\": {\n      \"severity\": \"CRITICAL\",\n      \"description\": \"Placeholder detected in generated message\",\n      \"remediation\": \"Regenerate with explicit anti-placeholder constraint\"\n    },\n    \"LIC-E002\": {\n      \"severity\": \"CRITICAL\",\n      \"description\": \"Per-claim confidence below threshold (0.70)\",\n      \"reme...",
-  "creation_timestamp": "2025-12-03T08:05:19.123698",
-  "version": "1.0"
+  "hash": "6c21323ad5bdca5e7040f3dd1a7d9c8825ff31bce5653e6bebb3898ea7d2c94e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/validator_rules_LIC.json",
+  "generated_at": "2025-12-03T17:47:46.649008",
+  "golden_status": "verified",
+  "checksum": "6c21323ad5bdca5e7040f3dd1a7d9c8825ff31bce5653e6bebb3898ea7d2c94e"
 }

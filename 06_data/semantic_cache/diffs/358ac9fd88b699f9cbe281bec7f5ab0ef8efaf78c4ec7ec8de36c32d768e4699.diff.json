@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l1/safety_planning.py",
-  "diff_content": "\"\"\"\nSafety planning for resume improvement validation and professional standards.\n\nCreates structured plans to ensure professional standards and compliance\nin resume enhancement for job applications.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any\n\nfrom core.models.models import (\n    ExecutionContext,\n    DraftingResult,\n    RAGResult,\n    QAResult,\n)\nfrom l1.builders.prompt_builder import PromptInstance, build_safety_prompt\n\n\n@dataclass(frozen=True)\nclass SafetyPlan:\n    \"\"\"\n    Defines safety validation structure for resume content.\n\n    Ensures professional standards and compliance in resume\n    improvement recommendations for job applications.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\ndef plan_safety_review(\n    safety_plan: Any,\n    *,\n    ctx: ExecutionContext,\n    draft: DraftingResult,\n    rag: RAGResult,\n    qa: QAResult,\n) -> SafetyPlan:\n    \"\"\"\n    Creates comprehensive safety plan for resume validation.\n\n    Structures evaluation approach to ensure professional\n    resume enhancement standards for job applications.\n    \"\"\"\n    prompt = build_safety_prompt(\n        plan=safety_plan,\n        ctx=ctx,\n        drafting=draft,\n        qa=qa,\n        prompt_id=\"system.safety.agent\",\n        layer=\"L2\",\n        agent=\"safety\",\n        model_tier=\"balanced\",\n    )\n    return SafetyPlan(prompt=prompt)\n\n\ndef plan_safety(\n    content: str,\n    *,\n    ctx: ExecutionContext,\n    model_tier: str = \"balanced\",\n) -> SafetyPlan:\n    \"\"\"\n    Plan safety validation for the given content.\n    \n    Args:\n        content: Content to validate for safety\n        ctx: Execution context\n        model_tier: Model tier to use\n        \n    Returns:\n        Safety plan with validation checks\n    \"\"\"\n    # Create a basic safety plan\n    safety_plan = SafetyPlan(\n        content=content,\n        validation_level=\"standard\",\n        checks=[\"content_safety\", \"privacy\", \"bias_detection\"]\n    )\n    \n    return plan_safety_review(\n        safety_plan=safety_plan,\n        ctx=ctx,\n        drafting=None,\n        qa=None,\n    )\n\n\n\n",
-  "statistics": {
-    "lines_added": 93,
-    "lines_removed": 0,
-    "lines_changed": 93
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/safety_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.972442",
+  "diff_type": "baseline",
+  "changes": []
 }

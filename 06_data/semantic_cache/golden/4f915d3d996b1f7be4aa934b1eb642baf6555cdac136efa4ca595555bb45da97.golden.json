@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
-  "content_hash": "ff02eeb21afc3fc7e30a5088aaec3c93cd56a5d60924f8dbf7390d28e83326aa",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\models\\dag_models.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\models\\dag_models.py",
-    "file_size": 308,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
-    "scan_timestamp": "2025-12-03T08:04:48.100089"
-  },
-  "content_preview": "\"\"\"\nOrchestration DAG models - re-exported from core.models for backward compatibility.\n\nThis module re-exports DAG models from core.models to maintain import compatibility\nduring the canonical structure cleanup.\n\"\"\"\n\n# Re-export all DAG models from core.models\nfrom core.models.dag_models import *\n",
-  "creation_timestamp": "2025-12-03T08:04:54.797326",
-  "version": "1.0"
+  "hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/models/dag_models.py",
+  "generated_at": "2025-12-03T17:47:45.936244",
+  "golden_status": "verified",
+  "checksum": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97"
 }

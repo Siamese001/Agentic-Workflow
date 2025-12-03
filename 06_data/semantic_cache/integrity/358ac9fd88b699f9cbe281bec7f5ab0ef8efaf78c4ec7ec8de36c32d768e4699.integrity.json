@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
-  "content_hash": "5ea5e0047982020a06b9c13ad47b1c2846758ac05e1437bc3130fbd9d8143900",
+  "hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/safety_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.973856",
   "file_size": 2180,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\safety_planning.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\safety_planning.py",
-    "file_size": 2180,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
-    "scan_timestamp": "2025-12-03T08:04:48.073527"
-  },
-  "verification_timestamp": "2025-12-03T08:04:51.201675",
-  "checksums": {
-    "sha256": "5ea5e0047982020a06b9c13ad47b1c2846758ac05e1437bc3130fbd9d8143900",
-    "md5": "dc7038c085e99ffddfaf308c4f09c1fb"
-  }
+  "modified_time": 1764610058.2174835,
+  "sha256": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
+  "integrity_check": "passed"
 }

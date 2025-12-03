@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3967ccc84899373f214f0e2e92f307f76b1b7a5f110c86531ef1b23ec74e1415",
-  "content_hash": "068d9a45a4a492f5be31d361ae40852ca66dacf11694d5dafdda4ac7f214bcb7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.50.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.50.json",
-    "file_size": 187496,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "3967ccc84899373f214f0e2e92f307f76b1b7a5f110c86531ef1b23ec74e1415",
-    "scan_timestamp": "2025-12-03T08:04:48.425338"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.5.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.5.0\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"v8.5.0: Hardened the L-Series trace generation logic and K.1 toggle table validation. Implemented stricter schema adherence and clarified template handling policies.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.5.0\",\n        \"date\": \"2025...",
-  "creation_timestamp": "2025-12-03T08:05:21.657444",
-  "version": "1.0"
+  "hash": "3967ccc84899373f214f0e2e92f307f76b1b7a5f110c86531ef1b23ec74e1415",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.50.json",
+  "generated_at": "2025-12-03T17:47:46.995572",
+  "golden_status": "verified",
+  "checksum": "3967ccc84899373f214f0e2e92f307f76b1b7a5f110c86531ef1b23ec74e1415"
 }

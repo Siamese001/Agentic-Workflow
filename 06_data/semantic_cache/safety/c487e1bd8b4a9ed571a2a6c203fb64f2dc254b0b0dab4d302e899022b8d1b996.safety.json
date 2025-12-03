@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 41,
-    "complexity_score": 46.71
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:51.987330"
+  "hash": "c487e1bd8b4a9ed571a2a6c203fb64f2dc254b0b0dab4d302e899022b8d1b996",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/llm_caller.py",
+  "generated_at": "2025-12-03T17:47:45.090179",
+  "safety_score": 1.0,
+  "issues": []
 }

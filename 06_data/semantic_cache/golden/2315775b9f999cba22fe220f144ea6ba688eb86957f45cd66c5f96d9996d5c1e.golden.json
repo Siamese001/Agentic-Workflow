@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
-  "content_hash": "b1c10e1dd6817c724d457e41f43e4a9fb74f19def6e9b5ec7c2c068fcfa33813",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\routing.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\routing.py",
-    "file_size": 14117,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
-    "scan_timestamp": "2025-12-03T08:04:48.101727"
-  },
-  "content_preview": "# FILE: 10_10/routing.py\n\"\"\"\nRouting Policy for Agentic Workflow v10_10\n=========================================\n\nThis is the v10_10 refactor of the v10_9 routing layer.\n\nIt removes:\n    - PlanObject-dependent logic\n    - L5.ModelRouter\n    - PromptEnvelope construction\n    - META-only routing criteria classes\n    - direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)\n    - simulated model invocation stubs\n\nand replaces them with a **minimal, deterministic RoutingPolicy** t...",
-  "creation_timestamp": "2025-12-03T08:04:54.899120",
-  "version": "1.0"
+  "hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/routing(1).py",
+  "generated_at": "2025-12-03T17:47:45.342856",
+  "golden_status": "verified",
+  "checksum": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e"
 }

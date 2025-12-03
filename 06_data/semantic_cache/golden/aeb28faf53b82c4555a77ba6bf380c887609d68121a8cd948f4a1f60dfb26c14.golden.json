@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14",
-  "content_hash": "2bac981fec236893c60a61b9fa9e59506d6053c8c21b5769fe1cabcc07689d13",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\workflow_planning.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\workflow_planning.py",
-    "file_size": 26475,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14",
-    "scan_timestamp": "2025-12-03T08:04:48.076409"
-  },
-  "content_preview": "\"\"\"\nL1 planning layer for resume workflow orchestration and optimization.\n\nAnalyzes job requirements to create comprehensive improvement plans\nfor optimal resume content and job alignment.\n\"\"\"\n\n# FILE: l1/workflow_planning.py\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import (\n    ComplexityLevel,\n    DraftingMode,\n    ReasoningMode,\n    JobInput,\n    ResumeInput,\n    WorkflowConfig,\n    ExecutionProfile,\n    RoutingHint,\n    Strate...",
-  "creation_timestamp": "2025-12-03T08:04:51.539442",
-  "version": "1.0"
+  "hash": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/workflow_planning.py",
+  "generated_at": "2025-12-03T17:47:45.035378",
+  "golden_status": "verified",
+  "checksum": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14"
 }

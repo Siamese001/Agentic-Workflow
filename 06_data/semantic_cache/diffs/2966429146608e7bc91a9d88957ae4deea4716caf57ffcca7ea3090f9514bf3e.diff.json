@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "eval/golden_state/judge.py",
-  "diff_content": "from __future__ import annotations\n\nfrom eval.golden_state.models import GoldenStateTestCase, JudgeVerdict\n\n\ndef evaluate_output(test_case: GoldenStateTestCase, agent_output: str) -> JudgeVerdict:\n    \"\"\"Deterministic judge over agent output for a given test case.\n\n    This initial implementation is intentionally simple and does not\n    call any language models. It uses string heuristics to produce a\n    coarse score in [0.0, 1.0].\n    \"\"\"\n\n    text = (agent_output or \"\").strip().lower()\n    if not text:\n        return JudgeVerdict(\n            score=0.0,\n            rating=\"fail\",\n            explanation=\"Empty output.\",\n        )\n\n    # Very basic heuristic: if the expected behavior's key phrase\n    # appears in the output, treat as a pass; otherwise borderline.\n    expected = (test_case.expected_behavior or \"\").lower()\n    key_ok = \"professional\" in expected and \"professional\" in text\n\n    if key_ok:\n        return JudgeVerdict(\n            score=1.0,\n            rating=\"pass\",\n            explanation=\"Output contains key expected behavior signal.\",\n        )\n\n    return JudgeVerdict(\n        score=0.5,\n        rating=\"borderline\",\n        explanation=\"Output is non-empty but did not hit key expected signals.\",\n    )\n\n\n\n",
-  "statistics": {
-    "lines_added": 41,
-    "lines_removed": 0,
-    "lines_changed": 41
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/judge.py",
+  "generated_at": "2025-12-03T17:47:46.181498",
+  "diff_type": "baseline",
+  "changes": []
 }

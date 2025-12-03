@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
-  "content_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/hop_agents_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.603302",
   "file_size": 25345,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "hop_agents_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\hop_agents_LIC.py",
-    "file_size": 25345,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
-    "scan_timestamp": "2025-12-03T08:04:48.368443"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.716966",
-  "checksums": {
-    "sha256": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
-    "md5": "94f01744ffb5138b2fdb64e4afab96d3"
-  }
+  "modified_time": 1764609961.260935,
+  "sha256": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "integrity_check": "passed"
 }

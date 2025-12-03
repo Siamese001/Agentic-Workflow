@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d7c1f405e4868c29678f186b6e90fb4ab2a44b7c82d891f6c0cba868522c6643",
-  "content_hash": "b0168a7c0a2f054bd5905aadc6f34774fe7218337eeae31df8c9dbde63b8aba3",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\sandbox\\models.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\models.py",
-    "file_size": 1126,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d7c1f405e4868c29678f186b6e90fb4ab2a44b7c82d891f6c0cba868522c6643",
-    "scan_timestamp": "2025-12-03T08:04:48.062970"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass ToolCallRequest(BaseModel):\n    \"\"\"Structured request for executing a tool inside the sandbox.\n\n    This model is intentionally generic and does not depend on any\n    particular tool implementation.\n    \"\"\"\n\n    tool_name: str\n    args: List[str] = Field(default_factory=list)\n    env: Dict[str, str] = Field(default_factory=dict)\n    timeout_s: float = 30.0\n    resource_...",
-  "creation_timestamp": "2025-12-03T08:04:50.295081",
-  "version": "1.0"
+  "hash": "d7c1f405e4868c29678f186b6e90fb4ab2a44b7c82d891f6c0cba868522c6643",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/models.py",
+  "generated_at": "2025-12-03T17:47:46.127670",
+  "golden_status": "verified",
+  "checksum": "d7c1f405e4868c29678f186b6e90fb4ab2a44b7c82d891f6c0cba868522c6643"
 }

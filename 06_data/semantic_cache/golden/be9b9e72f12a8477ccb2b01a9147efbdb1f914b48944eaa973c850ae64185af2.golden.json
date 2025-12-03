@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "be9b9e72f12a8477ccb2b01a9147efbdb1f914b48944eaa973c850ae64185af2",
-  "content_hash": "aec5c7023cee672d78280b9e5eec2b02173930fc3203afbd45e3fbfa0f537570",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-08_v2.83.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-08_v2.83.md",
-    "file_size": 43997,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "be9b9e72f12a8477ccb2b01a9147efbdb1f914b48944eaa973c850ae64185af2",
-    "scan_timestamp": "2025-12-03T08:04:48.518832"
-  },
-  "content_preview": "# LinkedInCanonical \u2014 2025-09-09 v2.83 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83  \nv2.83 consolidates three ZLOs into one upgrade from v2.82. It uplevels Senior TA messaging to executive-grade rigor, hardens routing so TA titles cannot be misclassified as Executive, and strictly enforces Entrance Gate sequencing, telemetry alignment, schema drift checks, and IVM timing. It preserves v2.82 scoring visibility discipline, Evidence minima, and AI FILTER v8...",
-  "creation_timestamp": "2025-12-03T08:05:26.231668",
-  "version": "1.0"
+  "hash": "be9b9e72f12a8477ccb2b01a9147efbdb1f914b48944eaa973c850ae64185af2",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-08_v2.83.md",
+  "generated_at": "2025-12-03T17:47:47.878111",
+  "golden_status": "verified",
+  "checksum": "be9b9e72f12a8477ccb2b01a9147efbdb1f914b48944eaa973c850ae64185af2"
 }

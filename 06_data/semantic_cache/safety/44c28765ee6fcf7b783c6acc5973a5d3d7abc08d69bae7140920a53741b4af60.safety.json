@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 25,
-    "complexity_score": 21.19
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:58.632799"
+  "hash": "44c28765ee6fcf7b783c6acc5973a5d3d7abc08d69bae7140920a53741b4af60",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/03_dag_workflow_topology.md",
+  "generated_at": "2025-12-03T17:47:45.576705",
+  "safety_score": 1.0,
+  "issues": []
 }

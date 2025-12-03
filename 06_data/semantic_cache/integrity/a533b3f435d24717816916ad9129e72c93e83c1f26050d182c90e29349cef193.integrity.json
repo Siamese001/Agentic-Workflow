@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a533b3f435d24717816916ad9129e72c93e83c1f26050d182c90e29349cef193",
-  "content_hash": "a9a7369ffeb324122370dc918541accf89afa5a890967f21c44c7106945ba316",
+  "hash": "a533b3f435d24717816916ad9129e72c93e83c1f26050d182c90e29349cef193",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/integration/test_dependency_injection.py",
+  "generated_at": "2025-12-03T17:47:45.661787",
   "file_size": 7746,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\integration\\test_dependency_injection.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\integration\\test_dependency_injection.py",
-    "file_size": 7746,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a533b3f435d24717816916ad9129e72c93e83c1f26050d182c90e29349cef193",
-    "scan_timestamp": "2025-12-03T08:04:48.136416"
-  },
-  "verification_timestamp": "2025-12-03T08:04:56.243786",
-  "checksums": {
-    "sha256": "a9a7369ffeb324122370dc918541accf89afa5a890967f21c44c7106945ba316",
-    "md5": "84b3749794dae10c6c9eadd5a2317a07"
-  }
+  "modified_time": 1764610059.4239507,
+  "sha256": "a533b3f435d24717816916ad9129e72c93e83c1f26050d182c90e29349cef193",
+  "integrity_check": "passed"
 }

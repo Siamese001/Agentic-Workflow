@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/storage/cache_redis.py",
-  "diff_content": "\"\"\"\nProvides Redis caching for r\u00e9sum\u00e9 analysis results to improve processing speed and reduce costs.\n\nImproves r\u00e9sum\u00e9 processing efficiency by storing LLM outputs and analysis results for fast retrieval across similar job queries.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Optional\n\n\nclass RedisNotConfiguredError(RuntimeError):\n    \"\"\"\n    Indicates r\u00e9sum\u00e9 caching is unavailable so analysis can continue without performance optimization.\n\n    Improves r\u00e9sum\u00e9 processing reliability by gracefully handling cache unavailability without breaking analysis workflows.\n    \"\"\"\n\n\nclass RedisClientError(RuntimeError):\n    \"\"\"\n    Wraps Redis connection issues to maintain r\u00e9sum\u00e9 analysis stability during cache failures.\n\n    Improves r\u00e9sum\u00e9 processing reliability by providing clear error handling for cache-related problems without disrupting workflows.\n    \"\"\"\n\n\ndef init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):\n    \"\"\"\n    Creates Redis client for r\u00e9sum\u00e9 analysis caching to speed up repeated job matching queries.\n\n    Improves r\u00e9sum\u00e9 processing performance by using provider client instead of direct SDK imports.\n    \"\"\"\n    from providers.redis_client import init_redis_client as provider_init_redis_client\n    return provider_init_redis_client(url, timeout_s=timeout_s)\n\n\ndef redis_healthcheck(client) -> bool:\n    \"\"\"\n    Checks Redis cache availability to ensure r\u00e9sum\u00e9 analysis can rely on cached results for optimal performance.\n\n    Improves r\u00e9sum\u00e9 processing reliability by verifying cache connectivity before attempting to store or retrieve analysis results.\n    \"\"\"\n    try:\n        return bool(client.ping())\n    except Exception:  # pragma: no cover - network dependent\n        return False\n\n\ndef get_llm_cache(client, key: str) -> Optional[Any]:\n    \"\"\"\n    Retrieves cached r\u00e9sum\u00e9 analysis results to speed up repeated job matching queries and reduce processing costs.\n\n    Improves r\u00e9sum\u00e9 processing efficiency by reusing previous LLM reasoning and drafting results for similar job applications.\n    \"\"\"\n\n    try:\n        raw = client.get(key)\n    except Exception as exc:  # pragma: no cover - network dependent\n        raise RedisClientError(f\"Redis GET failed for key={key!r}: {exc}\") from exc\n\n    if raw is None:\n        return None\n\n    try:\n        return json.loads(raw)\n    except Exception:\n        # Fallback: return raw bytes if JSON decoding fails.\n        return raw\n\n\ndef set_llm_cache(\n    client,\n    key: str,\n    value: Any,\n    *,\n    ttl_s: Optional[int] = 3600,\n) -> None:\n    \"\"\"\n    Stores r\u00e9sum\u00e9 analysis results in cache to speed up future job matching queries and reduce processing costs.\n\n    Improves r\u00e9sum\u00e9 processing efficiency by saving LLM reasoning and drafting results for reuse across similar job applications.\n    \"\"\"\n\n    try:\n        payload = json.dumps(value)\n    except TypeError as exc:\n        raise RedisClientError(f\"Value for key={key!r} is not JSON serialisable: {exc}\") from exc\n\n    try:\n        if ttl_s is None:\n            client.set(key, payload)\n        else:\n            client.setex(key, ttl_s, payload)\n    except Exception as exc:  # pragma: no cover - network dependent\n        raise RedisClientError(f\"Redis SET failed for key={key!r}: {exc}\") from exc\n\n\n\n",
-  "statistics": {
-    "lines_added": 100,
-    "lines_removed": 0,
-    "lines_changed": 100
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/storage/cache_redis.py",
+  "generated_at": "2025-12-03T17:47:46.145753",
+  "diff_type": "baseline",
+  "changes": []
 }

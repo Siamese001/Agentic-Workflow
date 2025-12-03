@@ -1,0 +1,9 @@
+{
+  "hash": "33635c5c16fe1499fbb4344bd5ac7c267861172f4b32d9f290e3a8295db721de",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/database/graph_store_neo4j.py",
+  "canonical_relative": "workflow/graph_store_neo4j.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.073454"
+}

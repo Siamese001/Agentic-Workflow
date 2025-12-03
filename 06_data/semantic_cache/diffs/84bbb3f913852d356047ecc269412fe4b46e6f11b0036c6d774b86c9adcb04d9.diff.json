@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "database/graph_query.py",
-  "diff_content": "from typing import Any, List, Dict, Optional\n\ntry:\n    from graph_store_neo4j import Neo4jGraphStore\n    _graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()\n    _NEO4J_AVAILABLE = True\nexcept ImportError:\n    _graph = None\n    _NEO4J_AVAILABLE = False\n\ndef graph_query(cypher: str, params: Dict[str, Any] | None = None) -> List[Any]:\n    \"\"\"\n    Executes Cypher queries against Neo4j for resume data retrieval.\n\n    Ensures resume generation system can efficiently access and process\n    structured knowledge for improved content quality and relevance.\n    \"\"\"\n    if not _NEO4J_AVAILABLE or _graph is None:\n        raise ImportError(\"Neo4j driver not installed. Install with: pip install neo4j>=5.22.0\")\n        \n    return _graph.run(cypher, params or {})\n",
-  "statistics": {
-    "lines_added": 21,
-    "lines_removed": 0,
-    "lines_changed": 21
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "84bbb3f913852d356047ecc269412fe4b46e6f11b0036c6d774b86c9adcb04d9",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/database/graph_query.py",
+  "generated_at": "2025-12-03T17:47:44.799956",
+  "diff_type": "baseline",
+  "changes": []
 }

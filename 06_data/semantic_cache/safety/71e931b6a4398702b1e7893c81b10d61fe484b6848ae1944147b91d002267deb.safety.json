@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 903,
-    "complexity_score": 788.68
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:57.121354"
+  "hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/observability/test_telemetry_collection.py",
+  "generated_at": "2025-12-03T17:47:45.725265",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
-  "content_hash": "d4ba79ba118c6179a9cd22443e511e6f39003ca248518586abd572323e4d8d19",
+  "hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/orchestrator.py",
+  "generated_at": "2025-12-03T17:47:45.339859",
   "file_size": 3076,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\orchestrator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\orchestrator.py",
-    "file_size": 3076,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
-    "scan_timestamp": "2025-12-03T08:04:48.101085"
-  },
-  "verification_timestamp": "2025-12-03T08:04:54.826134",
-  "checksums": {
-    "sha256": "d4ba79ba118c6179a9cd22443e511e6f39003ca248518586abd572323e4d8d19",
-    "md5": "f3f247b759873251553385ebc7794d4b"
-  }
+  "modified_time": 1764610060.9013834,
+  "sha256": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
+  "integrity_check": "passed"
 }

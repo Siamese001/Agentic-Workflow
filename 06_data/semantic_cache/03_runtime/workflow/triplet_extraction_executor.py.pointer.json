@@ -1,0 +1,9 @@
+{
+  "hash": "84f0b20dba4693fa2ace9f6ad27a5e709bcce5d1c7caf69e70075987d686c429",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/triplet_extraction_executor.py",
+  "canonical_relative": "workflow/triplet_extraction_executor.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.114530"
+}

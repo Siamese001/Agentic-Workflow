@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
-  "content_hash": "f3ec9a26ac0c31d0cd30fbc1395d4f737622f4d2c6997c89e8aaf7740edcb20e",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\observability\\test_telemetry_collection.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\test_telemetry_collection.py",
-    "file_size": 34743,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
-    "scan_timestamp": "2025-12-03T08:04:48.162327"
-  },
-  "content_preview": "\"\"\"\nTelemetry Collection for Observability Testing\n\nCollects metrics, performance data, and quality trends from existing test suite.\nWraps unit/integration/E2E/golden tests to track execution patterns and quality over time.\n\"\"\"\n\nimport pytest\nimport time\nimport json\nfrom typing import Dict, Any, List, Optional\nfrom dataclasses import dataclass, field, asdict\nfrom enum import Enum\nfrom datetime import datetime\nimport threading\n\n# Mark all tests as observability tests\npytestmark = [pytest.mark.obs...",
-  "creation_timestamp": "2025-12-03T08:04:57.121458",
-  "version": "1.0"
+  "hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/observability/test_telemetry_collection.py",
+  "generated_at": "2025-12-03T17:47:45.724839",
+  "golden_status": "verified",
+  "checksum": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb"
 }

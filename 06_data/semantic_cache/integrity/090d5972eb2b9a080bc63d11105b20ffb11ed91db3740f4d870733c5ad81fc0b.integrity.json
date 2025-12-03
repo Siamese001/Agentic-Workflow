@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
-  "content_hash": "ccaec9d47350b90db314c4a9df53bc600f35ca538ccb98c8b310347c765ab424",
+  "hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_executor.py",
+  "generated_at": "2025-12-03T17:47:46.050572",
   "file_size": 1803,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\dag\\dag_executor.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag\\dag_executor.py",
-    "file_size": 1803,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
-    "scan_timestamp": "2025-12-03T08:04:48.057822"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.052537",
-  "checksums": {
-    "sha256": "ccaec9d47350b90db314c4a9df53bc600f35ca538ccb98c8b310347c765ab424",
-    "md5": "1252b3b6f81192b57bd9b813605ccaf4"
-  }
+  "modified_time": 1764610058.4964104,
+  "sha256": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
+  "integrity_check": "passed"
 }

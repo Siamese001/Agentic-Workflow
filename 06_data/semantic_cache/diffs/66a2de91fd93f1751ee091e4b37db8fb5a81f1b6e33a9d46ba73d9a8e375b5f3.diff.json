@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Old LIC",
-  "logical_path": "prompts.py",
-  "diff_content": "# File: prompts.py\n# Description: Prompt templates for the LIC workflow.\n\n__version__ = \"11.10\"\n\nfrom models import Route, Archetype\n\n# NEW v11.9: Context-Aware CTA Templates\nCTA_TEMPLATES = {\n    Route.CONNECTION_REQ: {\n        \"default\": None  # CONNECTION_REQ has no CTA per SPEC 3\n    },\n    Route.INMAIL: {\n        Archetype.C_LEVEL: \"Would you be open to a brief conversation about how [TOPIC] might align with your strategic priorities?\",\n        Archetype.EXECUTIVE: \"I'd welcome the chance to discuss how [TOPIC] could support your team's objectives.\",\n        Archetype.SENIOR_TA: {\n            \"direct\": \"Would you have 15 minutes to discuss [TECHNICAL_TOPIC]?\",\n            \"deferential\": \"If this aligns with your team's direction, I'd appreciate any guidance you could share.\"\n        },\n        Archetype.RECRUITER: \"Would you be open to a conversation about roles that might match your team's needs?\"\n    },\n    Route.EMAIL: {\n        Archetype.C_LEVEL: \"I'd value the opportunity to explore how [TOPIC] aligns with your vision for [COMPANY].\",\n        Archetype.EXECUTIVE: \"Would you be open to a brief call to discuss [TOPIC]?\",\n        Archetype.SENIOR_TA: {\n            \"direct\": \"Could we schedule 20 minutes to dive into [TECHNICAL_TOPIC]?\",\n            \"deferential\": \"If this resonates with your team's roadmap, I'd be grateful for any insights you could offer.\"\n        },\n        Archetype.RECRUITER: \"I'd welcome a conversation about potential opportunities that could benefit your team.\"\n    },\n    Route.FOLLOW_UP: {\n        \"default\": \"Following up on my previous message - would you have time for a brief conversation this week?\"\n    }\n}\n\n# NEW v11.9: Archetype-Specific Generation Prompt Templates\nARCHETYPE_PROMPT_TEMPLATES = {\n    Archetype.C_LEVEL: \"\"\"\nYou are crafting an executive-level message that demonstrates thought leadership and strategic alignment.\n\nTONE: Strategic, confident, focused on business impact and organizational transformation.\nAPPROACH: Lead with macro trends, demonstrate understanding of strategic challenges, position yourself as a peer with complementary expertise.\nAVOID: Tactical details, overt sales language, assumptions about their specific pain points.\n    \"\"\",\n    Archetype.EXECUTIVE: \"\"\"\nYou are crafting a professional message that emphasizes collaboration and mutual value.\n\nTONE: Professional, collaborative, focused on team objectives and operational excellence.\nAPPROACH: Reference their role and responsibilities, demonstrate understanding of their team's challenges, offer concrete value.\nAVOID: Overly formal language, generic value propositions, excessive deference.\n    \"\"\",\n    Archetype.SENIOR_TA: \"\"\"\nYou are crafting a technical message for a senior technical authority (architect, principal engineer, tech lead).\n\nTONE: Technical peer, respectful but confident, focused on architectural decisions and technical excellence.\nAPPROACH: Reference specific technologies or patterns, demonstrate technical credibility, respect their authority on technical direction.\nAVOID: Marketing language, oversimplification of technical concepts, challenging their technical decisions.\n    \"\"\",\n    Archetype.RECRUITER: \"\"\"\nYou are crafting a job-focused message that centers on role fit and candidate qualifications.\n\nTONE: Warm, professional, focused on alignment between candidate skills and role requirements.\nAPPROACH: Lead with relevant experience, highlight specific skills that match job description, emphasize career growth potential.\nAVOID: Generic qualifications, vague interest statements, over-selling unrelated experience.\n    \"\"\"\n}",
-  "statistics": {
-    "lines_added": 66,
-    "lines_removed": 0,
-    "lines_changed": 66
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "66a2de91fd93f1751ee091e4b37db8fb5a81f1b6e33a9d46ba73d9a8e375b5f3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/prompts.py",
+  "generated_at": "2025-12-03T17:47:47.972623",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/regression/test_autotune_regression.py",
-  "diff_content": "from src.lic_agentic.telemetry import PolicyController\n\n\ndef test_budget_adjustment_trends_down_on_latency_pressure():\n    controller = PolicyController()\n    controller.register_tool(\"web_search_v1\", quarantined=False)\n    controller.update(latency_p95_ms=4200, qa_pass_rate=0.9)\n    controller.update(latency_p95_ms=4600, qa_pass_rate=0.88)\n    assert controller.budget_multiplier <= 1.0\n    controller.update(latency_p95_ms=3000, qa_pass_rate=0.9)\n    assert 0.7 <= controller.budget_multiplier <= 1.3\n",
-  "statistics": {
-    "lines_added": 11,
-    "lines_removed": 0,
-    "lines_changed": 11
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "bf20c0b9f631cc139ee7d4d7143eeeab6e6d0651fbe1660510b7ef1fae9f718a",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_autotune_regression.py",
+  "generated_at": "2025-12-03T17:47:46.473182",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/modularity/test_layer_boundaries.py",
-  "diff_content": "import ast\nfrom pathlib import Path\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef _iter_core_files():\n    core_root = PROJECT_ROOT / \"core\"\n    if not core_root.exists():\n        return\n    for path in core_root.rglob(\"*.py\"):\n        if path.name.startswith(\"test_\"):\n            continue\n        yield path\n\n\ndef _parse_calls(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename=str(path))\n    except SyntaxError:\n        return []\n\n    calls: list[str] = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Call):\n            func = node.func\n            if isinstance(func, ast.Attribute):\n                value = func.value\n                if isinstance(value, ast.Name):\n                    calls.append(f\"{value.id}.{func.attr}\")\n            elif isinstance(func, ast.Name):\n                calls.append(func.id)\n    return calls\n\n\ndef _parse_import_from_runtime_utils(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename=str(path))\n    except SyntaxError:\n        return []\n\n    imports: list[str] = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.ImportFrom) and node.module in (\"runtime_utils\", \"runtime.runtime_utils\"):\n            for alias in node.names:\n                imports.append(alias.name)\n    return imports\n\n\ndef test_core_does_not_call_runtime_utils_invoke_model() -> None:\n    \"\"\"core/* must not call runtime_utils.invoke_model directly.\"\"\"\n    forbidden = {\"invoke_model\", \"runtime_utils.invoke_model\"}\n    for path in _iter_core_files():\n        calls = set(_parse_calls(path))\n        assert not (calls & forbidden), f\"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}\"\n\n\ndef test_core_does_not_from_import_invoke_model() -> None:\n    \"\"\"core/* must not import invoke_model directly from runtime_utils.\"\"\"\n    for path in _iter_core_files():\n        imported = set(_parse_import_from_runtime_utils(path))\n        assert \"invoke_model\" not in imported, f\"{path} imports invoke_model from runtime_utils\"\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 76,
-    "lines_removed": 0,
-    "lines_changed": 76
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_layer_boundaries.py",
+  "generated_at": "2025-12-03T17:47:45.708558",
+  "diff_type": "baseline",
+  "changes": []
 }

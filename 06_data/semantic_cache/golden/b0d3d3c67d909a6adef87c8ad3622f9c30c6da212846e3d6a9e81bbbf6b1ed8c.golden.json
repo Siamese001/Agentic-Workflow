@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "b0d3d3c67d909a6adef87c8ad3622f9c30c6da212846e3d6a9e81bbbf6b1ed8c",
-  "content_hash": "b0d3d3c67d909a6adef87c8ad3622f9c30c6da212846e3d6a9e81bbbf6b1ed8c",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "workflow_LIC v11_10.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\workflow_LIC v11_10.py",
-    "file_size": 31712,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "b0d3d3c67d909a6adef87c8ad3622f9c30c6da212846e3d6a9e81bbbf6b1ed8c",
-    "scan_timestamp": "2025-12-03T08:04:48.537047"
-  },
-  "content_preview": "# File: workflow.py\n# Description: Core workflow orchestration for the LIC agentic system.\n\n__version__ = \"11.10\"\n\nimport asyncio\nimport hashlib\nfrom collections import defaultdict\nfrom dataclasses import asdict\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Any, Tuple, Set\n\n# Local module imports\nfrom models_LIC import (\n    OutreachMission, ProfileAnalysis, Archetype, AgentStatus, ResearchContext,\n    Route, MessageScaffold, GeneratedMessage, ValidationResult, QAReport...",
-  "creation_timestamp": "2025-12-03T08:05:27.155736",
-  "version": "1.0"
+  "hash": "b0d3d3c67d909a6adef87c8ad3622f9c30c6da212846e3d6a9e81bbbf6b1ed8c",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/workflow_LIC v11_10.py",
+  "generated_at": "2025-12-03T17:47:48.013412",
+  "golden_status": "verified",
+  "checksum": "b0d3d3c67d909a6adef87c8ad3622f9c30c6da212846e3d6a9e81bbbf6b1ed8c"
 }

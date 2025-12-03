@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-  "content_hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
+  "hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/prompts_LIC.py",
+  "generated_at": "2025-12-03T17:47:48.031054",
   "file_size": 8878,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
-    "archive_name": "deprecated in v13",
-    "relative_path": "prompts_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\prompts_LIC.py",
-    "file_size": 8878,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-    "scan_timestamp": "2025-12-03T08:04:48.539024"
-  },
-  "verification_timestamp": "2025-12-03T08:05:27.381388",
-  "checksums": {
-    "sha256": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-    "md5": "46af7275f1c94b45f5f455ca680dbe84"
-  }
+  "modified_time": 1764610055.9995582,
+  "sha256": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
+  "integrity_check": "passed"
 }

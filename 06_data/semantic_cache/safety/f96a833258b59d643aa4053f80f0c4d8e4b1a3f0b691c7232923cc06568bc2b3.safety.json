@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 41,
-    "complexity_score": 35.34
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.235010"
+  "hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/google_genai_client.py",
+  "generated_at": "2025-12-03T17:47:45.399115",
+  "safety_score": 1.0,
+  "issues": []
 }

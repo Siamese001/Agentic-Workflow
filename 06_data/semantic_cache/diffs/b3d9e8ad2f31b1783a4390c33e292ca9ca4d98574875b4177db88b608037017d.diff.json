@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "orchestration/agent_bus.py",
-  "diff_content": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List\n\nfrom core.models.models import AgentMessage\n\n\"\"\"\nProvides in-memory messaging channel for r\u00e9sum\u00e9 analysis agents to coordinate and share context.\n\nImproves r\u00e9sum\u00e9 processing by maintaining coherent communication between planning, drafting, and review stages without losing important context.\n\"\"\"\n\n\n@dataclass\nclass AgentBus:\n    \"\"\"Acts as an in-memory mailbox so agents can pass results and insights, keeping later resume steps aware of earlier decisions and preserving a coherent story for the candidate.\"\"\"\n\n    _queues: Dict[str, List[AgentMessage]] = field(default_factory=dict)\n\n    def send_message(self, message: AgentMessage) -> None:\n        \"\"\"Deliver a message to the agent responsible for the next step.\n\n        Each message typically carries context or results from an earlier\n        stage of the workflow. Routing it through this bus means downstream\n        agents can pick up exactly what they need to refine, review, or score\n        the resume without redoing work or guessing about prior decisions.\n        \"\"\"\n\n        queue = self._queues.setdefault(message.target_agent_id, [])\n        queue.append(message)\n\n    def get_messages_for(self, agent_id: str) -> List[AgentMessage]:\n        \"\"\"Retrieve all messages waiting for a given agent.\n\n        In practice this lets an agent see everything that earlier steps have\n        discovered or decided about the candidate and role. That shared view\n        supports better judgments about what to highlight, clarify, or remove\n        in the resume.\n        \"\"\"\n\n        return list(self._queues.get(agent_id, []))\n\n    def clear(self) -> None:\n        \"\"\"Reset all agent queues.\n\n        This is mainly used when starting a fresh workflow run or cleaning up\n        between tests, so each resume is processed independently without\n        leaking information from previous runs.\n\n        This helps to ensure that each resume is produced in isolation, without\n        any residual information from previous runs that could impact its quality.\n        \"\"\"\n\n        self._queues.clear()\n\n    # Phase-1 compatibility helpers -------------------------------------\n\n    def send(self, message: AgentMessage) -> None:\n        \"\"\"Compatibility alias that forwards to ``send_message``.\n\n        This keeps older code paths working while still benefiting from the\n        same, predictable message handling that newer parts of the workflow\n        rely on to coordinate resume improvements.\n        \"\"\"\n\n        self.send_message(message)\n\n    def get_for(self, agent_id: str) -> List[AgentMessage]:\n        \"\"\"Compatibility alias that forwards to ``get_messages_for``.\n\n        Older callers can still retrieve all messages for an agent without\n        being aware of newer APIs. This helps maintain stability as the\n        workflow evolves, which is important for keeping resume outputs\n        consistent over time.\n        \"\"\"\n\n        return self.get_messages_for(agent_id)\n\n\n\n",
-  "statistics": {
-    "lines_added": 81,
-    "lines_removed": 0,
-    "lines_changed": 81
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py",
+  "generated_at": "2025-12-03T17:47:45.307909",
+  "diff_type": "baseline",
+  "changes": []
 }

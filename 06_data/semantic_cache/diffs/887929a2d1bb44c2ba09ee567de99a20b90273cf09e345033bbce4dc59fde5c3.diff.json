@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "orchestration/dag_engine/__init__.py",
-  "diff_content": "from __future__ import annotations\n\n\"\"\"Facade for DAG engine primitives used by orchestration layers.\n\nThis package re-exports the existing infra.dag_engine models and\nexecutor so that callers can import from\n``orchestration.dag_engine`` without changing the underlying\nimplementation.\n\"\"\"\n\nfrom infra.dag_engine.models import Graph, Node, Edge  # noqa: F401\nfrom infra.dag_engine.executor import DAGExecutor  # noqa: F401\n\n__all__ = [\n    \"Graph\",\n    \"Node\",\n    \"Edge\",\n    \"DAGExecutor\",\n]\n\n\n\n",
-  "statistics": {
-    "lines_added": 22,
-    "lines_removed": 0,
-    "lines_changed": 22
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "887929a2d1bb44c2ba09ee567de99a20b90273cf09e345033bbce4dc59fde5c3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/dag_engine/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.932318",
+  "diff_type": "baseline",
+  "changes": []
 }

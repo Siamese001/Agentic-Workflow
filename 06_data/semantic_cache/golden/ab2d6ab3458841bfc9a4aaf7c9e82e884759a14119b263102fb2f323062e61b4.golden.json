@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
-  "content_hash": "23af4980017ce0ff508534ef6f389aea7c4f2ce0f31397676ee9cfcab502582a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\testing\\MCP_SERVER_INSTALLATION.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\MCP_SERVER_INSTALLATION.md",
-    "file_size": 8113,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
-    "scan_timestamp": "2025-12-03T08:04:48.119804"
-  },
-  "content_preview": "# MCP SERVER INSTALLATION GUIDE\n## Agentic-Workflow-10_10 Architecture\n\nThis document provides complete installation and validation instructions for all MCP servers required by the Agentic-Workflow-10_10 system.\n\n---\n\n## RECOMMENDED MCP SERVERS\n\nBased on the SDK vs MCP analysis, the following MCP servers should be installed:\n\n### 1. **Filesystem MCP Server** (REQUIRED)\n- **Purpose**: Agent-visible file operations for L2 execution layer\n- **Use Cases**: Prompt CMS, journal persistence, golden dat...",
-  "creation_timestamp": "2025-12-03T08:04:55.484704",
-  "version": "1.0"
+  "hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/MCP_SERVER_INSTALLATION.md",
+  "generated_at": "2025-12-03T17:47:45.894592",
+  "golden_status": "verified",
+  "checksum": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4"
 }

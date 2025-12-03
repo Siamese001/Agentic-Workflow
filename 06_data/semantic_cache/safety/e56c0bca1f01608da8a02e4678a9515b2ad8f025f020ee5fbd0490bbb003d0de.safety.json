@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 608,
-    "complexity_score": 534.19
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:26.669885"
+  "hash": "e56c0bca1f01608da8a02e4678a9515b2ad8f025f020ee5fbd0490bbb003d0de",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/rag_LIC v11_10.py",
+  "generated_at": "2025-12-03T17:47:47.981648",
+  "safety_score": 1.0,
+  "issues": []
 }

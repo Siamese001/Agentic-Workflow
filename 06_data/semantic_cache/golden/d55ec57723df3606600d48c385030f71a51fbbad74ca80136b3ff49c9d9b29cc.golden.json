@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
-  "content_hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\integration\\test_async_idempotence.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_async_idempotence.py",
-    "file_size": 839,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
-    "scan_timestamp": "2025-12-03T08:04:48.358838"
-  },
-  "content_preview": "\"\"\"Integration tests for the async conductor.\"\"\"\nfrom __future__ import annotations\n\nfrom src.lic_agentic.orchestration import Conductor\n\n\ndef test_conductor_preserves_order_under_concurrency():\n    conductor = Conductor(concurrency=2, seed=11)\n    factories = [\n        conductor.wrap_tool_call(i, lambda value=value, index=i: (value * 2, 25 + index * 5))\n        for i, value in enumerate((2, 3, 5))\n    ]\n    results = conductor.run(factories)\n    assert results == [(0, 4), (1, 6), (2, 10)]\n\n\ndef...",
-  "creation_timestamp": "2025-12-03T08:05:18.259306",
-  "version": "1.0"
+  "hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_async_idempotence.py",
+  "generated_at": "2025-12-03T17:47:46.453434",
+  "golden_status": "verified",
+  "checksum": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc"
 }

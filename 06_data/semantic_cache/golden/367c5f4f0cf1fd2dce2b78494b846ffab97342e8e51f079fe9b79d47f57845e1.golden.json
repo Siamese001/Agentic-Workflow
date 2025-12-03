@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "367c5f4f0cf1fd2dce2b78494b846ffab97342e8e51f079fe9b79d47f57845e1",
-  "content_hash": "75b4c636e4d6db4a681cd788417a8f849db59f38cc0d3c7d178cea07a944a186",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "providers\\pinecone_client\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\pinecone_client\\__init__.py",
-    "file_size": 165,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "367c5f4f0cf1fd2dce2b78494b846ffab97342e8e51f079fe9b79d47f57845e1",
-    "scan_timestamp": "2025-12-03T08:04:48.106893"
-  },
-  "content_preview": "\"\"\"Pinecone vector database client wrapper.\"\"\"\n\nfrom .pinecone_client import PineconeClient, Vector  # noqa: F401\n\n__all__ = [\"PineconeClient\", \"Vector\"]\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:55.264758",
-  "version": "1.0"
+  "hash": "367c5f4f0cf1fd2dce2b78494b846ffab97342e8e51f079fe9b79d47f57845e1",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/pinecone_client/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.924848",
+  "golden_status": "verified",
+  "checksum": "367c5f4f0cf1fd2dce2b78494b846ffab97342e8e51f079fe9b79d47f57845e1"
 }

@@ -1,0 +1,10 @@
+{
+  "hash": "40764443cbf5867da7a28f53088924894b39b74e4f750a24a3b9a615f75e3f59",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/kg_retrieval_orchestration.py",
+  "generated_at": "2025-12-03T17:47:45.334605",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91",
-  "content_hash": "bf87e2e21110a6a2e4aa03f30f87183f5b1b27304e091a0e1109567180e0636f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "providers\\chromadb_client.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\chromadb_client.py",
-    "file_size": 2581,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91",
-    "scan_timestamp": "2025-12-03T08:04:48.105616"
-  },
-  "content_preview": "\"\"\"\nChromaDB client provider for vector storage operations.\n\nIsolates ChromaDB SDK dependencies to the providers layer\nand provides a clean interface for vector store operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Optional, List, Dict, Any\n\ntry:\n    import chromadb  # type: ignore\nexcept ImportError as exc:\n    raise ImportError(\"chromadb package not installed. Install with: pip install chromadb\") from exc\n\n\nclass ChromaClient:\n    \"\"\"Pr...",
-  "creation_timestamp": "2025-12-03T08:04:55.222290",
-  "version": "1.0"
+  "hash": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/chromadb_client.py",
+  "generated_at": "2025-12-03T17:47:45.393915",
+  "golden_status": "verified",
+  "checksum": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91"
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "root_docs/refactoring/README_REFACTORING.md",
-  "diff_content": "# Refactoring Directory\n\nAll refactoring work organized by date in **MM-DD-YYYY** format.\n\n## Current Refactorings\n\n### 11/24/2025 - Atomicity Refactoring\n\n**Location**: `./11-24-2025/`\n\n**Summary**: Complete refactoring to enforce strict OpenAI-style layer separation.\n\n**Phases**:\n- **Phase A**: L1 Planning Layer\n- **Phase B**: Atomic Agents  \n- **Phase C**: L2 Pure Execution\n\n**Documentation**: See `./11-24-2025/README.md`\n\n---\n\n**Last Updated**: November 24, 2025\n",
-  "statistics": {
-    "lines_added": 22,
-    "lines_removed": 0,
-    "lines_changed": 22
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/refactoring/README_REFACTORING.md",
+  "generated_at": "2025-12-03T17:47:45.874918",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 25,
-    "complexity_score": 25.32
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:18.347820"
+  "hash": "4b52f6db625ab9fdcc8c9685de4219dff9969c4788347cd0f51902602d603da6",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_content_store.py",
+  "generated_at": "2025-12-03T17:47:46.516715",
+  "safety_score": 1.0,
+  "issues": []
 }

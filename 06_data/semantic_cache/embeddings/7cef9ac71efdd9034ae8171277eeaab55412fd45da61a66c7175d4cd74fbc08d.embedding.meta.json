@@ -1,0 +1,10 @@
+{
+  "hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_reasoning_toggles.py",
+  "generated_at": "2025-12-03T17:47:46.573686",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

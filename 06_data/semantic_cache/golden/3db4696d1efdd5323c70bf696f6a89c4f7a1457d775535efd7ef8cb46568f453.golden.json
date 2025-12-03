@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
-  "content_hash": "468547c046e48e67c8e9e8cb8c2f61fc9c5f2d6918c2e33e089bde120f3f8e28",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "runtime\\observability\\emitters.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\emitters.py",
-    "file_size": 6060,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
-    "scan_timestamp": "2025-12-03T08:04:48.122884"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import (\n    TelemetryEvent,\n    RetrievalAttemptEvent,\n    RetrievalSuccessEvent,\n    RetrievalFailureEvent,\n    RankingEvent,\n    CostSnapshot,\n)\nfrom runtime.observability.collectors import append_event\nfrom runtime.observability.spans import _now_ms\n\n\ndef emit_node_event(node: str, status: str, details: Optional[str] = None) -> None:\n    \"\"\"Node-level events for L3 orchestration visibili...",
-  "creation_timestamp": "2025-12-03T08:04:55.559860",
-  "version": "1.0"
+  "hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/emitters.py",
+  "generated_at": "2025-12-03T17:47:45.840857",
+  "golden_status": "verified",
+  "checksum": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
-  "content_hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-07_v2.6.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-07_v2.6.md",
-    "file_size": 116171,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
-    "scan_timestamp": "2025-12-03T08:04:48.511245"
-  },
-  "content_preview": "# LinkedInCanonical \u2014 2025-09-07 v2.8.8 (Full Overwrite from v2.8.7 + ND Patch)\nGenerated: 2025-09-07T02:59:06.723200\nSource SHA256 (v2.8.7): c33e2be45517ea038b9d926d3217f57b1db677f45639afd6298e706adc74a77b\n\n\n# LinkedInCanonical \u2014 2025-09-07 v2.8.7 (Full Overwrite from v2.8.6 + ND Patch)\nGenerated: 2025-09-07T01:54:23.230525\nSource SHA256 (v2.8.6): 1d09de331fd353bc9393b3915c4ed6deeacb02086f93c36e0eda364103f63035\n\n\n# LinkedInCanonical \u2014 2025-09-07 v2.8.6 (Full Overwrite from v2.8.5 + ND Patch)\nGe...",
-  "creation_timestamp": "2025-12-03T08:05:26.072062",
-  "version": "1.0"
+  "hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-07_v2.6.md",
+  "generated_at": "2025-12-03T17:47:47.810520",
+  "golden_status": "verified",
+  "checksum": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584"
 }

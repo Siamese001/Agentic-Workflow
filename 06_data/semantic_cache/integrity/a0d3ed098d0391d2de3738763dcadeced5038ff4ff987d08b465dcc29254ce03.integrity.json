@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
-  "content_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
+  "hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_bias_auditor.py",
+  "generated_at": "2025-12-03T17:47:46.506936",
   "file_size": 586,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_bias_auditor.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_bias_auditor.py",
-    "file_size": 586,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
-    "scan_timestamp": "2025-12-03T08:04:48.361823"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.327853",
-  "checksums": {
-    "sha256": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
-    "md5": "e9f96e129a439e9ce10e600d0327f353"
-  }
+  "modified_time": 1764609961.6224597,
+  "sha256": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
+  "integrity_check": "passed"
 }

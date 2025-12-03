@@ -1,13 +1,9 @@
 {
-  "diff_type": "lineage_diff",
-  "baseline_version": "Agentic-Workflow-10_11",
-  "current_version": "Agentic-LIC",
-  "logical_path": "config/__init__.py",
-  "diff_content": "--- Agentic-Workflow-10_11/config/__init__.py+++ Agentic-LIC/config/__init__.py@@ -1,4 +1,20 @@-\"\"\"Configuration module for Agentic Workflow v10_10.\"\"\"\n+\"\"\"Centralised configuration helpers for Agentic Workflow v10.7.\"\"\"\n+\n+from __future__ import annotations\n+\n+from copy import deepcopy\n+from typing import Any, Dict\n+\n+from mcp import get_schema\n \n \n+def load_master_config() -> Dict[str, Any]:\n+    \"\"\"Return a mutable copy of the shared master configuration.\"\"\"\n \n+    schema = get_schema(\"master_config_v10_7.json\")\n+    return deepcopy(schema)\n+\n+\n+CONFIG: Dict[str, Any] = load_master_config()\n+\n+__all__ = [\"CONFIG\", \"load_master_config\"]\n",
-  "statistics": {
-    "lines_added": 17,
-    "lines_removed": 1,
-    "lines_changed": 4
-  },
-  "has_changes": true
+  "hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/config/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.356562",
+  "diff_type": "baseline",
+  "changes": []
 }

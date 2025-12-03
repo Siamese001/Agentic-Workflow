@@ -1,0 +1,10 @@
+{
+  "hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/PINECONE_INTEGRATION.md",
+  "generated_at": "2025-12-03T17:47:45.870878",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
-  "content_hash": "d50b895095ed3ec45a5084a5758acbe01911c903d5ed2de8d2743c9bdec6829d",
+  "hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_events.py",
+  "generated_at": "2025-12-03T17:47:45.830692",
   "file_size": 1322,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "runtime\\observability\\agentic_events.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_events.py",
-    "file_size": 1322,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
-    "scan_timestamp": "2025-12-03T08:04:48.122182"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.533454",
-  "checksums": {
-    "sha256": "d50b895095ed3ec45a5084a5758acbe01911c903d5ed2de8d2743c9bdec6829d",
-    "md5": "99b962e0eb5031f880c52eecf80e9331"
-  }
+  "modified_time": 1764610057.756393,
+  "sha256": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
+  "integrity_check": "passed"
 }

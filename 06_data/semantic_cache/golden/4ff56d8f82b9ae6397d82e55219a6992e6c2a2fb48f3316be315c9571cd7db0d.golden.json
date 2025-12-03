@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
-  "content_hash": "8bfa0a5a2026347bb950c514819d2c9d2cf789dc13a6f5998e3d8e25659fe75a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\health\\health_metrics.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\health_metrics.py",
-    "file_size": 990,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
-    "scan_timestamp": "2025-12-03T08:04:48.049410"
-  },
-  "content_preview": "from __future__ import annotations\n\n\"\"\"AIS health metrics helpers.\n\nSimple aggregation utilities over error / success events that can be\nused by tests or higher-level evaluation code.\n\"\"\"\n\nfrom typing import Dict, List, Any\n\n\ndef compute_error_rate(events: List[Dict[str, Any]]) -> float:\n    \"\"\"Return fraction of events marked as errors.\n\n    Events are dicts with an optional \"event_type\" == \"error\" flag.\n    \"\"\"\n\n    if not events:\n        return 0.0\n\n    errors = sum(1 for evt in events if evt...",
-  "creation_timestamp": "2025-12-03T08:04:49.866895",
-  "version": "1.0"
+  "hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/health_metrics.py",
+  "generated_at": "2025-12-03T17:47:46.206632",
+  "golden_status": "verified",
+  "checksum": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d"
 }

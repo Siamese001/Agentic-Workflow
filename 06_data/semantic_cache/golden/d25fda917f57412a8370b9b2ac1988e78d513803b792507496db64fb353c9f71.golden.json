@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d25fda917f57412a8370b9b2ac1988e78d513803b792507496db64fb353c9f71",
-  "content_hash": "bf24d7c53fc81f0e89ca1890b81897a702f6e6c23eeb0db62ef08fe51488cb77",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\dag\\dag_engine.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag\\dag_engine.py",
-    "file_size": 294,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d25fda917f57412a8370b9b2ac1988e78d513803b792507496db64fb353c9f71",
-    "scan_timestamp": "2025-12-03T08:04:48.057473"
-  },
-  "content_preview": "\"\"\"\nDAG engine compatibility shim for r\u00e9sum\u00e9 processing workflows.\n\nPreserves backward compatibility while supporting comprehensive r\u00e9sum\u00e9 enhancement operations.\n\"\"\"\n\nfrom .dag_models import Node, Edge, Graph  # noqa: F401\nfrom .dag_executor import DAGExecutor  # noqa: F401\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:50.043529",
-  "version": "1.0"
+  "hash": "d25fda917f57412a8370b9b2ac1988e78d513803b792507496db64fb353c9f71",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_engine.py",
+  "generated_at": "2025-12-03T17:47:46.045902",
+  "golden_status": "verified",
+  "checksum": "d25fda917f57412a8370b9b2ac1988e78d513803b792507496db64fb353c9f71"
 }

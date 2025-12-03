@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "580147ad8f7b5858c66fea1c46f9a177ea75399eeb28c7acb3e225ee03c00e1a",
-  "content_hash": "580147ad8f7b5858c66fea1c46f9a177ea75399eeb28c7acb3e225ee03c00e1a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-10_v2.94.1.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v2.94.1.md",
-    "file_size": 17280,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "580147ad8f7b5858c66fea1c46f9a177ea75399eeb28c7acb3e225ee03c00e1a",
-    "scan_timestamp": "2025-12-03T08:04:48.442728"
-  },
-  "content_preview": "LinkedInCanonical \u2014 2025-09-11 v2.94.1 (FULL, ZLO-Consolidated Non C Level Updates). v2.94.1 is a zero loss overwrite of v2.94 that updates Executive, Senior TA, Recruiter, and Short (NEW) message types to the operator\u2019s specifications. C Level remains exactly as in v2.94. Canonical governance remains Prompt Shell v1 and AI FILTER v8.\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ...",
-  "creation_timestamp": "2025-12-03T08:05:22.360551",
-  "version": "1.0"
+  "hash": "580147ad8f7b5858c66fea1c46f9a177ea75399eeb28c7acb3e225ee03c00e1a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-10_v2.94.1.md",
+  "generated_at": "2025-12-03T17:47:47.120754",
+  "golden_status": "verified",
+  "checksum": "580147ad8f7b5858c66fea1c46f9a177ea75399eeb28c7acb3e225ee03c00e1a"
 }

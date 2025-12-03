@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
-  "content_hash": "4817128dbf8385bc4540f5f81ab5b97b218fe54f3951ff66051ca4077c53c0b0",
+  "hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/strategy_executor.py",
+  "generated_at": "2025-12-03T17:47:45.102729",
   "file_size": 2011,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l2\\strategy_executor.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\strategy_executor.py",
-    "file_size": 2011,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
-    "scan_timestamp": "2025-12-03T08:04:48.080163"
-  },
-  "verification_timestamp": "2025-12-03T08:04:52.020225",
-  "checksums": {
-    "sha256": "4817128dbf8385bc4540f5f81ab5b97b218fe54f3951ff66051ca4077c53c0b0",
-    "md5": "4ecdc604b432b4a755c828d615f3a6db"
-  }
+  "modified_time": 1764610058.783584,
+  "sha256": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+  "integrity_check": "passed"
 }

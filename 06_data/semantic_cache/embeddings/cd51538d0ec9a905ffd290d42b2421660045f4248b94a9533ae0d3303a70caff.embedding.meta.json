@@ -1,0 +1,10 @@
+{
+  "hash": "cd51538d0ec9a905ffd290d42b2421660045f4248b94a9533ae0d3303a70caff",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_vm_manager.py",
+  "generated_at": "2025-12-03T17:47:45.754104",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

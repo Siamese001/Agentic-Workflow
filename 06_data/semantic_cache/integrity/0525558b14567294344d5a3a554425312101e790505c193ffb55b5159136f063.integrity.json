@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
-  "content_hash": "fbad5fb4e7cd916ad5f016bcacdd4f39dacc30c95a0a2814ad12f94c6d285a3f",
+  "hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/slots.py",
+  "generated_at": "2025-12-03T17:47:46.021842",
   "file_size": 854,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\context_engine\\slots.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\slots.py",
-    "file_size": 854,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
-    "scan_timestamp": "2025-12-03T08:04:48.054756"
-  },
-  "verification_timestamp": "2025-12-03T08:04:49.968059",
-  "checksums": {
-    "sha256": "fbad5fb4e7cd916ad5f016bcacdd4f39dacc30c95a0a2814ad12f94c6d285a3f",
-    "md5": "ea96d8c19aa173be552c5fdb5bfad0e5"
-  }
+  "modified_time": 1764610058.6612556,
+  "sha256": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
+  "integrity_check": "passed"
 }

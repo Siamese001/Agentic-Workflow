@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "runtime/trace/__init__.py",
-  "diff_content": "from __future__ import annotations\n\n\"\"\"Snapshot-local runtime.trace package for v10_10 tests.\n\nThis ensures that imports like\n    from runtime.trace.trace_reconstruction import get_routing_trace\nresolve correctly when tests are run with rootdir=Agentic-Workflow-10_10.\n\nThe implementation of get_routing_trace lives in trace_reconstruction.py in\nthis package and mirrors the real runtime.trace helper at the repo root.\n\"\"\"\n\nfrom .trace_reconstruction import get_routing_trace  # noqa: F401\n\n\n\n",
-  "statistics": {
-    "lines_added": 16,
-    "lines_removed": 0,
-    "lines_changed": 16
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "777570d689f198eeb10de61f66858afe236481663df5cb5a321a3602bc75b1f4",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/trace/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.858996",
+  "diff_type": "baseline",
+  "changes": []
 }

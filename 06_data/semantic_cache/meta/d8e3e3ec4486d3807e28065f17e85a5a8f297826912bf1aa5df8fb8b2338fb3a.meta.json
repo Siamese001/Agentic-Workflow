@@ -1,25 +1,11 @@
 {
-  "meta_type": "artifact_manifest",
-  "file_hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "meta\\ranking.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\ranking.py",
-    "file_size": 18604,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
-    "scan_timestamp": "2025-12-03T08:04:48.093517"
-  },
-  "artifacts": {
-    "ast": "ast/d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a.ast",
-    "embedding": "embeddings/d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a.embedding",
-    "diff": "diffs/d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a.diff.json",
-    "safety": "safety/d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a.safety.json",
-    "golden": "golden/d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a.golden.json",
-    "integrity": "integrity/d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a.integrity.json"
-  },
-  "generation_timestamp": "2025-12-03T08:04:54.062723",
-  "artifact_count": 6
+  "hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
+  "type": "meta",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/ranking.py",
+  "generated_at": "2025-12-03T17:47:45.289885",
+  "file_type": "RG",
+  "file_extension": ".py",
+  "file_size": 18604,
+  "processing_stage": "phase_0_5"
 }

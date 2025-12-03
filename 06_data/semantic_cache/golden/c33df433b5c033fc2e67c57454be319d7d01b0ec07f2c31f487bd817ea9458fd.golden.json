@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-  "content_hash": "fc72bb72c320ae6fe2452543e922e7c9de7d04342e0488ce2e4459106a7e6789",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\storage\\cache_redis.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\storage\\cache_redis.py",
-    "file_size": 3424,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-    "scan_timestamp": "2025-12-03T08:04:48.064372"
-  },
-  "content_preview": "\"\"\"\nProvides Redis caching for r\u00e9sum\u00e9 analysis results to improve processing speed and reduce costs.\n\nImproves r\u00e9sum\u00e9 processing efficiency by storing LLM outputs and analysis results for fast retrieval across similar job queries.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Optional\n\n\nclass RedisNotConfiguredError(RuntimeError):\n    \"\"\"\n    Indicates r\u00e9sum\u00e9 caching is unavailable so analysis can continue without performance optimization.\n\n    Improves r\u00e9sum\u00e9 proc...",
-  "creation_timestamp": "2025-12-03T08:04:50.338263",
-  "version": "1.0"
+  "hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/storage/cache_redis.py",
+  "generated_at": "2025-12-03T17:47:46.146352",
+  "golden_status": "verified",
+  "checksum": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd"
 }

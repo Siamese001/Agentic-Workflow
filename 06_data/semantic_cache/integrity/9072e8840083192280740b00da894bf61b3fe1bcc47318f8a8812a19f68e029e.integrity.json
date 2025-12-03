@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
-  "content_hash": "c74df6ecbc88b6878a35eaefc25418734a145facc95013f96d84124fa91d8f0d",
+  "hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/react.py",
+  "generated_at": "2025-12-03T17:47:46.100054",
   "file_size": 1179,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\reasoning\\react.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\react.py",
-    "file_size": 1179,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
-    "scan_timestamp": "2025-12-03T08:04:48.061607"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.226118",
-  "checksums": {
-    "sha256": "c74df6ecbc88b6878a35eaefc25418734a145facc95013f96d84124fa91d8f0d",
-    "md5": "6f11af21d6b75a4a99a62dc8fb2f8a0d"
-  }
+  "modified_time": 1764610058.4540691,
+  "sha256": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
+  "integrity_check": "passed"
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "eval/golden_state/runner.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import List\n\nfrom core.models.models import ExecutionProfile\n\nfrom eval.golden_state.datasets import load_golden_inputs, load_golden_cases\nfrom eval.golden_state.evaluator import evaluate_case_output\nfrom eval.golden_state.judge import evaluate_output\nfrom eval.golden_state.models import EvalResult, GoldenOutput\n\n\ndef _mock_agent_output(input_text: str) -> str:\n    \"\"\"Acts as a deterministic stand-in for the real pipeline so golden tests can measure behavior without calling live resume agents.\"\"\"\n\n    if \"unethical\" in input_text.lower():\n        return \"I cannot assist with unethical behavior.\"\n    return \"This is a professional, concise summary placeholder.\"\n\n\ndef run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:\n    \"\"\"Runs the golden-state suite against the current setup so teams can see how well the system would summarize or respond in key resume-related scenarios.\"\"\"\n\n    results: List[EvalResult] = []\n    for tc in load_golden_inputs():\n        output = _mock_agent_output(tc.input_text)\n        verdict = evaluate_output(tc, output)\n        results.append(\n            EvalResult(\n                test_id=tc.id,\n                verdict=verdict,\n                raw_output=output,\n                reasoning_trace=[],\n            )\n        )\n    return results\n\n\ndef run_golden_suite(execution_profile: ExecutionProfile) -> List[GoldenOutput]:\n    \"\"\"Runs golden cases end to end and attaches simple verdicts so it is easy to spot when resume behavior regresses across versions.\"\"\"\n    outputs: List[GoldenOutput] = []\n    for case in load_golden_cases():\n        out = GoldenOutput(\n            case_id=case.id,\n            produced_keypoints=case.expected_keypoints,\n            correctness_map={},\n            safety_decisions={},\n            metacognition_summary={},\n            final_verdict=\"borderline\",\n        )\n        outputs.append(evaluate_case_output(case, out))\n    return outputs\n\n\n\n",
-  "statistics": {
-    "lines_added": 55,
-    "lines_removed": 0,
-    "lines_changed": 55
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/runner.py",
+  "generated_at": "2025-12-03T17:47:46.190873",
+  "diff_type": "baseline",
+  "changes": []
 }

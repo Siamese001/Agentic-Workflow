@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
-  "content_hash": "8eb016cce26521f4bff2d16794dca8b739c04beb33d9ebaf79093f50f90b3a34",
+  "hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/kg_retrieval_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.910070",
   "file_size": 16459,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\kg_retrieval_planning.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_retrieval_planning.py",
-    "file_size": 16459,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
-    "scan_timestamp": "2025-12-03T08:04:48.069950"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.919269",
-  "checksums": {
-    "sha256": "8eb016cce26521f4bff2d16794dca8b739c04beb33d9ebaf79093f50f90b3a34",
-    "md5": "f777d8fed9eb1308a1b06ea7dea7b46f"
-  }
+  "modified_time": 1764610058.3021948,
+  "sha256": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
+  "integrity_check": "passed"
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/storage/retrieval.py",
-  "diff_content": "\"\"\"Top-level retrieval facade module.\n\nRe-exports META retrieval orchestration entrypoints so that callers can import\nfrom the project root directly. All retrieval logic is centralized in\n``meta.retrieval.retrieval`` following L2 execution-layer conventions.\n\"\"\"\nfrom __future__ import annotations\n\nfrom meta.retrieval.retrieval import orchestrate_retrieval  # noqa: F401\nfrom meta.retrieval.retrieval import run_rag_retrieval  # noqa: F401\n\n__all__ = [\"orchestrate_retrieval\", \"run_rag_retrieval\"]\n",
-  "statistics": {
-    "lines_added": 12,
-    "lines_removed": 0,
-    "lines_changed": 12
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "147d22e30226674c8e9ad2bb11979433da24e71a8966440526f4a53f47f37ed7",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/storage/retrieval.py",
+  "generated_at": "2025-12-03T17:47:46.151059",
+  "diff_type": "baseline",
+  "changes": []
 }

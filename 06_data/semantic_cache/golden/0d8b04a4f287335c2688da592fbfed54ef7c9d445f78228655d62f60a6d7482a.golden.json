@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "0d8b04a4f287335c2688da592fbfed54ef7c9d445f78228655d62f60a6d7482a",
-  "content_hash": "0d8b04a4f287335c2688da592fbfed54ef7c9d445f78228655d62f60a6d7482a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-03-2025_v7.13.7.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v7.13.7.json",
-    "file_size": 160915,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "0d8b04a4f287335c2688da592fbfed54ef7c9d445f78228655d62f60a6d7482a",
-    "scan_timestamp": "2025-12-03T08:04:48.405630"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-03-2025_v7.5\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-03-2025_v7.13.7\",\n    \"last_updated\": \"10-03-2025\",\n    \"description\": \"Orchestration system for LinkedIn outreach with unified RAG, claim verification, job application linkage, Unicode filtering, enhanced reasoning toggles\",\n    \"changelog\": [\n      {\n        \"version\": \"v7.9_C043\",\n        \"date\": \"2025-10-03\",\n   ...",
-  "creation_timestamp": "2025-12-03T08:05:20.895314",
-  "version": "1.0"
+  "hash": "0d8b04a4f287335c2688da592fbfed54ef7c9d445f78228655d62f60a6d7482a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-03-2025_v7.13.7.json",
+  "generated_at": "2025-12-03T17:47:46.857036",
+  "golden_status": "verified",
+  "checksum": "0d8b04a4f287335c2688da592fbfed54ef7c9d445f78228655d62f60a6d7482a"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-  "archive_name": "Agentic-LIC",
-  "relative_path": "src\\__init__.py",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/__init__.py",
+  "generated_at": "2025-12-03T17:47:44.810102",
   "file_size": 0,
-  "file_extension": ".py",
-  "is_eligible": true,
-  "scan_timestamp": "2025-12-03T08:04:48.353288",
-  "integrity_timestamp": "2025-12-03T08:04:49.122945"
+  "modified_time": 1764610057.9508038,
+  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "integrity_check": "passed"
 }

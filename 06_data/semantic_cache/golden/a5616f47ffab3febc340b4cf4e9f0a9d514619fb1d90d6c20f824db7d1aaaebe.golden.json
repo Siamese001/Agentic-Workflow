@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-  "content_hash": "5855e19281e2930e25f86164a13c98057600803f989db59b55a68b5920c71140",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\golden_state\\gating.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\gating.py",
-    "file_size": 1297,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-    "scan_timestamp": "2025-12-03T08:04:48.046635"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import Dict\n\n\ndef gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:\n    \"\"\"Return True if the experiment meets or exceeds baseline.\n\n    For now we only enforce that avg_score is not worse and that\n    pass_count is not lower when both metrics are present.\n    \"\"\"\n\n    if not baseline_scores:\n        # No baseline recorded yet \u2192 allow by default.\n        return True\n\n    new_avg = float(new_scores.get(\"avg_sc...",
-  "creation_timestamp": "2025-12-03T08:04:49.801939",
-  "version": "1.0"
+  "hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/gating.py",
+  "generated_at": "2025-12-03T17:47:46.171253",
+  "golden_status": "verified",
+  "checksum": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe"
 }

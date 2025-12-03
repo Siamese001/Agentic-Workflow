@@ -1,0 +1,10 @@
+{
+  "hash": "71cbfa621795aeba4abfcfa11255fe99f06c3647790b3bb12951f23b585f1f5c",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/workflow.py",
+  "generated_at": "2025-12-03T17:47:48.007500",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

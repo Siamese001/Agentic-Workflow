@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/e2e/test_reflexion_quality_gain.py",
-  "diff_content": "from src.lic_agentic.agents.k3_message_architect import score_quality\n\n\ndef test_reflexion_improves_score():\n    base = score_quality(\"draft without reflexion\", reflexion=False)\n    with_reflexion = score_quality(\"draft with reflexion insights\", reflexion=True)\n    assert with_reflexion >= base + 1\n",
-  "statistics": {
-    "lines_added": 7,
-    "lines_removed": 0,
-    "lines_changed": 7
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_reflexion_quality_gain.py",
+  "generated_at": "2025-12-03T17:47:46.440673",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-  "content_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "utils.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\utils.py",
-    "file_size": 6456,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-    "scan_timestamp": "2025-12-03T08:04:48.535271"
-  },
-  "content_preview": "# File: utils.py\n# Description: General-purpose utilities for the LIC workflow.\n\n__version__ = \"11.10\"\n\nimport re\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Optional, Any, Callable, Tuple\nfrom collections import defaultdict\n\nfrom models import CircuitState, Archetype, CircuitBreakerOpenError\n\n# ============================================================================\n# NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)\n# =====================================================...",
-  "creation_timestamp": "2025-12-03T08:05:26.869867",
-  "version": "1.0"
+  "hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/utils.py",
+  "generated_at": "2025-12-03T17:47:47.993871",
+  "golden_status": "verified",
+  "checksum": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121"
 }

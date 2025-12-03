@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275",
-  "content_hash": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "agent_stacks_v10_7.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_stacks_v10_7.py",
-    "file_size": 244,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275",
-    "scan_timestamp": "2025-12-03T08:04:48.336208"
-  },
-  "content_preview": "\"\"\"Compatibility layer that re-exports stack agents for v10.7.\"\"\"\n\nfrom stacks_v10_7 import *  # noqa: F401,F403\nfrom stacks_v10_7 import __all__ as _STACK_EXPORTS\n\nfrom core_v10_7 import wrap_mcp\n\n__all__ = list(_STACK_EXPORTS) + [\"wrap_mcp\"]\n",
-  "creation_timestamp": "2025-12-03T08:05:16.995799",
-  "version": "1.0"
+  "hash": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/agent_stacks_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.246319",
+  "golden_status": "verified",
+  "checksum": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275"
 }

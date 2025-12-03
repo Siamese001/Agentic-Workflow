@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
-  "content_hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
-    "archive_name": "deprecated in v13",
-    "relative_path": "run_workflow_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\run_workflow_LIC.py",
-    "file_size": 10157,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
-    "scan_timestamp": "2025-12-03T08:04:48.539378"
-  },
-  "content_preview": "# File: run_workflow_LIC.py\n# Description: Main executable for the LIC agentic workflow.\n\n__version__ = \"12.0\"\n\nimport asyncio\nimport json\nimport sys\nimport os\nfrom uuid import uuid4\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any\n\nfrom models_LIC import OutreachMission\n\n__version__ = \"12.0\"\n\ndef load_mission_input(filename: str = \"mission_input_LIC.json\") -> Dict[str, Any]:\n    \"\"\"\n    Loads the mission input JSON file.\n    \n    Args:\n        filename: Path t...",
-  "creation_timestamp": "2025-12-03T08:05:27.400308",
-  "version": "1.0"
+  "hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/run_workflow_LIC.py",
+  "generated_at": "2025-12-03T17:47:48.035158",
+  "golden_status": "verified",
+  "checksum": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2"
 }

@@ -1,0 +1,9 @@
+{
+  "hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_layer_boundaries.py",
+  "canonical_relative": "workflow/test_layer_boundaries.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.210658"
+}

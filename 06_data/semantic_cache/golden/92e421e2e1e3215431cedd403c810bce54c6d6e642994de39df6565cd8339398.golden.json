@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398",
-  "content_hash": "66a0d77f845b8e7d309d3b4061006a2b126e9077dc498564e4ef687dc8e01699",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\refactoring\\REORGANIZATION_PLAN.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\REORGANIZATION_PLAN.md",
-    "file_size": 9660,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398",
-    "scan_timestamp": "2025-12-03T08:04:48.118486"
-  },
-  "content_preview": "# Agentic Workflow 10_10 Reorganization Plan\n\n## Current Structure Issues\n\n- Agents scattered across `l2/`, `core/`, and `meta/`\n- Infrastructure mixed across `infra/`, `core/`, and `runtime/`\n- Prompts split between `prompts/` and various layer directories\n- Tools and utilities fragmented throughout the codebase\n- Layer-based organization (L1-L5) makes navigation difficult for developers\n\n## Target OpenAI-Style Structure\n\n```text\nAgentic-Workflow-10_10/\n\u251c\u2500\u2500 agents/                    # All agen...",
-  "creation_timestamp": "2025-12-03T08:04:55.466658",
-  "version": "1.0"
+  "hash": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/refactoring/REORGANIZATION_PLAN.md",
+  "generated_at": "2025-12-03T17:47:45.883307",
+  "golden_status": "verified",
+  "checksum": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398"
 }

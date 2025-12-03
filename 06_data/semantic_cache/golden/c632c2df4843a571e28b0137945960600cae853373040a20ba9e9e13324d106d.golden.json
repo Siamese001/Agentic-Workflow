@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
-  "content_hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\e2e\\test_reflexion_quality_gain.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_reflexion_quality_gain.py",
-    "file_size": 300,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
-    "scan_timestamp": "2025-12-03T08:04:48.357990"
-  },
-  "content_preview": "from src.lic_agentic.agents.k3_message_architect import score_quality\n\n\ndef test_reflexion_improves_score():\n    base = score_quality(\"draft without reflexion\", reflexion=False)\n    with_reflexion = score_quality(\"draft with reflexion insights\", reflexion=True)\n    assert with_reflexion >= base + 1\n",
-  "creation_timestamp": "2025-12-03T08:05:18.240872",
-  "version": "1.0"
+  "hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_reflexion_quality_gain.py",
+  "generated_at": "2025-12-03T17:47:46.441093",
+  "golden_status": "verified",
+  "checksum": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d"
 }

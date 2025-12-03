@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-  "content_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
+  "hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/chromadb/utils/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.591492",
   "file_size": 213,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "chromadb\\utils\\__init__.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\chromadb\\utils\\__init__.py",
-    "file_size": 213,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-    "scan_timestamp": "2025-12-03T08:04:48.336939"
-  },
-  "verification_timestamp": "2025-12-03T08:05:17.066526",
-  "checksums": {
-    "sha256": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-    "md5": "e4c3c616f88cc745cb34e421be9fbc72"
-  }
+  "modified_time": 1764609961.5069258,
+  "sha256": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
+  "integrity_check": "passed"
 }

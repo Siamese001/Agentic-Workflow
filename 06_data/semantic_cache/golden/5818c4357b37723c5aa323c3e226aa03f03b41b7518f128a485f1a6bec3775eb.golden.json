@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5818c4357b37723c5aa323c3e226aa03f03b41b7518f128a485f1a6bec3775eb",
-  "content_hash": "fd3e1fe9b960e587bc39cf95063aa572e62a039a5450004fd61c5283a5cf0800",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\docs_overview.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\docs_overview.md",
-    "file_size": 3032,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "5818c4357b37723c5aa323c3e226aa03f03b41b7518f128a485f1a6bec3775eb",
-    "scan_timestamp": "2025-12-03T08:04:48.111070"
-  },
-  "content_preview": "# Documentation - Agentic Workflow 10_10\n\nThis directory contains all documentation for the Agentic Workflow 10_10 project, organized by functional area.\n\n## \ud83d\udcc1 Documentation Structure\n\n### **`architecture/`**\n\nCore architecture and design documentation\n\n- `FOLDER_STRUCTURE_GUIDE.md` - Complete guide to folder structure and functional organization\n- Understanding the L1-L5 layer architecture and capability-based organization\n\n### **`integration/`**\n\nExternal system integration documentation\n\n- `N...",
-  "creation_timestamp": "2025-12-03T08:04:55.357753",
-  "version": "1.0"
+  "hash": "5818c4357b37723c5aa323c3e226aa03f03b41b7518f128a485f1a6bec3775eb",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/docs_overview(1).md",
+  "generated_at": "2025-12-03T17:47:45.436840",
+  "golden_status": "verified",
+  "checksum": "5818c4357b37723c5aa323c3e226aa03f03b41b7518f128a485f1a6bec3775eb"
 }

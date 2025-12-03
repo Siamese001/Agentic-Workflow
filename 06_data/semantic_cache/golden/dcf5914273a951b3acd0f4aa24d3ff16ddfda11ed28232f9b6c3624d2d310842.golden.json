@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "dcf5914273a951b3acd0f4aa24d3ff16ddfda11ed28232f9b6c3624d2d310842",
-  "content_hash": "67ea715ec56da32e7c3dfcd5a054c8553fc46a1d1c37eb0801d1a3f40f3a3ac8",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "runtime\\runtime_utils.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\runtime_utils.py",
-    "file_size": 946,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "dcf5914273a951b3acd0f4aa24d3ff16ddfda11ed28232f9b6c3624d2d310842",
-    "scan_timestamp": "2025-12-03T08:04:48.123858"
-  },
-  "content_preview": "\"\"\"Snapshot-local runtime.runtime_utils shim for v10_10 tests.\n\nThis module allows imports of the form::\n\n    from runtime.runtime_utils import invoke_model, SandboxConfig\n\nwhen tests are run with rootdir=Agentic-Workflow-10_10. It delegates to the\nexisting runtime_utils module at the snapshot root.\n\"\"\"\nfrom __future__ import annotations\n\nfrom tools.runtime_utils import (  # noqa: F401\n    ValidationError,\n    ToolExecutionError,\n    ModelClientError,\n    SafetyException,\n    LLMInvocationError,...",
-  "creation_timestamp": "2025-12-03T08:04:55.596257",
-  "version": "1.0"
+  "hash": "dcf5914273a951b3acd0f4aa24d3ff16ddfda11ed28232f9b6c3624d2d310842",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/runtime_utils.py",
+  "generated_at": "2025-12-03T17:47:45.473210",
+  "golden_status": "verified",
+  "checksum": "dcf5914273a951b3acd0f4aa24d3ff16ddfda11ed28232f9b6c3624d2d310842"
 }

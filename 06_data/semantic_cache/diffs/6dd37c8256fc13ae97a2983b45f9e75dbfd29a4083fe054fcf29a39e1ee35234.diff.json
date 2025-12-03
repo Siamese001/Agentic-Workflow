@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/control_plane/test_routing_and_pipeline.py",
-  "diff_content": "from orchestration.control_plane import SafetyContext, run_safety_pipeline\n\n\ndef test_control_plane_allows_safe_text():\n    ctx = SafetyContext(input_text=\"This is a benign sentence.\")\n\n    decision, trace = run_safety_pipeline(ctx, execution_profile=None)\n\n    assert decision.action == \"allow\"\n    assert decision.verdict == \"safe\"\n    assert trace.rules_engine[\"match_count\"] == 0\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 17,
-    "lines_removed": 0,
-    "lines_changed": 17
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_routing_and_pipeline.py",
+  "generated_at": "2025-12-03T17:47:45.607677",
+  "diff_type": "baseline",
+  "changes": []
 }

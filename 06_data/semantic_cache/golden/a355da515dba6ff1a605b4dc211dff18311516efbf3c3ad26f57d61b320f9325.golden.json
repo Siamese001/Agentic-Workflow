@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "a355da515dba6ff1a605b4dc211dff18311516efbf3c3ad26f57d61b320f9325",
-  "content_hash": "f6fb955049ebeb21117269c35d23a6aa511a5492f582bc7884f0d5b565bb07d2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l5\\types.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\types.py",
-    "file_size": 6183,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a355da515dba6ff1a605b4dc211dff18311516efbf3c3ad26f57d61b320f9325",
-    "scan_timestamp": "2025-12-03T08:04:48.090322"
-  },
-  "content_preview": "\"\"\"\nL5 safety and policy types for resume job alignment workflows.\n\nDefines fundamental types for safety and policy enforcement in resume enhancement.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Optional, Union, TypeVar\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, timezone\nfrom enum import Enum\nfrom typing_extensions import Protocol, runtime_checkable\n\nT = TypeVar('T')\n\n@runtime_checkable\nclass SafetyPolicy(Protocol):\n    \"\"\"Protocol that...",
-  "creation_timestamp": "2025-12-03T08:04:53.838698",
-  "version": "1.0"
+  "hash": "a355da515dba6ff1a605b4dc211dff18311516efbf3c3ad26f57d61b320f9325",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/types.py",
+  "generated_at": "2025-12-03T17:47:45.273381",
+  "golden_status": "verified",
+  "checksum": "a355da515dba6ff1a605b4dc211dff18311516efbf3c3ad26f57d61b320f9325"
 }

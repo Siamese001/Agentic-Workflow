@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4241bfacec3d2891e1637ca97c999eccb065acbd0e4342622b8b113e02b4ad89",
-  "content_hash": "4241bfacec3d2891e1637ca97c999eccb065acbd0e4342622b8b113e02b4ad89",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-08_v2.8_full.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-08_v2.8_full.md",
-    "file_size": 125561,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "4241bfacec3d2891e1637ca97c999eccb065acbd0e4342622b8b113e02b4ad89",
-    "scan_timestamp": "2025-12-03T08:04:48.522187"
-  },
-  "content_preview": "# LinkedInCanonical \u2014 2025-09-08 v2.8 (Full Overwrite from v2.7 + ND Patch: Dash Scanner, QA Order, RAG Map + Bullet\u2192Company\u2192Resume QA Table)\nGenerated: 2025-09-08T23:59:00-04:00\n\n# LinkedInCanonical \u2014 2025-09-08 v2.7 (Full Overwrite from v2.6 + ND Patch: Cross-Archetype QA & CTA Clarification)\nGenerated: 2025-09-08T01:10:00-04:00\n\n# LinkedInCanonical \u2014 2025-09-07 v2.8.8 (Full Overwrite from v2.8.7 + ND Patch)\nGenerated: 2025-09-07T02:59:06.723200\nSource SHA256 (v2.8.7): c33e2be45517ea038b9d926d...",
-  "creation_timestamp": "2025-12-03T08:05:26.299738",
-  "version": "1.0"
+  "hash": "4241bfacec3d2891e1637ca97c999eccb065acbd0e4342622b8b113e02b4ad89",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-08_v2.8_full.md",
+  "generated_at": "2025-12-03T17:47:47.902002",
+  "golden_status": "verified",
+  "checksum": "4241bfacec3d2891e1637ca97c999eccb065acbd0e4342622b8b113e02b4ad89"
 }

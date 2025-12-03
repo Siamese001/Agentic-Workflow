@@ -1,19 +1,9 @@
 {
-  "safety_score": 70,
-  "risk_level": "medium",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": true,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 219,
-    "complexity_score": 143.57
-  },
-  "recommendations": [
-    "Review system operations for security implications",
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:55.345369"
+  "hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/architecture/FOLDER_STRUCTURE_GUIDE.md",
+  "generated_at": "2025-12-03T17:47:45.863723",
+  "safety_score": 1.0,
+  "issues": []
 }

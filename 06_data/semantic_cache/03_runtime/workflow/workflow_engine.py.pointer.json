@@ -1,0 +1,9 @@
+{
+  "hash": "bd9e70c02fda7d8556cb7c4d5bec96e57927bbbc22ae7936f30f27b224d93286",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/workflow_engine.py",
+  "canonical_relative": "workflow/workflow_engine.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.154591"
+}

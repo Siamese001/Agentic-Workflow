@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 2702,
-    "complexity_score": 2691.67
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:25.365011"
+  "hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json",
+  "generated_at": "2025-12-03T17:47:47.486399",
+  "safety_score": 1.0,
+  "issues": []
 }

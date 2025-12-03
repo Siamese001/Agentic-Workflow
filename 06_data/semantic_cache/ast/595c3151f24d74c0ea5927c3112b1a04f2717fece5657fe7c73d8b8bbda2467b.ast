@@ -1,34 +1,5 @@
-{
-  "ast_version": "python_3.8+",
-  "encoding": "utf-8",
-  "tree": {
-    "_type": "Module",
-    "_fields": {
-      "body": [
-        {
-          "_type": "Expr",
-          "_fields": {
-            "value": {
-              "_type": "Constant",
-              "_fields": {
-                "value": "Configuration module for Agentic Workflow v10_10.",
-                "kind": "None"
-              },
-              "_lineno": 1,
-              "_col_offset": 0
-            }
-          },
-          "_lineno": 1,
-          "_col_offset": 0
-        }
-      ],
-      "type_ignores": []
-    }
-  },
-  "statistics": {
-    "node_count": 3,
-    "function_count": 0,
-    "class_count": 0,
-    "import_count": 0
-  }
-}
+# STUB AST ARTIFACT
+# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/config/__init__.py
+# Hash: None
+# Type: RG
+# Size: 63 bytes

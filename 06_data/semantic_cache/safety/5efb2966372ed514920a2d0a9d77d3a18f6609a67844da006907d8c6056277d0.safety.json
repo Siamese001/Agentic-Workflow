@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 223,
-    "complexity_score": 221.05
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:27.358301"
+  "hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/config_LIC.py",
+  "generated_at": "2025-12-03T17:47:48.023014",
+  "safety_score": 1.0,
+  "issues": []
 }

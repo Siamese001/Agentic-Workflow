@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
-  "content_hash": "4ea304b3cbea8d6d2d109b7966e5ba3a74d9019b90d796cc7fc38f59e45c128a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\control_plane\\test_routing_and_pipeline.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\control_plane\\test_routing_and_pipeline.py",
-    "file_size": 407,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
-    "scan_timestamp": "2025-12-03T08:04:48.126085"
-  },
-  "content_preview": "from orchestration.control_plane import SafetyContext, run_safety_pipeline\n\n\ndef test_control_plane_allows_safe_text():\n    ctx = SafetyContext(input_text=\"This is a benign sentence.\")\n\n    decision, trace = run_safety_pipeline(ctx, execution_profile=None)\n\n    assert decision.action == \"allow\"\n    assert decision.verdict == \"safe\"\n    assert trace.rules_engine[\"match_count\"] == 0\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:55.703673",
-  "version": "1.0"
+  "hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_routing_and_pipeline.py",
+  "generated_at": "2025-12-03T17:47:45.608084",
+  "golden_status": "verified",
+  "checksum": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645",
-  "content_hash": "ee0327fb452f835d3953cb9d63919c3225405962d1a15f00362db98faa5db95c",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\golden_state\\test_evaluator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_evaluator.py",
-    "file_size": 736,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645",
-    "scan_timestamp": "2025-12-03T08:04:48.134799"
-  },
-  "content_preview": "from eval.golden_state.datasets import load_golden_cases\nfrom eval.golden_state.evaluator import evaluate_case_output\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\n\n\ndef test_evaluate_case_output_basic():\n    cases = load_golden_cases()\n    assert cases\n\n    case = cases[0]\n    output = GoldenOutput(\n        case_id=case.id,\n        produced_keypoints=list(case.expected_keypoints),\n        correctness_map={},\n        safety_decisions={},\n        metacognition_summary={},\n        ...",
-  "creation_timestamp": "2025-12-03T08:04:56.198218",
-  "version": "1.0"
+  "hash": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_evaluator.py",
+  "generated_at": "2025-12-03T17:47:45.640018",
+  "golden_status": "verified",
+  "checksum": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645"
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 70,
-    "complexity_score": 66.31
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.581810"
+  "hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/spans.py",
+  "generated_at": "2025-12-03T17:47:45.848834",
+  "safety_score": 1.0,
+  "issues": []
 }

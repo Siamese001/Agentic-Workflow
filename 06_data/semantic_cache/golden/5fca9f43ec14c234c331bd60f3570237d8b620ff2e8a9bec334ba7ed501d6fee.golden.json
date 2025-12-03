@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
-  "content_hash": "184e6b66665087aa2c8077d6768217dc649ce2b30cc6034e7f7bcd6c1b98031c",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "meta\\metacognition\\evaluator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\metacognition\\evaluator.py",
-    "file_size": 870,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
-    "scan_timestamp": "2025-12-03T08:04:48.091722"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef evaluate_hypotheses(hypotheses: List[Hypothesis]) -> List[Hypothesis]:\n    \"\"\"Return a new list of hypotheses with adjusted confidence.\n\n    Heuristics (purely deterministic):\n    - penalize very long or very short content slightly.\n    - if a hypothesis has no evidence_ids, reduce confidence.\n    - clamp confidence to [0, 1].\n    \"\"\"\n\n    evaluated: List[Hypothesis] = []\n    for h...",
-  "creation_timestamp": "2025-12-03T08:04:53.905743",
-  "version": "1.0"
+  "hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/evaluator.py",
+  "generated_at": "2025-12-03T17:47:45.951866",
+  "golden_status": "verified",
+  "checksum": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee"
 }

@@ -1,0 +1,9 @@
+{
+  "hash": "d6b4a731872c59d0f57420853c38b4207baafffa2219773b22524d0c50bcb5df",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_network_isolation.py",
+  "canonical_relative": "workflow/test_network_isolation.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.217994"
+}

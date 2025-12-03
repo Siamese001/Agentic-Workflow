@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l1/rag_planning.py",
-  "diff_content": "\"\"\"\nRAG planning for comprehensive resume evidence gathering and retrieval.\n\nCreates structured plans to retrieve relevant data for optimal\nresume improvement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Sequence\n\nfrom core.models.models import ExecutionContext, Evidence\nfrom l1.builders.prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt\n\n\n@dataclass(frozen=True)\nclass RAGReasoningPlan:\n    \"\"\"\n    Defines evidence analysis structure for resume improvement.\n\n    Ensures systematic processing of retrieved data for comprehensive\n    resume enhancement and job alignment.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\n@dataclass(frozen=True)\nclass HydePlan:\n    \"\"\"\n    Structures hypothetical document query planning.\n\n    Creates enhanced search strategies for better resume\n    evidence retrieval and job alignment.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\ndef plan_rag_reasoning(\n    rag_plan: Any,\n    *,\n    ctx: ExecutionContext,\n    evidence: Sequence[Evidence],\n) -> RAGReasoningPlan:\n    \"\"\"\n    Creates evidence analysis plan for resume improvement.\n\n    Structures approach to process retrieved data for comprehensive\n    resume enhancement and job alignment.\n    \"\"\"\n    prompt = build_rag_prompt(\n        plan=rag_plan,\n        ctx=ctx,\n        evidence=evidence,\n        prompt_id=\"system.rag.reasoning\",\n        layer=\"L2\",\n        agent=\"rag\",\n        model_tier=\"balanced\",\n    )\n    return RAGReasoningPlan(prompt=prompt)\n\n\ndef plan_hyde_query(\n    hyde_plan: Any,\n    *,\n    ctx: ExecutionContext,\n) -> HydePlan:\n    \"\"\"\n    Plans enhanced query generation for r\u00e9sum\u00e9 evidence retrieval.\n\n    Creates hypothetical documents to improve search relevance for r\u00e9sum\u00e9 improvement.\n    \"\"\"\n    prompt = build_hyde_prompt(\n        plan=hyde_plan,\n        ctx=ctx,\n        prompt_id=\"system.hyde\",\n        layer=\"L2\",\n        agent=\"hyde\",\n        model_tier=\"balanced\",\n    )\n    return HydePlan(prompt=prompt)\n\n\n\n",
-  "statistics": {
-    "lines_added": 86,
-    "lines_removed": 0,
-    "lines_changed": 86
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "b7d3986b87deb3c2ab434f0b93e5060da1ff90c123e44e36e4d208734d25c976",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/rag_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.953544",
+  "diff_type": "baseline",
+  "changes": []
 }

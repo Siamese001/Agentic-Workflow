@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "aea173c9298b6e08ec9db135229ade62f55bd05fa6fd00cc7fd07fe8be6319d5",
-  "content_hash": "a3c464fe7d1d6dd5e3de7f42a21fa6b0a9f80c7013a0eef422f2fbd15ff45bb0",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.58.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.58.json",
-    "file_size": 255998,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "aea173c9298b6e08ec9db135229ade62f55bd05fa6fd00cc7fd07fe8be6319d5",
-    "scan_timestamp": "2025-12-03T08:04:48.432609"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-07-2025_v8.6.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-07-2025_v8.6.0\",\n    \"last_updated\": \"2025-10-07\",\n    \"description\": \"Applied P858. Enforced the K.1 confirmation gate and redesigned the execution order to support L1 trace generation and a pause after each individual K-node.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.6.0\",\n        \"date\": \"2025-10-07\",\n...",
-  "creation_timestamp": "2025-12-03T08:05:21.935442",
-  "version": "1.0"
+  "hash": "aea173c9298b6e08ec9db135229ade62f55bd05fa6fd00cc7fd07fe8be6319d5",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.58.json",
+  "generated_at": "2025-12-03T17:47:47.034367",
+  "golden_status": "verified",
+  "checksum": "aea173c9298b6e08ec9db135229ade62f55bd05fa6fd00cc7fd07fe8be6319d5"
 }

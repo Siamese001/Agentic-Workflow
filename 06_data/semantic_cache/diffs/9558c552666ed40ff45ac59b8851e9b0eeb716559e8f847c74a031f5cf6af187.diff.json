@@ -1,13 +1,9 @@
 {
-  "diff_type": "lineage_diff",
-  "baseline_version": "Agentic-Workflow-10_7_main",
-  "current_version": "Agentic-LIC",
-  "logical_path": "mcp/__init__.py",
-  "diff_content": "--- Agentic-Workflow-10_7_main/mcp/__init__.py+++ Agentic-LIC/mcp/__init__.py@@ -7,7 +7,7 @@ import logging\n from pathlib import Path\n from types import SimpleNamespace\n-from typing import Any, Callable, Dict, Tuple\n+from typing import Any, Callable, Dict\n \n logger = logging.getLogger(\"mcp\")\n \n@@ -17,14 +17,13 @@ _AGENT_CACHE: Dict[str, Any] = {}\n _CONTEXT_STATE: Dict[str, Any] = {}\n \n-_AGENT_SPECS: Dict[str, Tuple[str, str]] = {\n-    \"SafetyGuardStack\": (\"agent_stacks_v10_8\", \"SafetyStackV10_8\"),\n-    \"StrategyStack\": (\"agent_stacks_v10_8\", \"StrategyStackV10_8\"),\n-    \"RAGStack\": (\"agent_stacks_v10_8\", \"RAGExecutionStack\"),\n-    \"DraftingStack\": (\"agent_stacks_v10_8\", \"DraftingExecutionStack\"),\n-    \"QAStack\": (\"agent_stacks_v10_8\", \"QAValidationStack\"),\n-    \"HILStack\": (\"agent_stacks_v10_8\", \"HILStackV10_8\"),\n-    \"RobustnessStack\": (\"agent_stacks_v10_8\", \"RobustnessStack\"),\n+_AGENT_SPECS: Dict[str, tuple[str, str]] = {\n+    \"SafetyGuardStack\": (\"stacks_v10_7\", \"PromptInjectionDetectorAgent\"),\n+    \"StrategyStack\": (\"stacks_v10_7\", \"ToTStrategistAgent\"),\n+    \"RAGStack\": (\"stacks_v10_7\", \"RAG_SearchAgent\"),\n+    \"DraftingStack\": (\"stacks_v10_7\", \"DraftingGuildCoordinator\"),\n+    \"QAStack\": (\"agent_orchestration_v10_7\", \"QAConductorAgent\"),\n+    \"HILStack\": (\"stacks_v10_7\", \"HILFeedbackRouterAgent\"),\n     \"MetaLearningLoop\": (\"agent_orchestration_v10_7\", \"MetaLearningLoop\"),\n }\n \n",
-  "statistics": {
-    "lines_added": 8,
-    "lines_removed": 9,
-    "lines_changed": 14
-  },
-  "has_changes": true
+  "hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.367145",
+  "diff_type": "baseline",
+  "changes": []
 }

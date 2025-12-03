@@ -1,0 +1,10 @@
+{
+  "hash": "d9baa0347089c88b6f93fe8ae49bac5064a05f283f63e84cd182641e2321b0e3",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/rag.py",
+  "generated_at": "2025-12-03T17:47:47.976011",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

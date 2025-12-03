@@ -1,0 +1,9 @@
+{
+  "hash": "8cde2aa609a046a0ed1671b898570223d2c15c3f4b16c141a6fd9e4d228ab9de",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/collectors.py",
+  "canonical_relative": "workflow/collectors.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.233140"
+}

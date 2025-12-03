@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 17,
-    "complexity_score": 12.71
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.703655"
+  "hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_routing_and_pipeline.py",
+  "generated_at": "2025-12-03T17:47:45.608472",
+  "safety_score": 1.0,
+  "issues": []
 }

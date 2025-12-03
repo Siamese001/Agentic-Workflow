@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4ca213f0aff096c268e090c5502c3dfcfc00c0508712f4bd6f10cb853bc9a68a",
-  "content_hash": "4968ffcadbd4b61fe1fd7c36fc8396e01aa01026982143547aaf57d25ab446e5",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedIn Prompt.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedIn Prompt.md",
-    "file_size": 10787,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "4ca213f0aff096c268e090c5502c3dfcfc00c0508712f4bd6f10cb853bc9a68a",
-    "scan_timestamp": "2025-12-03T08:04:48.490185"
-  },
-  "content_preview": "\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\nLINKEDIN PROMPT\n\nROLE  \nRecruiter Outreach Automation Specialist\n\nTASK  \nDiscover, validate, and message a minimum of four (4) US-based LinkedIn contacts per role. Contacts can be any combination of executives or recruiters. Enforce contact integrity, messaging standards, App Tracker schema compliance, and mandatory blocking on violations.\n\nCONTEXT  \n- Source: Active job row in App Tracker.\n- User explicitly prompte...",
-  "creation_timestamp": "2025-12-03T08:05:25.563871",
-  "version": "1.0"
+  "hash": "4ca213f0aff096c268e090c5502c3dfcfc00c0508712f4bd6f10cb853bc9a68a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Prompt.md",
+  "generated_at": "2025-12-03T17:47:47.564211",
+  "golden_status": "verified",
+  "checksum": "4ca213f0aff096c268e090c5502c3dfcfc00c0508712f4bd6f10cb853bc9a68a"
 }

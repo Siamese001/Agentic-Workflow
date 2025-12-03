@@ -1,0 +1,10 @@
+{
+  "hash": "2e467d22058412371e2cc7e519a9bc27471ce93e3aa7b7a714c485231a127dfa",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/run_batch_v10_10.py",
+  "generated_at": "2025-12-03T17:47:45.544235",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
-  "content_hash": "b2eff862f35377da55bf7d10966e87a7a1585d5dce70d685c53312b466e38c75",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\sandbox\\test_fs_isolation.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_fs_isolation.py",
-    "file_size": 294,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
-    "scan_timestamp": "2025-12-03T08:04:48.164187"
-  },
-  "content_preview": "from infra.sandbox.fs_template import build_ephemeral_rootfs\n\n\ndef test_build_ephemeral_rootfs_shape():\n    fs = build_ephemeral_rootfs()\n\n    assert fs.get(\"tmpfs\") is True\n    assert \"/\" in fs.get(\"restricted_paths\", [])\n    assert \"/tmp\" in fs.get(\"writable_paths\", [])\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:57.245770",
-  "version": "1.0"
+  "hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_fs_isolation.py",
+  "generated_at": "2025-12-03T17:47:45.728542",
+  "golden_status": "verified",
+  "checksum": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee"
 }

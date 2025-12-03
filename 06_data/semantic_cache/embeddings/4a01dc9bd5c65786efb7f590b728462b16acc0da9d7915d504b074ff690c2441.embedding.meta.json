@@ -1,0 +1,10 @@
+{
+  "hash": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/graph_store_neo4j.py",
+  "generated_at": "2025-12-03T17:47:44.702255",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

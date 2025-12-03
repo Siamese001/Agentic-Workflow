@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/regression/test_token_drift_guard.py",
-  "diff_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_token_drift_guard():\n    stack = OutreachStack(ReasoningToggles())\n    sample = SimpleNamespace(prompt=\"Checking drift bounds\", company_id=\"ACME\", contact_id=\"C1\")\n    outcome = stack.run(sample)\n    verdict = outcome[\"verdict\"]\n    assert verdict.passed\n    drift = stack.validator.metrics.token_drift()\n    assert drift <= 0.1\n",
-  "statistics": {
-    "lines_added": 14,
-    "lines_removed": 0,
-    "lines_changed": 14
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py",
+  "generated_at": "2025-12-03T17:47:46.495401",
+  "diff_type": "baseline",
+  "changes": []
 }

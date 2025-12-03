@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-  "content_hash": "12d14d3fe3cf43224bca9c0103e6b13701e98e7cfe5386f3e40b6a20b2642234",
+  "hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/PHASE_A_DISCOVERY_MAP.md",
+  "generated_at": "2025-12-03T17:47:45.899819",
   "file_size": 5778,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\testing\\PHASE_A_DISCOVERY_MAP.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\PHASE_A_DISCOVERY_MAP.md",
-    "file_size": 5778,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-    "scan_timestamp": "2025-12-03T08:04:48.120154"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.489912",
-  "checksums": {
-    "sha256": "12d14d3fe3cf43224bca9c0103e6b13701e98e7cfe5386f3e40b6a20b2642234",
-    "md5": "68b05c0708a84c831302d69ea1546abf"
-  }
+  "modified_time": 1764610059.0004885,
+  "sha256": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
+  "integrity_check": "passed"
 }

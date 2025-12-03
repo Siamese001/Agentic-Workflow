@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
-  "content_hash": "f3ec9a26ac0c31d0cd30fbc1395d4f737622f4d2c6997c89e8aaf7740edcb20e",
+  "hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/observability/test_telemetry_collection.py",
+  "generated_at": "2025-12-03T17:47:45.725708",
   "file_size": 34743,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\observability\\test_telemetry_collection.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\test_telemetry_collection.py",
-    "file_size": 34743,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
-    "scan_timestamp": "2025-12-03T08:04:48.162327"
-  },
-  "verification_timestamp": "2025-12-03T08:04:57.121534",
-  "checksums": {
-    "sha256": "f3ec9a26ac0c31d0cd30fbc1395d4f737622f4d2c6997c89e8aaf7740edcb20e",
-    "md5": "4dfdda0abce487b63bfa84d0cb0e6ae7"
-  }
+  "modified_time": 1764610059.7004805,
+  "sha256": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
+  "integrity_check": "passed"
 }

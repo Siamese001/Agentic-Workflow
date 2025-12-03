@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-  "content_hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
-    "file_size": 68830,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-    "scan_timestamp": "2025-12-03T08:04:48.486903"
-  },
-  "content_preview": "# LIC WORKFLOW v11.10 - COMPREHENSIVE SIGNAL CAPTURE ANALYSIS\n## Complete Signal Gap Analysis & External JSON Architecture\n\n**Date:** 2025-10-31  \n**Version:** 11.10_LIVE_COMPLETE  \n**Purpose:** Maximize signal quality for LIC message generation through strategic data enrichment\n\n---\n\n## EXECUTIVE SUMMARY\n\n**Current Signal Score:** ~0.72 baseline (threshold: 0.70)  \n**Target Signal Score:** 0.88+ (22% improvement)  \n**Critical Finding:** Current RAG pipeline is **Google Search-dependent** with *...",
-  "creation_timestamp": "2025-12-03T08:05:25.515334",
-  "version": "1.0"
+  "hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
+  "generated_at": "2025-12-03T17:47:47.528127",
+  "golden_status": "verified",
+  "checksum": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22"
 }

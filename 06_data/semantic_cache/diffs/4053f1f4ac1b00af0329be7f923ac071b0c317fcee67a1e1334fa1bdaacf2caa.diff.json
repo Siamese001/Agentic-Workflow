@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l1/qa_planning.py",
-  "diff_content": "\"\"\"\nQuality assurance planning for resume improvement validation and accuracy.\n\nCreates structured plans to ensure comprehensive resume enhancement\nquality and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import (\n    ExecutionContext,\n    DraftingResult,\n    RAGResult,\n)\nfrom l1.builders.prompt_builder import PromptInstance, build_qa_prompt\n\n\n@dataclass(frozen=True)\nclass SemanticQAPlan:\n    \"\"\"\n    Defines semantic quality assurance structure.\n\n    Ensures thorough evaluation of resume improvement content\n    for accuracy and job alignment.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\n@dataclass(frozen=True)\nclass CouncilPlan:\n    \"\"\"\n    Structures council review planning approach.\n\n    Coordinates comprehensive evaluation of resume enhancement\n    recommendations for improved quality.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\ndef plan_semantic_qa(\n    qa_plan: Any,\n    *,\n    ctx: ExecutionContext,\n    draft: DraftingResult,\n    rag: RAGResult,\n) -> SemanticQAPlan:\n    \"\"\"\n    Creates semantic quality assurance plan for resume validation.\n\n    Ensures thorough evaluation of resume content for accuracy\n    and improved job alignment.\n    \"\"\"\n    prompt = build_qa_prompt(\n        plan=qa_plan,\n        ctx=ctx,\n        drafting=draft,\n        rag=rag,\n        prompt_id=\"system.qa.agent\",\n        layer=\"L2\",\n        agent=\"qa\",\n        model_tier=\"balanced\",\n    )\n    return SemanticQAPlan(prompt=prompt)\n\n\ndef plan_qa(\n    question: str,\n    context: Optional[str] = None,\n    *,\n    model_tier: str = \"balanced\",\n) -> SemanticQAPlan:\n    \"\"\"\n    Plan a QA response for the given question and context.\n    \n    Args:\n        question: The question to answer\n        context: Optional context for the question\n        model_tier: Model tier to use\n        \n    Returns:\n        QA plan with semantic search and response generation\n    \"\"\"\n    return plan_semantic_qa(question, context, model_tier=model_tier)\n\n\ndef plan_council_review(\n    council_plan: Any,\n    *,\n    ctx: ExecutionContext,\n    draft: DraftingResult,\n    rag: RAGResult,\n) -> CouncilPlan:\n    \"\"\"\n    Plans council review for comprehensive r\u00e9sum\u00e9 assessment.\n\n    Coordinates multi-perspective evaluation to ensure optimal r\u00e9sum\u00e9 enhancement recommendations.\n    \"\"\"\n    prompt = build_qa_prompt(\n        plan=council_plan,\n        ctx=ctx,\n        drafting=draft,\n        rag=rag,\n        prompt_id=\"system.qa.council\",\n        layer=\"L2\",\n        agent=\"qa_council\",\n        model_tier=\"balanced\",\n    )\n    return CouncilPlan(prompt=prompt)\n\n\n\n",
-  "statistics": {
-    "lines_added": 116,
-    "lines_removed": 0,
-    "lines_changed": 116
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "4053f1f4ac1b00af0329be7f923ac071b0c317fcee67a1e1334fa1bdaacf2caa",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/qa_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.944848",
+  "diff_type": "baseline",
+  "changes": []
 }

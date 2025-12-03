@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/unit/test_mcp_discovery.py",
-  "diff_content": "\"\"\"MCPClient discovery and invocation tests.\"\"\"\nimport pytest\n\nfrom src.lic_agentic.mcp import MCPClient, ToolSpec\n\n\ndef test_discover_filters_by_capability_and_trust():\n    client = MCPClient(\n        tools=[\n            ToolSpec(\n                id=\"alpha\",\n                name=\"Alpha\",\n                capabilities=(\"profile_lookup\",),\n                cost=0.2,\n                trust_tier=\"high\",\n                latency_ms=200,\n            ),\n            ToolSpec(\n                id=\"beta\",\n                name=\"Beta\",\n                capabilities=(\"profile_lookup\", \"enrichment\"),\n                cost=0.4,\n                trust_tier=\"low\",\n                latency_ms=300,\n            ),\n        ]\n    )\n    results = client.discover(\"profile_lookup\", {\"min_trust\": \"medium\"})\n    assert len(results) == 1\n    assert results[0].id == \"alpha\"\n    payload = client.invoke(\"alpha\", {\"query\": \"ACME\"})\n    assert payload[\"ok\"] and payload[\"usage_count\"] == 1\n\n\ndef test_discover_honors_allowlist_and_cost_filters():\n    client = MCPClient()\n    allow_only = client.discover(\"web_search\", {\"allowlist\": [\"web_search_v1\"]})\n    assert allow_only and all(spec.id == \"web_search_v1\" for spec in allow_only)\n    denied = client.discover(\"web_search\", {\"denylist\": [\"web_search_v1\"]})\n    assert all(spec.id != \"web_search_v1\" for spec in denied)\n    cheap = client.discover(\"web_search\", {\"max_cost\": 0.3})\n    assert all(spec.cost <= 0.3 for spec in cheap)\n\n\ndef test_usage_count_tracks_invocations():\n    client = MCPClient()\n    client.invoke(\"web_search_v1\", {\"query\": \"one\"})\n    client.invoke(\"web_search_v1\", {\"query\": \"two\"})\n    assert client.usage_count(\"web_search_v1\") == 2\n\n\ndef test_discover_returns_empty_for_unknown_capability():\n    client = MCPClient()\n    assert client.discover(\"nonexistent\", {}) == []\n\n\ndef test_invoke_unknown_tool_raises_key_error():\n    client = MCPClient()\n    with pytest.raises(KeyError):\n        client.invoke(\"missing\")\n",
-  "statistics": {
-    "lines_added": 60,
-    "lines_removed": 0,
-    "lines_changed": 60
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_mcp_discovery.py",
+  "generated_at": "2025-12-03T17:47:46.525127",
+  "diff_type": "baseline",
+  "changes": []
 }

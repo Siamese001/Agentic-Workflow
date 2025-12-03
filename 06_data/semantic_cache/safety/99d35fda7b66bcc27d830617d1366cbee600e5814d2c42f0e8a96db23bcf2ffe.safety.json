@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 57,
-    "complexity_score": 61.79
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:49.878197"
+  "hash": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/repair_policies.py",
+  "generated_at": "2025-12-03T17:47:46.210653",
+  "safety_score": 1.0,
+  "issues": []
 }

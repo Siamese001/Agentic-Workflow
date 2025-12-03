@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 96,
-    "complexity_score": 64.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.269961"
+  "hash": "daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/README.md",
+  "generated_at": "2025-12-03T17:47:45.406447",
+  "safety_score": 1.0,
+  "issues": []
 }

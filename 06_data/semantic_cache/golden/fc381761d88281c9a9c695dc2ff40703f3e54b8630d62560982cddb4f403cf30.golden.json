@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30",
-  "content_hash": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_FULL_v10_23_1_COMPLETE.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_FULL_v10_23_1_COMPLETE.json",
-    "file_size": 41211,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30",
-    "scan_timestamp": "2025-12-03T08:04:48.483170"
-  },
-  "content_preview": "{\n  \"metadata\": {\n    \"template_id\": \"LIC-FULL-v10.23.1\",\n    \"template_name\": \"LinkedIn InMail Cold Outreach - Complete with Staging Buffer & Scope Isolation\",\n    \"version\": \"10.23.1\",\n    \"base_version\": \"10.22\",\n    \"patches_applied\": [\n      \"v10.23: Staging Buffer Integration\",\n      \"v10.23.1: Scope Isolation Fix\"\n    ],\n    \"created_date\": \"2025-10-15\",\n    \"status\": \"PRODUCTION_READY\",\n    \"changelog\": {\n      \"v10.22\": \"Baseline - metadata-based validation\",\n      \"v10.23\": \"Added stag...",
-  "creation_timestamp": "2025-12-03T08:05:25.437846",
-  "version": "1.0"
+  "hash": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_FULL_v10_23_1_COMPLETE.json",
+  "generated_at": "2025-12-03T17:47:47.500979",
+  "golden_status": "verified",
+  "checksum": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30"
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 697,
-    "complexity_score": 559.88
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.716798"
+  "hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/hop_agents_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.602914",
+  "safety_score": 1.0,
+  "issues": []
 }

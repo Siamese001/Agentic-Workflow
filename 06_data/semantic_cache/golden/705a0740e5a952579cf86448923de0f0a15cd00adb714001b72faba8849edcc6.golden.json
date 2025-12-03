@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
-  "content_hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\integration\\test_tool_registry.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_tool_registry.py",
-    "file_size": 1271,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
-    "scan_timestamp": "2025-12-03T08:04:48.359803"
-  },
-  "content_preview": "from src.lic_agentic.rag.tool_registry import BaseTool, ToolRegistry, ToolResult, default_registry\n\n\nclass DummyTool(BaseTool):\n    name = \"dummy\"\n    cost = 0.1\n\n    def run(self, query: str, context):\n        return ToolResult(f\"answer for {query}\", [\"http://dummy\"], 42, 0.9)\n\n\ndef test_tool_registration_and_execution():\n    registry = ToolRegistry()\n    registry.register(DummyTool())\n    tool = registry.resolve(\"dummy\")\n    assert isinstance(tool, DummyTool)\n    result = tool.run(\"query\", {})...",
-  "creation_timestamp": "2025-12-03T08:05:18.281708",
-  "version": "1.0"
+  "hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_tool_registry.py",
+  "generated_at": "2025-12-03T17:47:46.469075",
+  "golden_status": "verified",
+  "checksum": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6"
 }

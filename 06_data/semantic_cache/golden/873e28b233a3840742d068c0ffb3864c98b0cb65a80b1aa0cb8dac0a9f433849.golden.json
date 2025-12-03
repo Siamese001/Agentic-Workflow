@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "873e28b233a3840742d068c0ffb3864c98b0cb65a80b1aa0cb8dac0a9f433849",
-  "content_hash": "ed8cacd489519c9cbb518db85c8900d15fdefe683b4437966511d63c8b561259",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\context_engine\\relevance.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\relevance.py",
-    "file_size": 1404,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "873e28b233a3840742d068c0ffb3864c98b0cb65a80b1aa0cb8dac0a9f433849",
-    "scan_timestamp": "2025-12-03T08:04:48.054475"
-  },
-  "content_preview": "\"\"\"\nRelevance scoring for r\u00e9sum\u00e9 processing context items.\n\nProvides deterministic scoring to prioritize relevant information for r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Tuple\n\n\n@dataclass\nclass ContextItem:\n    \"\"\"\n    Represents context item for r\u00e9sum\u00e9 processing relevance scoring.\n\n    Enables intelligent information prioritization for comprehensive r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n    id: str\n    text: str\n    metadata: Dict[str, An...",
-  "creation_timestamp": "2025-12-03T08:04:49.959088",
-  "version": "1.0"
+  "hash": "873e28b233a3840742d068c0ffb3864c98b0cb65a80b1aa0cb8dac0a9f433849",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/relevance.py",
+  "generated_at": "2025-12-03T17:47:46.017127",
+  "golden_status": "verified",
+  "checksum": "873e28b233a3840742d068c0ffb3864c98b0cb65a80b1aa0cb8dac0a9f433849"
 }

@@ -1,0 +1,10 @@
+{
+  "hash": "4ca213f0aff096c268e090c5502c3dfcfc00c0508712f4bd6f10cb853bc9a68a",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Prompt.md",
+  "generated_at": "2025-12-03T17:47:47.563424",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

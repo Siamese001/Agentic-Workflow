@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
-  "content_hash": "7c935e8d61313add90f2440a437a7662d5b4633ff5887efb0263604b16c2b7a7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l5\\policy.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\policy.py",
-    "file_size": 9084,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
-    "scan_timestamp": "2025-12-03T08:04:48.089824"
-  },
-  "content_preview": "\"\"\"\nL5 safety and policy engine for resume job alignment workflows.\n\nDefines policy interface and implements safety engine for resume enhancement.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Optional, TypeVar\nfrom dataclasses import dataclass, field\nimport logging\nimport uuid\nfrom datetime import datetime, UTC\n\nfrom .types import (\n    SafetyContext,\n    SafetyFinding,\n    PolicyDecision,\n    Verdict,\n    Severity,\n    SafetyPolicy\n)\n\nlogger = logging.getLogger(__n...",
-  "creation_timestamp": "2025-12-03T08:04:53.758207",
-  "version": "1.0"
+  "hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/policy(1).py",
+  "generated_at": "2025-12-03T17:47:45.260147",
+  "golden_status": "verified",
+  "checksum": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c"
 }

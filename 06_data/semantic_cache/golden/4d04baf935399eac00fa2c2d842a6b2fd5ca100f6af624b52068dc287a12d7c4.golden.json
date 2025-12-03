@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4d04baf935399eac00fa2c2d842a6b2fd5ca100f6af624b52068dc287a12d7c4",
-  "content_hash": "2f4feabbd8246e8031114912394e0a7b1c424b16e98a8634492f5975d3353174",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-01-2025_v4.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-01-2025_v4.json",
-    "file_size": 173827,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "4d04baf935399eac00fa2c2d842a6b2fd5ca100f6af624b52068dc287a12d7c4",
-    "scan_timestamp": "2025-12-03T08:04:48.378866"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v4\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-10-01T22:00:00Z\",\n    \"sources\": \"v1 complete + Steve Benedetti chat comprehensive parameters + Kristy Amaro K.3-K.4 regeneration + JW v18.8 output patterns\",\n    \"notes\": \"Production version: Complete parameter tables by message type, enhanced regeneration, simplified reasoning output\",\n    \"sha256\": \"pending_calculation\",\n    \"changelog_v1_to_v2\": [\n      \"Added...",
-  "creation_timestamp": "2025-12-03T08:05:19.796814",
-  "version": "1.0"
+  "hash": "4d04baf935399eac00fa2c2d842a6b2fd5ca100f6af624b52068dc287a12d7c4",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-01-2025_v4.json",
+  "generated_at": "2025-12-03T17:47:46.677018",
+  "golden_status": "verified",
+  "checksum": "4d04baf935399eac00fa2c2d842a6b2fd5ca100f6af624b52068dc287a12d7c4"
 }

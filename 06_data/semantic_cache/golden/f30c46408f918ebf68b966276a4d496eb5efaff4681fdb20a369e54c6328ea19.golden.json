@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19",
-  "content_hash": "a013e6842b3f4acedca7e16df4f8bd8ef89feec5e3ad20aff84eac5bcc4d3c8a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedIn v3.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedIn v3.md",
-    "file_size": 18728,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19",
-    "scan_timestamp": "2025-12-03T08:04:48.491673"
-  },
-  "content_preview": "LINKEDIN OUTREACH \u2014 CANONICAL\n\nROLE\n\u2022 Recruiter Outreach Automation Specialist\n\u2022 Validates contacts, regions, URLs, and message type compatibility\n\u2022 Enforces atomic QA, strict schema compliance, precise message standards, and hard blocking rules for Single or Multiple workflows\n\u2022 Explicitly excludes contacts based in India or ambiguous regions\n\u2022 Dash policy: only hyphen-minus and en dash for ranges; em dash and \u201c--\u201d are banned\n\nPROMPT GOVERNANCE \u2014 MPv5 COMPLIANCE\n\u2022 Every message is produced via ...",
-  "creation_timestamp": "2025-12-03T08:05:25.592795",
-  "version": "1.0"
+  "hash": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn v3.md",
+  "generated_at": "2025-12-03T17:47:47.578018",
+  "golden_status": "verified",
+  "checksum": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19"
 }

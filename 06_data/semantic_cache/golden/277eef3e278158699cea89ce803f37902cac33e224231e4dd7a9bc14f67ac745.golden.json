@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-  "content_hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "stacks_v10_7\\__init__.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\__init__.py",
-    "file_size": 2451,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-    "scan_timestamp": "2025-12-03T08:04:48.355811"
-  },
-  "content_preview": "\"\"\"Stack-specific agent implementations for v10.7.\"\"\"\n\nfrom .models import (\n    SpecialistDraftPacket,\n    EvidenceClarificationRecord,\n    EvidenceBriefRecord,\n    EvidenceLiaisonPacket,\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n)\n\nfrom .safety import (\n    PIISanitizerAgent,\n    BiasDetectorAgent,\n    PromptInjectionDetectorAgent,\n    ConstitutionalReviewerAgent,\n)\n\nfrom .strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\n\nfrom .prompting import PromptEnginee...",
-  "creation_timestamp": "2025-12-03T08:05:18.154800",
-  "version": "1.0"
+  "hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.412368",
+  "golden_status": "verified",
+  "checksum": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745"
 }

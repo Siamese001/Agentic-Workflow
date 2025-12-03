@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 229,
-    "complexity_score": 192.31
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.559824"
+  "hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/emitters.py",
+  "generated_at": "2025-12-03T17:47:45.841257",
+  "safety_score": 1.0,
+  "issues": []
 }

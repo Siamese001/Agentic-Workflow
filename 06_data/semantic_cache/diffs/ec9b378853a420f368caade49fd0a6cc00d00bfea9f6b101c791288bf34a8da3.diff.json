@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/requirements.txt",
-  "diff_content": "neo4j>=5.22.0\npy2neo\n",
-  "statistics": {
-    "lines_added": 2,
-    "lines_removed": 0,
-    "lines_changed": 2
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "ec9b378853a420f368caade49fd0a6cc00d00bfea9f6b101c791288bf34a8da3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/requirements.txt",
+  "generated_at": "2025-12-03T17:47:45.493365",
+  "diff_type": "baseline",
+  "changes": []
 }

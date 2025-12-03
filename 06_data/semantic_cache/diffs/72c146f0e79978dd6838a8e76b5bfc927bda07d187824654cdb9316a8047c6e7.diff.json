@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/dag_engine/models.py",
-  "diff_content": "\"\"\"\nDAG engine models for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides minimal typed surface for constructing directed acyclic graphs in r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Awaitable, Callable, Dict, List\n\n\nNodeFn = Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]\n\n\n@dataclass\nclass Node:\n    \"\"\"\n    Represents single DAG node for r\u00e9sum\u00e9 processing workflows.\n\n    Defines executable units within r\u00e9sum\u00e9 improvement orchestration graphs.\n    \"\"\"\n\n    id: str\n    fn: NodeFn\n    metadata: Dict[str, Any] = field(default_factory=dict)\n\n\n@dataclass\nclass Edge:\n    \"\"\"\n    Represents directed edge between nodes in r\u00e9sum\u00e9 processing DAGs.\n\n    Defines execution flow and dependencies for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n\n    source: str\n    target: str\n\n\n@dataclass\nclass Graph:\n    \"\"\"\n    Represents directed acyclic graph for r\u00e9sum\u00e9 processing orchestration.\n\n    Enables structured workflow execution for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    nodes: Dict[str, Node]\n    edges: List[Edge]\n\n    def successors(self, node_id: str) -> List[Node]:\n        \"\"\"\n        Retrieves successor nodes for r\u00e9sum\u00e9 processing workflow execution.\n\n        Enables proper dependency resolution in r\u00e9sum\u00e9 improvement DAGs.\n        \"\"\"\n        return [self.nodes[e.target] for e in self.edges if e.source == node_id]\n\n    def predecessors(self, node_id: str) -> List[Node]:\n        \"\"\"\n        Retrieves predecessor nodes for r\u00e9sum\u00e9 processing workflow execution.\n\n        Enables proper dependency tracking in r\u00e9sum\u00e9 improvement DAGs.\n        \"\"\"\n        return [self.nodes[e.source] for e in self.edges if e.target == node_id]\n\n\n\n",
-  "statistics": {
-    "lines_added": 67,
-    "lines_removed": 0,
-    "lines_changed": 67
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag_engine/models.py",
+  "generated_at": "2025-12-03T17:47:46.064438",
+  "diff_type": "baseline",
+  "changes": []
 }

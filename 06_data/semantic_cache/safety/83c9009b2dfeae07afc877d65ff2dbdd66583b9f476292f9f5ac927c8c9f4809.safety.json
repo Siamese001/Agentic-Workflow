@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 39,
-    "complexity_score": 38.66
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:52.194304"
+  "hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/draft_orchestrator.py",
+  "generated_at": "2025-12-03T17:47:45.130985",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/sandbox/test_sandbox_observability.py",
-  "diff_content": "from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest\nfrom observability import clear_events, get_all_events\n\n\ndef test_sandbox_observability_events_include_vm_id():\n    clear_events()\n\n    vm = create_vm({})\n    req = ToolCallRequest(tool_name=\"echo\", args=[\"hi\"], timeout_s=1.0)\n    exec_in_vm(vm, req)\n    teardown_vm(vm)\n\n    events = get_all_events()\n    vm_ids = {e.attributes.get(\"vm_id\") for e in events if isinstance(getattr(e, \"attributes\", None), dict)}\n    # Some events may not carry vm_id; ensure at least one does.\n    assert vm.id in vm_ids\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 23,
-    "lines_removed": 0,
-    "lines_changed": 23
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "cd56a24629295b64126a7a6068d3c204cbb668298288e548ce42a9a0663f795b",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_sandbox_observability.py",
+  "generated_at": "2025-12-03T17:47:45.742725",
+  "diff_type": "baseline",
+  "changes": []
 }

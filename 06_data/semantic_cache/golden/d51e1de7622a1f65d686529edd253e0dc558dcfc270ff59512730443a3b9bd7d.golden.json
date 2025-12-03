@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d51e1de7622a1f65d686529edd253e0dc558dcfc270ff59512730443a3b9bd7d",
-  "content_hash": "5d01c1cc4605f0f75c1dbb262746d6ff89a4e6df733ee443b58c7043fb05363a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tools\\golden_eval.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\golden_eval.py",
-    "file_size": 54270,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d51e1de7622a1f65d686529edd253e0dc558dcfc270ff59512730443a3b9bd7d",
-    "scan_timestamp": "2025-12-03T08:04:48.179567"
-  },
-  "content_preview": "# FILE: 10_10/golden_eval.py\n\"\"\"\nGolden State Evaluator (v10_10 \u00b7 Phase 3 \u2014 Batch D)\n===================================================\n\nThis module provides a deterministic evaluation harness for the v10_10\nagentic workflow.\n\nIt is deliberately *pure*:\n\n    \u2022 No LLM calls.\n    \u2022 No orchestration, execution, or planning.\n    \u2022 Only consumes already\u2011materialised runtime artefacts\n      (typically the final L4 state patch exported as JSON).\n\nThe main responsibilities are:\n\n    1. Define *golden* ...",
-  "creation_timestamp": "2025-12-03T08:04:58.050308",
-  "version": "1.0"
+  "hash": "d51e1de7622a1f65d686529edd253e0dc558dcfc270ff59512730443a3b9bd7d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/golden_eval.py",
+  "generated_at": "2025-12-03T17:47:45.522412",
+  "golden_status": "verified",
+  "checksum": "d51e1de7622a1f65d686529edd253e0dc558dcfc270ff59512730443a3b9bd7d"
 }

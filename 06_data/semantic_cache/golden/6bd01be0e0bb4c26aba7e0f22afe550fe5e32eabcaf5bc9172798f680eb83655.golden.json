@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "6bd01be0e0bb4c26aba7e0f22afe550fe5e32eabcaf5bc9172798f680eb83655",
-  "content_hash": "d16282393c9ceb7d709e242fa27c14a5a5c57c3ed019546c0e5cd59e7a42dc9a",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "runtime\\observability\\agentic_collectors.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_collectors.py",
-    "file_size": 476,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "6bd01be0e0bb4c26aba7e0f22afe550fe5e32eabcaf5bc9172798f680eb83655",
-    "scan_timestamp": "2025-12-03T08:04:48.121949"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import List, Any\n\n\nEVENTS: List[Any] = []\n\n\ndef append_event(event: Any) -> None:\n    \"\"\"Append a raw event object to the in-memory agentic event buffer.\"\"\"\n\n    EVENTS.append(event)\n\n\ndef get_events() -> List[Any]:\n    \"\"\"Return a snapshot of all collected agentic events.\"\"\"\n\n    return list(EVENTS)\n\n\ndef clear_events() -> None:\n    \"\"\"Clear all collected agentic events.\"\"\"\n\n    EVENTS.clear()\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:55.526354",
-  "version": "1.0"
+  "hash": "6bd01be0e0bb4c26aba7e0f22afe550fe5e32eabcaf5bc9172798f680eb83655",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_collectors.py",
+  "generated_at": "2025-12-03T17:47:45.826024",
+  "golden_status": "verified",
+  "checksum": "6bd01be0e0bb4c26aba7e0f22afe550fe5e32eabcaf5bc9172798f680eb83655"
 }

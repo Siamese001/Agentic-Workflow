@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
-  "content_hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
+  "hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/manual_rag_input.json",
+  "generated_at": "2025-12-03T17:47:48.026920",
   "file_size": 739,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
-    "archive_name": "deprecated in v13",
-    "relative_path": "manual_rag_input.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\manual_rag_input.json",
-    "file_size": 739,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
-    "scan_timestamp": "2025-12-03T08:04:48.538674"
-  },
-  "verification_timestamp": "2025-12-03T08:05:27.376276",
-  "checksums": {
-    "sha256": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
-    "md5": "7e527ec894b84c4afe2d77a36c790bc9"
-  }
+  "modified_time": 1764610056.0015655,
+  "sha256": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
+  "integrity_check": "passed"
 }

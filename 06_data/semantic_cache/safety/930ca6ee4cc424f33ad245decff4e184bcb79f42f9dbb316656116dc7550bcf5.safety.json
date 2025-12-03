@@ -1,19 +1,9 @@
 {
-  "safety_score": 75,
-  "risk_level": "medium",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": true,
-    "has_network_operations": true,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 5285,
-    "complexity_score": 5302.85
-  },
-  "recommendations": [
-    "Validate network operations and endpoints",
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:19.986495"
+  "hash": "930ca6ee4cc424f33ad245decff4e184bcb79f42f9dbb316656116dc7550bcf5",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-02-2025_v5.6.1.json",
+  "generated_at": "2025-12-03T17:47:46.700208",
+  "safety_score": 1.0,
+  "issues": []
 }

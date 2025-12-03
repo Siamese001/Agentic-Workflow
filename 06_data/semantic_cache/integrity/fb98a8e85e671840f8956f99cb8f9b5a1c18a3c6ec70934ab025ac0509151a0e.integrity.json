@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
-  "content_hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_call_count_drift.py",
+  "generated_at": "2025-12-03T17:47:46.480341",
   "file_size": 387,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\regression\\test_call_count_drift.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_call_count_drift.py",
-    "file_size": 387,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
-    "scan_timestamp": "2025-12-03T08:04:48.360424"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.294320",
-  "checksums": {
-    "sha256": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
-    "md5": "098786ae3fa05e8c7c34bd036176021e"
-  }
+  "modified_time": 1764609961.562625,
+  "sha256": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "integrity_check": "passed"
 }

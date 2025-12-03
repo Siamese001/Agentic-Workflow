@@ -1,0 +1,9 @@
+{
+  "hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_executor.py",
+  "canonical_relative": "workflow/dag_executor.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.266923"
+}

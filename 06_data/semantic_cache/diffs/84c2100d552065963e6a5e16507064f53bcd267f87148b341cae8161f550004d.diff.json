@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "windsurf_rules/06_safety_policy_cost.md",
-  "diff_content": "# /windsurf_rules/06_safety_policy_cost.md\n## Safety, Policy, and Cost Rules (Condensed)\n\n### 1. Safety & Policy (L5 Only)\n- L5 enforces PII detection, uncertainty thresholds, and risk routing.\n- Allowed outcomes: allow, deny, reroute, escalate.\n- L5 produces decisions, not content.\n\n### 2. Policy Boundaries\n- No agent other than L5 may enforce safety gates.\n- All high-risk flows must be routed through L5.\n\n### 3. Cost Optimization Rules\n- Enforce compute budgets per agent and per DAG.\n- Prefer lower-cost, lower-latency models when viable.\n- Prevent cost regressions via CI enforcement.\n- Semantic caching allowed only when bounded and safe.\n\n### 4. Sandbox Requirements\n- All potentially dangerous operations must be sandbox-isolated.\n- L5 governs safety-critical execution flows.\n",
-  "statistics": {
-    "lines_added": 21,
-    "lines_removed": 0,
-    "lines_changed": 21
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/06_safety_policy_cost.md",
+  "generated_at": "2025-12-03T17:47:45.587935",
+  "diff_type": "baseline",
+  "changes": []
 }

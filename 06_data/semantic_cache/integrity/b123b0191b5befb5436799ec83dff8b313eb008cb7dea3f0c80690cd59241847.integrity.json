@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "content_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
+  "hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_pii_sanitizer.py",
+  "generated_at": "2025-12-03T17:47:46.544078",
   "file_size": 937,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_pii_sanitizer.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_pii_sanitizer.py",
-    "file_size": 937,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-    "scan_timestamp": "2025-12-03T08:04:48.363826"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.430407",
-  "checksums": {
-    "sha256": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-    "md5": "277abd0556eadb77add499475b21bf6f"
-  }
+  "modified_time": 1764609961.5841813,
+  "sha256": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
+  "integrity_check": "passed"
 }

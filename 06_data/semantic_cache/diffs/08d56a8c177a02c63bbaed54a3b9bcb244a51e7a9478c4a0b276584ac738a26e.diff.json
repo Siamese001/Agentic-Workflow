@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "eval/simulation/simulator.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom tools.simulation import Engine  # existing Phase-3 simulation harness\n\nfrom .models import SimScenario, SimOutcome\n\n\ndef run_scenario(scenario: SimScenario) -> SimOutcome:\n    \"\"\"Run a high-level simulation scenario using the existing Engine.\n\n    For now this is a thin wrapper around ``simulation.Engine.run_sync``.\n    It executes the named scenario ``run_count`` times (if available) and\n    aggregates the \"golden_eval_score\" metric from each run's outcome.\n    Unknown scenario ids are treated as empty, yielding zeroed scores.\n    \"\"\"\n\n    scores: List[float] = []\n    safety_incidents = 0\n    conflict_count = 0\n\n    for _ in range(max(scenario.run_count, 1)):\n        try:\n            result: Dict[str, Any] = Engine.run_sync(scenario.id, overrides=scenario.initial_context)\n        except Exception:  # pragma: no cover - defensive\n            continue\n\n        outcome = result.get(\"outcome\") or {}\n        score = float(outcome.get(\"golden_eval_score\") or 0.0)\n        scores.append(score)\n\n        if not bool(outcome.get(\"safety_passed\", True)):\n            safety_incidents += 1\n\n        # Heuristic: treat any correction iterations > 0 as a \"conflict\".\n        if int(outcome.get(\"correction_iterations\", 0) or 0) > 0:\n            conflict_count += 1\n\n    if scores:\n        avg_score = sum(scores) / float(len(scores))\n    else:\n        avg_score = 0.0\n\n    return SimOutcome(\n        scenario_id=scenario.id,\n        average_scores={\"golden_eval_score\": avg_score},\n        safety_incidents=safety_incidents,\n        agent_conflict_count=conflict_count,\n    )\n\n\n\n",
-  "statistics": {
-    "lines_added": 53,
-    "lines_removed": 0,
-    "lines_changed": 53
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "08d56a8c177a02c63bbaed54a3b9bcb244a51e7a9478c4a0b276584ac738a26e",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/simulation/simulator.py",
+  "generated_at": "2025-12-03T17:47:46.221902",
+  "diff_type": "baseline",
+  "changes": []
 }

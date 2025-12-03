@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
-  "content_hash": "c69be527242615c0db159eaff5e0de48f099667aece38279fad9875218aa7da2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\metacognition\\test_meta_ranking.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_ranking.py",
-    "file_size": 1594,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
-    "scan_timestamp": "2025-12-03T08:04:48.157095"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores\nfrom core.models.models import Evidence\n\n\ndef _make_item(text: str) -> Dict[str, Any]:\n    return {\"text\": text}\n\n\ndef test_bm25_score_prefers_important_tokens() -> None:\n    low = bm25_score(_make_item(\"foo bar\"))\n    high = bm25_score(_make_item(\"llm resume experience\"))\n    assert high >= low\n\n\ndef test_dense_score_is_deterministic() -> None:\n    a...",
-  "creation_timestamp": "2025-12-03T08:04:56.888509",
-  "version": "1.0"
+  "hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_meta_ranking.py",
+  "generated_at": "2025-12-03T17:47:45.679427",
+  "golden_status": "verified",
+  "checksum": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a"
 }

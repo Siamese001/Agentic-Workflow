@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
-  "content_hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "telemetry_v10_7.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\telemetry_v10_7.py",
-    "file_size": 587,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
-    "scan_timestamp": "2025-12-03T08:04:48.356310"
-  },
-  "content_preview": "\"\"\"Telemetry helpers emitting MCP-compatible events.\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import Any, Dict, Optional\n\nfrom mcp import emit_event\n\nlogger = logging.getLogger(\"telemetry_v10_7\")\n\n\ndef log_event(agent: str, event: str, data: Optional[Dict[str, Any]] = None) -> None:\n    \"\"\"Emit a telemetry event while preserving local logging.\"\"\"\n\n    payload = {\n        \"agent\": agent,\n        \"event\": event,\n        \"payload\": data or {},\n    }\n    emit_event(payload)...",
-  "creation_timestamp": "2025-12-03T08:05:18.206699",
-  "version": "1.0"
+  "hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/telemetry_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.339987",
+  "golden_status": "verified",
+  "checksum": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6"
 }

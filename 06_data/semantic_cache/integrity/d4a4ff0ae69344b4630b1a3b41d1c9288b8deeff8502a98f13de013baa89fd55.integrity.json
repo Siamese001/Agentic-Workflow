@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
-  "content_hash": "cb32db592aa4165d727f473fd5f3294100312851fe5381f9063fb617a4607254",
+  "hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/microvm.py",
+  "generated_at": "2025-12-03T17:47:46.124463",
   "file_size": 2632,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\sandbox\\microvm.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\microvm.py",
-    "file_size": 2632,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
-    "scan_timestamp": "2025-12-03T08:04:48.062731"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.276005",
-  "checksums": {
-    "sha256": "cb32db592aa4165d727f473fd5f3294100312851fe5381f9063fb617a4607254",
-    "md5": "84171784e20d383324c2dbc6873ffea3"
-  }
+  "modified_time": 1764610058.5130906,
+  "sha256": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
+  "integrity_check": "passed"
 }

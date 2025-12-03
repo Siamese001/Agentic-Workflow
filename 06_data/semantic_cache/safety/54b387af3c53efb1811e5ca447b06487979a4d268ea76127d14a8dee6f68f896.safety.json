@@ -1,18 +1,9 @@
 {
-  "safety_score": 85,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": true,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 17,
-    "complexity_score": 25.67
-  },
-  "recommendations": [
-    "Validate network operations and endpoints"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:18.221512"
+  "hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_evidence_traceability.py",
+  "generated_at": "2025-12-03T17:47:46.427081",
+  "safety_score": 1.0,
+  "issues": []
 }

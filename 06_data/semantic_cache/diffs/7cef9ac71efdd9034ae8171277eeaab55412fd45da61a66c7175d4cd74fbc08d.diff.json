@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/unit/test_reasoning_toggles.py",
-  "diff_content": "\"\"\"Tests for ReasoningToggles validation logic.\"\"\"\nimport pytest\nfrom pydantic import ValidationError\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef test_toggle_defaults():\n    toggles = ReasoningToggles()\n    assert toggles.cot\n    assert toggles.reflexion\n    assert 1 <= toggles.tot_branches <= 4\n\n\ndef test_toggle_bounds_for_tot_branches():\n    with pytest.raises(ValidationError):\n        ReasoningToggles(tot_branches=7)\n\n\ndef test_toggle_bounds_for_min_tot_depth():\n    with pytest.raises(ValidationError):\n        ReasoningToggles(min_tot_depth=5)\n\n\ndef test_toggle_bounds_for_temperature():\n    with pytest.raises(ValidationError):\n        ReasoningToggles(temperature_cap=0.05)\n\n\ndef test_toggle_bounds_for_self_consistency():\n    with pytest.raises(ValidationError):\n        ReasoningToggles(self_consistency=10)\n",
-  "statistics": {
-    "lines_added": 32,
-    "lines_removed": 0,
-    "lines_changed": 32
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_reasoning_toggles.py",
+  "generated_at": "2025-12-03T17:47:46.574128",
+  "diff_type": "baseline",
+  "changes": []
 }

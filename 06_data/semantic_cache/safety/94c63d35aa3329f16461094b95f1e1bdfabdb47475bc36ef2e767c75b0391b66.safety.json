@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 18,
-    "complexity_score": 12.71
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:56.966536"
+  "hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_selector_integration.py",
+  "generated_at": "2025-12-03T17:47:45.702020",
+  "safety_score": 1.0,
+  "issues": []
 }

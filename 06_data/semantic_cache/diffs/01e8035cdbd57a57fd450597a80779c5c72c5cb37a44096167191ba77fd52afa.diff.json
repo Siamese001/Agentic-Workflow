@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "meta/metacognition/models.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass Hypothesis(BaseModel):\n    \"\"\"Lightweight hypothesis used by the metacognition layer.\"\"\"\n\n    id: str\n    agent_id: str\n    content: str\n    confidence: float = 0.0\n    evidence_ids: List[str] = Field(default_factory=list)\n    rationale: Optional[str] = None\n\n\nclass MetacognitionReport(BaseModel):\n    \"\"\"Aggregate view over a set of hypotheses and signals.\"\"\"\n\n    hypotheses: List[Hypothesis] = Field(default_factory=list)\n    global_confidence: float = 0.0\n    uncertainty_score: float = 0.0\n    issues_detected: List[str] = Field(default_factory=list)\n\n\n\n",
-  "statistics": {
-    "lines_added": 28,
-    "lines_removed": 0,
-    "lines_changed": 28
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "01e8035cdbd57a57fd450597a80779c5c72c5cb37a44096167191ba77fd52afa",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/models.py",
+  "generated_at": "2025-12-03T17:47:45.959271",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tools/import_check.py",
-  "diff_content": "\"\"\"\nChecks import validity to ensure resume generation system works properly.\n\nVerifies all modules can be imported without errors to maintain\ncode quality and ensure smooth resume generation functionality.\n\"\"\"\n\nimport pkgutil\n\nprint(\"=== IMPORT CHECK START ===\")\nfor m in pkgutil.walk_packages([\"\"]):\n    name = (m.name or \"\").lstrip(\"\")\n    if not name:\n        # Skip empty or invalid module names.\n        continue\n    try:\n        __import__(name)\n    except Exception as e:\n        print(\"FAILED:\", name, \"->\", type(e).__name__, str(e))\nprint(\"=== IMPORT CHECK END ===\")\n\n\n",
-  "statistics": {
-    "lines_added": 22,
-    "lines_removed": 0,
-    "lines_changed": 22
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "302f2fd8f00a6a0b6970b1f6ab2c22be437ef32e59191c1f48c14e35fb4ab849",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/import_check.py",
+  "generated_at": "2025-12-03T17:47:45.525237",
+  "diff_type": "baseline",
+  "changes": []
 }

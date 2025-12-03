@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4a0f7aca97e4a5e57210853ec21de20bc71f4d8c2c6a22ddcf857ce677b335c5",
-  "content_hash": "18609074380eae4f2044cf91d793d921f7df2b0399e1f44fc90721f2a84013e3",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "runtime\\observability\\events.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\events.py",
-    "file_size": 552,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "4a0f7aca97e4a5e57210853ec21de20bc71f4d8c2c6a22ddcf857ce677b335c5",
-    "scan_timestamp": "2025-12-03T08:04:48.123109"
-  },
-  "content_preview": "from __future__ import annotations\n\n# In this codebase, event dataclasses live in models.py. This module exists\n# primarily as a semantic home for event types at the observability layer.\n\nfrom core.models.models import (\n    TelemetryEvent,\n    RetrievalAttemptEvent,\n    RetrievalSuccessEvent,\n    RetrievalFailureEvent,\n    RankingEvent,\n    CostSnapshot,\n)\n\n__all__ = [\n    \"TelemetryEvent\",\n    \"RetrievalAttemptEvent\",\n    \"RetrievalSuccessEvent\",\n    \"RetrievalFailureEvent\",\n    \"RankingEvent\"...",
-  "creation_timestamp": "2025-12-03T08:04:55.575315",
-  "version": "1.0"
+  "hash": "4a0f7aca97e4a5e57210853ec21de20bc71f4d8c2c6a22ddcf857ce677b335c5",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/events.py",
+  "generated_at": "2025-12-03T17:47:45.844316",
+  "golden_status": "verified",
+  "checksum": "4a0f7aca97e4a5e57210853ec21de20bc71f4d8c2c6a22ddcf857ce677b335c5"
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/sandbox/models.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass ToolCallRequest(BaseModel):\n    \"\"\"Structured request for executing a tool inside the sandbox.\n\n    This model is intentionally generic and does not depend on any\n    particular tool implementation.\n    \"\"\"\n\n    tool_name: str\n    args: List[str] = Field(default_factory=list)\n    env: Dict[str, str] = Field(default_factory=dict)\n    timeout_s: float = 30.0\n    resource_limits: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass ToolCallResult(BaseModel):\n    \"\"\"Result of running a tool inside the sandbox microVM.\"\"\"\n\n    success: bool\n    stdout: str = \"\"\n    stderr: str = \"\"\n    exit_code: int = 0\n    resource_usage: Dict[str, Any] = Field(default_factory=dict)\n    duration_ms: int = 0\n\n\nclass SandboxEvent(BaseModel):\n    \"\"\"Typed event emitted for sandbox observability hooks.\"\"\"\n\n    name: str\n    ts_ms: int\n    vm_id: Optional[str] = None\n    tool_name: Optional[str] = None\n    attributes: Dict[str, Any] = Field(default_factory=dict)\n\n\n\n",
-  "statistics": {
-    "lines_added": 43,
-    "lines_removed": 0,
-    "lines_changed": 43
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "d7c1f405e4868c29678f186b6e90fb4ab2a44b7c82d891f6c0cba868522c6643",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/models.py",
+  "generated_at": "2025-12-03T17:47:46.127216",
+  "diff_type": "baseline",
+  "changes": []
 }

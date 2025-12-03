@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 481,
-    "complexity_score": 390.78
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:51.922905"
+  "hash": "e02508416fa9fd2684b7bb61add38013ef647114a71479e1f36c84997b57baea",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/kg_retrieval_executor.py",
+  "generated_at": "2025-12-03T17:47:45.082854",
+  "safety_score": 1.0,
+  "issues": []
 }

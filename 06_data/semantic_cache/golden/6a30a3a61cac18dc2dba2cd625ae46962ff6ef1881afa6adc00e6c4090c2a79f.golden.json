@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
-  "content_hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "agent_orchestration_v10_7.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_orchestration_v10_7.py",
-    "file_size": 39365,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
-    "scan_timestamp": "2025-12-03T08:04:48.335980"
-  },
-  "content_preview": "# File: agent_orchestration_v10_7.py\n# Version: 10.7 (Refactored - CORRECTED)\n#\n# v10.7 REFACTOR (CORRECTION):\n# - RE-ADDED: Restored the `StrategyPlan.model_validate(...)` calls\n#   inside nodes. Removing them was an error and broke the agent\n#   contracts, which expect Pydantic objects, not dicts.\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #5): Graph now runs run_prompt_engineering and\n#   run_rag_stack in parallel using a fo...",
-  "creation_timestamp": "2025-12-03T08:05:16.927653",
-  "version": "1.0"
+  "hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/agent_orchestration_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.243080",
+  "golden_status": "verified",
+  "checksum": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f"
 }

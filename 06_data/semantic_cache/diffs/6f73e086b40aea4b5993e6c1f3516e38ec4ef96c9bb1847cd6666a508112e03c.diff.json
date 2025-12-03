@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Old LIC",
-  "logical_path": "LIC_v6.6_to_v6.9_functionality.md",
-  "diff_content": "### v6.6\n- Add 4.reasoning.rag_execution_enforcement with pre-execution tooling check and audit trail contract\n- Ensure LIC-QA-024..030 rules present (RAG enforcement)\n- Harden K.7 validation to BLOCK on audit missing\n\n### v6.7\n- Add 4.reasoning.about_section_policy; tag About as STATIC_PROFILE\n- Add LIC-QA-060 (About Section Contamination Check)\n- Add 3.context.current_role_verification with non-blocking WARN flow\n\n### v6.8\n- Add 4.reasoning.validation_architecture_v2 (3-layer model) and executor stub\n- Add 3.context.job_workflow_tracker_integration (CSV/JSON/Excel parser contract)\n\n### v6.9\n- Add 4.reasoning.flow_control_corrections (auto-proceed Section 3\u21924; simplified mode no pauses)\n- Add 5.output.text_wrapping (72-col wrap, preserve bullets/signature)\n\n",
-  "statistics": {
-    "lines_added": 18,
-    "lines_removed": 0,
-    "lines_changed": 18
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "6f73e086b40aea4b5993e6c1f3516e38ec4ef96c9bb1847cd6666a508112e03c",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_v6.6_to_v6.9_functionality.md",
+  "generated_at": "2025-12-03T17:47:47.544403",
+  "diff_type": "baseline",
+  "changes": []
 }

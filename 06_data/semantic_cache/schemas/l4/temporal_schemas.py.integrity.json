@@ -1,9 +1,0 @@
-{
-  "pointer_type": "integrity",
-  "target_root": "schemas",
-  "canonical_relative": "l4\\temporal_schemas.py",
-  "global_hash": "acad67a0f9dc35e4de977bd03a08119f1e4f353fb4fc2e666a19df3443f21f3b",
-  "global_path": "06_data/semantic_cache/integrity/acad67a0f9dc35e4de977bd03a08119f1e4f353fb4fc2e666a19df3443f21f3b.integrity.json",
-  "created_timestamp": "2025-12-03T08:05:27.560999",
-  "pointer_version": "1.0"
-}

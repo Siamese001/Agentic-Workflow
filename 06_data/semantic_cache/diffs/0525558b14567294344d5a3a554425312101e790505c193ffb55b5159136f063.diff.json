@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/context_engine/slots.py",
-  "diff_content": "\"\"\"\nContext slot management for r\u00e9sum\u00e9 processing workflows.\n\nDefines logical sections for organizing information in r\u00e9sum\u00e9 improvement prompts.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass ContextSlot:\n    \"\"\"\n    Represents context slot for r\u00e9sum\u00e9 processing prompt organization.\n\n    Enables structured information placement for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n    id: str\n    max_items: int\n    metadata: Dict[str, Any]\n\n\ndef assign_to_slot(slot: ContextSlot, texts: List[str]) -> List[str]:\n    \"\"\"\n    Assigns context texts to r\u00e9sum\u00e9 processing slots.\n\n    Ensures optimal information organization for r\u00e9sum\u00e9 improvement prompt generation.\n    \"\"\"\n\n    if slot.max_items <= 0:\n        return []\n    return texts[: slot.max_items]\n\n\n\n",
-  "statistics": {
-    "lines_added": 35,
-    "lines_removed": 0,
-    "lines_changed": 35
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/slots.py",
+  "generated_at": "2025-12-03T17:47:46.020690",
+  "diff_type": "baseline",
+  "changes": []
 }

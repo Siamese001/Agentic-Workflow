@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "c303a3fd6bf99eb00b5c05addf9ab3180d102b031bee8b25d32448830c473b55",
-  "content_hash": "3425600babdefbb316a062f59528ad0aef71433026b5522c80a2055ed6d850f8",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\README.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\README.md",
-    "file_size": 9221,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "c303a3fd6bf99eb00b5c05addf9ab3180d102b031bee8b25d32448830c473b55",
-    "scan_timestamp": "2025-12-03T08:04:48.163291"
-  },
-  "content_preview": "# Test Suite Documentation\n\n## Overview\n\nThis directory contains the comprehensive test suite for the Agentic-Workflow-10_10 system, organized by architectural layers and functional components.\n\n## \ud83d\udcc1 Directory Structure\n\n```text\ntests/\n\u251c\u2500\u2500 unit/                    # Unit tests by layer\n\u2502   \u251c\u2500\u2500 l1_planning/         # L1 Planning layer tests\n\u2502   \u251c\u2500\u2500 l2_execution/        # L2 Execution layer tests  \n\u2502   \u251c\u2500\u2500 l3_orchestration/    # L3 Orchestration layer tests\n\u2502   \u251c\u2500\u2500 l4_state/           # L4 State &...",
-  "creation_timestamp": "2025-12-03T08:04:57.232380",
-  "version": "1.0"
+  "hash": "c303a3fd6bf99eb00b5c05addf9ab3180d102b031bee8b25d32448830c473b55",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/README.md",
+  "generated_at": "2025-12-03T17:47:45.490108",
+  "golden_status": "verified",
+  "checksum": "c303a3fd6bf99eb00b5c05addf9ab3180d102b031bee8b25d32448830c473b55"
 }

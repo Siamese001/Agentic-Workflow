@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
-  "content_hash": "391a37f8786aea61ceadd8f9e1993e5d41739cdc18d7b248db8d4a2c556c99f3",
+  "hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/REFACTORING_SUMMARY.md",
+  "generated_at": "2025-12-03T17:47:45.915578",
   "file_size": 4726,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\testing\\REFACTORING_SUMMARY.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\REFACTORING_SUMMARY.md",
-    "file_size": 4726,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
-    "scan_timestamp": "2025-12-03T08:04:48.121232"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.518117",
-  "checksums": {
-    "sha256": "391a37f8786aea61ceadd8f9e1993e5d41739cdc18d7b248db8d4a2c556c99f3",
-    "md5": "622d140ce57e73706e73d3912c3d629f"
-  }
+  "modified_time": 1764610058.984515,
+  "sha256": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
+  "integrity_check": "passed"
 }

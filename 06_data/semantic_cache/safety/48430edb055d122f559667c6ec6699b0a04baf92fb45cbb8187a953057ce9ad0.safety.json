@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 220,
-    "complexity_score": 159.34
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.387462"
+  "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/NEO4J_INTEGRATION_README.md",
+  "generated_at": "2025-12-03T17:47:45.868180",
+  "safety_score": 1.0,
+  "issues": []
 }

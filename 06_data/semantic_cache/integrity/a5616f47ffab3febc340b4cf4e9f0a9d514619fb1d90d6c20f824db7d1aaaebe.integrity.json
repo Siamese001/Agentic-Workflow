@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-  "content_hash": "5855e19281e2930e25f86164a13c98057600803f989db59b55a68b5920c71140",
+  "hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/gating.py",
+  "generated_at": "2025-12-03T17:47:46.173348",
   "file_size": 1297,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\golden_state\\gating.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\gating.py",
-    "file_size": 1297,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-    "scan_timestamp": "2025-12-03T08:04:48.046635"
-  },
-  "verification_timestamp": "2025-12-03T08:04:49.801952",
-  "checksums": {
-    "sha256": "5855e19281e2930e25f86164a13c98057600803f989db59b55a68b5920c71140",
-    "md5": "54e12f97161092d97bfbfbff9454c344"
-  }
+  "modified_time": 1764610058.0433245,
+  "sha256": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
+  "integrity_check": "passed"
 }

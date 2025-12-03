@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
-  "content_hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "state_manager_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\state_manager_LIC.py",
-    "file_size": 17887,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
-    "scan_timestamp": "2025-12-03T08:04:48.372064"
-  },
-  "content_preview": "# File: state_manager_LIC.py\n# Description: State Manager for HOP-based architecture - v13.0\n# Manages explicit state files for auditable, debuggable, resumable workflow\n\n__version__ = \"13.0\"\n\nimport json\nimport os\nimport hashlib\nfrom pathlib import Path\nfrom typing import Dict, List, Any, Optional\nfrom datetime import datetime\nimport shutil\n\n\nclass StateManager:\n    \"\"\"\n    v13.0: Explicit state management for HOP architecture\n    \n    Each HOP (single-responsibility agent) reads from and write...",
-  "creation_timestamp": "2025-12-03T08:05:19.014468",
-  "version": "1.0"
+  "hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/state_manager_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.635795",
+  "golden_status": "verified",
+  "checksum": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465"
 }

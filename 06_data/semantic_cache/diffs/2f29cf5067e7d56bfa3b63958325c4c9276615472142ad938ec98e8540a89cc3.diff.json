@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "deprecated in v13",
-  "logical_path": "manual_rag_input.json",
-  "diff_content": "{\n  \"manual_recipient_data\": [\n    {\n      \"source_type\": \"RECIPIENT_LINKEDIN_ABOUT\",\n      \"text\": \"Paste the recipient's LinkedIn 'About' summary here.\"\n    },\n    {\n      \"source_type\": \"RECIPIENT_RECENT_POST\",\n      \"text\": \"Paste a relevant recent LinkedIn post from the recipient here.\"\n    },\n    {\n      \"source_type\": \"RECIPIENT_LINKEDIN_ABOUT\",\n      \"text\": \"Optional: Add more LinkedIn profile sections (Experience, Education, etc.)\"\n    },\n    {\n      \"source_type\": \"COMPANY_BLOG_ANNOUNCEMENT\",\n      \"text\": \"Optional: Paste relevant company blog posts or announcements here.\"\n    },\n    {\n      \"source_type\": \"COMPANY_PRESS_RELEASE\",\n      \"text\": \"Optional: Add company press releases or news coverage here.\"\n    }\n  ]\n}\n",
-  "statistics": {
-    "lines_added": 24,
-    "lines_removed": 0,
-    "lines_changed": 24
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/manual_rag_input.json",
+  "generated_at": "2025-12-03T17:47:48.025744",
+  "diff_type": "baseline",
+  "changes": []
 }

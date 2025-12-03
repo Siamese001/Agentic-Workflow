@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/dag_engine/__init__.py",
-  "diff_content": "\"\"\"\nDAG engine orchestration for r\u00e9sum\u00e9 processing workflows.\n\nProvides directed acyclic graph execution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom .models import Graph, Node, Edge  # noqa: F401\nfrom .executor import DAGExecutor  # noqa: F401\n\n\n\n",
-  "statistics": {
-    "lines_added": 11,
-    "lines_removed": 0,
-    "lines_changed": 11
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "d72f728525ad947f265a88f0f558765c54f3576c823b0dccbc60ac5921fc0a43",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag_engine/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.072266",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,0 +1,9 @@
+{
+  "hash": "f9b45a973bffd319a218a540b91055374ffb6bc4d4c2aaae1450ceb9511c53b8",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/cache/redis_cache.py",
+  "canonical_relative": "workflow/redis_cache.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.249468"
+}

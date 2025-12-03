@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
-  "content_hash": "7807a5cea25a35ac4ef73815317ef3eae68e455b1c7798cf48944e8cc0a07fee",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\_deprecated\\test_agent_registry_basic.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_registry_basic.py",
-    "file_size": 1095,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
-    "scan_timestamp": "2025-12-03T08:04:48.174253"
-  },
-  "content_preview": "from orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole  # normalized import\n\n\ndef test_agent_registry_register_and_lookup():\n    registry = AgentRegistry()\n\n    a1 = AgentCard(agent_id=\"planner-1\", role=AgentRole.PLANNER)\n    a2 = AgentCard(agent_id=\"qa-1\", role=AgentRole.QA)\n\n    registry.register_agent(a1)\n    registry.register_agent(a2)\n\n    assert registry.get_agent(\"planner-1\") is a1\n    assert registry.get_...",
-  "creation_timestamp": "2025-12-03T08:04:57.622280",
-  "version": "1.0"
+  "hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_agent_registry_basic.py",
+  "generated_at": "2025-12-03T17:47:45.785465",
+  "golden_status": "verified",
+  "checksum": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f"
 }

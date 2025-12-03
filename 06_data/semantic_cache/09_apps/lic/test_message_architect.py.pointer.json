@@ -1,0 +1,9 @@
+{
+  "hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_message_architect.py",
+  "canonical_relative": "lic/test_message_architect.py",
+  "canonical_root": "09_apps",
+  "generated_at": "2025-12-03T17:47:48.332800"
+}

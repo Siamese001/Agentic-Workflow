@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 1285,
-    "complexity_score": 1031.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:19.174291"
+  "hash": "120a04677936aecee86312cb73ada5f1768a1102254ce815c4f5271c8b158e6a",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/workflow_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.652881",
+  "safety_score": 1.0,
+  "issues": []
 }

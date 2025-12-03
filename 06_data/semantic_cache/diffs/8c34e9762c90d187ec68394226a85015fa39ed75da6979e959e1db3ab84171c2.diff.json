@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l1/cms/store.py",
-  "diff_content": "\"\"\"\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass StoredPrompt:\n    \"\"\"\n    Represents a stored resume generation prompt with metadata.\n\n    Ensures prompt storage supports consistent resume improvement.\n    \"\"\"\n    id: str\n    content: str\n    template: Optional[str] = None\n    context_schema: Optional[Dict[str, Any]] = None\n    version: str = \"1.0\"\n    created_at: Optional[str] = None\n\n\nclass PromptStore:\n    \"\"\"\n    CMS prompt storage for resume generation.\n\n    Provides storage and retrieval for compiled prompts and templates\n    to ensure consistent resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self):\n        self._prompts: Dict[str, StoredPrompt] = {}\n    \n    def store(self, prompt: StoredPrompt) -> str:\n        \"\"\"Stores resume generation prompt and returns its ID.\"\"\"\n        self._prompts[prompt.id] = prompt\n        return prompt.id\n    \n    def retrieve(self, prompt_id: str) -> Optional[StoredPrompt]:\n        \"\"\"Retrieves stored resume generation prompt by ID.\"\"\"\n        return self._prompts.get(prompt_id)\n    \n    def list_prompts(self) -> List[str]:\n        \"\"\"Lists all stored resume generation prompt IDs.\"\"\"\n        return list(self._prompts.keys())\n    \n    def delete(self, prompt_id: str) -> bool:\n        \"\"\"Deletes stored resume generation prompt.\"\"\"\n        if prompt_id in self._prompts:\n            del self._prompts[prompt_id]\n            return True\n        return False\n\n\n# Global prompt store instance\ndefault_store = PromptStore()\n\n\ndef get_store() -> PromptStore:\n    \"\"\"Gets the default resume generation prompt store instance.\"\"\"\n    return default_store\n\n\ndef store_prompt(prompt_id: str, content: str, **kwargs) -> str:\n    \"\"\"Convenience function to store resume generation prompt.\"\"\"\n    prompt = StoredPrompt(id=prompt_id, content=content, **kwargs)\n    return default_store.store(prompt)\n\n\ndef retrieve_prompt(prompt_id: str) -> Optional[StoredPrompt]:\n    \"\"\"Convenience function to retrieve resume generation prompt.\"\"\"\n    return default_store.retrieve(prompt_id)\n\n\ndef get_prompt_version(prompt_id: str) -> Optional[str]:\n    \"\"\"Gets the version of a stored resume generation prompt.\"\"\"\n    prompt = default_store.retrieve(prompt_id)\n    return prompt.version if prompt else None\n",
-  "statistics": {
-    "lines_added": 82,
-    "lines_removed": 0,
-    "lines_changed": 82
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/cms/store.py",
+  "generated_at": "2025-12-03T17:47:46.003029",
+  "diff_type": "baseline",
+  "changes": []
 }

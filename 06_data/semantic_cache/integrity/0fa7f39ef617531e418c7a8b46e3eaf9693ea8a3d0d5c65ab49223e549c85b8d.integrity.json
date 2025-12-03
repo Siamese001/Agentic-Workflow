@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-  "content_hash": "a497d34728665c5153c597742ea979c6c39bfbe5770e8cc6210ac092c0aa586f",
+  "hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/assembly.py",
+  "generated_at": "2025-12-03T17:47:46.008938",
   "file_size": 1403,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\context_engine\\assembly.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\assembly.py",
-    "file_size": 1403,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-    "scan_timestamp": "2025-12-03T08:04:48.053672"
-  },
-  "verification_timestamp": "2025-12-03T08:04:49.943008",
-  "checksums": {
-    "sha256": "a497d34728665c5153c597742ea979c6c39bfbe5770e8cc6210ac092c0aa586f",
-    "md5": "e85e0f06ce6e8fa6a26bc5b12716768f"
-  }
+  "modified_time": 1764610058.6405282,
+  "sha256": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+  "integrity_check": "passed"
 }

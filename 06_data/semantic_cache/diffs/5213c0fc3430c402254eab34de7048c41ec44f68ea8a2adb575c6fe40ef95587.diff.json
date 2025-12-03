@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/sandbox/test_sandbox_timeout.py",
-  "diff_content": "import pytest\n\nfrom infra.sandbox.models import ToolCallRequest\nfrom infra.sandbox.vm_manager import run_in_ephemeral_vm\nfrom infra.sandbox.sandbox_errors import SandboxTimeoutError\n\n\ndef test_timeout_error_when_timeout_non_positive():\n    req = ToolCallRequest(tool_name=\"echo\", args=[], timeout_s=0.0)\n    with pytest.raises(SandboxTimeoutError):\n        run_in_ephemeral_vm(req, resource_limits={})\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 17,
-    "lines_removed": 0,
-    "lines_changed": 17
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_sandbox_timeout.py",
+  "generated_at": "2025-12-03T17:47:45.746664",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 171,
-    "complexity_score": 155.16
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:58.535143"
+  "hash": "40a7d909b3faee28f450eece387c251ba9c5b94ea56737d48e9e6fce7297ae2c",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/update_imports_reorganization.py",
+  "generated_at": "2025-12-03T17:47:45.553441",
+  "safety_score": 1.0,
+  "issues": []
 }

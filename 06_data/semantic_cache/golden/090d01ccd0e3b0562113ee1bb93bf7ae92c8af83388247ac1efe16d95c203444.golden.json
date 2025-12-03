@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "090d01ccd0e3b0562113ee1bb93bf7ae92c8af83388247ac1efe16d95c203444",
-  "content_hash": "090d01ccd0e3b0562113ee1bb93bf7ae92c8af83388247ac1efe16d95c203444",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-10_v2.92.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v2.92.md",
-    "file_size": 17002,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "090d01ccd0e3b0562113ee1bb93bf7ae92c8af83388247ac1efe16d95c203444",
-    "scan_timestamp": "2025-12-03T08:04:48.442212"
-  },
-  "content_preview": "LinkedInCanonical \u2014 2025-09-11 v2.92 (FULL, ZLO-Consolidated). v2.92 is a zero-loss, additive overwrite of v2.91 that hardens transition checks, personalizes the Bridge requirement, and enforces lifecycle-gated CTAs while preserving all prior invariants, CXO precedence, and Prompt Shell v1 structure.&#x20;\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ, run canonical QA sequences,...",
-  "creation_timestamp": "2025-12-03T08:05:22.344645",
-  "version": "1.0"
+  "hash": "090d01ccd0e3b0562113ee1bb93bf7ae92c8af83388247ac1efe16d95c203444",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-10_v2.92.md",
+  "generated_at": "2025-12-03T17:47:47.109739",
+  "golden_status": "verified",
+  "checksum": "090d01ccd0e3b0562113ee1bb93bf7ae92c8af83388247ac1efe16d95c203444"
 }

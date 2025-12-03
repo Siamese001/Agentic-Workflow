@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/control_plane/decisions.py",
-  "diff_content": "\"\"\"\nControl plane decision logic for r\u00e9sum\u00e9 processing safety enforcement.\n\nProvides rule evaluation and verdict aggregation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional, Literal\n\nfrom pydantic import BaseModel, Field\n\nfrom .models import PolicyRule\n\n\nclass RuleMatch(BaseModel):\n    \"\"\"\n    Represents policy rule match for r\u00e9sum\u00e9 processing safety evaluation.\n\n    Enables systematic safety assessment for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    rule_id: str\n    category: str\n    severity: str\n    is_pii: bool = False\n\n    # Optional small snippet or structured payload.\n    details: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass RulesEngineResult(BaseModel):\n    \"\"\"\n    Aggregates rule evaluation results for r\u00e9sum\u00e9 processing safety decisions.\n\n    Provides comprehensive safety assessment for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n\n    matches: List[RuleMatch] = Field(default_factory=list)\n    max_severity: Optional[str] = None\n    has_pii: bool = False\n\n\nclass JudgeVerdict(BaseModel):\n    \"\"\"\n    Represents safety verdict for r\u00e9sum\u00e9 processing control plane decisions.\n\n    Enables structured safety validation for comprehensive r\u00e9sum\u00e9 enhancement operations.\n    \"\"\"\n\n    verdict: Literal[\"safe\", \"unsafe\", \"ambiguous\"]\n    explanation: str\n    signals: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass SafetyPipelineTrace(BaseModel):\n    \"\"\"\n    Provides debugging trace for r\u00e9sum\u00e9 processing safety pipeline execution.\n\n    Enables observability and troubleshooting for r\u00e9sum\u00e9 improvement safety workflows.\n    \"\"\"\n\n    rules_engine: Dict[str, Any] = Field(default_factory=dict)\n    judge: Dict[str, Any] = Field(default_factory=dict)\n\n\ndef aggregate_severity(levels: List[str]) -> Optional[str]:\n    \"\"\"\n    Aggregates severity levels for r\u00e9sum\u00e9 processing safety decisions.\n\n    Ensures proper risk assessment for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n\n    order = {\"low\": 0, \"medium\": 1, \"high\": 2}\n    best: Optional[str] = None\n    best_score = -1\n    for lvl in levels:\n        score = order.get(lvl, -1)\n        if score > best_score:\n            best = lvl\n            best_score = score\n    return best\n\n\ndef enabled_rules(rules: List[PolicyRule]) -> List[PolicyRule]:\n    \"\"\"\n    Filters enabled policy rules for r\u00e9sum\u00e9 processing safety enforcement.\n\n    Ensures only active rules are applied in r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n\n    return [r for r in rules if getattr(r, \"enabled\", True)]\n\n\n\n",
-  "statistics": {
-    "lines_added": 93,
-    "lines_removed": 0,
-    "lines_changed": 93
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/decisions.py",
+  "generated_at": "2025-12-03T17:47:46.027665",
+  "diff_type": "baseline",
+  "changes": []
 }

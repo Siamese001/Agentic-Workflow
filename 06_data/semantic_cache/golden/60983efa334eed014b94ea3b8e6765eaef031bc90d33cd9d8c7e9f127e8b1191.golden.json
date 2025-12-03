@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "60983efa334eed014b94ea3b8e6765eaef031bc90d33cd9d8c7e9f127e8b1191",
-  "content_hash": "60983efa334eed014b94ea3b8e6765eaef031bc90d33cd9d8c7e9f127e8b1191",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-10_v2.91.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v2.91.md",
-    "file_size": 16812,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "60983efa334eed014b94ea3b8e6765eaef031bc90d33cd9d8c7e9f127e8b1191",
-    "scan_timestamp": "2025-12-03T08:04:48.441941"
-  },
-  "content_preview": "LinkedInCanonical \u2014 2025-09-10 v2.91 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 \u2192 v2.75 \u2192 v2.80 \u2192 v2.81 \u2192 v2.82 \u2192 v2.83 \u2192 v2.84 \u2192 v2.84a \u2192 v2.85 \u2192 v2.86 \u2192 v2.88 \u2192 v2.90 \u2192 v2.91\n\nZLO Method: Versioned Zero-Loss Overwrite, Steps 1\u20135. v2.91 is an additive, zero-regression overwrite of v2.90. It encodes Nuclear RCA fixes for insight construction, bullet phrasing, and transition discipline; preserves all v2.90 invariants including CXO precedence and C-Level DRQ gating; and aligns the specification to P...",
-  "creation_timestamp": "2025-12-03T08:05:22.335299",
-  "version": "1.0"
+  "hash": "60983efa334eed014b94ea3b8e6765eaef031bc90d33cd9d8c7e9f127e8b1191",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-10_v2.91.md",
+  "generated_at": "2025-12-03T17:47:47.106114",
+  "golden_status": "verified",
+  "checksum": "60983efa334eed014b94ea3b8e6765eaef031bc90d33cd9d8c7e9f127e8b1191"
 }

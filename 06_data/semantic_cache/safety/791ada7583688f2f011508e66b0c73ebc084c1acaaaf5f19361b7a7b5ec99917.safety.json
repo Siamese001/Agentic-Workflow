@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 37,
-    "complexity_score": 38.48
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.300618"
+  "hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_retrieval_latency_slo.py",
+  "generated_at": "2025-12-03T17:47:46.485547",
+  "safety_score": 1.0,
+  "issues": []
 }

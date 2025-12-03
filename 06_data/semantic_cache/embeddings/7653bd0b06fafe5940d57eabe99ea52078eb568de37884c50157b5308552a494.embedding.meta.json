@@ -1,0 +1,10 @@
+{
+  "hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_validator.py",
+  "generated_at": "2025-12-03T17:47:46.560933",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

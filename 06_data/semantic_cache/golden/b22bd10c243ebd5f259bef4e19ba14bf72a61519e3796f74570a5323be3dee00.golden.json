@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-  "content_hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json",
-    "file_size": 113515,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-    "scan_timestamp": "2025-12-03T08:04:48.479965"
-  },
-  "content_preview": "{\n  \"metadata\": {\n    \"analysis_id\": \"LIC-ENFORCEMENT-QA-GATE-MAPPING-v1.0\",\n    \"template_analyzed\": \"LIC_FULL_v10_23_1_COMPLETE.json\",\n    \"analysis_date\": \"2025-10-15\",\n    \"purpose\": \"Map every enforcement point to corresponding QA validation gate and identify gaps\",\n    \"methodology\": \"Granular line-by-line analysis of all constraints, requirements, rules, and enforcement points\",\n    \"findings_summary\": {\n      \"total_enforcement_points\": 89,\n      \"mapped_to_qa_gates\": 47,\n      \"missing_...",
-  "creation_timestamp": "2025-12-03T08:05:25.365335",
-  "version": "1.0"
+  "hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json",
+  "generated_at": "2025-12-03T17:47:47.485918",
+  "golden_status": "verified",
+  "checksum": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3309c319a1ae6a47a9d21945c864ec8f9400d69b94a950a483c715cf36eeba7b",
-  "content_hash": "7a55802d06723944b294b3fa61e664c86657c064a5da8d82380e6c7c190697af",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l5\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\__init__.py",
-    "file_size": 7983,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3309c319a1ae6a47a9d21945c864ec8f9400d69b94a950a483c715cf36eeba7b",
-    "scan_timestamp": "2025-12-03T08:04:48.090568"
-  },
-  "content_preview": "\"\"\"\nL5 safety and policy layer for resume job alignment workflows.\n\nHandles safety checks and policy enforcement for resume enhancement processing.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, Optional\n\n# Re-export canonical types from l5.types\nfrom .types import (\n    Severity,\n    Verdict,\n    FindingType,\n    SafetyFinding,\n    PolicyDecision,\n    SafetyContext,\n    SafetyError,\n    PolicyEvaluationError,\n    PolicyConfigurationError,\n)\n\n# Re-export policy engine from ...",
-  "creation_timestamp": "2025-12-03T08:04:53.864417",
-  "version": "1.0"
+  "hash": "3309c319a1ae6a47a9d21945c864ec8f9400d69b94a950a483c715cf36eeba7b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.277180",
+  "golden_status": "verified",
+  "checksum": "3309c319a1ae6a47a9d21945c864ec8f9400d69b94a950a483c715cf36eeba7b"
 }

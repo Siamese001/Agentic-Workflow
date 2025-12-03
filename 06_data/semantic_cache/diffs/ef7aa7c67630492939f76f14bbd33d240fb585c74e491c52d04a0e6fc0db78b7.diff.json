@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "runtime/observability/agentic_events.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyEvent(BaseModel):\n    \"\"\"Observability event capturing safety-related activity.\n\n    This is intentionally lightweight and does not depend on higher-level\n    orchestration types; callers pass identifiers and structured payloads.\n    \"\"\"\n\n    name: str = \"safety_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    stage: Optional[str] = None\n    payload: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass DecisionEvent(BaseModel):\n    \"\"\"Event describing an applied safety / routing decision.\"\"\"\n\n    name: str = \"decision_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    decision_type: str\n    action: str\n    reason: str\n    metadata: Dict[str, Any] = Field(default_factory=dict)\n\n\nclass CostEvent(BaseModel):\n    \"\"\"Event capturing per-call cost/latency for observability.\"\"\"\n\n    name: str = \"cost_event\"\n    ts_ms: int\n    workflow_id: Optional[str] = None\n    agent_id: Optional[str] = None\n    provider: str\n    model_name: str\n    estimated_cost: float\n    latency_ms: int\n    metadata: Dict[str, Any] = Field(default_factory=dict)\n\n\n\n",
-  "statistics": {
-    "lines_added": 50,
-    "lines_removed": 0,
-    "lines_changed": 50
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_events.py",
+  "generated_at": "2025-12-03T17:47:45.829497",
+  "diff_type": "baseline",
+  "changes": []
 }

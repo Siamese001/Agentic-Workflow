@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
-  "content_hash": "568bada8ff460ba89d0d18e2edb1a77bd1062e4b9c17fa5e77a6ea5c6da97d33",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l3\\safety_orchestrator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\safety_orchestrator.py",
-    "file_size": 1099,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
-    "scan_timestamp": "2025-12-03T08:04:48.082576"
-  },
-  "content_preview": "\"\"\"\nL3 safety orchestrator for resume job alignment workflows.\n\nCoordinates safety planning and execution for resume enhancement.\n\"\"\"\n\nfrom typing import Any\nfrom l1.safety_planning import plan_safety\nfrom l2.safety_executor import SafetyExecutor\nfrom runtime.observability import record_event\n\nclass SafetyOrchestrator:\n    \"\"\"Pure orchestration for resume safety job alignment workflows.\"\"\"\n    \n    def __init__(self, safety_executor: SafetyExecutor):\n        self.safety_executor = safety_executo...",
-  "creation_timestamp": "2025-12-03T08:04:52.249335",
-  "version": "1.0"
+  "hash": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/safety_orchestrator.py",
+  "generated_at": "2025-12-03T17:47:45.145195",
+  "golden_status": "verified",
+  "checksum": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d"
 }

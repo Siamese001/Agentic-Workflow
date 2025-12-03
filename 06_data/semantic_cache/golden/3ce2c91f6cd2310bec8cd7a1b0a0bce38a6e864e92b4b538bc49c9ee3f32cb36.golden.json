@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36",
-  "content_hash": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_v11_1_Comprehensive_Test_Report.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_v11_1_Comprehensive_Test_Report.md",
-    "file_size": 16937,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36",
-    "scan_timestamp": "2025-12-03T08:04:48.487314"
-  },
-  "content_preview": "# LIC v11.1 - COMPREHENSIVE TEST EXECUTION REPORT\n\n**Date:** October 29, 2025  \n**System:** LIC-AGENTIC-v11.1 (LinkedIn InMail Cold Outreach)  \n**Test Framework:** pytest 8.4.2 with pytest-asyncio  \n**Python Version:** 3.12.3\n\n---\n\n## EXECUTIVE SUMMARY\n\n| Metric | Count | Percentage |\n|--------|-------|------------|\n| **Total Tests** | 43 | 100% |\n| **Passed** | 38 | 88.4% |\n| **Failed** | 5 | 11.6% |\n| **Skipped** | 0 | 0% |\n| **Errors** | 0 | 0% |\n\n**Pass Rate:** 88.4%  \n**Overall Status:** \u26a0\ufe0f...",
-  "creation_timestamp": "2025-12-03T08:05:25.523551",
-  "version": "1.0"
+  "hash": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_v11_1_Comprehensive_Test_Report.md",
+  "generated_at": "2025-12-03T17:47:47.532879",
+  "golden_status": "verified",
+  "checksum": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36"
 }

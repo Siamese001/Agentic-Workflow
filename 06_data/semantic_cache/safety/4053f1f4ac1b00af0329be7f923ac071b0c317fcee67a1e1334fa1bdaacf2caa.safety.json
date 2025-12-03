@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 116,
-    "complexity_score": 98.91
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:51.138977"
+  "hash": "4053f1f4ac1b00af0329be7f923ac071b0c317fcee67a1e1334fa1bdaacf2caa",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/qa_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.946037",
+  "safety_score": 1.0,
+  "issues": []
 }

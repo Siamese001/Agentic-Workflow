@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "eval/health/failure_detector.py",
-  "diff_content": "from __future__ import annotations\n\n\"\"\"Implements simple failure-detection helpers that turn raw telemetry into health signals so recurring problems can be fixed before they degrade resume quality.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass FailureSignal:\n    \"\"\"Represents a coarse failure signal used by health policies to judge how serious repeated issues are for resume runs.\"\"\"\n\n    code: str\n    message: str\n    severity: str\n    metadata: Dict[str, Any]\n\n\ndef detect_repeated_failures(events: List[Dict[str, Any]], threshold: int = 3) -> List[FailureSignal]:\n    \"\"\"Finds repeated error patterns in events so teams can spot unstable behavior that might lead to inconsistent or failed resume outputs.\"\"\"\n\n    counts: Dict[str, int] = {}\n    for evt in events:\n        if evt.get(\"event_type\") != \"error\":\n            continue\n        code = str(evt.get(\"error_code\") or \"unknown\")\n        counts[code] = counts.get(code, 0) + 1\n\n    signals: List[FailureSignal] = []\n    for code, count in counts.items():\n        if count >= threshold:\n            severity = \"high\" if count >= threshold * 2 else \"medium\"\n            signals.append(\n                FailureSignal(\n                    code=f\"repeated_{code}\",\n                    message=f\"Error {code!r} occurred {count} times\",\n                    severity=severity,\n                    metadata={\"count\": count},\n                )\n            )\n\n    return signals\n\n\n\n",
-  "statistics": {
-    "lines_added": 45,
-    "lines_removed": 0,
-    "lines_changed": 45
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/failure_detector.py",
+  "generated_at": "2025-12-03T17:47:46.202632",
+  "diff_type": "baseline",
+  "changes": []
 }

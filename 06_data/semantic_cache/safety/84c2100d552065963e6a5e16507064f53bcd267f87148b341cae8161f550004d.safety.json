@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 21,
-    "complexity_score": 17.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:58.647885"
+  "hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/06_safety_policy_cost.md",
+  "generated_at": "2025-12-03T17:47:45.588729",
+  "safety_score": 1.0,
+  "issues": []
 }

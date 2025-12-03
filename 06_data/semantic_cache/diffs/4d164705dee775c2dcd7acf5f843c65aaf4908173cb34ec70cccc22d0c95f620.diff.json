@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/unit/test_rag_init.py",
-  "diff_content": "import importlib\n\n\ndef test_rag_package_exports_expected_symbols():\n    module = importlib.import_module(\"src.lic_agentic.rag\")\n    for symbol in [\n        \"ContentStore\",\n        \"EvidenceRegistry\",\n        \"RetrievalPlan\",\n        \"ToolRegistry\",\n        \"ToolResult\",\n    ]:\n        assert hasattr(module, symbol)\n",
-  "statistics": {
-    "lines_added": 13,
-    "lines_removed": 0,
-    "lines_changed": 13
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "4d164705dee775c2dcd7acf5f843c65aaf4908173cb34ec70cccc22d0c95f620",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_rag_init.py",
+  "generated_at": "2025-12-03T17:47:46.566239",
+  "diff_type": "baseline",
+  "changes": []
 }

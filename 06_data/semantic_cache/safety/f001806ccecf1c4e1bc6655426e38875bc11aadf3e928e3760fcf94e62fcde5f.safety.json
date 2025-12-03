@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 103,
-    "complexity_score": 106.3
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.389887"
+  "hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_mcp_selector.py",
+  "generated_at": "2025-12-03T17:47:46.530748",
+  "safety_score": 1.0,
+  "issues": []
 }

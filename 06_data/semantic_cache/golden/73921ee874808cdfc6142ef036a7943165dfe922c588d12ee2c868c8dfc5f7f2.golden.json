@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2",
-  "content_hash": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_FULL_v10_20.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_FULL_v10_20.json",
-    "file_size": 114769,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2",
-    "scan_timestamp": "2025-12-03T08:04:48.480766"
-  },
-  "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.20\",\n    \"base_version\": \"v10.10\",\n    \"previous_version\": \"v10.10\",\n    \"release_date\": \"2025-10-14\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Comprehensive quality and edge case hardening patch based on 30-test validation suite. Addresses 11 critical gaps in boot validation, confidence scoring, metric validation, and error handling on top of v10.10's 41 remediat...",
-  "creation_timestamp": "2025-12-03T08:05:25.383678",
-  "version": "1.0"
+  "hash": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_FULL_v10_20.json",
+  "generated_at": "2025-12-03T17:47:47.489827",
+  "golden_status": "verified",
+  "checksum": "73921ee874808cdfc6142ef036a7943165dfe922c588d12ee2c868c8dfc5f7f2"
 }

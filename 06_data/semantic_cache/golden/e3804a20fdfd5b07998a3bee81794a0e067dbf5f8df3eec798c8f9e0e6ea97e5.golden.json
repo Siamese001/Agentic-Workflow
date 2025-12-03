@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e3804a20fdfd5b07998a3bee81794a0e067dbf5f8df3eec798c8f9e0e6ea97e5",
-  "content_hash": "a9bb919f9404866de203b319c1526840a1febb39a674eb4f02d60dfd9f47dae4",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "retrievers\\retrieval.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\retrieval.py",
-    "file_size": 324,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "e3804a20fdfd5b07998a3bee81794a0e067dbf5f8df3eec798c8f9e0e6ea97e5",
-    "scan_timestamp": "2025-12-03T08:04:48.109565"
-  },
-  "content_preview": "\"\"\"\nRetrieval system for r\u00e9sum\u00e9 evidence gathering.\n\nProvides access to RAG retrieval functions to support comprehensive r\u00e9sum\u00e9 improvement with relevant data.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom meta.retrieval.retrieval import run_rag_retrieval  # noqa: F401\n\n__all__ = [\"run_rag_retrieval\"]\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:55.328309",
-  "version": "1.0"
+  "hash": "e3804a20fdfd5b07998a3bee81794a0e067dbf5f8df3eec798c8f9e0e6ea97e5",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/retrievers/retrieval(1).py",
+  "generated_at": "2025-12-03T17:47:45.420226",
+  "golden_status": "verified",
+  "checksum": "e3804a20fdfd5b07998a3bee81794a0e067dbf5f8df3eec798c8f9e0e6ea97e5"
 }

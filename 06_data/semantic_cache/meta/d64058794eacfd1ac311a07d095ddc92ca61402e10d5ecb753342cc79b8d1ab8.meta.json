@@ -1,25 +1,11 @@
 {
-  "meta_type": "artifact_manifest",
-  "file_hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\refactoring\\README_REFACTORING.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\README_REFACTORING.md",
-    "file_size": 493,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
-    "scan_timestamp": "2025-12-03T08:04:48.117751"
-  },
-  "artifacts": {
-    "ast": "ast/d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8.ast",
-    "embedding": "embeddings/d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8.embedding",
-    "diff": "diffs/d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8.diff.json",
-    "safety": "safety/d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8.safety.json",
-    "golden": "golden/d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8.golden.json",
-    "integrity": "integrity/d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8.integrity.json"
-  },
-  "generation_timestamp": "2025-12-03T08:04:55.452262",
-  "artifact_count": 5
+  "hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
+  "type": "meta",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/refactoring/README_REFACTORING.md",
+  "generated_at": "2025-12-03T17:47:45.876576",
+  "file_type": "RG",
+  "file_extension": ".md",
+  "file_size": 493,
+  "processing_stage": "phase_0_5"
 }

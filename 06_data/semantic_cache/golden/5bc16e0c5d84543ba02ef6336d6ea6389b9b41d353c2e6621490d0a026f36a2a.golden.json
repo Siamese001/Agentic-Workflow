@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a",
-  "content_hash": "381e53337bdc837f44ed08e2a21735e5afc3316d4cc468dd51af304fca32a9fa",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\many_shot_examples.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\many_shot_examples.py",
-    "file_size": 16518,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a",
-    "scan_timestamp": "2025-12-03T08:04:48.070520"
-  },
-  "content_preview": "\"\"\"\nMany-Shot Examples for resume generation workflow guidance.\n\nProvides high-quality examples for L1 planners and executors\nto improve resume quality and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List\nfrom enum import Enum\n\n\nclass ExampleType(str, Enum):\n    \"\"\"\n    Type of example for resume generation workflow.\n\n    Defines example categories for improved resume quality guidance.\n    \"\"\"\n    \n    L1_STRATEGY...",
-  "creation_timestamp": "2025-12-03T08:04:50.998248",
-  "version": "1.0"
+  "hash": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/many_shot_examples(1).py",
+  "generated_at": "2025-12-03T17:47:44.918529",
+  "golden_status": "verified",
+  "checksum": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a"
 }

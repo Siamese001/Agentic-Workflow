@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/sandbox/test_fs_isolation.py",
-  "diff_content": "from infra.sandbox.fs_template import build_ephemeral_rootfs\n\n\ndef test_build_ephemeral_rootfs_shape():\n    fs = build_ephemeral_rootfs()\n\n    assert fs.get(\"tmpfs\") is True\n    assert \"/\" in fs.get(\"restricted_paths\", [])\n    assert \"/tmp\" in fs.get(\"writable_paths\", [])\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 15,
-    "lines_removed": 0,
-    "lines_changed": 15
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_fs_isolation.py",
+  "generated_at": "2025-12-03T17:47:45.728112",
+  "diff_type": "baseline",
+  "changes": []
 }

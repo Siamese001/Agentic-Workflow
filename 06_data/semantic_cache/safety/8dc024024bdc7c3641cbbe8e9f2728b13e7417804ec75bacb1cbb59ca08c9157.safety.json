@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 138,
-    "complexity_score": 104.25
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:49.510816"
+  "hash": "8dc024024bdc7c3641cbbe8e9f2728b13e7417804ec75bacb1cbb59ca08c9157",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/di_container.py",
+  "generated_at": "2025-12-03T17:47:44.774178",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "retrievers/bm25.py",
-  "diff_content": "\"\"\"BM25-based lexical retriever (v10_10 \u00b7 META layer).\n\nThis module wraps the ``rank-bm25`` library behind a simple function\nthat can be used by the retrieval layer. It is safe to import even if\n``rank_bm25`` is not installed: imports are performed lazily and\nexposed as explicit errors.\n\nResponsibilities:\n    \u2022 Provide a BM25Okapi-backed search over an in-memory corpus.\n    \u2022 Return results as simple dicts suitable for adaptation into\n      Evidence objects or other downstream structures.\n\nNon-responsibilities:\n    \u2022 No knowledge of prompts, agents, or workflow plans.\n    \u2022 No persistence or indexing beyond the in-memory corpus.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Sequence\n\n\nclass BM25ClientError(RuntimeError):\n    \"\"\"Raised when rank-bm25 cannot be imported or used.\"\"\"\n\n\ndef _import_bm25():\n    \"\"\"Import BM25Okapi lazily from rank_bm25.\"\"\"\n\n    try:  # pragma: no cover - import path is environment dependent\n        from rank_bm25 import BM25Okapi  # type: ignore\n    except ImportError as exc:  # pragma: no cover\n        raise BM25ClientError(\"rank-bm25 package not installed\") from exc\n    return BM25Okapi\n\n\n@dataclass\nclass BM25Config:\n    \"\"\"Configuration for BM25 retrieval.\"\"\"\n\n    k1: float = 1.5\n    b: float = 0.75\n    max_hits: int = 20\n\n\ndef _tokenize(text: str) -> List[str]:\n    \"\"\"Very simple whitespace tokenizer.\"\"\"\n\n    return (text or \"\").lower().split()\n\n\ndef bm25_search(\n    query: str,\n    corpus: Sequence[Dict[str, Any]],\n    *,\n    cfg: BM25Config,\n) -> List[Dict[str, Any]]:\n    \"\"\"Run BM25 search over an in-memory corpus.\n\n    Parameters\n    ----------\n    query:\n        Query string.\n    corpus:\n        Sequence of dict items; each must contain a ``text`` field.\n    cfg:\n        BM25Config with k1 / b / max_hits.\n\n    Returns\n    -------\n    List[Dict[str, Any]]\n        Items annotated with ``score`` and sorted by descending score.\n    \"\"\"\n\n    if not corpus:\n        return []\n\n    BM25Okapi = _import_bm25()\n\n    documents = [item.get(\"text\") or \"\" for item in corpus]\n    tokenized_corpus = [_tokenize(doc) for doc in documents]\n    bm25 = BM25Okapi(tokenized_corpus, k1=cfg.k1, b=cfg.b)\n\n    scores = bm25.get_scores(_tokenize(query))\n\n    enriched: List[Dict[str, Any]] = []\n    for item, score in zip(corpus, scores):\n        new_item = dict(item)\n        new_item[\"score\"] = float(score)\n        enriched.append(new_item)\n\n    enriched.sort(key=lambda x: x.get(\"score\", 0.0), reverse=True)\n    return enriched[: cfg.max_hits]\n\n\n\n",
-  "statistics": {
-    "lines_added": 97,
-    "lines_removed": 0,
-    "lines_changed": 97
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/retrievers/bm25(1).py",
+  "generated_at": "2025-12-03T17:47:45.412257",
+  "diff_type": "baseline",
+  "changes": []
 }

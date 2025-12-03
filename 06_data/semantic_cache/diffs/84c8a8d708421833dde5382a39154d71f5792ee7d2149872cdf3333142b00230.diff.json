@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "graph_query.py",
-  "diff_content": "# graph_query.py\n# L2-safe stub module to satisfy Neo4j import tests.\n\ntry:\n    from neo4j import GraphDatabase\n    _NEO4J_AVAILABLE = True\nexcept Exception:\n    GraphDatabase = None\n    _NEO4J_AVAILABLE = False\n\ndef graph_query(*args, **kwargs):\n    \"\"\"\n    Stubbed query function to satisfy import tests.\n    Does not execute Neo4j operations.\n    \"\"\"\n    if not _NEO4J_AVAILABLE:\n        raise ImportError(\"Neo4j driver not installed\")\n    return {\n        \"status\": \"neo4j_unavailable\",\n        \"results\": [],\n        \"error\": \"Neo4j driver not installed\"\n    }\n\n__all__ = [\"graph_query\", \"GraphDatabase\", \"_NEO4J_AVAILABLE\"]\n",
-  "statistics": {
-    "lines_added": 24,
-    "lines_removed": 0,
-    "lines_changed": 24
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "84c8a8d708421833dde5382a39154d71f5792ee7d2149872cdf3333142b00230",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/graph_query.py",
+  "generated_at": "2025-12-03T17:47:44.698351",
+  "diff_type": "baseline",
+  "changes": []
 }

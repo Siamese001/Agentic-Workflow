@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
-  "content_hash": "99be611c4aa8a5d68187a20c802b34513e143e945862f871ec9a5978c6856a71",
+  "hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/contracts/test_typed_contracts.py",
+  "generated_at": "2025-12-03T17:47:45.601401",
   "file_size": 2761,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\contracts\\test_typed_contracts.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\contracts\\test_typed_contracts.py",
-    "file_size": 2761,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
-    "scan_timestamp": "2025-12-03T08:04:48.125476"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.686972",
-  "checksums": {
-    "sha256": "99be611c4aa8a5d68187a20c802b34513e143e945862f871ec9a5978c6856a71",
-    "md5": "c0b3929734024d26b871bb62e200522e"
-  }
+  "modified_time": 1764610059.4358354,
+  "sha256": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
+  "integrity_check": "passed"
 }

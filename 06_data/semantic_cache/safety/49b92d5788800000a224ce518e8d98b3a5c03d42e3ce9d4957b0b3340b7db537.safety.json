@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 95,
-    "complexity_score": 75.51
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:25.575273"
+  "hash": "49b92d5788800000a224ce518e8d98b3a5c03d42e3ce9d4957b0b3340b7db537",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Single Prompt.md",
+  "generated_at": "2025-12-03T17:47:47.571834",
+  "safety_score": 1.0,
+  "issues": []
 }

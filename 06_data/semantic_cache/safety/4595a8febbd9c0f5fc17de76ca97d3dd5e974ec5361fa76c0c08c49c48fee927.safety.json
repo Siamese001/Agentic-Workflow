@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 46,
-    "complexity_score": 50.41
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.973996"
+  "hash": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/retrieval_clients.py",
+  "generated_at": "2025-12-03T17:47:46.299896",
+  "safety_score": 1.0,
+  "issues": []
 }

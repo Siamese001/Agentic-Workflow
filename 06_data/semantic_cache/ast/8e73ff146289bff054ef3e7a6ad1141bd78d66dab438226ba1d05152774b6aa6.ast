@@ -1,7 +1,0 @@
-{
-  "ast_version": "python_3.8+",
-  "error": "Syntax error: expected an indented block after function definition on line 313 (<unknown>, line 314)",
-  "line_number": 314,
-  "offset": 5,
-  "parse_failed": true
-}

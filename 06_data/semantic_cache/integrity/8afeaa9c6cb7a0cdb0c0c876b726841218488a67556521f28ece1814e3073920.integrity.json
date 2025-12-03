@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
-  "content_hash": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
+  "hash": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/hil.py",
+  "generated_at": "2025-12-03T17:47:46.385795",
   "file_size": 16003,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "stacks_v10_7\\hil.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\hil.py",
-    "file_size": 16003,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
-    "scan_timestamp": "2025-12-03T08:04:48.354295"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.016870",
-  "checksums": {
-    "sha256": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
-    "md5": "5d55a68e2ea4ff88f2d4c88b3cf08b8e"
-  }
+  "modified_time": 1764609961.6410353,
+  "sha256": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
+  "integrity_check": "passed"
 }

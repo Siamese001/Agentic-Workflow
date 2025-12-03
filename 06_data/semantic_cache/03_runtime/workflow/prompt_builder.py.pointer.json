@@ -1,0 +1,9 @@
+{
+  "hash": "9cc4de9a0a2467a00b135154b487e7fce34a5320a72062e7f0488422b3f55632",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/builders/prompt_builder.py",
+  "canonical_relative": "workflow/prompt_builder.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.256523"
+}

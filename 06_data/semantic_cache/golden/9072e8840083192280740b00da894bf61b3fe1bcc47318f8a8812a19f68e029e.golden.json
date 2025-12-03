@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
-  "content_hash": "c74df6ecbc88b6878a35eaefc25418734a145facc95013f96d84124fa91d8f0d",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\reasoning\\react.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\react.py",
-    "file_size": 1179,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
-    "scan_timestamp": "2025-12-03T08:04:48.061607"
-  },
-  "content_preview": "\"\"\"\nReAct reasoning framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides step-wise reasoning with interleaved actions for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass ReActStep:\n    \"\"\"\n    Represents reasoning-action-observation step for r\u00e9sum\u00e9 processing.\n\n    Enables structured iterative thinking for optimal r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    thought: str\n    action: str\n    observation: str\n\n\ndef run_rea...",
-  "creation_timestamp": "2025-12-03T08:04:50.226092",
-  "version": "1.0"
+  "hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/react.py",
+  "generated_at": "2025-12-03T17:47:46.098861",
+  "golden_status": "verified",
+  "checksum": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e"
 }

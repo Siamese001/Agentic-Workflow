@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
-  "content_hash": "b394ab8edc33a6b251ce5790ec9b3affd8af867d781398a48b69e172b14b3bdf",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "config\\config_profiles_v10_10.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\config_profiles_v10_10.py",
-    "file_size": 14598,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
-    "scan_timestamp": "2025-12-03T08:04:48.039676"
-  },
-  "content_preview": "\"\"\"\nConfigures r\u00e9sum\u00e9 analysis execution profiles for optimizing reasoning, retrieval, cost, and safety parameters.\n\nImproves r\u00e9sum\u00e9 processing by defining tailored analysis configurations for different job matching scenarios and use cases.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom typing import Dict\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import (\n    RetrievalConfig,\n    ContextBudget,\n    ReasoningMode,\n    RedisCacheConfig,\n    ChromaVectorCo...",
-  "creation_timestamp": "2025-12-03T08:04:49.418933",
-  "version": "1.0"
+  "hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/config_profiles_v10_10.py",
+  "generated_at": "2025-12-03T17:47:44.731820",
+  "golden_status": "verified",
+  "checksum": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe"
 }

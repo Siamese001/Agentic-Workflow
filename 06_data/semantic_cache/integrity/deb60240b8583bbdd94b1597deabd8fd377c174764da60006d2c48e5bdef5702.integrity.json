@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-  "content_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
+  "hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp.manifest.json",
+  "generated_at": "2025-12-03T17:47:46.283035",
   "file_size": 750,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "mcp.manifest.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\mcp.manifest.json",
-    "file_size": 750,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-    "scan_timestamp": "2025-12-03T08:04:48.340169"
-  },
-  "verification_timestamp": "2025-12-03T08:05:17.435025",
-  "checksums": {
-    "sha256": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-    "md5": "7adf08a1bfd952c5e23e8c9658960066"
-  }
+  "modified_time": 1764609961.3307762,
+  "sha256": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
+  "integrity_check": "passed"
 }

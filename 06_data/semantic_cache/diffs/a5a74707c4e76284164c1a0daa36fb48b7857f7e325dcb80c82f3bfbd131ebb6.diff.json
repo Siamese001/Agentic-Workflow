@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/modularity/test_retrieval_modularity.py",
-  "diff_content": "from pathlib import Path\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef test_retrieval_directory_structure_exists() -> None:\n    \"\"\"Ensure META retrieval directory tree exists.\"\"\"\n    expected_dirs = [\n        PROJECT_ROOT / \"meta\",\n        PROJECT_ROOT / \"meta\" / \"retrieval\",\n        PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrievers\",\n    ]\n    for d in expected_dirs:\n        assert d.exists(), f\"Expected directory missing: {d}\"\n\n\ndef test_retriever_placeholders_present() -> None:\n    \"\"\"Ensure placeholder retriever modules exist for future implementation.\"\"\"\n    expected_files = [\n        PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrievers\" / \"bm25.py\",\n        PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrievers\" / \"dense.py\",\n    ]\n    for f in expected_files:\n        assert f.exists(), f\"Expected retriever module missing: {f}\"\n\n\ndef test_meta_ranking_and_hybrid_ranker_present() -> None:\n    \"\"\"Ensure META ranking + hybrid ranker modules exist and are wired.\"\"\"\n    ranking_file = PROJECT_ROOT / \"meta\" / \"ranking.py\"\n    hybrid_ranker_file = PROJECT_ROOT / \"meta\" / \"retrieval\" / \"hybrid_ranker.py\"\n\n    assert ranking_file.exists(), f\"Expected META ranking module missing: {ranking_file}\"\n    assert hybrid_ranker_file.exists(), f\"Expected hybrid_ranker module missing: {hybrid_ranker_file}\"\n\n    retrieval_file = PROJECT_ROOT / \"meta\" / \"retrieval\" / \"retrieval.py\"\n    text = retrieval_file.read_text(encoding=\"utf-8\")\n    \n    # Check for actual import statements (at beginning of line), not in docstrings\n    lines = text.split('\\n')\n    import_lines = [line.strip() for line in lines if line.strip().startswith('from ') or line.strip().startswith('import ')]\n    \n    # Should import from meta.retrieval.hybrid_ranker\n    assert any(\"from meta.retrieval.hybrid_ranker import fuse_and_rank\" in line for line in import_lines), f\"Expected import from meta.retrieval.hybrid_ranker not found. Imports: {import_lines}\"\n    \n    # Should import from retrievers (bm25 and dense) for actual functionality\n    retriever_imports = [line for line in import_lines if 'from retrievers.' in line]\n    expected_retrievers = ['from retrievers.bm25 import bm25_search', 'from retrievers.dense import dense_search']\n    for expected in expected_retrievers:\n        assert any(expected in line for line in retriever_imports), f\"Expected retriever import not found: {expected}. Found: {retriever_imports}\"\n\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 57,
-    "lines_removed": 0,
-    "lines_changed": 57
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_retrieval_modularity.py",
+  "generated_at": "2025-12-03T17:47:45.720820",
+  "diff_type": "baseline",
+  "changes": []
 }

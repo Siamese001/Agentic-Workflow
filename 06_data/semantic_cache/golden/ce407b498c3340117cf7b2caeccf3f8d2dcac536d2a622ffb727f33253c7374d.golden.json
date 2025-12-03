@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d",
-  "content_hash": "973c03d0ecf2a32dbb7c41fb8e8282acf10634554029a1fffd12119867d2c822",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\04_testing_autorepair.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\04_testing_autorepair.md",
-    "file_size": 1656,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d",
-    "scan_timestamp": "2025-12-03T08:04:48.183899"
-  },
-  "content_preview": "# /windsurf_rules/04_testing_autorepair.md\n## Testing Standards, Continuous Re-Run, Auto-Repair Loop (Condensed)\n\n### 1. Testing Requirements\n- Must pass: imports, pytest, ruff, mypy.\n- No regressions allowed in RAG, drafting, QA, safety, HYDE, ExecutionContext.\n- Each agent requires: functional, schema, edge-case, determinism, failure-mode, and no-op detection tests.\n\n### 2. Zero-Failure Mandate\n- Partial passes count as failures.\n- No skips, xfail, or placeholders unless explicitly approved.\n-...",
-  "creation_timestamp": "2025-12-03T08:04:58.638400",
-  "version": "1.0"
+  "hash": "ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/04_testing_autorepair.md",
+  "generated_at": "2025-12-03T17:47:45.580392",
+  "golden_status": "verified",
+  "checksum": "ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d"
 }

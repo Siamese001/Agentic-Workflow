@@ -1,0 +1,9 @@
+{
+  "hash": "36f686b044fbfb64d7f695eba2ace5af9af8006781bd1e30a48571ed9cb9b785",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/interfaces.py",
+  "generated_at": "2025-12-03T17:47:44.893572",
+  "safety_score": 1.0,
+  "issues": []
+}

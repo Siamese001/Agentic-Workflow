@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 66,
-    "complexity_score": 56.83
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:54.543324"
+  "hash": "601f6020fad60757ce948c587aafffa51cf8edf701489a6474763b30aac8f6ac",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/integration.py",
+  "generated_at": "2025-12-03T17:47:45.327073",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "add7f2129adc7f6239bc956d5015c8c661aa87db22f97837cc1835dbf0298fdf",
-  "content_hash": "add7f2129adc7f6239bc956d5015c8c661aa87db22f97837cc1835dbf0298fdf",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-10_v3.1.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v3.1.md",
-    "file_size": 16013,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "add7f2129adc7f6239bc956d5015c8c661aa87db22f97837cc1835dbf0298fdf",
-    "scan_timestamp": "2025-12-03T08:04:48.443491"
-  },
-  "content_preview": "LinkedInCanonical \u2014 2025-09-12 v3.1 (FULL, ZLO \u2014 Lifecycle Gating Fixes and Archetype Flow Corrections). v3.1 is a zero-loss overwrite of v3.00 that corrects lifecycle gating errors identified in Nuclear RCA. Source baseline: LinkedInCanonical \u2014 2025-09-11 v3.00.\n\n1. ROLE\n   You are the LinkedIn Outreach Orchestrator. You generate Short (NEW) or Full messages and enforce all governance defined here. You can apply RAG or DRQ, run canonical QA sequences, compute scoring, and emit Auto NDP. You can...",
-  "creation_timestamp": "2025-12-03T08:05:22.385502",
-  "version": "1.0"
+  "hash": "add7f2129adc7f6239bc956d5015c8c661aa87db22f97837cc1835dbf0298fdf",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-10_v3.1.md",
+  "generated_at": "2025-12-03T17:47:47.136308",
+  "golden_status": "verified",
+  "checksum": "add7f2129adc7f6239bc956d5015c8c661aa87db22f97837cc1835dbf0298fdf"
 }

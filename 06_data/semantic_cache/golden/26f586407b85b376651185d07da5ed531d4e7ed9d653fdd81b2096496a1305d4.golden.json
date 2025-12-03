@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4",
-  "content_hash": "391473c88478ca150ddbef274fd8dbe549fe41256cee4ffca6ad3230665de1d1",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\testing\\FINAL_SDK_MCP_ANALYSIS.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\FINAL_SDK_MCP_ANALYSIS.md",
-    "file_size": 18363,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4",
-    "scan_timestamp": "2025-12-03T08:04:48.119425"
-  },
-  "content_preview": "# FINAL SDK vs MCP ANALYSIS + INSTALLATION + VALIDATION REPORT\n## Agentic-Workflow-10_10 Complete Analysis\n\n**Date**: 2025-01-24  \n**Project**: Agentic-Workflow-10_10  \n**Status**: \u2705 COMPLETE - All SDKs Installed & Validated\n\n---\n\n## EXECUTIVE SUMMARY\n\nThis document provides the complete SDK vs MCP analysis, installation results, and validation outcomes for the Agentic-Workflow-10_10 system. All required Python packages have been successfully installed and validated. MCP server installation inst...",
-  "creation_timestamp": "2025-12-03T08:04:55.479392",
-  "version": "1.0"
+  "hash": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/FINAL_SDK_MCP_ANALYSIS.md",
+  "generated_at": "2025-12-03T17:47:45.890948",
+  "golden_status": "verified",
+  "checksum": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4"
 }

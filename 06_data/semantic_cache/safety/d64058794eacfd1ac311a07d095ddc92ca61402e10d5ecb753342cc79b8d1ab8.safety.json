@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 22,
-    "complexity_score": 13.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:55.452219"
+  "hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/refactoring/README_REFACTORING.md",
+  "generated_at": "2025-12-03T17:47:45.875754",
+  "safety_score": 1.0,
+  "issues": []
 }

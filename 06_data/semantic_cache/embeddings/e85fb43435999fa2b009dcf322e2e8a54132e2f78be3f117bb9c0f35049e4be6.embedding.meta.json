@@ -1,0 +1,10 @@
+{
+  "hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/telemetry_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.339033",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

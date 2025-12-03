@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "ebd3aef6667e38a664392ace6235ef3773b5eda53bfea4c463a133e80b126f31",
-  "content_hash": "ebd3aef6667e38a664392ace6235ef3773b5eda53bfea4c463a133e80b126f31",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "main_v10_7.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\main_v10_7.py",
-    "file_size": 10317,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ebd3aef6667e38a664392ace6235ef3773b5eda53bfea4c463a133e80b126f31",
-    "scan_timestamp": "2025-12-03T08:04:48.339107"
-  },
-  "content_preview": "# File: main_v10_7.py  \n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - UPDATED: create_workflow_context call updated to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #9): run_workflow_async refactored to use\n#   `app.astream_events` to listen for `on_chat_model_stream` events.\n#   This now prints real-time streaming tokens (thoughts, partial JSON)\n#   from the ReAct conductors.\n# - IMPLEMENTED (Fix #30): Checks for 'failed_constitution' ...",
-  "creation_timestamp": "2025-12-03T08:05:17.385836",
-  "version": "1.0"
+  "hash": "ebd3aef6667e38a664392ace6235ef3773b5eda53bfea4c463a133e80b126f31",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/main_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.266506",
+  "golden_status": "verified",
+  "checksum": "ebd3aef6667e38a664392ace6235ef3773b5eda53bfea4c463a133e80b126f31"
 }

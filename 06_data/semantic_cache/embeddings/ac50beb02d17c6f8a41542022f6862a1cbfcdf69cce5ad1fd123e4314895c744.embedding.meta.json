@@ -1,0 +1,10 @@
+{
+  "hash": "ac50beb02d17c6f8a41542022f6862a1cbfcdf69cce5ad1fd123e4314895c744",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/strategy_ensemble_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.334164",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

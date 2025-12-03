@@ -1,7 +1,0 @@
-{
-  "ast_version": "python_3.8+",
-  "error": "Syntax error: unexpected indent (<unknown>, line 27)",
-  "line_number": 27,
-  "offset": 4,
-  "parse_failed": true
-}

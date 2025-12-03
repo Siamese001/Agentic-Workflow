@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 15,
-    "complexity_score": 11.33
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:57.245736"
+  "hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_fs_isolation.py",
+  "generated_at": "2025-12-03T17:47:45.728918",
+  "safety_score": 1.0,
+  "issues": []
 }

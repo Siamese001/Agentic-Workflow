@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/metacognition/test_uncertainty_model.py",
-  "diff_content": "from meta.metacognition.models import Hypothesis\nfrom meta.metacognition.uncertainty import compute_uncertainty\n\n\ndef test_uncertainty_increases_with_signals():\n    hs = [\n        Hypothesis(id=\"h1\", agent_id=\"a1\", content=\"c1\", confidence=0.8),\n        Hypothesis(id=\"h2\", agent_id=\"a1\", content=\"c2\", confidence=0.6),\n    ]\n\n    low = compute_uncertainty(hs, qa_signals=0, safety_signals=0)\n    high = compute_uncertainty(hs, qa_signals=3, safety_signals=2)\n\n    assert 0.0 <= low <= 1.0\n    assert 0.0 <= high <= 1.0\n    assert high > low\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 22,
-    "lines_removed": 0,
-    "lines_changed": 22
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_uncertainty_model.py",
+  "generated_at": "2025-12-03T17:47:45.690506",
+  "diff_type": "baseline",
+  "changes": []
 }

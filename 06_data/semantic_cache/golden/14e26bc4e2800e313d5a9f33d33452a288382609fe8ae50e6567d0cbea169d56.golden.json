@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56",
-  "content_hash": "0e4eb8adf14e3d477d5842d1e6cdf067a7e1c50579514192149d3166010f9259",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python",
-    "archive_name": "Old Resume Gen Python",
-    "relative_path": "Resume_Generation_v14_19.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_19.py",
-    "file_size": 583819,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56",
-    "scan_timestamp": "2025-12-03T08:04:48.330508"
-  },
-  "content_preview": "from __future__ import annotations\n\n# Standard library - Built-ins\nimport copy\nimport functools\nimport hashlib\nimport json\nimport logging\nimport math\nimport os\nimport random\nimport re\nimport shutil\nimport signal\nimport textwrap\nimport time\nfrom collections import Counter, defaultdict\nfrom collections.abc import Mapping, Sequence\nfrom datetime import datetime, timedelta\nfrom enum import Enum, auto\nfrom typing import (\n    Any, Callable, ClassVar, Dict, List, \n    Optional, Set, Tuple, TypeVar, Un...",
-  "creation_timestamp": "2025-12-03T08:05:14.298216",
-  "version": "1.0"
+  "hash": "14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Old Resume Gen Python/Resume_Generation_v14_19.py",
+  "generated_at": "2025-12-03T17:47:48.042753",
+  "golden_status": "verified",
+  "checksum": "14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56"
 }

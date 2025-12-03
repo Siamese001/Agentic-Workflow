@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75",
-  "content_hash": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-02 v1.5.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-02 v1.5.md",
-    "file_size": 20319,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75",
-    "scan_timestamp": "2025-12-03T08:04:48.493692"
-  },
-  "content_preview": "================================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-02 v1.5.1\n================================================================================\n\n# SUMMARY\n- Full functionality with the New vs Existing decision router and Single or Multiple batching.\n- All prompt sections use the Six Sections Prompt Shell v1 format: Role, Task, Context, Retrieval Plan, Reasoning, Output (stri...",
-  "creation_timestamp": "2025-12-03T08:05:25.629081",
-  "version": "1.0"
+  "hash": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-02 v1.5.md",
+  "generated_at": "2025-12-03T17:47:47.595037",
+  "golden_status": "verified",
+  "checksum": "70a4c188e851e3a3b2c5e4c16fb70e1cd9114169976fe37e246cb528009acf75"
 }

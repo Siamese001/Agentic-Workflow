@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "76f2d72a45ddd0c82d3c9a7b95e521e6b0f4187abcc890f7e3154c2a7af5f3b3",
-  "content_hash": "d68fbf8866f42069de58988fd8d266fac83da10a364449fa50a66be0b1733873",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\_deprecated\\test_runtime_core.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_runtime_core.py",
-    "file_size": 6625,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "76f2d72a45ddd0c82d3c9a7b95e521e6b0f4187abcc890f7e3154c2a7af5f3b3",
-    "scan_timestamp": "2025-12-03T08:04:48.176141"
-  },
-  "content_preview": "\"\"\"Tests for Runtime Core Integration\n\nTests LLM invocation, sandbox execution, and\nworkflow orchestration integration.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch, MagicMock\nfrom datetime import datetime\n\nfrom core.models.models import ExecutionContext, JobInput, ResumeInput\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\n\n\nclass TestLLMInvocation:\n    \"\"\"Test LLM invocation with mock responses.\"\"\"\n    \n    def test_mock_invoke_model_strategy_response(self):\n        \"...",
-  "creation_timestamp": "2025-12-03T08:04:57.767174",
-  "version": "1.0"
+  "hash": "76f2d72a45ddd0c82d3c9a7b95e521e6b0f4187abcc890f7e3154c2a7af5f3b3",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_runtime_core.py",
+  "generated_at": "2025-12-03T17:47:45.814081",
+  "golden_status": "verified",
+  "checksum": "76f2d72a45ddd0c82d3c9a7b95e521e6b0f4187abcc890f7e3154c2a7af5f3b3"
 }

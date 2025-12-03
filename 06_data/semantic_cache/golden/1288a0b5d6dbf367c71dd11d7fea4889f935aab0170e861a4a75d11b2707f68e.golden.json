@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
-  "content_hash": "99be611c4aa8a5d68187a20c802b34513e143e945862f871ec9a5978c6856a71",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\contracts\\test_typed_contracts.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\contracts\\test_typed_contracts.py",
-    "file_size": 2761,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
-    "scan_timestamp": "2025-12-03T08:04:48.125476"
-  },
-  "content_preview": "# FILE: tests/contracts/test_typed_contracts.py\n\nfrom __future__ import annotations\n\nfrom pydantic import BaseModel\n\nfrom meta.schema_validation import validate_schema_version\nfrom core.models.models import (\n    StrategyPlan,\n    StrategyResult,\n    DraftingPlan,\n    DraftingResult,\n    QAPlan,\n    QAResult,\n    SafetyPlan,\n    SafetyResult,\n    WorkflowPlanBundle,\n    RAGPlan,\n    RAGResult,\n    L2ResultBundle,\n)\n\n\ndef test_core_models_have_v1_schema_version_defaults():\n    # Simple models wit...",
-  "creation_timestamp": "2025-12-03T08:04:55.686957",
-  "version": "1.0"
+  "hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/contracts/test_typed_contracts.py",
+  "generated_at": "2025-12-03T17:47:45.600317",
+  "golden_status": "verified",
+  "checksum": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e"
 }

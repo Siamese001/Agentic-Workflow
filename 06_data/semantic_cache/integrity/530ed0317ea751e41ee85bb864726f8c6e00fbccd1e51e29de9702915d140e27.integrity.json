@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
-  "content_hash": "3429985b600292ff31c575a8cec2e85b188725b56d731e92ed0612fdcd545d0f",
+  "hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_uncertainty_model.py",
+  "generated_at": "2025-12-03T17:47:45.691690",
   "file_size": 570,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\metacognition\\test_uncertainty_model.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_uncertainty_model.py",
-    "file_size": 570,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
-    "scan_timestamp": "2025-12-03T08:04:48.157938"
-  },
-  "verification_timestamp": "2025-12-03T08:04:56.945643",
-  "checksums": {
-    "sha256": "3429985b600292ff31c575a8cec2e85b188725b56d731e92ed0612fdcd545d0f",
-    "md5": "26a826e79d7e63a84844e3247e003161"
-  }
+  "modified_time": 1764610059.8383942,
+  "sha256": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
+  "integrity_check": "passed"
 }

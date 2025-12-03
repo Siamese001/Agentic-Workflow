@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 6,
-    "complexity_score": 2.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:49.725092"
+  "hash": "83c114a4e6886dd52ee5f299c60924241b819ecc2d6074e87d38fde0c8946c12",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/routing.py",
+  "generated_at": "2025-12-03T17:47:44.789946",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3960234a1e9b74eaa7ae52da613e0388318f7da7d25dc9bad0696769b07d3240",
-  "content_hash": "f39504d479ed4aa1126eff3c7ac0de8680f975b6f21d5a1cc1ecc69e586ef823",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\__init__.py",
-    "file_size": 115,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3960234a1e9b74eaa7ae52da613e0388318f7da7d25dc9bad0696769b07d3240",
-    "scan_timestamp": "2025-12-03T08:04:48.103969"
-  },
-  "content_preview": "from __future__ import annotations\n\n\"\"\"Orchestration package for higher-level routing and DAG helpers.\"\"\"\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:55.195892",
-  "version": "1.0"
+  "hash": "3960234a1e9b74eaa7ae52da613e0388318f7da7d25dc9bad0696769b07d3240",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/__init__(1).py",
+  "generated_at": "2025-12-03T17:47:45.372050",
+  "golden_status": "verified",
+  "checksum": "3960234a1e9b74eaa7ae52da613e0388318f7da7d25dc9bad0696769b07d3240"
 }

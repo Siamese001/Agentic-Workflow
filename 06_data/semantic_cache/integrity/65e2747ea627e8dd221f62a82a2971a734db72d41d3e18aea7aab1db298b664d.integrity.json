@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
-  "content_hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
+  "hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/memory_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.613333",
   "file_size": 14028,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "memory_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\memory_LIC.py",
-    "file_size": 14028,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
-    "scan_timestamp": "2025-12-03T08:04:48.369980"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.905963",
-  "checksums": {
-    "sha256": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
-    "md5": "f0a082be47735c7c25448146d7356e83"
-  }
+  "modified_time": 1764609961.216007,
+  "sha256": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
+  "integrity_check": "passed"
 }

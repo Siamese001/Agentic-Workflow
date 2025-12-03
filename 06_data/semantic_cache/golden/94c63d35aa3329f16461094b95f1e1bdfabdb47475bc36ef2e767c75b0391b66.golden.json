@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
-  "content_hash": "45d80916b10b4e5d3e2711f3860496f3b0c90a7e8948a241948b595d279bd998",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\model_routing\\test_selector_integration.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\model_routing\\test_selector_integration.py",
-    "file_size": 497,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
-    "scan_timestamp": "2025-12-03T08:04:48.158890"
-  },
-  "content_preview": "from orchestration.model_routing import RoutingContext, select_model\n\n\ndef test_selector_integration_uses_cache_for_generic_calls():\n    ctx = RoutingContext(agent_id=\"agent1\", task_type=\"llm_call\", execution_profile=None)\n\n    first = select_model(ctx, requested_model=None, execution_profile=None)\n    second = select_model(ctx, requested_model=None, execution_profile=None)\n\n    assert first.provider == second.provider\n    assert first.model_name == second.model_name\n\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:56.966558",
-  "version": "1.0"
+  "hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_selector_integration.py",
+  "generated_at": "2025-12-03T17:47:45.701610",
+  "golden_status": "verified",
+  "checksum": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66"
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 81,
-    "complexity_score": 65.85
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:54.364842"
+  "hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py",
+  "generated_at": "2025-12-03T17:47:45.308708",
+  "safety_score": 1.0,
+  "issues": []
 }

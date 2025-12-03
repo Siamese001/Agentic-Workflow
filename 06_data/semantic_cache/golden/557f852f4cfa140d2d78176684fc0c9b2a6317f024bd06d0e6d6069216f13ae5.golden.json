@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5",
-  "content_hash": "e03ae8848f410e169ea1dea5e2e95b2284d7c7a308fab2e6ddc406251a180c1e",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\dag\\test_dag_executor_basic.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\dag\\test_dag_executor_basic.py",
-    "file_size": 751,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5",
-    "scan_timestamp": "2025-12-03T08:04:48.127155"
-  },
-  "content_preview": "from __future__ import annotations\n\nimport asyncio\nfrom typing import Any, Dict\n\nimport pytest\n\nfrom orchestration.dag_engine import Graph, Node, Edge, DAGExecutor\n\n\nasync def _id_node(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    return dict(ctx)\n\n\ndef _make_cyclic_graph() -> Graph:\n    nodes = {\n        \"a\": Node(id=\"a\", fn=_id_node, metadata={}),\n        \"b\": Node(id=\"b\", fn=_id_node, metadata={}),\n    }\n    edges = [Edge(source=\"a\", target=\"b\"), Edge(source=\"b\", target=\"a\")]\n    return Graph(n...",
-  "creation_timestamp": "2025-12-03T08:04:55.734385",
-  "version": "1.0"
+  "hash": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/dag/test_dag_executor_basic.py",
+  "generated_at": "2025-12-03T17:47:45.619810",
+  "golden_status": "verified",
+  "checksum": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5"
 }

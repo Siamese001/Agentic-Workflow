@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
-  "content_hash": "82b043619d3f9771141612f0bfd8b22df8106ebe08d2e30e58be30867689c536",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "config\\budget_profile.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\budget_profile.py",
-    "file_size": 448,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
-    "scan_timestamp": "2025-12-03T08:04:48.039373"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\n\nclass BudgetProfile(BaseModel):\n    \"\"\"High-level budget profile for cost/latency envelopes.\n\n    This duplicates some of the fields from ExecutionProfileSpec so that\n    future callers can reason about budget in a single nested object.\n    \"\"\"\n\n    max_cost_usd: float = Field(default=0.10, ge=0.0)\n    max_latency_ms: int = Field(default=3000, ge=0)\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:49.405534",
-  "version": "1.0"
+  "hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/budget_profile.py",
+  "generated_at": "2025-12-03T17:47:44.726426",
+  "golden_status": "verified",
+  "checksum": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1"
 }

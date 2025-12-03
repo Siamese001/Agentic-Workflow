@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
-  "content_hash": "e627eae04dc59de483e9d29e18ac78de3d4d18585c8c48ea5e4c539a0c9dd9f4",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\sandbox\\test_sandbox_timeout.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_sandbox_timeout.py",
-    "file_size": 425,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
-    "scan_timestamp": "2025-12-03T08:04:48.165495"
-  },
-  "content_preview": "import pytest\n\nfrom infra.sandbox.models import ToolCallRequest\nfrom infra.sandbox.vm_manager import run_in_ephemeral_vm\nfrom infra.sandbox.sandbox_errors import SandboxTimeoutError\n\n\ndef test_timeout_error_when_timeout_non_positive():\n    req = ToolCallRequest(tool_name=\"echo\", args=[], timeout_s=0.0)\n    with pytest.raises(SandboxTimeoutError):\n        run_in_ephemeral_vm(req, resource_limits={})\n\n\n\n\n\n\n",
-  "creation_timestamp": "2025-12-03T08:04:57.287638",
-  "version": "1.0"
+  "hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_sandbox_timeout.py",
+  "generated_at": "2025-12-03T17:47:45.747194",
+  "golden_status": "verified",
+  "checksum": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587"
 }

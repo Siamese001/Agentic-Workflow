@@ -1,19 +1,9 @@
 {
-  "safety_score": 75,
-  "risk_level": "medium",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": true,
-    "has_network_operations": true,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 389,
-    "complexity_score": 323.82
-  },
-  "recommendations": [
-    "Validate network operations and endpoints",
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:25.690949"
+  "hash": "a27e2d09e4782b7aecbc4114503550e8f9ee1008cedc94364e69af616a102684",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-04 v1.3.md",
+  "generated_at": "2025-12-03T17:47:47.624289",
+  "safety_score": 1.0,
+  "issues": []
 }

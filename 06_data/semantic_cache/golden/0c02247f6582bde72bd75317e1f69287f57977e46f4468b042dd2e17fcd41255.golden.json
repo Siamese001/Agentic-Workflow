@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "0c02247f6582bde72bd75317e1f69287f57977e46f4468b042dd2e17fcd41255",
-  "content_hash": "0c02247f6582bde72bd75317e1f69287f57977e46f4468b042dd2e17fcd41255",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_GAP_ANALYSIS_v10_22_to_v11_5.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_GAP_ANALYSIS_v10_22_to_v11_5.md",
-    "file_size": 35627,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "0c02247f6582bde72bd75317e1f69287f57977e46f4468b042dd2e17fcd41255",
-    "scan_timestamp": "2025-12-03T08:04:48.484360"
-  },
-  "content_preview": "# LIC Gap Analysis: v10.22 \u2192 v11.5\n## Comprehensive Functionality Reconciliation\n\n**Analysis Date:** 2025-10-30  \n**Source Files:**\n- v10.22: LIC_FULL_v10_22.json (4,303 lines)\n- v11.5: LIC_AGENTIC_v11_5.py (2,087 lines)\n\n---\n\n## EXECUTIVE SUMMARY\n\n**Total Gaps Identified:** 43  \n**Critical Priority (Implement):** 18  \n**Medium Priority (Consider):** 15  \n**Low Priority (Skip):** 10\n\n**Key Findings:**\n1. v11.5 missing comprehensive validation framework (107 QA rules \u2192 0 implemented)\n2. v11.5 mis...",
-  "creation_timestamp": "2025-12-03T08:05:25.463077",
-  "version": "1.0"
+  "hash": "0c02247f6582bde72bd75317e1f69287f57977e46f4468b042dd2e17fcd41255",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_GAP_ANALYSIS_v10_22_to_v11_5.md",
+  "generated_at": "2025-12-03T17:47:47.507909",
+  "golden_status": "verified",
+  "checksum": "0c02247f6582bde72bd75317e1f69287f57977e46f4468b042dd2e17fcd41255"
 }

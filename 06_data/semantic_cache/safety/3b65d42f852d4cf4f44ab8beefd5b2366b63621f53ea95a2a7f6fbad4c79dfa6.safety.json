@@ -1,18 +1,9 @@
 {
-  "safety_score": 80,
-  "risk_level": "medium",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": true,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 35,
-    "complexity_score": 33.67
-  },
-  "recommendations": [
-    "Review system operations for security implications"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:49.842800"
+  "hash": "3b65d42f852d4cf4f44ab8beefd5b2366b63621f53ea95a2a7f6fbad4c79dfa6",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/scorer.py",
+  "generated_at": "2025-12-03T17:47:46.195248",
+  "safety_score": 1.0,
+  "issues": []
 }

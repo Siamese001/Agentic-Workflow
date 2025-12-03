@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "46f5bdfc8a7236acc39754d0a51142ba79038a403f644ae280eb15a4305de895",
-  "content_hash": "46f5bdfc8a7236acc39754d0a51142ba79038a403f644ae280eb15a4305de895",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-04 v1.4.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-04 v1.4.md",
-    "file_size": 26177,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "46f5bdfc8a7236acc39754d0a51142ba79038a403f644ae280eb15a4305de895",
-    "scan_timestamp": "2025-12-03T08:04:48.497637"
-  },
-  "content_preview": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-05 v1.4\n===============================================================================\n\n# SUMMARY\n- Full router with NEW vs EXISTING and SINGLE vs MULTIPLE batching.\n- Edge-case support (NEW full message): When Premium InMail/full-message is available for a NEW contact, route to the EXISTING Recruiter or EXISTING Contact-L...",
-  "creation_timestamp": "2025-12-03T08:05:25.699237",
-  "version": "1.0"
+  "hash": "46f5bdfc8a7236acc39754d0a51142ba79038a403f644ae280eb15a4305de895",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-04 v1.4.md",
+  "generated_at": "2025-12-03T17:47:47.627231",
+  "golden_status": "verified",
+  "checksum": "46f5bdfc8a7236acc39754d0a51142ba79038a403f644ae280eb15a4305de895"
 }

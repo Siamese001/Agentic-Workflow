@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "9881969da7afd4f37ad758bd721e35c3c346e87c9a37eec2b5271bade3b2c721",
-  "content_hash": "198214a8797fa52d79ac12efe75c8167e15beb3f3b65e2505dbea914f907caa5",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\model_routing\\models.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\model_routing\\models.py",
-    "file_size": 999,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "9881969da7afd4f37ad758bd721e35c3c346e87c9a37eec2b5271bade3b2c721",
-    "scan_timestamp": "2025-12-03T08:04:48.060452"
-  },
-  "content_preview": "\"\"\"\nModel routing data structures for r\u00e9sum\u00e9 processing workflows.\n\nDefines lightweight model selection and routing context for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Optional\n\nfrom core.models.models import ExecutionProfile\n\n\n@dataclass\nclass ModelChoice:\n    \"\"\"\n    Represents model selection choice for r\u00e9sum\u00e9 processing workflows.\n\n    Enables lightweight provider-agnostic model routing for comprehensive r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n\n ...",
-  "creation_timestamp": "2025-12-03T08:04:50.167803",
-  "version": "1.0"
+  "hash": "9881969da7afd4f37ad758bd721e35c3c346e87c9a37eec2b5271bade3b2c721",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/model_routing/models.py",
+  "generated_at": "2025-12-03T17:47:46.080636",
+  "golden_status": "verified",
+  "checksum": "9881969da7afd4f37ad758bd721e35c3c346e87c9a37eec2b5271bade3b2c721"
 }

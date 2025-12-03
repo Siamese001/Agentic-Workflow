@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
-  "content_hash": "07aac4bbf5ac5ac0def27ebbdcbf93539af4a2a108bb0d767784a29e18125093",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\agent_bus.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_bus.py",
-    "file_size": 3138,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
-    "scan_timestamp": "2025-12-03T08:04:48.097121"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List\n\nfrom core.models.models import AgentMessage\n\n\"\"\"\nProvides in-memory messaging channel for r\u00e9sum\u00e9 analysis agents to coordinate and share context.\n\nImproves r\u00e9sum\u00e9 processing by maintaining coherent communication between planning, drafting, and review stages without losing important context.\n\"\"\"\n\n\n@dataclass\nclass AgentBus:\n    \"\"\"Acts as an in-memory mailbox so agents can pass results and ...",
-  "creation_timestamp": "2025-12-03T08:04:54.364901",
-  "version": "1.0"
+  "hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py",
+  "generated_at": "2025-12-03T17:47:45.308325",
+  "golden_status": "verified",
+  "checksum": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d"
 }

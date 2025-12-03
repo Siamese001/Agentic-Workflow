@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e3495d3447da5ff9b48a9f553d8aeb2499764096c521302680a42e4446b30483",
-  "content_hash": "65c93b0f435fe2b2297507be0e9be5abc78ee51233a72c6338f74d7828f80733",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.90.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.90.json",
-    "file_size": 210306,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "e3495d3447da5ff9b48a9f553d8aeb2499764096c521302680a42e4446b30483",
-    "scan_timestamp": "2025-12-03T08:04:48.439662"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-10-2025_v8.90\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-10-2025_v8.90\",\n    \"last_updated\": \"2025-10-10\",\n    \"description\": \"Applied critical post-stress-test hardening patch P891. Corrected configuration precedence logic, enhanced CTA date engine with holiday awareness, and hardened L-series trace generation.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.9.0\",\n  ...",
-  "creation_timestamp": "2025-12-03T08:05:22.264865",
-  "version": "1.0"
+  "hash": "e3495d3447da5ff9b48a9f553d8aeb2499764096c521302680a42e4446b30483",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.90.json",
+  "generated_at": "2025-12-03T17:47:47.078590",
+  "golden_status": "verified",
+  "checksum": "e3495d3447da5ff9b48a9f553d8aeb2499764096c521302680a42e4446b30483"
 }

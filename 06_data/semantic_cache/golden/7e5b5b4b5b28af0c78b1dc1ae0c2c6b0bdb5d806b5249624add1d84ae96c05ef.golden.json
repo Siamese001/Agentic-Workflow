@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
-  "content_hash": "11d83ab04a68f265dd4fce55004d3e0890e5932e9c85790fd43de195db166a0b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\control_plane\\routing.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\routing.py",
-    "file_size": 2154,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
-    "scan_timestamp": "2025-12-03T08:04:48.056532"
-  },
-  "content_preview": "\"\"\"\nControl plane routing for r\u00e9sum\u00e9 processing safety policy selection.\n\nProvides deterministic rule resolution for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom typing import List\n\nfrom .models import PolicyRule, SafetyContext\n\n\ndef default_rules_for(agent_id: str | None, task_type: str | None) -> List[PolicyRule]:\n    \"\"\"\n    Returns default safety rules for r\u00e9sum\u00e9 processing agent and task combinations.\n\n    Ensures appropriate policy enforcement for comprehensive r\u00e9sum\u00e9 enhancement ...",
-  "creation_timestamp": "2025-12-03T08:04:50.022329",
-  "version": "1.0"
+  "hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/routing.py",
+  "generated_at": "2025-12-03T17:47:46.039338",
+  "golden_status": "verified",
+  "checksum": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef"
 }

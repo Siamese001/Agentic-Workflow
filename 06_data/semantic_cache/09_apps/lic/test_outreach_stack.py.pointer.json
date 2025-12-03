@@ -1,0 +1,9 @@
+{
+  "hash": "0df5c64a6a540db4e15a02c9153192ab9da4cf15309ed13155044634dba599cd",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_outreach_stack.py",
+  "canonical_relative": "lic/test_outreach_stack.py",
+  "canonical_root": "09_apps",
+  "generated_at": "2025-12-03T17:47:48.333516"
+}

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/reasoning/reflexion.py",
-  "diff_content": "\"\"\"\nReflexion self-critique framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides deterministic output evaluation and revision for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n\n\n@dataclass\nclass Critique:\n    \"\"\"\n    Represents critique result for r\u00e9sum\u00e9 processing output evaluation.\n\n    Enables systematic quality assessment for r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    message: str\n    severity: str  # e.g. \"info\", \"warning\", \"error\"\n\n\ndef critique_output(output: str) -> List[Critique]:\n    \"\"\"\n    Evaluates r\u00e9sum\u00e9 processing output for quality improvements.\n\n    Identifies areas for enhancement in comprehensive r\u00e9sum\u00e9 analysis results.\n    \"\"\"\n\n    output = (output or \"\").strip()\n    if not output:\n        return [Critique(message=\"Output is empty\", severity=\"error\")]\n\n    critiques: List[Critique] = []\n    if len(output) < 50:\n        critiques.append(Critique(message=\"Output may be too short\", severity=\"warning\"))\n    if not output.endswith(\".\"):\n        critiques.append(Critique(message=\"Output does not end with a period\", severity=\"info\"))\n    return critiques\n\n\ndef apply_reflexion(output: str) -> Tuple[str, List[Critique]]:\n    \"\"\"\n    Applies reflexion revision process to r\u00e9sum\u00e9 processing outputs.\n\n    Ensures quality enhancement through systematic critique and revision.\n    \"\"\"\n\n    critiques = critique_output(output)\n    revised = output.strip()\n    if revised and not revised.endswith(\".\"):\n        revised = revised + \".\"\n    return revised, critiques\n\n\n\n",
-  "statistics": {
-    "lines_added": 55,
-    "lines_removed": 0,
-    "lines_changed": 55
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/reflexion.py",
+  "generated_at": "2025-12-03T17:47:46.103278",
+  "diff_type": "baseline",
+  "changes": []
 }

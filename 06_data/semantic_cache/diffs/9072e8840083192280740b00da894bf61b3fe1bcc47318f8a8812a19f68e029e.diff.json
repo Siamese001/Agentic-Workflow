@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/reasoning/react.py",
-  "diff_content": "\"\"\"\nReAct reasoning framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides step-wise reasoning with interleaved actions for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\n\n@dataclass\nclass ReActStep:\n    \"\"\"\n    Represents reasoning-action-observation step for r\u00e9sum\u00e9 processing.\n\n    Enables structured iterative thinking for optimal r\u00e9sum\u00e9 improvement workflows.\n    \"\"\"\n    thought: str\n    action: str\n    observation: str\n\n\ndef run_react_loop(task: str, max_steps: int = 3) -> List[ReActStep]:\n    \"\"\"\n    Executes ReAct reasoning loop for r\u00e9sum\u00e9 processing tasks.\n\n    Provides structured approach to complex r\u00e9sum\u00e9 enhancement problem solving.\n    \"\"\"\n\n    task = (task or \"\").strip()\n    if not task:\n        return []\n\n    steps: List[ReActStep] = []\n    for i in range(max_steps):\n        thought = f\"analyzing task segment {i+1}: {task[:50]}\"  # truncated\n        action = \"noop\"\n        observation = \"no external tools invoked (placeholder)\"\n        steps.append(ReActStep(thought=thought, action=action, observation=observation))\n    return steps\n\n\n\n",
-  "statistics": {
-    "lines_added": 43,
-    "lines_removed": 0,
-    "lines_changed": 43
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/react.py",
+  "generated_at": "2025-12-03T17:47:46.098352",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "root_docs/testing/setup_validation_report.md",
-  "diff_content": "# Environment Setup Validation Report\n\n## Task A \u2014 Pip Package Installation Status\n\n\u2705 **SUCCESS**: All pip packages installed successfully\n\n- Requirements.txt packages: \u2705 INSTALLED\n- Additional SDK packages: \u2705 INSTALLED\n- Fixed pinecone-client \u2192 pinecone migration: \u2705 COMPLETED\n\n## Task B \u2014 SDK Import Validation\n\n\u26a0\ufe0f **PARTIAL SUCCESS**: Most SDK imports working\n\n- \u2705 openai, anthropic, google.generativeai: WORKING\n- \u2705 redis, pinecone: WORKING\n- \u2705 numpy, pandas, sklearn: WORKING\n- \u2705 requests, httpx, rich, tqdm: WORKING\n- \u274c chromadb: FAILED (Python 3.14 compatibility issue)\n\n**ChromaDB Issue**: Pydantic v1 incompatibility with Python 3.14\n\n- Attempted fixes: Downgraded to 0.5.0, then 0.4.22 (failed due to pulsar-client)\n- **Recommendation**: Use Python 3.11/3.12 for full chromadb support or use alternative vector DB\n\n## Task C \u2014 MCP Server Installation\n\n\u26a0\ufe0f **PARTIAL SUCCESS**: Some MCP servers installed\n\n- \u2705 @modelcontextprotocol/server-filesystem: INSTALLED\n- \u2705 @modelcontextprotocol/server-sequential-thinking: INSTALLED\n- \u2705 @modelcontextprotocol/inspector: INSTALLED\n- \u2705 puppeteer-mcp-server: INSTALLED\n- \u2705 enhanced-postgres-mcp-server: INSTALLED\n- \u274c @modelcontextprotocol/server-sqlite: NOT FOUND (package doesn't exist)\n- \u274c @modelcontextprotocol/server-redis: NOT FOUND (package doesn't exist)\n- \u274c @modelcontextprotocol/server-http: NOT FOUND (package doesn't exist)\n- \u274c @modelcontextprotocol/server-github: NOT FOUND (package doesn't exist)\n- \u274c @modelcontextprotocol/server-process: NOT FOUND (package doesn't exist)\n- \u274c @modelcontextprotocol/cli: NOT FOUND (package doesn't exist)\n\n**Note**: Many of the requested MCP server packages don't exist in the npm registry. Alternative packages were installed where available.\n\n## Task D \u2014 MCP Server Validation\n\n\u274c **SKIPPED**: MCP CLI not available for validation\n\n- The `mcp` command is not recognized after installations\n- This suggests the MCP CLI package (@modelcontextprotocol/cli) doesn't exist\n- Individual server validation requires the MCP CLI tool\n\n## Final Summary\n\n- **All pip packages installed?**: \u26a0\ufe0f MOSTLY (chromadb excluded)\n- **All SDK imports succeeded?**: \u26a0\ufe0f MOSTLY (chromadb failed)\n- **All MCP servers installed globally?**: \u274c PARTIALLY (only 5/11 available)\n- **All MCP health checks passed?**: \u274c SKIPPED (no CLI available)\n\n## Recommendations\n\n1. **Python Version**: Consider using Python 3.11 or 3.12 for full chromadb compatibility\n2. **Vector Database Alternative**: Use pinecone, faiss, or other vector DB instead of chromadb\n3. **MCP Servers**: The official MCP server ecosystem appears to be different than documented\n4. **Manual MCP Setup**: Consider setting up MCP servers manually or using alternative implementations\n\n## Working Components\n\n- \u2705 AI SDKs (OpenAI, Anthropic, Google)\n- \u2705 Database clients (Redis, Pinecone)\n- \u2705 Data science stack (NumPy, Pandas, Scikit-learn)\n- \u2705 Web/HTTP libraries (Requests, HTTPX, Rich)\n- \u2705 Some MCP servers (filesystem, sequential-thinking, inspector, puppeteer, postgres)\n\n## Failed Components\n\n- \u274c ChromaDB (Python 3.14 incompatibility)\n- \u274c Most official MCP servers (packages don't exist)\n- \u274c MCP CLI validation tools\n",
-  "statistics": {
-    "lines_added": 78,
-    "lines_removed": 0,
-    "lines_changed": 78
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "9e1d949433072e2feb06a17249f60ca7a55a977ca043c8a0aef9304249826742",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/setup_validation_report.md",
+  "generated_at": "2025-12-03T17:47:45.917863",
+  "diff_type": "baseline",
+  "changes": []
 }

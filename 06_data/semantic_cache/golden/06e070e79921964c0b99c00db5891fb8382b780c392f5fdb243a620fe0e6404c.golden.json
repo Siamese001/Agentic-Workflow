@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c",
-  "content_hash": "06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-06 v2.6.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-06 v2.6.md",
-    "file_size": 47106,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c",
-    "scan_timestamp": "2025-12-03T08:04:48.505353"
-  },
-  "content_preview": "# LinkedInCanonical \u2014 2025-09-06 v2.6 (Content Hardening ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.5 (Merged Enforcement ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.4 (ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.3.4 (ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.3 (ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.2 (ND Patches applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.1 (ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.0 (ND Patch appli...",
-  "creation_timestamp": "2025-12-03T08:05:25.899361",
-  "version": "1.0"
+  "hash": "06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-06 v2.6.md",
+  "generated_at": "2025-12-03T17:47:47.743946",
+  "golden_status": "verified",
+  "checksum": "06e070e79921964c0b99c00db5891fb8382b780c392f5fdb243a620fe0e6404c"
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 24,
-    "complexity_score": 30.33
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:26.531448"
+  "hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/mission_input_LIC.json",
+  "generated_at": "2025-12-03T17:47:46.617907",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "runtime/observability/collectors.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom core.models.models import TelemetryEvent\n\n\n_telemetry_buffer: List[TelemetryEvent] = []\n_span_stack: List[Dict[str, Any]] = []\n\n\ndef append_event(evt: TelemetryEvent) -> None:\n    \"\"\"Append a telemetry event to the in-memory buffer.\"\"\"\n\n    _telemetry_buffer.append(evt)\n\n\ndef get_events() -> List[TelemetryEvent]:\n    \"\"\"Return a shallow copy of the telemetry buffer.\"\"\"\n\n    return list(_telemetry_buffer)\n\n\ndef clear_events() -> None:\n    \"\"\"Clear all telemetry events and open spans (primarily for tests).\"\"\"\n\n    _telemetry_buffer.clear()\n    _span_stack.clear()\n\n\ndef push_span(record: Dict[str, Any]) -> None:\n    \"\"\"Push a span record onto the span stack.\"\"\"\n\n    _span_stack.append(record)\n\n\ndef pop_span(record: Dict[str, Any]) -> None:\n    \"\"\"Remove a span record from the span stack if present.\"\"\"\n\n    if record in _span_stack:\n        _span_stack.remove(record)\n\n\ndef span_stack() -> List[Dict[str, Any]]:\n    \"\"\"Return the internal span stack (for inspection-only).\"\"\"\n\n    return _span_stack\n\n\n\n",
-  "statistics": {
-    "lines_added": 50,
-    "lines_removed": 0,
-    "lines_changed": 50
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "8cde2aa609a046a0ed1671b898570223d2c15c3f4b16c141a6fd9e4d228ab9de",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/collectors.py",
+  "generated_at": "2025-12-03T17:47:45.837133",
+  "diff_type": "baseline",
+  "changes": []
 }

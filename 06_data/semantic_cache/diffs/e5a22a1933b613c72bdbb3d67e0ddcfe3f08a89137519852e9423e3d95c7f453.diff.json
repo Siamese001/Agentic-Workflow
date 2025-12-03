@@ -1,13 +1,9 @@
 {
-  "diff_type": "lineage_diff",
-  "baseline_version": "Agentic-Workflow-10_7_main",
-  "current_version": "Agentic-LIC",
-  "logical_path": "chromadb/__init__.py",
-  "diff_content": "--- Agentic-Workflow-10_7_main/chromadb/__init__.py+++ Agentic-LIC/chromadb/__init__.py@@ -1,24 +1,11 @@-\"\"\"Local stub shim for the chromadb package used in tests.\"\"\"\n+class Client:  # pragma: no cover - stub for tests\n+    \"\"\"Minimal ChromaDB client stub.\"\"\"\n \n-from vendor.chromadb_stub import (\n-    Client,\n-    Collection,\n-    HttpClient,\n-    PersistentClient,\n-    embedding_functions as _embedding_functions,\n-)\n+    def __init__(self, *args, **kwargs):\n+        pass\n \n-__all__ = [\n-    \"Client\",\n-    \"Collection\",\n-    \"HttpClient\",\n-    \"PersistentClient\",\n-    \"embedding_functions\",\n-]\n+    def get_or_create_collection(self, *args, **kwargs):\n+        raise NotImplementedError\n \n-\n-class utils:  # pragma: no cover - namespace compatibility\n-    embedding_functions = _embedding_functions\n-\n-\n-embedding_functions = _embedding_functions\n+    def get_collection(self, *args, **kwargs):\n+        raise NotImplementedError\n",
-  "statistics": {
-    "lines_added": 8,
-    "lines_removed": 21,
-    "lines_changed": 4
-  },
-  "has_changes": true
+  "hash": "e5a22a1933b613c72bdbb3d67e0ddcfe3f08a89137519852e9423e3d95c7f453",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/chromadb/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.352590",
+  "diff_type": "baseline",
+  "changes": []
 }

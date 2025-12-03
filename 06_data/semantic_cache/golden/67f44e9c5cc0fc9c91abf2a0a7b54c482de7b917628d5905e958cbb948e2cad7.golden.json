@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7",
-  "content_hash": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Monolithic",
-    "archive_name": "Monolithic",
-    "relative_path": "LIC_AGENTIC_v11_10.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Monolithic\\LIC_AGENTIC_v11_10.py",
-    "file_size": 117101,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7",
-    "scan_timestamp": "2025-12-03T08:04:48.374630"
-  },
-  "content_preview": "# ATTACHMENT: LIC_AGENTIC_v11_10.py\n\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.10\n=====================================================\n\nCHANGELOG v11.10 (CRITICAL - The Dual-Loop Agentic Refactor):\n---------------------------------------------------------\nThis version represents a fundamental architectural shift from a linear pipeline (v11.9)\nto a recursive, dual-loop agentic system based on user-approved designs.\n\n\u2728 NEW: ENHANCEMENT 1 & 2 - S2 Multi-Agent Specialization & Internal ...",
-  "creation_timestamp": "2025-12-03T08:05:19.387422",
-  "version": "1.0"
+  "hash": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Monolithic/LIC_AGENTIC_v11_10.py",
+  "generated_at": "2025-12-03T17:47:46.655918",
+  "golden_status": "verified",
+  "checksum": "67f44e9c5cc0fc9c91abf2a0a7b54c482de7b917628d5905e958cbb948e2cad7"
 }

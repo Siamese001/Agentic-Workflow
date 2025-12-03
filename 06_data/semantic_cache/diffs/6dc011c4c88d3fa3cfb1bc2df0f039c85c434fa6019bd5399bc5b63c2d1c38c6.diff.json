@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/control_plane/rules_engine.py",
-  "diff_content": "\"\"\"\nRules engine for r\u00e9sum\u00e9 processing safety policy enforcement.\n\nProvides deterministic rule evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nimport re\nfrom typing import List\n\nfrom .decisions import RuleMatch, RulesEngineResult, aggregate_severity\nfrom .models import PolicyRule, SafetyContext\n\n\n_PII_REGEXES = [\n    # Email addresses\n    re.compile(r\"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\", re.IGNORECASE),\n    # Simple phone number patterns (international and local)\n    re.compile(r\"(?:(?:\\+?\\d{1,3})?[\\s-]?)?(?:\\d{3}[\\s-]?\\d{3}[\\s-]?\\d{4})\"),\n]\n\n\ndef _detect_pii(text: str) -> bool:\n    \"\"\"\n    Detects personally identifiable information in r\u00e9sum\u00e9 processing text.\n\n    Ensures privacy protection for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n    for rx in _PII_REGEXES:\n        if rx.search(text):\n            return True\n    return False\n\n\ndef evaluate_rules(context: SafetyContext, rules: List[PolicyRule]) -> RulesEngineResult:\n    \"\"\"\n    Evaluates safety rules against r\u00e9sum\u00e9 processing context.\n\n    Provides systematic policy enforcement for comprehensive r\u00e9sum\u00e9 improvement operations.\n    \"\"\"\n\n    matches: List[RuleMatch] = []\n    text = context.input_text or \"\"\n\n    # Built-in PII signal (even if no explicit PII rule is configured).\n    has_pii_builtin = _detect_pii(text)\n\n    for rule in rules:\n        if not rule.enabled:\n            continue\n\n        hit = False\n        details = {}\n\n        # Text pattern matching.\n        if rule.pattern:\n            rx = re.compile(rule.pattern, re.IGNORECASE | re.MULTILINE)\n            m = rx.search(text)\n            if m:\n                hit = True\n                snippet = m.group(0)\n                details[\"matched_snippet\"] = snippet[:128]\n\n        # Tool-based matching.\n        if rule.tool_name and rule.tool_name in (context.tools or []):\n            hit = True\n            details[\"tool\"] = rule.tool_name\n\n        if not hit:\n            continue\n\n        matches.append(\n            RuleMatch(\n                rule_id=rule.id,\n                category=rule.category,\n                severity=rule.severity,\n                is_pii=rule.is_pii_rule,\n                details=details,\n            )\n        )\n\n    all_severities = [m.severity for m in matches]\n    max_sev = aggregate_severity(all_severities)\n\n    has_pii = has_pii_builtin or any(m.is_pii for m in matches)\n\n    return RulesEngineResult(matches=matches, max_severity=max_sev, has_pii=has_pii)\n\n\n\n",
-  "statistics": {
-    "lines_added": 89,
-    "lines_removed": 0,
-    "lines_changed": 89
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/rules_engine.py",
+  "generated_at": "2025-12-03T17:47:46.042228",
+  "diff_type": "baseline",
+  "changes": []
 }

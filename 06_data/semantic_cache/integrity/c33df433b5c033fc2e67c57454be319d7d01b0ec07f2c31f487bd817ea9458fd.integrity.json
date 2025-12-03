@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-  "content_hash": "fc72bb72c320ae6fe2452543e922e7c9de7d04342e0488ce2e4459106a7e6789",
+  "hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/storage/cache_redis.py",
+  "generated_at": "2025-12-03T17:47:46.147593",
   "file_size": 3424,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\storage\\cache_redis.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\storage\\cache_redis.py",
-    "file_size": 3424,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-    "scan_timestamp": "2025-12-03T08:04:48.064372"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.338294",
-  "checksums": {
-    "sha256": "fc72bb72c320ae6fe2452543e922e7c9de7d04342e0488ce2e4459106a7e6789",
-    "md5": "71b909ebb2cdf287f4e44bc8eac75243"
-  }
+  "modified_time": 1764610058.5130906,
+  "sha256": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
+  "integrity_check": "passed"
 }

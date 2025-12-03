@@ -1,7 +1,0 @@
-{
-  "ast_version": "python_3.8+",
-  "error": "Syntax error: invalid syntax (<unknown>, line 256)",
-  "line_number": 256,
-  "offset": 8,
-  "parse_failed": true
-}

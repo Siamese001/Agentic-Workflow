@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
-  "content_hash": "b614de94a8483652f2f9895cb1b82bed2bf1c29fcc1b27a066ef8df04da807de",
+  "hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/networking.py",
+  "generated_at": "2025-12-03T17:47:46.134245",
   "file_size": 588,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\sandbox\\networking.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\networking.py",
-    "file_size": 588,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
-    "scan_timestamp": "2025-12-03T08:04:48.063212"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.308448",
-  "checksums": {
-    "sha256": "b614de94a8483652f2f9895cb1b82bed2bf1c29fcc1b27a066ef8df04da807de",
-    "md5": "3614be207dbfb62c74f1ac6d7adb80eb"
-  }
+  "modified_time": 1764610058.5130906,
+  "sha256": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
+  "integrity_check": "passed"
 }

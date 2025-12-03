@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/golden_state/test_runner.py",
-  "diff_content": "# FILE: tests/golden_state/test_runner.py\n\nfrom core.models.models import ExecutionProfile, RetrievalConfig\n\nfrom eval.golden_state.runner import run_all_golden_tests\n\n\ndef test_run_all_golden_tests_returns_results():\n    profile = ExecutionProfile(\n        name=\"TEST\",\n        description=\"test profile\",\n        retrieval=RetrievalConfig(),\n        metadata={},\n    )\n\n    results = run_all_golden_tests(profile)\n\n    assert results\n    ids = {r.test_id for r in results}\n    assert \"gs_basic_1\" in ids\n    assert \"gs_safety_1\" in ids\n\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 28,
-    "lines_removed": 0,
-    "lines_changed": 28
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_runner.py",
+  "generated_at": "2025-12-03T17:47:45.652751",
+  "diff_type": "baseline",
+  "changes": []
 }

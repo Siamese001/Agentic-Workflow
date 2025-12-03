@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
-  "content_hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "sender_knowledge_base.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\sender_knowledge_base.json",
-    "file_size": 3362,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
-    "scan_timestamp": "2025-12-03T08:04:48.371544"
-  },
-  "content_preview": "{\n  \"company_name\": \"Unify Consulting\",\n  \"core_value_propositions\": [\n    \"We deploy agentic API frameworks using chain-of-thought prompting to automate complex workflows\",\n    \"Our context-engineering frameworks with retrieval-augmented pipelines improve generative AI accuracy\",\n    \"We architect LLM deployment pipelines with embedding stores and vector databases on cloud infrastructure\",\n    \"We build senior engineering teams focused on transformer models and low-latency inference optimizatio...",
-  "creation_timestamp": "2025-12-03T08:05:18.983381",
-  "version": "1.0"
+  "hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/sender_knowledge_base.json",
+  "generated_at": "2025-12-03T17:47:46.316762",
+  "golden_status": "verified",
+  "checksum": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc"
 }

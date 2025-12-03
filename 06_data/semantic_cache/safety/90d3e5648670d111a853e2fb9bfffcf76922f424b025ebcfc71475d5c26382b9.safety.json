@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 195,
-    "complexity_score": 183.66
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.136316"
+  "hash": "90d3e5648670d111a853e2fb9bfffcf76922f424b025ebcfc71475d5c26382b9",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/strategy.py",
+  "generated_at": "2025-12-03T17:47:46.407654",
+  "safety_score": 1.0,
+  "issues": []
 }

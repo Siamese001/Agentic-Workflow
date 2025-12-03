@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
-  "content_hash": "dcbb7c22fba44cb5b9b89bf8f432e07bb8da5e66e656cd0411564922524bc56d",
+  "hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_scorer.py",
+  "generated_at": "2025-12-03T17:47:45.658032",
   "file_size": 497,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\golden_state\\test_scorer.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_scorer.py",
-    "file_size": 497,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
-    "scan_timestamp": "2025-12-03T08:04:48.135982"
-  },
-  "verification_timestamp": "2025-12-03T08:04:56.227179",
-  "checksums": {
-    "sha256": "dcbb7c22fba44cb5b9b89bf8f432e07bb8da5e66e656cd0411564922524bc56d",
-    "md5": "0ce7bd8547fc210e8fcf705c9e3a46ec"
-  }
+  "modified_time": 1764610060.312401,
+  "sha256": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
+  "integrity_check": "passed"
 }

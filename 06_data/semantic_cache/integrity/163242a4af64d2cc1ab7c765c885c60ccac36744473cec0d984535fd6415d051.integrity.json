@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
-  "content_hash": "9ec871a5b259660f76936715f3ddcde00d235d3f9aafdd5be674b0dda4379008",
+  "hash": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/agent_router_policy.py",
+  "generated_at": "2025-12-03T17:47:44.766424",
   "file_size": 1094,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\agent_router_policy.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_router_policy.py",
-    "file_size": 1094,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
-    "scan_timestamp": "2025-12-03T08:04:48.097624"
-  },
-  "verification_timestamp": "2025-12-03T08:04:54.395552",
-  "checksums": {
-    "sha256": "9ec871a5b259660f76936715f3ddcde00d235d3f9aafdd5be674b0dda4379008",
-    "md5": "4b629089db10fd14fee4801671300c8c"
-  }
+  "modified_time": 1764610057.8971486,
+  "sha256": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
+  "integrity_check": "passed"
 }

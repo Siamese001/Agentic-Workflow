@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0",
-  "content_hash": "1e44bafef04dd0a7a842e21f2020c079f8128faf7b3c11acf3c2aba24e5770ed",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l3\\strategy_orchestrator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\strategy_orchestrator.py",
-    "file_size": 1136,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0",
-    "scan_timestamp": "2025-12-03T08:04:48.082807"
-  },
-  "content_preview": "\"\"\"\nL3 strategy orchestrator for resume job alignment workflows.\n\nCoordinates strategy planning and execution for resume enhancement.\n\"\"\"\n\nfrom typing import Any\nfrom l1.strategy_planning import plan_strategy\nfrom l2.strategy_executor import StrategyExecutor\nfrom runtime.observability import record_event\n\nclass StrategyOrchestrator:\n    \"\"\"Pure orchestration for resume strategy job alignment workflows.\"\"\"\n    \n    def __init__(self, strategy_executor: StrategyExecutor):\n        self.strategy_exe...",
-  "creation_timestamp": "2025-12-03T08:04:52.261400",
-  "version": "1.0"
+  "hash": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/strategy_orchestrator.py",
+  "generated_at": "2025-12-03T17:47:45.150221",
+  "golden_status": "verified",
+  "checksum": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0"
 }

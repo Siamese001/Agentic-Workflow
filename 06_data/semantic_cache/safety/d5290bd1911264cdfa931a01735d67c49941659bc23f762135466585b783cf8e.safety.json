@@ -1,18 +1,9 @@
 {
-  "safety_score": 80,
-  "risk_level": "medium",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": true,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 3335,
-    "complexity_score": 3347.31
-  },
-  "recommendations": [
-    "Review system operations for security implications"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:57.940149"
+  "hash": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_report.json",
+  "generated_at": "2025-12-03T17:47:45.510422",
+  "safety_score": 1.0,
+  "issues": []
 }

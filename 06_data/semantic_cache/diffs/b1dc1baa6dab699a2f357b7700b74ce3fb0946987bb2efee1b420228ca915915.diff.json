@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "meta/cognitive_agents.py",
-  "diff_content": "\"\"\"\nProvides access to specialized AI agents for r\u00e9sum\u00e9 analysis and job matching optimization.\n\nImproves r\u00e9sum\u00e9 quality by coordinating strategy, drafting, QA, and safety agents for comprehensive career analysis.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom l2.agents import (\n    LLMBaseAgent,\n    StrategyLLMAgent,\n    DraftingGuild,\n    SemanticQAAgent,\n    ConstitutionalSafetyAgent,\n    HYDEQueryAgent,\n    QACouncilAgent,\n)\n\n__all__ = [\n    \"LLMBaseAgent\",\n    \"StrategyLLMAgent\",\n    \"DraftingGuild\",\n    \"SemanticQAAgent\",\n    \"ConstitutionalSafetyAgent\",\n    \"HYDEQueryAgent\",\n    \"QACouncilAgent\",\n]\n\n\n\n",
-  "statistics": {
-    "lines_added": 30,
-    "lines_removed": 0,
-    "lines_changed": 30
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "b1dc1baa6dab699a2f357b7700b74ce3fb0946987bb2efee1b420228ca915915",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/cognitive_agents.py",
+  "generated_at": "2025-12-03T17:47:45.280674",
+  "diff_type": "baseline",
+  "changes": []
 }

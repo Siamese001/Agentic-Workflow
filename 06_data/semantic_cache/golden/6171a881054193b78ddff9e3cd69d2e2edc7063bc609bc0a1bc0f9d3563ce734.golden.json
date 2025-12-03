@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "6171a881054193b78ddff9e3cd69d2e2edc7063bc609bc0a1bc0f9d3563ce734",
-  "content_hash": "84ef3c9dcb6150f8db95aa64bb8c69150357eb7f407113d34120c7c7c1dda5f7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-08_v2.86.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-08_v2.86.md",
-    "file_size": 36579,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "6171a881054193b78ddff9e3cd69d2e2edc7063bc609bc0a1bc0f9d3563ce734",
-    "scan_timestamp": "2025-12-03T08:04:48.520651"
-  },
-  "content_preview": "Understood. Full, zero-loss LIC v2.86 below \u2014 single continuous fenced block.\n\n````markdown\n# LinkedInCanonical \u2014 2025-09-09 v2.86 (FULL, ZLO-Consolidated)\n\nLineage: v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> **v2.86**\n\nv2.86 is a versioned zero-loss overwrite that **fully decouples mandatory profile-derived RAG enrichment from JD availability** for Senior TA. Profile/About RAG is now enforced unconditionally; JD-driven semantic matching is a separate step ...",
-  "creation_timestamp": "2025-12-03T08:05:26.267498",
-  "version": "1.0"
+  "hash": "6171a881054193b78ddff9e3cd69d2e2edc7063bc609bc0a1bc0f9d3563ce734",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-08_v2.86.md",
+  "generated_at": "2025-12-03T17:47:47.892137",
+  "golden_status": "verified",
+  "checksum": "6171a881054193b78ddff9e3cd69d2e2edc7063bc609bc0a1bc0f9d3563ce734"
 }

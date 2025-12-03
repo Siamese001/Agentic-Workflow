@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "fc7dbdfd7f3d82432455259edc0429f46d9272b09432036de11aac0f76d90d67",
-  "content_hash": "fc7dbdfd7f3d82432455259edc0429f46d9272b09432036de11aac0f76d90d67",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_FULL_v10_22.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_FULL_v10_22.json",
-    "file_size": 169591,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "fc7dbdfd7f3d82432455259edc0429f46d9272b09432036de11aac0f76d90d67",
-    "scan_timestamp": "2025-12-03T08:04:48.482667"
-  },
-  "content_preview": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.22\",\n    \"base_version\": \"v10.21\",\n    \"previous_version\": \"v10.21\",\n    \"release_date\": \"2025-10-16\",\n    \"architecture\": \"Clerk, then Artist (Complete SSOT + Hardened Routing + E2E Testing)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Complete SSOT centralization for ALL tunable parameters (47 total), routing decision tree hardening, and comprehensive E2E test suite expansion (5\u219220 cases). Zero functional changes to...",
-  "creation_timestamp": "2025-12-03T08:05:25.427406",
-  "version": "1.0"
+  "hash": "fc7dbdfd7f3d82432455259edc0429f46d9272b09432036de11aac0f76d90d67",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_FULL_v10_22.json",
+  "generated_at": "2025-12-03T17:47:47.496785",
+  "golden_status": "verified",
+  "checksum": "fc7dbdfd7f3d82432455259edc0429f46d9272b09432036de11aac0f76d90d67"
 }

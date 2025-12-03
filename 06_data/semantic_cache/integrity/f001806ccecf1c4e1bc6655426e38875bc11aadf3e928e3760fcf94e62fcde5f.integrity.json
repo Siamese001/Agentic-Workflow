@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
-  "content_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_mcp_selector.py",
+  "generated_at": "2025-12-03T17:47:46.531231",
   "file_size": 3696,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_mcp_selector.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_mcp_selector.py",
-    "file_size": 3696,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
-    "scan_timestamp": "2025-12-03T08:04:48.363067"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.389934",
-  "checksums": {
-    "sha256": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
-    "md5": "aba93d5df14b7808218fd78413579a51"
-  }
+  "modified_time": 1764609961.5750027,
+  "sha256": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "integrity_check": "passed"
 }

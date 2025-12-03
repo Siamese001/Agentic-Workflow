@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 87,
-    "complexity_score": 72.97
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:56.975261"
+  "hash": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_import_rules.py",
+  "generated_at": "2025-12-03T17:47:45.705806",
+  "safety_score": 1.0,
+  "issues": []
 }

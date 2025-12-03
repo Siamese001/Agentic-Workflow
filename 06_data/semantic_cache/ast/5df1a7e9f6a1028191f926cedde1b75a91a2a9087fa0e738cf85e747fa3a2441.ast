@@ -1,7 +1,0 @@
-{
-  "ast_version": "python_3.8+",
-  "error": "Syntax error: invalid character '\u2022' (U+2022) (<unknown>, line 213)",
-  "line_number": 213,
-  "offset": 5,
-  "parse_failed": true
-}

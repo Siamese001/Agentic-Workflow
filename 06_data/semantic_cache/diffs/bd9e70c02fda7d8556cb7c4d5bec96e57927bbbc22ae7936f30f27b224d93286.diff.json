@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "orchestration/workflow_engine.py",
-  "diff_content": "\"\"\"\nProvides high-level r\u00e9sum\u00e9 analysis workflow execution with coordinated multi-agent processing.\n\nImproves r\u00e9sum\u00e9 processing reliability by orchestrating complex analysis workflows with safety validation and error handling.\n\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar\n\nfrom l5 import SafetySystem\n\nfrom .integration import WorkflowExecutionConfig, create_workflow_context, execute_workflow\nfrom .models.dag_models import DAGResult\n\n\nTState = TypeVar(\"TState\")\n\n\n@dataclass\nclass EngineConfig:\n    \"\"\"\n    Configures r\u00e9sum\u00e9 analysis workflow engine settings for reliability and performance optimization.\n\n    Improves r\u00e9sum\u00e9 processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.\n    \"\"\"\n\n    max_retries: int = 3\n    retry_delay: float = 0.5\n    fail_fast: bool = True\n    default_node_timeout: Optional[float] = 30.0\n\n\nclass AgenticWorkflowEngine:\n    \"\"\"\n    Manages r\u00e9sum\u00e9 analysis workflow execution with coordinated multi-agent processing and safety validation.\n\n    Improves r\u00e9sum\u00e9 processing by orchestrating complex analysis workflows with proper error handling and retry logic.\n    \"\"\"\n\n    def __init__(\n        self,\n        config: Optional[EngineConfig] = None,\n        safety_system: Optional[SafetySystem] = None,\n    ) -> None:\n        \"\"\"\n        Sets up r\u00e9sum\u00e9 workflow engine with retry policies and safety validation for reliable multi-agent processing.\n\n        Improves r\u00e9sum\u00e9 processing reliability by configuring error handling and safety checks for complex analysis workflows.\n        \"\"\"\n        self.config = config or EngineConfig()\n        self.safety_system = safety_system\n\n    async def run_dag(\n        self,\n        workflow_id: str,\n        initial_state: TState,\n        node_executors: Dict[str, Callable[..., Awaitable[Any]]],\n        node_dependencies: Dict[str, List[str]],\n        **metadata: Any,\n    ) -> DAGResult:\n        \"\"\"\n        Executes r\u00e9sum\u00e9 analysis workflow with coordinated multi-agent processing and comprehensive error handling.\n\n        Improves r\u00e9sum\u00e9 processing reliability by managing complex analysis workflows with proper dependency resolution and retry logic.\n        \"\"\"\n\n        wf_cfg = WorkflowExecutionConfig(\n            max_retries=self.config.max_retries,\n            retry_delay=self.config.retry_delay,\n            fail_fast=self.config.fail_fast,\n            default_node_timeout=self.config.default_node_timeout,\n        )\n\n        return await execute_workflow(\n            workflow_id=workflow_id,\n            initial_state=initial_state,\n            node_executors=node_executors,\n            node_dependencies=node_dependencies,\n            safety_system=self.safety_system,\n            config=wf_cfg,\n            **metadata,\n        )\n\n\n\n",
-  "statistics": {
-    "lines_added": 87,
-    "lines_removed": 0,
-    "lines_changed": 87
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "bd9e70c02fda7d8556cb7c4d5bec96e57927bbbc22ae7936f30f27b224d93286",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/workflow_engine.py",
+  "generated_at": "2025-12-03T17:47:45.362933",
+  "diff_type": "baseline",
+  "changes": []
 }

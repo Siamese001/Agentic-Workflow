@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-  "content_hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\regression\\test_token_drift_guard.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_token_drift_guard.py",
-    "file_size": 502,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-    "scan_timestamp": "2025-12-03T08:04:48.361170"
-  },
-  "content_preview": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_token_drift_guard():\n    stack = OutreachStack(ReasoningToggles())\n    sample = SimpleNamespace(prompt=\"Checking drift bounds\", company_id=\"ACME\", contact_id=\"C1\")\n    outcome = stack.run(sample)\n    verdict = outcome[\"verdict\"]\n    assert verdict.passed\n    drift = stack.validator.metrics.token_drift()\n    assert drift <= 0....",
-  "creation_timestamp": "2025-12-03T08:05:18.314343",
-  "version": "1.0"
+  "hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py",
+  "generated_at": "2025-12-03T17:47:46.496018",
+  "golden_status": "verified",
+  "checksum": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b"
 }

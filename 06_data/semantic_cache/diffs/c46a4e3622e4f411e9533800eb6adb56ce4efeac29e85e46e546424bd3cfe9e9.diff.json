@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l2/vector_search_executor.py",
-  "diff_content": "\"\"\"\nVector search execution layer for resume processing workflows.\n\nExecutes vector search operations to support comprehensive resume\nenhancement through semantic retrieval for job alignment.\n\"\"\"\n\nfrom typing import List, Dict, Any, Optional\nfrom dataclasses import dataclass\n\nfrom l4 import PineconeAdapter, VectorQueryResult\n\n\n@dataclass\nclass SearchResult:\n    \"\"\"\n    Container for resume processing vector search results.\n\n    Provides structured data retrieval for resume enhancement\n    and job alignment workflows.\n    \"\"\"\n    id: str\n    score: float\n    metadata: Dict[str, Any]\n\n\nclass VectorSearchExecutor:\n    \"\"\"\n    L2 executor for resume processing vector search operations.\n\n    Executes search plans from L1 via L4's PineconeAdapter for\n    resume enhancement and job alignment workflows.\n    \"\"\"\n    \n    def __init__(self, pinecone_adapter: PineconeAdapter):\n        \"\"\"\n        Initializes vector search executor for resume processing.\n\n        Args:\n            pinecone_adapter: L4 PineconeAdapter for resume data retrieval\n        \"\"\"\n        self.adapter = pinecone_adapter\n    \n    def execute_search(\n        self,\n        namespace: str,\n        query_text: str,\n        top_k: int = 5,\n        metadata_filter: Optional[Dict[str, Any]] = None,\n        score_threshold: Optional[float] = None,\n    ) -> List[SearchResult]:\n        \"\"\"\n        Executes vector search for resume processing data retrieval.\n\n        Main L2 execution method that takes search plan and executes\n        via L4 for resume enhancement and job alignment.\n        \"\"\"\n        # Delegate to L4 adapter\n        l4_results: List[VectorQueryResult] = self.adapter.query_by_text(\n            query_text=query_text,\n            namespace=namespace,\n            top_k=top_k,\n            metadata_filter=metadata_filter,\n            score_threshold=score_threshold,\n        )\n        \n        # Transform L4 results to L2 execution results\n        return [\n            SearchResult(\n                id=result.id,\n                score=result.score,\n                metadata=result.metadata,\n            )\n            for result in l4_results\n        ]\n    \n    def execute_upsert(\n        self,\n        namespace: str,\n        texts: List[str],\n        record_type: str = \"doc\",\n        metadata_list: Optional[List[Dict[str, Any]]] = None,\n    ) -> List[str]:\n        \"\"\"\n        Executes vector upsert for resume processing data storage.\n\n        Stores resume enhancement data for improved job alignment.\n        \"\"\"\n        # Delegate to L4 adapter\n        return self.adapter.upsert_text_records(\n            texts=texts,\n            namespace=namespace,\n            record_type=record_type,\n            metadata_list=metadata_list,\n        )\n\n\n\n",
-  "statistics": {
-    "lines_added": 98,
-    "lines_removed": 0,
-    "lines_changed": 98
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "c46a4e3622e4f411e9533800eb6adb56ce4efeac29e85e46e546424bd3cfe9e9",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/vector_search_executor.py",
+  "generated_at": "2025-12-03T17:47:45.115805",
+  "diff_type": "baseline",
+  "changes": []
 }

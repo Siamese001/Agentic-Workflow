@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "ecaa790cb830e0265c52d134eea9c05296f454281940886812c513e13792a417",
-  "content_hash": "ecaa790cb830e0265c52d134eea9c05296f454281940886812c513e13792a417",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tools\\run_tests_with_coverage.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tools\\run_tests_with_coverage.py",
-    "file_size": 4837,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ecaa790cb830e0265c52d134eea9c05296f454281940886812c513e13792a417",
-    "scan_timestamp": "2025-12-03T08:04:48.367095"
-  },
-  "content_preview": "#!/usr/bin/env python3\n\"\"\"Run pytest under the stdlib trace module and enforce a coverage threshold.\n\nThis script exists so we can enforce the repository's 90%% coverage gate even in\nrestricted environments where third-party coverage plugins (e.g. pytest-cov)\nare not available.  It executes pytest with the builtin ``trace`` module to\ncollect line execution counts, computes the aggregate coverage for the\n``src/lic_agentic`` package, and exits with a non-zero status code if coverage\nfalls below th...",
-  "creation_timestamp": "2025-12-03T08:05:18.664698",
-  "version": "1.0"
+  "hash": "ecaa790cb830e0265c52d134eea9c05296f454281940886812c513e13792a417",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tools/run_tests_with_coverage.py",
+  "generated_at": "2025-12-03T17:47:46.422033",
+  "golden_status": "verified",
+  "checksum": "ecaa790cb830e0265c52d134eea9c05296f454281940886812c513e13792a417"
 }

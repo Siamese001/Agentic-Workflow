@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
-  "content_hash": "b19f7ca688367b61e2e6c1a9310bdb36b54fedd8aa57bcd5279d69157996fb1f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\integration\\PINECONE_INTEGRATION.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\integration\\PINECONE_INTEGRATION.md",
-    "file_size": 5294,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
-    "scan_timestamp": "2025-12-03T08:04:48.112797"
-  },
-  "content_preview": "# Pinecone Vector Database Integration\n\n## Overview\n\nThe Agentic-Workflow-10_10 system now includes full Pinecone vector database integration for semantic search and retrieval operations. The integration follows the strict L1/L2/L3 layering architecture.\n\n## Architecture\n\n### Layer Separation\n\n- **L1 (Planning)**: `l1/vector_search_planning.py`\n  - Pure planning functions that generate typed plans\n  - No actual vector operations or SDK calls\n  - Functions: `plan_vector_search()`, `plan_vector_up...",
-  "creation_timestamp": "2025-12-03T08:04:55.392819",
-  "version": "1.0"
+  "hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/PINECONE_INTEGRATION.md",
+  "generated_at": "2025-12-03T17:47:45.871667",
+  "golden_status": "verified",
+  "checksum": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065"
 }

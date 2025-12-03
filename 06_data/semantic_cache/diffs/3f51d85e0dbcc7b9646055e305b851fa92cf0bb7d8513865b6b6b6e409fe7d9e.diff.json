@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Old LIC",
-  "logical_path": "run_workflow.py",
-  "diff_content": "# File: run_workflow.py\n# Description: Main executable for the LIC agentic workflow.\n\n__version__ = \"11.10\"\n\nimport asyncio\nimport json\nimport sys\nimport os\nfrom uuid import uuid4\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any\n\nfrom workflow import WorkflowOrchestrator\nfrom models import OutreachMission\n\n__version__ = \"11.10\"\n\ndef load_mission_input(filename: str = \"mission_input.json\") -> Dict[str, Any]:\n    \"\"\"Loads the mission input JSON file.\"\"\"\n    if not os.path.exists(filename):\n        print(f\"FATAL: {filename} not found. Please create it.\")\n        sys.exit(1)\n    try:\n        with open(filename, 'r') as f:\n            return json.load(f)\n    except json.JSONDecodeError as e:\n        print(f\"FATAL: Error decoding {filename}: {e}\")\n        sys.exit(1)\n\ndef create_orchestrator() -> WorkflowOrchestrator:\n    \"\"\"Create orchestrator instance\"\"\"\n    return WorkflowOrchestrator()\n\nasync def main():\n    \"\"\"Main execution\"\"\"\n    \n    print(\"\\n\" + \"=\"*80)\n    print(f\"LIC v{__version__} - LinkedIn Outreach Orchestrator (Dual-Loop Agentic)\")\n    print(\"=\"*80)\n    \n    # Load data from JSON file\n    print(\"\\nLoading mission from mission_input.json...\")\n    input_data = load_mission_input()\n    \n    sender_profile = input_data.get(\"sender_profile\", {})\n    recipient_profile = input_data.get(\"recipient_profile\", {})\n    job_description = input_data.get(\"job_description\", {})\n\n    if not all([sender_profile, recipient_profile, job_description]):\n        print(\"FATAL: mission_input.json is missing one or more required top-level keys: \"\n              \"'sender_profile', 'recipient_profile', 'job_description'\")\n        sys.exit(1)\n\n    mission = OutreachMission(\n        mission_id=str(uuid4()),\n        sender_profile=sender_profile,\n        recipient_profile=recipient_profile,\n        job_description=job_description,\n        connection_status=recipient_profile.get(\"connection_status\", \"not_connected\"),\n        prior_message_count=recipient_profile.get(\"prior_message_count\", 0)\n    )\n    \n    print(f\"\\n{'='*80}\")\n    print(\"LIC v11.10 - Workflow Execution\")\n    print(f\"{'='*80}\\n\")\n    print(f\"Mission ID: {mission.mission_id}\")\n    print(f\"Sender: {mission.sender_profile.get('name', 'N/A')}\")\n    print(f\"Recipient: {mission.recipient_profile.get('name', 'N/A')}\")\n    print(f\"Job: {mission.job_description.get('title', 'N/A')} at {mission.job_description.get('company', 'N/A')}\")\n    \n    orchestrator = create_orchestrator()\n    result = await orchestrator.execute_workflow(mission)\n    \n    print(f\"\\n{'='*80}\")\n    print(\"WORKFLOW RESULTS\")\n    print(f\"{'='*80}\\n\")\n    print(f\"Status: {result['status']}\")\n    \n    if result['status'] == 'success':\n        print(f\"Production Ready: {result['production_ready']}\")\n        print(f\"Workflow Time: {result['workflow_time']:.2f}s\")\n        print(f\"\\nGenerated Message ({result['word_count']} words):\")\n        print(\"-\" * 80)\n        print(result['message'])\n        print(\"-\" * 80)\n        print(f\"\\nQA Summary:\")\n        print(f\"  Critical: {result['qa_summary']['critical_issues']}\")\n        print(f\"  High: {result['qa_summary']['high_issues']}\")\n        print(f\"  Medium: {result['qa_summary']['errors']}\")\n        print(f\"  Warnings: {result['qa_summary']['warnings']}\")\n        print(result['qa_report'])\n    else:\n        print(f\"Error: {result.get('error', 'Unknown error')}\")\n    \n    return result\n\nif __name__ == \"__main__\":\n    # Note: Added necessary imports for asyncio\n    import asyncio\n    asyncio.run(main())",
-  "statistics": {
-    "lines_added": 102,
-    "lines_removed": 0,
-    "lines_changed": 102
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/run_workflow.py",
+  "generated_at": "2025-12-03T17:47:47.989532",
+  "diff_type": "baseline",
+  "changes": []
 }

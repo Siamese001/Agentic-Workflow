@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/modularity/test_import_rules.py",
-  "diff_content": "import ast\nfrom pathlib import Path\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef _iter_py_files(root: Path):\n    if not root.exists():\n        return\n    for path in root.rglob(\"*.py\"):\n        if path.name.startswith(\"test_\"):\n            continue\n        yield path\n\n\ndef _parse_imports(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename=str(path))\n    except SyntaxError:\n        return []\n\n    imports: list[str] = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Import):\n            for alias in node.names:\n                imports.append(alias.name)\n        elif isinstance(node, ast.ImportFrom):\n            if node.module:\n                imports.append(node.module)\n    return imports\n\n\ndef _has_forbidden_import(root: Path, forbidden_prefixes: list[str]) -> list[tuple[Path, str]]:\n    violations: list[tuple[Path, str]] = []\n    for path in _iter_py_files(root):\n        for mod in _parse_imports(path):\n            for prefix in forbidden_prefixes:\n                if mod == prefix or mod.startswith(prefix + \".\"):\n                    violations.append((path, mod))\n    return violations\n\n\ndef test_core_does_not_import_providers() -> None:\n    \"\"\"core/* MUST NOT import providers/* (scoped to new core tree only).\"\"\"\n    core_root = PROJECT_ROOT / \"core\"\n    violations = _has_forbidden_import(core_root, [\"providers\"])\n    assert not violations, f\"core modules must not import providers: {violations}\"\n\n\ndef test_core_does_not_import_meta_retrievers_directly() -> None:\n    \"\"\"core/* must not depend on low-level retrievers; use orchestrators instead.\"\"\"\n    core_root = PROJECT_ROOT / \"core\"\n    violations = _has_forbidden_import(core_root, [\"meta.retrieval.retrievers\"])\n    assert not violations, f\"core modules must not import retrievers directly: {violations}\"\n\n\ndef test_meta_does_not_import_core() -> None:\n    \"\"\"meta/* MUST NOT import core/* (except core.models.models for data types).\"\"\"\n    meta_root = PROJECT_ROOT / \"meta\"\n    all_violations = _has_forbidden_import(meta_root, [\"core\"])\n    \n    # Allow core.models.models imports for data types (established pattern)\n    allowed_imports = {\"core.models.models\", \"core.models\"}\n    violations = [\n        (path, mod) for path, mod in all_violations \n        if mod not in allowed_imports\n    ]\n    \n    assert not violations, f\"meta modules must not import core (except core.models): {violations}\"\n\n\ndef test_providers_do_not_import_core_or_meta() -> None:\n    \"\"\"providers/* MUST be infrastructure-only; no core/meta imports.\"\"\"\n    providers_root = PROJECT_ROOT / \"providers\"\n    violations = _has_forbidden_import(providers_root, [\"core\", \"meta\"])\n    assert not violations, f\"providers must not import core/meta: {violations}\"\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 87,
-    "lines_removed": 0,
-    "lines_changed": 87
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_import_rules.py",
+  "generated_at": "2025-12-03T17:47:45.705006",
+  "diff_type": "baseline",
+  "changes": []
 }

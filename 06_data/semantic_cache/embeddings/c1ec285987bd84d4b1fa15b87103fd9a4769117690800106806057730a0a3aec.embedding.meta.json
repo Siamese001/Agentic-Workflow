@@ -1,0 +1,10 @@
+{
+  "hash": "c1ec285987bd84d4b1fa15b87103fd9a4769117690800106806057730a0a3aec",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_9.25.2025_v3.0.json",
+  "generated_at": "2025-12-03T17:47:47.329439",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

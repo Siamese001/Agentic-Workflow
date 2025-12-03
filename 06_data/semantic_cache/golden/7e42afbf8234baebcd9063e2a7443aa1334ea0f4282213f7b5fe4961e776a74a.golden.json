@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
-  "content_hash": "10f4586db0be422d3ebea2c74ad50b56a2b7c01fe4205cb0eec83d8b375fb730",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\di_container.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\di_container.py",
-    "file_size": 6029,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
-    "scan_timestamp": "2025-12-03T08:04:48.059822"
-  },
-  "content_preview": "\"\"\"\nInfrastructure dependency injection for r\u00e9sum\u00e9 processing workflows.\n\nProvides service management and dependency resolution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, TypeVar, Callable, Optional\nimport functools\n\nT = TypeVar('T')\n\n# Simple service registry for atomic architecture\n_services: Dict[str, Any] = {}\n\nclass SimpleDIContainer:\n    \"\"\"\n    Manages dependency injection services for r\u00e9sum\u00e9 processing architecture.\n\n    Ensures proper service res...",
-  "creation_timestamp": "2025-12-03T08:04:50.137904",
-  "version": "1.0"
+  "hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/di_container.py",
+  "generated_at": "2025-12-03T17:47:44.856317",
+  "golden_status": "verified",
+  "checksum": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a"
 }

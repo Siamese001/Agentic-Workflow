@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "33411875fe5547dd1a591968c6e898857fc18ad772259e7d03c5df449f467099",
-  "content_hash": "33411875fe5547dd1a591968c6e898857fc18ad772259e7d03c5df449f467099",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_9-30-2025 v19.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9-30-2025 v19.json",
-    "file_size": 172007,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "33411875fe5547dd1a591968c6e898857fc18ad772259e7d03c5df449f467099",
-    "scan_timestamp": "2025-12-03T08:04:48.454387"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v17\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v16 COMPLETE with execution refinements from real-world usage (zero-loss overwrite)\",\n    \"notes\": \"Added: job application context handling, explicit K-node skip notifications, reasoning toggle prompt placement, RAG pre-processing visualization guidance, execution flow clarity. ALL v16 content preserved in full.\",\n    \"sha256\": \"p...",
-  "creation_timestamp": "2025-12-03T08:05:22.720179",
-  "version": "1.0"
+  "hash": "33411875fe5547dd1a591968c6e898857fc18ad772259e7d03c5df449f467099",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_9-30-2025 v19.json",
+  "generated_at": "2025-12-03T17:47:47.253523",
+  "golden_status": "verified",
+  "checksum": "33411875fe5547dd1a591968c6e898857fc18ad772259e7d03c5df449f467099"
 }

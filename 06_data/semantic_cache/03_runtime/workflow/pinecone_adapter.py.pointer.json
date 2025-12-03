@@ -1,0 +1,9 @@
+{
+  "hash": "59dc8859f25939dcc1dabc186c8431f064bffb95657a6c2c4da4eed0ec5c632a",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/pinecone_adapter.py",
+  "canonical_relative": "workflow/pinecone_adapter.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.127956"
+}

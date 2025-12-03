@@ -1,0 +1,10 @@
+{
+  "hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Monolithic/test_lic_v11_10.py",
+  "generated_at": "2025-12-03T17:47:46.658638",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

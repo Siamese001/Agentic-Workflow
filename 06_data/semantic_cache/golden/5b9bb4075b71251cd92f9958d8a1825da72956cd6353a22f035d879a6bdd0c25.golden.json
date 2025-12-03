@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "content_hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "redis.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\redis.py",
-    "file_size": 179,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-    "scan_timestamp": "2025-12-03T08:04:48.340955"
-  },
-  "content_preview": "class Redis:  # pragma: no cover - stub for tests\n    \"\"\"Minimal Redis stub so the core module can be imported in tests.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        pass\n",
-  "creation_timestamp": "2025-12-03T08:05:17.450492",
-  "version": "1.0"
+  "hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/redis.py",
+  "generated_at": "2025-12-03T17:47:46.291082",
+  "golden_status": "verified",
+  "checksum": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25"
 }

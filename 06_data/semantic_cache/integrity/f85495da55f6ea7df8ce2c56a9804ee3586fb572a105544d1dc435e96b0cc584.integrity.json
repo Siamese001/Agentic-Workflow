@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
-  "content_hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
+  "hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-07_v2.6.md",
+  "generated_at": "2025-12-03T17:47:47.811766",
   "file_size": 116171,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-07_v2.6.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-07_v2.6.md",
-    "file_size": 116171,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
-    "scan_timestamp": "2025-12-03T08:04:48.511245"
-  },
-  "verification_timestamp": "2025-12-03T08:05:26.072375",
-  "checksums": {
-    "sha256": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
-    "md5": "36c954bb08b19a52abf283095143cc34"
-  }
+  "modified_time": 1764609961.7003655,
+  "sha256": "f85495da55f6ea7df8ce2c56a9804ee3586fb572a105544d1dc435e96b0cc584",
+  "integrity_check": "passed"
 }

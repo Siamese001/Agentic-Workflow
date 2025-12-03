@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
-  "content_hash": "9aeb7d62ca165d45b30c9b662ac82b7dbf9dd4f970cd0081bd7e7d456de8ac22",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\metacognition\\test_hypothesis_generation.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_hypothesis_generation.py",
-    "file_size": 978,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
-    "scan_timestamp": "2025-12-03T08:04:48.156532"
-  },
-  "content_preview": "from meta.metacognition.hypothesis import generate_initial_hypotheses\nfrom meta.metacognition.models import Hypothesis\n\n\nclass DummyRAG:\n    def __init__(self, evidence_count: int) -> None:\n        self.evidence = [object() for _ in range(evidence_count)]\n\n\nclass DummyAgentCard:\n    def __init__(self, agent_id: str) -> None:\n        self.agent_id = agent_id\n\n\ndef test_generate_initial_hypotheses_with_evidence():\n    rag = DummyRAG(evidence_count=3)\n    agent = DummyAgentCard(\"planner_1\")\n\n    hs...",
-  "creation_timestamp": "2025-12-03T08:04:56.865285",
-  "version": "1.0"
+  "hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_hypothesis_generation.py",
+  "generated_at": "2025-12-03T17:47:45.671866",
+  "golden_status": "verified",
+  "checksum": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b"
 }

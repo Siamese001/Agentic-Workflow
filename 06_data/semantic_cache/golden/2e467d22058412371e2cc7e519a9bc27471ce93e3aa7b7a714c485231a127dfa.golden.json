@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "2e467d22058412371e2cc7e519a9bc27471ce93e3aa7b7a714c485231a127dfa",
-  "content_hash": "c6c3b6db5fc88ff5087f31a5388cd81a91c2eea26645710c2a81b704e3775bc0",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tools\\run_batch_v10_10.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\run_batch_v10_10.py",
-    "file_size": 26608,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "2e467d22058412371e2cc7e519a9bc27471ce93e3aa7b7a714c485231a127dfa",
-    "scan_timestamp": "2025-12-03T08:04:48.181195"
-  },
-  "content_preview": "\"\"\"\nBatch processing interface for r\u00e9sum\u00e9 analysis across multiple job applications and candidates.\n\nImproves r\u00e9sum\u00e9 processing efficiency by coordinating parallel analysis workflows with consistent quality and telemetry.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport dataclasses\nfrom dataclasses import dataclass, asdict\nimport json\nimport os\nimport sys\nimport time\nimport uuid\nfrom concurrent.futures import ThreadPoolExecutor, as_completed\nfrom typing import Any, Dict, Iterable,...",
-  "creation_timestamp": "2025-12-03T08:04:58.378459",
-  "version": "1.0"
+  "hash": "2e467d22058412371e2cc7e519a9bc27471ce93e3aa7b7a714c485231a127dfa",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/run_batch_v10_10.py",
+  "generated_at": "2025-12-03T17:47:45.545121",
+  "golden_status": "verified",
+  "checksum": "2e467d22058412371e2cc7e519a9bc27471ce93e3aa7b7a714c485231a127dfa"
 }

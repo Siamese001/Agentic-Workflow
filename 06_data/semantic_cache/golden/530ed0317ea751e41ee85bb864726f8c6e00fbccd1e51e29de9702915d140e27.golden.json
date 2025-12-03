@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
-  "content_hash": "3429985b600292ff31c575a8cec2e85b188725b56d731e92ed0612fdcd545d0f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\metacognition\\test_uncertainty_model.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_uncertainty_model.py",
-    "file_size": 570,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
-    "scan_timestamp": "2025-12-03T08:04:48.157938"
-  },
-  "content_preview": "from meta.metacognition.models import Hypothesis\nfrom meta.metacognition.uncertainty import compute_uncertainty\n\n\ndef test_uncertainty_increases_with_signals():\n    hs = [\n        Hypothesis(id=\"h1\", agent_id=\"a1\", content=\"c1\", confidence=0.8),\n        Hypothesis(id=\"h2\", agent_id=\"a1\", content=\"c2\", confidence=0.6),\n    ]\n\n    low = compute_uncertainty(hs, qa_signals=0, safety_signals=0)\n    high = compute_uncertainty(hs, qa_signals=3, safety_signals=2)\n\n    assert 0.0 <= low <= 1.0\n    assert...",
-  "creation_timestamp": "2025-12-03T08:04:56.945629",
-  "version": "1.0"
+  "hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_uncertainty_model.py",
+  "generated_at": "2025-12-03T17:47:45.690911",
+  "golden_status": "verified",
+  "checksum": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27"
 }

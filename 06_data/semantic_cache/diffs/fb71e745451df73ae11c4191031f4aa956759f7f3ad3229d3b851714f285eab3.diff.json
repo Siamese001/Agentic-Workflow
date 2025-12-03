@@ -1,13 +1,9 @@
 {
-  "diff_type": "lineage_diff",
-  "baseline_version": "Agentic-Workflow-10_11",
-  "current_version": "Agentic-Workflow-10_9",
-  "logical_path": "production_inputs/job_input.json",
-  "diff_content": "",
-  "statistics": {
-    "lines_added": 0,
-    "lines_removed": 0,
-    "lines_changed": 0
-  },
-  "has_changes": false
+  "hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/production_inputs/job_input.json",
+  "generated_at": "2025-12-03T17:47:45.380346",
+  "diff_type": "baseline",
+  "changes": []
 }

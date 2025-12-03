@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 90,
-    "complexity_score": 99.69
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:25.467536"
+  "hash": "498fc3d3cf8e75dcb4db0848d0b294b62bc73fbfd74e2cb4fd44c7346fd6458f",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_PATCH_C023_C024_diff.json",
+  "generated_at": "2025-12-03T17:47:47.511540",
+  "safety_score": 1.0,
+  "issues": []
 }

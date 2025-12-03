@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "runtime/observability/agentic_spans.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, Dict\n\nfrom runtime.observability.spans import start_span, end_span\n\n\ndef start_agent_span(name: str, meta: Dict[str, Any]) -> str:\n    \"\"\"Start an agent-level span and return its span identifier.\n\n    This is a thin convenience wrapper over the core spans module so that\n    higher layers have a semantic home for agent-centric tracing.\n    \"\"\"\n\n    ctx = meta if isinstance(meta, dict) else {\"meta\": str(meta)}\n    span_id = start_span(name, ctx=ctx)\n    return span_id\n\n\ndef end_agent_span(span_id: str) -> None:\n    \"\"\"End a previously-started agent span.\n\n    The span identifier is passed straight through to the spans module.\n    \"\"\"\n\n    end_span(span_id)\n\n\n\n",
-  "statistics": {
-    "lines_added": 29,
-    "lines_removed": 0,
-    "lines_changed": 29
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "59a845181c098d272fb3c9402906bd0a2fd4adcbd9aa376738d08c8ee28ae369",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_spans.py",
+  "generated_at": "2025-12-03T17:47:45.833409",
+  "diff_type": "baseline",
+  "changes": []
 }

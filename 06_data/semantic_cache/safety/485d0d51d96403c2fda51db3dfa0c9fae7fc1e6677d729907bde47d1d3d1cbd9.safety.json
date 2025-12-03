@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 104,
-    "complexity_score": 86.92
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:50.397531"
+  "hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/integration/atomic_integration_bridge.py",
+  "generated_at": "2025-12-03T17:47:44.864983",
+  "safety_score": 1.0,
+  "issues": []
 }

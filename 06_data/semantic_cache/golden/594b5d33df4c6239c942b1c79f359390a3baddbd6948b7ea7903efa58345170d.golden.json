@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-  "content_hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "intelligence_service_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\intelligence_service_LIC.py",
-    "file_size": 21858,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-    "scan_timestamp": "2025-12-03T08:04:48.368780"
-  },
-  "content_preview": "# File: intelligence_service_LIC.py\n# Description: Persistent Intelligence Service (\"The Librarian\") - v13.0\n# Runs offline/async to pre-compute deep research and store in vector database\n\n__version__ = \"13.0\"\n\nimport asyncio\nimport json\nimport os\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Any, Optional, Tuple\nfrom pathlib import Path\n\n# PDF parsing\ntry:\n    import fitz  # PyMuPDF\n    PDF_SUPPORT = True\nexcept ImportError:\n    PDF_SUPPORT = False\n    print(\"WARNING: ...",
-  "creation_timestamp": "2025-12-03T08:05:18.825327",
-  "version": "1.0"
+  "hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/intelligence_service_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.605910",
+  "golden_status": "verified",
+  "checksum": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d"
 }

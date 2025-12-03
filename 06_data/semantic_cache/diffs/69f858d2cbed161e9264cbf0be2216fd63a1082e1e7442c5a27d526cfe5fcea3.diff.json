@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "tests/control_plane/test_judge_engine.py",
-  "diff_content": "from orchestration.control_plane import (\n    SafetyContext,\n    PolicyRule,\n    RulesEngineResult,\n    RuleMatch,\n    evaluate_with_guard_model,\n)\n\n\ndef test_judge_engine_unsafe_on_high_severity():\n    ctx = SafetyContext(input_text=\"harmful text\")\n    rules_result = RulesEngineResult(\n        matches=[\n            RuleMatch(\n                rule_id=\"r1\",\n                category=\"violence\",\n                severity=\"high\",\n            )\n        ],\n        max_severity=\"high\",\n        has_pii=False,\n    )\n\n    verdict = evaluate_with_guard_model(ctx, rules_result)\n\n    assert verdict.verdict == \"unsafe\"\n\n\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 32,
-    "lines_removed": 0,
-    "lines_changed": 32
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "69f858d2cbed161e9264cbf0be2216fd63a1082e1e7442c5a27d526cfe5fcea3",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_judge_engine.py",
+  "generated_at": "2025-12-03T17:47:45.604109",
+  "diff_type": "baseline",
+  "changes": []
 }

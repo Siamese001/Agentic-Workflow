@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "meta/metacognition/hypothesis.py",
-  "diff_content": "from __future__ import annotations\n\nfrom typing import Any, List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef generate_initial_hypotheses(task: str, rag_result: Any, agent_card: Any) -> List[Hypothesis]:\n    \"\"\"Generate a small set of coarse hypotheses from task + RAG.\n\n    This implementation is deterministic and uses only cheap heuristics:\n    - if there is any evidence, we create 1\u20133 simple hypotheses whose\n      confidence is proportional to the number of evidence items.\n    - if no evidence is present, we still produce a single low-confidence\n      hypothesis so downstream code has something to inspect.\n    \"\"\"\n\n    evidence = getattr(rag_result, \"evidence\", []) or []\n    evidence_ids = [str(i) for i in range(len(evidence))]\n    count = len(evidence)\n\n    base_conf = 0.2 if count == 0 else min(1.0, 0.3 + 0.1 * count)\n\n    hypotheses: List[Hypothesis] = []\n    # Primary hypothesis: task is achievable with current evidence.\n    hypotheses.append(\n        Hypothesis(\n            id=\"h1\",\n            agent_id=getattr(agent_card, \"agent_id\", \"unknown\"),\n            content=f\"Task '{task}' appears achievable given current evidence.\",\n            confidence=base_conf,\n            evidence_ids=evidence_ids,\n            rationale=None,\n        )\n    )\n\n    # Optional second hypothesis if we have at least some evidence.\n    if count > 0:\n        hypotheses.append(\n            Hypothesis(\n                id=\"h2\",\n                agent_id=getattr(agent_card, \"agent_id\", \"unknown\"),\n                content=\"Additional evidence may improve specificity of the draft.\",\n                confidence=max(0.1, base_conf - 0.1),\n                evidence_ids=evidence_ids[: max(1, len(evidence_ids) // 2)],\n                rationale=\"Derived from partial evidence coverage.\",\n            )\n        )\n\n    return hypotheses\n\n\n\n",
-  "statistics": {
-    "lines_added": 53,
-    "lines_removed": 0,
-    "lines_changed": 53
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/hypothesis.py",
+  "generated_at": "2025-12-03T17:47:45.955383",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 87,
-    "complexity_score": 61.55
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:50.008521"
+  "hash": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/models.py",
+  "generated_at": "2025-12-03T17:47:46.036230",
+  "safety_score": 1.0,
+  "issues": []
 }

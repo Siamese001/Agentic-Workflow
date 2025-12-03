@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-  "content_hash": "15be2915f517de8e2721c3f765d141054df6f6352046eadbdeb1b8ce1584e1c7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l3\\draft_orchestrator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\draft_orchestrator.py",
-    "file_size": 1342,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-    "scan_timestamp": "2025-12-03T08:04:48.081833"
-  },
-  "content_preview": "\"\"\"\nL3 orchestration layer for r\u00e9sum\u00e9 drafting workflow.\n\nCoordinates planning and execution to create comprehensive r\u00e9sum\u00e9 improvements.\n\"\"\"\n\nfrom typing import Any\nfrom l1.draft_planning import plan_drafting\nfrom l2.draft_executor import DraftExecutor\nfrom runtime.observability import record_event\n\nclass DraftOrchestrator:\n    \"\"\"\n    Coordinates r\u00e9sum\u00e9 drafting workflow across all layers.\n\n    Ensures systematic integration of planning and execution for optimal r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n   ...",
-  "creation_timestamp": "2025-12-03T08:04:52.194352",
-  "version": "1.0"
+  "hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/draft_orchestrator.py",
+  "generated_at": "2025-12-03T17:47:45.130436",
+  "golden_status": "verified",
+  "checksum": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809"
 }

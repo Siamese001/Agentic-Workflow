@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 24,
-    "complexity_score": 25.74
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.259287"
+  "hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_async_idempotence.py",
+  "generated_at": "2025-12-03T17:47:46.453944",
+  "safety_score": 1.0,
+  "issues": []
 }

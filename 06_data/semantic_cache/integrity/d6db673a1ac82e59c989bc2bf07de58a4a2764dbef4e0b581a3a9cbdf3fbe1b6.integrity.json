@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
-  "content_hash": "406e5de11441e5e175730ccb7a63a4e6409910bd7c02ef858e62a83f886cbe6d",
+  "hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/instructional_injection_v6(1).py",
+  "generated_at": "2025-12-03T17:47:44.878623",
   "file_size": 16070,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\instructional_injection_v6.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\instructional_injection_v6.py",
-    "file_size": 16070,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
-    "scan_timestamp": "2025-12-03T08:04:48.068078"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.577990",
-  "checksums": {
-    "sha256": "406e5de11441e5e175730ccb7a63a4e6409910bd7c02ef858e62a83f886cbe6d",
-    "md5": "a90d20dd82756c38a0889946f3590b49"
-  }
+  "modified_time": 1764610058.294191,
+  "sha256": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
+  "integrity_check": "passed"
 }

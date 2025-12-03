@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "741af180908ac64fb1964705420712402c32c5d8e2cb2493e5b8fab6fd8068e9",
-  "content_hash": "f4a7937007dd471ab4022f52e3f85370dfc21bb3fae430919a9855c4f9542b3d",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l2\\fusion_executor.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\fusion_executor.py",
-    "file_size": 24205,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "741af180908ac64fb1964705420712402c32c5d8e2cb2493e5b8fab6fd8068e9",
-    "scan_timestamp": "2025-12-03T08:04:48.078161"
-  },
-  "content_preview": "\"\"\"\nExecutes resume analysis steps for job matching and enhancement.\n\nImproves resume targeting by processing career data and job requirements\nto identify optimal job alignment opportunities.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\nfrom datetime import datetime, UTC\nimport logging\n\nfrom l1.kg_rag_fusion_planning import (\n    RetrievalStepType,\n    FusionPlanStep,\n    KGRAGFusionPlan,\n    RAGRetrievalStep,\n)\nfr...",
-  "creation_timestamp": "2025-12-03T08:04:51.760838",
-  "version": "1.0"
+  "hash": "741af180908ac64fb1964705420712402c32c5d8e2cb2493e5b8fab6fd8068e9",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/fusion_executor.py",
+  "generated_at": "2025-12-03T17:47:45.068059",
+  "golden_status": "verified",
+  "checksum": "741af180908ac64fb1964705420712402c32c5d8e2cb2493e5b8fab6fd8068e9"
 }

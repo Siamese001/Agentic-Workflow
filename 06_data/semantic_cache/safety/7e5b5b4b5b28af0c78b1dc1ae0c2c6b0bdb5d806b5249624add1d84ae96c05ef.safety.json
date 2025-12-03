@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 72,
-    "complexity_score": 66.89
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:50.022277"
+  "hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/routing.py",
+  "generated_at": "2025-12-03T17:47:46.039712",
+  "safety_score": 1.0,
+  "issues": []
 }

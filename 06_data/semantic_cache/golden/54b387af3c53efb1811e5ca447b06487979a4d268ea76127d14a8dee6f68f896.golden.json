@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
-  "content_hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\e2e\\test_evidence_traceability.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_evidence_traceability.py",
-    "file_size": 532,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
-    "scan_timestamp": "2025-12-03T08:04:48.357263"
-  },
-  "content_preview": "from src.lic_agentic.rag.evidence_registry import EvidenceRegistry\n\n\ndef test_mapping():\n    registry = EvidenceRegistry()\n    artifact_id = registry.upsert(\n        scope=\"company\",\n        company_id=\"ACME\",\n        source_url=\"http://example.com\",\n        summary=\"ACME hit revenue goals\",\n        anchor_date=\"2025-10-01\",\n        confidence=0.9,\n        used_in_section=\"value_wedge\",\n    )\n    assert artifact_id in registry\n    stored = registry.get(artifact_id)\n    assert stored and stored.u...",
-  "creation_timestamp": "2025-12-03T08:05:18.221532",
-  "version": "1.0"
+  "hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_evidence_traceability.py",
+  "generated_at": "2025-12-03T17:47:46.426484",
+  "golden_status": "verified",
+  "checksum": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060",
-  "content_hash": "8b8964bd4a714221582bf6b5ab81af26a7c7ec61bed61ea0f8e0e1c8738cffc7",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\golden_state\\evaluator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\evaluator.py",
-    "file_size": 1068,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060",
-    "scan_timestamp": "2025-12-03T08:04:48.046375"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import Any\n\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\n\n\ndef evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> GoldenOutput:\n    \"\"\"Compares expected keypoints to what the system produced so tests can see whether resumes captured the most important ideas or missed critical content.\"\"\"\n\n    produced_set = {k.strip().lower() for k in output.produced_keypoints}\n    correctness_map: dict[str, bool] = {}\n\n    for key in ...",
-  "creation_timestamp": "2025-12-03T08:04:49.792933",
-  "version": "1.0"
+  "hash": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/evaluator.py",
+  "generated_at": "2025-12-03T17:47:46.165920",
+  "golden_status": "verified",
+  "checksum": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060"
 }

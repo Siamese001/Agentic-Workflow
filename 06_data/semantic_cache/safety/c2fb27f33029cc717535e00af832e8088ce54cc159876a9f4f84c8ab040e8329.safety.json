@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 33,
-    "complexity_score": 41.32
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.456534"
+  "hash": "c2fb27f33029cc717535e00af832e8088ce54cc159876a9f4f84c8ab040e8329",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_metrics.py",
+  "generated_at": "2025-12-03T17:47:46.558359",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "f7fee04ad72ab801bad0c19d6f8abc9eb367e6b3ad51fc9863203919351e90a0",
-  "content_hash": "0a29c404334a010b189729e6d66f8e3281a2d4c73ed1cb9122709ae8f18e7df0",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "providers\\pinecone_client\\pinecone_client.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\pinecone_client\\pinecone_client.py",
-    "file_size": 3824,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "f7fee04ad72ab801bad0c19d6f8abc9eb367e6b3ad51fc9863203919351e90a0",
-    "scan_timestamp": "2025-12-03T08:04:48.106620"
-  },
-  "content_preview": "\"\"\"Pinecone client wrapper for vector operations.\"\"\"\nfrom typing import Any, Dict, List, TypedDict\nimport os\nfrom pinecone import Pinecone\nfrom openai import OpenAI\n\n\nclass Vector(TypedDict):\n    id: str\n    values: List[float]\n    metadata: Dict[str, Any]\n\n\nclass PineconeClient:\n    \"\"\"A client for interacting with Pinecone's vector database.\n    \n    This client provides a simple interface for common vector operations\n    while abstracting away the underlying Pinecone SDK details.\n    \"\"\"\n    ...",
-  "creation_timestamp": "2025-12-03T08:04:55.253733",
-  "version": "1.0"
+  "hash": "f7fee04ad72ab801bad0c19d6f8abc9eb367e6b3ad51fc9863203919351e90a0",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/pinecone_client/pinecone_client.py",
+  "generated_at": "2025-12-03T17:47:45.921521",
+  "golden_status": "verified",
+  "checksum": "f7fee04ad72ab801bad0c19d6f8abc9eb367e6b3ad51fc9863203919351e90a0"
 }

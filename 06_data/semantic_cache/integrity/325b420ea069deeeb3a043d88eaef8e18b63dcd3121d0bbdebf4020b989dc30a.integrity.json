@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
-  "content_hash": "c69be527242615c0db159eaff5e0de48f099667aece38279fad9875218aa7da2",
+  "hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_meta_ranking.py",
+  "generated_at": "2025-12-03T17:47:45.680544",
   "file_size": 1594,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\metacognition\\test_meta_ranking.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_ranking.py",
-    "file_size": 1594,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
-    "scan_timestamp": "2025-12-03T08:04:48.157095"
-  },
-  "verification_timestamp": "2025-12-03T08:04:56.888522",
-  "checksums": {
-    "sha256": "c69be527242615c0db159eaff5e0de48f099667aece38279fad9875218aa7da2",
-    "md5": "2d0754a4b3ddb08b416c7870f9dd155c"
-  }
+  "modified_time": 1764610059.8383942,
+  "sha256": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
+  "integrity_check": "passed"
 }

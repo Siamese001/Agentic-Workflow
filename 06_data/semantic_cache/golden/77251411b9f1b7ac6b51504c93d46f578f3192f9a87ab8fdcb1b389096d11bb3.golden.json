@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "77251411b9f1b7ac6b51504c93d46f578f3192f9a87ab8fdcb1b389096d11bb3",
-  "content_hash": "77251411b9f1b7ac6b51504c93d46f578f3192f9a87ab8fdcb1b389096d11bb3",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_9-30-2025 v12.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9-30-2025 v12.json",
-    "file_size": 96453,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "77251411b9f1b7ac6b51504c93d46f578f3192f9a87ab8fdcb1b389096d11bb3",
-    "scan_timestamp": "2025-12-03T08:04:48.451029"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v12\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v11 with comprehensive hardening - fixed 5 inconsistencies\",\n    \"notes\": \"Hardening: (1) SHORT_NEW unified to 330 chars, (2) Route-based K-node skipping enforced in Section 6, (3) K.6/K.7 personas completed, (4) CONNECTION_REQ overrides added, (5) All cross-references validated.\",\n    \"sha256\": \"pending_calculation\"\n  },\n  \"instr...",
-  "creation_timestamp": "2025-12-03T08:05:22.622841",
-  "version": "1.0"
+  "hash": "77251411b9f1b7ac6b51504c93d46f578f3192f9a87ab8fdcb1b389096d11bb3",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_9-30-2025 v12.json",
+  "generated_at": "2025-12-03T17:47:47.237902",
+  "golden_status": "verified",
+  "checksum": "77251411b9f1b7ac6b51504c93d46f578f3192f9a87ab8fdcb1b389096d11bb3"
 }

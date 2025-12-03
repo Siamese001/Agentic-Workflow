@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
-  "content_hash": "ae054768b4e9d4da3cda831d7ec3886c706e1e809ba1ed272149f13cb4876f96",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "runtime\\observability\\spans.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\spans.py",
-    "file_size": 1787,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
-    "scan_timestamp": "2025-12-03T08:04:48.123357"
-  },
-  "content_preview": "from __future__ import annotations\n\nimport time\nimport uuid\nfrom typing import Any, Dict, Optional\n\nfrom core.models.models import TelemetryEvent\nfrom runtime.observability.collectors import append_event, push_span, pop_span\n\n\ndef _now_ms() -> int:\n    return int(time.time() * 1000)\n\n\ndef start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n    \"\"\"Create a uniquely identified span and record the start time.\"\"\"\n\n    span_id = str(uuid.uuid4())\n    record: Dict[str, Any] ...",
-  "creation_timestamp": "2025-12-03T08:04:55.581839",
-  "version": "1.0"
+  "hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/spans.py",
+  "generated_at": "2025-12-03T17:47:45.848380",
+  "golden_status": "verified",
+  "checksum": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a"
 }

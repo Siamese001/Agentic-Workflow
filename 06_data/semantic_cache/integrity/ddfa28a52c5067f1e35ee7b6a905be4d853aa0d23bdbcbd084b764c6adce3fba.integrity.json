@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
-  "content_hash": "4d52d15cea691fd1bd43c6875eeb41043a1c8242e7ef5d8aac465f506aed744c",
+  "hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/vm_manager.py",
+  "generated_at": "2025-12-03T17:47:46.142745",
   "file_size": 667,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\sandbox\\vm_manager.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\vm_manager.py",
-    "file_size": 667,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
-    "scan_timestamp": "2025-12-03T08:04:48.063701"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.326057",
-  "checksums": {
-    "sha256": "4d52d15cea691fd1bd43c6875eeb41043a1c8242e7ef5d8aac465f506aed744c",
-    "md5": "f18a76e22f61e4367e920d43e4ad8410"
-  }
+  "modified_time": 1764610058.528943,
+  "sha256": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
+  "integrity_check": "passed"
 }

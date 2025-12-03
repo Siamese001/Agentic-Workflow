@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "36f686b044fbfb64d7f695eba2ace5af9af8006781bd1e30a48571ed9cb9b785",
-  "content_hash": "9dd6719e14253e83ee111b812724c9549cfed12ceaff7bcc5486b247e1d48354",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\interfaces.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\interfaces.py",
-    "file_size": 6765,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "36f686b044fbfb64d7f695eba2ace5af9af8006781bd1e30a48571ed9cb9b785",
-    "scan_timestamp": "2025-12-03T08:04:48.068605"
-  },
-  "content_preview": "\"\"\"\nDefines abstract interfaces for L1 planning operations in resume generation.\n\nEnsures consistent planning implementation across all resume\ngeneration components for improved code organization.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom abc import ABC, abstractmethod\nfrom typing import Any, Dict, List, Optional\nfrom dataclasses import dataclass\n\nfrom core.models.models import (\n    WorkflowPlanBundle,\n    ExecutionContext,\n    ComplexityLevel,\n    TaskDecomposition,\n    UncertaintyEstimate...",
-  "creation_timestamp": "2025-12-03T08:04:50.602026",
-  "version": "1.0"
+  "hash": "36f686b044fbfb64d7f695eba2ace5af9af8006781bd1e30a48571ed9cb9b785",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/interfaces(1).py",
+  "generated_at": "2025-12-03T17:47:44.887851",
+  "golden_status": "verified",
+  "checksum": "36f686b044fbfb64d7f695eba2ace5af9af8006781bd1e30a48571ed9cb9b785"
 }

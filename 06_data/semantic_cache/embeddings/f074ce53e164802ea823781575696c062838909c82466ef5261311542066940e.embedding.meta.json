@@ -1,0 +1,10 @@
+{
+  "hash": "f074ce53e164802ea823781575696c062838909c82466ef5261311542066940e",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/adapters.py",
+  "generated_at": "2025-12-03T17:47:45.162161",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

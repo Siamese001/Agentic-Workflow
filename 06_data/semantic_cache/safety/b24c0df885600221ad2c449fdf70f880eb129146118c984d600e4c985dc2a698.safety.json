@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 26,
-    "complexity_score": 16.82
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:56.958335"
+  "hash": "b24c0df885600221ad2c449fdf70f880eb129146118c984d600e4c985dc2a698",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_policy_selection.py",
+  "generated_at": "2025-12-03T17:47:45.698436",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577",
-  "content_hash": "5acef070a19c48fbd145fe8433fdd574b88cfc9ad85918ae955a8b5d82c87d4f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\control_plane\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\control_plane\\__init__.py",
-    "file_size": 944,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577",
-    "scan_timestamp": "2025-12-03T08:04:48.097967"
-  },
-  "content_preview": "from __future__ import annotations\n\n\"\"\"Facade for the safety control-plane orchestration layer.\n\nThis package re-exports the existing infra.control_plane primitives so\ncallers can depend on a stable ``orchestration.control_plane``\nnamespace without changing the underlying implementation.\n\"\"\"\n\nfrom infra.control_plane.models import SafetyContext, PolicyRule, PolicyDecision  # noqa: F401\nfrom infra.control_plane.decisions import RulesEngineResult, RuleMatch  # noqa: F401\nfrom infra.control_plane.r...",
-  "creation_timestamp": "2025-12-03T08:04:54.404291",
-  "version": "1.0"
+  "hash": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/control_plane/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.928498",
+  "golden_status": "verified",
+  "checksum": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577"
 }

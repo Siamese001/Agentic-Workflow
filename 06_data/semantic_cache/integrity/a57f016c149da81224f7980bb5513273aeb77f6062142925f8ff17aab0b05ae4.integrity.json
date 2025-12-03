@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
-  "content_hash": "6f3ab745c7a813ebc238a04b09e0a77ee1fb8094811ffc44569f11cc977262ac",
+  "hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/failure_detector.py",
+  "generated_at": "2025-12-03T17:47:46.203839",
   "file_size": 1523,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\health\\failure_detector.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\failure_detector.py",
-    "file_size": 1523,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
-    "scan_timestamp": "2025-12-03T08:04:48.048969"
-  },
-  "verification_timestamp": "2025-12-03T08:04:49.858016",
-  "checksums": {
-    "sha256": "6f3ab745c7a813ebc238a04b09e0a77ee1fb8094811ffc44569f11cc977262ac",
-    "md5": "3adeaf38a0eff98dd4a53096c94757b8"
-  }
+  "modified_time": 1764610058.005281,
+  "sha256": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
+  "integrity_check": "passed"
 }

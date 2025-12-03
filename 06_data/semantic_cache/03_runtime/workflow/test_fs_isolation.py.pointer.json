@@ -1,0 +1,9 @@
+{
+  "hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_fs_isolation.py",
+  "canonical_relative": "workflow/test_fs_isolation.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.214975"
+}

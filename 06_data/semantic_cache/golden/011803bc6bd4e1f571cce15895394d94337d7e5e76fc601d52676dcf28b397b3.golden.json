@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "011803bc6bd4e1f571cce15895394d94337d7e5e76fc601d52676dcf28b397b3",
-  "content_hash": "a88d890c772312bf46292981985835597a6b7f483884bd33a9fd0236baea18ed",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\__init__.py",
-    "file_size": 59,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "011803bc6bd4e1f571cce15895394d94337d7e5e76fc601d52676dcf28b397b3",
-    "scan_timestamp": "2025-12-03T08:04:48.177218"
-  },
-  "content_preview": "\"\"\"Tests package - Test suite for atomic architecture.\"\"\"\n",
-  "creation_timestamp": "2025-12-03T08:04:57.847064",
-  "version": "1.0"
+  "hash": "011803bc6bd4e1f571cce15895394d94337d7e5e76fc601d52676dcf28b397b3",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.503236",
+  "golden_status": "verified",
+  "checksum": "011803bc6bd4e1f571cce15895394d94337d7e5e76fc601d52676dcf28b397b3"
 }

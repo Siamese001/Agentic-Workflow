@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "c487e1bd8b4a9ed571a2a6c203fb64f2dc254b0b0dab4d302e899022b8d1b996",
-  "content_hash": "ef1329d88370d8131ba7432d5fa591820fbb3877bbf22c30ef8bfe1a4a04973e",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l2\\llm_caller.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\llm_caller.py",
-    "file_size": 1621,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c487e1bd8b4a9ed571a2a6c203fb64f2dc254b0b0dab4d302e899022b8d1b996",
-    "scan_timestamp": "2025-12-03T08:04:48.079447"
-  },
-  "content_preview": "\"\"\"L2 LLM Caller for resume processing execution.\n\nProvides pure LLM execution for resume improvement workflows.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass LLMCaller:\n    \"\"\"\n    Pure LLM execution for resume processing workflows.\n\n    Ha...",
-  "creation_timestamp": "2025-12-03T08:04:51.987358",
-  "version": "1.0"
+  "hash": "c487e1bd8b4a9ed571a2a6c203fb64f2dc254b0b0dab4d302e899022b8d1b996",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/llm_caller.py",
+  "generated_at": "2025-12-03T17:47:45.089801",
+  "golden_status": "verified",
+  "checksum": "c487e1bd8b4a9ed571a2a6c203fb64f2dc254b0b0dab4d302e899022b8d1b996"
 }

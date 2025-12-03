@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "graph_store_neo4j.py",
-  "diff_content": "# graph_store_neo4j.py\n# L2-safe Neo4j graph store stub module.\n\ntry:\n    from neo4j import GraphDatabase\nexcept Exception:\n    GraphDatabase = None\n\nclass Neo4jGraphStore:\n    \"\"\"\n    Stub graph store class used when Neo4j is not installed.\n    Provides import-safe behavior only.\n    \"\"\"\n\n    def __init__(self, uri=None, auth=None):\n        if GraphDatabase is None:\n            raise ImportError(\"Neo4j driver not installed\")\n        self.driver = None\n\n    def write_node(self, *args, **kwargs):\n        return {\"status\": \"neo4j_unavailable\"}\n\n    def write_relationship(self, *args, **kwargs):\n        return {\"status\": \"neo4j_unavailable\"}\n\n    def close(self):\n        return\n\n__all__ = [\"Neo4jGraphStore\", \"GraphDatabase\"]\n",
-  "statistics": {
-    "lines_added": 29,
-    "lines_removed": 0,
-    "lines_changed": 29
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/graph_store_neo4j.py",
+  "generated_at": "2025-12-03T17:47:44.702764",
+  "diff_type": "baseline",
+  "changes": []
 }

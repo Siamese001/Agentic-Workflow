@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l2/__init__.py",
-  "diff_content": "\"\"\"\nExecution layer for resume processing workflow orchestration.\n\nProvides technical execution functions that bridge planning to actual\nLLM execution for resume enhancement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\n# Re-export execution functions from l2.execution\nfrom .execution import (\n    execute_workflow_plans,\n    run_l2,\n    _execute_strategy,\n    _execute_retrieval,\n    _execute_drafting,\n    _execute_qa,\n    _execute_safety,\n    _maybe_run_hyde_query,\n)\n\n# Re-export agents from l2.agents\nfrom .agents import (\n    LLMBaseAgent,\n    StrategyLLMAgent,\n    DraftingGuild,\n    SemanticQAAgent,\n    ConstitutionalSafetyAgent,\n    HYDEQueryAgent,\n    QACouncilAgent,\n)\n\n# Re-export retrieval and observability for test compatibility\nfrom .execution import run_rag_retrieval\nfrom runtime.observability import start_span, end_span\n\n__all__ = [\n    # Execution functions\n    'execute_workflow_plans',\n    'run_l2',\n    '_execute_strategy',\n    '_execute_retrieval',\n    '_execute_drafting',\n    '_execute_qa',\n    '_execute_safety',\n    '_maybe_run_hyde_query',\n    # Agents\n    'LLMBaseAgent',\n    'StrategyLLMAgent',\n    'DraftingGuild',\n    'SemanticQAAgent',\n    'ConstitutionalSafetyAgent',\n    'HYDEQueryAgent',\n    'QACouncilAgent',\n    # Re-exports for test compatibility\n    'run_rag_retrieval',\n    'start_span',\n    'end_span',\n]\n\n\n\n",
-  "statistics": {
-    "lines_added": 62,
-    "lines_removed": 0,
-    "lines_changed": 62
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "b2eb65aad47cc679d65fc61bdaee19cf9fbcce84047481926dbb4f1496d60ea8",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.120835",
+  "diff_type": "baseline",
+  "changes": []
 }

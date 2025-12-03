@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "providers/anthropic_client.py",
-  "diff_content": "\"\"\"Anthropic client adapter for v10_10.\n\nThis module is the ONLY place where the Anthropic SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nfrom typing import Any, List\n\n\ndef run_llm_anthropic(\n    model: str,\n    prompt: str,\n    *,\n    temperature: float,\n    max_tokens: int,\n    timeout_s: int,\n) -> str:\n    \"\"\"Run an Anthropic message completion and return the response text.\"\"\"\n\n    try:\n        import anthropic  # type: ignore\n    except ImportError as exc:  # pragma: no cover - optional dependency\n        raise ImportError(\"anthropic package not installed\") from exc\n\n    api_key = os.getenv(\"ANTHROPIC_API_KEY\")\n    if not api_key:\n        raise RuntimeError(\"ANTHROPIC_API_KEY must be set for Anthropic provider\")\n\n    client = anthropic.Anthropic(api_key=api_key)\n\n    resp: Any = client.messages.create(\n        model=model,\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        temperature=temperature,\n        max_tokens=max_tokens,\n        timeout=timeout_s,\n    )\n\n    parts: List[str] = []\n    for block in getattr(resp, \"content\", []) or []:\n        if getattr(block, \"type\", None) == \"text\":\n            parts.append(getattr(block, \"text\", \"\"))\n    return \"\\n\".join(parts)\n\n\n\n",
-  "statistics": {
-    "lines_added": 49,
-    "lines_removed": 0,
-    "lines_changed": 49
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "f456031a9d5cad4c69093285df831bbb2b048a5fe0e65d38eb03a4afc3dec8a8",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/anthropic_client.py",
+  "generated_at": "2025-12-03T17:47:45.388983",
+  "diff_type": "baseline",
+  "changes": []
 }

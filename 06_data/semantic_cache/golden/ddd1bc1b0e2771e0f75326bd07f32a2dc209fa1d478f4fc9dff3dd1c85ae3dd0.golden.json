@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-  "content_hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\deprecated in v13",
-    "archive_name": "deprecated in v13",
-    "relative_path": "validation_LIC.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\validation_LIC.py",
-    "file_size": 22331,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-    "scan_timestamp": "2025-12-03T08:04:48.539788"
-  },
-  "content_preview": "# File: validation_LIC.py\n# Description: Validation & QA agents (HOP-6, HOP-8) for v13.0 architecture\n# REFACTOR: v13.0 - Implements state-based I/O and externalized rule engine\n\n__version__ = \"13.0\"\n\nimport json\nimport re\nimport os\nfrom pathlib import Path\nfrom datetime import datetime\nfrom typing import Dict, List, Any, Optional, Tuple\n\nfrom models_LIC import ValidationSeverity, ValidationResult, AgentStatus\nfrom state_manager_LIC import StateManager\nfrom tools_LIC import ValidationToolkit, Co...",
-  "creation_timestamp": "2025-12-03T08:05:27.451502",
-  "version": "1.0"
+  "hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/validation_LIC.py",
+  "generated_at": "2025-12-03T17:47:48.039049",
+  "golden_status": "verified",
+  "checksum": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0"
 }

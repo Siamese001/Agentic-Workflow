@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "28d3bcf378da9163009f52588e58557da24d768422f0c2e0cc3b3e11f3127183",
-  "content_hash": "be2e8cd1f305f56f794858bc53a6bae670196f8db417cc25e03f6b2d14336331",
+  "hash": "28d3bcf378da9163009f52588e58557da24d768422f0c2e0cc3b3e11f3127183",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/temporal_kg_self_healing.py",
+  "generated_at": "2025-12-03T17:47:45.352232",
   "file_size": 25058,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\temporal_kg_self_healing.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\temporal_kg_self_healing.py",
-    "file_size": 25058,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "28d3bcf378da9163009f52588e58557da24d768422f0c2e0cc3b3e11f3127183",
-    "scan_timestamp": "2025-12-03T08:04:48.102044"
-  },
-  "verification_timestamp": "2025-12-03T08:04:54.955787",
-  "checksums": {
-    "sha256": "be2e8cd1f305f56f794858bc53a6bae670196f8db417cc25e03f6b2d14336331",
-    "md5": "0c20f418e39081f46748daa6c0c0b3b8"
-  }
+  "modified_time": 1764610060.8851986,
+  "sha256": "28d3bcf378da9163009f52588e58557da24d768422f0c2e0cc3b3e11f3127183",
+  "integrity_check": "passed"
 }

@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 26,
-    "complexity_score": 31.54
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:17.434995"
+  "hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp.manifest.json",
+  "generated_at": "2025-12-03T17:47:46.282401",
+  "safety_score": 1.0,
+  "issues": []
 }

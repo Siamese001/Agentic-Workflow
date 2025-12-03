@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "4c161eeafa64524123f7bdc76e5d4e5ddf637a45247c7d50c72c079aeb93be7d",
-  "content_hash": "ce8eace3c21689c2b73b77ae80919e1094d83c95bd241e12897aa01393f80910",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l4\\interfaces.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\interfaces.py",
-    "file_size": 7694,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "4c161eeafa64524123f7bdc76e5d4e5ddf637a45247c7d50c72c079aeb93be7d",
-    "scan_timestamp": "2025-12-03T08:04:48.084539"
-  },
-  "content_preview": "\"\"\"\nL4 interfaces for resume job alignment memory and state management.\n\nDefines abstract interfaces for resume enhancement state operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom abc import ABC, abstractmethod\nfrom typing import Any, Dict, List, Optional, Sequence, Union\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom enum import Enum\n\nfrom core.models.models import (\n    ExecutionContext,\n    Entity,\n    Triplet,\n    TemporalKG,\n    StateSnapshot,\n    MemoryFragmen...",
-  "creation_timestamp": "2025-12-03T08:04:52.629635",
-  "version": "1.0"
+  "hash": "4c161eeafa64524123f7bdc76e5d4e5ddf637a45247c7d50c72c079aeb93be7d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/interfaces.py",
+  "generated_at": "2025-12-03T17:47:45.177400",
+  "golden_status": "verified",
+  "checksum": "4c161eeafa64524123f7bdc76e5d4e5ddf637a45247c7d50c72c079aeb93be7d"
 }

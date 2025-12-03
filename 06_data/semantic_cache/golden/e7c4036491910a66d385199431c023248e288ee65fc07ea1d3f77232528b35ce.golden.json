@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
-  "content_hash": "27f80bdcf2d4ef287c0a6b14af238626b22357f1f9719360d924b5210da3e190",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l5\\adapters.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\adapters.py",
-    "file_size": 22681,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
-    "scan_timestamp": "2025-12-03T08:04:48.088246"
-  },
-  "content_preview": "\"\"\"\nL5 adapter for resume job alignment workflows.\n\nWraps safety validator to enforce interface contracts for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional, Union\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom enum import Enum\n\nfrom l5.interfaces import (\n    L5PolicyEnforcerInterface,\n    L5SafetyCheckerInterface,\n    L5RiskAssessmentInterface,\n    L5ComplianceCheckerInterface,\n    L5HitLInterface,\n    L5ResourceG...",
-  "creation_timestamp": "2025-12-03T08:04:53.388732",
-  "version": "1.0"
+  "hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/adapters(1).py",
+  "generated_at": "2025-12-03T17:47:45.231099",
+  "golden_status": "verified",
+  "checksum": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce"
 }

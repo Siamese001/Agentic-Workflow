@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
-  "content_hash": "6e4c7c210a959a606f343983828b173de6aaffce7e6e3afc2f8eadd31a2ec15d",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "config\\safety_profile.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\safety_profile.py",
-    "file_size": 537,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
-    "scan_timestamp": "2025-12-03T08:04:48.040899"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyProfile(BaseModel):\n    \"\"\"Safety configuration profile used by execution profiles.\n\n    This is intentionally string/primitive based to avoid cycles and\n    mirrors the SafetyTier + policy toggles used in ExecutionProfileSpec.\n    \"\"\"\n\n    safety_tier: str = Field(default=\"standard\", description=\"Safety tier: standard | strict | relaxed | debug\")\n    pii_detection_enabled: bool = True\n    policy_engine_enabl...",
-  "creation_timestamp": "2025-12-03T08:04:49.488171",
-  "version": "1.0"
+  "hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/safety_profile.py",
+  "generated_at": "2025-12-03T17:47:44.756673",
+  "golden_status": "verified",
+  "checksum": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf"
 }

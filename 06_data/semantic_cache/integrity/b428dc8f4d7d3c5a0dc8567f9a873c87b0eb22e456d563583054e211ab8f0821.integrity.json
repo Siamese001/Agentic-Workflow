@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "b428dc8f4d7d3c5a0dc8567f9a873c87b0eb22e456d563583054e211ab8f0821",
-  "content_hash": "e74fd0acd41ef813c141dc3ace54c165f79cb15b8a0674c6f05b1dfc64b1c803",
+  "hash": "b428dc8f4d7d3c5a0dc8567f9a873c87b0eb22e456d563583054e211ab8f0821",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/validation/sdk_validation_test.py",
+  "generated_at": "2025-12-03T17:47:45.565937",
   "file_size": 13678,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "validation\\sdk_validation_test.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\validation\\sdk_validation_test.py",
-    "file_size": 13678,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "b428dc8f4d7d3c5a0dc8567f9a873c87b0eb22e456d563583054e211ab8f0821",
-    "scan_timestamp": "2025-12-03T08:04:48.182725"
-  },
-  "verification_timestamp": "2025-12-03T08:04:58.581305",
-  "checksums": {
-    "sha256": "e74fd0acd41ef813c141dc3ace54c165f79cb15b8a0674c6f05b1dfc64b1c803",
-    "md5": "f277ef0fac6efe60b60445904c9de38e"
-  }
+  "modified_time": 1764610059.0790987,
+  "sha256": "b428dc8f4d7d3c5a0dc8567f9a873c87b0eb22e456d563583054e211ab8f0821",
+  "integrity_check": "passed"
 }

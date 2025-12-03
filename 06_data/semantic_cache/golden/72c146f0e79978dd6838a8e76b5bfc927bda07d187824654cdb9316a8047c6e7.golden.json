@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
-  "content_hash": "c5d5972a92533dafaebbb8be2a42cc37138e2163015a3f950d2bb949b2535cd2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\dag_engine\\models.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag_engine\\models.py",
-    "file_size": 1810,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
-    "scan_timestamp": "2025-12-03T08:04:48.059025"
-  },
-  "content_preview": "\"\"\"\nDAG engine models for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides minimal typed surface for constructing directed acyclic graphs in r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Awaitable, Callable, Dict, List\n\n\nNodeFn = Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]\n\n\n@dataclass\nclass Node:\n    \"\"\"\n    Represents single DAG node for r\u00e9sum\u00e9 processing workflows.\n\n    Defines executable units within r\u00e9sum\u00e9 improvement orche...",
-  "creation_timestamp": "2025-12-03T08:04:50.102689",
-  "version": "1.0"
+  "hash": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag_engine/models.py",
+  "generated_at": "2025-12-03T17:47:46.064900",
+  "golden_status": "verified",
+  "checksum": "72c146f0e79978dd6838a8e76b5bfc927bda07d187824654cdb9316a8047c6e7"
 }

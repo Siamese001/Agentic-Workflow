@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "content_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_pii_sanitizer.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_pii_sanitizer.py",
-    "file_size": 937,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-    "scan_timestamp": "2025-12-03T08:04:48.363826"
-  },
-  "content_preview": "from src.lic_agentic.safety.pii_sanitizer import SanitizedInputs, sanitize_pii\n\n\nclass _Inputs:\n    def __init__(self, prompt: str, company_id: str | None = None, contact_id: str | None = None):\n        self.prompt = prompt\n        self.company_id = company_id\n        self.contact_id = contact_id\n\n\ndef test_email_and_phone_masking():\n    prompt = \"Reach out to alice@example.com or call +1 555 123 4567 for help\"\n    sanitized, mapping = sanitize_pii(_Inputs(prompt, company_id=\"ACME\", contact_id=\"...",
-  "creation_timestamp": "2025-12-03T08:05:18.430396",
-  "version": "1.0"
+  "hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_pii_sanitizer.py",
+  "generated_at": "2025-12-03T17:47:46.543157",
+  "golden_status": "verified",
+  "checksum": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847"
 }

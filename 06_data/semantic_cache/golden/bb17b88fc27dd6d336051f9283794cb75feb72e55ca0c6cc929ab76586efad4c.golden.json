@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c",
-  "content_hash": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "prompts_LIC.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\prompts_LIC.json",
-    "file_size": 16989,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c",
-    "scan_timestamp": "2025-12-03T08:04:48.370976"
-  },
-  "content_preview": "{\n  \"schema_version\": \"13.0\",\n  \"description\": \"Externalized prompt templates for LIC v13.0 - All agent prompts, generation templates, and critique templates\",\n  \n  \"cta_templates\": {\n    \"CONNECTION_REQ\": {\n      \"default\": null,\n      \"_comment\": \"CONNECTION_REQ has no CTA per SPEC 3\"\n    },\n    \"INMAIL\": {\n      \"C_LEVEL\": \"Would you be open to a brief conversation about how [TOPIC] might align with your strategic priorities?\",\n      \"EXECUTIVE\": \"I'd welcome the chance to discuss how [TOPIC]...",
-  "creation_timestamp": "2025-12-03T08:05:18.963181",
-  "version": "1.0"
+  "hash": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/prompts_LIC.json",
+  "generated_at": "2025-12-03T17:47:46.630093",
+  "golden_status": "verified",
+  "checksum": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c"
 }

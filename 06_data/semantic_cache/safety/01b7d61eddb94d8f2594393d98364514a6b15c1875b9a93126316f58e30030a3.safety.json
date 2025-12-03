@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 76,
-    "complexity_score": 69.91
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:56.988516"
+  "hash": "01b7d61eddb94d8f2594393d98364514a6b15c1875b9a93126316f58e30030a3",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_layer_boundaries.py",
+  "generated_at": "2025-12-03T17:47:45.709394",
+  "safety_score": 1.0,
+  "issues": []
 }

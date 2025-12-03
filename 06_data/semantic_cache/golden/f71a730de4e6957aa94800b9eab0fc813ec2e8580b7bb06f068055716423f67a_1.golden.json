@@ -1,0 +1,9 @@
+{
+  "hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/kg_retrieval_planning.py",
+  "generated_at": "2025-12-03T17:47:44.914075",
+  "golden_status": "verified",
+  "checksum": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a"
+}

@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
-  "content_hash": "d500212cf264f00c69c0352220621a029b7c8c7217ed77b9d74a26bf6158ef57",
+  "hash": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_agent_bus_basic.py",
+  "generated_at": "2025-12-03T17:47:45.777235",
   "file_size": 542,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\_deprecated\\test_agent_bus_basic.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_bus_basic.py",
-    "file_size": 542,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
-    "scan_timestamp": "2025-12-03T08:04:48.173747"
-  },
-  "verification_timestamp": "2025-12-03T08:04:57.596365",
-  "checksums": {
-    "sha256": "d500212cf264f00c69c0352220621a029b7c8c7217ed77b9d74a26bf6158ef57",
-    "md5": "1befceb41cc4e97efce060e06ffa6687"
-  }
+  "modified_time": 1764610060.111802,
+  "sha256": "6221b44baae2424b809dd02220baffe9406e275372293b5161cb5f49ce28445d",
+  "integrity_check": "passed"
 }

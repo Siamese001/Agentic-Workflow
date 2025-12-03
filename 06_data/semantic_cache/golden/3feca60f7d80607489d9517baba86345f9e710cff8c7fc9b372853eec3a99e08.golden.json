@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "3feca60f7d80607489d9517baba86345f9e710cff8c7fc9b372853eec3a99e08",
-  "content_hash": "29156fc549959093621a75b0fd3dc7d28b930407a02d04f4960beb44d781cbfc",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\__init__.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\__init__.py",
-    "file_size": 2018,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "3feca60f7d80607489d9517baba86345f9e710cff8c7fc9b372853eec3a99e08",
-    "scan_timestamp": "2025-12-03T08:04:48.065115"
-  },
-  "content_preview": "\"\"\"\nInfrastructure dependency injection for r\u00e9sum\u00e9 processing workflows.\n\nProvides service management and dependency resolution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, TypeVar, Callable\nimport functools\n\nT = TypeVar('T')\n\n# Simple service registry for atomic architecture\n_services: Dict[str, Any] = {}\n\ndef register_service(name: str, service: Any) -> None:\n    \"\"\"\n    Registers service for r\u00e9sum\u00e9 processing dependency injection.\n\n    Enables modular se...",
-  "creation_timestamp": "2025-12-03T08:04:50.383052",
-  "version": "1.0"
+  "hash": "3feca60f7d80607489d9517baba86345f9e710cff8c7fc9b372853eec3a99e08",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/__init__.py",
+  "generated_at": "2025-12-03T17:47:44.860386",
+  "golden_status": "verified",
+  "checksum": "3feca60f7d80607489d9517baba86345f9e710cff8c7fc9b372853eec3a99e08"
 }

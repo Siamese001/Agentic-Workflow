@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-  "content_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\regression\\test_retrieval_latency_slo.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_retrieval_latency_slo.py",
-    "file_size": 1217,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-    "scan_timestamp": "2025-12-03T08:04:48.360686"
-  },
-  "content_preview": "\"\"\"Regression test enforcing retrieval latency SLO.\"\"\"\nfrom __future__ import annotations\n\nimport math\n\nfrom src.lic_agentic.agents.k3_message_architect import MessageArchitect\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef percentile(values: list[int], pct: float) -> float:\n    if not values:\n        raise ValueError(\"values must not be empty\")\n    ordered = sorted(values)\n    k = (len(ordered) - 1) * pct\n    f = math.floor(k)\n    c = math.ceil(k)\n    if f == c:\n        re...",
-  "creation_timestamp": "2025-12-03T08:05:18.300644",
-  "version": "1.0"
+  "hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_retrieval_latency_slo.py",
+  "generated_at": "2025-12-03T17:47:46.484959",
+  "golden_status": "verified",
+  "checksum": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917"
 }

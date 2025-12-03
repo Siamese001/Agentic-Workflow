@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
-  "content_hash": "48ab78b281f800232569d73ec3e8b92c548f893a510c01f64ddd33660a21b23f",
+  "hash": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/draft_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.869976",
   "file_size": 1040,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\draft_planning.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\draft_planning.py",
-    "file_size": 1040,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
-    "scan_timestamp": "2025-12-03T08:04:48.067514"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.554726",
-  "checksums": {
-    "sha256": "48ab78b281f800232569d73ec3e8b92c548f893a510c01f64ddd33660a21b23f",
-    "md5": "adae490945c394474fe80103dfc2ece4"
-  }
+  "modified_time": 1764610058.2404392,
+  "sha256": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
+  "integrity_check": "passed"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-  "content_hash": "a497d34728665c5153c597742ea979c6c39bfbe5770e8cc6210ac092c0aa586f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\context_engine\\assembly.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\assembly.py",
-    "file_size": 1403,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-    "scan_timestamp": "2025-12-03T08:04:48.053672"
-  },
-  "content_preview": "\"\"\"\nContext assembly and pruning for r\u00e9sum\u00e9 processing workflows.\n\nOrchestrates relevant information into structured text blocks for optimal r\u00e9sum\u00e9 improvement prompts.\n\"\"\"\n\nfrom typing import List\n\nfrom .pinned import PinnedItem, filter_pinned\nfrom .relevance import ContextItem, score_relevance\nfrom .slots import ContextSlot, assign_to_slot\n\n\ndef assemble_context(\n    query: str,\n    pinned: List[PinnedItem],\n    candidates: List[ContextItem],\n    slots: List[ContextSlot],\n) -> List[str]:\n    \"...",
-  "creation_timestamp": "2025-12-03T08:04:49.942988",
-  "version": "1.0"
+  "hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/assembly.py",
+  "generated_at": "2025-12-03T17:47:46.007780",
+  "golden_status": "verified",
+  "checksum": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d"
 }

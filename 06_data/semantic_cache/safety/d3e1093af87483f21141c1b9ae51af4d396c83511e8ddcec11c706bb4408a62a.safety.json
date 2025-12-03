@@ -1,18 +1,9 @@
 {
-  "safety_score": 85,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": true,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 261,
-    "complexity_score": 225.18
-  },
-  "recommendations": [
-    "Validate network operations and endpoints"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:19.108257"
+  "hash": "d3e1093af87483f21141c1b9ae51af4d396c83511e8ddcec11c706bb4408a62a",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/utils_LIC.py",
+  "generated_at": "2025-12-03T17:47:46.645315",
+  "safety_score": 1.0,
+  "issues": []
 }

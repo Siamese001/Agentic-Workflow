@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
-  "content_hash": "8eb016cce26521f4bff2d16794dca8b739c04beb33d9ebaf79093f50f90b3a34",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\kg_retrieval_planning.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_retrieval_planning.py",
-    "file_size": 16459,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
-    "scan_timestamp": "2025-12-03T08:04:48.069950"
-  },
-  "content_preview": "\"\"\"\nKnowledge graph retrieval planning for resume processing workflows.\n\nImplements L1 planning for multi-hop knowledge graph retrieval to support\ncomprehensive resume enhancement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set\nfrom datetime import datetime, UTC\nfrom enum import Enum\n\n\nclass HopDirection(str, Enum):\n    \"\"\"Direction of traversal in resume processing knowledge graph.\n\n    Ensure...",
-  "creation_timestamp": "2025-12-03T08:04:50.919189",
-  "version": "1.0"
+  "hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/kg_retrieval_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.909120",
+  "golden_status": "verified",
+  "checksum": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a"
 }

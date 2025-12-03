@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 80,
-    "complexity_score": 78.93
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:57.025653"
+  "hash": "e55745e9571876ad6a579f333ef234645bedfa840f7b54cee94eaf041ec72980",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_provider_isolation.py",
+  "generated_at": "2025-12-03T17:47:45.717975",
+  "safety_score": 1.0,
+  "issues": []
 }

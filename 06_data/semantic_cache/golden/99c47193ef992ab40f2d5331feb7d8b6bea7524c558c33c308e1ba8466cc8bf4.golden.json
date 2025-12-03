@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4",
-  "content_hash": "a56f7f4ce6ed4aae32727679a84f4a6bc1f52e7c82c7ccc84e7180ec3d427134",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\08_prompt_rag_governance.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\08_prompt_rag_governance.md",
-    "file_size": 758,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4",
-    "scan_timestamp": "2025-12-03T08:04:48.184870"
-  },
-  "content_preview": "# /windsurf_rules/08_prompt_rag_governance.md\n## Prompt Governance, RAG Determinism, and High-Signal Drafting Rules\n\n### 1. Prompt Governance\n- All prompts must be stored in a prompt registry.\n- Each prompt defines: ID, version, schema, owner, change log.\n- Placeholders must be used exactly as declared.\n\n### 2. RAG Determinism\n- Same query + same corpus = same retrieval.\n- BM25, dense retrieval, and RRF must be deterministic.\n- Golden offline datasets required.\n\n### 3. Drafting Rules & High-Sign...",
-  "creation_timestamp": "2025-12-03T08:04:58.658684",
-  "version": "1.0"
+  "hash": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/08_prompt_rag_governance.md",
+  "generated_at": "2025-12-03T17:47:45.595602",
+  "golden_status": "verified",
+  "checksum": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4"
 }

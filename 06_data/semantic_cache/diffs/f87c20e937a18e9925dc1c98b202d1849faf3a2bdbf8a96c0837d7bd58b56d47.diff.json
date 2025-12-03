@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "core/__init__.py",
-  "diff_content": "\"\"\"Central engine that wires together planning, execution, agent reasoning, routing, and workflow graphs so resumes are improved in a consistent, high-quality way over time.\n\nNote: Layer modules (l1, l2, l3, l4, l5), cognitive_agents, and workflow_graph\nare now imported directly from the root level, not from core.\n\nExample:\n    import l1\n    from l2.agents import StrategyLLMAgent\n    from orchestration.workflow_graph import run_workflow_graph\n\"\"\"\n\n\n\n\n",
-  "statistics": {
-    "lines_added": 14,
-    "lines_removed": 0,
-    "lines_changed": 14
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "f87c20e937a18e9925dc1c98b202d1849faf3a2bdbf8a96c0837d7bd58b56d47",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/__init__.py",
+  "generated_at": "2025-12-03T17:47:44.794115",
+  "diff_type": "baseline",
+  "changes": []
 }

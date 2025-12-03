@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
-  "content_hash": "11d83ab04a68f265dd4fce55004d3e0890e5932e9c85790fd43de195db166a0b",
+  "hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/routing.py",
+  "generated_at": "2025-12-03T17:47:46.040054",
   "file_size": 2154,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\control_plane\\routing.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\routing.py",
-    "file_size": 2154,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
-    "scan_timestamp": "2025-12-03T08:04:48.056532"
-  },
-  "verification_timestamp": "2025-12-03T08:04:50.022354",
-  "checksums": {
-    "sha256": "11d83ab04a68f265dd4fce55004d3e0890e5932e9c85790fd43de195db166a0b",
-    "md5": "7277e3ca02e3007a6269f3a572b3f0e6"
-  }
+  "modified_time": 1764610058.6884325,
+  "sha256": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
+  "integrity_check": "passed"
 }

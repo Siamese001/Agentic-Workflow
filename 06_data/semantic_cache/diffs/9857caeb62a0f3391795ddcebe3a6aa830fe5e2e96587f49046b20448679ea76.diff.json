@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "openai/__init__.py",
-  "diff_content": "class AsyncOpenAI:  # pragma: no cover - stub for tests\n    def __init__(self, *args, **kwargs):\n        pass\n",
-  "statistics": {
-    "lines_added": 3,
-    "lines_removed": 0,
-    "lines_changed": 3
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "9857caeb62a0f3391795ddcebe3a6aa830fe5e2e96587f49046b20448679ea76",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/openai/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.371013",
+  "diff_type": "baseline",
+  "changes": []
 }

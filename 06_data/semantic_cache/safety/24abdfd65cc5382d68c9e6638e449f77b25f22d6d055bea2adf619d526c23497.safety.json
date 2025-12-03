@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 6,
-    "complexity_score": 8.67
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:17.366338"
+  "hash": "24abdfd65cc5382d68c9e6638e449f77b25f22d6d055bea2adf619d526c23497",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/job_input.json",
+  "generated_at": "2025-12-03T17:47:46.256710",
+  "safety_score": 1.0,
+  "issues": []
 }

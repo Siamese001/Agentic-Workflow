@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "55f92942d8cbaeac8166ee68fea79b5a9f57b105811c188c206173eeb62bab21",
-  "content_hash": "3e9ce20ef41bb3bf0ba460541afaa91e8df76e1c57096720376892c209f7bc18",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.85.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.85.json",
-    "file_size": 204180,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "55f92942d8cbaeac8166ee68fea79b5a9f57b105811c188c206173eeb62bab21",
-    "scan_timestamp": "2025-12-03T08:04:48.437339"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-08-2025_v8.85\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-08-2025_v8.85\",\n    \"last_updated\": \"2025-10-08\",\n    \"description\": \"Applied P885. Centralized all configuration and parameters into single 'central_config' section. Eliminated parameter drift by establishing single source of truth. All sections now reference central_config via $ref pointers. Applied P884. Enhanced...",
-  "creation_timestamp": "2025-12-03T08:05:22.166084",
-  "version": "1.0"
+  "hash": "55f92942d8cbaeac8166ee68fea79b5a9f57b105811c188c206173eeb62bab21",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.85.json",
+  "generated_at": "2025-12-03T17:47:47.063242",
+  "golden_status": "verified",
+  "checksum": "55f92942d8cbaeac8166ee68fea79b5a9f57b105811c188c206173eeb62bab21"
 }

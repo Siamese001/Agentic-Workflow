@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Old LIC",
-  "logical_path": "mission_input.json",
-  "diff_content": "{\n  \"sender_profile\": {\n    \"name\": \"Amit\",\n    \"title\": \"Chief AI Officer\",\n    \"company\": \"AI Innovations Inc\",\n    \"linkedin_url\": \"https://linkedin.com/in/amit\",\n    \"about_section\": \"Chief AI Officer specializing in Enterprise Generative AI Platforms and Technical Success & Adoption Leadership.\",\n    \"teams\": [\"AI Platform\", \"GenAI R&D\"]\n  },\n  \"recipient_profile\": {\n    \"name\": \"Sarah Johnson\",\n    \"title\": \"VP of Engineering\",\n    \"company\": \"Tech Giants Corp\",\n    \"linkedin_url\": \"https://linkedin.com/in/sarahjohnson\",\n    \"connection_status\": \"not_connected\",\n    \"prior_message_count\": 0\n  },\n  \"job_description\": {\n    \"title\": \"Head of AI Platform\",\n    \"company\": \"Tech Giants Corp\",\n    \"location\": \"San Francisco, CA\",\n    \"requirements\": \"We are seeking a Head of AI Platform to lead our next-generation generative AI infrastructure. This leader will manage a team of platform engineers, data scientists, and MLOps specialists. Must have 10+ years of AI/ML leadership and deep experience in platform scaling, model deployment, and cloud architecture (AWS, GCP). Responsibilities include defining the strategic roadmap for our internal AI platform, collaborating with product teams to drive adoption, and ensuring system reliability and cost-efficiency. Direct experience with scaling is a must. Experience with LLM orchestration and agentic systems is a major plus.\"\n  }\n}",
-  "statistics": {
-    "lines_added": 24,
-    "lines_removed": 0,
-    "lines_changed": 24
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/mission_input_LIC.json",
+  "generated_at": "2025-12-03T17:47:46.616901",
+  "diff_type": "baseline",
+  "changes": []
 }

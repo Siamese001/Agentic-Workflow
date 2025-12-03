@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 22,
-    "complexity_score": 19.14
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.477164"
+  "hash": "cbfbcafed7d13936bf1b9addd52b87fcdddd66497700e09a5a176dd34e246f04",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_reasoning_helpers.py",
+  "generated_at": "2025-12-03T17:47:46.571457",
+  "safety_score": 1.0,
+  "issues": []
 }

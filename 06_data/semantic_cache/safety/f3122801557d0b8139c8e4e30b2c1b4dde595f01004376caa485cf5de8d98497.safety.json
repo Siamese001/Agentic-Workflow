@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 141,
-    "complexity_score": 153.06
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:18.890157"
+  "hash": "f3122801557d0b8139c8e4e30b2c1b4dde595f01004376caa485cf5de8d98497",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/master_resume.json",
+  "generated_at": "2025-12-03T17:47:46.273916",
+  "safety_score": 1.0,
+  "issues": []
 }

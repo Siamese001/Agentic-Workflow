@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 291,
-    "complexity_score": 254.13
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:27.400246"
+  "hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/deprecated in v13/run_workflow_LIC.py",
+  "generated_at": "2025-12-03T17:47:48.035548",
+  "safety_score": 1.0,
+  "issues": []
 }

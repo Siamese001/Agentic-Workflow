@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "08d56a8c177a02c63bbaed54a3b9bcb244a51e7a9478c4a0b276584ac738a26e",
-  "content_hash": "005f86f995f045fefac7efd360185a5b225810b20e30b9be5d8d48eca5bcc53b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\simulation\\simulator.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\simulation\\simulator.py",
-    "file_size": 1711,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "08d56a8c177a02c63bbaed54a3b9bcb244a51e7a9478c4a0b276584ac738a26e",
-    "scan_timestamp": "2025-12-03T08:04:48.051168"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom tools.simulation import Engine  # existing Phase-3 simulation harness\n\nfrom .models import SimScenario, SimOutcome\n\n\ndef run_scenario(scenario: SimScenario) -> SimOutcome:\n    \"\"\"Run a high-level simulation scenario using the existing Engine.\n\n    For now this is a thin wrapper around ``simulation.Engine.run_sync``.\n    It executes the named scenario ``run_count`` times (if available) and\n    aggregates the \"golden_eval...",
-  "creation_timestamp": "2025-12-03T08:04:49.911047",
-  "version": "1.0"
+  "hash": "08d56a8c177a02c63bbaed54a3b9bcb244a51e7a9478c4a0b276584ac738a26e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/simulation/simulator.py",
+  "generated_at": "2025-12-03T17:47:46.222248",
+  "golden_status": "verified",
+  "checksum": "08d56a8c177a02c63bbaed54a3b9bcb244a51e7a9478c4a0b276584ac738a26e"
 }

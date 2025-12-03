@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d23a4d0ce00f448a2dec9d9d5224d9ab468676357da504ce5cc19aef22dcfcac",
-  "content_hash": "d23a4d0ce00f448a2dec9d9d5224d9ab468676357da504ce5cc19aef22dcfcac",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LinkedInCanonical_2025-09-06 v2.2.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-06 v2.2.md",
-    "file_size": 28233,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "d23a4d0ce00f448a2dec9d9d5224d9ab468676357da504ce5cc19aef22dcfcac",
-    "scan_timestamp": "2025-12-03T08:04:48.503561"
-  },
-  "content_preview": "# LinkedInCanonical \u2014 2025-09-06 v2.2 (ND Patches applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.1 (ND Patch applied)\n\n# LinkedInCanonical \u2014 2025-09-06 v2.0 (ND Patch applied)\n\n===============================================================================\nLINKEDIN OUTREACH \u2014 CANONICAL PROMPT SHELL (MPV5)\nRegenerated with GPT\u20115 Thinking \u2022 Date: 2025\u201109\u201106\n===============================================================================\n\n# ROLE\nYou are the LinkedIn Outreach Orchestrator. You generat...",
-  "creation_timestamp": "2025-12-03T08:05:25.848382",
-  "version": "1.0"
+  "hash": "d23a4d0ce00f448a2dec9d9d5224d9ab468676357da504ce5cc19aef22dcfcac",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-06 v2.2.md",
+  "generated_at": "2025-12-03T17:47:47.715898",
+  "golden_status": "verified",
+  "checksum": "d23a4d0ce00f448a2dec9d9d5224d9ab468676357da504ce5cc19aef22dcfcac"
 }

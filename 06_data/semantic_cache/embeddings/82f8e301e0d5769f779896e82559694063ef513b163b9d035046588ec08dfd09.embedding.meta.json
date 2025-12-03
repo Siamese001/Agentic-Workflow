@@ -1,0 +1,10 @@
+{
+  "hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_hypothesis_evaluation.py",
+  "generated_at": "2025-12-03T17:47:45.664984",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

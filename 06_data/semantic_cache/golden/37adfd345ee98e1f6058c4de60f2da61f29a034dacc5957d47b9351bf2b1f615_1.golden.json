@@ -1,0 +1,9 @@
+{
+  "hash": "37adfd345ee98e1f6058c4de60f2da61f29a034dacc5957d47b9351bf2b1f615",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/kg_rag_fusion_planning.py",
+  "generated_at": "2025-12-03T17:47:44.904202",
+  "golden_status": "verified",
+  "checksum": "37adfd345ee98e1f6058c4de60f2da61f29a034dacc5957d47b9351bf2b1f615"
+}

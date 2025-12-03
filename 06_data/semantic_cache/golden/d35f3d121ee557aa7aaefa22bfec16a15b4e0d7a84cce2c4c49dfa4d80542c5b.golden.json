@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d35f3d121ee557aa7aaefa22bfec16a15b4e0d7a84cce2c4c49dfa4d80542c5b",
-  "content_hash": "340c5ad65adae1905ee6ba5f75aedf1ebf871aeca98d8a02d68c5d3a947319d2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.10.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.10.json",
-    "file_size": 121191,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "d35f3d121ee557aa7aaefa22bfec16a15b4e0d7a84cce2c4c49dfa4d80542c5b",
-    "scan_timestamp": "2025-12-03T08:04:48.420590"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-06-2025_v8.0.1\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-06-2025_v8.0.1\",\n    \"last_updated\": \"2025-10-06\",\n    \"description\": \"PATCH: Auto-display toggle table after K.1 + auto-scan tracker in Section 3\",\n    \"changelog\": [],\n    \"patches\": [\n      {\n        \"patch_id\": \"PATCH_C096\",\n        \"date\": \"2025-10-06\",\n        \"description\": \"K.1 confirmation gate: auto-displ...",
-  "creation_timestamp": "2025-12-03T08:05:21.540100",
-  "version": "1.0"
+  "hash": "d35f3d121ee557aa7aaefa22bfec16a15b4e0d7a84cce2c4c49dfa4d80542c5b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.10.json",
+  "generated_at": "2025-12-03T17:47:46.975376",
+  "golden_status": "verified",
+  "checksum": "d35f3d121ee557aa7aaefa22bfec16a15b4e0d7a84cce2c4c49dfa4d80542c5b"
 }

@@ -1,0 +1,10 @@
+{
+  "hash": "b950bae2af70e2b61490050e5f539eb209bcaec5e1c3c2d721950dabc5ea5945",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/dag/test_agent_assignment_in_dag.py",
+  "generated_at": "2025-12-03T17:47:45.615042",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

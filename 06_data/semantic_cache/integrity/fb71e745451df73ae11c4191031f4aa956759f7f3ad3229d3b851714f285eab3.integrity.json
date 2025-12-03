@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
-  "content_hash": "43f875c7e7fecb9f625c9537574f7b59ac93d0d3f939209340605246998a1199",
+  "hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/production_inputs/job_input.json",
+  "generated_at": "2025-12-03T17:47:45.381877",
   "file_size": 6200,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9",
-    "archive_name": "Agentic-Workflow-10_9",
-    "relative_path": "production_inputs\\job_input.json",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\production_inputs\\job_input.json",
-    "file_size": 6200,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
-    "scan_timestamp": "2025-12-03T08:04:48.199497"
-  },
-  "verification_timestamp": "2025-12-03T08:05:00.832923",
-  "checksums": {
-    "sha256": "43f875c7e7fecb9f625c9537574f7b59ac93d0d3f939209340605246998a1199",
-    "md5": "4919b9e150d8f1938c77fa534a7db0db"
-  }
+  "modified_time": 1764610061.077041,
+  "sha256": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
+  "integrity_check": "passed"
 }

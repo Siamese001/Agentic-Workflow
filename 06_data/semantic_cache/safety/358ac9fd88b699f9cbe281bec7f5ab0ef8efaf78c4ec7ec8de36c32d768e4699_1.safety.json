@@ -1,0 +1,9 @@
+{
+  "hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/safety_planning.py",
+  "generated_at": "2025-12-03T17:47:44.977932",
+  "safety_score": 1.0,
+  "issues": []
+}

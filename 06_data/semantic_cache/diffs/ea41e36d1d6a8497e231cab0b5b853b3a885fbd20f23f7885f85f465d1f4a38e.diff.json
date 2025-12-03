@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "root_docs/testing/baseline_test_results.md",
-  "diff_content": "# Baseline Test Results - Pre-Restructuring\n\n**Date:** 2025-11-25  \n**Command:** `python -m pytest tests/ -v --tb=short`  \n**Results:** 15 failed, 183 passed, 4 skipped, 62 warnings\n\n## Failed Tests (Baseline)\n\n### ExecutionContext Field Errors (7 tests)\n\n- test_e2e_full_pipeline\n- test_e2e_correction_signals_and_ais_snapshot  \n- test_e2e_safety_flow\n- test_e2e_correction_loop\n- test_regression_state_patch_against_golden\n- test_multi_scenario_e2e[scenario0]\n- test_multi_scenario_e2e[scenario1]\n- test_l3_dag_orchestration\n\n**Error:** `ValueError: \"ExecutionContext\" object has no field \"saf...\"`\n\n### Retrieval Configuration Errors (1 test)\n\n- test_execute_retrieval_uses_high_quality_profile_retrieval_cfg\n\n**Error:** `KeyError: 'hyde_query'`\n\n### TemporalKG Attribute Errors (2 tests)\n\n- test_add_fact\n- test_add_facts_batch\n\n**Error:** `AttributeError: <class 'l4.temporal_kg.TemporalKG'> doe...`\n\n### Integration Errors (2 tests)\n\n- test_hybrid_search_execution\n- test_execution_context_with_l4_adapters\n\n**Errors:** `assert 0 > 0`, `TypeError: argument of type 'Mock' is not iterable`\n\n### Vector Search Errors (2 tests)\n\n- test_vector_search_flow\n- test_import_vector_modules\n\n**Errors:** `AttributeError`, `ImportError: cannot import name 'Pinecone'`\n\n## Goal After Restructuring\n\n- Same number of failures (15)\n- Same number of passes (183)\n- No NEW failures introduced\n",
-  "statistics": {
-    "lines_added": 53,
-    "lines_removed": 0,
-    "lines_changed": 53
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "ea41e36d1d6a8497e231cab0b5b853b3a885fbd20f23f7885f85f465d1f4a38e",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/baseline_test_results.md",
+  "generated_at": "2025-12-03T17:47:45.886623",
+  "diff_type": "baseline",
+  "changes": []
 }

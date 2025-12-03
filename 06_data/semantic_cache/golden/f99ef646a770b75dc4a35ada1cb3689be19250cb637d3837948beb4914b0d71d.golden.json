@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
-  "content_hash": "335e6aab938ba0717d5f18f4aab0ace66fedddbfbceb4d3207748e412554701f",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\health\\adapter.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\adapter.py",
-    "file_size": 903,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
-    "scan_timestamp": "2025-12-03T08:04:48.048606"
-  },
-  "content_preview": "\"\"\"Transforms low-level observability events into a simple format so health checks can spot patterns that might harm resume quality or reliability.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom observability import get_all_events\n\n\ndef collect_error_events() -> List[Dict[str, Any]]:\n    \"\"\"Collects error-like events from the global stream so health detectors can flag recurring issues before they impact resume runs.\"\"\"\n\n    events: List[Dict[str, Any]] = []\n    ...",
-  "creation_timestamp": "2025-12-03T08:04:49.850154",
-  "version": "1.0"
+  "hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/adapter.py",
+  "generated_at": "2025-12-03T17:47:46.198716",
+  "golden_status": "verified",
+  "checksum": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d"
 }

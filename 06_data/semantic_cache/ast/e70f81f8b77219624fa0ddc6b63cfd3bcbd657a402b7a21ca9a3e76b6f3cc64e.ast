@@ -1,7 +1,5 @@
-{
-  "ast_version": "python_3.8+",
-  "error": "Syntax error: unexpected indent (<unknown>, line 628)",
-  "line_number": 628,
-  "offset": 8,
-  "parse_failed": true
-}
+# STUB AST ARTIFACT
+# Generated for: Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_9.py
+# Hash: None
+# Type: LIC
+# Size: 105373 bytes

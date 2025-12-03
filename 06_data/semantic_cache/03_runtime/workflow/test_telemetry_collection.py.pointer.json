@@ -1,0 +1,9 @@
+{
+  "hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/observability/test_telemetry_collection.py",
+  "canonical_relative": "workflow/test_telemetry_collection.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.213924"
+}

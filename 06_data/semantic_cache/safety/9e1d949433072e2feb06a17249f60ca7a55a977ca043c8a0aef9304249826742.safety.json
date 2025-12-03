@@ -1,18 +1,9 @@
 {
-  "safety_score": 85,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": true,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 78,
-    "complexity_score": 55.0
-  },
-  "recommendations": [
-    "Validate network operations and endpoints"
-  ],
-  "scan_timestamp": "2025-12-03T08:04:55.522416"
+  "hash": "9e1d949433072e2feb06a17249f60ca7a55a977ca043c8a0aef9304249826742",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/setup_validation_report.md",
+  "generated_at": "2025-12-03T17:47:45.918611",
+  "safety_score": 1.0,
+  "issues": []
 }

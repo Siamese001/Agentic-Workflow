@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "infra/context_engine/relevance.py",
-  "diff_content": "\"\"\"\nRelevance scoring for r\u00e9sum\u00e9 processing context items.\n\nProvides deterministic scoring to prioritize relevant information for r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Tuple\n\n\n@dataclass\nclass ContextItem:\n    \"\"\"\n    Represents context item for r\u00e9sum\u00e9 processing relevance scoring.\n\n    Enables intelligent information prioritization for comprehensive r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n    id: str\n    text: str\n    metadata: Dict[str, Any]\n\n\ndef score_relevance(query: str, items: List[ContextItem]) -> List[Tuple[ContextItem, float]]:\n    \"\"\"\n    Scores context items by relevance to r\u00e9sum\u00e9 improvement queries.\n\n    Prioritizes information that supports comprehensive r\u00e9sum\u00e9 enhancement processing.\n    \"\"\"\n\n    q_tokens = set((query or \"\").lower().split())\n    scored: List[Tuple[ContextItem, float]] = []\n    for item in items:\n        tokens = set((item.text or \"\").lower().split())\n        # Jaccard-like overlap proxy.\n        if not tokens:\n            score = 0.0\n        else:\n            inter = len(q_tokens & tokens)\n            union = len(q_tokens | tokens) or 1\n            score = inter / union\n        scored.append((item, float(score)))\n    # Sort by score descending, then id for determinism.\n    scored.sort(key=lambda x: (-x[1], x[0].id))\n    return scored\n\n\n\n",
-  "statistics": {
-    "lines_added": 47,
-    "lines_removed": 0,
-    "lines_changed": 47
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "873e28b233a3840742d068c0ffb3864c98b0cb65a80b1aa0cb8dac0a9f433849",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/relevance.py",
+  "generated_at": "2025-12-03T17:47:46.016713",
+  "diff_type": "baseline",
+  "changes": []
 }

@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
-  "content_hash": "5fd87cb64d407dbbd3ef1deff1f430736bb6a772937cea352c19d4ac28686acb",
+  "hash": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/CURRENT_STATUS.md",
+  "generated_at": "2025-12-03T17:47:45.487125",
   "file_size": 4138,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\CURRENT_STATUS.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\CURRENT_STATUS.md",
-    "file_size": 4138,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
-    "scan_timestamp": "2025-12-03T08:04:48.126584"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.716916",
-  "checksums": {
-    "sha256": "5fd87cb64d407dbbd3ef1deff1f430736bb6a772937cea352c19d4ac28686acb",
-    "md5": "4ac20ddba9e8cb320795f6bead52e9d7"
-  }
+  "modified_time": 1764610059.3268,
+  "sha256": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
+  "integrity_check": "passed"
 }

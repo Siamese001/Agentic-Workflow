@@ -1,25 +1,11 @@
 {
-  "meta_type": "artifact_manifest",
-  "file_hash": "cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\control_plane\\control_plane.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\control_plane.py",
-    "file_size": 2395,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5",
-    "scan_timestamp": "2025-12-03T08:04:48.055469"
-  },
-  "artifacts": {
-    "ast": "ast/cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5.ast",
-    "embedding": "embeddings/cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5.embedding",
-    "diff": "diffs/cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5.diff.json",
-    "safety": "safety/cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5.safety.json",
-    "golden": "golden/cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5.golden.json",
-    "integrity": "integrity/cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5.integrity.json"
-  },
-  "generation_timestamp": "2025-12-03T08:04:49.977785",
-  "artifact_count": 6
+  "hash": "cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5",
+  "type": "meta",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/control_plane.py",
+  "generated_at": "2025-12-03T17:47:46.025748",
+  "file_type": "RG",
+  "file_extension": ".py",
+  "file_size": 2395,
+  "processing_stage": "phase_0_5"
 }

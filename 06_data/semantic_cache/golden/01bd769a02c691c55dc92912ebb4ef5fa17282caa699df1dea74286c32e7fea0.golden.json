@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0",
-  "content_hash": "d35a511503893fb642c93f187373c37e365c547eb742430a7d7bcd2ddfd36ec3",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.71 Patch.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.71 Patch.json",
-    "file_size": 8091,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0",
-    "scan_timestamp": "2025-12-03T08:04:48.433727"
-  },
-  "content_preview": "{\n  \"INSTRUCTIONS_FOR_LLM\": {\n    \"NOTE\": \"This is a consolidated patch file. It includes the strategic overhaul from P870 plus all subsequent configuration changes (word counts, terminology) from our discussion.\"\n  },\n  \"1_metadata\": {\n    \"patch_id\": \"LIC-P-871\",\n    \"patch_name\": \"Phoenix v2 (Strategic Overhaul & Configuration Refinement)\",\n    \"version\": \"2025-10-08_v1\",\n    \"date_created\": \"2025-10-08\",\n    \"author\": \"Gemini System Engineer (Editor)\",\n    \"severity\": \"CRITICAL\",\n    \"purpos...",
-  "creation_timestamp": "2025-12-03T08:05:21.980767",
-  "version": "1.0"
+  "hash": "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.71 Patch.json",
+  "generated_at": "2025-12-03T17:47:47.042451",
+  "golden_status": "verified",
+  "checksum": "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0"
 }

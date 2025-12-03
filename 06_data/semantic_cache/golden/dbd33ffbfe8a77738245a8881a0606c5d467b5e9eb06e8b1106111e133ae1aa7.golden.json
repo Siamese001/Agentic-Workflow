@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "dbd33ffbfe8a77738245a8881a0606c5d467b5e9eb06e8b1106111e133ae1aa7",
-  "content_hash": "64c49d1305c52cbfcf11b031da64f4da31169bbd391516c5c935b5e020fd46ad",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\cms\\compiler.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\cms\\compiler.py",
-    "file_size": 1544,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "dbd33ffbfe8a77738245a8881a0606c5d467b5e9eb06e8b1106111e133ae1aa7",
-    "scan_timestamp": "2025-12-03T08:04:48.066493"
-  },
-  "content_preview": "\"\"\"\nCMS compiler for resume generation prompt compilation.\n\nProvides prompt compilation functionality to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom typing import Any, Dict, Optional\n\n\ndef compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str:\n    \"\"\"\n    Compiles prompt template for resume generation.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    # Minimal implementation to unblock imports\n   ...",
-  "creation_timestamp": "2025-12-03T08:04:50.505756",
-  "version": "1.0"
+  "hash": "dbd33ffbfe8a77738245a8881a0606c5d467b5e9eb06e8b1106111e133ae1aa7",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/cms/compiler.py",
+  "generated_at": "2025-12-03T17:47:45.994809",
+  "golden_status": "verified",
+  "checksum": "dbd33ffbfe8a77738245a8881a0606c5d467b5e9eb06e8b1106111e133ae1aa7"
 }

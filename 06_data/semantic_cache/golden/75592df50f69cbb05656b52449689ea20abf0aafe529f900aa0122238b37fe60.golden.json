@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
-  "content_hash": "5d3f47d5cd37ab517afbc2c17cfbe2cc78dd8472513cf5e7503c651295c009d5",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "mission_input.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\mission_input.json",
-    "file_size": 1417,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
-    "scan_timestamp": "2025-12-03T08:04:48.532671"
-  },
-  "content_preview": "{\n  \"sender_profile\": {\n    \"name\": \"Amit\",\n    \"title\": \"Chief AI Officer\",\n    \"company\": \"AI Innovations Inc\",\n    \"linkedin_url\": \"https://linkedin.com/in/amit\",\n    \"about_section\": \"Chief AI Officer specializing in Enterprise Generative AI Platforms and Technical Success & Adoption Leadership.\",\n    \"teams\": [\"AI Platform\", \"GenAI R&D\"]\n  },\n  \"recipient_profile\": {\n    \"name\": \"Sarah Johnson\",\n    \"title\": \"VP of Engineering\",\n    \"company\": \"Tech Giants Corp\",\n    \"linkedin_url\": \"https:...",
-  "creation_timestamp": "2025-12-03T08:05:26.531474",
-  "version": "1.0"
+  "hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic LIC/mission_input_LIC.json",
+  "generated_at": "2025-12-03T17:47:46.617407",
+  "golden_status": "verified",
+  "checksum": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60"
 }

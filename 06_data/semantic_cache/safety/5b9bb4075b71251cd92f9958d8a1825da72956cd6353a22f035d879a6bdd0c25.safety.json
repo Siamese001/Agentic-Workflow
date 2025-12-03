@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 5,
-    "complexity_score": 12.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:17.450476"
+  "hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/redis.py",
+  "generated_at": "2025-12-03T17:47:46.291493",
+  "safety_score": 1.0,
+  "issues": []
 }

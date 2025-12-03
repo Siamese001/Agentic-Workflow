@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "91946d770cb6d27c62ed533d9b1e06f4cc9e20b70e382a5f8a810e68984ae548",
-  "content_hash": "c963a3c0bd86f2f38d36bb930b97d902b759f661e01cc61537e616f730898941",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_10-05-2025_v8.30.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.30.json",
-    "file_size": 183722,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "91946d770cb6d27c62ed533d9b1e06f4cc9e20b70e382a5f8a810e68984ae548",
-    "scan_timestamp": "2025-12-03T08:04:48.422975"
-  },
-  "content_preview": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-06-2025_v8.3.0\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-06-2025_v8.3.0\",\n    \"last_updated\": \"2025-10-06\",\n    \"description\": \"v8.3.0: Applied patch C099 to restructure reasoning visualization controls.\",\n    \"changelog\": [\n      {\n        \"version\": \"v8.2.0\",\n        \"date\": \"2025-10-06\",\n        \"author\": \"LIC Engineering Team\",\n        \"description\": \"Applied PATCH v...",
-  "creation_timestamp": "2025-12-03T08:05:21.591248",
-  "version": "1.0"
+  "hash": "91946d770cb6d27c62ed533d9b1e06f4cc9e20b70e382a5f8a810e68984ae548",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.30.json",
+  "generated_at": "2025-12-03T17:47:46.984983",
+  "golden_status": "verified",
+  "checksum": "91946d770cb6d27c62ed533d9b1e06f4cc9e20b70e382a5f8a810e68984ae548"
 }

@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 888,
-    "complexity_score": 700.68
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:25.462964"
+  "hash": "0c02247f6582bde72bd75317e1f69287f57977e46f4468b042dd2e17fcd41255",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_GAP_ANALYSIS_v10_22_to_v11_5.md",
+  "generated_at": "2025-12-03T17:47:47.508277",
+  "safety_score": 1.0,
+  "issues": []
 }

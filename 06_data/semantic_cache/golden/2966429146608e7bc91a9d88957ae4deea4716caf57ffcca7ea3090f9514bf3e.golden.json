@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
-  "content_hash": "64ad452a13620b409db1482c9c41f64a6437e7fbd2e30d62675eece1a888476b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "eval\\golden_state\\judge.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\judge.py",
-    "file_size": 1284,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
-    "scan_timestamp": "2025-12-03T08:04:48.046897"
-  },
-  "content_preview": "from __future__ import annotations\n\nfrom eval.golden_state.models import GoldenStateTestCase, JudgeVerdict\n\n\ndef evaluate_output(test_case: GoldenStateTestCase, agent_output: str) -> JudgeVerdict:\n    \"\"\"Deterministic judge over agent output for a given test case.\n\n    This initial implementation is intentionally simple and does not\n    call any language models. It uses string heuristics to produce a\n    coarse score in [0.0, 1.0].\n    \"\"\"\n\n    text = (agent_output or \"\").strip().lower()\n    if ...",
-  "creation_timestamp": "2025-12-03T08:04:49.813751",
-  "version": "1.0"
+  "hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/judge.py",
+  "generated_at": "2025-12-03T17:47:46.182682",
+  "golden_status": "verified",
+  "checksum": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e"
 }

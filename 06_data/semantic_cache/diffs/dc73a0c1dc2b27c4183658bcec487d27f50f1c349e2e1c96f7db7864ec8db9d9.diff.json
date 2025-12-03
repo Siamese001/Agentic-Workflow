@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "l2/strategy_executor.py",
-  "diff_content": "\"\"\"\nL2 strategy execution for resume improvement workflows.\n\nExecutes strategy generation using optimal models for comprehensive\nresume enhancement planning and job alignment.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass StrategyExecutor:\n    \"\"\"\n    Executes resume strategy generation with optimal model selection.\n\n    Delivers targeted improvement plans to enhance resume job\n    alignment and effectiveness for better applications.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def execute_strategy(self, prompt: str) -> str:\n        \"\"\"\n        Executes resume strategy generation using LLM models.\n\n        Produces comprehensive improvement strategies for optimal\n        resume job matching and better applications.\n        \"\"\"\n        try:\n            model = self.routing_policy.select_model(\n                task=\"strategy_execution\",\n                complexity=ComplexityLevel.MEDIUM,\n                meta_profile=self.meta_profile,\n            )\n            \n            record_event(\"strategy_execution_start\", {\"task\": \"strategy_execution\"})\n            \n            result = invoke_model(\n                model=model,\n                prompt=prompt,\n                sandbox=self.sandbox,\n            )\n            \n            record_event(\"strategy_execution_success\", {\"result_length\": len(result)})\n            return result\n            \n        except Exception as exc:\n            record_exception(\"strategy_execution_failure\", exc)\n            raise\n",
-  "statistics": {
-    "lines_added": 55,
-    "lines_removed": 0,
-    "lines_changed": 55
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/strategy_executor.py",
+  "generated_at": "2025-12-03T17:47:45.101394",
+  "diff_type": "baseline",
+  "changes": []
 }

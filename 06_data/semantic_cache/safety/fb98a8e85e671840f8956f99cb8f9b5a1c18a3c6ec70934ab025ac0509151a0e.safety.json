@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 8,
-    "complexity_score": 10.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:18.294295"
+  "hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_call_count_drift.py",
+  "generated_at": "2025-12-03T17:47:46.479777",
+  "safety_score": 1.0,
+  "issues": []
 }

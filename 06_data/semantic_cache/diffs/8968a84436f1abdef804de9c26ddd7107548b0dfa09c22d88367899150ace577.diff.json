@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "orchestration/control_plane/__init__.py",
-  "diff_content": "from __future__ import annotations\n\n\"\"\"Facade for the safety control-plane orchestration layer.\n\nThis package re-exports the existing infra.control_plane primitives so\ncallers can depend on a stable ``orchestration.control_plane``\nnamespace without changing the underlying implementation.\n\"\"\"\n\nfrom infra.control_plane.models import SafetyContext, PolicyRule, PolicyDecision  # noqa: F401\nfrom infra.control_plane.decisions import RulesEngineResult, RuleMatch  # noqa: F401\nfrom infra.control_plane.rules_engine import evaluate_rules  # noqa: F401\nfrom infra.control_plane.judge_engine import evaluate_with_guard_model  # noqa: F401\nfrom infra.control_plane.control_plane import run_safety_pipeline  # noqa: F401\n\n__all__ = [\n    \"SafetyContext\",\n    \"PolicyRule\",\n    \"PolicyDecision\",\n    \"RulesEngineResult\",\n    \"RuleMatch\",\n    \"evaluate_rules\",\n    \"evaluate_with_guard_model\",\n    \"run_safety_pipeline\",\n]\n\n\n\n",
-  "statistics": {
-    "lines_added": 28,
-    "lines_removed": 0,
-    "lines_changed": 28
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/control_plane/__init__.py",
+  "generated_at": "2025-12-03T17:47:45.928118",
+  "diff_type": "baseline",
+  "changes": []
 }

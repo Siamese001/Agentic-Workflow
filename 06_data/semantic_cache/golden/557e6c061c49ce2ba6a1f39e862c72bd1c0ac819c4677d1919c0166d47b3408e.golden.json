@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
-  "content_hash": "3c6864d106238bd09e6b8bf2f7e7ce34a1a9deb627ee659c19cf0b21968e2fc0",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "orchestration\\fusion_governance.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\fusion_governance.py",
-    "file_size": 29216,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
-    "scan_timestamp": "2025-12-03T08:04:48.098915"
-  },
-  "content_preview": "\"\"\"L3 Fusion Governance Layer\n\nTop-level governance and oversight layer that fuses Temporal KG reasoning,\nRAG, MoR recursion, and L5 safety into a single production-grade interface.\n\nLayer: L3 (Orchestration / DAGs)\nResponsibilities:\n- Orchestrate the complete fusion pipeline (L1 \u2192 L3 \u2192 L2 \u2192 L4 \u2192 L5)\n- Apply safety checkpoints at critical decision points\n- Manage MoR recursion depth and compute allocation\n- Provide single entry point for production queries\n- Track session-level safety and compli...",
-  "creation_timestamp": "2025-12-03T08:04:54.471767",
-  "version": "1.0"
+  "hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/fusion_governance.py",
+  "generated_at": "2025-12-03T17:47:45.321897",
+  "golden_status": "verified",
+  "checksum": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e"
 }

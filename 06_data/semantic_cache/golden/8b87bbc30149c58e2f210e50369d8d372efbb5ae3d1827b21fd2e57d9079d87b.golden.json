@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "8b87bbc30149c58e2f210e50369d8d372efbb5ae3d1827b21fd2e57d9079d87b",
-  "content_hash": "8b87bbc30149c58e2f210e50369d8d372efbb5ae3d1827b21fd2e57d9079d87b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_AGENTIC_v11_2.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_2.py",
-    "file_size": 101868,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "8b87bbc30149c58e2f210e50369d8d372efbb5ae3d1827b21fd2e57d9079d87b",
-    "scan_timestamp": "2025-12-03T08:04:48.473165"
-  },
-  "content_preview": "\"\"\"\nLIC-AGENTIC-v11.2: LinkedIn InMail Cold Outreach - Enhanced Quality Framework\n==============================================================================\n\nVersion: 11.2\nBase Version: 11.1\nArchitecture: Event-Driven Microservices with Agentic Research & Generation Loops\nStatus: PRODUCTION_READY\n\nKey Upgrades from v11.1:\n-------------------------\n1. QA Report Generation Framework: Comprehensive structured reports with production readiness indicators\n2. Multi-Hop Checkpoint Architecture: Cry...",
-  "creation_timestamp": "2025-12-03T08:05:23.626082",
-  "version": "1.0"
+  "hash": "8b87bbc30149c58e2f210e50369d8d372efbb5ae3d1827b21fd2e57d9079d87b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_2.py",
+  "generated_at": "2025-12-03T17:47:47.447119",
+  "golden_status": "verified",
+  "checksum": "8b87bbc30149c58e2f210e50369d8d372efbb5ae3d1827b21fd2e57d9079d87b"
 }

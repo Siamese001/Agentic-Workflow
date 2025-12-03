@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
-  "content_hash": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "agent_tools_v10_7.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_tools_v10_7.py",
-    "file_size": 24623,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
-    "scan_timestamp": "2025-12-03T08:04:48.336502"
-  },
-  "content_preview": "# File: agent_tools_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - REFACTORED (Fix #14, #17, #19, #20, #24): All tools (Drafting, RAG, QA)\n#   refactored to use the new *asynchronous* _format_prompt_with_defaults\n#   from core_v10_7. This correctly injects Goal State, Top Failures,\n#   Cognitive Modes, Reflection steps, and uses agentic pruning.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #8): Added new stubbed tools 'UIUpdateElement...",
-  "creation_timestamp": "2025-12-03T08:05:17.020828",
-  "version": "1.0"
+  "hash": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/agent_tools_v10_7.py",
+  "generated_at": "2025-12-03T17:47:46.249759",
+  "golden_status": "verified",
+  "checksum": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e"
 }

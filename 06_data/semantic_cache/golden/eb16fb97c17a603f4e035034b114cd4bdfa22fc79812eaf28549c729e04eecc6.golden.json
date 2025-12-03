@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-  "content_hash": "b31b00ff7b8f8c1fab25aed32720ee3dde0cb3e1271fed1235bb70c82b4b2480",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\architecture\\FOLDER_STRUCTURE_GUIDE.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\architecture\\FOLDER_STRUCTURE_GUIDE.md",
-    "file_size": 6680,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-    "scan_timestamp": "2025-12-03T08:04:48.110553"
-  },
-  "content_preview": "# Folder Structure Guide - Agentic Workflow 10_10\n\nThis guide explains the functional purpose of each folder in the Agentic Workflow 10_10 repository to help you understand where files are located and what they do.\n\n## \ud83c\udfd7\ufe0f Architecture Overview\n\nThis project uses a **5-layer agentic architecture** (L1-L5) plus capability-based organization. Think of it like a company with different departments and management levels.\n\n```text\nL1 (Planning)     \u2192 L2 (Execution) \u2192 L3 (Orchestration) \u2192 L4 (State) \u2192 L...",
-  "creation_timestamp": "2025-12-03T08:04:55.345472",
-  "version": "1.0"
+  "hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/architecture/FOLDER_STRUCTURE_GUIDE.md",
+  "generated_at": "2025-12-03T17:47:45.863248",
+  "golden_status": "verified",
+  "checksum": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6"
 }

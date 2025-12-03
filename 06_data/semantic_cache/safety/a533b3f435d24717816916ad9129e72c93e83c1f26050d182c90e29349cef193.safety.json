@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 230,
-    "complexity_score": 182.1
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:56.243652"
+  "hash": "a533b3f435d24717816916ad9129e72c93e83c1f26050d182c90e29349cef193",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/integration/test_dependency_injection.py",
+  "generated_at": "2025-12-03T17:47:45.661371",
+  "safety_score": 1.0,
+  "issues": []
 }

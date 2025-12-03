@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-  "content_hash": "b31b00ff7b8f8c1fab25aed32720ee3dde0cb3e1271fed1235bb70c82b4b2480",
+  "hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/architecture/FOLDER_STRUCTURE_GUIDE.md",
+  "generated_at": "2025-12-03T17:47:45.864283",
   "file_size": 6680,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "root_docs\\architecture\\FOLDER_STRUCTURE_GUIDE.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\architecture\\FOLDER_STRUCTURE_GUIDE.md",
-    "file_size": 6680,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-    "scan_timestamp": "2025-12-03T08:04:48.110553"
-  },
-  "verification_timestamp": "2025-12-03T08:04:55.345525",
-  "checksums": {
-    "sha256": "b31b00ff7b8f8c1fab25aed32720ee3dde0cb3e1271fed1235bb70c82b4b2480",
-    "md5": "14c6185d6aab0e075615fd68090a408a"
-  }
+  "modified_time": 1764610059.0110154,
+  "sha256": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
+  "integrity_check": "passed"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
-  "content_hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "mcp\\__init__.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\mcp\\__init__.py",
-    "file_size": 3938,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
-    "scan_timestamp": "2025-12-03T08:04:48.339949"
-  },
-  "content_preview": "\"\"\"Minimal MCP compatibility layer for local testing.\"\"\"\n\nfrom __future__ import annotations\n\nimport importlib\nimport json\nimport logging\nfrom pathlib import Path\nfrom types import SimpleNamespace\nfrom typing import Any, Callable, Dict\n\nlogger = logging.getLogger(\"mcp\")\n\n_ROOT = Path(__file__).resolve().parent.parent\n_TOOL_CACHE: Dict[str, Any] = {}\n_SCHEMA_CACHE: Dict[str, Any] = {}\n_AGENT_CACHE: Dict[str, Any] = {}\n_CONTEXT_STATE: Dict[str, Any] = {}\n\n_AGENT_SPECS: Dict[str, tuple[str, str]] =...",
-  "creation_timestamp": "2025-12-03T08:05:17.422609",
-  "version": "1.0"
+  "hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp/__init__.py",
+  "generated_at": "2025-12-03T17:47:46.367677",
+  "golden_status": "verified",
+  "checksum": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187"
 }

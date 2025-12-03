@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
-  "content_hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_qa_validator.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_qa_validator.py",
-    "file_size": 1595,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
-    "scan_timestamp": "2025-12-03T08:04:48.364859"
-  },
-  "content_preview": "from src.lic_agentic.qa import QAValidator\n\n\ndef test_missing_subject_fails():\n    validator = QAValidator()\n    draft = \"Hello\\n\\nBody without subject\"\n    result = validator.validate(draft, {\"123\": \"summary\"})\n    assert not result.ok\n    assert \"subject\" in \" \".join(result.missing_sections)\n\n\ndef test_complete_message_passes():\n    validator = QAValidator()\n    draft = (\n        \"Subject: Update\\n\\nHello there\\n[artifact_id:123] summary\\nCTA: Can we connect?\\nBest regards,\\nLIC Outreach Bot\"\n...",
-  "creation_timestamp": "2025-12-03T08:05:18.464559",
-  "version": "1.0"
+  "hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_validator.py",
+  "generated_at": "2025-12-03T17:47:46.561802",
+  "golden_status": "verified",
+  "checksum": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494"
 }

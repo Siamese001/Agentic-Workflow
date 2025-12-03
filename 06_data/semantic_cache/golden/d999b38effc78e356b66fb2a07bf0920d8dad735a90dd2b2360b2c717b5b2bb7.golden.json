@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-  "content_hash": "d4c664cade66c08b76dbd029db7be9f467814f276e11411808cc1177380549f2",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\reasoning\\tot.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\tot.py",
-    "file_size": 1301,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-    "scan_timestamp": "2025-12-03T08:04:48.062093"
-  },
-  "content_preview": "\"\"\"\nTree-of-thought reasoning framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides deterministic thought exploration for comprehensive r\u00e9sum\u00e9 enhancement problem solving.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n\n\n@dataclass\nclass ThoughtNode:\n    \"\"\"\n    Represents thought node in r\u00e9sum\u00e9 processing reasoning tree.\n\n    Enables structured exploration of solution paths for r\u00e9sum\u00e9 improvement tasks.\n    \"\"\"\n    content: str\n    score: float\n\n\ndef tree_search(seed: str,...",
-  "creation_timestamp": "2025-12-03T08:04:50.252427",
-  "version": "1.0"
+  "hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/tot.py",
+  "generated_at": "2025-12-03T17:47:46.113039",
+  "golden_status": "verified",
+  "checksum": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7"
 }

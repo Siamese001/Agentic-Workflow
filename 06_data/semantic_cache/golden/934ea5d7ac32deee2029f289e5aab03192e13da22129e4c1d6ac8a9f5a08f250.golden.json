@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
-  "content_hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_AGENTIC_v11_4.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_4.py",
-    "file_size": 118444,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
-    "scan_timestamp": "2025-12-03T08:04:48.474804"
-  },
-  "content_preview": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.4\n====================================================\n\nCHANGELOG v11.4 (CRITICAL - Decision Tree from v10.24):\n--------------------------------------------------------\n\u2728 NEW: Proper Decision Tree Implementation from LIC v10.24\n- Added FOLLOW_UP route for continuing conversations\n- Added connection_status field (\"not_connected\" | \"connected\")\n- Added prior_message_count field for follow-up tracking\n- Implemented v10.24 routing logic:\n  1. IF...",
-  "creation_timestamp": "2025-12-03T08:05:24.257862",
-  "version": "1.0"
+  "hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_4.py",
+  "generated_at": "2025-12-03T17:47:47.457941",
+  "golden_status": "verified",
+  "checksum": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250"
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "60a332b8662936c15aaba637c13cbc993acc8d944b8d012c945d9d0617da15cc",
-  "content_hash": "b6fe1a1638c63c07a7cf22741e9e69fabf1d6c9a062a29994075bc27af001298",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\reasoning\\cot.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\cot.py",
-    "file_size": 845,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "60a332b8662936c15aaba637c13cbc993acc8d944b8d012c945d9d0617da15cc",
-    "scan_timestamp": "2025-12-03T08:04:48.061348"
-  },
-  "content_preview": "\"\"\"\nChain-of-thought reasoning for r\u00e9sum\u00e9 processing workflows.\n\nProvides deterministic reasoning scaffolding for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import List\n\n\ndef expand_chain_of_thought(seed: str, steps: int = 3) -> List[str]:\n    \"\"\"\n    Expands chain-of-thought reasoning for r\u00e9sum\u00e9 processing tasks.\n\n    Enables structured thinking processes for optimal r\u00e9sum\u00e9 enhancement workflows.\n    \"\"\"\n\n    seed = (seed or \"\").strip()\n    if not seed:\n        return []\n\n   ...",
-  "creation_timestamp": "2025-12-03T08:04:50.213142",
-  "version": "1.0"
+  "hash": "60a332b8662936c15aaba637c13cbc993acc8d944b8d012c945d9d0617da15cc",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/cot.py",
+  "generated_at": "2025-12-03T17:47:46.094206",
+  "golden_status": "verified",
+  "checksum": "60a332b8662936c15aaba637c13cbc993acc8d944b8d012c945d9d0617da15cc"
 }

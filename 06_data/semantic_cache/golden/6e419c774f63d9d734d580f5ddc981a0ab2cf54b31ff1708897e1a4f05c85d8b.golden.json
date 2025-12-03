@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
-  "content_hash": "d0607e5ed86680abe69fc9d521e005d34186db67e23aae3ab6d1cb857e59a651",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\v6_prompt_integration.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\v6_prompt_integration.py",
-    "file_size": 12420,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
-    "scan_timestamp": "2025-12-03T08:04:48.075862"
-  },
-  "content_preview": "\"\"\"\nV6 Prompt Integration for resume generation system.\n\nIntegrates instructional prompts with planners to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom .instructional_injection_v6 import (\n    InstructionalPrompt,\n    InstructionalLayer,\n    InstructionalExtension,\n    LayerContent,\n    ExtensionContent,\n    create_l1_planner_prompt,\n    create_l2_executor_prompt,\n    add_rag_extension,\n    add...",
-  "creation_timestamp": "2025-12-03T08:04:51.482875",
-  "version": "1.0"
+  "hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/v6_prompt_integration.py",
+  "generated_at": "2025-12-03T17:47:45.019009",
+  "golden_status": "verified",
+  "checksum": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b"
 }

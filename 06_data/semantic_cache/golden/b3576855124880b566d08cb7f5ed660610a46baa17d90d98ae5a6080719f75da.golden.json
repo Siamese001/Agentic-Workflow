@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
-  "content_hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic LIC",
-    "archive_name": "Agentic LIC",
-    "relative_path": "sender_voice_profile.json",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\sender_voice_profile.json",
-    "file_size": 1924,
-    "file_extension": ".json",
-    "is_eligible": true,
-    "sha256_hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
-    "scan_timestamp": "2025-12-03T08:04:48.371783"
-  },
-  "content_preview": "{\n  \"persona\": \"Strategic AI Leader & Technical Advisor\",\n  \"style_attributes\": [\n    \"Direct and confident\",\n    \"Peer-to-peer (not subservient)\",\n    \"Data-driven with quantifiable results\",\n    \"Technical depth without jargon overload\",\n    \"Executive-level strategic thinking\",\n    \"Focus on measurable business outcomes\"\n  ],\n  \"preferred_phrases\": [\n    \"strategic alignment\",\n    \"measurable business outcomes\",\n    \"operational transformation\",\n    \"enterprise-grade\",\n    \"production-ready\",...",
-  "creation_timestamp": "2025-12-03T08:05:18.987727",
-  "version": "1.0"
+  "hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/sender_voice_profile.json",
+  "generated_at": "2025-12-03T17:47:46.325281",
+  "golden_status": "verified",
+  "checksum": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da"
 }

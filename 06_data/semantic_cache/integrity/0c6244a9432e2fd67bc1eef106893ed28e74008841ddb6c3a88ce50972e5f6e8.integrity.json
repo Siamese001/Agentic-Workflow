@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
-  "content_hash": "2c6fd4cf80950e8ca795e9ef76cab2e1e321a611cace2430ead0b3446a78e074",
+  "hash": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_agent_cards.py",
+  "generated_at": "2025-12-03T17:47:45.781665",
   "file_size": 2025,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\_deprecated\\test_agent_cards.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_cards.py",
-    "file_size": 2025,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
-    "scan_timestamp": "2025-12-03T08:04:48.174001"
-  },
-  "verification_timestamp": "2025-12-03T08:04:57.607467",
-  "checksums": {
-    "sha256": "2c6fd4cf80950e8ca795e9ef76cab2e1e321a611cace2430ead0b3446a78e074",
-    "md5": "4d2c529cb3ebd0c6ba87f2e4343fa19c"
-  }
+  "modified_time": 1764610060.0950499,
+  "sha256": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
+  "integrity_check": "passed"
 }

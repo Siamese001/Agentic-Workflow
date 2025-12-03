@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 55,
-    "complexity_score": 58.18
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:52.020180"
+  "hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/strategy_executor.py",
+  "generated_at": "2025-12-03T17:47:45.102255",
+  "safety_score": 1.0,
+  "issues": []
 }

@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-  "content_hash": "bec43fe35bda92a8bb7e6da13b74c6767ad0efb34bfa24ce28be2315288d5e44",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tests\\golden_state\\test_runner.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_runner.py",
-    "file_size": 573,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-    "scan_timestamp": "2025-12-03T08:04:48.135673"
-  },
-  "content_preview": "# FILE: tests/golden_state/test_runner.py\n\nfrom core.models.models import ExecutionProfile, RetrievalConfig\n\nfrom eval.golden_state.runner import run_all_golden_tests\n\n\ndef test_run_all_golden_tests_returns_results():\n    profile = ExecutionProfile(\n        name=\"TEST\",\n        description=\"test profile\",\n        retrieval=RetrievalConfig(),\n        metadata={},\n    )\n\n    results = run_all_golden_tests(profile)\n\n    assert results\n    ids = {r.test_id for r in results}\n    assert \"gs_basic_1\" i...",
-  "creation_timestamp": "2025-12-03T08:04:56.221295",
-  "version": "1.0"
+  "hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_runner.py",
+  "generated_at": "2025-12-03T17:47:45.653212",
+  "golden_status": "verified",
+  "checksum": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226"
 }

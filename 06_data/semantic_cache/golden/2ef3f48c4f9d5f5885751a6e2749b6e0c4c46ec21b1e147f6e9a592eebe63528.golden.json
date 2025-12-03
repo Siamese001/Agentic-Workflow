@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "2ef3f48c4f9d5f5885751a6e2749b6e0c4c46ec21b1e147f6e9a592eebe63528",
-  "content_hash": "e1bee1f4b9d58b42bc43878303bcc62c81173f721176f318c754bda299e570d0",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l1\\strategy_planning.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\strategy_planning.py",
-    "file_size": 6498,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "2ef3f48c4f9d5f5885751a6e2749b6e0c4c46ec21b1e147f6e9a592eebe63528",
-    "scan_timestamp": "2025-12-03T08:04:48.074584"
-  },
-  "content_preview": "\"\"\"\nStrategy planning for comprehensive resume improvement and job alignment.\n\nCreates targeted plans to enhance resume content and structure\nfor optimal job application success.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, List, Optional\n\nfrom config import config_profiles_v10_10 as config_profiles\nfrom core.models.models import (\n    DraftingPlan as WorkflowDraftingPlan,\n    ExecutionContext,\n    RAGResult,\n    StrategyPlan as WorkflowStrat...",
-  "creation_timestamp": "2025-12-03T08:04:51.352749",
-  "version": "1.0"
+  "hash": "2ef3f48c4f9d5f5885751a6e2749b6e0c4c46ec21b1e147f6e9a592eebe63528",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/strategy_planning(1).py",
+  "generated_at": "2025-12-03T17:47:44.991748",
+  "golden_status": "verified",
+  "checksum": "2ef3f48c4f9d5f5885751a6e2749b6e0c4c46ec21b1e147f6e9a592eebe63528"
 }

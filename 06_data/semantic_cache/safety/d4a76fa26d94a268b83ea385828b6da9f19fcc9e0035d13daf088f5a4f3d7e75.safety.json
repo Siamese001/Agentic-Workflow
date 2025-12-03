@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 53,
-    "complexity_score": 55.0
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:53.919221"
+  "hash": "d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/hypothesis.py",
+  "generated_at": "2025-12-03T17:47:45.956225",
+  "safety_score": 1.0,
+  "issues": []
 }

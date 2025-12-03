@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "providers/README.md",
-  "diff_content": "# Provider Layer - External SDK Isolation\n\nThis directory enforces strict architectural separation between the application layers (L1-L5) and external SDK dependencies.\n\n## \ud83c\udfd7\ufe0f Architecture Principle\n\n**External SDKs MUST only be imported in the `providers/` directory.**\n\nAll other layers (L1-L5, infra, meta, core) should delegate to provider clients instead of importing SDKs directly.\n\n## \ud83d\udce6 Available Providers\n\n### Redis Client (`redis_client.py`)\n\n- **Purpose**: Redis caching operations\n- **Usage**: `from providers.redis_client import RedisClient, init_redis_client`\n- **Replaces**: Direct `import redis` in infra/storage layers\n\n### ChromaDB Client (`chromadb_client.py`)\n\n- **Purpose**: Vector storage and retrieval\n- **Usage**: `from providers.chromadb_client import ChromaClient, ChromaConfig, init_chroma_client`\n- **Replaces**: Direct `import chromadb` in infra/storage layers\n\n### OpenAI Client (`openai_client.py`)\n\n- **Purpose**: OpenAI API operations\n- **Usage**: `from providers.openai_client import OpenAIClient`\n\n### Anthropic Client (`anthropic_client.py`)\n\n- **Purpose**: Anthropic Claude API operations\n- **Usage**: `from providers.anthropic_client import AnthropicClient`\n\n### Google GenAI Client (`google_genai_client.py`)\n\n- **Purpose**: Google Generative AI API operations\n- **Usage**: `from providers.google_genai_client import GoogleGenAIClient`\n\n### Pinecone Client (`pinecone_client/`)\n\n- **Purpose**: Pinecone vector database operations\n- **Usage**: `from providers.pinecone_client import PineconeClient`\n\n## \ud83d\udeab Forbidden Patterns\n\n\u274c **Direct SDK imports outside providers**:\n\n```python\n# WRONG - Violates isolation\nimport redis\nimport chromadb\nfrom pinecone import Pinecone\n```\n\n\u2705 **Provider delegation pattern**:\n\n```python\n# CORRECT - Maintains isolation\nfrom providers.redis_client import RedisClient\nfrom providers.chromadb_client import ChromaClient\n```\n\n## \ud83e\uddea Enforcement\n\nThe provider isolation is automatically enforced by:\n\n```bash\npytest tests/modularity/test_provider_isolation.py::test_only_providers_contain_provider_sdks -v\n```\n\nThis test scans all Python files and ensures external SDKs are only imported in the `providers/` directory.\n\n## \ud83d\udd27 Adding New Providers\n\n1. Create provider client in `providers/your_provider.py`\n2. Isolate all SDK imports to that file\n3. Provide clean interface methods\n4. Update other layers to use your provider instead of direct imports\n5. Add your SDK to the test's `external_sdks` set\n6. Verify the isolation test still passes\n\n## \ud83d\udccb Benefits\n\n- **Clean Architecture**: Clear separation between application logic and external dependencies\n- **Testability**: Easy to mock providers for testing\n- **Maintainability**: SDK changes only affect provider implementations\n- **Security**: Controlled surface area for external dependencies\n- **Compliance**: Enforced by automated testing\n\n## \ud83c\udfaf Current Status\n\n\u2705 **Zero violations** - All external SDKs properly isolated\n\u2705 **118 tests passing** - No regressions introduced\n\u2705 **Backward compatibility** - Existing imports still work\n\u2705 **Production ready** - Full test coverage and architectural enforcement\n",
-  "statistics": {
-    "lines_added": 96,
-    "lines_removed": 0,
-    "lines_changed": 96
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "daee9654e59c9f784d421bc7a5bac9f0b572e5b9fb1fcf696f3143b9e57ea5f8",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/README.md",
+  "generated_at": "2025-12-03T17:47:45.405730",
+  "diff_type": "baseline",
+  "changes": []
 }

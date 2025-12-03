@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 309,
-    "complexity_score": 318.45
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:05:17.409769"
+  "hash": "45e7f701db45593dc4b5d96a9d00a0ee7df2d35d504d775c3e8b024e32f0054d",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/master_config_v10_7.json",
+  "generated_at": "2025-12-03T17:47:46.270379",
+  "safety_score": 1.0,
+  "issues": []
 }

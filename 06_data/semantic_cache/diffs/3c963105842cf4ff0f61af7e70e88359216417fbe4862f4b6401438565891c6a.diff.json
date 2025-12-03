@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-Workflow-10_11",
-  "logical_path": "runtime/observability/spans.py",
-  "diff_content": "from __future__ import annotations\n\nimport time\nimport uuid\nfrom typing import Any, Dict, Optional\n\nfrom core.models.models import TelemetryEvent\nfrom runtime.observability.collectors import append_event, push_span, pop_span\n\n\ndef _now_ms() -> int:\n    return int(time.time() * 1000)\n\n\ndef start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n    \"\"\"Create a uniquely identified span and record the start time.\"\"\"\n\n    span_id = str(uuid.uuid4())\n    record: Dict[str, Any] = {\n        \"span_id\": span_id,\n        \"name\": name,\n        \"start_ms\": _now_ms(),\n        \"ctx\": ctx or {},\n    }\n    push_span(record)\n\n    append_event(\n        TelemetryEvent(\n            name=name,\n            span_id=span_id,\n            ts_ms=record[\"start_ms\"],\n            attributes={\n                \"event_type\": \"span_start\",\n                \"span_id\": span_id,\n                \"ctx\": ctx or {},\n            },\n        )\n    )\n\n    return record\n\n\ndef end_span(span_record: Dict[str, Any]) -> None:\n    \"\"\"Close a previously-started span; no-op if unknown.\"\"\"\n\n    from runtime.observability.collectors import span_stack  # local import to avoid cycles\n\n    if span_record not in span_stack():\n        return\n\n    pop_span(span_record)\n    end_ms = _now_ms()\n    duration = end_ms - span_record[\"start_ms\"]\n\n    append_event(\n        TelemetryEvent(\n            name=span_record[\"name\"],\n            span_id=span_record[\"span_id\"],\n            ts_ms=end_ms,\n            attributes={\n                \"event_type\": \"span_end\",\n                \"span_id\": span_record[\"span_id\"],\n                \"duration_ms\": duration,\n                \"ctx\": span_record.get(\"ctx\", {}),\n            },\n        )\n    )\n\n\n\n",
-  "statistics": {
-    "lines_added": 70,
-    "lines_removed": 0,
-    "lines_changed": 70
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
+  "type": "diff",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/spans.py",
+  "generated_at": "2025-12-03T17:47:45.847969",
+  "diff_type": "baseline",
+  "changes": []
 }

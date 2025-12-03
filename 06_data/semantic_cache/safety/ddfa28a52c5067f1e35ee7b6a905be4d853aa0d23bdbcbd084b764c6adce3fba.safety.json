@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 23,
-    "complexity_score": 20.29
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:50.326001"
+  "hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/vm_manager.py",
+  "generated_at": "2025-12-03T17:47:46.142313",
+  "safety_score": 1.0,
+  "issues": []
 }

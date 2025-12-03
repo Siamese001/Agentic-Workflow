@@ -1,0 +1,10 @@
+{
+  "hash": "ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/04_testing_autorepair.md",
+  "generated_at": "2025-12-03T17:47:45.579372",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}

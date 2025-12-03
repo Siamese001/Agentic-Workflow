@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
-  "content_hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
+  "hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_6.py",
+  "generated_at": "2025-12-03T17:47:47.467260",
   "file_size": 84063,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_AGENTIC_v11_6.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_6.py",
-    "file_size": 84063,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
-    "scan_timestamp": "2025-12-03T08:04:48.476164"
-  },
-  "verification_timestamp": "2025-12-03T08:05:24.750022",
-  "checksums": {
-    "sha256": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
-    "md5": "b3a995c5be32e6f7868efb60a4055638"
-  }
+  "modified_time": 1764609962.7137876,
+  "sha256": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
+  "integrity_check": "passed"
 }

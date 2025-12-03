@@ -1,14 +1,9 @@
 {
-  "diff_type": "initial_diff",
-  "baseline_version": null,
-  "current_version": "Agentic-LIC",
-  "logical_path": "tests/regression/test_call_count_drift.py",
-  "diff_content": "from src.lic_agentic.agents.k3_message_architect import MessageArchitect\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef test_call_count_stable(snapshot=None):\n    architect = MessageArchitect(ReasoningToggles())\n    plan = architect._build_plan([\"ACME latest milestones\"], type(\"S\", (), {\"company_id\": \"ACME\", \"contact_id\": \"C1\"})())\n    assert len(plan.jobs) <= 6\n",
-  "statistics": {
-    "lines_added": 8,
-    "lines_removed": 0,
-    "lines_changed": 8
-  },
-  "has_changes": true,
-  "initial_generation": true
+  "hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
+  "type": "diff",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_call_count_drift.py",
+  "generated_at": "2025-12-03T17:47:46.478498",
+  "diff_type": "baseline",
+  "changes": []
 }

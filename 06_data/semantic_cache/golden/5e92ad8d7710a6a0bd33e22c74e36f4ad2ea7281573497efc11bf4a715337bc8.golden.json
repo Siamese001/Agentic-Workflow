@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "5e92ad8d7710a6a0bd33e22c74e36f4ad2ea7281573497efc11bf4a715337bc8",
-  "content_hash": "c02d690d8258f0f33d9dc2e18c1fb1e935a2fafcd613706daf019850af51fb92",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "tools\\simulation.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\simulation.py",
-    "file_size": 25685,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "5e92ad8d7710a6a0bd33e22c74e36f4ad2ea7281573497efc11bf4a715337bc8",
-    "scan_timestamp": "2025-12-03T08:04:48.181517"
-  },
-  "content_preview": "# FILE: 10_10/simulation.py\n\"\"\"\nPhase-3 Simulation Harness (v10_10) \u2014 Batch D (Testing & Simulation)\n====================================================================\n\nThis module provides a meta-level simulation system for the v10_10 stack.\n\nIt focuses on:\n\n  \u2022 Exercising the Phase-3 knobs across multiple scenarios:\n        - HYDE enabled vs disabled\n        - RRF strategies\n        - QA council size\n        - Correction-loop depth\n        - Telemetry routing modes\n\n  \u2022 Using the real entryp...",
-  "creation_timestamp": "2025-12-03T08:04:58.467655",
-  "version": "1.0"
+  "hash": "5e92ad8d7710a6a0bd33e22c74e36f4ad2ea7281573497efc11bf4a715337bc8",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/simulation.py",
+  "generated_at": "2025-12-03T17:47:45.549343",
+  "golden_status": "verified",
+  "checksum": "5e92ad8d7710a6a0bd33e22c74e36f4ad2ea7281573497efc11bf4a715337bc8"
 }

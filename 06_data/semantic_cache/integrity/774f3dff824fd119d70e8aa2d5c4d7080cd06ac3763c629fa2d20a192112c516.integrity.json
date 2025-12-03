@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
-  "content_hash": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
+  "hash": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_safety_stack.py",
+  "generated_at": "2025-12-03T17:47:46.583246",
   "file_size": 236,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_safety_stack.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_safety_stack.py",
-    "file_size": 236,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
-    "scan_timestamp": "2025-12-03T08:04:48.366090"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.496423",
-  "checksums": {
-    "sha256": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
-    "md5": "1d1c0e73c14c3efb49c7db4739e9379a"
-  }
+  "modified_time": 1764609961.6063924,
+  "sha256": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
+  "integrity_check": "passed"
 }

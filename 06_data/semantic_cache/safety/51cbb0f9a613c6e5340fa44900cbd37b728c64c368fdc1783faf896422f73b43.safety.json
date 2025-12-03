@@ -1,18 +1,9 @@
 {
-  "safety_score": 85,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": true,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 143,
-    "complexity_score": 116.85
-  },
-  "recommendations": [
-    "Validate network operations and endpoints"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:18.407501"
+  "hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_message_architect.py",
+  "generated_at": "2025-12-03T17:47:46.535400",
+  "safety_score": 1.0,
+  "issues": []
 }

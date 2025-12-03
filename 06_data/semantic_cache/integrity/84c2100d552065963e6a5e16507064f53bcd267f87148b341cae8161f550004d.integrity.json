@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
-  "content_hash": "be96b13337ea281b4b03efde596c3ca6c8dcdf7e0c0699d62201006cd1c5460a",
+  "hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/06_safety_policy_cost.md",
+  "generated_at": "2025-12-03T17:47:45.589122",
   "file_size": 809,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\06_safety_policy_cost.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\06_safety_policy_cost.md",
-    "file_size": 809,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
-    "scan_timestamp": "2025-12-03T08:04:48.184375"
-  },
-  "verification_timestamp": "2025-12-03T08:04:58.647942",
-  "checksums": {
-    "sha256": "be96b13337ea281b4b03efde596c3ca6c8dcdf7e0c0699d62201006cd1c5460a",
-    "md5": "224eba3681242d8058391539ed875924"
-  }
+  "modified_time": 1764610058.4200962,
+  "sha256": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
+  "integrity_check": "passed"
 }

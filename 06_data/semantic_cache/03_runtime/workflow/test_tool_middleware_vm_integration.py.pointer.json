@@ -1,0 +1,9 @@
+{
+  "hash": "6f91530e9da244a1779aa4271cb78c39a1548e8f8a6b16a385a340933f6b2913",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_tool_middleware_vm_integration.py",
+  "canonical_relative": "workflow/test_tool_middleware_vm_integration.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.220553"
+}

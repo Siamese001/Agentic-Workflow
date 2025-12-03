@@ -1,18 +1,9 @@
 {
-  "safety_score": 90,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": false,
-    "has_file_operations": true,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": true,
-    "file_size_risk": false,
-    "line_count": 142,
-    "complexity_score": 154.28
-  },
-  "recommendations": [
-    "Ensure sensitive data is properly secured"
-  ],
-  "scan_timestamp": "2025-12-03T08:05:21.980712"
+  "hash": "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0",
+  "type": "safety",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.71 Patch.json",
+  "generated_at": "2025-12-03T17:47:47.043001",
+  "safety_score": 1.0,
+  "issues": []
 }

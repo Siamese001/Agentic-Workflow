@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
-  "content_hash": "a1036234b1d7e83e7927d20e2e4280d612455d1c19fc44bf1c1e5cc08f334b9b",
+  "hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/01_core_governance.md",
+  "generated_at": "2025-12-03T17:47:45.569861",
   "file_size": 1654,
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\01_core_governance.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\01_core_governance.md",
-    "file_size": 1654,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
-    "scan_timestamp": "2025-12-03T08:04:48.183109"
-  },
-  "verification_timestamp": "2025-12-03T08:04:58.621115",
-  "checksums": {
-    "sha256": "a1036234b1d7e83e7927d20e2e4280d612455d1c19fc44bf1c1e5cc08f334b9b",
-    "md5": "26078e7847b28e1fdcc9f05fc7637811"
-  }
+  "modified_time": 1764610058.4200962,
+  "sha256": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
+  "integrity_check": "passed"
 }

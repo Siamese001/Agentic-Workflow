@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "1dff3193f4db829e6cf20e3643589fb75327f40eb860b735606075d71b97ad2b",
-  "content_hash": "1dff3193f4db829e6cf20e3643589fb75327f40eb860b735606075d71b97ad2b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "workflow_LIC_v12.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\workflow_LIC_v12.py",
-    "file_size": 43396,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "1dff3193f4db829e6cf20e3643589fb75327f40eb860b735606075d71b97ad2b",
-    "scan_timestamp": "2025-12-03T08:04:48.537542"
-  },
-  "content_preview": "# File: workflow_LIC.py\n# Description: Complete workflow orchestration with live API integration\n# Version: 12.0 - Strategic Alignment Engine\n\n__version__ = \"12.0\"\n\nimport asyncio\nimport hashlib\nimport json\nimport os\nfrom datetime import datetime, timedelta\nfrom pathlib import Path\nfrom typing import Dict, List, Optional, Any, Tuple\n\n# Live API clients\nfrom llm_clients import GeminiLLMClient\nfrom retrieval_clients import GoogleSearchClient\n\n# RAG agents (FIXED: import from rag_LIC, not rag_LIC_L...",
-  "creation_timestamp": "2025-12-03T08:05:27.267226",
-  "version": "1.0"
+  "hash": "1dff3193f4db829e6cf20e3643589fb75327f40eb860b735606075d71b97ad2b",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/workflow_LIC_v12.py",
+  "generated_at": "2025-12-03T17:47:48.018461",
+  "golden_status": "verified",
+  "checksum": "1dff3193f4db829e6cf20e3643589fb75327f40eb860b735606075d71b97ad2b"
 }

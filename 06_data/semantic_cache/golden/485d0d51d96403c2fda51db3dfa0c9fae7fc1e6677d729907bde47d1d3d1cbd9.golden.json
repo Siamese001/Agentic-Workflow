@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-  "content_hash": "8f1c45de1f7d9324f0bdf2334b0973a47001a016da3bc0d56813b9cb5aa9545b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "integration\\atomic_integration_bridge.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\integration\\atomic_integration_bridge.py",
-    "file_size": 5062,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-    "scan_timestamp": "2025-12-03T08:04:48.065513"
-  },
-  "content_preview": "\"\"\"Bridges OpenAI structure to atomic L1-L5 layers with strict boundaries.\n\nEnsures resume generation follows a clean, maintainable architecture that improves\noutput consistency and makes it easier to enhance resume quality over time.\n\"\"\"\n\nfrom typing import Any, Dict, Optional\nfrom pathlib import Path\n\n# Import concrete implementations to be wrapped\nfrom l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator\nfrom l4.state_manager import StateManager\nfrom l5.safety_validator import ...",
-  "creation_timestamp": "2025-12-03T08:04:50.397573",
-  "version": "1.0"
+  "hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/integration/atomic_integration_bridge.py",
+  "generated_at": "2025-12-03T17:47:44.864470",
+  "golden_status": "verified",
+  "checksum": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9"
 }

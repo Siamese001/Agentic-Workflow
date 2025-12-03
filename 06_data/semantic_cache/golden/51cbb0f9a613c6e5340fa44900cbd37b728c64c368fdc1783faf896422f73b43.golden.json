@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
-  "content_hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\unit\\test_message_architect.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_message_architect.py",
-    "file_size": 5771,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
-    "scan_timestamp": "2025-12-03T08:04:48.363329"
-  },
-  "content_preview": "\"\"\"Unit tests covering MessageArchitect planning and composition.\"\"\"\nfrom types import SimpleNamespace\nfrom unittest.mock import patch\n\nfrom src.lic_agentic.agents.k3_message_architect import DraftPackage, MessageArchitect\nfrom src.lic_agentic.rag.content_store import ContentStore\nfrom src.lic_agentic.rag.retrieval_planner import RetrievalJob\nfrom src.lic_agentic.rag.tool_registry import BaseTool, ToolRegistry, ToolResult\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\nclass Sta...",
-  "creation_timestamp": "2025-12-03T08:05:18.407534",
-  "version": "1.0"
+  "hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_message_architect.py",
+  "generated_at": "2025-12-03T17:47:46.534922",
+  "golden_status": "verified",
+  "checksum": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43"
 }

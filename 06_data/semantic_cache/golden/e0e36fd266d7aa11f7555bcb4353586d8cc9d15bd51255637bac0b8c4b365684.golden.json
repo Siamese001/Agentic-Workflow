@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "e0e36fd266d7aa11f7555bcb4353586d8cc9d15bd51255637bac0b8c4b365684",
-  "content_hash": "e0e36fd266d7aa11f7555bcb4353586d8cc9d15bd51255637bac0b8c4b365684",
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Old LIC",
-    "archive_name": "Old LIC",
-    "relative_path": "LIC_2025-09-10_v3.3.md",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v3.3.md",
-    "file_size": 8887,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "e0e36fd266d7aa11f7555bcb4353586d8cc9d15bd51255637bac0b8c4b365684",
-    "scan_timestamp": "2025-12-03T08:04:48.443987"
-  },
-  "content_preview": "Understood. Below is the **full Zero-Loss Overwrite (ZLO) of LinkedInCanonical v3.2 \u2192 v3.3**, ready for direct paste into VSC.\nThis is a **complete canonical file**; every section is preserved from v3.2 with the governance changes applied: supplemental RAG enrichment is now mandatory for **all archetypes, including Short (NEW) and C Level**.\n\n---\n\n# LinkedInCanonical \u2014 2025-09-13 v3.3 (FULL, ZLO \u2014 Universal RAG Enrichment Integrated)\n\nVersion: v3.3 | Status: Canonical\nSource baseline: LinkedInCa...",
-  "creation_timestamp": "2025-12-03T08:05:22.402189",
-  "version": "1.0"
+  "hash": "e0e36fd266d7aa11f7555bcb4353586d8cc9d15bd51255637bac0b8c4b365684",
+  "type": "golden",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-10_v3.3.md",
+  "generated_at": "2025-12-03T17:47:47.143643",
+  "golden_status": "verified",
+  "checksum": "e0e36fd266d7aa11f7555bcb4353586d8cc9d15bd51255637bac0b8c4b365684"
 }

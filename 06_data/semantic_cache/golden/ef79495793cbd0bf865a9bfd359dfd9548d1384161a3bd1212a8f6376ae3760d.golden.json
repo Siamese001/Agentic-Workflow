@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
-  "content_hash": "defd7babad7d1d18b87cc85bacfa6bb6e652602937b1483276fde7ac56911053",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "l4\\triplet_store.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\triplet_store.py",
-    "file_size": 12448,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
-    "scan_timestamp": "2025-12-03T08:04:48.086982"
-  },
-  "content_preview": "\"\"\"\nL4 Triplet Store for resume job alignment workflows.\n\nMaintains efficient indexes for resume enhancement querying.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass\nfrom datetime import datetime, UTC\nfrom typing import Any, Dict, List, Optional, Set, Tuple\nfrom enum import Enum\n\n\nclass TemporalType(Enum):\n    \"\"\"Temporal classification of facts for resume job alignment workflows.\"\"\"\n    STATIC = \"static\"\n    DYNAMIC = \"dynamic\"\n    TEMPORARY = \"tempora...",
-  "creation_timestamp": "2025-12-03T08:04:53.143075",
-  "version": "1.0"
+  "hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/triplet_store.py",
+  "generated_at": "2025-12-03T17:47:45.216949",
+  "golden_status": "verified",
+  "checksum": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d"
 }

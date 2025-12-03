@@ -1,19 +1,9 @@
 {
-  "golden_type": "source_canonical",
-  "file_hash": "add67d862198e741431d6ae3f340f10eb7e5bdfd34de05bb1f549f8f3d69e564",
-  "content_hash": "0e17335d035e7e4acf1ee1eed5f5f426481a4e4513e85c56a9b5e182efea442b",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "infra\\dag_engine\\node.py",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag_engine\\node.py",
-    "file_size": 839,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "add67d862198e741431d6ae3f340f10eb7e5bdfd34de05bb1f549f8f3d69e564",
-    "scan_timestamp": "2025-12-03T08:04:48.059269"
-  },
-  "content_preview": "\"\"\"\nDAG node model for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides agent-aware node definitions for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\n\nclass DAGNode(BaseModel):\n    \"\"\"\n    Represents agent-aware DAG node for r\u00e9sum\u00e9 processing workflows.\n\n    Defines declarative node structure for optimal r\u00e9sum\u00e9 enhancement orchestration.\n    \"\"\"\n\n    id: str\n    type: str\n    inputs: List[str] = Field(de...",
-  "creation_timestamp": "2025-12-03T08:04:50.114869",
-  "version": "1.0"
+  "hash": "add67d862198e741431d6ae3f340f10eb7e5bdfd34de05bb1f549f8f3d69e564",
+  "type": "golden",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag_engine/node.py",
+  "generated_at": "2025-12-03T17:47:46.068904",
+  "golden_status": "verified",
+  "checksum": "add67d862198e741431d6ae3f340f10eb7e5bdfd34de05bb1f549f8f3d69e564"
 }

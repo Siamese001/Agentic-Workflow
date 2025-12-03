@@ -1,16 +1,9 @@
 {
-  "safety_score": 100,
-  "risk_level": "low",
-  "checks": {
-    "has_executable_code": true,
-    "has_file_operations": false,
-    "has_network_operations": false,
-    "has_system_operations": false,
-    "has_sensitive_patterns": false,
-    "file_size_risk": false,
-    "line_count": 28,
-    "complexity_score": 32.89
-  },
-  "recommendations": [],
-  "scan_timestamp": "2025-12-03T08:04:49.850130"
+  "hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
+  "type": "safety",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/adapter.py",
+  "generated_at": "2025-12-03T17:47:46.199172",
+  "safety_score": 1.0,
+  "issues": []
 }

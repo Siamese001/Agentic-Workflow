@@ -1,22 +1,11 @@
 {
-  "integrity_type": "content_verification",
-  "file_hash": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
-  "content_hash": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
+  "hash": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
+  "type": "integrity",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_value_claim_evidence.py",
+  "generated_at": "2025-12-03T17:47:46.450291",
   "file_size": 1158,
-  "file_info": {
-    "archive_root": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC",
-    "archive_name": "Agentic-LIC",
-    "relative_path": "tests\\e2e\\test_value_claim_evidence.py",
-    "absolute_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_value_claim_evidence.py",
-    "file_size": 1158,
-    "file_extension": ".py",
-    "is_eligible": true,
-    "sha256_hash": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
-    "scan_timestamp": "2025-12-03T08:04:48.358478"
-  },
-  "verification_timestamp": "2025-12-03T08:05:18.252429",
-  "checksums": {
-    "sha256": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
-    "md5": "4afb32963066d8cb182ef59a6991d957"
-  }
+  "modified_time": 1764609961.5342143,
+  "sha256": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
+  "integrity_check": "passed"
 }

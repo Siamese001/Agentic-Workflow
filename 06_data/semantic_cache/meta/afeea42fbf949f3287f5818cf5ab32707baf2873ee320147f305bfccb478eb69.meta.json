@@ -1,25 +1,11 @@
 {
-  "meta_type": "artifact_manifest",
-  "file_hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
-  "file_info": {
-    "archive_root": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11",
-    "archive_name": "Agentic-Workflow-10_11",
-    "relative_path": "windsurf_rules\\07_concurrency_parallelism.md",
-    "absolute_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\07_concurrency_parallelism.md",
-    "file_size": 743,
-    "file_extension": ".md",
-    "is_eligible": true,
-    "sha256_hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
-    "scan_timestamp": "2025-12-03T08:04:48.184613"
-  },
-  "artifacts": {
-    "ast": "ast/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.ast",
-    "embedding": "embeddings/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.embedding",
-    "diff": "diffs/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.diff.json",
-    "safety": "safety/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.safety.json",
-    "golden": "golden/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.golden.json",
-    "integrity": "integrity/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.integrity.json"
-  },
-  "generation_timestamp": "2025-12-03T08:04:58.653209",
-  "artifact_count": 5
+  "hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
+  "type": "meta",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/07_concurrency_parallelism.md",
+  "generated_at": "2025-12-03T17:47:45.592998",
+  "file_type": "RG",
+  "file_extension": ".md",
+  "file_size": 743,
+  "processing_stage": "phase_0_5"
 }

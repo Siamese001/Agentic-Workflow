@@ -1,0 +1,9 @@
+{
+  "hash": "371b05ac0c47aa2d24fe997453d0a5378b4c2ef7c3b07d9d5a966e80ba81917b",
+  "type": "pointer",
+  "global": true,
+  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/simulation/test_metrics.py",
+  "canonical_relative": "workflow/test_metrics.py",
+  "canonical_root": "03_runtime",
+  "generated_at": "2025-12-03T17:47:48.221733"
+}

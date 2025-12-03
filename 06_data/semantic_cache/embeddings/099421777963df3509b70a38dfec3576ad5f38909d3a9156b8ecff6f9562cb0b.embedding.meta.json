@@ -1,0 +1,10 @@
+{
+  "hash": "099421777963df3509b70a38dfec3576ad5f38909d3a9156b8ecff6f9562cb0b",
+  "type": "embedding",
+  "global": true,
+  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/rag.py",
+  "generated_at": "2025-12-03T17:47:46.397516",
+  "artifact_type": "embedding",
+  "dimensions": 1536,
+  "model": "text-embedding-ada-002"
+}
