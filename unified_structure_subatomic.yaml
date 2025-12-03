@@ -1,3 +1,7 @@
+# Add explicit header that this YAML requires a meta sidecar
+meta_sidecar: unified_structure_subatomic_meta.yaml
+canonical_definition: "Canonical SSoT = MERGE(main_yaml, meta_yaml)"
+
 agentic_core:
   L1_cognition:
     P1_retrieve:
@@ -9,6 +13,40 @@ agentic_core:
           check_registry_policy.py: null
           enforce_boundaries.py: null
           validate_constraints.py: null
+      get_info:
+        __init__.py: null
+        understand_request:
+          __init__.py: null
+          build_core_query.py: null
+          extract_layer_parameters.py: null
+          fetch_core_history.py: null
+          parse_registry_intent.py: null
+          query_core_store.py: null
+          retrieve_core_context.py: null
+        utility_prepare_information:
+          __init__.py: null
+          build_filters.py: null
+          format_registry_context.py: null
+          prepare_payload.py: null
+        embedding_compare_meaning:
+          __init__.py: null
+          match_context.py: null
+          retrieve_similarity.py: null
+          search_vectors.py: null
+    P2_inspect:
+      __init__.py: null
+      check_structure:
+        __init__.py: null
+        policy_check_safety:
+          __init__.py: null
+          check_compliance.py: null
+          enforce_contracts.py: null
+          validate_schema.py: null
+        semantic_adjust_scores:
+          __init__.py: null
+          calculate_relevance.py: null
+          adjust_confidence.py: null
+          rank_results.py: null
       get_info:
         __init__.py: null
         understand_request:
