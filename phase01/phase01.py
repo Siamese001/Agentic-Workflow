@@ -491,8 +491,9 @@ def infer_subfolders(phase: str, parts: List[str], filename: str) -> Tuple[List[
     conf = 0.0
 
     def translate_to_filesystem(name: str) -> str:
-        """Convert Python identifier (underscores) to filesystem path (hyphens)"""
-        return name.replace("_", "-")
+        """Convert YAML canonical name (hyphens) to filesystem path (underscores)"""
+        return name.replace("-", "_")
+
 
     def add(folder: str, reason: str, weight: float) -> None:
         nonlocal conf
