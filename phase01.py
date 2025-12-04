@@ -201,11 +201,12 @@ def phase01_execute() -> int:
         print(f"--- PROCESSING {folder} ---")
         root_path = PROJECT_ROOT / folder
 
-        if folder not in ssot_canon:
-            print(f"SKIP: {folder} not in SSoT.")
+        logical_name = map_folder_to_logical(folder)
+        if logical_name not in ssot_canon:
+            print(f"SKIP: {folder} (logical: {logical_name}) not in SSoT.")
             continue
 
-        ssot_subtree = ssot_canon[folder]
+        ssot_subtree = ssot_canon[logical_name]
 
         fs_raw = scan_fs(root_path)
         fs_canon = canon_tree(fs_raw)
