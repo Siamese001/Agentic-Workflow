@@ -17,13 +17,27 @@ global:
   enforce_dict_for_directories: true
   enforce_null_for_files: true
   no_duplicate_keys: true
-  cognitive_domains: ["agentic_core", "apps_lic", "apps_rg"]
-  non_cognitive_domains: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared", "tests"]
+  # removed redundant cognitive/non-cognitive lists
+  # domain_modes now acts as the authoritative mapping
 
 domains:
-  cognitive: ["agentic_core", "apps_lic", "apps_rg"]
-  operational_support: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared"]
+  operational_support: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared", "shared_engine_ops"]
   test_taxonomy: ["tests"]
+
+domain_modes:
+  agentic_core: cognitive_engine
+  apps_lic: cognitive_engine
+  apps_rg: cognitive_engine
+  shared_engine_ops: library_support
+  schemas: operational_support
+  runtime: operational_support
+  prompt_governance: operational_support
+  config: operational_support
+  data: operational_support
+  observability: operational_support
+  scripts: operational_support
+  shared: operational_support
+  tests: test_taxonomy
 
 naming_conventions:
   filename_prefixes:
@@ -31,9 +45,12 @@ naming_conventions:
     apps_lic: "lic_*"
     apps_rg: "rg_*"
     shared_engine_ops: "shared_*"
-  directory_prefix_exemptions:
-    - "L*"
-    - "P*"
+  prefix_exemptions:
+    agentic_core: ["L*", "P*"]
+    apps_lic: ["L*", "P*"]
+    apps_rg: ["L*", "P*"]
+    tests: ["L*", "P*"]
+    default: []
   engine_prefix_rules:
     strict: true
     allow_shared_ops: true
@@ -55,15 +72,14 @@ engine_namespaces:
       - data
       - observability
       - scripts
-      - shared
-      - tests
     prefix: "shared_"
 
 hierarchy:
   shared_engine_ops:
     mode: "library_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
+    protected: true
     description: "Foundational library containing reusable cognitive, inspection, and operational logic"
   agentic_core:
     mode: "cognitive_engine"
@@ -130,7 +146,9 @@ hierarchy:
     mode: "test_taxonomy"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: []
+    auto_generate_missing_paths: false
+    enforce_allowed_structure: true
     allowed_structure:
       unit:
         agentic_core:
@@ -376,10 +394,10 @@ hierarchy:
               long_horizon_behavior:
                 degradation_thresholds: []
 
-enforcement:
-  require_all_layers: false
-  require_all_phases: false
-  allow_sparse_structures: true
+  enforcement:
+    require_all_layers: false
+    require_all_phases: false
+    allow_sparse_structures: true
 
 # =================================================================
 # SHARED ENGINE OPERATIONS (Library)
@@ -1676,7 +1694,6 @@ config:
           apply_safety_policy.py: null
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
-        # Item B: Removed semantic_adjust_scores
         manage_config_costs_state_update_ops:
           enforce_safety_budget.py: null
           track_safety_cost.py: null
@@ -2895,38 +2912,4 @@ shared:
             track_safety_cost.py: null
             update_safety_usage.py: null
     __init__.py: null
-  __init__.py: null
-
-tests:
-  unit:
-    agentic_core: {}
-    apps_lic: {}
-    apps_rg: {}
-    runtime: {}
-    data: {}
-    schemas: {}
-    prompt_governance: {}
-    config: {}
-    observability: {}
-    scripts: {}
-  integration:
-    core_plus_runtime: {}
-    lic_plus_data: {}
-    rg_plus_data: {}
-    full_pipeline: {}
-  e2e:
-    outreach_flows: {}
-    resume_flows: {}
-    admin_flows: {}
-  golden:
-    prompts: {}
-    semantics: {}
-    safety: {}
-  perf:
-    latency: {}
-    throughput: {}
-    cost: {}
-  load:
-    spike: {}
-    soak: {}
   __init__.py: null

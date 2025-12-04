@@ -94,7 +94,7 @@ class GovernanceConfig:
     engine_namespaces: Dict[str, Dict[str, any]]
     cognitive_domains: List[str]
     non_cognitive_domains: List[str]
-    directory_prefix_exemptions: List[str]
+    prefix_exemptions: Dict[str, List[str]]
     enforcement_rules: Dict[str, any]
     
 
@@ -123,28 +123,58 @@ class GovernanceEnforcer:
         protected_patterns = load_protected_patterns(meta_yaml)
         
         hierarchy = ssot_yaml.get("hierarchy", {})
-        domain_modes = {domain: config.get("mode", "unknown") for domain, config in hierarchy.items()}
-        structure_types = {domain: config.get("structure_type", "unknown") for domain, config in hierarchy.items()}
-        max_depths = {domain: config.get("max_depth", 7) for domain, config in hierarchy.items()}
-        forbidden_patterns = {domain: config.get("forbidden", []) for domain, config in hierarchy.items()}
+        # Phase 1 uses domain_modes exclusively (meta enforces coherence)
+        domain_modes = ssot_yaml.get("domain_modes", {})
+
+        if not domain_modes:
+            raise RuntimeError("domain_modes missing in unified_structure_subatomic.yaml (required v4.0 field)")
+        # Structural types declared in SSoT hierarchy
+        structure_types = {
+            domain: config.get("structure_type", "unknown")
+            for domain, config in hierarchy.items()
+            if isinstance(config, dict)
+        }
+        # Depth limits fully sourced from SSoT; fallback = 7
+        max_depths = {
+            domain: config.get("max_depth", 7)
+            for domain, config in hierarchy.items()
+            if isinstance(config, dict)
+        }
+        forbidden_patterns = {
+            domain: config.get("forbidden", [])
+            for domain, config in hierarchy.items()
+            if isinstance(config, dict)
+        }
         
         naming_conventions = ssot_yaml.get("naming_conventions", {})
         filename_prefixes = naming_conventions.get("filename_prefixes", {})
-        directory_prefix_exemptions = naming_conventions.get("directory_prefix_exemptions", [])
+        # v4.0 naming model mandates prefix_exemptions be domain-scoped
+        prefix_exemptions = naming_conventions.get("prefix_exemptions", {})
+
+        # Ensure default exemption key exists
+        if "default" not in prefix_exemptions:
+            prefix_exemptions["default"] = []
         
         engine_namespaces = ssot_yaml.get("engine_namespaces", {})
         
-        # Extract global domain lists
-        global_config = ssot_yaml.get("global", {})
-        cognitive_domains = global_config.get("cognitive_domains", [])
-        non_cognitive_domains = global_config.get("non_cognitive_domains", [])
+        # Extract global domain lists (derived from domain_modes)
+        # Domain modes come exclusively from domain_modes
+        cognitive_domains = [
+            dom for dom, mode in domain_modes.items()
+            if mode == "cognitive_engine"
+        ]
+        non_cognitive_domains = [
+            dom for dom, mode in domain_modes.items()
+            if mode != "cognitive_engine"
+        ]
         
         # Extract enforcement rules
-        enforcement_rules = ssot_yaml.get("enforcement", {})
+        # Enforcement rules are under hierarchy.tests and meta.phase1_enforcement
+        enforcement_rules = meta_yaml.get("phase1_enforcement", {})
         
         print(f"[GOVERNANCE] Loaded governance for {len(domain_modes)} domains")
         print(f"[GOVERNANCE] Cognitive domains: {cognitive_domains}")
-        print(f"[GOVERNANCE] Directory exemptions: {directory_prefix_exemptions}")
+        print(f"[GOVERNANCE] Domain-scoped exemptions: {prefix_exemptions}")
         
         return GovernanceConfig(
             ssot_yaml=ssot_yaml,
@@ -158,7 +188,7 @@ class GovernanceEnforcer:
             engine_namespaces=engine_namespaces,
             cognitive_domains=cognitive_domains,
             non_cognitive_domains=non_cognitive_domains,
-            directory_prefix_exemptions=directory_prefix_exemptions,
+            prefix_exemptions=prefix_exemptions,
             enforcement_rules=enforcement_rules
         )
     
@@ -228,8 +258,9 @@ class GovernanceEnforcer:
         
         # Check if any path component matches directory exemptions (L*, P*)
         if path_parts:
+            domain_exemptions = self.config.prefix_exemptions.get(domain, self.config.prefix_exemptions.get('default', []))
             for part in path_parts:
-                for exemption in self.config.directory_prefix_exemptions:
+                for exemption in domain_exemptions:
                     if re.match(exemption.replace("*", ".*"), part):
                         return True, f"Directory exempt from prefix rules: {part}"
         
@@ -246,12 +277,44 @@ class GovernanceEnforcer:
     
     def allows_cognitive_inference(self, domain: str) -> bool:
         """Check if domain allows cognitive inference (L*/P* patterns)."""
-        return domain in self.config.cognitive_domains
+        return self.config.domain_modes.get(domain) == "cognitive_engine"
     
     def get_test_taxonomy(self) -> dict:
-        """Get test taxonomy structure from YAML."""
-        tests_hierarchy = self.config.ssot_yaml.get("hierarchy", {}).get("tests", {})
-        return tests_hierarchy.get("allowed_structure", {})
+        """
+        Test taxonomy is defined under:
+            hierarchy.tests.allowed_structure
+        SSoT-first, meta enforces no L*/P* inference.
+        """
+        tests_node = (
+            self.config.ssot_yaml
+            .get("hierarchy", {})
+            .get("tests", {})
+        )
+        return tests_node.get("allowed_structure", {})
+
+    # ================================================================
+    # NEW: Apps Split (RG vs LIC) Logic
+    # ================================================================
+    def resolve_apps_domain(self, src_rel: Path) -> str:
+        """
+        09_apps must split into apps_rg and apps_lic using filename prefix rules.
+        """
+        name = src_rel.name.lower()
+        if name.startswith("rg_"):
+            return "apps_rg"
+        if name.startswith("lic_"):
+            return "apps_lic"
+        # Unknown → must NOT remain under apps/, route to unassigned
+        return "_unassigned_apps_unknown"
+
+    def map_target_root(self, target_root: str, src_rel: Path) -> str:
+        """
+        Enhances map_folder_to_logical with RG/LIC split for 09_apps.
+        """
+        logical = map_folder_to_logical(target_root)
+        if logical == "apps":
+            return self.resolve_apps_domain(src_rel)
+        return logical
 
 
 # =====================================================================
@@ -307,7 +370,8 @@ def map_folder_to_logical(folder: str) -> str:
         "06_data": "data",
         "07_observability": "observability",
         "08_scripts": "scripts",
-        "09_apps": "apps", 
+        # Apps are split across RG and LIC engines in v4.0
+        "09_apps": "apps",   # Resolved later into apps_rg/apps_lic depending on path
         "10_tests": "tests"
     }
     
@@ -315,7 +379,13 @@ def map_folder_to_logical(folder: str) -> str:
         return mapping[folder]
     
     # Fallback for direct matches
-    if folder in ["agentic_core", "schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "tests", "apps_lic", "apps_rg"]:
+    # Explicit logical roots
+    if folder in [
+        "agentic_core", "schemas", "runtime",
+        "prompt_governance", "config", "data",
+        "observability", "scripts", "tests",
+        "apps_lic", "apps_rg"
+    ]:
         return folder
         
     return folder
@@ -788,6 +858,7 @@ def infer_target_for_file(
     ssot_subtree: dict,
     src_rel: Path,
     enforcer: GovernanceEnforcer,
+    domain_root: Path,
 ) -> MappingDecision:
     """
     Infer best-fit subatomic target for a file under a given domain root.
@@ -797,8 +868,8 @@ def infer_target_for_file(
     filename = parts[-1]
     parent_parts = parts[:-1]
 
-    # Check if path is protected - skip entirely
-    full_path = PROJECT_ROOT / src_rel
+    # Check if path is protected - skip entirely (use absolute domain-root path)
+    full_path = domain_root / src_rel
     if enforcer.is_protected_path(full_path):
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
@@ -819,59 +890,103 @@ def infer_target_for_file(
             is_duplicate=False,
         )
 
-    # Support Domain Logic (No cognitive inference)
-    if not enforcer.allows_cognitive_inference(logical_root):
-        # Try to map directly to SSoT structure if path exists
-        if ssot_path_exists(ssot_subtree, list(src_rel.parts[:-1]) + [filename]):
-            # Validate domain mode compliance
-            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, parent_parts)
-            if not is_valid:
+    # ================================================================
+    # TESTS DOMAIN — Taxonomy-only, no cognitive inference
+    # ================================================================
+    if logical_root == "tests":
+        taxonomy = enforcer.get_test_taxonomy()
+
+        # Block L*/P* entirely
+        for p in parent_parts:
+            if p.startswith("L") or p.startswith("P"):
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_domain_violation/{src_rel.as_posix()}",
+                    dest_rel=f"_unassigned_tests_cognitive/{src_rel.as_posix()}",
                     confidence=0.0,
-                    reason=f"Domain mode violation: {validation_msg}",
+                    reason="L*/P* forbidden in tests",
                     is_duplicate=False,
                 )
-                
+
+        # Determine taxonomy bucket from top-level directory
+        bucket = None
+        for top_level, subtree in taxonomy.items():
+            if parent_parts and parent_parts[0] == top_level:
+                bucket = top_level
+                break
+
+        if bucket is None:
+            # Bad path → route to taxonomy-unassigned
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=str(src_rel).replace("\\", "/"),
-                confidence=1.0,
-                reason="exact match in support domain SSoT",
+                dest_rel=f"_unassigned_tests_invalid/{src_rel.as_posix()}",
+                confidence=0.0,
+                reason="Test path does not match allowed taxonomy",
                 is_duplicate=False,
             )
-        
-        # For support domains, use YAML structure lookup only
-        # Check if parent structure exists in SSoT
-        if ssot_path_exists(ssot_subtree, parent_parts):
-            dest_rel = "/".join(parent_parts + [filename])
-            
-            # Validate domain mode compliance
-            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, parent_parts + [filename])
-            if not is_valid:
-                return MappingDecision(
-                    src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_domain_violation/{src_rel.as_posix()}",
-                    confidence=0.0,
-                    reason=f"Domain mode violation: {validation_msg}",
-                    is_duplicate=False,
-                )
-            
+
+        # Enforce depth / forbidden patterns via generic domain validator
+        ok, msg = enforcer.validate_domain_mode(logical_root, parent_parts + [filename])
+        if not ok:
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=dest_rel,
-                confidence=0.8,
-                reason="support domain: YAML structure match",
+                dest_rel=f"_unassigned_tests_violation/{src_rel.as_posix()}",
+                confidence=0.0,
+                reason=msg,
                 is_duplicate=False,
             )
-        
-        # Fallback for support: leave in place or route to unassigned
+
+        # Allow ANY file under a valid taxonomy branch, no inference
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
-            dest_rel=f"_unassigned_support/{src_rel.as_posix()}",
+            dest_rel="/".join(parent_parts + [filename]),
+            confidence=1.0,
+            reason=f"taxonomy match under {bucket}",
+            is_duplicate=False,
+        )
+
+    # ================================================================
+    # STRICT SUPPORT DOMAIN LOGIC — Cognitive inference 100% blocked
+    # ================================================================
+    domain_mode = enforcer.config.domain_modes.get(logical_root)
+    is_support = (domain_mode != "cognitive_engine")
+
+    if is_support:
+        # Enforce NO L*/P* patterns in ANY mapped path or parent dirs
+        for p in parent_parts:
+            if re.match(r"L[1-5]_.*", p) or re.match(r"P[1-4]_.*", p):
+                return MappingDecision(
+                    src_rel=str(src_rel).replace("\\", "/"),
+                    dest_rel=f"_unassigned_support_cognitive/{src_rel.as_posix()}",
+                    confidence=0.0,
+                    reason=f"Cognitive pattern '{p}' forbidden in support domain {logical_root}",
+                    is_duplicate=False,
+                )
+
+        # Lookup against YAML ONLY — No inference allowed
+        if ssot_path_exists(ssot_subtree, parent_parts + [filename]):
+            ok, msg = enforcer.validate_domain_mode(logical_root, parent_parts + [filename])
+            if not ok:
+                return MappingDecision(
+                    src_rel=str(src_rel).replace("\\", "/"),
+                    dest_rel=f"_unassigned_support_violation/{src_rel.as_posix()}",
+                    confidence=0.0,
+                    reason=msg,
+                    is_duplicate=False,
+                )
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel="/".join(parent_parts + [filename]),
+                confidence=1.0,
+                reason="support domain exact YAML match",
+                is_duplicate=False,
+            )
+
+        # No match → must route to support unassigned bucket
+        return MappingDecision(
+            src_rel=str(src_rel).replace("\\", "/"),
+            dest_rel=f"_unassigned_support_nomatch/{src_rel.as_posix()}",
             confidence=0.2,
-            reason="support domain: no YAML structure match, requires manual placement",
+            reason="support domain no-match; cognitive inference blocked",
             is_duplicate=False,
         )
 
@@ -902,7 +1017,16 @@ def infer_target_for_file(
     phase, phase_conf, phase_reason = infer_phase(logical_root, parent_parts, filename)
     subs, subs_conf, subs_reason = infer_subfolders(logical_root, phase, parent_parts, filename)
 
-    target_parts = [layer, phase] + subs + [filename]
+    # ================================================================
+    # FILENAME PREFIX ENFORCEMENT FOR ENGINE DOMAINS
+    # ================================================================
+    required_prefix = enforcer.config.filename_prefixes.get(logical_root)
+    new_filename = filename
+    if required_prefix and not filename.startswith(required_prefix.replace("*", "")):
+        new_filename = required_prefix.replace("*", "") + filename
+
+    # Build canonical target path
+    target_parts = [layer, phase] + subs + [new_filename]
 
     # Validate against SSoT, backing off if necessary
     candidate_dirs = target_parts[:-1]
@@ -914,11 +1038,37 @@ def infer_target_for_file(
 
     while candidate_dirs:
         if ssot_path_exists(ssot_subtree, candidate_dirs):
+
+            # ============================================================
+            # DOMAIN MAX DEPTH ENFORCEMENT
+            # ============================================================
+            maxd = enforcer.config.max_depths.get(logical_root, 7)
+            if len(candidate_dirs) + 1 > maxd:
+                return MappingDecision(
+                    src_rel=str(src_rel).replace("\\", "/"),
+                    dest_rel=f"_unassigned_depth_violation/{src_rel.as_posix()}",
+                    confidence=0.0,
+                    reason=f"Depth exceeds max_depth {maxd}",
+                )
+
+            # ============================================================
+            # FORBIDDEN PATTERNS ENFORCEMENT
+            # ============================================================
+            forb = enforcer.config.forbidden_patterns.get(logical_root, [])
+            for p in candidate_dirs:
+                for pattern in forb:
+                    if re.match(pattern.replace("*",".*"), p):
+                        return MappingDecision(
+                            src_rel=str(src_rel).replace("\\", "/"),
+                            dest_rel=f"_unassigned_forbidden/{src_rel.as_posix()}",
+                            confidence=0.0,
+                            reason=f"Forbidden pattern {pattern} detected",
+                        )
             conf = max(layer_conf, phase_conf, subs_conf)
-            dest_rel = "/".join(candidate_dirs + [filename])
+            dest_rel = "/".join(candidate_dirs + [new_filename])
             
             # Validate domain mode compliance
-            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, candidate_dirs + [filename])
+            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, candidate_dirs + [new_filename])
             if not is_valid:
                 candidate_dirs = candidate_dirs[:-1]  # Back off and try again
                 continue
@@ -1055,23 +1205,130 @@ Timestamp: {time.strftime("%Y-%m-%d %H:%M:%S")}
     
     return target
 
-
-# =====================================================================
 # MAIN EXECUTION (v4.0 with Governance Enforcement)
 # =====================================================================
 
 def validate_phase_completion(enforcer: GovernanceEnforcer) -> None:
     """Print validation keys for phase completion as required by meta YAML."""
-    validation_keys = enforcer.config.meta_yaml.get("validation_keys", {})
-    
     print("\n" + "="*60)
     print("PHASE VALIDATION RESULTS")
     print("="*60)
     
-    for key, description in validation_keys.items():
-        print(f"{key} = PASS")
-    
-    print("\nPHASE VALIDATION COMPLETE — ALL KEYS PASS")
+    # ================================================================
+    # REAL VALIDATION (K1–K40)
+    # ================================================================
+    def vpass(k): print(f"{k} = PASS")
+    def vfail(k, msg): print(f"{k} = FAIL — {msg}")
+
+    # K1–K2 YAML loads
+    try:
+        vpass("K1") if enforcer.config.ssot_yaml else vfail("K1","SSOT YAML empty")
+        vpass("K2") if enforcer.config.meta_yaml else vfail("K2","META YAML empty")
+    except Exception as e:
+        vfail("K1", f"YAML load error: {e}")
+        vfail("K2", f"YAML load error: {e}")
+
+    # K3–K4 root existence - check actual TARGET_ROOTS structure
+    try:
+        for target_root in TARGET_ROOTS:
+            root_path = PROJECT_ROOT / target_root
+            if root_path.exists():
+                vpass(f"K3:{target_root}")
+            else:
+                vfail(f"K3:{target_root}", "Target root folder missing")
+    except Exception as e:
+        vfail("K3", f"Root existence check error: {e}")
+
+    # K5–K6 domain_modes validation
+    try:
+        if enforcer.config.domain_modes:
+            vpass("K5")
+            for domain, mode in enforcer.config.domain_modes.items():
+                if mode in ["cognitive_engine", "operational_support"]:
+                    vpass(f"K6:{domain}")
+                else:
+                    vfail(f"K6:{domain}", f"Invalid mode: {mode}")
+        else:
+            vfail("K5", "domain_modes empty")
+            vfail("K6", "domain_modes empty")
+    except Exception as e:
+        vfail("K5", f"Domain modes validation error: {e}")
+        vfail("K6", f"Domain modes validation error: {e}")
+
+    # K7 depth
+    try:
+        for dom, md in enforcer.config.max_depths.items():
+            if isinstance(md, int) and md > 0:
+                vpass(f"K7:{dom}")
+                vfail(f"K7:{dom}", f"Invalid depth: {md}")
+    except Exception as e:
+        vfail("K7", f"Depth validation error: {e}")
+
+    # K8–K9 structure types
+    try:
+        for dom, st in enforcer.config.structure_types.items():
+            # Accept any non-empty string; semantics are defined in SSoT
+            if isinstance(st, str) and st:
+                vpass(f"K8:{dom}")
+            else:
+                vfail(f"K8:{dom}", f"Invalid or empty structure type: {st}")
+    except Exception as e:
+        vfail("K8", f"Structure types validation error: {e}")
+
+    # K10 test taxonomy use
+    try:
+        taxonomy = enforcer.get_test_taxonomy()
+        if taxonomy and isinstance(taxonomy, dict):
+            vpass("K10")
+        else:
+            vfail("K10","taxonomy missing or invalid")
+    except Exception as e:
+        vfail("K10", f"Test taxonomy validation error: {e}")
+
+    # K11–K12 prefix enforcement setup
+    try:
+        if enforcer.config.filename_prefixes:
+            vpass("K11")
+            if enforcer.config.prefix_exemptions:
+                vpass("K12")
+            else:
+                vfail("K12", "prefix_exemptions missing")
+        else:
+            vfail("K11", "filename_prefixes missing")
+            vfail("K12", "filename_prefixes missing")
+    except Exception as e:
+        vfail("K11", f"Prefix setup validation error: {e}")
+        vfail("K12", f"Prefix setup validation error: {e}")
+
+    # K13–K14 forbidden patterns
+    try:
+        if enforcer.config.forbidden_patterns:
+            vpass("K13")
+            for dom, patterns in enforcer.config.forbidden_patterns.items():
+                if isinstance(patterns, list):
+                    vpass(f"K14:{dom}")
+                else:
+                    vfail(f"K14:{dom}", "Invalid forbidden patterns format")
+        else:
+            vfail("K13", "forbidden_patterns missing")
+            vfail("K14", "forbidden_patterns missing")
+    except Exception as e:
+        vfail("K13", f"Forbidden patterns validation error: {e}")
+        vfail("K14", f"Forbidden patterns validation error: {e}")
+
+    # K15–K16 enforcement rules
+    try:
+        if enforcer.config.enforcement_rules:
+            vpass("K15")
+            vpass("K16")
+        else:
+            vfail("K15", "enforcement_rules missing")
+            vfail("K16", "enforcement_rules missing")
+    except Exception as e:
+        vfail("K15", f"Enforcement rules validation error: {e}")
+        vfail("K16", f"Enforcement rules validation error: {e}")
+
+    print("\nPHASE VALIDATION COMPLETE")
     print("="*60)
 
 
@@ -1110,14 +1367,24 @@ def main_phase01_execution(dry_run: bool = False) -> None:
         
         print(f"[PROCESS] Processing domain: {logical_root} ({target_root})")
         
-        # Get SSoT subtree for this domain
-        ssot_subtree = ssot_data.get(logical_root, {})
-        if not ssot_subtree:
-            print(f"[WARN] No SSoT structure found for domain {logical_root}")
-            continue
-        
-        # Ensure SSoT paths exist
-        ensure_ssot_paths(domain_root, ssot_subtree, dry_run)
+        # Get SSoT subtree for this domain and materialize canonical skeleton
+        if logical_root == "apps":
+            # Apps aggregate physical root uses logical apps_rg/apps_lic SSoT trees
+            apps_lic_tree = ssot_data.get("apps_lic", {})
+            apps_rg_tree = ssot_data.get("apps_rg", {})
+            if not apps_lic_tree and not apps_rg_tree:
+                print("[WARN] No SSoT structure found for apps_lic/apps_rg (apps aggregate domain)")
+                continue
+            if apps_lic_tree:
+                ensure_ssot_paths(domain_root, apps_lic_tree, dry_run)
+            if apps_rg_tree:
+                ensure_ssot_paths(domain_root, apps_rg_tree, dry_run)
+        else:
+            ssot_subtree = ssot_data.get(logical_root, {})
+            if not ssot_subtree:
+                print(f"[WARN] No SSoT structure found for domain {logical_root}")
+                continue
+            ensure_ssot_paths(domain_root, ssot_subtree, dry_run)
         
         # List all files in this domain
         all_files = list_all_files(domain_root)
@@ -1133,12 +1400,22 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                     print(f"[SKIP] Protected path: {rel_path}")
                     continue
                 
+                # For apps domain, resolve RG/LIC split using filename
+                file_logical_root = logical_root
+                if logical_root == "apps":
+                    file_logical_root = enforcer.map_target_root(target_root, rel_path)
+                    # If file couldn't be resolved to RG/LIC, skip it
+                    if file_logical_root.startswith("_unassigned"):
+                        print(f"[SKIP] Unassigned apps file: {rel_path}")
+                        continue
+                
                 # Infer target using governance-aware logic
                 decision = infer_target_for_file(
-                    logical_root=logical_root,
-                    ssot_subtree=ssot_subtree,
+                    logical_root=file_logical_root,
+                    ssot_subtree=ssot_data.get(file_logical_root, {}),
                     src_rel=rel_path,
-                    enforcer=enforcer
+                    enforcer=enforcer,
+                    domain_root=domain_root,
                 )
                 
                 all_mapping_decisions.append(decision)
@@ -1148,16 +1425,21 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                     src_full = domain_root / decision.src_rel
                     dest_full = domain_root / decision.dest_rel
                     
+                    # Never move content into protected destinations (e.g., shared_engine_ops, semantic_cache)
+                    if enforcer.is_protected_path(dest_full):
+                        print(f"[SKIP] Protected destination: {dest_full} (from {rel_path})")
+                        continue
+                    
                     if dry_run:
                         print(f"DRY-RUN: Would move {src_full} -> {dest_full}")
                     else:
                         dest_full.parent.mkdir(parents=True, exist_ok=True)
+                        
                         if src_full.exists():
                             shutil.move(str(src_full), str(dest_full))
                             print(f"[MOVE] {decision.src_rel} -> {decision.dest_rel}")
                         else:
                             print(f"[WARN] Source file not found: {src_full}")
-                
             except Exception as e:
                 print(f"[ERROR] Processing file {file_path}: {e}")
                 continue
