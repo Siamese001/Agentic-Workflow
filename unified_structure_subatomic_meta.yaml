@@ -1,7 +1,7 @@
-structure_version: '1.0'
+structure_version: '1.1'
 description: Single Source of Truth for Agentic Workflow Architecture
 binds_to: unified_structure_subatomic.yaml
-canonical_role: "Defines vocab constraints: domains, layers, phases, intents, axes, verb_groups, protected_paths"
+canonical_role: "Defines vocab constraints: domains, layers, phases, intents, axes, verb_groups, protected_paths, engines"
 
 # Add protected path rules if missing
 protected_paths:
@@ -9,9 +9,8 @@ protected_paths:
   - "**/*.md"
 
 domains:
+  apps: Unified applications domain for user-facing engines (LIC + RG).
   agentic_core: Core reasoning, decision making, and autonomous logic engine.
-  apps_rg: Resume Generation Application specific logic.
-  apps_lic: LinkedIn Outreach Application specific logic.
   shared: Cross-domain shared utilities, base classes, and common logic.
   config: Configuration management, registry settings, and environment variables.
   data: Data persistence, retrieval, storage management, and database connectors.
@@ -21,60 +20,68 @@ domains:
   schemas: Data validation schemas, type definitions, and contract enforcement.
   scripts: Maintenance scripts, automation tools, and deployment helpers.
   tests: Test suites, integration tests, and validation frameworks.
+
+engines:
+  apps_rg: Resume Generation application engine (RG).
+  apps_lic: LinkedIn Outreach application engine (LIC).
+
 layers:
   L1_cognition: High-level understanding, planning, and intent recognition.
   L2_execution: Concrete action execution, tool invocation, and operational tasks.
   L3_orchestration: Workflow coordination, error handling, and cross-component routing.
   L4_memory: State management, context retrieval, and history tracking.
   L5_safety: Guardrails, compliance checks, cost management, and ethical boundaries.
+
 phases:
   P1_retrieve: Gathering context, understanding requests, and fetching necessary data.
   P2_inspect: Analyzing data, vetting quality, embedding content, and converting formats.
   P3_aggregate: Refining results, executing tools, updating state, and compiling outputs.
   P4_safety: Final safety validation, cost accounting, and policy enforcement.
+
 intents:
-- check_format
-- check_message_format
-- check_outreach_rules
-- check_prompt_rules
-- check_prompt_structure
-- check_resume_format
-- check_resume_rules
-- check_rules
-- check_schema_rules
-- check_schema_structure
-- check_structure
-- convert
-- convert_content
-- convert_prompt_content
-- convert_schema_content
-- find_msg_problems
-- find_problems
-- find_prompt_problems
-- find_resume_problems
-- find_schema_problems
-- get_info
-- get_prompt_info
-- get_schema_info
-- manage_costs
-- manage_outreach_costs
-- manage_prompt_costs
-- manage_resume_costs
-- manage_schema_costs
-- pick_best_result
-- pick_message
-- pick_resume_content
-- sjob_fit
-- sperson
-- update_outreach
-- update_prompt_state
-- update_schema_state
-- update_state
-- use_prompt_tools
-- use_schema_tools
-- use_tools
-- vectorize_message
-- vectorize_resume
+  - check_format
+  - check_message_format
+  - check_outreach_rules
+  - check_prompt_rules
+  - check_prompt_structure
+  - check_resume_format
+  - check_resume_rules
+  - check_rules
+  - check_schema_rules
+  - check_schema_structure
+  - check_structure
+  - convert
+  - convert_content
+  - convert_prompt_content
+  - convert_schema_content
+  - find_msg_problems
+  - find_problems
+  - find_prompt_problems
+  - find_resume_problems
+  - find_schema_problems
+  - get_info
+  - get_prompt_info
+  - get_schema_info
+  - manage_costs
+  - manage_outreach_costs
+  - manage_prompt_costs
+  - manage_resume_costs
+  - manage_schema_costs
+  - pick_best_result
+  - pick_message
+  - pick_resume_content
+  - sjob_fit
+  - sperson
+  - update_outreach
+  - update_prompt_state
+  - update_schema_state
+  - update_state
+  - use_prompt_tools
+  - use_schema_tools
+  - use_tools
+  - vectorize_message
+  - vectorize_resume
+
 axes:
   - embedding_compare_meaning
   - manage_config_costs_update_memory
@@ -95,3 +102,4 @@ axes:
   - utility_prepare_information
 
 verb_groups: []
+
