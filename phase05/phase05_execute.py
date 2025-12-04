@@ -492,7 +492,8 @@ class Phase05Orchestrator:
         """Run comprehensive validation"""
         # Import and run validation
         try:
-            from . import phase05_validate
+            # FIX: Use absolute import for script execution
+            import phase05_validate
             result = phase05_validate.run()
             self.stats["validation_keys_passed"] = 40  # Assuming all pass
             self.stats["validation_keys_failed"] = 0 if result == 0 else 1
@@ -881,8 +882,7 @@ def generate_canonical_bucket_pointers(
             bucket_root = CACHE_ROOT / bucket
 
             canon_rel = canonical_relative_ssot(f, engine)
-            pointer_dir  = bucket_root / canon_rel
-            pointer_file = pointer_dir / f"{f.stem}{f.suffix}.json"
+            pointer_file = bucket_root / f"{canon_rel}.json"
 
             write_json(pointer_file, {
                 "hash": h,

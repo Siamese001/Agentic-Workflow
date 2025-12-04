@@ -95,6 +95,7 @@ def canon_tree(tree: dict) -> dict:
 
 def map_folder_to_logical(folder: str) -> str:
     """Map numbered folder names to logical SSoT root keys (agentic_core, schemas, etc.)."""
+    # Updated domain mapping to match latest SSoT structure v3.2
     mapping = {
         "01_agentic_core": "agentic_core",
         "02_schemas": "schemas",
