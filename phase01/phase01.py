@@ -247,15 +247,30 @@ def is_empty_directory(path: Path) -> bool:
 
 
 def collect_all_ssot_folder_names(ssot_subtree: dict) -> set:
-    """Collect all folder names from SSoT subtree for canonical-folder exclusion."""
+    """Recursively collect only canonical SSoT folder names (L* and P* patterns) from the SSoT subtree."""
     all_ssot_names = set()
-    
-    def _walk(node: dict) -> None:
+    def _walk(node: dict):
         for name, child in node.items():
-            all_ssot_names.add(name)
+            # Only add if it's a folder (dict) AND matches canonical patterns
             if isinstance(child, dict):
+                # Include L* folders (L1_cognition, L2_execution, etc.)
+                # Include P* folders (P1_retrieve, P2_inspect, etc.)  
+                # Include immediate structural subfolders of canonical folders
+                if (name.startswith('L') and len(name) > 1 and name[1].isdigit()) or \
+                   (name.startswith('P') and len(name) > 1 and name[1].isdigit()) or \
+                   (any(parent.startswith('L') and parent[1].isdigit() for parent in name.split('_')[:1])) or \
+                   (any(parent.startswith('P') and parent[1].isdigit() for parent in name.split('_')[:1])):
+                    # Add both hyphenated (filesystem) and underscore (Python) versions
+                    all_ssot_names.add(name)  # Original (hyphenated) version
+                    if '_' in name:
+                        all_ssot_names.add(name.replace('_', '-'))  # Hyphenated version
+                    if '-' in name:
+                        all_ssot_names.add(name.replace('-', '_'))  # Underscore version
                 _walk(child)
-    
+            elif isinstance(child, list): # Handle lists of files/folders
+                for item in child:
+                    if isinstance(item, dict):
+                        _walk(item)
     _walk(ssot_subtree)
     return all_ssot_names
 
@@ -338,7 +353,7 @@ def score_candidate_folder(
         structural_score = 0.8  # Canonical L-layer
     elif canonical_lower.startswith("p") and "_" in canonical_lower:
         structural_score = 0.7  # Canonical P-phase
-    elif any(descriptor in canonical_lower for descriptor in ["get_info", "check_structure", "semantic"]):
+    elif any(descriptor in canonical_lower for descriptor in ["gather_context_inputs", "check_structure", "semantic"]):
         structural_score = 0.6
     
     # 4. Filename heuristics (0.10 weight)
@@ -372,9 +387,9 @@ def score_candidate_folder(
     # 5. Semantic descriptors (0.05 weight)
     semantic_score = 0.0
     semantic_descriptors = [
-        "get_info", "check_structure", "semantic", "refinement", 
-        "routing", "utility", "update_state", "use_tools", 
-        "manage_costs", "apply", "compute", "assess"
+        "gather_context_inputs", "check_structure", "semantic", "refinement", 
+        "routing", "utility", "sync_status", "execute_actions", 
+        "control_resources", "apply", "compute", "assess"
     ]
     
     for descriptor in semantic_descriptors:
@@ -457,12 +472,12 @@ def infer_layer(logical_root: str, parts: List[str]) -> Tuple[str, float, str]:
 def infer_phase(parts: List[str], filename: str) -> Tuple[str, float, str]:
     tokens = " ".join(parts + [filename]).lower()
 
-    if any(t in tokens for t in ["retrieve", "retriever", "get_info", "search", "find", "load"]):
-        return "P1_retrieve", 0.9, "tokens: retrieve/get_info/search/find/load"
+    if any(t in tokens for t in ["retrieve", "retriever", "gather_context_inputs", "search", "find", "load"]):
+        return "P1_retrieve", 0.9, "tokens: retrieve/gather_context_inputs/search/find/load"
     if any(t in tokens for t in ["inspect", "check", "validate", "verify", "convert"]):
         return "P2_inspect", 0.9, "tokens: inspect/check/validate/verify/convert"
-    if any(t in tokens for t in ["aggregate", "pick_best", "best_result", "rank", "score", "refine", "update_state"]):
-        return "P3_aggregate", 0.9, "tokens: aggregate/pick_best/rank/score/refine/update_state"
+    if any(t in tokens for t in ["aggregate", "select_optimal", "best_result", "rank", "score", "refine", "sync_status"]):
+        return "P3_aggregate", 0.9, "tokens: aggregate/select_optimal/rank/score/refine/sync_status"
     if any(t in tokens for t in ["safety", "safe", "policy", "guard", "risk", "budget", "cost"]):
         return "P4_safety", 0.9, "tokens: safety/safe/policy/guard/risk/budget/cost"
 
@@ -475,17 +490,23 @@ def infer_subfolders(phase: str, parts: List[str], filename: str) -> Tuple[List[
     reasons: List[str] = []
     conf = 0.0
 
+    def translate_to_filesystem(name: str) -> str:
+        """Convert Python identifier (underscores) to filesystem path (hyphens)"""
+        return name.replace("_", "-")
+
     def add(folder: str, reason: str, weight: float) -> None:
         nonlocal conf
-        if folder not in subfolders:
-            subfolders.append(folder)
+        # Translate underscore names to hyphenated filesystem paths
+        filesystem_folder = translate_to_filesystem(folder)
+        if filesystem_folder not in subfolders:
+            subfolders.append(filesystem_folder)
             reasons.append(reason)
             conf = max(conf, weight)
 
     # Phase-specific anchors
     if phase == "P1_retrieve":
-        if any(t in tokens for t in ["get_info", "info", "retrieve", "search", "find"]):
-            add("get_info", "tokens: get_info/retrieve/search/find", 0.9)
+        if any(t in tokens for t in ["gather_context_inputs", "info", "retrieve", "search", "find"]):
+            add("gather_context_inputs", "tokens: gather_context_inputs/retrieve/search/find", 0.9)
         if "embedding" in tokens or "similarity" in tokens or "compare" in tokens:
             add("embedding", "tokens: embedding/similarity/compare", 0.9)
         if "utility" in tokens or "prepare" in tokens or "format" in tokens or "serialize" in tokens:
@@ -501,11 +522,11 @@ def infer_subfolders(phase: str, parts: List[str], filename: str) -> Tuple[List[
 
     if phase == "P3_aggregate":
         if "pick_best" in tokens or "best_result" in tokens or "rank" in tokens or "score" in tokens:
-            add("pick_best_result", "tokens: pick_best/best_result/rank/score", 0.9)
-        if "update_state" in tokens or "state" in tokens:
-            add("update_state", "tokens: update_state/state", 0.8)
+            add("select_optimal", "tokens: select_optimal/best_result/rank/score", 0.9)
+        if "sync_status" in tokens or "state" in tokens:
+            add("sync_status", "tokens: sync_status/state", 0.8)
         if "tool" in tokens or "route" in tokens or "routing" in tokens:
-            add("use_tools", "tokens: tool/route/routing", 0.8)
+            add("execute_actions", "tokens: tool/route/routing", 0.8)
         if "refine" in tokens or "adjust" in tokens or "optimize" in tokens:
             add("refinement", "tokens: refine/adjust/optimize", 0.9)
         if "utility" in tokens:
@@ -517,7 +538,7 @@ def infer_subfolders(phase: str, parts: List[str], filename: str) -> Tuple[List[
         if "semantic" in tokens:
             add("semantic", "tokens: semantic", 0.9)
         if "cost" in tokens or "budget" in tokens or "spend" in tokens:
-            add("manage_costs", "tokens: cost/budget/spend", 0.9)
+            add("control_resources", "tokens: cost/budget/spend", 0.9)
 
     # Generic anchors
     if "routing" in tokens or "route" in tokens:
@@ -741,7 +762,7 @@ def find_fuzzy_folder_matches(
         if folder_name.startswith(("L1_", "L2_", "L3_", "L4_", "L5_", "P1_", "P2_", "P3_", "P4_")):
             continue
         
-        # Skip if folder name exists in SSoT structure (including deep folders like "use_tools")
+        # Skip if folder name exists in SSoT structure (including deep folders like "execute-actions")
         if folder_name in all_ssot_names:
             continue
         
@@ -832,8 +853,8 @@ def phase01_execute(dry_run: bool = False) -> int:
     # Load and prepare SSoT
     ssot = load_yaml(SSOT_YAML)
     meta = load_yaml(META_YAML)
-    combined = {**ssot, **meta}
-    ssot_canon = canon_tree(combined)
+    # DO NOT merge META into SSoT - meta is NOT structure, only protected patterns
+    ssot_canon = canon_tree(ssot)
 
     protected_patterns = load_protected_patterns(meta)
 
@@ -1034,66 +1055,124 @@ DO NOT REMOVE during Phase 1."""
                       f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
                 shutil.move(str(src), str(dest))
 
-        # 7.5) Empty folder cleanup - archive any empty non-canonical folders
-        all_ssot_names = collect_all_ssot_folder_names(ssot_subtree)
-        empty_folders = []
-        
-        for dirpath, dirnames, filenames in os.walk(root_path):
-            path = Path(dirpath)
-            
-            # Skip Phase 1 internal paths
-            if "phase1_" in path.parts:
-                continue
-            
-            # Skip protected paths
-            if is_under_hard_protected(path) or is_meta_protected(path, protected_patterns):
-                continue
-            
-            # Skip canonical folders
-            if path.name in all_ssot_names:
-                continue
-            
-            # Skip unassigned buckets
-            if path.name in {"_unassigned_unknown", "_unassigned_duplicates"}:
-                continue
-            
-            # Skip domain root
-            if path == root_path:
-                continue
-            
-            # Only archive truly empty folders
-            if is_empty_directory(path):
-                empty_folders.append(path)
-        
-        empty_archived_count = 0
-        empty_folder_log = []
-        
-        for empty_folder in empty_folders:
-            rel = empty_folder.relative_to(root_path)
-            placeholder = """This folder was empty after Phase 1 reorganization and does not exist in SSoT.
+        # 7.5) Empty folder cleanup - archive any empty non-canonical folders AFTER file moves
+        # Skip 06_data domain entirely since it contains Phase 1 backup directories
+        if folder == "06_data":
+            empty_archived_count = 0
+            empty_folder_log = []
+        else:
+            print(f"[DEBUG] About to start empty-folder cleanup for {folder}")
+            try:
+                print(f"[EMPTY-CLEANUP] Starting empty-folder cleanup for {folder}")
+                all_ssot_names = collect_all_ssot_folder_names(ssot_subtree)
+                print(f"[DEBUG] Collected SSoT names: {len(all_ssot_names)} names")
+                # Show first 20 SSoT names to debug incorrect inclusion
+                ssot_sample = sorted(list(all_ssot_names))[:20]
+                print(f"[DEBUG] SSoT names sample: {ssot_sample}")
+                empty_folders_logged = []
+                
+                # Multi-pass cleanup with fresh rglob scan each pass to catch cascading empty folders
+                passes = 0
+                while True:
+                    passes += 1
+                    
+                    # Fresh filesystem scan using rglob - no caching like os.walk
+                    print(f"[DEBUG] Pass {passes}: Starting rglob scan...")
+                    all_dirs = [p for p in root_path.rglob("*") if p.is_dir()]
+                    print(f"[DEBUG] Pass {passes}: rglob found {len(all_dirs)} total directories")
+                    
+                    # Show sample of directories found
+                    sample_dirs = [str(p.relative_to(root_path)) for p in all_dirs[:20]]
+                    print(f"[DEBUG] Sample directories: {sample_dirs}")
+                    
+                    empty_folders = []
+                    filtered_phase1 = 0
+                    filtered_protected = 0
+                    filtered_ssot = 0
+                    filtered_buckets = 0
+                    filtered_nonempty = 0
+                    
+                    for path in all_dirs:
+                        # Skip domain root
+                        if path == root_path:
+                            continue
+
+                        # Skip Phase 1 internal directories
+                        if any("phase1_" in part for part in path.parts):
+                            filtered_phase1 += 1
+                            continue
+
+                        # Skip protected paths
+                        if is_under_hard_protected(path) or is_meta_protected(path, protected_patterns):
+                            filtered_protected += 1
+                            continue
+
+                        # Skip canonical SSoT folders
+                        if path.name in all_ssot_names:
+                            filtered_ssot += 1
+                            continue
+
+                        # Skip bucket directories
+                        if path.name in {"_unassigned_unknown", "_unassigned_duplicates"}:
+                            filtered_buckets += 1
+                            continue
+
+                        # Only archive truly empty folders
+                        if is_empty_directory(path):
+                            empty_folders.append(path)
+                        else:
+                            filtered_nonempty += 1
+                    
+                    print(f"[DEBUG] Filters - phase1: {filtered_phase1}, protected: {filtered_protected}, ssot: {filtered_ssot}, buckets: {filtered_buckets}, nonempty: {filtered_nonempty}")
+                    print(f"[DEBUG] After filtering: {len(empty_folders)} empty folders remain")
+
+                    if not empty_folders:
+                        break  # No more empty folders → cleanup complete
+
+                    print(f"[EMPTY-CLEANUP] Pass {passes}: Found {len(empty_folders)} empty folders")
+                    
+                    # Sort by depth (deepest first) for proper bottom-up processing
+                    empty_folders.sort(key=lambda p: len(p.parts), reverse=True)
+
+                    for empty_folder in empty_folders:
+                        rel = empty_folder.relative_to(root_path)
+
+                        placeholder_msg = """This folder was empty after Phase 1 reorganization and does not exist in SSoT.
 It has been archived for Phase 2 semantic analysis.
 DO NOT REMOVE during Phase 1."""
-            
-            if dry_run:
-                print(f"DRY-RUN: Would archive empty folder {empty_folder}")
-                archived_to = None
-            else:
-                archived_to = archive_legacy_folder(
-                    domain=folder_name,
-                    legacy_rel_path=rel,
-                    archive_root=PHASE1_LEGACY_ROOT,
-                    dry_run=dry_run,
-                    placeholder_content=placeholder,
-                    protected_patterns=protected_patterns,
-                    placeholder_filename=".phase1_empty_folder_placeholder"
-                )
-            
-            empty_archived_count += 1
-            empty_folder_log.append({
-                "legacy_folder": str(rel),
-                "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
-                "placeholder_added": True
-            })
+
+                        if dry_run:
+                            print(f"DRY-RUN: Would archive empty folder {empty_folder}")
+                            archived_to = None
+                        else:
+                            archived_to = archive_legacy_folder(
+                                folder,
+                                rel,
+                                PHASE1_LEGACY_ROOT,
+                                dry_run,
+                                placeholder_msg,
+                                protected_patterns,
+                                ".phase1_empty_folder_placeholder"
+                            )
+
+                        empty_folders_logged.append({
+                            "legacy_folder": str(rel),
+                            "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
+                            "placeholder_added": True
+                        })
+
+                empty_archived_count = len(empty_folders_logged)
+                empty_folder_log = empty_folders_logged
+                
+                if empty_archived_count > 0:
+                    print(f"[EMPTY-CLEANUP] Completed: {empty_archived_count} total empty folders archived across {passes} passes")
+                    
+            except Exception as e:
+                print(f"[ERROR] Empty-folder cleanup failed for {folder}: {e}")
+                import traceback
+                traceback.print_exc()
+                empty_archived_count = 0
+                empty_folder_log = []
 
         # 8) Compute and print summary for this domain (runs in both modes)
         # Separate legacy and borderline matches

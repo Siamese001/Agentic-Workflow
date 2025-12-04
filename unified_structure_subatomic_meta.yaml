@@ -54,20 +54,20 @@ intents:
   - convert_content
   - convert_prompt_content
   - convert_schema_content
+  - detect_anomalies
   - find_msg_problems
-  - find_problems
   - find_prompt_problems
   - find_resume_problems
   - find_schema_problems
-  - get_info
+  - gather_context_inputs
   - get_prompt_info
   - get_schema_info
-  - manage_costs
-  - manage_outreach_costs
-  - manage_prompt_costs
-  - manage_resume_costs
-  - manage_schema_costs
-  - pick_best_result
+  - control_resources
+  - control_outreach_resources
+  - control_prompt_resources
+  - control_resume_resources
+  - control_schema_resources
+  - select_optimal
   - pick_message
   - pick_resume_content
   - sjob_fit
@@ -75,10 +75,10 @@ intents:
   - update_outreach
   - update_prompt_state
   - update_schema_state
-  - update_state
-  - use_prompt_tools
-  - use_schema_tools
-  - use_tools
+  - sync_status
+  - execute_actions
+  - execute_prompt_actions
+  - execute_schema_actions
   - vectorize_message
   - vectorize_resume
 
