@@ -1,0 +1,11 @@
+{
+  "hash": "bfde4746dc18166be2bcba99cb3a8d1dc3d77a073885459c09ce5d0886fe470d",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_8/state_v10_8/test_resume_view_backward_compat.py"
+    }
+  ]
+}

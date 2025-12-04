@@ -1,0 +1,11 @@
+{
+  "hash": "cac2f95133c3ba7734f6a315eb6f7941abbcf1f831619449838c8ff03efe1f98",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "vendor/anthropic_stub/__init__.py"
+    }
+  ]
+}

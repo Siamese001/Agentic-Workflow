@@ -1,0 +1,2024 @@
+{
+  "domain": "05_config",
+  "logical_root": "config",
+  "mappings": [
+    {
+      "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
+      "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
+      "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/validate.py",
+      "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/search.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/search.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/extract.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/extract.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/fetch.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/fetch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/load.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/load.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/parse.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/parse.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/query.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/query.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/utility/build.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/build.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/utility/format.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/utility/prepare.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/policy/check.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/check.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/policy/enforce.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/policy/validate.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/assess.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/assess.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/compute.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/validate.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/compute.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/apply.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/compute.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
+      "dest_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/find_problems/update/inspect.py",
+      "dest_rel": "L1_cognition/P2_inspect/find_problems/update/inspect.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
+      "dest_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/update/aggregate.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/update/aggregate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/update/consolidate.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/update/consolidate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/update/merge.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/update/merge.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/utility/format.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/utility/prepare.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/utility/serialize.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/serialize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/apply.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/handle.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/handle.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/implement.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/implement.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/use/execute.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/execute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/use/process.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/process.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L1_cognition/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L1_cognition/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/manage_costs/update/enforce.py",
+      "dest_rel": "L1_cognition/P4_safety/manage_costs/update/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/manage_costs/update/track.py",
+      "dest_rel": "L1_cognition/P4_safety/manage_costs/update/track.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/manage_costs/update/update.py",
+      "dest_rel": "L1_cognition/P4_safety/manage_costs/update/update.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/diagnose_config_issues.py",
+      "dest_rel": "L2_execution/diagnose_config_issues.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/inspect_config_quality.py",
+      "dest_rel": "L2_execution/inspect_config_quality.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/log_config_metrics.py",
+      "dest_rel": "L2_execution/log_config_metrics.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/llm_governance.yaml",
+      "dest_rel": "L2_execution/P2_inspect/llm_governance.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/outreach_writer.yaml",
+      "dest_rel": "L2_execution/P2_inspect/outreach_writer.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/outreach_message.schema.json",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/outreach_message.schema.json",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/policy/check.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/policy/check.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/policy/enforce.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/policy/validate.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/retry_defaults.yaml",
+      "dest_rel": "L2_execution/P3_aggregate/retry_defaults.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/settings.yaml",
+      "dest_rel": "L2_execution/P3_aggregate/settings.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/version_map.yaml",
+      "dest_rel": "L2_execution/P3_aggregate/version_map.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/execute_config_commands.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/execute_config_commands.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/handle_config_timeouts.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/handle_config_timeouts.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/implement_config_fallback.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/implement_config_fallback.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/invoke_config_actions.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/invoke_config_actions.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/perform_config_operations.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/perform_config_operations.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/retry_config_failures.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/retry_config_failures.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/use/execute.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/use/execute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/use/perform.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/use/perform.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/utility/format.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/utility/prepare.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/utility/serialize.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/serialize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/cost_tracking.yaml",
+      "dest_rel": "L2_execution/P4_safety/cost_tracking.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/planner_prompts.yaml",
+      "dest_rel": "L2_execution/P4_safety/check_rules/planner_prompts.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L2_execution/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L2_execution/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L2_execution/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/api_settings.yaml",
+      "dest_rel": "L3_orchestration/api_settings.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/apply_config_safety.py",
+      "dest_rel": "L3_orchestration/apply_config_safety.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/apply_config_weights.py",
+      "dest_rel": "L3_orchestration/apply_config_weights.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/assess_config_confidence.py",
+      "dest_rel": "L3_orchestration/assess_config_confidence.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/calculate_config_similarity.py",
+      "dest_rel": "L3_orchestration/calculate_config_similarity.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/compliance.yaml",
+      "dest_rel": "L3_orchestration/compliance.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/compute_config_confidence.py",
+      "dest_rel": "L3_orchestration/compute_config_confidence.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/compute_config_embeddings.py",
+      "dest_rel": "L3_orchestration/compute_config_embeddings.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/compute_config_validation.py",
+      "dest_rel": "L3_orchestration/compute_config_validation.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/data_retention.yaml",
+      "dest_rel": "L3_orchestration/data_retention.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/embeddings_defaults.yaml",
+      "dest_rel": "L3_orchestration/embeddings_defaults.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/enforce_config_filters.py",
+      "dest_rel": "L3_orchestration/enforce_config_filters.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/generator_prompts.yaml",
+      "dest_rel": "L3_orchestration/generator_prompts.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/normalize_config_scores.py",
+      "dest_rel": "L3_orchestration/normalize_config_scores.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/normalize_config_vectors.py",
+      "dest_rel": "L3_orchestration/normalize_config_vectors.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/outreach_strategy.schema.json",
+      "dest_rel": "L3_orchestration/outreach_strategy.schema.json",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/pii.yaml",
+      "dest_rel": "L3_orchestration/pii.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/prompt_registry.yaml",
+      "dest_rel": "L3_orchestration/prompt_registry.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/safety_overrides.yaml",
+      "dest_rel": "L3_orchestration/safety_overrides.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/safety_routing.yaml",
+      "dest_rel": "L3_orchestration/safety_routing.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/validate_config_ethics.py",
+      "dest_rel": "L3_orchestration/validate_config_ethics.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/validate_config_quality.py",
+      "dest_rel": "L3_orchestration/validate_config_quality.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/policy_loader.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/policy_loader.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/registry_loader.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/registry_loader.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/fallback_policies.yaml",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/fallback_policies.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/linkedin_policies.yaml",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/linkedin_policies.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/load_config_planning.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/load_config_planning.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/model_profiles.yaml",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/model_profiles.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/prepare_config_payload.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/prepare_config_payload.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/redis_settings.yaml",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/redis_settings.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/resume_message.schema.json",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/resume_message.schema.json",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/search.yaml",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/search.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/telemetry_overrides.yaml",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/telemetry_overrides.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/yaml_loader.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/yaml_loader.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/manage.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/manage.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/adjust_config_weights.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/adjust_config_weights.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/apply_config_algorithm.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/apply_config_algorithm.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/build_config_filters.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/build_config_filters.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/build_config_orchestration.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/build_config_orchestration.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/cache_settings.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/cache_settings.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/cadence_defaults.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/cadence_defaults.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/codeexec.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/codeexec.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/coordinate_config_settings.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/coordinate_config_settings.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/extract_layer_parameters.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/extract_layer_parameters.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/format_config_context.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/format_config_context.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/format_registry_context.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/format_registry_context.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/manage_config_parameters.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/manage_config_parameters.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/metric_counters.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/metric_counters.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/optimize_config_order.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/optimize_config_order.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/orchestrate_config_planning.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/orchestrate_config_planning.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/outreach_model_routing.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/outreach_model_routing.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/outreach_plan.schema.json",
+      "dest_rel": "L3_orchestration/P3_aggregate/outreach_plan.schema.json",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/outreach_planner.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/outreach_planner.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/outreach_style.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/outreach_style.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/parse_registry_settings.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/parse_registry_settings.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/pii_policies.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/pii_policies.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/prepare_config_orchestration.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/prepare_config_orchestration.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/rank_config_components.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/rank_config_components.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/refine_config_ranking.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/refine_config_ranking.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/resume_plan.schema.json",
+      "dest_rel": "L3_orchestration/P3_aggregate/resume_plan.schema.json",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/rollout_policies.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/rollout_policies.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/sort_config_results.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/sort_config_results.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/execute_config_commands.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/execute_config_commands.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/invoke_config_actions.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/invoke_config_actions.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/knowledge_profiles.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/knowledge_profiles.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/model_routing.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/model_routing.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/perform_config_operations.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/perform_config_operations.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/resume_strategy.schema.json",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/resume_strategy.schema.json",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/system_prompts.yaml",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/system_prompts.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle_config_timeouts.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle_config_timeouts.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement_config_fallback.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement_config_fallback.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry_config_failures.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry_config_failures.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/call.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/call.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/enforce_config_limits.py",
+      "dest_rel": "L3_orchestration/P4_safety/enforce_config_limits.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/llm_overrides.yaml",
+      "dest_rel": "L3_orchestration/P4_safety/llm_overrides.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/output_policies.yaml",
+      "dest_rel": "L3_orchestration/P4_safety/output_policies.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/track_config_usage.py",
+      "dest_rel": "L3_orchestration/P4_safety/track_config_usage.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/update_config_budget.py",
+      "dest_rel": "L3_orchestration/P4_safety/update_config_budget.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/agent_boundary.yaml",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/agent_boundary.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/cost_profiles.yaml",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/cost_profiles.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/routing_overrides.yaml",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/routing_overrides.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/event_schema.yaml",
+      "dest_rel": "L4_memory/event_schema.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/schema_loader.py",
+      "dest_rel": "L4_memory/P1_retrieve/schema_loader.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/fetch_config_history.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/fetch_config_history.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/query_config_store.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/query_config_store.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/retrieve_config_context.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/retrieve_config_context.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/safety_policies.yaml",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/safety_policies.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/find.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/find.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/match.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/match.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/match_config_context.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/match_config_context.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/retrieve_config_similarity.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/retrieve_config_similarity.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/search.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/search.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/search_config_vectors.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/search_config_vectors.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/understand/fetch.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/understand/fetch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/understand/query.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/understand/query.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/understand/retrieve.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/understand/retrieve.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/enforce_config_budget.py",
+      "dest_rel": "L4_memory/P4_safety/enforce_config_budget.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/track_config_cost.py",
+      "dest_rel": "L4_memory/P4_safety/track_config_cost.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/update_config_usage.py",
+      "dest_rel": "L4_memory/P4_safety/update_config_usage.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L4_memory/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L4_memory/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L4_memory/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/apply_config_safety.py",
+      "dest_rel": "L5_safety/apply_config_safety.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/assess_config_risk.py",
+      "dest_rel": "L5_safety/assess_config_risk.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/browser.yaml",
+      "dest_rel": "L5_safety/browser.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/check_config_compliance.py",
+      "dest_rel": "L5_safety/check_config_compliance.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/check_config_policy.py",
+      "dest_rel": "L5_safety/check_config_policy.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/compute_config_score.py",
+      "dest_rel": "L5_safety/compute_config_score.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/cost_routing.yaml",
+      "dest_rel": "L5_safety/cost_routing.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/enforce_config_boundaries.py",
+      "dest_rel": "L5_safety/enforce_config_boundaries.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/enforce_config_contracts.py",
+      "dest_rel": "L5_safety/enforce_config_contracts.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/enforce_config_filters.py",
+      "dest_rel": "L5_safety/enforce_config_filters.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/evaluate_config_compliance.py",
+      "dest_rel": "L5_safety/evaluate_config_compliance.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/inference_defaults.yaml",
+      "dest_rel": "L5_safety/inference_defaults.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/template_defaults.yaml",
+      "dest_rel": "L5_safety/template_defaults.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/validate_config_constraints.py",
+      "dest_rel": "L5_safety/validate_config_constraints.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/validate_config_ethics.py",
+      "dest_rel": "L5_safety/validate_config_ethics.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/validate_config_schema.py",
+      "dest_rel": "L5_safety/validate_config_schema.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/safety.yaml",
+      "dest_rel": "L5_safety/P4_safety/safety.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/personalization_routing.yaml",
+      "dest_rel": "L5_safety/P4_safety/check_rules/personalization_routing.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/semantic/assess.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/semantic/assess.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/semantic/compute.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/semantic/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/semantic/evaluate.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/semantic/evaluate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/cost_overrides.yaml",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/cost_overrides.yaml",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/update/track.py",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/update/track.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/update/update.py",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/update/update.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    }
+  ],
+  "legacy_folders": [],
+  "borderline_folders": [],
+  "used_destinations": {
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\load.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\load.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\utility\\build.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\utility\\build.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\use\\process.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P3_aggregate\\use_tools\\use\\process.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\05_config\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\diagnose_config_issues.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\diagnose_config_issues.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\inspect_config_quality.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\inspect_config_quality.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\log_config_metrics.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\log_config_metrics.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\llm_governance.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\llm_governance.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\outreach_writer.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\outreach_writer.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\outreach_message.schema.json": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\outreach_message.schema.json",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\retry_defaults.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\retry_defaults.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\settings.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\settings.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\version_map.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\version_map.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\execute_config_commands.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\execute_config_commands.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\handle_config_timeouts.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\handle_config_timeouts.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\implement_config_fallback.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\implement_config_fallback.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\invoke_config_actions.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\invoke_config_actions.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\perform_config_operations.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\perform_config_operations.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\retry_config_failures.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\retry_config_failures.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\use\\perform.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\use\\perform.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\cost_tracking.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\cost_tracking.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\planner_prompts.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\planner_prompts.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\api_settings.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\api_settings.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\apply_config_safety.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\apply_config_safety.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\apply_config_weights.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\apply_config_weights.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\assess_config_confidence.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\assess_config_confidence.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\calculate_config_similarity.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\calculate_config_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compliance.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compliance.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compute_config_confidence.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compute_config_confidence.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compute_config_embeddings.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compute_config_embeddings.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compute_config_validation.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\compute_config_validation.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\data_retention.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\data_retention.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\embeddings_defaults.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\embeddings_defaults.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\enforce_config_filters.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\enforce_config_filters.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\generator_prompts.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\generator_prompts.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\normalize_config_scores.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\normalize_config_scores.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\normalize_config_vectors.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\normalize_config_vectors.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\outreach_strategy.schema.json": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\outreach_strategy.schema.json",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\pii.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\pii.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\prompt_registry.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\prompt_registry.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\safety_overrides.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\safety_overrides.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\safety_routing.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\safety_routing.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\validate_config_ethics.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\validate_config_ethics.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\validate_config_quality.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\validate_config_quality.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\policy_loader.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\policy_loader.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\registry_loader.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\registry_loader.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\fallback_policies.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\fallback_policies.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\linkedin_policies.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\linkedin_policies.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\load_config_planning.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\load_config_planning.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\model_profiles.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\model_profiles.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\prepare_config_payload.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\prepare_config_payload.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\redis_settings.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\redis_settings.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\resume_message.schema.json": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\resume_message.schema.json",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\search.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\search.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\telemetry_overrides.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\telemetry_overrides.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\yaml_loader.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\yaml_loader.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\adjust_config_weights.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\adjust_config_weights.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\apply_config_algorithm.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\apply_config_algorithm.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\build_config_filters.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\build_config_filters.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\build_config_orchestration.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\build_config_orchestration.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\cache_settings.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\cache_settings.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\cadence_defaults.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\cadence_defaults.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\codeexec.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\codeexec.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\coordinate_config_settings.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\coordinate_config_settings.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\extract_layer_parameters.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\extract_layer_parameters.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\format_config_context.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\format_config_context.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\format_registry_context.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\format_registry_context.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\manage_config_parameters.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\manage_config_parameters.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\metric_counters.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\metric_counters.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\optimize_config_order.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\optimize_config_order.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\orchestrate_config_planning.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\orchestrate_config_planning.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_model_routing.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_model_routing.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_plan.schema.json": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_plan.schema.json",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_planner.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_planner.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_style.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\outreach_style.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\parse_registry_settings.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\parse_registry_settings.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\pii_policies.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\pii_policies.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\prepare_config_orchestration.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\prepare_config_orchestration.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\rank_config_components.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\rank_config_components.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\refine_config_ranking.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\refine_config_ranking.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\resume_plan.schema.json": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\resume_plan.schema.json",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\rollout_policies.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\rollout_policies.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\sort_config_results.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\sort_config_results.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\execute_config_commands.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\execute_config_commands.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\invoke_config_actions.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\invoke_config_actions.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\knowledge_profiles.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\knowledge_profiles.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\model_routing.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\model_routing.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\perform_config_operations.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\perform_config_operations.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\resume_strategy.schema.json": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\resume_strategy.schema.json",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\system_prompts.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\system_prompts.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle_config_timeouts.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle_config_timeouts.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement_config_fallback.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement_config_fallback.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry_config_failures.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry_config_failures.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\enforce_config_limits.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\enforce_config_limits.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\llm_overrides.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\llm_overrides.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\output_policies.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\output_policies.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\track_config_usage.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\track_config_usage.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\update_config_budget.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\update_config_budget.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\agent_boundary.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\agent_boundary.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\cost_profiles.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\cost_profiles.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\routing_overrides.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\routing_overrides.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\event_schema.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\event_schema.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\schema_loader.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\schema_loader.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\fetch_config_history.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\fetch_config_history.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\query_config_store.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\query_config_store.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\retrieve_config_context.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\retrieve_config_context.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\safety_policies.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\safety_policies.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\find.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\find.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\match_config_context.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\match_config_context.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\retrieve_config_similarity.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\retrieve_config_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\search_config_vectors.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\embedding\\search_config_vectors.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\enforce_config_budget.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\enforce_config_budget.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\track_config_cost.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\track_config_cost.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\update_config_usage.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\update_config_usage.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L4_memory\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\apply_config_safety.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\apply_config_safety.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\assess_config_risk.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\assess_config_risk.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\browser.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\browser.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\check_config_compliance.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\check_config_compliance.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\check_config_policy.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\check_config_policy.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\compute_config_score.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\compute_config_score.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\cost_routing.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\cost_routing.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\enforce_config_boundaries.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\enforce_config_boundaries.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\enforce_config_contracts.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\enforce_config_contracts.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\enforce_config_filters.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\enforce_config_filters.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\evaluate_config_compliance.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\evaluate_config_compliance.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\inference_defaults.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\inference_defaults.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\template_defaults.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\template_defaults.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\validate_config_constraints.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\validate_config_constraints.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\validate_config_ethics.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\validate_config_ethics.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\validate_config_schema.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\validate_config_schema.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\safety.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\safety.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\personalization_routing.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\personalization_routing.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\cost_overrides.yaml": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\cost_overrides.yaml",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\05_config\\L5_safety\\P4_safety\\manage_costs\\update\\update.py"
+  },
+  "summary": {
+    "high_conf_archives": 0,
+    "borderline_archives": 0,
+    "file_moves": 223,
+    "duplicate_routes": 0,
+    "protected_skips": 0
+  }
+}

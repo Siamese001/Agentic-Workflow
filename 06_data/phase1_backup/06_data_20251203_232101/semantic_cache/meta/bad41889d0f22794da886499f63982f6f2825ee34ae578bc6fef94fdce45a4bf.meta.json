@@ -1,0 +1,11 @@
+{
+  "hash": "bad41889d0f22794da886499f63982f6f2825ee34ae578bc6fef94fdce45a4bf",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "v9.0",
+      "relative": "agent_swarm_v9_0.py"
+    }
+  ]
+}

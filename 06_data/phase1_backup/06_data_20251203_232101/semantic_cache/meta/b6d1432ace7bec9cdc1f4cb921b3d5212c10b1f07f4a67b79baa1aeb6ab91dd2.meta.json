@@ -1,0 +1,16 @@
+{
+  "hash": "b6d1432ace7bec9cdc1f4cb921b3d5212c10b1f07f4a67b79baa1aeb6ab91dd2",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "config.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "core_v10_7/config.py"
+    }
+  ]
+}

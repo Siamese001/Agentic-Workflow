@@ -1,0 +1,1889 @@
+{
+  "domain": "08_scripts",
+  "logical_root": "scripts",
+  "mappings": [
+    {
+      "src_rel": "budget-manager-layer/aggregate-phase-group/retrieval-ops/general-operations-ops/utility-functions-ops/logging_utils.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/logging_utils.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "budget-manager-layer/expand-phase-group/vectorization-ops/general-operations-ops/utility-functions-ops/validate_runtime_integrity.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P2_inspect/validate_runtime_integrity.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "budget-manager-layer/rank-phase-group/schema-validation-ops/general-operations-ops/utility-functions-ops/tree_export.ps1_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/tree_export.ps1_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "budget-manager-layer/refine-phase-group/diagnostics-ops/general-operations-ops/utility-functions-ops/golden_trace_auditor.py_LEVEL_3",
+      "dest_rel": "L2_execution/P3_aggregate/golden_trace_auditor.py_LEVEL_3",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: refine/adjust/optimize; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "budget-manager-layer/validate-phase-group/dag-operations-ops/general-operations-ops/utility-functions-ops/ast_purity_scanner.py_LEVEL_3",
+      "dest_rel": "L2_execution/P2_inspect/ast_purity_scanner.py_LEVEL_3",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/act-phase/use-scripts-tools/general/use-a-tool/execute_scripts_commands.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/execute_scripts_commands.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/act-phase/use-scripts-tools/general/use-a-tool/invoke_scripts_actions.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/invoke_scripts_actions.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/act-phase/use-scripts-tools/general/use-a-tool/perform_scripts_operations.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/perform_scripts_operations.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/act-phase/use-scripts-tools/routing/retry-task/handle_scripts_timeouts.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/handle_scripts_timeouts.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: routing/route",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/act-phase/use-scripts-tools/routing/retry-task/implement_scripts_fallback.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/implement_scripts_fallback.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: routing/route",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/act-phase/use-scripts-tools/routing/retry-task/retry_scripts_failures.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/retry_scripts_failures.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: routing/route",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/inspect-phase/find-scripts-problems/general/update-memory/diagnose_scripts_issues.py",
+      "dest_rel": "L2_execution/diagnose_scripts_issues.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/inspect-phase/find-scripts-problems/general/update-memory/inspect_scripts_quality.py",
+      "dest_rel": "L2_execution/inspect_scripts_quality.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "exec-layer/inspect-phase/find-scripts-problems/general/update-memory/log_scripts_metrics.py",
+      "dest_rel": "L2_execution/log_scripts_metrics.py",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "executor-microagent-layer/act-phase-group/tool-adapter-ops/general-operations-ops/utility-functions-ops/ingest_job_descriptions.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/ingest_job_descriptions.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "executor-microagent-layer/aggregate-phase-group/state-management-ops/general-operations-ops/utility-functions-ops/run_tests.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/run_tests.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: update_state/state; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "executor-microagent-layer/inspect-phase-group/constraint-check-ops/general-operations-ops/utility-functions-ops/enforce_data_structure.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/enforce_data_structure.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "executor-microagent-layer/refine-phase-group/diagnostics-ops/general-operations-ops/utility-functions-ops/metrics.json_LEVEL_3",
+      "dest_rel": "L2_execution/P3_aggregate/metrics.json_LEVEL_3",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: refine/adjust/optimize; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "executor-microagent-layer/retry-phase-group/logging-metrics-ops/general-operations-ops/utility-functions-ops/test_matrix_validator.py_LEVEL_3",
+      "dest_rel": "L2_execution/P3_aggregate/test_matrix_validator.py_LEVEL_3",
+      "confidence": 0.95,
+      "reason": "tokens: exec; fallback phase P3_aggregate; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "executor-microagent-layer/validate-phase-group/dag-operations-ops/general-operations-ops/utility-functions-ops/check_for_large_files.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/check_for_large_files.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: exec; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
+      "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
+      "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/validate.py",
+      "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/search.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/search.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/extract.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/extract.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/fetch.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/fetch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/load.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/load.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/parse.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/parse.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/query.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/query.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/utility/build.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/build.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/utility/format.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/get_info/utility/prepare.py",
+      "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/policy/check.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/check.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/policy/enforce.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/policy/validate.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/assess.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/assess.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/compute.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/validate.py",
+      "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/compute.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/apply.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/compute.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
+      "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
+      "dest_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/find_problems/update/inspect.py",
+      "dest_rel": "L1_cognition/P2_inspect/find_problems/update/inspect.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
+      "dest_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/update/aggregate.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/update/aggregate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/update/consolidate.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/update/consolidate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/update/merge.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/update/merge.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/utility/format.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/utility/prepare.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/update_state/utility/serialize.py",
+      "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/serialize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/apply.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/handle.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/handle.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/implement.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/implement.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/use/execute.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/execute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/use_tools/use/process.py",
+      "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/process.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L1_cognition/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L1_cognition/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/manage_costs/update/enforce.py",
+      "dest_rel": "L1_cognition/P4_safety/manage_costs/update/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/manage_costs/update/track.py",
+      "dest_rel": "L1_cognition/P4_safety/manage_costs/update/track.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/manage_costs/update/update.py",
+      "dest_rel": "L1_cognition/P4_safety/manage_costs/update/update.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/policy/check.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/policy/check.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/policy/enforce.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P2_inspect/check_structure/policy/validate.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/use/execute.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/use/execute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/use/perform.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/use/perform.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/utility/format.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/utility/prepare.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/use_tools/utility/serialize.py",
+      "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/serialize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L2_execution/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L2_execution/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L2_execution/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/manage.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/manage.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/call.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/call.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/find.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/find.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/match.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/match.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/embedding/search.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/search.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/understand/fetch.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/understand/fetch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/understand/query.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/understand/query.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/get_info/understand/retrieve.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/understand/retrieve.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L4_memory/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L4_memory/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L4_memory/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/policy/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/semantic/assess.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/semantic/assess.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/semantic/compute.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/semantic/compute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/check_rules/semantic/evaluate.py",
+      "dest_rel": "L5_safety/P4_safety/check_rules/semantic/evaluate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/update/track.py",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/update/track.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/manage_costs/update/update.py",
+      "dest_rel": "L5_safety/P4_safety/manage_costs/update/update.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "mem-layer/retrieve-phase/get-scripts-info/embedding/compare-meaning/match_scripts_context.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/match_scripts_context.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: embedding/similarity/compare",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "mem-layer/retrieve-phase/get-scripts-info/embedding/compare-meaning/retrieve_scripts_similarity.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/retrieve_scripts_similarity.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: embedding/similarity/compare",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "mem-layer/retrieve-phase/get-scripts-info/embedding/compare-meaning/search_scripts_vectors.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/search_scripts_vectors.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: embedding/similarity/compare",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "mem-layer/retrieve-phase/get-scripts-info/general/understand-request/fetch_scripts_history.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/fetch_scripts_history.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "mem-layer/retrieve-phase/get-scripts-info/general/understand-request/query_scripts_store.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/query_scripts_store.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "mem-layer/retrieve-phase/get-scripts-info/general/understand-request/retrieve_scripts_context.py",
+      "dest_rel": "L4_memory/P1_retrieve/get_info/retrieve_scripts_context.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "observer-microagent-layer/act-phase-group/general-operations-ops/utility-functions-ops/helper-methods-ops/io_helpers.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/io_helpers.py_LEVEL_3_placeholder",
+      "confidence": 0.7,
+      "reason": "default layer for domain scripts; fallback phase P3_aggregate; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "observer-microagent-layer/aggregate-phase-group/retrieval-ops/general-operations-ops/utility-functions-ops/normalize_permissions.ps1_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/normalize_permissions.ps1_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "observer-microagent-layer/inspect-phase-group/cost-budgeting-ops/general-operations-ops/utility-functions-ops/validate_root_folders.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P2_inspect/validate_root_folders.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "observer-microagent-layer/rank-phase-group/schema-validation-ops/general-operations-ops/utility-functions-ops/run_lint.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P3_aggregate/run_lint.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "observer-microagent-layer/retry-phase-group/backoff-policy-ops/general-operations-ops/utility-functions-ops/ingest_resume_inputs.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/P4_safety/check_rules/ingest_resume_inputs.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: policy/check; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "observer-microagent-layer/validate-phase-group/state-management-ops/general-operations-ops/utility-functions-ops/migrate_scripts.py_LEVEL_2",
+      "dest_rel": "L4_memory/migrate_scripts.py_LEVEL_2",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: inspect/check/validate/verify/convert; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/act-phase/use-scripts-tools/general/use-a-tool/execute_scripts_commands.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/execute_scripts_commands.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/act-phase/use-scripts-tools/general/use-a-tool/invoke_scripts_actions.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/invoke_scripts_actions.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/act-phase/use-scripts-tools/general/use-a-tool/perform_scripts_operations.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/perform_scripts_operations.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/act-phase/use-scripts-tools/routing/retry-task/handle_scripts_timeouts.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle_scripts_timeouts.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: routing/route",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/act-phase/use-scripts-tools/routing/retry-task/implement_scripts_fallback.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement_scripts_fallback.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: routing/route",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/act-phase/use-scripts-tools/routing/retry-task/retry_scripts_failures.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry_scripts_failures.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: tool/route/routing; tokens: routing/route",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/plan-phase/get-scripts-info/general/understand-request/coordinate_scripts_operations.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/coordinate_scripts_operations.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/plan-phase/get-scripts-info/general/understand-request/manage_scripts_parameters.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/manage_scripts_parameters.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/plan-phase/get-scripts-info/general/understand-request/orchestrate_scripts_planning.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/orchestrate_scripts_planning.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/plan-phase/get-scripts-info/utility/prepare-information/build_scripts_orchestration.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/build_scripts_orchestration.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: utility",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/plan-phase/get-scripts-info/utility/prepare-information/format_scripts_context.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/format_scripts_context.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: utility",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/plan-phase/get-scripts-info/utility/prepare-information/prepare_scripts_orchestration.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/prepare_scripts_orchestration.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: utility",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/safety-phase/check-scripts-rules/policy/check-safety/apply_scripts_safety.py",
+      "dest_rel": "L3_orchestration/apply_scripts_safety.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/safety-phase/check-scripts-rules/policy/check-safety/enforce_scripts_filters.py",
+      "dest_rel": "L3_orchestration/enforce_scripts_filters.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/safety-phase/check-scripts-rules/policy/check-safety/validate_scripts_ethics.py",
+      "dest_rel": "L3_orchestration/validate_scripts_ethics.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/safety-phase/manage-scripts-costs/general/update-memory/enforce_scripts_limits.py",
+      "dest_rel": "L3_orchestration/P4_safety/enforce_scripts_limits.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: cost/budget/spend; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/safety-phase/manage-scripts-costs/general/update-memory/track_scripts_usage.py",
+      "dest_rel": "L3_orchestration/P4_safety/track_scripts_usage.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: cost/budget/spend; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "orc-layer/safety-phase/manage-scripts-costs/general/update-memory/update_scripts_budget.py",
+      "dest_rel": "L3_orchestration/P4_safety/update_scripts_budget.py",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: cost/budget/spend; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "pipeline_logs/.gitkeep",
+      "dest_rel": "L2_execution/P3_aggregate/.gitkeep",
+      "confidence": 0.6,
+      "reason": "default layer for domain scripts; fallback phase P3_aggregate",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/expand-phase/convert-scripts-content/embedding/compare-meaning/calculate_scripts_similarity.py",
+      "dest_rel": "L2_execution/P2_inspect/calculate_scripts_similarity.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: convert",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/expand-phase/convert-scripts-content/embedding/compare-meaning/compute_scripts_embeddings.py",
+      "dest_rel": "L2_execution/P2_inspect/compute_scripts_embeddings.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: convert",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/expand-phase/convert-scripts-content/embedding/compare-meaning/normalize_scripts_vectors.py",
+      "dest_rel": "L2_execution/P2_inspect/normalize_scripts_vectors.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: convert",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/expand-phase/convert-scripts-content/semantic/adjust-scores/apply_scripts_weights.py",
+      "dest_rel": "L2_execution/P2_inspect/apply_scripts_weights.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: semantic; tokens: convert",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/expand-phase/convert-scripts-content/semantic/adjust-scores/compute_scripts_confidence.py",
+      "dest_rel": "L2_execution/P2_inspect/compute_scripts_confidence.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: semantic; tokens: convert",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/expand-phase/convert-scripts-content/semantic/adjust-scores/normalize_scripts_scores.py",
+      "dest_rel": "L2_execution/P2_inspect/normalize_scripts_scores.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: semantic; tokens: convert",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/check-scripts-rules/policy/check-safety/check_scripts_policy.py",
+      "dest_rel": "L5_safety/check_scripts_policy.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/check-scripts-rules/policy/check-safety/enforce_scripts_boundaries.py",
+      "dest_rel": "L5_safety/enforce_scripts_boundaries.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/check-scripts-rules/policy/check-safety/validate_scripts_constraints.py",
+      "dest_rel": "L5_safety/validate_scripts_constraints.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/get-scripts-info/general/understand-request/extract_scripts_parameters.py",
+      "dest_rel": "L2_execution/P3_aggregate/extract_scripts_parameters.py",
+      "confidence": 0.6,
+      "reason": "default layer for domain scripts; fallback phase P3_aggregate; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/get-scripts-info/general/understand-request/load_scripts_planning.py",
+      "dest_rel": "L2_execution/load_scripts_planning.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/get-scripts-info/general/understand-request/parse_scripts_settings.py",
+      "dest_rel": "L2_execution/P3_aggregate/parse_scripts_settings.py",
+      "confidence": 0.6,
+      "reason": "default layer for domain scripts; fallback phase P3_aggregate; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/get-scripts-info/utility/prepare-information/build_scripts_filters.py",
+      "dest_rel": "L2_execution/P3_aggregate/build_scripts_filters.py",
+      "confidence": 0.7,
+      "reason": "default layer for domain scripts; fallback phase P3_aggregate; tokens: utility",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/get-scripts-info/utility/prepare-information/format_scripts_context.py",
+      "dest_rel": "L2_execution/P3_aggregate/format_scripts_context.py",
+      "confidence": 0.7,
+      "reason": "default layer for domain scripts; fallback phase P3_aggregate; tokens: utility",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/plan-phase/get-scripts-info/utility/prepare-information/prepare_scripts_payload.py",
+      "dest_rel": "L2_execution/prepare_scripts_payload.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/refine-phase/pick-best-result/general/understand-request/apply_scripts_algorithm.py",
+      "dest_rel": "L2_execution/P3_aggregate/apply_scripts_algorithm.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: refine/adjust/optimize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/refine-phase/pick-best-result/general/understand-request/rank_scripts_components.py",
+      "dest_rel": "L2_execution/P3_aggregate/rank_scripts_components.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: refine/adjust/optimize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/refine-phase/pick-best-result/general/understand-request/sort_scripts_results.py",
+      "dest_rel": "L2_execution/P3_aggregate/sort_scripts_results.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: refine/adjust/optimize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/adjust_scripts_weights.py",
+      "dest_rel": "L2_execution/P3_aggregate/adjust_scripts_weights.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: refine/adjust/optimize",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/optimize_scripts_order.py",
+      "dest_rel": "L2_execution/P3_aggregate/optimize_scripts_order.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: refine/adjust/optimize",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/refine_scripts_ranking.py",
+      "dest_rel": "L2_execution/P3_aggregate/refine_scripts_ranking.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: refine/adjust/optimize",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/validate-phase/check-scripts-structure/policy/check-safety/check_scripts_compliance.py",
+      "dest_rel": "L5_safety/check_scripts_compliance.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/validate-phase/check-scripts-structure/policy/check-safety/enforce_scripts_contracts.py",
+      "dest_rel": "L5_safety/enforce_scripts_contracts.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/validate-phase/check-scripts-structure/policy/check-safety/validate_scripts_schema.py",
+      "dest_rel": "L5_safety/validate_scripts_schema.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/validate-phase/check-scripts-structure/semantic/adjust-scores/assess_scripts_confidence.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/assess_scripts_confidence.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: semantic",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/validate-phase/check-scripts-structure/semantic/adjust-scores/compute_scripts_validation.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/compute_scripts_validation.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: semantic",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "plan-layer/validate-phase/check-scripts-structure/semantic/adjust-scores/validate_scripts_quality.py",
+      "dest_rel": "L2_execution/P2_inspect/check_structure/validate_scripts_quality.py",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: semantic",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/act-phase-group/schema-validation-ops/general-operations-ops/utility-functions-ops/semantic_validation_engine.py_LEVEL_3",
+      "dest_rel": "L3_orchestration/P3_aggregate/semantic_validation_engine.py_LEVEL_3",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/expand-phase-group/backoff-policy-ops/general-operations-ops/utility-functions-ops/.gitkeep                            # LEVEL 3",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/.gitkeep                            # LEVEL 3",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: policy/check; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/expand-phase-group/backoff-policy-ops/general-operations-ops/utility-functions-ops/.gitkeep_LEVEL_3",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/.gitkeep_LEVEL_3",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: policy/check; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/expand-phase-group/backoff-policy-ops/general-operations-ops/utility-functions-ops/.gitkeep______________________________LEVEL_3",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/.gitkeep______________________________LEVEL_3",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: policy/check; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/inspect-phase-group/diagnostics-ops/general-operations-ops/utility-functions-ops/data_meta_artifacts.json",
+      "dest_rel": "L3_orchestration/data_meta_artifacts.json",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/refine-phase-group/cost-budgeting-ops/general-operations-ops/utility-functions-ops/diff_folder_structure.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/P3_aggregate/diff_folder_structure.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: refine/adjust/optimize; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/retry-phase-group/vectorization-ops/general-operations-ops/utility-functions-ops/enforce_config_structure.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/P3_aggregate/enforce_config_structure.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; fallback phase P3_aggregate; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "planner-microagent-layer/validate-phase-group/retrieval-ops/general-operations-ops/utility-functions-ops/validate_test_structure.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/validate_test_structure.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "retriever-microagent-layer/act-phase-group/schema-validation-ops/general-operations-ops/utility-functions-ops/scripts-tree.txt_LEVEL_2",
+      "dest_rel": "L2_execution/scripts-tree.txt_LEVEL_2",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "retriever-microagent-layer/aggregate-phase-group/dag-operations-ops/general-operations-ops/utility-functions-ops/validate_config_schemas.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/validate_config_schemas.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "retriever-microagent-layer/expand-phase-group/logging-metrics-ops/general-operations-ops/utility-functions-ops/check_schemas.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/check_schemas.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "retriever-microagent-layer/inspect-phase-group/diagnostics-ops/general-operations-ops/utility-functions-ops/ingest_taxonomy_data.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/ingest_taxonomy_data.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "retriever-microagent-layer/rank-phase-group/tool-adapter-ops/general-operations-ops/utility-functions-ops/remove_pycache.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/remove_pycache.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "retriever-microagent-layer/retry-phase-group/vectorization-ops/general-operations-ops/utility-functions-ops/file_ops.py_LEVEL_3_placeholder",
+      "dest_rel": "L2_execution/file_ops.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "default layer for domain scripts; tokens: retrieve/get_info/search/find/load; tokens: get_info/retrieve/search/find; tokens: utility/prepare/format/serialize; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "router-microagent-layer/aggregate-phase-group/state-management-ops/general-operations-ops/utility-functions-ops/sanitize_inputs.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/P3_aggregate/sanitize_inputs.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: update_state/state; tokens: tool/route/routing; tokens: utility; tokens: routing/route; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "router-microagent-layer/expand-phase-group/backoff-policy-ops/general-operations-ops/utility-functions-ops/contract_registry_validator.py_LEVEL_3",
+      "dest_rel": "L3_orchestration/P4_safety/check_rules/contract_registry_validator.py_LEVEL_3",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: policy/check; tokens: routing/route; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "router-microagent-layer/inspect-phase-group/constraint-check-ops/general-operations-ops/utility-functions-ops/hashing.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/hashing.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: routing/route; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "router-microagent-layer/rank-phase-group/general-operations-ops/utility-functions-ops/helper-methods-ops/validate_observability_structure.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/validate_observability_structure.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: routing/route; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "router-microagent-layer/refine-phase-group/cost-budgeting-ops/general-operations-ops/utility-functions-ops/verify_golden_sets.py_LEVEL_3_placeholder",
+      "dest_rel": "L3_orchestration/verify_golden_sets.py_LEVEL_3_placeholder",
+      "confidence": 0.9,
+      "reason": "tokens: orc/orchestr/router/planner; tokens: inspect/check/validate/verify/convert; tokens: routing/route; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/check-scripts-rules/policy/check-safety/apply_scripts_safety.py",
+      "dest_rel": "L5_safety/apply_scripts_safety.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/check-scripts-rules/policy/check-safety/enforce_scripts_filters.py",
+      "dest_rel": "L5_safety/enforce_scripts_filters.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/check-scripts-rules/policy/check-safety/validate_scripts_ethics.py",
+      "dest_rel": "L5_safety/validate_scripts_ethics.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/check-scripts-rules/semantic/adjust-scores/assess_scripts_risk.py",
+      "dest_rel": "L5_safety/assess_scripts_risk.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: semantic",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/check-scripts-rules/semantic/adjust-scores/compute_scripts_score.py",
+      "dest_rel": "L5_safety/compute_scripts_score.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: semantic",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/check-scripts-rules/semantic/adjust-scores/evaluate_scripts_compliance.py",
+      "dest_rel": "L5_safety/evaluate_scripts_compliance.py",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: semantic",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/manage-scripts-costs/general/update-memory/enforce_scripts_budget.py",
+      "dest_rel": "L4_memory/P4_safety/enforce_scripts_budget.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: cost/budget/spend; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/manage-scripts-costs/general/update-memory/track_scripts_cost.py",
+      "dest_rel": "L4_memory/P4_safety/track_scripts_cost.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: cost/budget/spend; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safe-layer/safety-phase/manage-scripts-costs/general/update-memory/update_scripts_usage.py",
+      "dest_rel": "L4_memory/P4_safety/update_scripts_usage.py",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: cost/budget/spend; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safety-guard-layer/act-phase-group/general-operations-ops/utility-functions-ops/helper-methods-ops/cleanup_observability.py_LEVEL_3_placeholder",
+      "dest_rel": "L5_safety/P4_safety/cleanup_observability.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safety-guard-layer/expand-phase-group/logging-metrics-ops/general-operations-ops/utility-functions-ops/show_repo_summary.py_LEVEL_3_placeholder",
+      "dest_rel": "L5_safety/P4_safety/show_repo_summary.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safety-guard-layer/rank-phase-group/tool-adapter-ops/general-operations-ops/utility-functions-ops/pipeline_test_001_results.json_LEVEL_3",
+      "dest_rel": "L5_safety/pipeline_test_001_results.json_LEVEL_3",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: aggregate/pick_best/rank/score/refine/update_state; tokens: pick_best/best_result/rank/score; tokens: tool/route/routing; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safety-guard-layer/refine-phase-group/constraint-check-ops/general-operations-ops/utility-functions-ops/validate_prompt_governance.py_LEVEL_3_placeholder",
+      "dest_rel": "L5_safety/validate_prompt_governance.py_LEVEL_3_placeholder",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: inspect/check/validate/verify/convert; tokens: check/structure; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safety-guard-layer/retry-phase-group/backoff-policy-ops/general-operations-ops/utility-functions-ops/ci_enforcer.py_LEVEL_3",
+      "dest_rel": "L5_safety/P4_safety/check_rules/ci_enforcer.py_LEVEL_3",
+      "confidence": 0.95,
+      "reason": "tokens: safe/safety/guard; tokens: safety/safe/policy/guard/risk/budget/cost; tokens: policy/check; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "safety-guard-layer/validate-phase-group/state-management-ops/general-operations-ops/utility-functions-ops/manifest_validator.py_LEVEL_3",
+      "dest_rel": "L4_memory/manifest_validator.py_LEVEL_3",
+      "confidence": 0.9,
+      "reason": "tokens: mem/state/cache; tokens: inspect/check/validate/verify/convert; tokens: utility; tokens: general",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    }
+  ],
+  "legacy_folders": [],
+  "borderline_folders": [],
+  "used_destinations": {
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\logging_utils.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\budget-manager-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\logging_utils.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\validate_runtime_integrity.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\budget-manager-layer\\expand-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\validate_runtime_integrity.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\tree_export.ps1_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\budget-manager-layer\\rank-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\tree_export.ps1_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\golden_trace_auditor.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\budget-manager-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\golden_trace_auditor.py_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\ast_purity_scanner.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\budget-manager-layer\\validate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\ast_purity_scanner.py_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\execute_scripts_commands.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\execute_scripts_commands.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\invoke_scripts_actions.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\invoke_scripts_actions.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\perform_scripts_operations.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\perform_scripts_operations.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\handle_scripts_timeouts.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\act-phase\\use-scripts-tools\\routing\\retry-task\\handle_scripts_timeouts.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\implement_scripts_fallback.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\act-phase\\use-scripts-tools\\routing\\retry-task\\implement_scripts_fallback.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\retry_scripts_failures.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\act-phase\\use-scripts-tools\\routing\\retry-task\\retry_scripts_failures.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\diagnose_scripts_issues.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\inspect-phase\\find-scripts-problems\\general\\update-memory\\diagnose_scripts_issues.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\inspect_scripts_quality.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\inspect-phase\\find-scripts-problems\\general\\update-memory\\inspect_scripts_quality.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\log_scripts_metrics.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\inspect-phase\\find-scripts-problems\\general\\update-memory\\log_scripts_metrics.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\ingest_job_descriptions.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\executor-microagent-layer\\act-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\ingest_job_descriptions.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\run_tests.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\executor-microagent-layer\\aggregate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\run_tests.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\enforce_data_structure.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\executor-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\enforce_data_structure.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\metrics.json_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\executor-microagent-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\metrics.json_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\test_matrix_validator.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\executor-microagent-layer\\retry-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\test_matrix_validator.py_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\check_for_large_files.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\executor-microagent-layer\\validate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\check_for_large_files.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\load.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\load.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\utility\\build.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\utility\\build.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\use\\process.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P3_aggregate\\use_tools\\use\\process.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\use\\perform.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\use\\perform.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\find.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\find.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\manage_costs\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\manage_costs\\update\\update.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\match_scripts_context.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\embedding\\compare-meaning\\match_scripts_context.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\retrieve_scripts_similarity.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\embedding\\compare-meaning\\retrieve_scripts_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\embedding\\search_scripts_vectors.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\embedding\\compare-meaning\\search_scripts_vectors.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\fetch_scripts_history.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\general\\understand-request\\fetch_scripts_history.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\query_scripts_store.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\general\\understand-request\\query_scripts_store.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P1_retrieve\\get_info\\retrieve_scripts_context.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\general\\understand-request\\retrieve_scripts_context.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\io_helpers.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\observer-microagent-layer\\act-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\io_helpers.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\normalize_permissions.ps1_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\observer-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\normalize_permissions.ps1_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\validate_root_folders.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\observer-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\validate_root_folders.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\run_lint.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\observer-microagent-layer\\rank-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\run_lint.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P4_safety\\check_rules\\ingest_resume_inputs.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\observer-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\ingest_resume_inputs.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\migrate_scripts.py_LEVEL_2": "C:\\Git\\Agentic-Workflow\\08_scripts\\observer-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\migrate_scripts.py_LEVEL_2",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\execute_scripts_commands.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\execute_scripts_commands.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\invoke_scripts_actions.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\invoke_scripts_actions.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\perform_scripts_operations.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\general\\use-a-tool\\perform_scripts_operations.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle_scripts_timeouts.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\routing\\retry-task\\handle_scripts_timeouts.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement_scripts_fallback.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\routing\\retry-task\\implement_scripts_fallback.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry_scripts_failures.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\act-phase\\use-scripts-tools\\routing\\retry-task\\retry_scripts_failures.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\coordinate_scripts_operations.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\coordinate_scripts_operations.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\manage_scripts_parameters.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\manage_scripts_parameters.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\orchestrate_scripts_planning.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\orchestrate_scripts_planning.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\build_scripts_orchestration.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\build_scripts_orchestration.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\format_scripts_context.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\format_scripts_context.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\prepare_scripts_orchestration.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\prepare_scripts_orchestration.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\apply_scripts_safety.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\apply_scripts_safety.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\enforce_scripts_filters.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\enforce_scripts_filters.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\validate_scripts_ethics.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\validate_scripts_ethics.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\enforce_scripts_limits.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\enforce_scripts_limits.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\track_scripts_usage.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\track_scripts_usage.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\update_scripts_budget.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\update_scripts_budget.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\.gitkeep": "C:\\Git\\Agentic-Workflow\\08_scripts\\pipeline_logs\\.gitkeep",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\calculate_scripts_similarity.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\embedding\\compare-meaning\\calculate_scripts_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\compute_scripts_embeddings.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\embedding\\compare-meaning\\compute_scripts_embeddings.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\normalize_scripts_vectors.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\embedding\\compare-meaning\\normalize_scripts_vectors.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\apply_scripts_weights.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\semantic\\adjust-scores\\apply_scripts_weights.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\compute_scripts_confidence.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\semantic\\adjust-scores\\compute_scripts_confidence.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\normalize_scripts_scores.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\semantic\\adjust-scores\\normalize_scripts_scores.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\check_scripts_policy.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\check-scripts-rules\\policy\\check-safety\\check_scripts_policy.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\enforce_scripts_boundaries.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\check-scripts-rules\\policy\\check-safety\\enforce_scripts_boundaries.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\validate_scripts_constraints.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\check-scripts-rules\\policy\\check-safety\\validate_scripts_constraints.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\extract_scripts_parameters.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\extract_scripts_parameters.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\load_scripts_planning.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\load_scripts_planning.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\parse_scripts_settings.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\parse_scripts_settings.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\build_scripts_filters.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\build_scripts_filters.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\format_scripts_context.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\format_scripts_context.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\prepare_scripts_payload.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\prepare_scripts_payload.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\apply_scripts_algorithm.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\apply_scripts_algorithm.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\rank_scripts_components.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\rank_scripts_components.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\sort_scripts_results.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\sort_scripts_results.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\adjust_scripts_weights.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\adjust_scripts_weights.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\optimize_scripts_order.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\optimize_scripts_order.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P3_aggregate\\refine_scripts_ranking.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\refine_scripts_ranking.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\check_scripts_compliance.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\validate-phase\\check-scripts-structure\\policy\\check-safety\\check_scripts_compliance.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\enforce_scripts_contracts.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\validate-phase\\check-scripts-structure\\policy\\check-safety\\enforce_scripts_contracts.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\validate_scripts_schema.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\validate-phase\\check-scripts-structure\\policy\\check-safety\\validate_scripts_schema.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\assess_scripts_confidence.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\validate-phase\\check-scripts-structure\\semantic\\adjust-scores\\assess_scripts_confidence.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\compute_scripts_validation.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\validate-phase\\check-scripts-structure\\semantic\\adjust-scores\\compute_scripts_validation.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\P2_inspect\\check_structure\\validate_scripts_quality.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\validate-phase\\check-scripts-structure\\semantic\\adjust-scores\\validate_scripts_quality.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\semantic_validation_engine.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\act-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\semantic_validation_engine.py_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\.gitkeep                            # LEVEL 3": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\.gitkeep                            # LEVEL 3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\.gitkeep_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\.gitkeep_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\.gitkeep______________________________LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\.gitkeep______________________________LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\data_meta_artifacts.json": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\data_meta_artifacts.json",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\diff_folder_structure.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\diff_folder_structure.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\enforce_config_structure.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\enforce_config_structure.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\validate_test_structure.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\validate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\validate_test_structure.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\scripts-tree.txt_LEVEL_2": "C:\\Git\\Agentic-Workflow\\08_scripts\\retriever-microagent-layer\\act-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\scripts-tree.txt_LEVEL_2",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\validate_config_schemas.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\retriever-microagent-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\validate_config_schemas.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\check_schemas.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\retriever-microagent-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\check_schemas.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\ingest_taxonomy_data.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\retriever-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\ingest_taxonomy_data.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\remove_pycache.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\retriever-microagent-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\remove_pycache.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L2_execution\\file_ops.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\retriever-microagent-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\file_ops.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P3_aggregate\\sanitize_inputs.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\router-microagent-layer\\aggregate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\sanitize_inputs.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\P4_safety\\check_rules\\contract_registry_validator.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\router-microagent-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\contract_registry_validator.py_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\hashing.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\router-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\hashing.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\validate_observability_structure.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\router-microagent-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\validate_observability_structure.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L3_orchestration\\verify_golden_sets.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\router-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\verify_golden_sets.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\apply_scripts_safety.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\apply_scripts_safety.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\enforce_scripts_filters.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\enforce_scripts_filters.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\validate_scripts_ethics.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\validate_scripts_ethics.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\assess_scripts_risk.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\semantic\\adjust-scores\\assess_scripts_risk.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\compute_scripts_score.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\semantic\\adjust-scores\\compute_scripts_score.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\evaluate_scripts_compliance.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\semantic\\adjust-scores\\evaluate_scripts_compliance.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\enforce_scripts_budget.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\enforce_scripts_budget.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\track_scripts_cost.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\track_scripts_cost.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\P4_safety\\update_scripts_usage.py": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\update_scripts_usage.py",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\cleanup_observability.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\safety-guard-layer\\act-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\cleanup_observability.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\show_repo_summary.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\safety-guard-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\show_repo_summary.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\pipeline_test_001_results.json_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\safety-guard-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\pipeline_test_001_results.json_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\validate_prompt_governance.py_LEVEL_3_placeholder": "C:\\Git\\Agentic-Workflow\\08_scripts\\safety-guard-layer\\refine-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\validate_prompt_governance.py_LEVEL_3_placeholder",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L5_safety\\P4_safety\\check_rules\\ci_enforcer.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\safety-guard-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\ci_enforcer.py_LEVEL_3",
+    "C:\\Git\\Agentic-Workflow\\08_scripts\\L4_memory\\manifest_validator.py_LEVEL_3": "C:\\Git\\Agentic-Workflow\\08_scripts\\safety-guard-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\manifest_validator.py_LEVEL_3"
+  },
+  "summary": {
+    "high_conf_archives": 0,
+    "borderline_archives": 0,
+    "file_moves": 208,
+    "duplicate_routes": 0,
+    "protected_skips": 0
+  }
+}

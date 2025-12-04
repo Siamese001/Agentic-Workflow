@@ -1,0 +1,19 @@
+{
+  "hash": "857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e",
+  "canonical_root": "04_prompt_governance",
+  "engine": "RG",
+  "archive_name": "v8.0",
+  "relative": "Testing/V8_0_COMPLETE_UPGRADE_SUMMARY.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/V8_0_COMPLETE_UPGRADE_SUMMARY.md",
+  "global": {
+    "ast": "ast/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.ast",
+    "ast_meta": "ast/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.ast.meta.json",
+    "embedding": "embeddings/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.embedding",
+    "emb_meta": "embeddings/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.embedding.meta.json",
+    "diff": "diffs/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.diff.json",
+    "golden": "golden/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.golden.json",
+    "safety": "safety/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.safety.json",
+    "integrity": "integrity/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.integrity.json",
+    "meta": "meta/857c315978fa1b1ba111e77274645e4599c58d4ca410c5057f14e99557a0861e.meta.json"
+  }
+}

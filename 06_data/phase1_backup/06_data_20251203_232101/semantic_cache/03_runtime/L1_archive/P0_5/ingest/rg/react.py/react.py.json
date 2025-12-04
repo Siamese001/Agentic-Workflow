@@ -1,0 +1,19 @@
+{
+  "hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "infra/reasoning/react.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/react.py",
+  "global": {
+    "ast": "ast/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.ast",
+    "ast_meta": "ast/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.ast.meta.json",
+    "embedding": "embeddings/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.embedding",
+    "emb_meta": "embeddings/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.embedding.meta.json",
+    "diff": "diffs/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.diff.json",
+    "golden": "golden/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.golden.json",
+    "safety": "safety/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.safety.json",
+    "integrity": "integrity/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.integrity.json",
+    "meta": "meta/9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e.meta.json"
+  }
+}

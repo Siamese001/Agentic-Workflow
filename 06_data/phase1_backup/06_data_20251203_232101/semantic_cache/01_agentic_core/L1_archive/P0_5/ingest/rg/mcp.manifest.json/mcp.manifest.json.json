@@ -1,0 +1,19 @@
+{
+  "hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "mcp.manifest.json",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/mcp.manifest.json",
+  "global": {
+    "ast": "ast/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.ast",
+    "ast_meta": "ast/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.ast.meta.json",
+    "embedding": "embeddings/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.embedding",
+    "emb_meta": "embeddings/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.embedding.meta.json",
+    "diff": "diffs/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.diff.json",
+    "golden": "golden/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.golden.json",
+    "safety": "safety/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.safety.json",
+    "integrity": "integrity/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.integrity.json",
+    "meta": "meta/deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702.meta.json"
+  }
+}

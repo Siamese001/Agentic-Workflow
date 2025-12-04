@@ -1,0 +1,11 @@
+{
+  "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/integration/NEO4J_INTEGRATION_README.md"
+    }
+  ]
+}

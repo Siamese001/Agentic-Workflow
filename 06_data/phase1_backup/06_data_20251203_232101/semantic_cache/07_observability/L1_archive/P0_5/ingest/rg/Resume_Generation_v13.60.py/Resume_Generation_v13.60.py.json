@@ -1,0 +1,19 @@
+{
+  "hash": "adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Old Resume Gen Python",
+  "relative": "Resume_Generation_v13.60.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/Resume_Generation_v13.60.py",
+  "global": {
+    "ast": "ast/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.ast",
+    "ast_meta": "ast/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.ast.meta.json",
+    "embedding": "embeddings/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.embedding",
+    "emb_meta": "embeddings/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.embedding.meta.json",
+    "diff": "diffs/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.diff.json",
+    "golden": "golden/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.golden.json",
+    "safety": "safety/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.safety.json",
+    "integrity": "integrity/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.integrity.json",
+    "meta": "meta/adab50795f0a63caf53c0d76446ec43481f6f203d0193a771f4f446a472457db.meta.json"
+  }
+}
