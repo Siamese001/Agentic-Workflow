@@ -1,6 +1,131 @@
-# Add explicit header that this YAML requires a meta sidecar
+# =====================================================================
+# unified_structure_subatomic.yaml (SSoT v4.0)
+# =====================================================================
 meta_sidecar: unified_structure_subatomic_meta.yaml
 canonical_definition: "Canonical SSoT = MERGE(main_yaml, meta_yaml)"
+
+# ---------------------------------------------------------------------
+# GOVERNANCE LAYER (v4.0)
+# ---------------------------------------------------------------------
+structure_version: "4.0"
+description: "Agentic-Workflow SSoT with domain modes, structure types, and governance enforcement"
+binds_to: "unified_structure_subatomic_meta.yaml"
+canonical_role: "primary architectural map defining allowable filesystem paths"
+
+global:
+  max_depth: 7
+  enforce_dict_for_directories: true
+  enforce_null_for_files: true
+  no_duplicate_keys: true
+
+domains:
+  cognitive: ["agentic_core", "apps_lic", "apps_rg"]
+  operational_support: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared"]
+  test_taxonomy: ["tests"]
+
+naming_conventions:
+  filename_prefixes:
+    agentic_core: "shared_*"
+    apps_lic: "lic_*"
+    apps_rg: "rg_*"
+    shared_engine_ops: "shared_*"
+  forbidden_patterns:
+    - "L*"
+    - "P*"
+  engine_prefix_rules:
+    strict: true
+    allow_shared_ops: true
+
+engine_namespaces:
+  rg:
+    allowed_domains: ["apps_rg"]
+    prefix: "rg_"
+  lic:
+    allowed_domains: ["apps_lic"]
+    prefix: "lic_"
+  shared:
+    allowed_domains: ["agentic_core", "shared_engine_ops"]
+    prefix: "shared_"
+
+hierarchy:
+  shared_engine_ops:
+    mode: "library_support"
+    structure_type: "flat"
+    max_depth: 3
+    description: "Foundational library containing reusable cognitive, inspection, and operational logic"
+  agentic_core:
+    mode: "cognitive_engine"
+    structure_type: "cognitive"
+    max_depth: 7
+    allowed_layers: ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memory", "L5_safety"]
+    allowed_phases: ["P1_retrieve", "P2_inspect", "P3_aggregate", "P4_safety"]
+    forbidden: []
+  apps_lic:
+    mode: "cognitive_engine"
+    structure_type: "cognitive"
+    max_depth: 7
+    allowed_layers: ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memory", "L5_safety"]
+    allowed_phases: ["P1_retrieve", "P2_inspect", "P3_aggregate", "P4_safety"]
+    forbidden: []
+  apps_rg:
+    mode: "cognitive_engine"
+    structure_type: "cognitive"
+    max_depth: 7
+    allowed_layers: ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memory", "L5_safety"]
+    allowed_phases: ["P1_retrieve", "P2_inspect", "P3_aggregate", "P4_safety"]
+    forbidden: []
+  schemas:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  runtime:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  prompt_governance:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  config:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  data:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  observability:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  scripts:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  shared:
+    mode: "operational_support"
+    structure_type: "hierarchical"
+    max_depth: 4
+    forbidden: ["L*", "P*"]
+  tests:
+    mode: "test_taxonomy"
+    structure_type: "flat"
+    max_depth: 3
+    forbidden: ["L*", "P*"]
+    allowed_structure:
+      unit: ["agentic_core", "apps_lic", "apps_rg", "runtime", "data", "schemas", "prompt_governance", "config", "observability", "scripts"]
+      integration: ["core_plus_runtime", "lic_plus_data", "rg_plus_data", "full_pipeline"]
+      e2e: ["outreach_flows", "resume_flows", "admin_flows"]
+      golden: ["prompts", "semantics", "safety"]
+      perf: ["latency", "throughput", "cost"]
+      load: ["spike", "soak"]
 
 # =================================================================
 # SHARED ENGINE OPERATIONS (Library)
