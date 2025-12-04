@@ -1,8 +1,0 @@
-{
-  "rollback_id": "rollback_20251202_210505_613601",
-  "timestamp": "2025-12-02T21:05:09.987003",
-  "description": "test_rollback_functionality",
-  "operations_count": 1703,
-  "backup_location": "c:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210505_613601",
-  "can_rollback": true
-}
