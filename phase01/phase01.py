@@ -399,6 +399,8 @@ class LegacyFolderMatch:
     archived_to: Optional[str] = None
     requires_review: bool = False
     placeholder_added: bool = False
+    placeholder_filename: Optional[str] = None
+    placeholder_content: Optional[str] = None
 
 
 DEFAULT_LAYER_BY_DOMAIN: Dict[str, str] = {
@@ -1006,6 +1008,43 @@ DO NOT REMOVE during Phase 1."""
             legacy_folders = [m for m in legacy_matches if m.category == "high_confidence_match"]
             borderline_folders = [m for m in legacy_matches if m.category == "borderline_match"]
             
+            # Add placeholder metadata to legacy folders
+            for m in legacy_folders:
+                m.placeholder_filename = ".phase1_legacy_placeholder"
+                m.placeholder_content = "noncanonical"
+            
+            # Add placeholder metadata to borderline folders
+            for m in borderline_folders:
+                m.placeholder_filename = ".phase1_borderline_placeholder"
+                m.placeholder_content = "borderline"
+            
+            # Compute summary counts
+            high_conf_archives = len(legacy_folders)
+            borderline_archives = len(borderline_folders)
+            file_moves = len([m for m in mappings if not m.is_duplicate and m.dest_rel])
+            duplicate_routes = len([m for m in mappings if m.is_duplicate])
+            
+            # Count protected paths skipped during archival
+            protected_skips = 0
+            # This would be tracked during archive operations - for now using placeholder
+            # In a real implementation, this would be accumulated from archive operations
+            
+            summary = {
+                "high_conf_archives": high_conf_archives,
+                "borderline_archives": borderline_archives,
+                "file_moves": file_moves,
+                "duplicate_routes": duplicate_routes,
+                "protected_skips": protected_skips
+            }
+            
+            # Print summary
+            print(f"[SUMMARY] {folder}:")
+            print(f"  High-confidence archives: {high_conf_archives}")
+            print(f"  Borderline archives: {borderline_archives}")
+            print(f"  File moves: {file_moves}")
+            print(f"  Duplicate routes: {duplicate_routes}")
+            print(f"  Protected items skipped: {protected_skips}")
+            
             index_data = {
                 "domain": folder,
                 "logical_root": logical_name,
@@ -1013,6 +1052,7 @@ DO NOT REMOVE during Phase 1."""
                 "legacy_folders": [asdict(m) for m in legacy_folders],
                 "borderline_folders": [asdict(m) for m in borderline_folders],
                 "used_destinations": used_destinations,
+                "summary": summary,
             }
             index_file = PHASE1_INDEX_DIR / f"phase1_index_{folder}.json"
             index_file.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
