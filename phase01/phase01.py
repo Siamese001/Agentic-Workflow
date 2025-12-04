@@ -5,18 +5,20 @@ PHASE 1 — STRUCTURAL ENFORCEMENT & INTELLIGENT RE-ORGANIZATION (ZERO-LOSS)
 Combined EXECUTION + VALIDATION script.
 
 Updated intent:
-    • Non-destructive, zero-loss: NO deletions, NO content edits.
-    • Structural mutation only: create folders, move files.
+    • Zero-loss content preservation: NO file content deletions or modifications.
+    • Structural mutation only: create folders, move files, remove empty legacy folder shells after archival.
     • Intelligent placement: infer L1–L5 / P1–P4 / subfolders from paths & names.
     • No FS modification outside TARGET_ROOT.
     • Preserve duplicates by routing them into _unassigned_duplicates.
     • Preserve semantic cache and META-protected paths.
     • Emit detailed mapping/index JSON for Phase 2 & Phase 3.
+    • Multi-signal scoring engine with fuzzy matching and archival logic.
 """
 
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import sys
 import json
@@ -64,6 +66,8 @@ SYSTEM_EXCLUDES = {
 PHASE1_DATA_ROOT = PROJECT_ROOT / "06_data"
 PHASE1_INDEX_DIR = PHASE1_DATA_ROOT / "phase1_indices"
 PHASE1_BACKUP_ROOT = PHASE1_DATA_ROOT / "phase1_backup"
+PHASE1_LEGACY_ROOT = PHASE1_DATA_ROOT / "phase1_legacy_folders"
+PHASE1_BORDERLINE_ROOT = PHASE1_DATA_ROOT / "phase1_borderline_matches"
 
 # Paths that Phase 1 must never touch (hard-coded safety)
 HARD_PROTECTED_SUBPATHS = [
@@ -196,7 +200,7 @@ def ensure_ssot_paths(root: Path, ssot_subtree: dict, dry_run: bool) -> None:
 # =====================================================================
 
 def list_all_files(root: Path) -> List[Path]:
-    """Return a list of all files under root, excluding system caches."""
+    """Return a list of all files under root, excluding system caches and Phase 1 data."""
     files: List[Path] = []
     for base, dirs, fnames in os.walk(root):
         base_path = Path(base)
@@ -206,12 +210,170 @@ def list_all_files(root: Path) -> List[Path]:
             continue
 
         dirs[:] = [d for d in dirs if d not in SYSTEM_EXCLUDES]
+        
+        # Skip Phase 1 internal directories
+        dirs[:] = [d for d in dirs if not d.startswith("phase1_")]
 
         for f in fnames:
             if f in SYSTEM_EXCLUDES:
                 continue
             files.append(base_path / f)
     return files
+
+
+def list_all_directories(root: Path) -> List[Path]:
+    """Return a list of all directories under root, excluding system caches and Phase 1 data."""
+    dirs_list: List[Path] = []
+    for base, dirs, _ in os.walk(root):
+        base_path = Path(base)
+        rel_base = base_path.relative_to(root)
+
+        if len(rel_base.parts) > MAX_DEPTH:
+            continue
+
+        dirs[:] = [d for d in dirs if d not in SYSTEM_EXCLUDES]
+        
+        # Skip Phase 1 internal directories
+        dirs[:] = [d for d in dirs if not d.startswith("phase1_")]
+
+        for d in dirs:
+            dirs_list.append(base_path / d)
+    return dirs_list
+
+
+# =====================================================================
+# MULTI-SIGNAL SCORING ENGINE
+# =====================================================================
+
+def score_candidate_folder(
+    legacy_name: str,
+    canonical_name: str,
+    context_tokens: List[str],
+) -> float:
+    """
+    Multi-signal scoring engine for fuzzy folder matching.
+    Returns confidence score 0.0 to 1.0.
+    
+    Signal weights:
+    - Token similarity: 0.4
+    - Historical patterns: 0.3
+    - Structural position: 0.15
+    - Filename heuristics: 0.10
+    - Semantic descriptors: 0.05
+    """
+    # Normalize inputs
+    legacy_lower = legacy_name.lower()
+    canonical_lower = canonical_name.lower()
+    legacy_tokens = set(re.split(r'[_\-]', legacy_lower))
+    canonical_tokens = set(re.split(r'[_\-]', canonical_lower))
+    context_set = set(t.lower() for t in context_tokens)
+    
+    # 1. Token similarity (0.4 weight)
+    shared_tokens = legacy_tokens & canonical_tokens
+    token_similarity = len(shared_tokens) / max(len(legacy_tokens | canonical_tokens), 1)
+    
+    # Bonus for exact match
+    if legacy_lower == canonical_lower:
+        token_similarity = 1.0
+    # Bonus for prefix/suffix
+    elif canonical_lower.startswith(legacy_lower) or legacy_lower.startswith(canonical_lower):
+        token_similarity = max(token_similarity, 0.8)
+    elif canonical_lower.endswith(legacy_lower) or legacy_lower.endswith(canonical_lower):
+        token_similarity = max(token_similarity, 0.7)
+    
+    # 2. Historical patterns (0.3 weight)
+    historical_patterns = {
+        # Legacy -> Canonical mappings
+        "exec-layer": "L2_execution",
+        "orc-layer": "L3_orchestration", 
+        "mem-layer": "L4_memory",
+        "safe-layer": "L5_safety",
+        "plan-layer": "L3_orchestration",
+        "router-microagent-layer": "L3_orchestration",
+        "executor-microagent-layer": "L2_execution",
+        "safety-guard-layer": "L5_safety",
+        "budget-manager-layer": "L3_orchestration",
+        "cache": "L4_memory",
+        "data": "L4_memory",
+        "orch": "L3_orchestration",
+        "orchestr": "L3_orchestration",
+        "safety": "L5_safety",
+        "guard": "L5_safety",
+        "policy": "P4_safety",
+        "routing": "P3_aggregate",
+        "utility": "utility",
+    }
+    
+    historical_score = 0.0
+    if legacy_lower in historical_patterns:
+        if historical_patterns[legacy_lower] in canonical_lower:
+            historical_score = 1.0
+        else:
+            historical_score = 0.5
+    elif any(pattern in legacy_lower for pattern in historical_patterns):
+        historical_score = 0.6
+    
+    # 3. Structural position (0.15 weight)
+    structural_score = 0.0
+    if canonical_lower.startswith("l") and "_" in canonical_lower:
+        structural_score = 0.8  # Canonical L-layer
+    elif canonical_lower.startswith("p") and "_" in canonical_lower:
+        structural_score = 0.7  # Canonical P-phase
+    elif any(descriptor in canonical_lower for descriptor in ["get_info", "check_structure", "semantic"]):
+        structural_score = 0.6
+    
+    # 4. Filename heuristics (0.10 weight)
+    heuristic_score = 0.0
+    heuristic_tokens = {
+        "router": "L3_orchestration",
+        "route": "L3_orchestration", 
+        "planner": "L3_orchestration",
+        "plan": "L3_orchestration",
+        "cache": "L4_memory",
+        "state": "L4_memory",
+        "safety": "L5_safety",
+        "guard": "L5_safety",
+        "policy": "P4_safety",
+        "embedding": "P1_retrieve",
+        "similarity": "P1_retrieve",
+        "retrieve": "P1_retrieve",
+        "inspect": "P2_inspect",
+        "validate": "P2_inspect",
+        "aggregate": "P3_aggregate",
+        "refine": "P3_aggregate",
+        "ranking": "P3_aggregate",
+    }
+    
+    for token, target in heuristic_tokens.items():
+        if token in legacy_lower and target in canonical_lower:
+            heuristic_score = max(heuristic_score, 0.8)
+        elif token in canonical_lower and target in legacy_lower:
+            heuristic_score = max(heuristic_score, 0.8)
+    
+    # 5. Semantic descriptors (0.05 weight)
+    semantic_score = 0.0
+    semantic_descriptors = [
+        "get_info", "check_structure", "semantic", "refinement", 
+        "routing", "utility", "update_state", "use_tools", 
+        "manage_costs", "apply", "compute", "assess"
+    ]
+    
+    for descriptor in semantic_descriptors:
+        if descriptor in canonical_lower:
+            semantic_score = max(semantic_score, 0.3)
+        if descriptor in legacy_lower:
+            semantic_score = max(semantic_score, 0.2)
+    
+    # Weighted sum
+    final_score = (
+        token_similarity * 0.4 +
+        historical_score * 0.3 +
+        structural_score * 0.15 +
+        heuristic_score * 0.10 +
+        semantic_score * 0.05
+    )
+    
+    return min(max(final_score, 0.0), 1.0)
 
 
 # =====================================================================
@@ -226,6 +388,17 @@ class MappingDecision:
     reason: str
     is_duplicate: bool = False
     duplicate_bucket_rel: Optional[str] = None
+
+
+@dataclass
+class LegacyFolderMatch:
+    legacy_folder: str
+    canonical_target: str
+    confidence: float
+    category: str  # "high_confidence_match", "borderline_match", "low_confidence"
+    archived_to: Optional[str] = None
+    requires_review: bool = False
+    placeholder_added: bool = False
 
 
 DEFAULT_LAYER_BY_DOMAIN: Dict[str, str] = {
@@ -346,7 +519,7 @@ def infer_target_for_file(
 ) -> MappingDecision:
     """
     Infer best-fit subatomic target for a file under a given domain root.
-    Does not check for duplicates; only suggests a dest_rel.
+    Uses multi-signal scoring and SSoT validation.
     """
     parts = list(src_rel.parts)
     filename = parts[-1]
@@ -369,7 +542,6 @@ def infer_target_for_file(
     target_parts = [layer, phase] + subs + [filename]
 
     # Validate against SSoT, backing off if necessary
-    # Ignore the file itself when checking folder existence.
     candidate_dirs = target_parts[:-1]
 
     conf = 0.0
@@ -423,6 +595,183 @@ def make_domain_backup(root: Path, domain: str, dry_run: bool) -> Optional[Path]
 
 
 # =====================================================================
+# LEGACY FOLDER ARCHIVAL
+# =====================================================================
+
+def archive_legacy_folder(
+    domain: str,
+    legacy_rel_path: Path,
+    archive_root: Path,
+    dry_run: bool,
+    placeholder_content: str,
+    protected_patterns: List[str] = None,
+    placeholder_filename: str = ".phase1_legacy_placeholder"
+) -> Optional[Path]:
+    """Archive a legacy folder to the specified archive root, skipping protected paths."""
+    domain_root = PROJECT_ROOT / domain
+    source = domain_root / legacy_rel_path
+    target = archive_root / domain / legacy_rel_path
+    
+    if dry_run:
+        print(f"DRY-RUN: Would archive folder {source} -> {target}")
+        return None
+    
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists():
+        target = target.parent / f"{legacy_rel_path.name}_{int(time.time())}"
+    
+    print(f"[ARCHIVE] Moving legacy folder {source} -> {target}")
+    
+    # Copy directory tree while skipping protected paths
+    def copy_tree_skip_protected(src: Path, dst: Path) -> bool:
+        had_protected = False
+        dst.mkdir(parents=True, exist_ok=True)
+        for item in src.iterdir():
+            if is_under_hard_protected(item) or (protected_patterns and is_meta_protected(item, protected_patterns)):
+                print(f"[SKIP] Protected path during archive: {item}")
+                had_protected = True
+                continue
+            
+            if item.is_dir():
+                had_protected |= copy_tree_skip_protected(item, dst / item.name)
+            else:
+                shutil.copy2(item, dst / item.name)
+        return had_protected
+    
+    had_protected = copy_tree_skip_protected(source, target)
+    
+    # Only remove source if NO protected content was skipped
+    try:
+        if source.exists() and not had_protected:
+            print(f"[STRUCTURAL-DELETE] Removed legacy folder shell {source} after archival")
+            shutil.rmtree(source)
+        elif had_protected:
+            print(f"[INFO] Preserving source folder {source} because it contains protected paths")
+    except OSError as e:
+        print(f"[WARN] Could not remove source folder {source}: {e}")
+    
+    # Add placeholder
+    placeholder_file = target / placeholder_filename
+    placeholder_content_with_metadata = f"""{placeholder_content}
+
+Original path: {source}
+Archived to: {target}
+Timestamp: {time.strftime("%Y-%m-%d %H:%M:%S")}
+"""
+    placeholder_file.write_text(placeholder_content_with_metadata, encoding="utf-8")
+    
+    return target
+
+
+def find_fuzzy_folder_matches(
+    domain_root: Path,
+    ssot_subtree: dict,
+    dry_run: bool
+) -> Tuple[List[LegacyFolderMatch], Dict[str, List[str]]]:
+    """
+    Find fuzzy matches between existing folders and SSoT canonical names.
+    Returns legacy folder matches and mapping of canonical names to existing folders.
+    """
+    # Get all existing directories
+    existing_dirs = list_all_directories(domain_root)
+    
+    # Precompute all SSoT folder names for efficiency
+    all_ssot_names = set()
+    def _collect_names(node: dict) -> None:
+        for child_name, child in node.items():
+            all_ssot_names.add(child_name)
+            if isinstance(child, dict):
+                _collect_names(child)
+    _collect_names(ssot_subtree)
+    
+    # Extract canonical folder names from SSoT
+    canonical_names = all_ssot_names.copy()
+    
+    # Find fuzzy matches
+    matches: List[LegacyFolderMatch] = []
+    canonical_to_existing: Dict[str, List[str]] = {}
+    
+    for existing_dir in existing_dirs:
+        rel_path = existing_dir.relative_to(domain_root)
+        folder_name = rel_path.name
+        
+        # Skip if already canonical (starts with L_ or P_) or is any SSoT folder
+        if folder_name.startswith(("L1_", "L2_", "L3_", "L4_", "L5_", "P1_", "P2_", "P3_", "P4_")):
+            continue
+        
+        # Skip if folder name exists in SSoT structure (including deep folders like "use_tools")
+        if folder_name in all_ssot_names:
+            continue
+        
+        # Skip Phase 1 internal directories
+        if folder_name.startswith("phase1_"):
+            continue
+        
+        # Find best canonical match
+        best_match = ""
+        best_score = 0.0
+        
+        for canonical_name in canonical_names:
+            # Get context from surrounding folders
+            context_tokens = []
+            if rel_path.parent != Path("."):
+                context_tokens = list(rel_path.parent.parts)
+            
+            score = score_candidate_folder(
+                folder_name,
+                canonical_name,
+                context_tokens
+            )
+            
+            if score > best_score:
+                best_score = score
+                best_match = canonical_name
+        
+        # Categorize based on confidence
+        if best_score >= 0.75:
+            # High confidence - will be moved and archived
+            match = LegacyFolderMatch(
+                legacy_folder=str(rel_path),
+                canonical_target=best_match,
+                confidence=best_score,
+                category="high_confidence_match",
+                requires_review=False,
+                placeholder_added=False
+            )
+            matches.append(match)
+        elif best_score >= 0.60:
+            # Borderline - will be archived as-is
+            match = LegacyFolderMatch(
+                legacy_folder=str(rel_path),
+                canonical_target=best_match,
+                confidence=best_score,
+                category="borderline_match",
+                requires_review=True,
+                placeholder_added=False
+            )
+            matches.append(match)
+        else:
+            # Low confidence - no folder-level action
+            match = LegacyFolderMatch(
+                legacy_folder=str(rel_path),
+                canonical_target=best_match,
+                confidence=best_score,
+                category="low_confidence",
+                requires_review=False,
+                placeholder_added=False
+            )
+            matches.append(match)
+        
+        # Track canonical to existing mapping
+        if best_score >= 0.60:
+            if best_match not in canonical_to_existing:
+                canonical_to_existing[best_match] = []
+            canonical_to_existing[best_match].append(str(rel_path))
+    
+    return matches, canonical_to_existing
+
+
+# =====================================================================
 # EXECUTION ENTRYPOINT
 # =====================================================================
 
@@ -433,10 +782,8 @@ def phase01_execute(dry_run: bool = False) -> int:
     if not SSOT_YAML.exists():
         print("FAIL: Missing SSoT YAML")
         return 1
-    if not META_YAML.exists():
-        print("FAIL: Missing META YAML")
-        return 1
 
+    # Load and prepare SSoT
     ssot = load_yaml(SSOT_YAML)
     meta = load_yaml(META_YAML)
     combined = {**ssot, **meta}
@@ -444,8 +791,11 @@ def phase01_execute(dry_run: bool = False) -> int:
 
     protected_patterns = load_protected_patterns(meta)
 
+    # Ensure Phase 1 directories exist
     PHASE1_INDEX_DIR.mkdir(parents=True, exist_ok=True)
     PHASE1_BACKUP_ROOT.mkdir(parents=True, exist_ok=True)
+    PHASE1_LEGACY_ROOT.mkdir(parents=True, exist_ok=True)
+    PHASE1_BORDERLINE_ROOT.mkdir(parents=True, exist_ok=True)
 
     for folder in TARGET_ROOTS:
         print(f"\n--- PROCESSING {folder} ---")
@@ -470,16 +820,104 @@ def phase01_execute(dry_run: bool = False) -> int:
         if backup_loc:
             print(f"[BACKUP] Created at: {backup_loc}")
 
-        # 3) Build mapping & duplicate plan.
+        # 3) Find fuzzy folder matches
+        legacy_matches, canonical_to_existing = find_fuzzy_folder_matches(
+            root_path, ssot_subtree, dry_run
+        )
+
+        # 4) Process high-confidence matches (move files + archive folder)
+        high_confidence_matches = [m for m in legacy_matches if m.category == "high_confidence_match"]
+        for match in high_confidence_matches:
+            legacy_folder_path = root_path / match.legacy_folder
+            
+            if not legacy_folder_path.exists():
+                continue
+            
+            # Move files from legacy folder to canonical structure
+            print(f"[HIGH-CONF] Processing legacy folder: {match.legacy_folder} -> {match.canonical_target}")
+            
+            # Find all files in legacy folder
+            legacy_files = list_all_files(legacy_folder_path)
+            
+            for legacy_file in legacy_files:
+                file_rel = legacy_file.relative_to(root_path)
+                
+                # Skip protected files
+                if is_under_hard_protected(legacy_file) or is_meta_protected(legacy_file, protected_patterns):
+                    continue
+                
+                # Infer target for this file
+                decision = infer_target_for_file(logical_name, ssot_subtree, file_rel)
+                
+                # Apply move (simplified for high-confidence folders)
+                if dry_run:
+                    print(f"DRY-RUN: Would move {legacy_file} -> {root_path / decision.dest_rel}")
+                else:
+                    target_path = root_path / decision.dest_rel
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
+                    if legacy_file != target_path:
+                        shutil.move(str(legacy_file), str(target_path))
+                        print(f"[MOVE] {legacy_file} -> {target_path}")
+            
+            # Archive the now-empty legacy folder
+            placeholder_content = """This folder was identified as a non-canonical structural residue by Phase 1.
+Its contents were moved into the canonical YAML structure.
+The folder has been archived for Phase 2 semantic review.
+DO NOT REMOVE during Phase 1."""
+            
+            archived_to = archive_legacy_folder(
+                folder,
+                Path(match.legacy_folder),
+                PHASE1_LEGACY_ROOT,
+                dry_run,
+                placeholder_content,
+                protected_patterns
+            )
+            
+            if archived_to:
+                match.archived_to = str(archived_to.relative_to(PROJECT_ROOT))
+                match.placeholder_added = True
+
+        # 5) Process borderline matches (archive entire folder as-is)
+        borderline_matches = [m for m in legacy_matches if m.category == "borderline_match"]
+        for match in borderline_matches:
+            legacy_folder_path = root_path / match.legacy_folder
+            
+            if not legacy_folder_path.exists():
+                continue
+            
+            print(f"[BORDERLINE] Archiving folder: {match.legacy_folder}")
+            
+            placeholder_content = """This folder was identified as a borderline structural match by Phase 1.
+It has been archived for Phase 2 semantic review and potential canonicalization.
+DO NOT REMOVE during Phase 1."""
+            
+            # Archive the entire folder as-is with protected path filtering
+            archived_to = archive_legacy_folder(
+                folder,
+                Path(match.legacy_folder),
+                PHASE1_BORDERLINE_ROOT,
+                dry_run,
+                placeholder_content,
+                protected_patterns,
+                ".phase1_borderline_placeholder"
+            )
+            
+            if archived_to:
+                match.archived_to = str(archived_to.relative_to(PROJECT_ROOT))
+                match.placeholder_added = True
+
+        # 6) Build mapping & duplicate plan for remaining files
         all_files = list_all_files(root_path)
         # Avoid reprocessing backup or index data if nested by mistake
         all_files = [
             f for f in all_files
-            if "phase1_backup" not in f.parts and "phase1_indices" not in f.parts
+            if "phase1_backup" not in f.parts and "phase1_indices" not in f.parts 
+            and "phase1_legacy_folders" not in f.parts and "phase1_borderline_matches" not in f.parts
         ]
 
         mappings: List[MappingDecision] = []
-        used_destinations: Dict[str, str] = {}  # dest_rel -> src_rel (canonical claim)
+        used_destinations: Dict[str, str] = {}  # resolved_path -> src_rel (canonical claim)
 
         # _unassigned buckets are per-domain
         unassigned_root = root_path / "_unassigned_unknown"
@@ -506,17 +944,20 @@ def phase01_execute(dry_run: bool = False) -> int:
                 decision.confidence = min(decision.confidence, 0.3)
                 decision.reason += "; routed to _unassigned_unknown (no dest_rel)"
             else:
-                # Detect duplicates: if another file already mapped to same dest_rel
-                if dest_rel in used_destinations and dest_rel != src_rel.as_posix():
+                # Detect duplicates: if another file already mapped to same resolved destination
+                dest_path = (root_path / dest_rel).resolve()
+                src_path_str = str(src_abs.resolve())
+                
+                if str(dest_path) in used_destinations and str(dest_path) != src_path_str:
                     # This is a duplicate; reroute into duplicates bucket.
                     decision.is_duplicate = True
                     decision.duplicate_bucket_rel = f"_unassigned_duplicates/{src_rel.as_posix()}"
                 else:
-                    used_destinations[dest_rel] = decision.src_rel
+                    used_destinations[str(dest_path)] = src_path_str
 
             mappings.append(decision)
 
-        # 4) Apply move plan (non-destructive: no deletions).
+        # 7) Apply move plan (non-destructive: no deletions).
         for decision in mappings:
             src_rel = Path(decision.src_rel)
             src = root_path / src_rel
@@ -547,12 +988,18 @@ def phase01_execute(dry_run: bool = False) -> int:
                       f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
                 shutil.move(str(src), str(dest))
 
-        # 5) Emit index/mapping JSON for this domain.
+        # 8) Emit index/mapping JSON for this domain.
         if not dry_run:
+            # Separate legacy and borderline matches
+            legacy_folders = [m for m in legacy_matches if m.category == "high_confidence_match"]
+            borderline_folders = [m for m in legacy_matches if m.category == "borderline_match"]
+            
             index_data = {
                 "domain": folder,
                 "logical_root": logical_name,
                 "mappings": [asdict(m) for m in mappings],
+                "legacy_folders": [asdict(m) for m in legacy_folders],
+                "borderline_folders": [asdict(m) for m in borderline_folders],
                 "used_destinations": used_destinations,
             }
             index_file = PHASE1_INDEX_DIR / f"phase1_index_{folder}.json"
@@ -712,4 +1159,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
