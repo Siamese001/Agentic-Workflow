@@ -895,51 +895,67 @@ def infer_target_for_file(
     # ================================================================
     if logical_root == "tests":
         taxonomy = enforcer.get_test_taxonomy()
-
-        # Block L*/P* entirely
+        
+        # Strip L*/P* and _unassigned_* patterns from path for clean routing
+        clean_parent_parts = []
+        has_forbidden_pattern = False
         for p in parent_parts:
-            if p.startswith("L") or p.startswith("P"):
-                return MappingDecision(
-                    src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_tests_cognitive/{src_rel.as_posix()}",
-                    confidence=0.0,
-                    reason="L*/P* forbidden in tests",
-                    is_duplicate=False,
-                )
+            if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned"):
+                has_forbidden_pattern = True
+                print(f"[DEBUG] Stripping pattern {p} from tests domain path")
+            else:
+                clean_parent_parts.append(p)
 
-        # Determine taxonomy bucket from top-level directory
+        # Determine taxonomy bucket from cleaned path
         bucket = None
         for top_level, subtree in taxonomy.items():
-            if parent_parts and parent_parts[0] == top_level:
+            if clean_parent_parts and clean_parent_parts[0] == top_level:
                 bucket = top_level
                 break
-
+        
+        # If no bucket found from clean path, try to infer from filename
         if bucket is None:
-            # Bad path → route to taxonomy-unassigned
+            fn_lower = filename.lower()
+            if fn_lower.startswith("test_"):
+                # Try to infer taxonomy bucket from filename patterns
+                if any(pattern in fn_lower for pattern in ["unit", "mock", "stub"]):
+                    bucket = "unit"
+                elif any(pattern in fn_lower for pattern in ["integration", "e2e", "workflow", "api"]):
+                    bucket = "integration"
+                elif any(pattern in fn_lower for pattern in ["perf", "latency", "throughput", "cost"]):
+                    bucket = "perf"
+        
+        # If still no bucket, route to flat unassigned (no nested paths)
+        if bucket is None:
+            print(f"[DEBUG] Routing {filename} to _unassigned_tests_invalid (no taxonomy match)")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=f"_unassigned_tests_invalid/{src_rel.as_posix()}",
+                dest_rel=f"_unassigned_tests_invalid/{filename}",
                 confidence=0.0,
                 reason="Test path does not match allowed taxonomy",
                 is_duplicate=False,
             )
 
         # Enforce depth / forbidden patterns via generic domain validator
-        ok, msg = enforcer.validate_domain_mode(logical_root, parent_parts + [filename])
+        ok, msg = enforcer.validate_domain_mode(logical_root, clean_parent_parts + [filename])
         if not ok:
+            print(f"[DEBUG] Routing {filename} to _unassigned_tests_violation")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=f"_unassigned_tests_violation/{src_rel.as_posix()}",
+                dest_rel=f"_unassigned_tests_violation/{filename}",
                 confidence=0.0,
                 reason=msg,
                 is_duplicate=False,
             )
 
-        # Allow ANY file under a valid taxonomy branch, no inference
+        # Route to clean path under taxonomy bucket
+        clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else f"{bucket}/{filename}"
+        print(f"[DEBUG] Successfully routing {filename} to tests/{clean_path}")
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
-            dest_rel="/".join(parent_parts + [filename]),
-            reason=f"taxonomy match under {bucket}",
+            dest_rel=clean_path,
+            confidence=1.0,
+            reason=f"taxonomy match under {bucket} (patterns stripped)",
             is_duplicate=False,
         )
 
@@ -1011,39 +1027,24 @@ def infer_target_for_file(
                 is_duplicate=False,
             )
         
-        # For apps_rg/apps_lic (already split), strip L*/P* patterns and allow hierarchical structure
-        # This handles files that were already in L*/P* folders before the domain split
+        # For apps_rg/apps_lic (already split), strip L*/P*, _unassigned_*, and subdomain prefix patterns
         clean_parent_parts = []
-        has_cognitive_pattern = False
         for p in parent_parts:
-            if p.startswith("L") or p.startswith("P"):
-                has_cognitive_pattern = True
-                print(f"[DEBUG] Stripping cognitive pattern {p} from apps subdomain {logical_root}")
+            if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned") or p in ["apps_rg", "apps_lic"]:
+                print(f"[DEBUG] Stripping pattern {p} from apps subdomain {logical_root}")
             else:
                 clean_parent_parts.append(p)
         
-        if has_cognitive_pattern:
-            # Route to clean hierarchical path (L*/P* stripped)
-            clean_path = "/".join(clean_parent_parts + [filename])
-            print(f"[DEBUG] Successfully routing {filename} to clean path in {logical_root}: {clean_path}")
-            return MappingDecision(
-                src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=clean_path,
-                confidence=1.0,
-                reason=f"Apps subdomain {logical_root} hierarchical structure (cognitive patterns stripped)",
-                is_duplicate=False,
-            )
-        else:
-            # Already clean, allow hierarchical structure
-            print(f"[DEBUG] Allowing hierarchical structure for {logical_root}: {filename}")
-            clean_path = "/".join(parent_parts + [filename])
-            return MappingDecision(
-                src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=clean_path,
-                confidence=1.0,
-                reason=f"Apps subdomain {logical_root} hierarchical structure",
-                is_duplicate=False,
-            )
+        # Route to clean hierarchical path
+        clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else filename
+        print(f"[DEBUG] Successfully routing {filename} to clean path in {logical_root}: {clean_path}")
+        return MappingDecision(
+            src_rel=str(src_rel).replace("\\", "/"),
+            dest_rel=clean_path,
+            confidence=1.0,
+            reason=f"Apps subdomain {logical_root} hierarchical structure (patterns stripped)",
+            is_duplicate=False,
+        )
 
     # ================================================================
     # SUPPORT DOMAIN LOGIC — Cognitive inference 100% blocked
@@ -1052,40 +1053,41 @@ def infer_target_for_file(
     is_support = (domain_mode != "cognitive_engine")
 
     if is_support:
-        # Enforce NO L*/P* patterns in ANY mapped path or parent dirs
+        # Strip L*/P* and _unassigned_* patterns from path for clean routing
+        clean_parent_parts = []
         for p in parent_parts:
-            if re.match(r"L[1-5]_.*", p) or re.match(r"P[1-4]_.*", p):
-                return MappingDecision(
-                    src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_support_cognitive/{src_rel.as_posix()}",
-                    confidence=0.0,
-                    reason=f"Cognitive pattern '{p}' forbidden in support domain {logical_root}",
-                    is_duplicate=False,
-                )
+            if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned"):
+                print(f"[DEBUG] Stripping pattern {p} from support domain {logical_root} path")
+            else:
+                clean_parent_parts.append(p)
 
         # Lookup against YAML ONLY — No inference allowed
-        if ssot_path_exists(ssot_subtree, parent_parts + [filename]):
-            ok, msg = enforcer.validate_domain_mode(logical_root, parent_parts + [filename])
+        if ssot_path_exists(ssot_subtree, clean_parent_parts + [filename]):
+            ok, msg = enforcer.validate_domain_mode(logical_root, clean_parent_parts + [filename])
             if not ok:
+                print(f"[DEBUG] Routing {filename} to _unassigned_support_violation")
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_support_violation/{src_rel.as_posix()}",
+                    dest_rel=f"_unassigned_support_violation/{filename}",
                     confidence=0.0,
                     reason=msg,
                     is_duplicate=False,
                 )
+            clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else filename
+            print(f"[DEBUG] Successfully routing {filename} to support domain: {clean_path}")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel="/".join(parent_parts + [filename]),
+                dest_rel=clean_path,
                 confidence=1.0,
-                reason="support domain exact YAML match",
+                reason="support domain exact YAML match (patterns stripped)",
                 is_duplicate=False,
             )
 
-        # No match → must route to support unassigned bucket
+        # No match → route to flat unassigned bucket (no nested paths)
+        print(f"[DEBUG] Routing {filename} to _unassigned_support_nomatch (no YAML match)")
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
-            dest_rel=f"_unassigned_support_nomatch/{src_rel.as_posix()}",
+            dest_rel=f"_unassigned_support_nomatch/{filename}",
             confidence=0.2,
             reason="support domain no-match; cognitive inference blocked",
             is_duplicate=False,
