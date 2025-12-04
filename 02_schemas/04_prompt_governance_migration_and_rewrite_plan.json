@@ -1,0 +1,54 @@
+{
+  "mode": "semantic_only_zero_loss",
+  "operations": [],
+  "phase": "phase_02_semantic_diff_and_plan",
+  "schema_version": "1.0",
+  "summary": {
+    "by_type": {},
+    "mode": "semantic_only_zero_loss",
+    "note": "Phase 2 only plans; no mutation. Phase 1 & Phase 0.5 remain the only mutators.",
+    "target_root": "04_prompt_governance",
+    "total_operations": 0,
+    "validation_digest": "81613ec1023e190e06d9e9e1813e304450e12b2feb5cd6c58d4efb82dd93ebe4"
+  },
+  "target_root": "04_prompt_governance",
+  "timestamp": "2025-12-04T18:44:18.924993",
+  "validations": [
+    {
+      "description": "SSoT YAML & META loaded",
+      "detail": null,
+      "key": "K3",
+      "ok": true
+    },
+    {
+      "description": "Found SSoT subtree for logical root 'prompt_governance'",
+      "detail": null,
+      "key": "K4",
+      "ok": true
+    },
+    {
+      "description": "Captured filesystem snapshot with 131 live files",
+      "detail": null,
+      "key": "K7",
+      "ok": true
+    },
+    {
+      "description": "Loaded 7 canonical pointers for bucket '04_prompt_governance'",
+      "detail": null,
+      "key": "K10",
+      "ok": true
+    },
+    {
+      "description": "Computed semantic diffs for 131 live files",
+      "detail": null,
+      "key": "K11",
+      "ok": true
+    },
+    {
+      "description": "No operations generated; plan degenerates to no-op (safe default)",
+      "detail": null,
+      "key": "K13",
+      "ok": true
+    }
+  ]
+}
