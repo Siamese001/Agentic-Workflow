@@ -148,28 +148,40 @@ def diff_trees(ssot: dict, fs: dict, prefix=""):
 # STRUCTURAL FIXES (K21–K32)
 # =====================================================================
 
-def create_yaml_paths(root: Path, paths: list[str]):
+def create_yaml_paths(root: Path, paths: list[str], dry_run=False):
     for p in paths:
         full = root / p
         if p.endswith("/"):
-            full.mkdir(parents=True, exist_ok=True)
+            if dry_run:
+                print(f"DRY-RUN: Would create directory {full}")
+            else:
+                full.mkdir(parents=True, exist_ok=True)
         else:
-            full.parent.mkdir(parents=True, exist_ok=True)
-            full.touch(exist_ok=True)
+            if dry_run:
+                print(f"DRY-RUN: Would create file {full}")
+            else:
+                full.parent.mkdir(parents=True, exist_ok=True)
+                full.touch(exist_ok=True)
 
-def delete_fs_paths(root: Path, paths: list[str]):
+def delete_fs_paths(root: Path, paths: list[str], dry_run=False):
     for p in paths:
         full = root / p
-        if full.is_file(): full.unlink()
-        elif full.is_dir(): shutil.rmtree(full)
-
-def fix_mismatches(root: Path, paths: list[str]):
-    for p in paths:
-        full = root / p
-        if full.exists():
+        if dry_run:
+            print(f"DRY-RUN: Would delete {full} (DIR)" if full.is_dir() else f"DRY-RUN: Would delete {full} (FILE)")
+        else:
             if full.is_file(): full.unlink()
-            else: shutil.rmtree(full)
-        full.mkdir(parents=True, exist_ok=True)
+            elif full.is_dir(): shutil.rmtree(full)
+
+def fix_mismatches(root: Path, paths: list[str], dry_run=False):
+    for p in paths:
+        full = root / p
+        if dry_run:
+            print(f"DRY-RUN: Would fix mismatch for {full} (remove and recreate as directory)")
+        else:
+            if full.exists():
+                if full.is_file(): full.unlink()
+                else: shutil.rmtree(full)
+            full.mkdir(parents=True, exist_ok=True)
 
 def fix_misplaced():
     """Phase 1 supports move/rename. Actual rules driven by SSoT META. Placeholder."""
@@ -179,8 +191,9 @@ def fix_misplaced():
 # EXECUTION ENTRYPOINT
 # =====================================================================
 
-def phase01_execute() -> int:
-    print("=== PHASE 1 — EXECUTION START ===")
+def phase01_execute(dry_run=False) -> int:
+    mode = "DRY-RUN" if dry_run else "EXECUTION"
+    print(f"=== PHASE 1 — {mode} START ===")
 
     if not SSOT_YAML.exists():
         print("FAIL: Missing SSoT YAML")
@@ -213,21 +226,24 @@ def phase01_execute() -> int:
 
         diff = diff_trees(ssot_subtree, fs_canon)
 
-        create_yaml_paths(root_path, diff["yaml_only"])
-        delete_fs_paths(root_path, diff["fs_only"])
-        fix_mismatches(root_path, diff["mismatches"])
+        print(f"Found {len(diff['yaml_only'])} YAML-only paths, {len(diff['fs_only'])} FS-only paths, {len(diff['mismatches'])} mismatches")
+
+        create_yaml_paths(root_path, diff["yaml_only"], dry_run)
+        delete_fs_paths(root_path, diff["fs_only"], dry_run)
+        fix_mismatches(root_path, diff["mismatches"], dry_run)
         fix_misplaced()
 
-        index_data = {
-            "before": fs_canon,
-            "after": canon_tree(scan_fs(root_path)),
-            "diff": diff
-        }
+        if not dry_run:
+            index_data = {
+                "before": fs_canon,
+                "after": canon_tree(scan_fs(root_path)),
+                "diff": diff
+            }
 
-        index_file = PHASE1_INDEX_DIR / f"phase1_index_{folder}.json"
-        index_file.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
+            index_file = PHASE1_INDEX_DIR / f"phase1_index_{folder}.json"
+            index_file.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
 
-    print("=== PHASE 1 — EXECUTION COMPLETE ===")
+    print(f"=== PHASE 1 — {mode} COMPLETE ===")
     return 0
 
 # =====================================================================
@@ -339,7 +355,7 @@ def phase01_validate() -> int:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python phase01.py [execute|validate]")
+        print("Usage: python phase01.py [execute|validate|dry-run]")
         return 1
 
     mode = sys.argv[1].lower().strip()
@@ -347,8 +363,10 @@ def main():
         return phase01_execute()
     if mode == "validate":
         return phase01_validate()
+    if mode == "dry-run":
+        return phase01_execute(dry_run=True)
 
-    print("Unknown command. Use: execute | validate")
+    print("Unknown command. Use: execute | validate | dry-run")
     return 1
 
 if __name__ == "__main__":
