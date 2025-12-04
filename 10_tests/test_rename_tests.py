@@ -244,7 +244,7 @@ class TestRenamer:
         if not self.rename_log:
             return True
         
-        log_file = self.tests_root.parent / "test_rename_log.json"
+        log_file = self.rename_log_file
         try:
             with open(log_file, 'w') as f:
                 json.dump(self.rename_log, f, indent=2)
