@@ -241,6 +241,25 @@ def list_all_directories(root: Path) -> List[Path]:
     return dirs_list
 
 
+def is_empty_directory(path: Path) -> bool:
+    """Check if a directory is empty (contains no files or subdirectories)."""
+    return path.is_dir() and len(list(path.iterdir())) == 0
+
+
+def collect_all_ssot_folder_names(ssot_subtree: dict) -> set:
+    """Collect all folder names from SSoT subtree for canonical-folder exclusion."""
+    all_ssot_names = set()
+    
+    def _walk(node: dict) -> None:
+        for name, child in node.items():
+            all_ssot_names.add(name)
+            if isinstance(child, dict):
+                _walk(child)
+    
+    _walk(ssot_subtree)
+    return all_ssot_names
+
+
 # =====================================================================
 # MULTI-SIGNAL SCORING ENGINE
 # =====================================================================
@@ -1015,6 +1034,67 @@ DO NOT REMOVE during Phase 1."""
                       f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
                 shutil.move(str(src), str(dest))
 
+        # 7.5) Empty folder cleanup - archive any empty non-canonical folders
+        all_ssot_names = collect_all_ssot_folder_names(ssot_subtree)
+        empty_folders = []
+        
+        for dirpath, dirnames, filenames in os.walk(root_path):
+            path = Path(dirpath)
+            
+            # Skip Phase 1 internal paths
+            if "phase1_" in path.parts:
+                continue
+            
+            # Skip protected paths
+            if is_under_hard_protected(path) or is_meta_protected(path, protected_patterns):
+                continue
+            
+            # Skip canonical folders
+            if path.name in all_ssot_names:
+                continue
+            
+            # Skip unassigned buckets
+            if path.name in {"_unassigned_unknown", "_unassigned_duplicates"}:
+                continue
+            
+            # Skip domain root
+            if path == root_path:
+                continue
+            
+            # Only archive truly empty folders
+            if is_empty_directory(path):
+                empty_folders.append(path)
+        
+        empty_archived_count = 0
+        empty_folder_log = []
+        
+        for empty_folder in empty_folders:
+            rel = empty_folder.relative_to(root_path)
+            placeholder = """This folder was empty after Phase 1 reorganization and does not exist in SSoT.
+It has been archived for Phase 2 semantic analysis.
+DO NOT REMOVE during Phase 1."""
+            
+            if dry_run:
+                print(f"DRY-RUN: Would archive empty folder {empty_folder}")
+                archived_to = None
+            else:
+                archived_to = archive_legacy_folder(
+                    domain=folder_name,
+                    legacy_rel_path=rel,
+                    archive_root=PHASE1_LEGACY_ROOT,
+                    dry_run=dry_run,
+                    placeholder_content=placeholder,
+                    protected_patterns=protected_patterns,
+                    placeholder_filename=".phase1_empty_folder_placeholder"
+                )
+            
+            empty_archived_count += 1
+            empty_folder_log.append({
+                "legacy_folder": str(rel),
+                "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
+                "placeholder_added": True
+            })
+
         # 8) Compute and print summary for this domain (runs in both modes)
         # Separate legacy and borderline matches
         legacy_folders = [m for m in legacy_matches if m.category == "high_confidence_match"]
@@ -1035,6 +1115,7 @@ DO NOT REMOVE during Phase 1."""
         print(f"[SUMMARY] {folder}:")
         print(f"  High-confidence archives: {high_conf_archives}")
         print(f"  Borderline archives: {borderline_archives}")
+        print(f"  Empty-folder archives: {empty_archived_count}")
         print(f"  File moves: {file_moves}")
         print(f"  Duplicate routes: {duplicate_routes}")
         print(f"  Protected items skipped: {protected_skips}")
@@ -1054,6 +1135,7 @@ DO NOT REMOVE during Phase 1."""
             summary = {
                 "high_conf_archives": high_conf_archives,
                 "borderline_archives": borderline_archives,
+                "empty_archives": empty_archived_count,
                 "file_moves": file_moves,
                 "duplicate_routes": duplicate_routes,
                 "protected_skips": protected_skips
@@ -1065,6 +1147,7 @@ DO NOT REMOVE during Phase 1."""
                 "mappings": [asdict(m) for m in mappings],
                 "legacy_folders": [asdict(m) for m in legacy_folders],
                 "borderline_folders": [asdict(m) for m in borderline_folders],
+                "empty_folders": empty_folder_log,
                 "used_destinations": used_destinations,
                 "summary": summary,
             }
