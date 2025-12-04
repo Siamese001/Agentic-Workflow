@@ -1046,11 +1046,68 @@ DO NOT REMOVE during Phase 1."""
                       f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
                 shutil.move(str(src), str(dest))
 
-        # 7.5) Empty folder cleanup - archive any empty non-canonical folders AFTER file moves
-        # Skip 06_data domain entirely since it contains Phase 1 backup directories
+        # 7.5) Empty-folder cleanup + LEGACY L1–L5 CLEANUP for 06_data
+        # ============================================================================
+        # NEW OPTION B BEHAVIOR:
+        #   For 06_data:
+        #     • Identify stray L1_*/L2_*/L3_*/L4_*/L5_* folders
+        #     • Archive them (zero-loss) into phase1_legacy_folders
+        #     • NEVER delete semantic_cache or any META-protected paths
+        # ----------------------------------------------------------------------------
         if folder == "06_data":
+            print("[OPTION B] Scanning 06_data for legacy L1–L5 folders…")
+
+            legacy_L_folders = []
+            for path in (root_path).iterdir():
+                name = path.name
+
+                # Identify legacy agentic folders incorrectly living under 06_data
+                if (
+                    path.is_dir()
+                    and re.match(r"^L[1-5]_", name)
+                    and name not in ssot_subtree
+                    and not is_under_hard_protected(path)
+                ):
+                    legacy_L_folders.append(path)
+
+            print(f"[OPTION B] Found {len(legacy_L_folders)} legacy L-folders to archive")
+
             empty_archived_count = 0
             empty_folder_log = []
+
+            for lf in legacy_L_folders:
+                rel = lf.relative_to(root_path)
+
+                placeholder_msg = """This L*-folder was found under 06_data but does not belong to the data-plane.
+It has been archived for Phase 2 semantic inspection.
+DO NOT REMOVE during Phase 1."""
+
+                print(f"[OPTION B] Archiving legacy L-folder: {lf}")
+
+                if dry_run:
+                    archived_to = None
+                    print(f"DRY-RUN: Would archive {lf}")
+                else:
+                    archived_to = archive_legacy_folder(
+                        folder,
+                        rel,
+                        PHASE1_LEGACY_ROOT,
+                        dry_run,
+                        placeholder_msg,
+                        protected_patterns,
+                        ".phase1_legacy_L_placeholder"
+                    )
+
+                empty_folder_log.append({
+                    "legacy_folder": str(rel),
+                    "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
+                    "placeholder_added": True
+                })
+                empty_archived_count += 1
+
+        # ============================================================================
+        # ORIGINAL EMPTY-FOLDER CLEANUP for non-06_data domains
+        # ============================================================================
         else:
             print(f"[DEBUG] About to start empty-folder cleanup for {folder}")
             try:
