@@ -1,0 +1,917 @@
+[
+  {
+    "timestamp": "2025-12-04T05:55:15.038453",
+    "old_path": "rename_tests.py",
+    "new_path": "test_rename_tests.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.039758",
+    "old_path": "L2_execution\\diagnose_tests_issues.py",
+    "new_path": "L2_execution/test_diagnose_tests_issues.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.041025",
+    "old_path": "L2_execution\\inspect_tests_quality.py",
+    "new_path": "L2_execution/test_inspect_tests_quality.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.042095",
+    "old_path": "L2_execution\\lic_outreach_fixtures.py",
+    "new_path": "L2_execution/test_lic_outreach_fixtures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.043116",
+    "old_path": "L2_execution\\load_tests_planning.py",
+    "new_path": "L2_execution/test_load_tests_planning.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.044127",
+    "old_path": "L2_execution\\log_tests_metrics.py",
+    "new_path": "L2_execution/test_log_tests_metrics.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.045220",
+    "old_path": "L2_execution\\prepare_tests_payload.py",
+    "new_path": "L2_execution/test_prepare_tests_payload.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.046972",
+    "old_path": "L3_orchestration\\apply_tests_safety.py",
+    "new_path": "L3_orchestration/test_apply_tests_safety.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.048369",
+    "old_path": "L3_orchestration\\enforce_tests_filters.py",
+    "new_path": "L3_orchestration/test_enforce_tests_filters.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.049650",
+    "old_path": "L3_orchestration\\validate_tests_ethics.py",
+    "new_path": "L3_orchestration/test_validate_tests_ethics.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.051019",
+    "old_path": "L5_safety\\apply.py",
+    "new_path": "L5_safety/test_apply.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.053430",
+    "old_path": "L5_safety\\assess.py",
+    "new_path": "L5_safety/test_assess.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.055428",
+    "old_path": "L5_safety\\check_tests_compliance.py",
+    "new_path": "L5_safety/test_check_tests_compliance.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.056602",
+    "old_path": "L5_safety\\check_tests_policy.py",
+    "new_path": "L5_safety/test_check_tests_policy.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.057790",
+    "old_path": "L5_safety\\compute.py",
+    "new_path": "L5_safety/test_compute.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.058839",
+    "old_path": "L5_safety\\compute_tests_score.py",
+    "new_path": "L5_safety/test_compute_tests_score.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.059705",
+    "old_path": "L5_safety\\enforce.py",
+    "new_path": "L5_safety/test_enforce.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.060545",
+    "old_path": "L5_safety\\evaluate.py",
+    "new_path": "L5_safety/test_evaluate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.061338",
+    "old_path": "L5_safety\\validate.py",
+    "new_path": "L5_safety/test_validate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.062112",
+    "old_path": "L5_safety\\validate_tests_constraints.py",
+    "new_path": "L5_safety/test_validate_tests_constraints.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.062965",
+    "old_path": "L5_safety\\validate_tests_ethics.py",
+    "new_path": "L5_safety/test_validate_tests_ethics.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.064063",
+    "old_path": "L5_safety\\validate_tests_schema.py",
+    "new_path": "L5_safety/test_validate_tests_schema.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.065400",
+    "old_path": "_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\enforce.py",
+    "new_path": "_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/test_enforce_resource_limits.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.066341",
+    "old_path": "_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\track.py",
+    "new_path": "_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/test_track_resource_usage.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.067635",
+    "old_path": "_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\update.py",
+    "new_path": "_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/test_update_safety_state.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.069214",
+    "old_path": "_unassigned_duplicates\\l5_safety\\P4_safety\\check_rules\\policy\\validate.py",
+    "new_path": "_unassigned_duplicates/l5_safety/P4_safety/check_rules/policy/test_safety_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.070685",
+    "old_path": "L5_safety\\P4_safety\\apply.py",
+    "new_path": "L5_safety/P4_safety/test_apply.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.072056",
+    "old_path": "L5_safety\\P4_safety\\apply_tests_safety.py",
+    "new_path": "L5_safety/P4_safety/test_apply_tests_safety.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.073360",
+    "old_path": "L5_safety\\P4_safety\\assess.py",
+    "new_path": "L5_safety/P4_safety/test_assess.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.074414",
+    "old_path": "L5_safety\\P4_safety\\assess_tests_risk.py",
+    "new_path": "L5_safety/P4_safety/test_assess_tests_risk.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.075281",
+    "old_path": "L5_safety\\P4_safety\\compute.py",
+    "new_path": "L5_safety/P4_safety/test_compute.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.076320",
+    "old_path": "L5_safety\\P4_safety\\enforce.py",
+    "new_path": "L5_safety/P4_safety/test_enforce.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.077411",
+    "old_path": "L5_safety\\P4_safety\\enforce_tests_boundaries.py",
+    "new_path": "L5_safety/P4_safety/test_enforce_tests_boundaries.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.078468",
+    "old_path": "L5_safety\\P4_safety\\enforce_tests_contracts.py",
+    "new_path": "L5_safety/P4_safety/test_enforce_tests_contracts.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.079305",
+    "old_path": "L5_safety\\P4_safety\\enforce_tests_filters.py",
+    "new_path": "L5_safety/P4_safety/test_enforce_tests_filters.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.080415",
+    "old_path": "L5_safety\\P4_safety\\evaluate.py",
+    "new_path": "L5_safety/P4_safety/test_evaluate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.081258",
+    "old_path": "L5_safety\\P4_safety\\evaluate_tests_compliance.py",
+    "new_path": "L5_safety/P4_safety/test_evaluate_tests_compliance.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.082290",
+    "old_path": "L5_safety\\P4_safety\\model_stub_fixtures.py",
+    "new_path": "L5_safety/P4_safety/test_model_stub_fixtures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.083148",
+    "old_path": "L5_safety\\P4_safety\\manage_costs\\enforce.py",
+    "new_path": "L5_safety/P4_safety/manage_costs/test_enforce.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.084138",
+    "old_path": "L5_safety\\P4_safety\\manage_costs\\init_.py",
+    "new_path": "L5_safety/P4_safety/manage_costs/test_init_.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.085132",
+    "old_path": "L5_safety\\P4_safety\\manage_costs\\track.py",
+    "new_path": "L5_safety/P4_safety/manage_costs/test_track.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.086236",
+    "old_path": "L5_safety\\P4_safety\\manage_costs\\update.py",
+    "new_path": "L5_safety/P4_safety/manage_costs/test_update.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.087253",
+    "old_path": "L4_memory\\P4_safety\\enforce_tests_budget.py",
+    "new_path": "L4_memory/P4_safety/test_enforce_tests_budget.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.088626",
+    "old_path": "L4_memory\\P4_safety\\track_tests_cost.py",
+    "new_path": "L4_memory/P4_safety/test_track_tests_cost.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.089586",
+    "old_path": "L4_memory\\P4_safety\\update_tests_usage.py",
+    "new_path": "L4_memory/P4_safety/test_update_tests_usage.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.090512",
+    "old_path": "L4_memory\\P4_safety\\check_rules\\policy\\apply.py",
+    "new_path": "L4_memory/P4_safety/check_rules/policy/test_apply_safety_policies.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.091492",
+    "old_path": "L4_memory\\P4_safety\\check_rules\\policy\\enforce.py",
+    "new_path": "L4_memory/P4_safety/check_rules/policy/test_enforce_safety_thresholds.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.092853",
+    "old_path": "L4_memory\\P4_safety\\check_rules\\policy\\validate.py",
+    "new_path": "L4_memory/P4_safety/check_rules/policy/test_safety_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.093781",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\fetch_tests_history.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/test_fetch_tests_history.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.094899",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\query_tests_store.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/test_query_tests_store.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.095775",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\retrieve_tests_context.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/test_retrieve_tests_context.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.096546",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\embedding\\find.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/embedding/test_find.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.097298",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\embedding\\match.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/embedding/test_match_embedding_neighbors.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.098056",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\embedding\\match_tests_context.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/embedding/test_match_tests_context.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.098856",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\embedding\\retrieve_tests_similarity.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/embedding/test_retrieve_tests_similarity.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.099624",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\embedding\\search.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/embedding/test_search_fallback_mechanism.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.100404",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\embedding\\search_tests_vectors.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/embedding/test_search_tests_vectors.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.101226",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/understand/test_fetch_remote_resources.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.102858",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\understand\\query.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/understand/test_query_routing_logic.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.103886",
+    "old_path": "L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "new_path": "L4_memory/P1_retrieve/get_info/understand/test_retrieve_context_documents.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.104884",
+    "old_path": "L3_orchestration\\P3_aggregate\\build_tests_orchestration.py",
+    "new_path": "L3_orchestration/P3_aggregate/test_build_tests_orchestration.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.105803",
+    "old_path": "L3_orchestration\\P3_aggregate\\coordinate_tests_operations.py",
+    "new_path": "L3_orchestration/P3_aggregate/test_coordinate_tests_operations.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.106719",
+    "old_path": "L3_orchestration\\P3_aggregate\\format_tests_context.py",
+    "new_path": "L3_orchestration/P3_aggregate/test_format_tests_context.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.107597",
+    "old_path": "L3_orchestration\\P3_aggregate\\manage_tests_parameters.py",
+    "new_path": "L3_orchestration/P3_aggregate/test_manage_tests_parameters.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.108555",
+    "old_path": "L3_orchestration\\P3_aggregate\\orchestrate_tests_planning.py",
+    "new_path": "L3_orchestration/P3_aggregate/test_orchestrate_tests_planning.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.109525",
+    "old_path": "L3_orchestration\\P3_aggregate\\prepare_tests_orchestration.py",
+    "new_path": "L3_orchestration/P3_aggregate/test_prepare_tests_orchestration.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.110501",
+    "old_path": "L3_orchestration\\P4_safety\\enforce_tests_limits.py",
+    "new_path": "L3_orchestration/P4_safety/test_enforce_tests_limits.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.111689",
+    "old_path": "L3_orchestration\\P4_safety\\init_.py",
+    "new_path": "L3_orchestration/P4_safety/test_init_.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.112577",
+    "old_path": "L3_orchestration\\P4_safety\\track_tests_usage.py",
+    "new_path": "L3_orchestration/P4_safety/test_track_tests_usage.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.113421",
+    "old_path": "L3_orchestration\\P4_safety\\update_tests_budget.py",
+    "new_path": "L3_orchestration/P4_safety/test_update_tests_budget.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.114307",
+    "old_path": "L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py",
+    "new_path": "L3_orchestration/P4_safety/check_rules/policy/test_apply_safety_policies.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.115157",
+    "old_path": "L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py",
+    "new_path": "L3_orchestration/P4_safety/check_rules/policy/test_enforce_safety_thresholds.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.116237",
+    "old_path": "L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py",
+    "new_path": "L3_orchestration/P4_safety/check_rules/policy/test_safety_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.117198",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\execute_tests_commands.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/test_execute_tests_commands.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.118153",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\init_.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/test_init_.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.119473",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\invoke_tests_actions.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/test_invoke_tests_actions.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.120942",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\memory_fixtures.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/test_memory_fixtures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.122134",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\perform_tests_operations.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/test_perform_tests_operations.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.123170",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/routing/test_handle_routing_errors.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.124208",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle_tests_timeouts.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/routing/test_handle_tests_timeouts.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.125172",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/routing/test_implement_retry_logic.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.126150",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement_tests_fallback.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/routing/test_implement_tests_fallback.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.127320",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/routing/test_retry_failure_modes.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.128264",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry_tests_failures.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/routing/test_retry_tests_failures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.129068",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/use/test_call.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.129830",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/use/test_dispatch.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.130576",
+    "old_path": "L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "new_path": "L3_orchestration/P3_aggregate/use_tools/use/test_invoke.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.131379",
+    "old_path": "L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py",
+    "new_path": "L3_orchestration/P1_retrieve/get_info/understand/test_coordinate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.132437",
+    "old_path": "L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py",
+    "new_path": "L3_orchestration/P1_retrieve/get_info/understand/test_manage.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.133252",
+    "old_path": "L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py",
+    "new_path": "L3_orchestration/P1_retrieve/get_info/understand/test_orchestrate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.134029",
+    "old_path": "L2_execution\\P2_inspect\\apply_tests_weights.py",
+    "new_path": "L2_execution/P2_inspect/test_apply_tests_weights.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.134874",
+    "old_path": "L2_execution\\P2_inspect\\calculate_tests_similarity.py",
+    "new_path": "L2_execution/P2_inspect/test_calculate_tests_similarity.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.135921",
+    "old_path": "L2_execution\\P2_inspect\\compute_tests_confidence.py",
+    "new_path": "L2_execution/P2_inspect/test_compute_tests_confidence.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.136960",
+    "old_path": "L2_execution\\P2_inspect\\compute_tests_embeddings.py",
+    "new_path": "L2_execution/P2_inspect/test_compute_tests_embeddings.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.138236",
+    "old_path": "L2_execution\\P2_inspect\\normalize_tests_scores.py",
+    "new_path": "L2_execution/P2_inspect/test_normalize_tests_scores.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.139323",
+    "old_path": "L2_execution\\P2_inspect\\normalize_tests_vectors.py",
+    "new_path": "L2_execution/P2_inspect/test_normalize_tests_vectors.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.140233",
+    "old_path": "L2_execution\\P3_aggregate\\adjust_tests_weights.py",
+    "new_path": "L2_execution/P3_aggregate/test_adjust_tests_weights.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.141066",
+    "old_path": "L2_execution\\P3_aggregate\\apply_tests_algorithm.py",
+    "new_path": "L2_execution/P3_aggregate/test_apply_tests_algorithm.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.141861",
+    "old_path": "L2_execution\\P3_aggregate\\build_tests_filters.py",
+    "new_path": "L2_execution/P3_aggregate/test_build_tests_filters.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.142616",
+    "old_path": "L2_execution\\P3_aggregate\\extract_tests_parameters.py",
+    "new_path": "L2_execution/P3_aggregate/test_extract_tests_parameters.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.143542",
+    "old_path": "L2_execution\\P3_aggregate\\format_tests_context.py",
+    "new_path": "L2_execution/P3_aggregate/test_format_tests_context.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.144440",
+    "old_path": "L2_execution\\P3_aggregate\\optimize_tests_order.py",
+    "new_path": "L2_execution/P3_aggregate/test_optimize_tests_order.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.145281",
+    "old_path": "L2_execution\\P3_aggregate\\parse_tests_settings.py",
+    "new_path": "L2_execution/P3_aggregate/test_parse_tests_settings.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.146055",
+    "old_path": "L2_execution\\P3_aggregate\\rank_tests_components.py",
+    "new_path": "L2_execution/P3_aggregate/test_rank_tests_components.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.146819",
+    "old_path": "L2_execution\\P3_aggregate\\refine_tests_ranking.py",
+    "new_path": "L2_execution/P3_aggregate/test_refine_tests_ranking.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.147675",
+    "old_path": "L2_execution\\P3_aggregate\\sort_tests_results.py",
+    "new_path": "L2_execution/P3_aggregate/test_sort_tests_results.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.148548",
+    "old_path": "L2_execution\\P4_safety\\check_rules\\rag_fixtures.py",
+    "new_path": "L2_execution/P4_safety/check_rules/test_rag_fixtures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.149615",
+    "old_path": "L2_execution\\P4_safety\\check_rules\\policy\\apply.py",
+    "new_path": "L2_execution/P4_safety/check_rules/policy/test_apply_safety_policies.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.150416",
+    "old_path": "L2_execution\\P4_safety\\check_rules\\policy\\enforce.py",
+    "new_path": "L2_execution/P4_safety/check_rules/policy/test_enforce_safety_thresholds.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.151387",
+    "old_path": "L2_execution\\P4_safety\\check_rules\\policy\\validate.py",
+    "new_path": "L2_execution/P4_safety/check_rules/policy/test_safety_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.152544",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\execute_tests_commands.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/test_execute_tests_commands.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.153595",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\handle_tests_timeouts.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/test_handle_tests_timeouts.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.154960",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\implement_tests_fallback.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/test_implement_tests_fallback.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.156222",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\invoke_tests_actions.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/test_invoke_tests_actions.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.157232",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\perform_tests_operations.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/test_perform_tests_operations.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.158240",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\retry_tests_failures.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/test_retry_tests_failures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.159259",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\use\\execute.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/use/test_execute.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.160174",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/use/test_invoke.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.161401",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\use\\perform.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/use/test_perform.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.162431",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\utility\\format.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/utility/test_format_context_payload.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.163313",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/utility/test_prepare_normalized_inputs.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.164141",
+    "old_path": "L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py",
+    "new_path": "L2_execution/P3_aggregate/use_tools/utility/test_serialize.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.165001",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\assess_tests_confidence.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/test_assess_tests_confidence.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.165975",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\compute_tests_validation.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/test_compute_tests_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.166836",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\rg_resume_fixtures.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/test_rg_resume_fixtures.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.167618",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\validate_tests_quality.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/test_validate_tests_quality.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.168676",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\policy\\check.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/policy/test_policy_rule_selection.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.170080",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/policy/test_policy_enforcement_paths.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.171392",
+    "old_path": "L2_execution\\P2_inspect\\check_structure\\policy\\validate.py",
+    "new_path": "L2_execution/P2_inspect/check_structure/policy/test_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.172367",
+    "old_path": "L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py",
+    "new_path": "L1_cognition/P4_safety/manage_costs/update/test_enforce_resource_limits.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.173315",
+    "old_path": "L1_cognition\\P4_safety\\manage_costs\\update\\track.py",
+    "new_path": "L1_cognition/P4_safety/manage_costs/update/test_track_resource_usage.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.174552",
+    "old_path": "L1_cognition\\P4_safety\\manage_costs\\update\\update.py",
+    "new_path": "L1_cognition/P4_safety/manage_costs/update/test_update_safety_state.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.175469",
+    "old_path": "L1_cognition\\P4_safety\\check_rules\\policy\\apply.py",
+    "new_path": "L1_cognition/P4_safety/check_rules/policy/test_apply_safety_policies.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.176355",
+    "old_path": "L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py",
+    "new_path": "L1_cognition/P4_safety/check_rules/policy/test_enforce_safety_thresholds.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.177478",
+    "old_path": "L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+    "new_path": "L1_cognition/P4_safety/check_rules/policy/test_safety_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.178718",
+    "old_path": "L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py",
+    "new_path": "L1_cognition/P3_aggregate/use_tools/routing/test_apply_routing_decisions.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.179899",
+    "old_path": "L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "new_path": "L1_cognition/P3_aggregate/use_tools/routing/test_handle_routing_errors.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.180950",
+    "old_path": "L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "new_path": "L1_cognition/P3_aggregate/use_tools/routing/test_implement_retry_logic.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.181770",
+    "old_path": "L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py",
+    "new_path": "L1_cognition/P3_aggregate/use_tools/use/test_execute.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.182613",
+    "old_path": "L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "new_path": "L1_cognition/P3_aggregate/use_tools/use/test_invoke.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.183366",
+    "old_path": "L1_cognition\\P3_aggregate\\use_tools\\use\\process.py",
+    "new_path": "L1_cognition/P3_aggregate/use_tools/use/test_process.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.184137",
+    "old_path": "L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py",
+    "new_path": "L1_cognition/P3_aggregate/update_state/update/test_aggregate_status_across_sources.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.185236",
+    "old_path": "L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py",
+    "new_path": "L1_cognition/P3_aggregate/update_state/update/test_consolidate_state_transitions.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.186758",
+    "old_path": "L1_cognition\\P3_aggregate\\update_state\\update\\merge.py",
+    "new_path": "L1_cognition/P3_aggregate/update_state/update/test_merge_status_records.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.187928",
+    "old_path": "L1_cognition\\P3_aggregate\\update_state\\utility\\format.py",
+    "new_path": "L1_cognition/P3_aggregate/update_state/utility/test_format_context_payload.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.189363",
+    "old_path": "L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py",
+    "new_path": "L1_cognition/P3_aggregate/update_state/utility/test_prepare_normalized_inputs.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.190424",
+    "old_path": "L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py",
+    "new_path": "L1_cognition/P3_aggregate/update_state/utility/test_serialize.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.191354",
+    "old_path": "L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py",
+    "new_path": "L1_cognition/P3_aggregate/pick_best_result/refinement/test_adjust_rankings_on_feedback.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.192419",
+    "old_path": "L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py",
+    "new_path": "L1_cognition/P3_aggregate/pick_best_result/refinement/test_optimize_candidate_set.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.193248",
+    "old_path": "L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py",
+    "new_path": "L1_cognition/P3_aggregate/pick_best_result/refinement/regression_guard_refinement_regressions.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.194206",
+    "old_path": "L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py",
+    "new_path": "L1_cognition/P3_aggregate/pick_best_result/understand/test_apply.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.195104",
+    "old_path": "L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py",
+    "new_path": "L1_cognition/P3_aggregate/pick_best_result/understand/test_rank.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.196148",
+    "old_path": "L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py",
+    "new_path": "L1_cognition/P3_aggregate/pick_best_result/understand/test_sort.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.196939",
+    "old_path": "L1_cognition\\P2_inspect\\find_problems\\update\\capture.py",
+    "new_path": "L1_cognition/P2_inspect/find_problems/update/test_capture.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.197700",
+    "old_path": "L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py",
+    "new_path": "L1_cognition/P2_inspect/find_problems/update/test_inspect.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.198440",
+    "old_path": "L1_cognition\\P2_inspect\\find_problems\\update\\log.py",
+    "new_path": "L1_cognition/P2_inspect/find_problems/update/test_log.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.199244",
+    "old_path": "L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py",
+    "new_path": "L1_cognition/P2_inspect/convert_content/embedding/test_calculate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.200226",
+    "old_path": "L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py",
+    "new_path": "L1_cognition/P2_inspect/convert_content/embedding/test_embedding_compute_determinism.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.201161",
+    "old_path": "L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py",
+    "new_path": "L1_cognition/P2_inspect/convert_content/embedding/test_embedding_normalization_invariants.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.202258",
+    "old_path": "L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py",
+    "new_path": "L1_cognition/P2_inspect/convert_content/semantic/test_semantic_apply_transforms.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.203695",
+    "old_path": "L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py",
+    "new_path": "L1_cognition/P2_inspect/convert_content/semantic/test_semantic_compute_features.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.204648",
+    "old_path": "L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py",
+    "new_path": "L1_cognition/P2_inspect/convert_content/semantic/test_semantic_normalize_outputs.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.205614",
+    "old_path": "L1_cognition\\P2_inspect\\check_structure\\policy\\check.py",
+    "new_path": "L1_cognition/P2_inspect/check_structure/policy/test_policy_rule_selection.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.206565",
+    "old_path": "L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "new_path": "L1_cognition/P2_inspect/check_structure/policy/test_policy_enforcement_paths.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.207603",
+    "old_path": "L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+    "new_path": "L1_cognition/P2_inspect/check_structure/policy/test_policy_schema_validation.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.208580",
+    "old_path": "L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py",
+    "new_path": "L1_cognition/P2_inspect/check_structure/semantic/test_semantic_assessment_scores.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.209506",
+    "old_path": "L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py",
+    "new_path": "L1_cognition/P2_inspect/check_structure/semantic/test_semantic_compute_features.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.210963",
+    "old_path": "L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+    "new_path": "L1_cognition/P2_inspect/check_structure/semantic/test_validate.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.212320",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/embedding/test_match_embedding_neighbors.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.213604",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/embedding/test_retrieve_similarity_topk.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.214493",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/embedding/test_search_fallback_mechanism.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.215386",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/understand/test_extract_input_fields.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.216204",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/understand/test_fetch_remote_resources.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.217177",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\understand\\load.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/understand/test_load_config_and_state.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.218019",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/understand/test_parse_user_queries.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.219270",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\understand\\query.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/understand/test_query_routing_logic.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.220749",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/understand/test_retrieve_context_documents.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.221844",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\utility\\build.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/utility/test_build_context_object.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.222829",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\utility\\format.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/utility/test_format_context_payload.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.223919",
+    "old_path": "L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py",
+    "new_path": "L1_cognition/P1_retrieve/get_info/utility/test_prepare_normalized_inputs.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.224750",
+    "old_path": "L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
+    "new_path": "L1_cognition/P1_retrieve/check_rules/policy/test_policy_rule_selection.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.225677",
+    "old_path": "L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
+    "new_path": "L1_cognition/P1_retrieve/check_rules/policy/test_policy_enforcement_paths.py"
+  },
+  {
+    "timestamp": "2025-12-04T05:55:15.227148",
+    "old_path": "L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
+    "new_path": "L1_cognition/P1_retrieve/check_rules/policy/test_policy_schema_validation.py"
+  }
+]
