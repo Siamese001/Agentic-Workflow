@@ -21,7 +21,11 @@ global:
   # domain_modes now acts as the authoritative mapping
 
 domains:
-  operational_support: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared", "shared_engine_ops"]
+  # Operational support domains (non-cognitive, no L*/P* inference)
+  operational_support: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared"]
+  # Library support is a distinct mode in domain_modes; keep it separate from operational_support
+  library_support: ["shared_engine_ops"]
+  # Tests use taxonomy-based governance, no L*/P* inference
   test_taxonomy: ["tests"]
 
 domain_modes:
