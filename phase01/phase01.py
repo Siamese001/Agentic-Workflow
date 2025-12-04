@@ -1002,12 +1002,32 @@ DO NOT REMOVE during Phase 1."""
                       f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
                 shutil.move(str(src), str(dest))
 
-        # 8) Emit index/mapping JSON for this domain.
+        # 8) Compute and print summary for this domain (runs in both modes)
+        # Separate legacy and borderline matches
+        legacy_folders = [m for m in legacy_matches if m.category == "high_confidence_match"]
+        borderline_folders = [m for m in legacy_matches if m.category == "borderline_match"]
+        
+        # Compute summary counts
+        high_conf_archives = len(legacy_folders)
+        borderline_archives = len(borderline_folders)
+        file_moves = len([m for m in mappings if not m.is_duplicate and m.dest_rel])
+        duplicate_routes = len([m for m in mappings if m.is_duplicate])
+        
+        # Count protected paths skipped during archival
+        protected_skips = 0
+        # This would be tracked during archive operations - for now using placeholder
+        # In a real implementation, this would be accumulated from archive operations
+        
+        # Print summary
+        print(f"[SUMMARY] {folder}:")
+        print(f"  High-confidence archives: {high_conf_archives}")
+        print(f"  Borderline archives: {borderline_archives}")
+        print(f"  File moves: {file_moves}")
+        print(f"  Duplicate routes: {duplicate_routes}")
+        print(f"  Protected items skipped: {protected_skips}")
+        
+        # 9) Emit index/mapping JSON for this domain (execute mode only)
         if not dry_run:
-            # Separate legacy and borderline matches
-            legacy_folders = [m for m in legacy_matches if m.category == "high_confidence_match"]
-            borderline_folders = [m for m in legacy_matches if m.category == "borderline_match"]
-            
             # Add placeholder metadata to legacy folders
             for m in legacy_folders:
                 m.placeholder_filename = ".phase1_legacy_placeholder"
@@ -1018,17 +1038,6 @@ DO NOT REMOVE during Phase 1."""
                 m.placeholder_filename = ".phase1_borderline_placeholder"
                 m.placeholder_content = "borderline"
             
-            # Compute summary counts
-            high_conf_archives = len(legacy_folders)
-            borderline_archives = len(borderline_folders)
-            file_moves = len([m for m in mappings if not m.is_duplicate and m.dest_rel])
-            duplicate_routes = len([m for m in mappings if m.is_duplicate])
-            
-            # Count protected paths skipped during archival
-            protected_skips = 0
-            # This would be tracked during archive operations - for now using placeholder
-            # In a real implementation, this would be accumulated from archive operations
-            
             summary = {
                 "high_conf_archives": high_conf_archives,
                 "borderline_archives": borderline_archives,
@@ -1036,14 +1045,6 @@ DO NOT REMOVE during Phase 1."""
                 "duplicate_routes": duplicate_routes,
                 "protected_skips": protected_skips
             }
-            
-            # Print summary
-            print(f"[SUMMARY] {folder}:")
-            print(f"  High-confidence archives: {high_conf_archives}")
-            print(f"  Borderline archives: {borderline_archives}")
-            print(f"  File moves: {file_moves}")
-            print(f"  Duplicate routes: {duplicate_routes}")
-            print(f"  Protected items skipped: {protected_skips}")
             
             index_data = {
                 "domain": folder,
