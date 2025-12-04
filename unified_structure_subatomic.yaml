@@ -2917,3 +2917,137 @@ shared:
             update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
+
+# Apps aggregate structure (physical 09_apps contains apps_rg and apps_lic subfolders)
+apps:
+  apps_rg:
+    __init__.py: null
+  apps_lic:
+    __init__.py: null
+  _unassigned_apps_unknown:
+    __init__.py: null
+  __init__.py: null
+
+# Tests structure (physical 10_tests contains test taxonomy)
+tests:
+  unit:
+    __init__.py: null
+    agentic_core:
+      __init__.py: null
+      L1_cognition:
+        __init__.py: null
+        P1_retrieve:
+          __init__.py: null
+          understand_request:
+            __init__.py: null
+        P2_inspect:
+          __init__.py: null
+          diagnostics_ops:
+            __init__.py: null
+        P3_aggregate:
+          __init__.py: null
+          pick_best_result:
+            __init__.py: null
+        P4_safety:
+          __init__.py: null
+          check_rules:
+            __init__.py: null
+      L2_execution:
+        __init__.py: null
+        P1_retrieve:
+          __init__.py: null
+        P2_inspect:
+          __init__.py: null
+        P3_aggregate:
+          __init__.py: null
+        P4_safety:
+          __init__.py: null
+      L3_orchestration:
+        __init__.py: null
+        P1_retrieve:
+          __init__.py: null
+        P2_inspect:
+          __init__.py: null
+        P3_aggregate:
+          __init__.py: null
+        P4_safety:
+          __init__.py: null
+      L4_memory:
+        __init__.py: null
+        P1_retrieve:
+          __init__.py: null
+        P2_inspect:
+          __init__.py: null
+        P3_aggregate:
+          __init__.py: null
+        P4_safety:
+          __init__.py: null
+      L5_safety:
+        __init__.py: null
+        P1_retrieve:
+          __init__.py: null
+        P2_inspect:
+          __init__.py: null
+        P3_aggregate:
+          __init__.py: null
+        P4_safety:
+          __init__.py: null
+    apps_rg:
+      __init__.py: null
+      L1_cognition:
+        __init__.py: null
+      L2_execution:
+        __init__.py: null
+      L3_orchestration:
+        __init__.py: null
+      L4_memory:
+        __init__.py: null
+      L5_safety:
+        __init__.py: null
+    apps_lic:
+      __init__.py: null
+      L1_cognition:
+        __init__.py: null
+      L2_execution:
+        __init__.py: null
+      L3_orchestration:
+        __init__.py: null
+      L4_memory:
+        __init__.py: null
+      L5_safety:
+        __init__.py: null
+    schemas:
+      __init__.py: null
+    runtime:
+      __init__.py: null
+    prompt_governance:
+      __init__.py: null
+    config:
+      __init__.py: null
+    data:
+      __init__.py: null
+    observability:
+      __init__.py: null
+    scripts:
+      __init__.py: null
+    shared:
+      __init__.py: null
+  integration:
+    __init__.py: null
+    api:
+      __init__.py: null
+    workflow:
+      __init__.py: null
+    cross_domain:
+      __init__.py: null
+  perf:
+    __init__.py: null
+    latency:
+      __init__.py: null
+    throughput:
+      __init__.py: null
+    cost:
+      __init__.py: null
+  logic:
+    __init__.py: null
+  __init__.py: null

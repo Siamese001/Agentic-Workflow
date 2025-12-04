@@ -939,13 +939,103 @@ def infer_target_for_file(
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
             dest_rel="/".join(parent_parts + [filename]),
-            confidence=1.0,
             reason=f"taxonomy match under {bucket}",
             is_duplicate=False,
         )
 
     # ================================================================
-    # STRICT SUPPORT DOMAIN LOGIC — Cognitive inference 100% blocked
+    # APPS DOMAIN — Handle apps_rg/apps_lic with hierarchical structure
+    # ================================================================
+    if logical_root in ["apps", "apps_rg", "apps_lic"]:
+        print(f"[DEBUG] Apps domain routing triggered for file: {filename} (logical_root: {logical_root})")
+        filename = parts[-1]
+        
+        # For apps domain (not yet split), strip L*/P* patterns and route to appropriate subdomain
+        if logical_root == "apps":
+            # Strip L*/P* components from path for clean routing
+            clean_parent_parts = []
+            has_cognitive_pattern = False
+            for p in parent_parts:
+                if p.startswith("L") or p.startswith("P"):
+                    has_cognitive_pattern = True
+                    print(f"[DEBUG] Stripping cognitive pattern {p} from apps domain")
+                else:
+                    clean_parent_parts.append(p)
+            
+            # Infer target subdomain based on folder patterns when filename lacks prefix
+            if filename.lower().startswith("rg_"):
+                target_subdomain = "apps_rg"
+                print(f"[DEBUG] Routing {filename} to apps_rg (rg_ prefix)")
+            elif filename.lower().startswith("lic_"):
+                target_subdomain = "apps_lic"
+                print(f"[DEBUG] Routing {filename} to apps_lic (lic_ prefix)")
+            else:
+                # Infer from folder patterns
+                folder_path = "/".join(clean_parent_parts).lower()
+                if any(pattern in folder_path for pattern in ["outreach", "message", "campaign", "generation"]):
+                    target_subdomain = "apps_lic"
+                    print(f"[DEBUG] Routing {filename} to apps_lic (inferred from outreach/message patterns)")
+                elif any(pattern in folder_path for pattern in ["resume", "recruiting", "job", "candidate"]):
+                    target_subdomain = "apps_rg"
+                    print(f"[DEBUG] Routing {filename} to apps_rg (inferred from resume/job patterns)")
+                else:
+                    # Unknown pattern → route to unassigned (preserving original path)
+                    print(f"[DEBUG] Routing {filename} to _unassigned_apps_unknown (no recognizable patterns)")
+                    return MappingDecision(
+                        src_rel=str(src_rel).replace("\\", "/"),
+                        dest_rel=f"_unassigned_apps_unknown/{src_rel.as_posix()}",
+                        confidence=0.2,
+                        reason="Apps file lacks rg_/lic_ prefix and recognizable folder patterns",
+                        is_duplicate=False,
+                    )
+            
+            # Route to appropriate subdomain with clean path (L*/P* stripped)
+            clean_path = "/".join(clean_parent_parts + [filename])
+            print(f"[DEBUG] Successfully routing {filename} to {target_subdomain}/{clean_path}")
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=f"{target_subdomain}/{clean_path}",
+                confidence=1.0,
+                reason=f"Apps file routed to {target_subdomain} based on prefix (cognitive patterns stripped)",
+                is_duplicate=False,
+            )
+        
+        # For apps_rg/apps_lic (already split), strip L*/P* patterns and allow hierarchical structure
+        # This handles files that were already in L*/P* folders before the domain split
+        clean_parent_parts = []
+        has_cognitive_pattern = False
+        for p in parent_parts:
+            if p.startswith("L") or p.startswith("P"):
+                has_cognitive_pattern = True
+                print(f"[DEBUG] Stripping cognitive pattern {p} from apps subdomain {logical_root}")
+            else:
+                clean_parent_parts.append(p)
+        
+        if has_cognitive_pattern:
+            # Route to clean hierarchical path (L*/P* stripped)
+            clean_path = "/".join(clean_parent_parts + [filename])
+            print(f"[DEBUG] Successfully routing {filename} to clean path in {logical_root}: {clean_path}")
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=clean_path,
+                confidence=1.0,
+                reason=f"Apps subdomain {logical_root} hierarchical structure (cognitive patterns stripped)",
+                is_duplicate=False,
+            )
+        else:
+            # Already clean, allow hierarchical structure
+            print(f"[DEBUG] Allowing hierarchical structure for {logical_root}: {filename}")
+            clean_path = "/".join(parent_parts + [filename])
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=clean_path,
+                confidence=1.0,
+                reason=f"Apps subdomain {logical_root} hierarchical structure",
+                is_duplicate=False,
+            )
+
+    # ================================================================
+    # SUPPORT DOMAIN LOGIC — Cognitive inference 100% blocked
     # ================================================================
     domain_mode = enforcer.config.domain_modes.get(logical_root)
     is_support = (domain_mode != "cognitive_engine")
@@ -989,6 +1079,97 @@ def infer_target_for_file(
             reason="support domain no-match; cognitive inference blocked",
             is_duplicate=False,
         )
+
+    # ================================================================
+    # APPS DOMAIN — Handle apps_rg/apps_lic with hierarchical structure
+    # ================================================================
+    if logical_root in ["apps", "apps_rg", "apps_lic"]:
+        print(f"[DEBUG] Apps domain routing triggered for file: {filename} (logical_root: {logical_root})")
+        filename = parts[-1]
+        
+        # For apps domain (not yet split), strip L*/P* patterns and route to appropriate subdomain
+        if logical_root == "apps":
+            # Strip L*/P* components from path for clean routing
+            clean_parent_parts = []
+            has_cognitive_pattern = False
+            for p in parent_parts:
+                if p.startswith("L") or p.startswith("P"):
+                    has_cognitive_pattern = True
+                    print(f"[DEBUG] Stripping cognitive pattern {p} from apps domain")
+                else:
+                    clean_parent_parts.append(p)
+            
+            # Infer target subdomain based on folder patterns when filename lacks prefix
+            if filename.lower().startswith("rg_"):
+                target_subdomain = "apps_rg"
+                print(f"[DEBUG] Routing {filename} to apps_rg (rg_ prefix)")
+            elif filename.lower().startswith("lic_"):
+                target_subdomain = "apps_lic"
+                print(f"[DEBUG] Routing {filename} to apps_lic (lic_ prefix)")
+            else:
+                # Infer from folder patterns
+                folder_path = "/".join(clean_parent_parts).lower()
+                if any(pattern in folder_path for pattern in ["outreach", "message", "campaign", "generation"]):
+                    target_subdomain = "apps_lic"
+                    print(f"[DEBUG] Routing {filename} to apps_lic (inferred from outreach/message patterns)")
+                elif any(pattern in folder_path for pattern in ["resume", "recruiting", "job", "candidate"]):
+                    target_subdomain = "apps_rg"
+                    print(f"[DEBUG] Routing {filename} to apps_rg (inferred from resume/job patterns)")
+                else:
+                    # Unknown pattern → route to unassigned (preserving original path)
+                    print(f"[DEBUG] Routing {filename} to _unassigned_apps_unknown (no recognizable patterns)")
+                    return MappingDecision(
+                        src_rel=str(src_rel).replace("\\", "/"),
+                        dest_rel=f"_unassigned_apps_unknown/{src_rel.as_posix()}",
+                        confidence=0.2,
+                        reason="Apps file lacks rg_/lic_ prefix and recognizable folder patterns",
+                        is_duplicate=False,
+                    )
+            
+            # Route to appropriate subdomain with clean path (L*/P* stripped)
+            clean_path = "/".join(clean_parent_parts + [filename])
+            print(f"[DEBUG] Successfully routing {filename} to {target_subdomain}/{clean_path}")
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=f"{target_subdomain}/{clean_path}",
+                confidence=1.0,
+                reason=f"Apps file routed to {target_subdomain} based on prefix (cognitive patterns stripped)",
+                is_duplicate=False,
+            )
+        
+        # For apps_rg/apps_lic (already split), strip L*/P* patterns and allow hierarchical structure
+        # This handles files that were already in L*/P* folders before the domain split
+        clean_parent_parts = []
+        has_cognitive_pattern = False
+        for p in parent_parts:
+            if p.startswith("L") or p.startswith("P"):
+                has_cognitive_pattern = True
+                print(f"[DEBUG] Stripping cognitive pattern {p} from apps subdomain {logical_root}")
+            else:
+                clean_parent_parts.append(p)
+        
+        if has_cognitive_pattern:
+            # Route to clean hierarchical path (L*/P* stripped)
+            clean_path = "/".join(clean_parent_parts + [filename])
+            print(f"[DEBUG] Successfully routing {filename} to clean path in {logical_root}: {clean_path}")
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=clean_path,
+                confidence=1.0,
+                reason=f"Apps subdomain {logical_root} hierarchical structure (cognitive patterns stripped)",
+                is_duplicate=False,
+            )
+        else:
+            # Already clean, allow hierarchical structure
+            print(f"[DEBUG] Allowing hierarchical structure for {logical_root}: {filename}")
+            clean_path = "/".join(parent_parts + [filename])
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=clean_path,
+                confidence=1.0,
+                reason=f"Apps subdomain {logical_root} hierarchical structure",
+                is_duplicate=False,
+            )
 
     # Cognitive Domain Logic (agentic_core, apps_lic, apps_rg)
     # If already starts with L[1-5]_ we assume it's already in canonical L-layer.
@@ -1404,12 +1585,13 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                 file_logical_root = logical_root
                 if logical_root == "apps":
                     file_logical_root = enforcer.map_target_root(target_root, rel_path)
-                    # If file couldn't be resolved to RG/LIC, skip it
+                    # If file couldn't be resolved to RG/LIC, still process with "apps" for pattern inference
                     if file_logical_root.startswith("_unassigned"):
-                        print(f"[SKIP] Unassigned apps file: {rel_path}")
-                        continue
+                        file_logical_root = "apps"  # Use "apps" to trigger pattern inference routing logic
+                        print(f"[DEBUG] Processing unassigned apps file with pattern inference: {rel_path}")
                 
                 # Infer target using governance-aware logic
+                print(f"[DEBUG] About to call infer_target_for_file with logical_root={file_logical_root} for file: {rel_path}")
                 decision = infer_target_for_file(
                     logical_root=file_logical_root,
                     ssot_subtree=ssot_data.get(file_logical_root, {}),
@@ -1417,6 +1599,7 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                     enforcer=enforcer,
                     domain_root=domain_root,
                 )
+                print(f"[DEBUG] infer_target_for_file returned: {decision.dest_rel} (reason: {decision.reason})")
                 
                 all_mapping_decisions.append(decision)
                 
