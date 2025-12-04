@@ -1,0 +1,16 @@
+{
+  "hash": "3884704b5ad9547fa76c7329baa9a6db3baab3db66d80ba8d4d026f3b9684cc7",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "draft_planning.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "stacks_v10_8/draft_planning.py"
+    }
+  ]
+}

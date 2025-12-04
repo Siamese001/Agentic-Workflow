@@ -1,0 +1,11 @@
+{
+  "hash": "b2ca9f17042182544b7147a64b959e538cd43483c8260473cca308f917628500",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/qa/metrics.py"
+    }
+  ]
+}

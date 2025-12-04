@@ -3,6 +3,2102 @@
   "logical_root": "data",
   "mappings": [
     {
+      "src_rel": "test_rename_log.json",
+      "dest_rel": "test_rename_log.json",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/rename_tests.py",
+      "dest_rel": "10_tests_backup_20251204_055433/rename_tests.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/check_rules/policy/check.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/check_rules/policy/check.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/check_rules/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/check_rules/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/embedding/match.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/embedding/match.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/embedding/search.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/embedding/search.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/extract.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/extract.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/fetch.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/fetch.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/load.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/load.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/parse.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/parse.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/query.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/query.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/utility/build.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/utility/build.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/utility/format.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/utility/format.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/utility/prepare.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P1_retrieve/get_info/utility/prepare.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/policy/check.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/policy/check.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/semantic/assess.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/semantic/assess.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/semantic/compute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/semantic/compute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/semantic/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/check_structure/semantic/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/embedding/compute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/embedding/compute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/semantic/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/semantic/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/semantic/compute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/semantic/compute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/find_problems/update/capture.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/find_problems/update/capture.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/find_problems/update/inspect.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/find_problems/update/inspect.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/find_problems/update/log.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P2_inspect/find_problems/update/log.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/update/aggregate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/update/aggregate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/update/consolidate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/update/consolidate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/update/merge.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/update/merge.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/utility/format.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/utility/format.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/utility/prepare.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/utility/prepare.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/utility/serialize.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/update_state/utility/serialize.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/routing/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/routing/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/routing/handle.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/routing/handle.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/routing/implement.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/routing/implement.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/use/execute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/use/execute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/use/process.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P3_aggregate/use_tools/use/process.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/check_rules/policy/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/manage_costs/update/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/manage_costs/update/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/manage_costs/update/track.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/manage_costs/update/track.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/manage_costs/update/update.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L1_cognition/P4_safety/manage_costs/update/update.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/diagnose_tests_issues.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/diagnose_tests_issues.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/inspect_tests_quality.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/inspect_tests_quality.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/lic_outreach_fixtures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/lic_outreach_fixtures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/load_tests_planning.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/load_tests_planning.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/log_tests_metrics.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/log_tests_metrics.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/prepare_tests_payload.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/prepare_tests_payload.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_e2e_multi_turn_state.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_e2e_multi_turn_state.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_fallback_paths.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_fallback_paths.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_l2_rg_execution_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_l2_rg_execution_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_company_research_executor.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_company_research_executor.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_contact_research_executor.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_contact_research_executor.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_message_generation_executor.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_message_generation_executor.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_research_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_lic_research_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_memory_schema_validation.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_memory_schema_validation.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_performance_stability.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_performance_stability.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_rg_company_research_executor.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_rg_company_research_executor.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/test_tool_calls.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/test_tool_calls.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/apply_tests_weights.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/apply_tests_weights.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/calculate_tests_similarity.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/calculate_tests_similarity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/compute_tests_confidence.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/compute_tests_confidence.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/compute_tests_embeddings.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/compute_tests_embeddings.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/normalize_tests_scores.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/normalize_tests_scores.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/normalize_tests_vectors.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/normalize_tests_vectors.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/sample_rg_resume_input.json",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/sample_rg_resume_input.json",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_api_stability.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_api_stability.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_dag_validity.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_dag_validity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_rg_safety_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_rg_safety_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_rg_temporal_memory.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/test_rg_temporal_memory.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/assess_tests_confidence.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/assess_tests_confidence.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/compute_tests_validation.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/compute_tests_validation.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/rg_resume_fixtures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/rg_resume_fixtures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/test_l1_lic_planning_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/test_l1_lic_planning_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/test_self_correction_loops.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/test_self_correction_loops.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/validate_tests_quality.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/validate_tests_quality.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/policy/check.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/policy/check.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P2_inspect/check_structure/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/adjust_tests_weights.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/adjust_tests_weights.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/apply_tests_algorithm.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/apply_tests_algorithm.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/build_tests_filters.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/build_tests_filters.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/extract_tests_parameters.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/extract_tests_parameters.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/format_tests_context.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/format_tests_context.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/optimize_tests_order.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/optimize_tests_order.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/parse_tests_settings.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/parse_tests_settings.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/rank_tests_components.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/rank_tests_components.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/refine_tests_ranking.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/refine_tests_ranking.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/sample_contact_kg.json",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/sample_contact_kg.json",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/sort_tests_results.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/sort_tests_results.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_e2e_lic_outreach_flow.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_e2e_lic_outreach_flow.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_kg_pipeline_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_kg_pipeline_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_lic_refinement_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_lic_refinement_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_long_term_memory.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_long_term_memory.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_memory_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_memory_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_output_stability.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_output_stability.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_planning_schema_validation.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_planning_schema_validation.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_prompt_injection_protection.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_prompt_injection_protection.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_provider_registry.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_provider_registry.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_ast.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_ast.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_integrity.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_integrity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_lineage.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_lineage.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_reconstruction.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/test_semantic_cache_reconstruction.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/execute_tests_commands.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/execute_tests_commands.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/handle_tests_timeouts.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/handle_tests_timeouts.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/implement_tests_fallback.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/implement_tests_fallback.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/invoke_tests_actions.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/invoke_tests_actions.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/perform_tests_operations.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/perform_tests_operations.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/retry_tests_failures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/retry_tests_failures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/use/execute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/use/execute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/use/perform.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/use/perform.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/format.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/format.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/prepare.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/prepare.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/serialize.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/serialize.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/test_e2e_tool_error_recovery.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/test_e2e_tool_error_recovery.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/test_tool_response_parser.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P3_aggregate/use_tools/utility/test_tool_response_parser.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/test_cross_layer_purity.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/test_cross_layer_purity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/test_semantic_cache_safety.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/test_semantic_cache_safety.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/rag_fixtures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/rag_fixtures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/test_rg_strategy_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/test_rg_strategy_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/policy/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L2_execution/P4_safety/check_rules/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/apply_tests_safety.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/apply_tests_safety.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/enforce_tests_filters.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/enforce_tests_filters.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_e2e_safety_blocking_flows.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_e2e_safety_blocking_flows.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_lic_safety_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_lic_safety_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_llm_guardrails.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_llm_guardrails.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_rag_pipeline_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_rag_pipeline_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_tool_request_builder.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/test_tool_request_builder.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/validate_tests_ethics.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/validate_tests_ethics.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/test_rg_research_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/test_rg_research_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/understand/manage.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/understand/manage.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/build_tests_orchestration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/build_tests_orchestration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/coordinate_tests_operations.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/coordinate_tests_operations.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/format_tests_context.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/format_tests_context.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/manage_tests_parameters.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/manage_tests_parameters.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/orchestrate_tests_planning.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/orchestrate_tests_planning.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/prepare_tests_orchestration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/prepare_tests_orchestration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/sample_company_kg.json",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/sample_company_kg.json",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_e2e_rg_resume_flow.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_e2e_rg_resume_flow.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_lic_message_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_lic_message_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_lic_outreach_engine_dag.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_lic_outreach_engine_dag.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_lic_temporal_memory.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_lic_temporal_memory.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_policy_engine.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_policy_engine.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_regression_temporal_memory.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_regression_temporal_memory.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_rg_message_generation_executor.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/test_rg_message_generation_executor.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/execute_tests_commands.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/execute_tests_commands.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/init_.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/init_.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/invoke_tests_actions.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/invoke_tests_actions.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/memory_fixtures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/memory_fixtures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/perform_tests_operations.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/perform_tests_operations.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/test_l1_rg_planning_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/test_l1_rg_planning_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/test_l2_lic_execution_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/test_l2_lic_execution_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/test_observability_integration.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/test_observability_integration.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/handle_tests_timeouts.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/handle_tests_timeouts.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/implement_tests_fallback.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/implement_tests_fallback.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/retry_tests_failures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/routing/retry_tests_failures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/use/call.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/use/call.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/enforce_tests_limits.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/enforce_tests_limits.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/init_.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/init_.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/track_tests_usage.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/track_tests_usage.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/update_tests_budget.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/update_tests_budget.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/test_rg_memory_mappings.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/test_rg_memory_mappings.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/policy/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L3_orchestration/P4_safety/check_rules/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/test_lic_memory_mappings.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/test_lic_memory_mappings.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/test_regression_rg_resume_outputs.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/test_regression_rg_resume_outputs.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/fetch_tests_history.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/fetch_tests_history.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/query_tests_store.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/query_tests_store.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/retrieve_tests_context.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/retrieve_tests_context.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/test_rg_refinement_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/test_rg_refinement_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/find.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/find.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/match.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/match.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/match_tests_context.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/match_tests_context.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/retrieve_tests_similarity.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/retrieve_tests_similarity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/search.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/search.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/search_tests_vectors.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/embedding/search_tests_vectors.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/understand/fetch.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/understand/fetch.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/understand/query.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/understand/query.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/understand/retrieve.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P1_retrieve/get_info/understand/retrieve.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/enforce_tests_budget.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/enforce_tests_budget.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/track_tests_cost.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/track_tests_cost.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/update_tests_usage.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/update_tests_usage.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/check_rules/policy/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/check_rules/policy/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/check_rules/policy/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/check_rules/policy/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L4_memory/P4_safety/check_rules/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/assess.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/assess.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/check_tests_compliance.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/check_tests_compliance.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/check_tests_policy.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/check_tests_policy.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/compute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/compute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/compute_tests_score.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/compute_tests_score.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/evaluate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/evaluate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/test_rg_contact_research_executor.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/test_rg_contact_research_executor.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/validate_tests_constraints.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/validate_tests_constraints.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/validate_tests_ethics.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/validate_tests_ethics.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/validate_tests_schema.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/validate_tests_schema.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/apply.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/apply.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/apply_tests_safety.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/apply_tests_safety.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/assess.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/assess.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/assess_tests_risk.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/assess_tests_risk.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/compute.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/compute.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce_tests_boundaries.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce_tests_boundaries.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce_tests_contracts.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce_tests_contracts.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce_tests_filters.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/enforce_tests_filters.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/evaluate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/evaluate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/evaluate_tests_compliance.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/evaluate_tests_compliance.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/model_stub_fixtures.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/model_stub_fixtures.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/sample_lic_outreach_input.json",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/sample_lic_outreach_input.json",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_filters.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_filters.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_lic_strategy_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_lic_strategy_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_model_routing.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_model_routing.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_regression_lic_outreach_outputs.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_regression_lic_outreach_outputs.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_rg_message_planner.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_rg_message_planner.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_rg_resume_engine_dag.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_rg_resume_engine_dag.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_safety_schema_validation.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_safety_schema_validation.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_validators.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/test_validators.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/init_.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/init_.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/track.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/track.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/update.py",
+      "dest_rel": "10_tests_backup_20251204_055433/L5_safety/P4_safety/manage_costs/update.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/check_rules/policy/validate.py",
+      "dest_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/check_rules/policy/validate.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/enforce.py",
+      "dest_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/enforce.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/track.py",
+      "dest_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/track.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/update.py",
+      "dest_rel": "10_tests_backup_20251204_055433/_unassigned_duplicates/l5_safety/P4_safety/manage_costs/update/update.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/preprocess-signals/cleanse-signals/remove-html.py",
+      "dest_rel": "ingest-artifacts/preprocess-signals/cleanse-signals/remove-html.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/preprocess-signals/cleanse-signals/strip-stopwords.py",
+      "dest_rel": "ingest-artifacts/preprocess-signals/cleanse-signals/strip-stopwords.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/preprocess-signals/extract-signals/extract-entities.py",
+      "dest_rel": "ingest-artifacts/preprocess-signals/extract-signals/extract-entities.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/preprocess-signals/extract-signals/extract-keywords.py",
+      "dest_rel": "ingest-artifacts/preprocess-signals/extract-signals/extract-keywords.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/preprocess-signals/normalize-signals/reformat-json.py",
+      "dest_rel": "ingest-artifacts/preprocess-signals/normalize-signals/reformat-json.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/preprocess-signals/normalize-signals/unify-encoding.py",
+      "dest_rel": "ingest-artifacts/preprocess-signals/normalize-signals/unify-encoding.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/validate-inputs/inspect-format/detect-format.py",
+      "dest_rel": "ingest-artifacts/validate-inputs/inspect-format/detect-format.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/validate-inputs/inspect-format/enforce-schema.py",
+      "dest_rel": "ingest-artifacts/validate-inputs/inspect-format/enforce-schema.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/validate-inputs/verify-integrity/check-encoding.py",
+      "dest_rel": "ingest-artifacts/validate-inputs/verify-integrity/check-encoding.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "ingest-artifacts/validate-inputs/verify-integrity/check-size.py",
+      "dest_rel": "ingest-artifacts/validate-inputs/verify-integrity/check-size.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
       "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
       "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
       "confidence": 1.0,
@@ -1425,12 +3521,690 @@
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/capture-events/load-event/filter-log.py",
+      "dest_rel": "lineage-records-storage/capture-events/load-event/filter-log.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/capture-events/load-event/read-log.py",
+      "dest_rel": "lineage-records-storage/capture-events/load-event/read-log.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/capture-events/resolve-events/merge-log.py",
+      "dest_rel": "lineage-records-storage/capture-events/resolve-events/merge-log.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/capture-events/resolve-events/prune-log.py",
+      "dest_rel": "lineage-records-storage/capture-events/resolve-events/prune-log.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/capture-events/write-event/append-log.py",
+      "dest_rel": "lineage-records-storage/capture-events/write-event/append-log.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/capture-events/write-event/stamp-event.py",
+      "dest_rel": "lineage-records-storage/capture-events/write-event/stamp-event.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/diff-records/assess-impact/classify-impact.py",
+      "dest_rel": "lineage-records-storage/diff-records/assess-impact/classify-impact.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/diff-records/assess-impact/risk-score.py",
+      "dest_rel": "lineage-records-storage/diff-records/assess-impact/risk-score.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/diff-records/compute-deltas/compare-struct-diff.py",
+      "dest_rel": "lineage-records-storage/diff-records/compute-deltas/compare-struct-diff.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/diff-records/compute-deltas/compute-content-diff.py",
+      "dest_rel": "lineage-records-storage/diff-records/compute-deltas/compute-content-diff.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/diff-records/resolve-deltas/align-records.py",
+      "dest_rel": "lineage-records-storage/diff-records/resolve-deltas/align-records.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "lineage-records-storage/diff-records/resolve-deltas/merge-deltas.py",
+      "dest_rel": "lineage-records-storage/diff-records/resolve-deltas/merge-deltas.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/embed-documents/embed-batch/embed-batch.py",
+      "dest_rel": "rag-corpus-store/embed-documents/embed-batch/embed-batch.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/embed-documents/embed-batch/refresh-embedding.py",
+      "dest_rel": "rag-corpus-store/embed-documents/embed-batch/refresh-embedding.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/embed-documents/maintain-index/purge-stale.py",
+      "dest_rel": "rag-corpus-store/embed-documents/maintain-index/purge-stale.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/embed-documents/maintain-index/update-index.py",
+      "dest_rel": "rag-corpus-store/embed-documents/maintain-index/update-index.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/manage-documents/update-documents/add-doc.py",
+      "dest_rel": "rag-corpus-store/manage-documents/update-documents/add-doc.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/manage-documents/update-documents/delete-doc.py",
+      "dest_rel": "rag-corpus-store/manage-documents/update-documents/delete-doc.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/manage-documents/update-documents/update-doc.py",
+      "dest_rel": "rag-corpus-store/manage-documents/update-documents/update-doc.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/manage-documents/validate-documents/content-safety-check.py",
+      "dest_rel": "rag-corpus-store/manage-documents/validate-documents/content-safety-check.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "rag-corpus-store/manage-documents/validate-documents/verify-format.py",
+      "dest_rel": "rag-corpus-store/manage-documents/validate-documents/verify-format.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/hydrate-representations/assemble-representations/compose-record.py",
+      "dest_rel": "semantic-cache-storage/hydrate-representations/assemble-representations/compose-record.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/hydrate-representations/assemble-representations/compress-record.py",
+      "dest_rel": "semantic-cache-storage/hydrate-representations/assemble-representations/compress-record.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/hydrate-representations/embed-vectors/build-dense.py",
+      "dest_rel": "semantic-cache-storage/hydrate-representations/embed-vectors/build-dense.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/hydrate-representations/embed-vectors/build-hybrid.py",
+      "dest_rel": "semantic-cache-storage/hydrate-representations/embed-vectors/build-hybrid.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/hydrate-representations/merge-metadata/attach-provenance.py",
+      "dest_rel": "semantic-cache-storage/hydrate-representations/merge-metadata/attach-provenance.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/hydrate-representations/merge-metadata/attach-schema.py",
+      "dest_rel": "semantic-cache-storage/hydrate-representations/merge-metadata/attach-schema.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/prepare-records/cleanse-contents/normalize-text.py",
+      "dest_rel": "semantic-cache-storage/prepare-records/cleanse-contents/normalize-text.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/prepare-records/cleanse-contents/strip-noise.py",
+      "dest_rel": "semantic-cache-storage/prepare-records/cleanse-contents/strip-noise.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/prepare-records/intake-payloads/load-file.py",
+      "dest_rel": "semantic-cache-storage/prepare-records/intake-payloads/load-file.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/prepare-records/intake-payloads/validate-format.py",
+      "dest_rel": "semantic-cache-storage/prepare-records/intake-payloads/validate-format.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/prepare-records/tokenize-signals/split-sentences.py",
+      "dest_rel": "semantic-cache-storage/prepare-records/tokenize-signals/split-sentences.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/prepare-records/tokenize-signals/tokenize-words.py",
+      "dest_rel": "semantic-cache-storage/prepare-records/tokenize-signals/tokenize-words.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/snapshot-versions/diff-snapshot/compute-diff.py",
+      "dest_rel": "semantic-cache-storage/snapshot-versions/diff-snapshot/compute-diff.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/snapshot-versions/diff-snapshot/resolve-diff.py",
+      "dest_rel": "semantic-cache-storage/snapshot-versions/diff-snapshot/resolve-diff.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/snapshot-versions/load-snapshot/deserialize-cache.py",
+      "dest_rel": "semantic-cache-storage/snapshot-versions/load-snapshot/deserialize-cache.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "semantic-cache-storage/snapshot-versions/write-snapshot/serialize-cache.py",
+      "dest_rel": "semantic-cache-storage/snapshot-versions/write-snapshot/serialize-cache.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "temp-runtime-staging/buffer-results/load-buffer.py",
+      "dest_rel": "temp-runtime-staging/buffer-results/load-buffer.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "temp-runtime-staging/buffer-results/write-buffer.py",
+      "dest_rel": "temp-runtime-staging/buffer-results/write-buffer.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/assemble-index/build-hnsw.py",
+      "dest_rel": "vector-search-memory/index-vectors/assemble-index/build-hnsw.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/assemble-index/compress-index.py",
+      "dest_rel": "vector-search-memory/index-vectors/assemble-index/compress-index.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/assemble-index/optimize-hnsw.py",
+      "dest_rel": "vector-search-memory/index-vectors/assemble-index/optimize-hnsw.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/normalize-vectors/dedupe-batch.py",
+      "dest_rel": "vector-search-memory/index-vectors/normalize-vectors/dedupe-batch.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/normalize-vectors/normalize-batch.py",
+      "dest_rel": "vector-search-memory/index-vectors/normalize-vectors/normalize-batch.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/validate-index/check-integrity.py",
+      "dest_rel": "vector-search-memory/index-vectors/validate-index/check-integrity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/index-vectors/validate-index/verify-structure.py",
+      "dest_rel": "vector-search-memory/index-vectors/validate-index/verify-structure.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/query-results/refine-output/format-response.py",
+      "dest_rel": "vector-search-memory/query-results/refine-output/format-response.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/query-results/refine-output/trim-results.py",
+      "dest_rel": "vector-search-memory/query-results/refine-output/trim-results.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/query-results/rerank-candidates/hybrid-rerank.py",
+      "dest_rel": "vector-search-memory/query-results/rerank-candidates/hybrid-rerank.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/query-results/rerank-candidates/score-similarity.py",
+      "dest_rel": "vector-search-memory/query-results/rerank-candidates/score-similarity.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/query-results/retrieve-candidates/range-query.py",
+      "dest_rel": "vector-search-memory/query-results/retrieve-candidates/range-query.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "vector-search-memory/query-results/retrieve-candidates/search-topk.py",
+      "dest_rel": "vector-search-memory/query-results/retrieve-candidates/search-topk.py",
+      "confidence": 0.2,
+      "reason": "no matching SSoT prefix; keep in place",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
     }
   ],
   "legacy_folders": [],
   "borderline_folders": [],
   "empty_folders": [],
   "used_destinations": {
+    "C:\\Git\\Agentic-Workflow\\06_data\\test_rename_log.json": "C:\\Git\\Agentic-Workflow\\06_data\\test_rename_log.json",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\rename_tests.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\rename_tests.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\extract.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\load.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\load.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\parse.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\utility\\build.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\utility\\build.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P1_retrieve\\get_info\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\semantic\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\embedding\\calculate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\embedding\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\update_state\\utility\\serialize.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\routing\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\use\\process.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P3_aggregate\\use_tools\\use\\process.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\diagnose_tests_issues.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\diagnose_tests_issues.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\inspect_tests_quality.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\inspect_tests_quality.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\lic_outreach_fixtures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\lic_outreach_fixtures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\load_tests_planning.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\load_tests_planning.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\log_tests_metrics.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\log_tests_metrics.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\prepare_tests_payload.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\prepare_tests_payload.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_e2e_multi_turn_state.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_e2e_multi_turn_state.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_fallback_paths.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_fallback_paths.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_l2_rg_execution_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_l2_rg_execution_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_company_research_executor.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_company_research_executor.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_contact_research_executor.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_contact_research_executor.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_message_generation_executor.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_message_generation_executor.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_research_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_lic_research_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_memory_schema_validation.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_memory_schema_validation.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_performance_stability.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_performance_stability.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_rg_company_research_executor.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_rg_company_research_executor.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_tool_calls.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\test_tool_calls.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\apply_tests_weights.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\apply_tests_weights.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\calculate_tests_similarity.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\calculate_tests_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\compute_tests_confidence.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\compute_tests_confidence.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\compute_tests_embeddings.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\compute_tests_embeddings.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\normalize_tests_scores.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\normalize_tests_scores.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\normalize_tests_vectors.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\normalize_tests_vectors.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\sample_rg_resume_input.json": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\sample_rg_resume_input.json",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_api_stability.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_api_stability.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_dag_validity.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_dag_validity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_rg_safety_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_rg_safety_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_rg_temporal_memory.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\test_rg_temporal_memory.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\assess_tests_confidence.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\assess_tests_confidence.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\compute_tests_validation.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\compute_tests_validation.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\rg_resume_fixtures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\rg_resume_fixtures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\test_l1_lic_planning_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\test_l1_lic_planning_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\test_self_correction_loops.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\test_self_correction_loops.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\validate_tests_quality.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\validate_tests_quality.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\adjust_tests_weights.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\adjust_tests_weights.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\apply_tests_algorithm.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\apply_tests_algorithm.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\build_tests_filters.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\build_tests_filters.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\extract_tests_parameters.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\extract_tests_parameters.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\format_tests_context.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\format_tests_context.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\optimize_tests_order.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\optimize_tests_order.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\parse_tests_settings.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\parse_tests_settings.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\rank_tests_components.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\rank_tests_components.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\refine_tests_ranking.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\refine_tests_ranking.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\sample_contact_kg.json": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\sample_contact_kg.json",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\sort_tests_results.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\sort_tests_results.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_e2e_lic_outreach_flow.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_e2e_lic_outreach_flow.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_kg_pipeline_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_kg_pipeline_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_lic_refinement_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_lic_refinement_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_long_term_memory.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_long_term_memory.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_memory_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_memory_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_output_stability.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_output_stability.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_planning_schema_validation.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_planning_schema_validation.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_prompt_injection_protection.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_prompt_injection_protection.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_provider_registry.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_provider_registry.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_ast.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_ast.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_integrity.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_integrity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_lineage.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_lineage.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_reconstruction.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\test_semantic_cache_reconstruction.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\execute_tests_commands.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\execute_tests_commands.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\handle_tests_timeouts.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\handle_tests_timeouts.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\implement_tests_fallback.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\implement_tests_fallback.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\invoke_tests_actions.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\invoke_tests_actions.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\perform_tests_operations.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\perform_tests_operations.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\retry_tests_failures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\retry_tests_failures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\use\\perform.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\use\\perform.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\serialize.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\test_e2e_tool_error_recovery.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\test_e2e_tool_error_recovery.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\test_tool_response_parser.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P3_aggregate\\use_tools\\utility\\test_tool_response_parser.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\test_cross_layer_purity.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\test_cross_layer_purity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\test_semantic_cache_safety.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\test_semantic_cache_safety.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\rag_fixtures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\rag_fixtures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\test_rg_strategy_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\test_rg_strategy_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\apply_tests_safety.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\apply_tests_safety.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\enforce_tests_filters.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\enforce_tests_filters.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_e2e_safety_blocking_flows.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_e2e_safety_blocking_flows.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_lic_safety_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_lic_safety_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_llm_guardrails.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_llm_guardrails.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_rag_pipeline_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_rag_pipeline_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_tool_request_builder.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\test_tool_request_builder.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\validate_tests_ethics.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\validate_tests_ethics.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\test_rg_research_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\test_rg_research_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\understand\\coordinate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\understand\\manage.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P1_retrieve\\get_info\\understand\\orchestrate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\build_tests_orchestration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\build_tests_orchestration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\coordinate_tests_operations.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\coordinate_tests_operations.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\format_tests_context.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\format_tests_context.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\manage_tests_parameters.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\manage_tests_parameters.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\orchestrate_tests_planning.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\orchestrate_tests_planning.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\prepare_tests_orchestration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\prepare_tests_orchestration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\sample_company_kg.json": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\sample_company_kg.json",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_e2e_rg_resume_flow.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_e2e_rg_resume_flow.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_lic_message_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_lic_message_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_lic_outreach_engine_dag.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_lic_outreach_engine_dag.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_lic_temporal_memory.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_lic_temporal_memory.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_policy_engine.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_policy_engine.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_regression_temporal_memory.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_regression_temporal_memory.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_rg_message_generation_executor.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\test_rg_message_generation_executor.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\execute_tests_commands.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\execute_tests_commands.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\init_.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\init_.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\invoke_tests_actions.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\invoke_tests_actions.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\memory_fixtures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\memory_fixtures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\perform_tests_operations.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\perform_tests_operations.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\test_l1_rg_planning_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\test_l1_rg_planning_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\test_l2_lic_execution_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\test_l2_lic_execution_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\test_observability_integration.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\test_observability_integration.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle_tests_timeouts.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\handle_tests_timeouts.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement_tests_fallback.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\implement_tests_fallback.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry_tests_failures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\routing\\retry_tests_failures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\use\\call.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\use\\dispatch.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P3_aggregate\\use_tools\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\enforce_tests_limits.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\enforce_tests_limits.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\init_.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\init_.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\track_tests_usage.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\track_tests_usage.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\update_tests_budget.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\update_tests_budget.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\test_rg_memory_mappings.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\test_rg_memory_mappings.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\test_lic_memory_mappings.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\test_lic_memory_mappings.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\test_regression_rg_resume_outputs.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\test_regression_rg_resume_outputs.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\fetch_tests_history.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\fetch_tests_history.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\query_tests_store.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\query_tests_store.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\retrieve_tests_context.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\retrieve_tests_context.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\test_rg_refinement_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\test_rg_refinement_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\find.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\find.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\match_tests_context.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\match_tests_context.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\retrieve_tests_similarity.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\retrieve_tests_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\search_tests_vectors.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\embedding\\search_tests_vectors.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P1_retrieve\\get_info\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\enforce_tests_budget.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\enforce_tests_budget.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\track_tests_cost.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\track_tests_cost.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\update_tests_usage.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\update_tests_usage.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\check_rules\\policy\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\check_rules\\policy\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L4_memory\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\assess.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\check_tests_compliance.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\check_tests_compliance.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\check_tests_policy.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\check_tests_policy.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\compute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\compute_tests_score.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\compute_tests_score.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\evaluate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\evaluate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\test_rg_contact_research_executor.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\test_rg_contact_research_executor.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate_tests_constraints.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate_tests_constraints.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate_tests_ethics.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate_tests_ethics.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate_tests_schema.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\validate_tests_schema.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\apply.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\apply_tests_safety.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\apply_tests_safety.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\assess.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\assess.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\assess_tests_risk.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\assess_tests_risk.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\compute.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\compute.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce_tests_boundaries.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce_tests_boundaries.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce_tests_contracts.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce_tests_contracts.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce_tests_filters.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\enforce_tests_filters.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\evaluate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\evaluate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\evaluate_tests_compliance.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\evaluate_tests_compliance.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\model_stub_fixtures.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\model_stub_fixtures.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\sample_lic_outreach_input.json": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\sample_lic_outreach_input.json",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_filters.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_filters.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_lic_strategy_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_lic_strategy_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_model_routing.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_model_routing.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_regression_lic_outreach_outputs.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_regression_lic_outreach_outputs.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_rg_message_planner.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_rg_message_planner.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_rg_resume_engine_dag.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_rg_resume_engine_dag.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_safety_schema_validation.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_safety_schema_validation.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_validators.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\test_validators.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\init_.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\init_.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\track.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\track.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\update.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\L5_safety\\P4_safety\\manage_costs\\update.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\06_data\\10_tests_backup_20251204_055433\\_unassigned_duplicates\\l5_safety\\P4_safety\\manage_costs\\update\\update.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\cleanse-signals\\remove-html.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\cleanse-signals\\remove-html.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\cleanse-signals\\strip-stopwords.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\cleanse-signals\\strip-stopwords.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\extract-signals\\extract-entities.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\extract-signals\\extract-entities.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\extract-signals\\extract-keywords.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\extract-signals\\extract-keywords.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\normalize-signals\\reformat-json.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\normalize-signals\\reformat-json.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\normalize-signals\\unify-encoding.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\preprocess-signals\\normalize-signals\\unify-encoding.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\inspect-format\\detect-format.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\inspect-format\\detect-format.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\inspect-format\\enforce-schema.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\inspect-format\\enforce-schema.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\verify-integrity\\check-encoding.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\verify-integrity\\check-encoding.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\verify-integrity\\check-size.py": "C:\\Git\\Agentic-Workflow\\06_data\\ingest-artifacts\\validate-inputs\\verify-integrity\\check-size.py",
     "C:\\Git\\Agentic-Workflow\\06_data\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\06_data\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
     "C:\\Git\\Agentic-Workflow\\06_data\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
     "C:\\Git\\Agentic-Workflow\\06_data\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\06_data\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
@@ -1608,13 +4382,65 @@
     "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py": "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py",
     "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py",
     "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\track.py",
-    "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\update.py"
+    "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\06_data\\L5_safety\\P4_safety\\manage_costs\\update\\update.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\load-event\\filter-log.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\load-event\\filter-log.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\load-event\\read-log.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\load-event\\read-log.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\resolve-events\\merge-log.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\resolve-events\\merge-log.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\resolve-events\\prune-log.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\resolve-events\\prune-log.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\write-event\\append-log.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\write-event\\append-log.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\write-event\\stamp-event.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\capture-events\\write-event\\stamp-event.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\assess-impact\\classify-impact.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\assess-impact\\classify-impact.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\assess-impact\\risk-score.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\assess-impact\\risk-score.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\compute-deltas\\compare-struct-diff.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\compute-deltas\\compare-struct-diff.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\compute-deltas\\compute-content-diff.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\compute-deltas\\compute-content-diff.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\resolve-deltas\\align-records.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\resolve-deltas\\align-records.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\resolve-deltas\\merge-deltas.py": "C:\\Git\\Agentic-Workflow\\06_data\\lineage-records-storage\\diff-records\\resolve-deltas\\merge-deltas.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\embed-batch\\embed-batch.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\embed-batch\\embed-batch.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\embed-batch\\refresh-embedding.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\embed-batch\\refresh-embedding.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\maintain-index\\purge-stale.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\maintain-index\\purge-stale.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\maintain-index\\update-index.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\embed-documents\\maintain-index\\update-index.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\update-documents\\add-doc.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\update-documents\\add-doc.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\update-documents\\delete-doc.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\update-documents\\delete-doc.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\update-documents\\update-doc.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\update-documents\\update-doc.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\validate-documents\\content-safety-check.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\validate-documents\\content-safety-check.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\validate-documents\\verify-format.py": "C:\\Git\\Agentic-Workflow\\06_data\\rag-corpus-store\\manage-documents\\validate-documents\\verify-format.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\assemble-representations\\compose-record.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\assemble-representations\\compose-record.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\assemble-representations\\compress-record.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\assemble-representations\\compress-record.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\embed-vectors\\build-dense.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\embed-vectors\\build-dense.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\embed-vectors\\build-hybrid.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\embed-vectors\\build-hybrid.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\merge-metadata\\attach-provenance.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\merge-metadata\\attach-provenance.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\merge-metadata\\attach-schema.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\hydrate-representations\\merge-metadata\\attach-schema.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\cleanse-contents\\normalize-text.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\cleanse-contents\\normalize-text.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\cleanse-contents\\strip-noise.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\cleanse-contents\\strip-noise.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\intake-payloads\\load-file.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\intake-payloads\\load-file.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\intake-payloads\\validate-format.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\intake-payloads\\validate-format.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\tokenize-signals\\split-sentences.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\tokenize-signals\\split-sentences.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\tokenize-signals\\tokenize-words.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\prepare-records\\tokenize-signals\\tokenize-words.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\diff-snapshot\\compute-diff.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\diff-snapshot\\compute-diff.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\diff-snapshot\\resolve-diff.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\diff-snapshot\\resolve-diff.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\load-snapshot\\deserialize-cache.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\load-snapshot\\deserialize-cache.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\write-snapshot\\serialize-cache.py": "C:\\Git\\Agentic-Workflow\\06_data\\semantic-cache-storage\\snapshot-versions\\write-snapshot\\serialize-cache.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\temp-runtime-staging\\buffer-results\\load-buffer.py": "C:\\Git\\Agentic-Workflow\\06_data\\temp-runtime-staging\\buffer-results\\load-buffer.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\temp-runtime-staging\\buffer-results\\write-buffer.py": "C:\\Git\\Agentic-Workflow\\06_data\\temp-runtime-staging\\buffer-results\\write-buffer.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\assemble-index\\build-hnsw.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\assemble-index\\build-hnsw.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\assemble-index\\compress-index.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\assemble-index\\compress-index.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\assemble-index\\optimize-hnsw.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\assemble-index\\optimize-hnsw.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\normalize-vectors\\dedupe-batch.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\normalize-vectors\\dedupe-batch.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\normalize-vectors\\normalize-batch.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\normalize-vectors\\normalize-batch.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\validate-index\\check-integrity.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\validate-index\\check-integrity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\validate-index\\verify-structure.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\index-vectors\\validate-index\\verify-structure.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\refine-output\\format-response.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\refine-output\\format-response.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\refine-output\\trim-results.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\refine-output\\trim-results.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\rerank-candidates\\hybrid-rerank.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\rerank-candidates\\hybrid-rerank.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\rerank-candidates\\score-similarity.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\rerank-candidates\\score-similarity.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\retrieve-candidates\\range-query.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\retrieve-candidates\\range-query.py",
+    "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\retrieve-candidates\\search-topk.py": "C:\\Git\\Agentic-Workflow\\06_data\\vector-search-memory\\query-results\\retrieve-candidates\\search-topk.py"
   },
   "summary": {
     "high_conf_archives": 0,
     "borderline_archives": 0,
     "empty_archives": 0,
-    "file_moves": 178,
+    "file_moves": 492,
     "duplicate_routes": 0,
     "protected_skips": 0
   }

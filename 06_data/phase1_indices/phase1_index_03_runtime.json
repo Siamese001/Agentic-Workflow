@@ -27,6 +27,102 @@
       "duplicate_bucket_rel": null
     },
     {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/match.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/match.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/retrieve_similarity.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/retrieve_similarity.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/search.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/search.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/extract.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/extract.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/fetch.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/fetch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/load.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/load.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/parse.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/parse.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/query.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/query.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/retrieve.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/retrieve.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/build.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/build.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/format.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/prepare.py",
+      "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
       "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
       "confidence": 1.0,
@@ -219,6 +315,30 @@
       "duplicate_bucket_rel": null
     },
     {
+      "src_rel": "L1_cognition/P2_inspect/detect-anomalies/update/capture.py",
+      "dest_rel": "L1_cognition/P2_inspect/detect-anomalies/update/capture.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/detect-anomalies/update/inspect.py",
+      "dest_rel": "L1_cognition/P2_inspect/detect-anomalies/update/inspect.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P2_inspect/detect-anomalies/update/log.py",
+      "dest_rel": "L1_cognition/P2_inspect/detect-anomalies/update/log.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
       "src_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
       "dest_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
       "confidence": 1.0,
@@ -237,6 +357,54 @@
     {
       "src_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
       "dest_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/execute-actions/routing/apply.py",
+      "dest_rel": "L1_cognition/P3_aggregate/execute-actions/routing/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/execute-actions/routing/handle.py",
+      "dest_rel": "L1_cognition/P3_aggregate/execute-actions/routing/handle.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/execute-actions/routing/implement.py",
+      "dest_rel": "L1_cognition/P3_aggregate/execute-actions/routing/implement.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/execute-actions/use/execute.py",
+      "dest_rel": "L1_cognition/P3_aggregate/execute-actions/use/execute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/execute-actions/use/invoke.py",
+      "dest_rel": "L1_cognition/P3_aggregate/execute-actions/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/execute-actions/use/process.py",
+      "dest_rel": "L1_cognition/P3_aggregate/execute-actions/use/process.py",
       "confidence": 1.0,
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
@@ -285,6 +453,102 @@
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/adjust.py",
+      "dest_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/adjust.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/optimize.py",
+      "dest_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/optimize.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/refine.py",
+      "dest_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/refine.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/select-optimal/understand/apply.py",
+      "dest_rel": "L1_cognition/P3_aggregate/select-optimal/understand/apply.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/select-optimal/understand/rank.py",
+      "dest_rel": "L1_cognition/P3_aggregate/select-optimal/understand/rank.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/select-optimal/understand/sort.py",
+      "dest_rel": "L1_cognition/P3_aggregate/select-optimal/understand/sort.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/sync-status/update/aggregate.py",
+      "dest_rel": "L1_cognition/P3_aggregate/sync-status/update/aggregate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/sync-status/update/consolidate.py",
+      "dest_rel": "L1_cognition/P3_aggregate/sync-status/update/consolidate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/sync-status/update/merge.py",
+      "dest_rel": "L1_cognition/P3_aggregate/sync-status/update/merge.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/sync-status/utility/format.py",
+      "dest_rel": "L1_cognition/P3_aggregate/sync-status/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/sync-status/utility/prepare.py",
+      "dest_rel": "L1_cognition/P3_aggregate/sync-status/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P3_aggregate/sync-status/utility/serialize.py",
+      "dest_rel": "L1_cognition/P3_aggregate/sync-status/utility/serialize.py",
       "confidence": 1.0,
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
@@ -405,6 +669,30 @@
     {
       "src_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
       "dest_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/control-resources/update/enforce.py",
+      "dest_rel": "L1_cognition/P4_safety/control-resources/update/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/control-resources/update/track.py",
+      "dest_rel": "L1_cognition/P4_safety/control-resources/update/track.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L1_cognition/P4_safety/control-resources/update/update.py",
+      "dest_rel": "L1_cognition/P4_safety/control-resources/update/update.py",
       "confidence": 1.0,
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
@@ -541,6 +829,54 @@
     {
       "src_rel": "L2_execution/P3_aggregate/runner.py",
       "dest_rel": "L2_execution/P3_aggregate/runner.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/execute-actions/use/execute.py",
+      "dest_rel": "L2_execution/P3_aggregate/execute-actions/use/execute.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/execute-actions/use/invoke.py",
+      "dest_rel": "L2_execution/P3_aggregate/execute-actions/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/execute-actions/use/perform.py",
+      "dest_rel": "L2_execution/P3_aggregate/execute-actions/use/perform.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/execute-actions/utility/format.py",
+      "dest_rel": "L2_execution/P3_aggregate/execute-actions/utility/format.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/execute-actions/utility/prepare.py",
+      "dest_rel": "L2_execution/P3_aggregate/execute-actions/utility/prepare.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L2_execution/P3_aggregate/execute-actions/utility/serialize.py",
+      "dest_rel": "L2_execution/P3_aggregate/execute-actions/utility/serialize.py",
       "confidence": 1.0,
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
@@ -837,6 +1173,30 @@
     {
       "src_rel": "L3_orchestration/vm_manager.py",
       "dest_rel": "L3_orchestration/vm_manager.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/coordinate.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/coordinate.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/manage.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/manage.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/orchestrate.py",
+      "dest_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/orchestrate.py",
       "confidence": 1.0,
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
@@ -1195,6 +1555,54 @@
       "duplicate_bucket_rel": null
     },
     {
+      "src_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/handle.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/handle.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/implement.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/implement.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/retry.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/retry.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/execute-actions/use/call.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/use/call.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/execute-actions/use/dispatch.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/use/dispatch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L3_orchestration/P3_aggregate/execute-actions/use/invoke.py",
+      "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/use/invoke.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/budget_profile.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/budget_profile.py",
       "confidence": 1.0,
@@ -1429,6 +1837,54 @@
     {
       "src_rel": "L4_memory/uncertainty.py",
       "dest_rel": "L4_memory/uncertainty.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/find.py",
+      "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/find.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/match.py",
+      "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/match.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/search.py",
+      "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/search.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/fetch.py",
+      "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/fetch.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/query.py",
+      "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/query.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/retrieve.py",
+      "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/retrieve.py",
       "confidence": 1.0,
       "reason": "already canonical L*-prefixed path",
       "is_duplicate": false,
@@ -1787,6 +2243,30 @@
       "duplicate_bucket_rel": null
     },
     {
+      "src_rel": "L5_safety/P4_safety/control-resources/update/enforce.py",
+      "dest_rel": "L5_safety/P4_safety/control-resources/update/enforce.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/control-resources/update/track.py",
+      "dest_rel": "L5_safety/P4_safety/control-resources/update/track.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "L5_safety/P4_safety/control-resources/update/update.py",
+      "dest_rel": "L5_safety/P4_safety/control-resources/update/update.py",
+      "confidence": 1.0,
+      "reason": "already canonical L*-prefixed path",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
       "src_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
       "dest_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
       "confidence": 1.0,
@@ -1818,6 +2298,18 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\retrieve_similarity.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\retrieve_similarity.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\extract.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\extract.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\load.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\load.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\parse.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\parse.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\retrieve.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\utility\\build.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\utility\\build.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\gather-context-inputs\\utility\\prepare.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\get_info\\embedding\\match.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\get_info\\embedding\\retrieve_similarity.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P1_retrieve\\get_info\\embedding\\search.py",
@@ -1842,15 +2334,36 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\convert_content\\semantic\\apply.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\convert_content\\semantic\\compute.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\convert_content\\semantic\\normalize.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\capture.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\capture.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\inspect.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\inspect.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\log.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\log.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\find_problems\\update\\capture.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\find_problems\\update\\inspect.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P2_inspect\\find_problems\\update\\log.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\routing\\apply.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\routing\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\use\\process.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\execute-actions\\use\\process.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\adjust.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\optimize.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\refinement\\refine.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\apply.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\rank.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\pick_best_result\\understand\\sort.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\adjust.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\adjust.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\optimize.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\optimize.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\refine.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\refine.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\understand\\apply.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\understand\\apply.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\understand\\rank.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\understand\\rank.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\understand\\sort.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\select-optimal\\understand\\sort.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\update\\aggregate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\update\\aggregate.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\update\\consolidate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\update\\consolidate.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\update\\merge.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\update\\merge.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\sync-status\\utility\\serialize.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\update_state\\update\\aggregate.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\update_state\\update\\consolidate.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P3_aggregate\\update_state\\update\\merge.py",
@@ -1866,6 +2379,9 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\check_rules\\policy\\apply.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\check_rules\\policy\\enforce.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\control-resources\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\control-resources\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\control-resources\\update\\track.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\control-resources\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\control-resources\\update\\update.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\control-resources\\update\\update.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\manage_costs\\update\\enforce.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\manage_costs\\update\\track.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L1_cognition\\P4_safety\\manage_costs\\update\\update.py",
@@ -1883,6 +2399,12 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\llm_judge.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\llm_judge.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\metrics.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\metrics.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\runner.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\runner.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\use\\execute.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\use\\execute.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\use\\invoke.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\use\\perform.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\use\\perform.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\utility\\format.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\utility\\format.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\utility\\prepare.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\utility\\prepare.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\utility\\serialize.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\execute-actions\\utility\\serialize.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\use_tools\\execute_runtime_commands.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\use_tools\\execute_runtime_commands.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\use_tools\\handle_runtime_timeouts.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\use_tools\\handle_runtime_timeouts.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\use_tools\\implement_runtime_fallback.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L2_execution\\P3_aggregate\\use_tools\\implement_runtime_fallback.py",
@@ -1920,6 +2442,9 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\validate_runtime_ethics.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\validate_runtime_ethics.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\validate_runtime_quality.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\validate_runtime_quality.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\vm_manager.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\vm_manager.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\coordinate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\coordinate.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\manage.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\manage.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\orchestrate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\orchestrate.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\get_info\\agent_profile.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\get_info\\agent_profile.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\get_info\\context_manager.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\get_info\\context_manager.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\get_info\\cost_tracking.json": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P1_retrieve\\get_info\\cost_tracking.json",
@@ -1964,6 +2489,12 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\session_manager.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\session_manager.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\sort_runtime_results.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\sort_runtime_results.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\telemetry.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\telemetry.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\routing\\handle.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\routing\\handle.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\routing\\implement.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\routing\\implement.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\routing\\retry.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\routing\\retry.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\use\\call.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\use\\call.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\use\\dispatch.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\use\\dispatch.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\use\\invoke.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\execute-actions\\use\\invoke.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\use_tools\\budget_profile.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\use_tools\\budget_profile.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\use_tools\\datasets.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\use_tools\\datasets.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\use_tools\\execute_runtime_commands.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L3_orchestration\\P3_aggregate\\use_tools\\execute_runtime_commands.py",
@@ -1994,6 +2525,12 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\.gitkeep": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\.gitkeep",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\.mypy_cacheslash": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\.mypy_cacheslash",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\uncertainty.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\uncertainty.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\embedding\\find.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\embedding\\find.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\embedding\\match.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\embedding\\match.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\embedding\\search.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\embedding\\search.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\understand\\fetch.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\understand\\fetch.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\understand\\query.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\understand\\query.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\understand\\retrieve.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\gather-context-inputs\\understand\\retrieve.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\get_info\\fetch_runtime_history.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\get_info\\fetch_runtime_history.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\get_info\\init_.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\get_info\\init_.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\get_info\\query_runtime_store.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L4_memory\\P1_retrieve\\get_info\\query_runtime_store.py",
@@ -2038,6 +2575,9 @@
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\control-resources\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\control-resources\\update\\enforce.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\control-resources\\update\\track.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\control-resources\\update\\track.py",
+    "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\control-resources\\update\\update.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\control-resources\\update\\update.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\manage_costs\\update\\enforce.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\manage_costs\\update\\track.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\manage_costs\\update\\track.py",
     "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\manage_costs\\update\\update.py": "C:\\Git\\Agentic-Workflow\\03_runtime\\L5_safety\\P4_safety\\manage_costs\\update\\update.py"
@@ -2046,7 +2586,7 @@
     "high_conf_archives": 0,
     "borderline_archives": 0,
     "empty_archives": 0,
-    "file_moves": 226,
+    "file_moves": 286,
     "duplicate_routes": 0,
     "protected_skips": 0
   }

@@ -1,0 +1,72 @@
+# Agentic L5 Test Matrix
+# Minimal stub to unblock test_matrix_validator
+
+version: "1.0.0"
+test_matrix:
+  l1_planning:
+    modules:
+      - "agentic_core.l1_planning.planners.lic_outreach_archetype_planning"
+      - "agentic_core.l1_planning.planners.lic_outreach_dataclasses"
+      - "agentic_core.l1_planning.planners.lic_message_planning"
+    tests:
+      - "tests.L1_planning.test_outreach_archetype_planner"
+      - "tests.L1_planning.test_outreach_dataclasses"
+      - "tests.L1_planning.test_message_planning"
+    coverage_target: 80
+    
+  l2_execution:
+    modules:
+      - "agentic_core.l2_execution.engines.outreach.company_research_executor"
+      - "agentic_core.l2_execution.engines.outreach.contact_research_executor"
+      - "agentic_core.l2_execution.engines.triplet_extraction_executor"
+    tests:
+      - "tests.L2_execution.test_company_research_executor"
+      - "tests.L2_execution.test_contact_research_executor"
+      - "tests.L2_execution.test_triplet_extraction"
+    coverage_target: 75
+    
+  l3_orchestration:
+    modules:
+      - "agentic_core.l3_orchestration.engines.resume.lic_orchestrator"
+      - "agentic_core.l3_orchestration.engines.outreach.lic_orchestrator"
+      - "agentic_core.l3_orchestration.engines.rag.lic_rag_kg_orchestrator"
+    tests:
+      - "tests.L3_orchestration.test_lic_orchestrator_structure"
+      - "tests.L3_orchestration.test_outreach_orchestrator"
+      - "tests.L3_orchestration.test_rag_kg_orchestrator"
+    coverage_target: 85
+    
+  l4_memory:
+    modules:
+      - "agentic_core.l4_memory.stores.triplet_store"
+    tests:
+      - "tests.L4_memory_state.test_triplet_store"
+    coverage_target: 70
+    
+  l5_safety:
+    modules:
+      - "agentic_core.l5_safety.validators.lic_safety_validator"
+      - "agentic_core.l5_safety.validators.lic_failure_classifier"
+      - "agentic_core.l5_safety.validators.outreach_safety_validator"
+    tests:
+      - "tests.L5_safety.test_lic_safety_validator"
+      - "tests.L5_safety.test_lic_failure_classifier"
+      - "tests.L5_safety.test_outreach_safety_validator"
+    coverage_target: 90
+
+test_categories:
+  - unit
+  - integration
+  - e2e
+  - regression
+  - stress
+
+observability:
+  tracing_enabled: true
+  metrics_enabled: true
+  logging_enabled: true
+
+golden_traces:
+  enabled: true
+  trace_file: "golden_traces.json"
+  schema_version: "1.0"

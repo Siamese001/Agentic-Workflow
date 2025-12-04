@@ -1,0 +1,19 @@
+{
+  "hash": "d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "meta/metacognition/hypothesis.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/hypothesis.py",
+  "global": {
+    "ast": "ast/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.ast",
+    "ast_meta": "ast/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.ast.meta.json",
+    "embedding": "embeddings/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.embedding",
+    "emb_meta": "embeddings/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.embedding.meta.json",
+    "diff": "diffs/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.diff.json",
+    "golden": "golden/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.golden.json",
+    "safety": "safety/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.safety.json",
+    "integrity": "integrity/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.integrity.json",
+    "meta": "meta/d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75.meta.json"
+  }
+}

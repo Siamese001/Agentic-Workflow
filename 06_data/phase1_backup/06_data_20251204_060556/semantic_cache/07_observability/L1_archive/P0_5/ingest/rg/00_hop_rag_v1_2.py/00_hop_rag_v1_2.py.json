@@ -1,0 +1,19 @@
+{
+  "hash": "ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Microservices Model",
+  "relative": "00_hop_rag_v1_2.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/00_hop_rag_v1_2.py",
+  "global": {
+    "ast": "ast/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.ast",
+    "ast_meta": "ast/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.ast.meta.json",
+    "embedding": "embeddings/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.embedding",
+    "emb_meta": "embeddings/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.embedding.meta.json",
+    "diff": "diffs/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.diff.json",
+    "golden": "golden/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.golden.json",
+    "safety": "safety/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.safety.json",
+    "integrity": "integrity/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.integrity.json",
+    "meta": "meta/ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3.meta.json"
+  }
+}

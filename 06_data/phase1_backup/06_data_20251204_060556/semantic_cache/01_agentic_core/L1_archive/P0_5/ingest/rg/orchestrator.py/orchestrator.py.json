@@ -1,0 +1,19 @@
+{
+  "hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "orchestration/orchestrator.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/orchestrator.py",
+  "global": {
+    "ast": "ast/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.ast",
+    "ast_meta": "ast/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.ast.meta.json",
+    "embedding": "embeddings/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.embedding",
+    "emb_meta": "embeddings/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.embedding.meta.json",
+    "diff": "diffs/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.diff.json",
+    "golden": "golden/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.golden.json",
+    "safety": "safety/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.safety.json",
+    "integrity": "integrity/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.integrity.json",
+    "meta": "meta/2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa.meta.json"
+  }
+}

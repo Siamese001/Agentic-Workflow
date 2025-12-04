@@ -1,0 +1,11 @@
+{
+  "hash": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/refactoring/REORGANIZATION_PLAN.md"
+    }
+  ]
+}
