@@ -592,7 +592,20 @@ def make_domain_backup(root: Path, domain: str, dry_run: bool) -> Optional[Path]
         # Very unlikely but avoid overwriting
         target = PHASE1_BACKUP_ROOT / f"{domain}_{timestamp}_{int(time.time())}"
     print(f"[BACKUP] Copying {root} -> {target}")
-    shutil.copytree(root, target)
+    
+    def ignore_phase1_artifacts(path: str, names: List[str]) -> List[str]:
+        """Ignore Phase 1 artifacts and system directories during backup."""
+        ignored = []
+        for name in names:
+            # Skip system excludes
+            if name in SYSTEM_EXCLUDES:
+                ignored.append(name)
+            # Skip Phase 1 internal directories
+            elif name.startswith("phase1_"):
+                ignored.append(name)
+        return ignored
+    
+    shutil.copytree(root, target, ignore=ignore_phase1_artifacts)
     return target
 
 
