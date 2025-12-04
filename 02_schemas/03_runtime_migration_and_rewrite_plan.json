@@ -1,0 +1,54 @@
+{
+  "mode": "semantic_only_zero_loss",
+  "operations": [],
+  "phase": "phase_02_semantic_diff_and_plan",
+  "schema_version": "1.0",
+  "summary": {
+    "by_type": {},
+    "mode": "semantic_only_zero_loss",
+    "note": "Phase 2 only plans; no mutation. Phase 1 & Phase 0.5 remain the only mutators.",
+    "target_root": "03_runtime",
+    "total_operations": 0,
+    "validation_digest": "065e9ae1bce73cbb2e7fe8ec325ecffe3754a170e3f4b7cc3da6df62813b3935"
+  },
+  "target_root": "03_runtime",
+  "timestamp": "2025-12-04T18:44:18.309345",
+  "validations": [
+    {
+      "description": "SSoT YAML & META loaded",
+      "detail": null,
+      "key": "K3",
+      "ok": true
+    },
+    {
+      "description": "Found SSoT subtree for logical root 'runtime'",
+      "detail": null,
+      "key": "K4",
+      "ok": true
+    },
+    {
+      "description": "Captured filesystem snapshot with 168 live files",
+      "detail": null,
+      "key": "K7",
+      "ok": true
+    },
+    {
+      "description": "Loaded 16 canonical pointers for bucket '03_runtime'",
+      "detail": null,
+      "key": "K10",
+      "ok": true
+    },
+    {
+      "description": "Computed semantic diffs for 168 live files",
+      "detail": null,
+      "key": "K11",
+      "ok": true
+    },
+    {
+      "description": "No operations generated; plan degenerates to no-op (safe default)",
+      "detail": null,
+      "key": "K13",
+      "ok": true
+    }
+  ]
+}
