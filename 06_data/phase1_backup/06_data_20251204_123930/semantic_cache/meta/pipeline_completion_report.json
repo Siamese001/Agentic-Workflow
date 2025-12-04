@@ -1,0 +1,21 @@
+{
+  "pipeline_id": "20251204_121709",
+  "completion_timestamp": "2025-12-04T12:18:50.337760",
+  "statistics": {
+    "total_files_scanned": 1631,
+    "eligible_files_processed": 1631,
+    "global_artifacts_created": 10605,
+    "canonical_pointers_created": 1631,
+    "validation_keys_passed": 40,
+    "validation_keys_failed": 0
+  },
+  "semantic_cache_summary": {
+    "ast": 3030,
+    "embeddings": 3030,
+    "diffs": 1515,
+    "golden": 1515,
+    "safety": 1515,
+    "integrity": 1515,
+    "meta": 1516
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "providers/google_genai_client.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/google_genai_client.py",
+  "global": {
+    "ast": "ast/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.ast",
+    "ast_meta": "ast/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.ast.meta.json",
+    "embedding": "embeddings/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.embedding",
+    "emb_meta": "embeddings/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.embedding.meta.json",
+    "diff": "diffs/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.diff.json",
+    "golden": "golden/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.golden.json",
+    "safety": "safety/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.safety.json",
+    "integrity": "integrity/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.integrity.json",
+    "meta": "meta/f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3.meta.json"
+  }
+}

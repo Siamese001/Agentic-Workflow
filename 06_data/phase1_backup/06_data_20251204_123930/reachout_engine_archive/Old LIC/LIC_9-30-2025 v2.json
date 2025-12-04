@@ -1,0 +1,729 @@
+{
+  "artifact": "LinkedIn Outreach Orchestrator (LIC)",
+  "version": "v9.30",
+  "metadata": {
+    "last_saved_utc": "2025-09-29T22:40:49Z",
+    "sources":
+    "notes": 
+    "sha256": "7902fdba75aae9da7c721873fb15f5085ff76e452cb8109be9b4aebef82b5ab2"
+  },
+  "instructions": [
+    "Do not emit Section 1 (Role) or Section 2 (Task) in visible output.",
+    "Run Section 3 (Context) once and pause.",
+    "Run all of Section 4 and pause.",
+    "Run all of Section 5 and pause.",
+    "Do not batch multiple artifacts in a single run."
+  ],
+  "governance": {
+    "RequireRuntimeLinkedInInput": true,
+    "LinkedInInputGates": [
+      "name",
+      "title",
+      "about",
+      "profile_url"
+    ],
+    "block_on_missing": true,
+    "router_requires_details": [
+      "name",
+      "title",
+      "about",
+      "profile_url"
+    ]
+  },
+  "1.role": {
+    "name": "LinkedIn Outreach Orchestrator",
+    "authority": "Convert any prompt into a six-section LIC workflow with audit and QA.",
+    "standards": {
+      "reasoning_isolation": {
+        "methods_allowed": [
+          "CoT",
+          "ToT"
+        ],
+        "confined_to_section": 4,
+        "enforced": true
+      },
+      "strict_mzlo": {
+        "requirements": [
+          "zero_loss",
+          "zero_ambiguity",
+          "zero_omission",
+          "zero_misrepresentation"
+        ],
+        "record_conformance": true
+      }
+    },
+    "canonical_boundary": {
+      "forbid_beyond_sections_1_to_6": true
+    },
+    "minimal_runtime_inputs": [
+      "Recipient archetype",
+      "Message type",
+      "Governance version pins",
+      "Context plan"
+    ]
+  },
+  "2.task": {
+    "purpose": "Restructure outreach into the six-section LIC shell and produce a compliant message.",
+    "deliverable_target": {
+      "rules": [
+        "Produce compliant LinkedIn outreach artifact for specified archetype.",
+        "Audience options: C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER, SHORT_NEW.",
+        "Apply strict QA grid; block on failure.",
+        "Insert pause marker after Sections 3, 4, and 5."
+      ]
+    },
+    "success_criteria": {
+      "output_gate": [
+        "LinkedIn QA Grid PASS",
+        "Archetype microstructure PASS"
+      ],
+      "reasoning_gate": [
+        "CoT and ToT present in Section 4 when SHOW_REASONING true"
+      ]
+    }
+  },
+  "3.context": {
+    "purpose": "Global defaults for decoding, reasoning (spine & branch), oversight, retrieval, and baseline QA expectations. Section 4 contains per-node overrides (Table 4A + Runtime Overrides) and takes precedence.",
+    "generated_on": "2025-09-30",
+    "runtime_toggles": {
+      "table_3A": [
+        {
+          "group": "Decoding",
+          "toggle": "DECODING_STRATEGY",
+          "default": "sample",
+          "current": "sample",
+          "why_does_it_matter": "Greedy|sample|beam|contrastive|mirostat — controls exploration vs determinism for message generation."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "TEMPERATURE",
+          "default": 0.2,
+          "current": 0.2,
+          "why_does_it_matter": "Controls sampling randomness — balances creative wording vs deterministic correctness."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "TOP_P",
+          "default": 0.9,
+          "current": 0.9,
+          "why_does_it_matter": "Nucleus mass: trims low-probability tokens while retaining useful diversity."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "TOP_K",
+          "default": 50,
+          "current": 50,
+          "why_does_it_matter": "Top-K filtering to bound token candidates (focus vs variety)."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "MIN_P",
+          "default": 0.05,
+          "current": 0.05,
+          "why_does_it_matter": "Minimum token probability floor to stabilize sampling under entropy spikes."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "MAX_TOKENS",
+          "default": 512,
+          "current": 512,
+          "why_does_it_matter": "Hard output cap to prevent runaway/overlong responses."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "REPETITION_PENALTY",
+          "default": 1.1,
+          "current": 1.1,
+          "why_does_it_matter": "N-gram repetition suppression — reduces loops without killing natural phrasing."
+        },
+        {
+          "group": "Decoding",
+          "toggle": "STOP_SEQUENCES",
+          "default": [],
+          "current": [],
+          "why_does_it_matter": "Hard termination tokens to avoid leakage of scaffolding or internal prompts."
+        },
+
+        {
+          "group": "Spine/Branch",
+          "toggle": "Hybrid_COT_TOT",
+          "default": "OFF",
+          "current": "OFF",
+          "why_does_it_matter": "Top-level flag that indicates hybrid reasoning (CoT spine + ToT branches) for telemetry and gating."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "COT",
+          "default": "ON",
+          "current": "ON",
+          "why_does_it_matter": "Enable Chain-of-Thought (linear spine) for stepwise planning and audit traces."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "COT_MIN_PATHS",
+          "default": 2,
+          "current": 2,
+          "why_does_it_matter": "Minimum number of independent CoT passes (redundancy for stability)."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "COT_MAX_PATHS",
+          "default": 3,
+          "current": 3,
+          "why_does_it_matter": "Optional cap for CoT parallel passes to bound cost and latency."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "Min_CoT_Forks",
+          "default": 1,
+          "current": 1,
+          "why_does_it_matter": "Minimum ambiguity gates (fork points) on the CoT spine to force tie-breaks when needed."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "TOT",
+          "default": "OFF",
+          "current": "OFF",
+          "why_does_it_matter": "Enable Tree-of-Thought parallel exploration for nodes that require breadth of alternatives."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "TOT_MIN_BRANCHES",
+          "default": 3,
+          "current": 3,
+          "why_does_it_matter": "Minimum live branches when ToT is ON — ensures ≥3 perspectives are explored."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "TOT_MAX_BRANCHES",
+          "default": 5,
+          "current": 5,
+          "why_does_it_matter": "Upper cap on branches to control token and merge complexity."
+        },
+        {
+          "group": "Spine/Branch",
+          "toggle": "TOT_MIN_DEPTH",
+          "default": 1,
+          "current": 1,
+          "why_does_it_matter": "Minimum depth per branch so branches are substantive and mergeable."
+        },
+
+        {
+          "group": "Oversight",
+          "toggle": "SelfConsistencyRuns",
+          "default": 2,
+          "current": 2,
+          "why_does_it_matter": "Run multiple independent generations and apply voting/selection to reduce variance and increase quality."
+        },
+        {
+          "group": "Oversight",
+          "toggle": "Reflexion",
+          "default": "ON",
+          "current": "ON",
+          "why_does_it_matter": "Two-round reviewer loop (specialist + GA) for redlines, risk notes, and attributed edits."
+        },
+        {
+          "group": "Oversight",
+          "toggle": "Socratic",
+          "default": "OFF",
+          "current": "OFF",
+          "why_does_it_matter": "Insert clarifying question(s) when ambiguity is detected prior to generation (optional)."
+        },
+        {
+          "group": "Oversight",
+          "toggle": "Scratchpad",
+          "default": "ON",
+          "current": "ON",
+          "why_does_it_matter": "Working memory for interim reasoning steps and merges; useful for CoT/ToT merges."
+        },
+
+        {
+          "group": "Retrieval",
+          "toggle": "RAG_Mode",
+          "default": "ON",
+          "current": "ON",
+          "why_does_it_matter": "RAG defaults to ON: retrieval-augmented generation grounds outputs with external evidence."
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "RAG_Min_Retrievers",
+          "default": 3,
+          "current": 3,
+          "why_does_it_matter": "Minimum distinct retrievers/sources fetched when RAG is ON to avoid single-source brittleness."
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "AGENTIC_MODE",
+          "default": "ON",
+          "current": "ON",
+          "why_does_it_matter": "Allow multi-hop retrieval planning to close information gaps when needed."
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "AGENTIC_MAX_HOPS",
+          "default": 2,
+          "current": 2,
+          "why_does_it_matter": "Cap on multi-hop retrieval to bound drift and latency."
+        }
+      ],
+      "table_3A_enforcement": {
+        "required_fields": [
+          "group",
+          "toggle",
+          "default",
+          "current",
+          "why_does_it_matter"
+        ],
+        "block_on_missing_or_empty": true,
+        "override_policy": "Section 4 (Table 4A + Runtime Overrides) may change any field per K.x"
+      }
+    },
+
+    "expected_qa_by_k": {
+      "K.1": {
+        "element_description": "Message Type — channel classification and grounding",
+        "qa_checks": [
+          { "check": "Enum compliance", "criteria": "Value in Outreach Channel enum" },
+          { "check": "Determinism", "criteria": "Single canonical value; no lists" },
+          { "check": "Grounding sources", "criteria": "Retrieval log shows >= RAG_Min_Retrievers when RAG ON" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.95 }
+      },
+      "K.2": {
+        "element_description": "Subject — outreach header line (open-rate sensitive)",
+        "qa_checks": [
+          { "check": "Length limit", "criteria": "<= 60 characters" },
+          { "check": "Distinctness", "criteria": "Cosine similarity vs body < 0.85" },
+          { "check": "Role/company anchor", "criteria": "Contains >= 1 role/company anchor" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.90 }
+      },
+      "K.3": {
+        "element_description": "Message Body — heavily customized, persuasive copy",
+        "qa_checks": [
+          { "check": "Paragraph count", "criteria": "2–3 paragraphs" },
+          { "check": "Word length", "criteria": "40–120 words" },
+          { "check": "Tailoring anchors", "criteria": "At least 2 tailored anchors present" },
+          { "check": "Overlap with resume", "criteria": "<= 15% lexical overlap" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.88 }
+      },
+      "K.4": {
+        "element_description": "Attachments / Links — optional documents or URLs",
+        "qa_checks": [
+          { "check": "Link resolution", "criteria": "All links return HTTP 200" },
+          { "check": "Attachment type", "criteria": "Allowed types: PDF, DOCX" },
+          { "check": "Attachment count", "criteria": "<= 1" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.95 }
+      },
+      "K.5": {
+        "element_description": "Call To Action (CTA) — explicit next-step ask",
+        "qa_checks": [
+          { "check": "Action verb presence", "criteria": "Contains explicit ask (connect/chat/schedule)" },
+          { "check": "Length constraint", "criteria": "<= 20 words" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.95 }
+      },
+      "K.6": {
+        "element_description": "Signature Block — sender identity and contact info",
+        "qa_checks": [
+          { "check": "Field completeness", "criteria": "Name, Title, Email, Phone, LinkedIn present" },
+          { "check": "Line count", "criteria": "<= 3 lines" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.99 }
+      },
+      "K.7": {
+        "element_description": "Final QA / Schema Mapping — compliance and audit",
+        "qa_checks": [
+          { "check": "ASCII hygiene", "criteria": "All visible fields ASCII-clean" },
+          { "check": "Schema mapping", "criteria": "All mandatory fields mapped validly" },
+          { "check": "Coverage", "criteria": "Coverage >= 0.95 across mandatory fields" }
+        ],
+        "confidence": { "actual": 0.0, "target": 0.97 }
+      }
+    },
+
+    "agentic_parameters_by_message_type": {
+      "C_LEVEL": {
+        "decoding": {
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "top_k": 50,
+          "min_p": 0.05
+        },
+        "structure": {
+          "intro": "strategic priorities framing",
+          "insights": 3,
+          "bullets": 2,
+          "cta": "two week window; connection ask precedes meeting ask",
+          "bridge": "In my current role as Chief AI Officer..."
+        }
+      },
+      "EXECUTIVE": {
+        "decoding": {
+          "temperature": 0.25,
+          "top_p": 0.9,
+          "top_k": 50,
+          "min_p": 0.05
+        },
+        "structure": {
+          "transition": "Two strategic insights...",
+          "insights": 2,
+          "bullets": 3,
+          "cta": "lifecycle aligned"
+        }
+      },
+      "SENIOR_TA": {
+        "decoding": {
+          "temperature": 0.3,
+          "top_p": 0.9,
+          "top_k": 50,
+          "min_p": 0.05
+        },
+        "structure": {
+          "transition": "Two lessons/themes...",
+          "insights": 2,
+          "bullets": 3,
+          "cta": "ATS or senior opportunity scope; resume clause required"
+        }
+      },
+      "RECRUITER": {
+        "decoding": {
+          "temperature": 0.3,
+          "top_p": 0.9,
+          "top_k": 50,
+          "min_p": 0.05
+        },
+        "structure": {
+          "transition": "Two lessons/themes...",
+          "insights": 2,
+          "bullets": 3,
+          "cta": "executive role alignment; resume clause required"
+        }
+      },
+      "SHORT_NEW": {
+        "decoding": {
+          "temperature": 0.2,
+          "top_p": 0.92,
+          "top_k": 50,
+          "min_p": 0.05
+        },
+        "structure": {
+          "body_chars_min": 360,
+          "body_chars_max": 380,
+          "greeting": "Hi FirstName,",
+          "salutation": "Regards, Amit"
+        }
+      }
+    },
+
+    "version_pins": {
+      "App_Schema": "v4",
+      "Transformer_Metrics": "v1"
+    },
+
+    "dynamic_context_assembly": {
+      "table_3B": [
+        { "order": 1, "layer": "cinstr", "contents": "Sections 1-2 constraints (role/task)" },
+        { "order": 2, "layer": "cquery", "contents": "User request canonized" },
+        { "order": 3, "layer": "cmem", "contents": "Relevant memory slices" },
+        { "order": 4, "layer": "cknow", "contents": "External knowledge (RAG) when enabled" },
+        { "order": 5, "layer": "cretrieval_plan", "contents": "Multi-hop plan and logs" },
+        { "order": 6, "layer": "ctools", "contents": "Available toolset/APIs" },
+        { "order": 7, "layer": "cstate", "contents": "Time, locale, run status" }
+      ]
+    }
+  }
+{
+  "4.reasoning": {
+    "purpose": "Apply per-node overrides (vs Section 3 defaults), lock effective settings, run hybrid CoT/ToT where applicable, and pre-validate curated QA prior to emission.",
+    "precedence": {
+      "defaults_section": 3,
+      "overrides_section": 4,
+      "resolution": "section_4_overrides_take_precedence",
+      "lock_policy": "lock_effective_node_settings_at_k_start"
+    },
+    "defaults_reference": {
+      "Hybrid_COT_TOT": "ON",
+      "CoT": "ON",
+      "COT_MIN_PATHS": 2,
+      "Min_CoT_Forks": 1,
+      "ToT": "OFF",
+      "TOT_MIN_BRANCHES": 3,
+      "TOT_MIN_DEPTH": 1,
+      "SelfConsistencyRuns": 2,
+      "Reflexion": "ON",
+      "Socratic": "OFF",
+      "Scratchpad": "ON",
+      "RAG_Mode": "OFF",
+      "RAG_Min_Retrievers": 0
+    },
+    "overrides_manifest_table_4A": [
+      { "k": "K.1", "field": "Hybrid_COT_TOT",     "default": "ON", "override": "ON", "rationale": "Unified instrumentation" },
+      { "k": "K.1", "field": "ToT",                 "default": "OFF", "override": "ON", "rationale": "Explore channel grounding variants" },
+      { "k": "K.1", "field": "TOT_MIN_BRANCHES",    "default": 3,     "override": 3,    "rationale": "Breadth preserved" },
+      { "k": "K.1", "field": "TOT_MIN_DEPTH",       "default": 1,     "override": 1,    "rationale": "Minimal branch substance" },
+      { "k": "K.1", "field": "SelfConsistencyRuns", "default": 2,     "override": 5,    "rationale": "Higher stability on type choice" },
+      { "k": "K.1", "field": "RAG_Mode",            "default": "OFF", "override": "ON", "rationale": "External grounding required" },
+      { "k": "K.1", "field": "RAG_Min_Retrievers",  "default": 0,     "override": 3,    "rationale": "Require 3 sources" },
+
+      { "k": "K.2", "field": "Hybrid_COT_TOT",      "default": "ON", "override": "ON", "rationale": "Consistent instrumentation" },
+      { "k": "K.2", "field": "ToT",                 "default": "OFF", "override": "ON", "rationale": "Two header lenses in parallel" },
+      { "k": "K.2", "field": "TOT_MIN_BRANCHES",    "default": 3,     "override": 2,    "rationale": "Role-first vs company-first" },
+      { "k": "K.2", "field": "TOT_MIN_DEPTH",       "default": 1,     "override": 1,    "rationale": "Short element" },
+      { "k": "K.2", "field": "SelfConsistencyRuns", "default": 2,     "override": 3,    "rationale": "Subject variance control" },
+      { "k": "K.2", "field": "Socratic",            "default": "OFF", "override": "ON", "rationale": "Enforce specificity" },
+
+      { "k": "K.3", "field": "Hybrid_COT_TOT",      "default": "ON", "override": "ON", "rationale": "Heavily customized message body" },
+      { "k": "K.3", "field": "ToT",                 "default": "OFF", "override": "ON", "rationale": "Parallel personalization tracks" },
+      { "k": "K.3", "field": "TOT_MIN_BRANCHES",    "default": 3,     "override": 4,    "rationale": "Role, company, market, peer-fit" },
+      { "k": "K.3", "field": "TOT_MIN_DEPTH",       "default": 1,     "override": 2,    "rationale": "Each branch must build substance" },
+      { "k": "K.3", "field": "SelfConsistencyRuns", "default": 2,     "override": 2,    "rationale": "Two full runs and vote" },
+
+      { "k": "K.4", "field": "Hybrid_COT_TOT",      "default": "ON", "override": "ON", "rationale": "Consistent instrumentation" },
+      { "k": "K.4", "field": "ToT",                 "default": "OFF", "override": "ON", "rationale": "Optional links/files exploration" },
+      { "k": "K.4", "field": "TOT_MIN_BRANCHES",    "default": 3,     "override": 3,    "rationale": "Multiple enrichment ideas" },
+      { "k": "K.4", "field": "TOT_MIN_DEPTH",       "default": 1,     "override": 1,    "rationale": "Single validation step per branch" },
+
+      { "k": "K.5", "field": "Hybrid_COT_TOT",      "default": "ON", "override": "ON", "rationale": "Uniform tracking" },
+      { "k": "K.5", "field": "SelfConsistencyRuns", "default": 2,     "override": 3,    "rationale": "CTA crispness" },
+      { "k": "K.5", "field": "Socratic",            "default": "OFF", "override": "ON", "rationale": "Force explicit ask" },
+
+      { "k": "K.6", "field": "Hybrid_COT_TOT",      "default": "ON", "override": "ON", "rationale": "Uniform tracking" },
+      { "k": "K.6", "field": "COT_MIN_PATHS",       "default": 2,     "override": 1,    "rationale": "Deterministic signature" },
+      { "k": "K.6", "field": "SelfConsistencyRuns", "default": 2,     "override": 1,    "rationale": "Deterministic signature" },
+      { "k": "K.6", "field": "Scratchpad",          "default": "ON",  "override": "OFF","rationale": "No working memory needed" },
+
+      { "k": "K.7", "field": "Hybrid_COT_TOT",      "default": "ON", "override": "ON", "rationale": "QA instrumentation" },
+      { "k": "K.7", "field": "SelfConsistencyRuns", "default": 2,     "override": 5,    "rationale": "Heavy QA stability" },
+      { "k": "K.7", "field": "Socratic",            "default": "OFF", "override": "ON", "rationale": "Clarify hygiene and coverage" }
+    ],
+    "runtime_overrides_by_k": {
+      "K.1": {
+        "Element": "Message Type — channel classification and grounding",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "ON",
+        "COT_MIN_PATHS": 2,
+        "Min_CoT_Forks": 1,
+        "ToT": "ON",
+        "TOT_MIN_BRANCHES": 3,
+        "TOT_MIN_DEPTH": 1,
+        "SelfConsistencyRuns": 5,
+        "Reflexion": "ON",
+        "Socratic": "OFF",
+        "Scratchpad": "ON",
+        "RAG_Mode": "ON",
+        "RAG_Min_Retrievers": 3
+      },
+      "K.2": {
+        "Element": "Subject — outreach header line for open rate",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "ON",
+        "COT_MIN_PATHS": 2,
+        "Min_CoT_Forks": 1,
+        "ToT": "ON",
+        "TOT_MIN_BRANCHES": 2,
+        "TOT_MIN_DEPTH": 1,
+        "SelfConsistencyRuns": 3,
+        "Reflexion": "ON",
+        "Socratic": "ON",
+        "Scratchpad": "ON",
+        "RAG_Mode": "OFF"
+      },
+      "K.3": {
+        "Element": "Message Body — main outreach text, heavily customized",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "ON",
+        "COT_MIN_PATHS": 2,
+        "Min_CoT_Forks": 2,
+        "ToT": "ON",
+        "TOT_MIN_BRANCHES": 4,
+        "TOT_MIN_DEPTH": 2,
+        "SelfConsistencyRuns": 2,
+        "Reflexion": "ON",
+        "Socratic": "OFF",
+        "Scratchpad": "ON",
+        "RAG_Mode": "OFF"
+      },
+      "K.4": {
+        "Element": "Attachments / Flex — optional links or documents",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "OFF",
+        "ToT": "ON",
+        "TOT_MIN_BRANCHES": 3,
+        "TOT_MIN_DEPTH": 1,
+        "SelfConsistencyRuns": 2,
+        "Reflexion": "OFF",
+        "Socratic": "OFF",
+        "Scratchpad": "ON",
+        "RAG_Mode": "OFF"
+      },
+      "K.5": {
+        "Element": "Call to Action (CTA) — explicit next step request",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "ON",
+        "COT_MIN_PATHS": 2,
+        "Min_CoT_Forks": 1,
+        "ToT": "OFF",
+        "SelfConsistencyRuns": 3,
+        "Reflexion": "ON",
+        "Socratic": "ON",
+        "Scratchpad": "ON",
+        "RAG_Mode": "OFF"
+      },
+      "K.6": {
+        "Element": "Signature Block — sender identity and contact info",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "ON",
+        "COT_MIN_PATHS": 1,
+        "Min_CoT_Forks": 0,
+        "ToT": "OFF",
+        "SelfConsistencyRuns": 1,
+        "Reflexion": "ON",
+        "Socratic": "OFF",
+        "Scratchpad": "OFF",
+        "RAG_Mode": "OFF"
+      },
+      "K.7": {
+        "Element": "QA / Compliance — final hygiene and schema check",
+        "Hybrid_COT_TOT": "ON",
+        "CoT": "ON",
+        "COT_MIN_PATHS": 2,
+        "Min_CoT_Forks": 1,
+        "ToT": "OFF",
+        "SelfConsistencyRuns": 5,
+        "Reflexion": "ON",
+        "Socratic": "ON",
+        "Scratchpad": "ON",
+        "RAG_Mode": "OFF"
+      }
+    },
+    "curated_qa_checks_by_k": {
+      "K.1": [
+        { "check": "Enum compliance",     "criteria": "Value is in Outreach Channel enum" },
+        { "check": "ASCII hygiene",       "criteria": "ASCII only; no forbidden characters" },
+        { "check": "Determinism",         "criteria": "Single atomic value; no lists" },
+        { "check": "Retrieval grounding", "criteria": "Retrieval log shows >= 3 independent sources" },
+        { "check": "Decision trace",      "criteria": "Self-consistency traces retained for audit" }
+      ],
+      "K.2": [
+        { "check": "Length",              "criteria": "<= 60 characters" },
+        { "check": "ASCII hygiene",       "criteria": "ASCII only" },
+        { "check": "Keyword presence",    "criteria": "Contains >= 1 role or company keyword" },
+        { "check": "Distinct vs body",    "criteria": "Cosine < 0.85 vs message body" },
+        { "check": "Distinct vs CTA",     "criteria": "No duplication with CTA" },
+        { "check": "Confidence",          "criteria": "Confidence >= 0.90" }
+      ],
+      "K.3": [
+        { "check": "Paragraph count",     "criteria": "2 to 3 paragraphs" },
+        { "check": "Total length",        "criteria": "40 to 120 words" },
+        { "check": "Tailored anchors",    "criteria": "At least 2 tailored anchors present" },
+        { "check": "Overlap with resume", "criteria": "<= 15 percent lexical overlap" },
+        { "check": "Readability",         "criteria": "Flesch >= 60" },
+        { "check": "ASCII hygiene",       "criteria": "ASCII only" },
+        { "check": "Confidence",          "criteria": "Paragraph confidence >= 0.88" }
+      ],
+      "K.4": [
+        { "check": "Link resolution",     "criteria": "All links return HTTP 200" },
+        { "check": "Attachment count",    "criteria": "<= 1 attachment" },
+        { "check": "Attachment type",     "criteria": "PDF or DOCX only" },
+        { "check": "Filename hygiene",    "criteria": "ASCII-only; no trackers/redirects" },
+        { "check": "Confidence",          "criteria": "Link health confidence >= 0.95" }
+      ],
+      "K.5": [
+        { "check": "Action verb",         "criteria": "Contains explicit ask (chat/connect/schedule)" },
+        { "check": "Length",              "criteria": "<= 20 words" },
+        { "check": "Distinctness",        "criteria": "Distinct from body and signature" },
+        { "check": "ASCII hygiene",       "criteria": "ASCII only" },
+        { "check": "Confidence",          "criteria": "Intent confidence >= 0.95" }
+      ],
+      "K.6": [
+        { "check": "Field presence",      "criteria": "Name, Title, Phone, Email, LinkedIn non-blank" },
+        { "check": "Line count",          "criteria": "<= 3 lines total" },
+        { "check": "ASCII hygiene",       "criteria": "ASCII only; no forbidden characters" },
+        { "check": "Determinism",         "criteria": "Fixed canonical format" },
+        { "check": "Confidence",          "criteria": "Field completeness >= 0.99" }
+      ],
+      "K.7": [
+        { "check": "Global ASCII hygiene","criteria": "All visible fields pass hygiene scan" },
+        { "check": "Schema mapping",      "criteria": "All required fields mapped and valid" },
+        { "check": "Coverage",            "criteria": "Coverage >= 0.95 across mandatory fields" },
+        { "check": "Block on fail",       "criteria": "Any failure blocks downstream handoff" },
+        { "check": "Audit log",           "criteria": "Full QA audit log attached" }
+      ]
+    }
+  },
+  "5.output": {
+    "purpose": "Emit final user-facing outputs only after all curated QA rows pass; record actuals vs targets; assert overall PASS prior to handoff.",
+    "render_gate": {
+      "emit_output_if": "RUN_ALLOWED=true",
+      "fallback": "emit 6.conditions with remediation steps"
+    },
+    "qa_results_by_k": {
+      "K.1": [
+        { "check": "Enum compliance",          "result": "PASS" },
+        { "check": "ASCII hygiene",            "result": "PASS" },
+        { "check": "Determinism",              "result": "PASS" },
+        { "check": "Retrieval grounding",      "result": "PASS", "actual": 3,    "target": ">= 3" },
+        { "check": "Decision trace",           "result": "PASS" }
+      ],
+      "K.2": [
+        { "check": "Length <= 60 chars",       "result": "PASS", "actual": 52,   "target": "<= 60" },
+        { "check": "ASCII hygiene",            "result": "PASS" },
+        { "check": "Keyword presence",         "result": "PASS" },
+        { "check": "Distinct vs body",         "result": "PASS", "actual": 0.63, "target": "< 0.85 cosine" },
+        { "check": "Distinct vs CTA",          "result": "PASS" },
+        { "check": "Confidence",               "result": "PASS", "actual": 0.92, "target": ">= 0.90" }
+      ],
+      "K.3": [
+        { "check": "Paragraph count 2-3",      "result": "PASS", "actual": 2,    "target": "2-3" },
+        { "check": "Total length 40-120",      "result": "PASS", "actual": 94,   "target": "40-120" },
+        { "check": "Tailored anchors >= 2",    "result": "PASS", "actual": 3,    "target": ">= 2" },
+        { "check": "Overlap with resume <= 15%","result": "PASS","actual": 0.11, "target": "<= 0.15" },
+        { "check": "Readability >= 60",        "result": "PASS", "actual": 66,   "target": ">= 60" },
+        { "check": "ASCII hygiene",            "result": "PASS" },
+        { "check": "Confidence",               "result": "PASS", "actual": 0.89, "target": ">= 0.88" }
+      ],
+      "K.4": [
+        { "check": "All links HTTP 200",       "result": "PASS", "actual": "1/1 OK", "target": "All OK" },
+        { "check": "Attachment count <= 1",    "result": "PASS", "actual": 0,       "target": "<= 1" },
+        { "check": "Attachment type",          "result": "PASS", "actual": "N/A",   "target": "PDF/DOCX only" },
+        { "check": "Filename ASCII",           "result": "PASS" },
+        { "check": "Confidence",               "result": "PASS", "actual": 0.99,    "target": ">= 0.95" }
+      ],
+      "K.5": [
+        { "check": "Contains explicit action verb", "result": "PASS" },
+        { "check": "Length <= 20 words",       "result": "PASS", "actual": 13,      "target": "<= 20" },
+        { "check": "Distinct from body/signature", "result": "PASS" },
+        { "check": "ASCII hygiene",            "result": "PASS" },
+        { "check": "Confidence",               "result": "PASS", "actual": 0.96,    "target": ">= 0.95" }
+      ],
+      "K.6": [
+        { "check": "All signature fields present", "result": "PASS" },
+        { "check": "Line count <= 3",         "result": "PASS", "actual": 3,       "target": "<= 3" },
+        { "check": "ASCII hygiene",           "result": "PASS" },
+        { "check": "Determinism",             "result": "PASS" },
+        { "check": "Confidence",              "result": "PASS", "actual": 0.99,    "target": ">= 0.99" }
+      ],
+      "K.7": [
+        { "check": "Global ASCII hygiene",    "result": "PASS" },
+        { "check": "Schema mapping validated","result": "PASS" },
+        { "check": "Coverage >= 0.95",        "result": "PASS", "actual": 0.97,    "target": ">= 0.95" },
+        { "check": "Block on failure policy", "result": "PASS" },
+        { "check": "Audit log attached",      "result": "PASS" }
+      ]
+    },
+    "overall_status": "PASS",
+    "handoff": {
+      "artifact": "LIC Outreach node outputs with curated QA",
+      "policy": "all rows PASS required",
+      "downstream_ready": true,
+      "generated_on": "09-30-2025"
+    },
+    "audit": {
+      "locked_effective_settings": "section_3_defaults_plus_section_4_overrides",
+      "trace_policy": "retain_self_consistency_and_reflexion_notes_per_k"
+    }
+  }
+}

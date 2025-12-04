@@ -1,0 +1,115 @@
+--- LIC_10-03-2025_v6.6.json
++++ LIC_10-03-2025_v6.7.json
+@@ -2,7 +2,7 @@
+   "artifact": "LinkedIn Outreach Orchestrator (LIC)",
+   "version": "LIC_10-01-2025_v4",
+   "metadata": {
+-    "version": "LIC_10-03-2025_v6.6",
++    "version": "LIC_10-03-2025_v6.7",
+     "patches": [
+       "C001",
+       "C002",
+@@ -15,7 +15,9 @@
+       "C009",
+       "C010",
+       "C011",
+-      "C012"
++      "C012",
++      "C013",
++      "C014"
+     ],
+     "changelog": "external://CHANGELOG.md",
+     "sha256": "70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09",
+@@ -779,6 +781,31 @@
+         "on_update_command": "Overwrite global_sender_profile.profile with new values",
+         "on_session_start": "Auto-load from global_sender_profile.profile if exists"
+       }
++    },
++    "current_role_verification": {
++      "trigger_point": "After linkedin_input_collection, before K.1 execution",
++      "steps": [
++        {
++          "action": "web_search",
++          "query_template": "{recipient_name} {company_name} 2025",
++          "parse_for": [
++            "joined",
++            "appointed",
++            "named",
++            "leaves",
++            "departs",
++            "exits"
++          ]
++        },
++        {
++          "logic": {
++            "if_found_departure": "WARN user; allow proceed with confirmation",
++            "if_found_recent_appointment": "PROCEED",
++            "if_no_recent_news": "WARN user; allow proceed"
++          }
++        }
++      ],
++      "blocking": false
+     }
+   },
+   "4.reasoning": {
+@@ -2787,6 +2814,12 @@
+           "CTA date specificity",
+           "CTA contains specific day names or dates",
+           "LOW"
++        ],
++        [
++          "LIC-QA-060",
++          "About Section Contamination Check",
++          "about_similarity < 0.75",
++          "CRITICAL"
+         ]
+       ],
+       "rules_detailed": {
+@@ -2925,6 +2958,14 @@
+           "rule_id": "LIC-QA-059",
+           "name": "CTA date specificity",
+           "blocking": false
++        },
++        "LIC-QA-060": {
++          "rule_id": "LIC-QA-060",
++          "name": "About Section Contamination Check",
++          "check": "K.3 insights contain no exact/paraphrased text from About section",
++          "severity": "CRITICAL",
++          "validation": "Fuzzy string match >= 0.75 triggers BLOCK",
++          "failure_action": "BLOCK_MESSAGE_DELIVERY"
+         }
+       }
+     },
+@@ -3281,6 +3322,32 @@
+         "LIC-QA-029",
+         "LIC-QA-030"
+       ]
++    },
++    "about_section_policy": {
++      "principle": "About section = background context ONLY, never current insights",
++      "allowed": [
++        "Domain expertise validation",
++        "Career trajectory context",
++        "Relevance bridges",
++        "Education/certifications"
++      ],
++      "prohibited": [
++        "Current strategic initiatives",
++        "Recent achievements presented as current",
++        "Active projects",
++        "Present-tense statements about current role"
++      ],
++      "tagging": {
++        "source_tag_for_about": "STATIC_PROFILE"
++      },
++      "detection": {
++        "fuzzy_match_threshold": 0.75,
++        "scan_targets": [
++          "K.3 insights list",
++          "opening paragraph"
++        ],
++        "action_on_violation": "BLOCK"
++      }
+     }
+   },
+   "5.output": {

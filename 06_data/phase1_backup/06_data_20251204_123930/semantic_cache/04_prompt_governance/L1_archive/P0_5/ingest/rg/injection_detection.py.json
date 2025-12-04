@@ -1,0 +1,19 @@
+{
+  "hash": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
+  "canonical_root": "04_prompt_governance",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "l5/injection_detection.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/injection_detection.py",
+  "global": {
+    "ast": "ast/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.ast",
+    "ast_meta": "ast/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.ast.meta.json",
+    "embedding": "embeddings/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.embedding",
+    "emb_meta": "embeddings/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.embedding.meta.json",
+    "diff": "diffs/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.diff.json",
+    "golden": "golden/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.golden.json",
+    "safety": "safety/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.safety.json",
+    "integrity": "integrity/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.integrity.json",
+    "meta": "meta/cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e.meta.json"
+  }
+}

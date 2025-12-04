@@ -1,0 +1,19 @@
+{
+  "hash": "e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "vendor/pydantic_stub/main.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/main.py",
+  "global": {
+    "ast": "ast/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.ast",
+    "ast_meta": "ast/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.ast.meta.json",
+    "embedding": "embeddings/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.embedding",
+    "emb_meta": "embeddings/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.embedding.meta.json",
+    "diff": "diffs/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.diff.json",
+    "golden": "golden/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.golden.json",
+    "safety": "safety/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.safety.json",
+    "integrity": "integrity/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.integrity.json",
+    "meta": "meta/e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10.meta.json"
+  }
+}

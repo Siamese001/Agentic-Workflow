@@ -5,2288 +5,2288 @@
     {
       "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
       "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/check.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
       "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/check_rules/policy/validate.py",
       "dest_rel": "L1_cognition/P1_retrieve/check_rules/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/match.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/match.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/retrieve_similarity.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/retrieve_similarity.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/search.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/embedding/search.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/extract.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/extract.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/fetch.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/fetch.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/load.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/load.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/parse.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/parse.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/query.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/query.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/retrieve.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/understand/retrieve.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/build.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/build.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/format.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/format.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/prepare.py",
       "dest_rel": "L1_cognition/P1_retrieve/gather-context-inputs/utility/prepare.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/match.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/retrieve_similarity.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/embedding/search.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/embedding/search.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/understand/extract.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/extract.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/understand/fetch.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/fetch.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/understand/load.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/load.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/understand/parse.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/parse.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/understand/query.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/query.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/understand/retrieve.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/utility/build.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/build.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/utility/format.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/format.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P1_retrieve/get_info/utility/prepare.py",
       "dest_rel": "L1_cognition/P1_retrieve/get_info/utility/prepare.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/check_structure/policy/check.py",
       "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/check.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/check_structure/policy/enforce.py",
       "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/check_structure/policy/validate.py",
       "dest_rel": "L1_cognition/P2_inspect/check_structure/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/assess.py",
       "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/assess.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/compute.py",
       "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/compute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/check_structure/semantic/validate.py",
       "dest_rel": "L1_cognition/P2_inspect/check_structure/semantic/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
       "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/calculate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/compute.py",
       "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/compute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
       "dest_rel": "L1_cognition/P2_inspect/convert_content/embedding/normalize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/apply.py",
       "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/compute.py",
       "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/compute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
       "dest_rel": "L1_cognition/P2_inspect/convert_content/semantic/normalize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/detect-anomalies/update/capture.py",
       "dest_rel": "L1_cognition/P2_inspect/detect-anomalies/update/capture.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/detect-anomalies/update/inspect.py",
       "dest_rel": "L1_cognition/P2_inspect/detect-anomalies/update/inspect.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/detect-anomalies/update/log.py",
       "dest_rel": "L1_cognition/P2_inspect/detect-anomalies/update/log.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
       "dest_rel": "L1_cognition/P2_inspect/find_problems/update/capture.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/find_problems/update/inspect.py",
       "dest_rel": "L1_cognition/P2_inspect/find_problems/update/inspect.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
       "dest_rel": "L1_cognition/P2_inspect/find_problems/update/log.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/execute-actions/routing/apply.py",
       "dest_rel": "L1_cognition/P3_aggregate/execute-actions/routing/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/execute-actions/routing/handle.py",
       "dest_rel": "L1_cognition/P3_aggregate/execute-actions/routing/handle.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/execute-actions/routing/implement.py",
       "dest_rel": "L1_cognition/P3_aggregate/execute-actions/routing/implement.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/execute-actions/use/execute.py",
       "dest_rel": "L1_cognition/P3_aggregate/execute-actions/use/execute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/execute-actions/use/invoke.py",
       "dest_rel": "L1_cognition/P3_aggregate/execute-actions/use/invoke.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/execute-actions/use/process.py",
       "dest_rel": "L1_cognition/P3_aggregate/execute-actions/use/process.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/adjust.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/optimize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/refinement/refine.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/rank.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
       "dest_rel": "L1_cognition/P3_aggregate/pick_best_result/understand/sort.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/adjust.py",
       "dest_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/adjust.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/optimize.py",
       "dest_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/optimize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/refine.py",
       "dest_rel": "L1_cognition/P3_aggregate/select-optimal/refinement/refine.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/select-optimal/understand/apply.py",
       "dest_rel": "L1_cognition/P3_aggregate/select-optimal/understand/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/select-optimal/understand/rank.py",
       "dest_rel": "L1_cognition/P3_aggregate/select-optimal/understand/rank.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/select-optimal/understand/sort.py",
       "dest_rel": "L1_cognition/P3_aggregate/select-optimal/understand/sort.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/sync-status/update/aggregate.py",
       "dest_rel": "L1_cognition/P3_aggregate/sync-status/update/aggregate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/sync-status/update/consolidate.py",
       "dest_rel": "L1_cognition/P3_aggregate/sync-status/update/consolidate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/sync-status/update/merge.py",
       "dest_rel": "L1_cognition/P3_aggregate/sync-status/update/merge.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/sync-status/utility/format.py",
       "dest_rel": "L1_cognition/P3_aggregate/sync-status/utility/format.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/sync-status/utility/prepare.py",
       "dest_rel": "L1_cognition/P3_aggregate/sync-status/utility/prepare.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/sync-status/utility/serialize.py",
       "dest_rel": "L1_cognition/P3_aggregate/sync-status/utility/serialize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/update_state/update/aggregate.py",
       "dest_rel": "L1_cognition/P3_aggregate/update_state/update/aggregate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/update_state/update/consolidate.py",
       "dest_rel": "L1_cognition/P3_aggregate/update_state/update/consolidate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/update_state/update/merge.py",
       "dest_rel": "L1_cognition/P3_aggregate/update_state/update/merge.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/update_state/utility/format.py",
       "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/format.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/update_state/utility/prepare.py",
       "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/prepare.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/update_state/utility/serialize.py",
       "dest_rel": "L1_cognition/P3_aggregate/update_state/utility/serialize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/apply.py",
       "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/handle.py",
       "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/handle.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/use_tools/routing/implement.py",
       "dest_rel": "L1_cognition/P3_aggregate/use_tools/routing/implement.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/use_tools/use/execute.py",
       "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/execute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/use_tools/use/invoke.py",
       "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/invoke.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P3_aggregate/use_tools/use/process.py",
       "dest_rel": "L1_cognition/P3_aggregate/use_tools/use/process.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/check_rules/policy/apply.py",
       "dest_rel": "L1_cognition/P4_safety/check_rules/policy/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/check_rules/policy/enforce.py",
       "dest_rel": "L1_cognition/P4_safety/check_rules/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
       "dest_rel": "L1_cognition/P4_safety/check_rules/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/control-resources/update/enforce.py",
       "dest_rel": "L1_cognition/P4_safety/control-resources/update/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/control-resources/update/track.py",
       "dest_rel": "L1_cognition/P4_safety/control-resources/update/track.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/control-resources/update/update.py",
       "dest_rel": "L1_cognition/P4_safety/control-resources/update/update.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/manage_costs/update/enforce.py",
       "dest_rel": "L1_cognition/P4_safety/manage_costs/update/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/manage_costs/update/track.py",
       "dest_rel": "L1_cognition/P4_safety/manage_costs/update/track.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L1_cognition/P4_safety/manage_costs/update/update.py",
       "dest_rel": "L1_cognition/P4_safety/manage_costs/update/update.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/diagnose_runtime_issues.py",
       "dest_rel": "L2_execution/diagnose_runtime_issues.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/inspect_runtime_quality.py",
       "dest_rel": "L2_execution/inspect_runtime_quality.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/log_runtime_metrics.py",
       "dest_rel": "L2_execution/log_runtime_metrics.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P2_inspect/lic_cta.py",
       "dest_rel": "L2_execution/P2_inspect/lic_cta.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P2_inspect/refinement.py",
       "dest_rel": "L2_execution/P2_inspect/refinement.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P2_inspect/check_structure/retrieval_profile.py",
       "dest_rel": "L2_execution/P2_inspect/check_structure/retrieval_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P2_inspect/check_structure/policy/check.py",
       "dest_rel": "L2_execution/P2_inspect/check_structure/policy/check.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P2_inspect/check_structure/policy/enforce.py",
       "dest_rel": "L2_execution/P2_inspect/check_structure/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P2_inspect/check_structure/policy/validate.py",
       "dest_rel": "L2_execution/P2_inspect/check_structure/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/data_meta_artifacts.json",
       "dest_rel": "L2_execution/P3_aggregate/data_meta_artifacts.json",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/fs_template.py",
       "dest_rel": "L2_execution/P3_aggregate/fs_template.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/llm_judge.py",
       "dest_rel": "L2_execution/P3_aggregate/llm_judge.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/metrics.py",
       "dest_rel": "L2_execution/P3_aggregate/metrics.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/runner.py",
       "dest_rel": "L2_execution/P3_aggregate/runner.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/execute-actions/use/execute.py",
       "dest_rel": "L2_execution/P3_aggregate/execute-actions/use/execute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/execute-actions/use/invoke.py",
       "dest_rel": "L2_execution/P3_aggregate/execute-actions/use/invoke.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/execute-actions/use/perform.py",
       "dest_rel": "L2_execution/P3_aggregate/execute-actions/use/perform.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/execute-actions/utility/format.py",
       "dest_rel": "L2_execution/P3_aggregate/execute-actions/utility/format.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/execute-actions/utility/prepare.py",
       "dest_rel": "L2_execution/P3_aggregate/execute-actions/utility/prepare.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/execute-actions/utility/serialize.py",
       "dest_rel": "L2_execution/P3_aggregate/execute-actions/utility/serialize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/execute_runtime_commands.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/execute_runtime_commands.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/handle_runtime_timeouts.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/handle_runtime_timeouts.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/implement_runtime_fallback.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/implement_runtime_fallback.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/invoke_runtime_actions.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/invoke_runtime_actions.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/perform_runtime_operations.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/perform_runtime_operations.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/retry_runtime_failures.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/retry_runtime_failures.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/use/execute.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/use/execute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/use/invoke.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/use/invoke.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/use/perform.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/use/perform.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/utility/format.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/format.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/utility/prepare.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/prepare.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P3_aggregate/use_tools/utility/serialize.py",
       "dest_rel": "L2_execution/P3_aggregate/use_tools/utility/serialize.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P4_safety/check_rules/policy/apply.py",
       "dest_rel": "L2_execution/P4_safety/check_rules/policy/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P4_safety/check_rules/policy/enforce.py",
       "dest_rel": "L2_execution/P4_safety/check_rules/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L2_execution/P4_safety/check_rules/policy/validate.py",
       "dest_rel": "L2_execution/P4_safety/check_rules/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/3.13slash",
       "dest_rel": "L3_orchestration/3.13slash",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/apply_runtime_safety.py",
       "dest_rel": "L3_orchestration/apply_runtime_safety.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/apply_runtime_weights.py",
       "dest_rel": "L3_orchestration/apply_runtime_weights.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/assess_runtime_confidence.py",
       "dest_rel": "L3_orchestration/assess_runtime_confidence.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/calculate_runtime_similarity.py",
       "dest_rel": "L3_orchestration/calculate_runtime_similarity.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/compute_runtime_confidence.py",
       "dest_rel": "L3_orchestration/compute_runtime_confidence.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/compute_runtime_embeddings.py",
       "dest_rel": "L3_orchestration/compute_runtime_embeddings.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/compute_runtime_validation.py",
       "dest_rel": "L3_orchestration/compute_runtime_validation.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/enforce_runtime_filters.py",
       "dest_rel": "L3_orchestration/enforce_runtime_filters.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/execution_budget_manager.py",
       "dest_rel": "L3_orchestration/execution_budget_manager.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/lic_tone.py",
       "dest_rel": "L3_orchestration/lic_tone.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/metrics.json",
       "dest_rel": "L3_orchestration/metrics.json",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/models.py",
       "dest_rel": "L3_orchestration/models.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/normalize_runtime_scores.py",
       "dest_rel": "L3_orchestration/normalize_runtime_scores.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/normalize_runtime_vectors.py",
       "dest_rel": "L3_orchestration/normalize_runtime_vectors.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/policies.py",
       "dest_rel": "L3_orchestration/policies.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/reliability_scorer.py",
       "dest_rel": "L3_orchestration/reliability_scorer.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/rg_config.py",
       "dest_rel": "L3_orchestration/rg_config.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/sandbox_errors.py",
       "dest_rel": "L3_orchestration/sandbox_errors.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/validate_runtime_ethics.py",
       "dest_rel": "L3_orchestration/validate_runtime_ethics.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/validate_runtime_quality.py",
       "dest_rel": "L3_orchestration/validate_runtime_quality.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/vm_manager.py",
       "dest_rel": "L3_orchestration/vm_manager.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/coordinate.py",
       "dest_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/coordinate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/manage.py",
       "dest_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/manage.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/orchestrate.py",
       "dest_rel": "L3_orchestration/P1_retrieve/gather-context-inputs/understand/orchestrate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/agent_profile.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/agent_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/context_manager.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/context_manager.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/cost_tracking.json",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/cost_tracking.json",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/lic_seniority.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/lic_seniority.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/load_runtime_planning.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/load_runtime_planning.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/networking.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/networking.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/observability.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/observability.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/prepare_runtime_payload.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/prepare_runtime_payload.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/rest_interface.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/rest_interface.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/safety_profile.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/safety_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/scoring.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/scoring.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/coordinate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/manage.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/manage.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
       "dest_rel": "L3_orchestration/P1_retrieve/get_info/understand/orchestrate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/.cacheslash",
       "dest_rel": "L3_orchestration/P3_aggregate/.cacheslash",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/.gitkeep",
       "dest_rel": "L3_orchestration/P3_aggregate/.gitkeep",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/.keep",
       "dest_rel": "L3_orchestration/P3_aggregate/.keep",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/adjust_runtime_weights.py",
       "dest_rel": "L3_orchestration/P3_aggregate/adjust_runtime_weights.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/apply_runtime_algorithm.py",
       "dest_rel": "L3_orchestration/P3_aggregate/apply_runtime_algorithm.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/build_runtime_filters.py",
       "dest_rel": "L3_orchestration/P3_aggregate/build_runtime_filters.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/build_runtime_orchestration.py",
       "dest_rel": "L3_orchestration/P3_aggregate/build_runtime_orchestration.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/config_profiles_v10_10.py",
       "dest_rel": "L3_orchestration/P3_aggregate/config_profiles_v10_10.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/coordinate_runtime_operations.py",
       "dest_rel": "L3_orchestration/P3_aggregate/coordinate_runtime_operations.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/extract_runtime_parameters.py",
       "dest_rel": "L3_orchestration/P3_aggregate/extract_runtime_parameters.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/format_runtime_context.py",
       "dest_rel": "L3_orchestration/P3_aggregate/format_runtime_context.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/golden_datasets.py",
       "dest_rel": "L3_orchestration/P3_aggregate/golden_datasets.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/hybrid_ranker.py",
       "dest_rel": "L3_orchestration/P3_aggregate/hybrid_ranker.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/judge.py",
       "dest_rel": "L3_orchestration/P3_aggregate/judge.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/lic_assembly.py",
       "dest_rel": "L3_orchestration/P3_aggregate/lic_assembly.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/lic_validation.py",
       "dest_rel": "L3_orchestration/P3_aggregate/lic_validation.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/manage_runtime_parameters.py",
       "dest_rel": "L3_orchestration/P3_aggregate/manage_runtime_parameters.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/meta_profile.py",
       "dest_rel": "L3_orchestration/P3_aggregate/meta_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/microvm.py",
       "dest_rel": "L3_orchestration/P3_aggregate/microvm.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/optimize_runtime_order.py",
       "dest_rel": "L3_orchestration/P3_aggregate/optimize_runtime_order.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/orchestrate.py",
       "dest_rel": "L3_orchestration/P3_aggregate/orchestrate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/orchestrate_runtime_planning.py",
       "dest_rel": "L3_orchestration/P3_aggregate/orchestrate_runtime_planning.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/parse_runtime_settings.py",
       "dest_rel": "L3_orchestration/P3_aggregate/parse_runtime_settings.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/prepare_runtime_orchestration.py",
       "dest_rel": "L3_orchestration/P3_aggregate/prepare_runtime_orchestration.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/rank_runtime_components.py",
       "dest_rel": "L3_orchestration/P3_aggregate/rank_runtime_components.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/refine_runtime_ranking.py",
       "dest_rel": "L3_orchestration/P3_aggregate/refine_runtime_ranking.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/scorer.py",
       "dest_rel": "L3_orchestration/P3_aggregate/scorer.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/session_manager.py",
       "dest_rel": "L3_orchestration/P3_aggregate/session_manager.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/sort_runtime_results.py",
       "dest_rel": "L3_orchestration/P3_aggregate/sort_runtime_results.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/telemetry.py",
       "dest_rel": "L3_orchestration/P3_aggregate/telemetry.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/handle.py",
       "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/handle.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/implement.py",
       "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/implement.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/retry.py",
       "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/routing/retry.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/execute-actions/use/call.py",
       "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/use/call.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/execute-actions/use/dispatch.py",
       "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/use/dispatch.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/execute-actions/use/invoke.py",
       "dest_rel": "L3_orchestration/P3_aggregate/execute-actions/use/invoke.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/budget_profile.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/budget_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/datasets.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/datasets.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/execute_runtime_commands.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/execute_runtime_commands.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/invoke_runtime_actions.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/invoke_runtime_actions.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/lic_routing.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/lic_routing.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/perform_runtime_operations.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/perform_runtime_operations.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle_runtime_timeouts.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/handle_runtime_timeouts.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement_runtime_fallback.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/implement_runtime_fallback.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry_runtime_failures.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/routing/retry_runtime_failures.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/call.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/call.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/dispatch.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
       "dest_rel": "L3_orchestration/P3_aggregate/use_tools/use/invoke.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/.gitkeep",
       "dest_rel": "L3_orchestration/P4_safety/.gitkeep",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/enforce_runtime_limits.py",
       "dest_rel": "L3_orchestration/P4_safety/enforce_runtime_limits.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/evaluator.py",
       "dest_rel": "L3_orchestration/P4_safety/evaluator.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/executor.py",
       "dest_rel": "L3_orchestration/P4_safety/executor.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/track_runtime_usage.py",
       "dest_rel": "L3_orchestration/P4_safety/track_runtime_usage.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/update_runtime_budget.py",
       "dest_rel": "L3_orchestration/P4_safety/update_runtime_budget.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/check_rules/hypothesis.py",
       "dest_rel": "L3_orchestration/P4_safety/check_rules/hypothesis.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/check_rules/policy_engine.py",
       "dest_rel": "L3_orchestration/P4_safety/check_rules/policy_engine.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/check_rules/routing.py",
       "dest_rel": "L3_orchestration/P4_safety/check_rules/routing.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/check_rules/policy/apply.py",
       "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/check_rules/policy/enforce.py",
       "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L3_orchestration/P4_safety/check_rules/policy/validate.py",
       "dest_rel": "L3_orchestration/P4_safety/check_rules/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/.gitkeep",
       "dest_rel": "L4_memory/.gitkeep",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/.mypy_cacheslash",
       "dest_rel": "L4_memory/.mypy_cacheslash",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/uncertainty.py",
       "dest_rel": "L4_memory/uncertainty.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/find.py",
       "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/find.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/match.py",
       "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/match.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/search.py",
       "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/embedding/search.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/fetch.py",
       "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/fetch.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/query.py",
       "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/query.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/retrieve.py",
       "dest_rel": "L4_memory/P1_retrieve/gather-context-inputs/understand/retrieve.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/fetch_runtime_history.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/fetch_runtime_history.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/init_.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/init_.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/query_runtime_store.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/query_runtime_store.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/retrieve_runtime_context.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/retrieve_runtime_context.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/embedding/find.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/find.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/embedding/match.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/match.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/embedding/match_runtime_context.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/match_runtime_context.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/embedding/retrieve_runtime_similarity.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/retrieve_runtime_similarity.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/embedding/search.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/search.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/embedding/search_runtime_vectors.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/embedding/search_runtime_vectors.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/understand/fetch.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/understand/fetch.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/understand/query.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/understand/query.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P1_retrieve/get_info/understand/retrieve.py",
       "dest_rel": "L4_memory/P1_retrieve/get_info/understand/retrieve.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P4_safety/enforce_runtime_budget.py",
       "dest_rel": "L4_memory/P4_safety/enforce_runtime_budget.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P4_safety/track_runtime_cost.py",
       "dest_rel": "L4_memory/P4_safety/track_runtime_cost.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P4_safety/update_runtime_usage.py",
       "dest_rel": "L4_memory/P4_safety/update_runtime_usage.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P4_safety/check_rules/policy/apply.py",
       "dest_rel": "L4_memory/P4_safety/check_rules/policy/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P4_safety/check_rules/policy/enforce.py",
       "dest_rel": "L4_memory/P4_safety/check_rules/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L4_memory/P4_safety/check_rules/policy/validate.py",
       "dest_rel": "L4_memory/P4_safety/check_rules/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/apply_runtime_safety.py",
       "dest_rel": "L5_safety/apply_runtime_safety.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/assess_runtime_risk.py",
       "dest_rel": "L5_safety/assess_runtime_risk.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/check_runtime_compliance.py",
       "dest_rel": "L5_safety/check_runtime_compliance.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/check_runtime_policy.py",
       "dest_rel": "L5_safety/check_runtime_policy.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/compute_runtime_score.py",
       "dest_rel": "L5_safety/compute_runtime_score.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/cost_tracker.py",
       "dest_rel": "L5_safety/cost_tracker.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/enforce_runtime_boundaries.py",
       "dest_rel": "L5_safety/enforce_runtime_boundaries.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/enforce_runtime_contracts.py",
       "dest_rel": "L5_safety/enforce_runtime_contracts.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/enforce_runtime_filters.py",
       "dest_rel": "L5_safety/enforce_runtime_filters.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/evaluate_runtime_compliance.py",
       "dest_rel": "L5_safety/evaluate_runtime_compliance.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/gating.py",
       "dest_rel": "L5_safety/gating.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/llm_profile.py",
       "dest_rel": "L5_safety/llm_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/tool_registry.py",
       "dest_rel": "L5_safety/tool_registry.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/validate_runtime_constraints.py",
       "dest_rel": "L5_safety/validate_runtime_constraints.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/validate_runtime_ethics.py",
       "dest_rel": "L5_safety/validate_runtime_ethics.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/validate_runtime_schema.py",
       "dest_rel": "L5_safety/validate_runtime_schema.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/runtime_utils.py",
       "dest_rel": "L5_safety/P4_safety/runtime_utils.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/schema_validation.py",
       "dest_rel": "L5_safety/P4_safety/schema_validation.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/context_profile.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/context_profile.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/policy/apply.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/policy/apply.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/policy/enforce.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/policy/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/policy/validate.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/policy/validate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/semantic/assess.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/semantic/assess.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/semantic/compute.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/semantic/compute.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/check_rules/semantic/evaluate.py",
       "dest_rel": "L5_safety/P4_safety/check_rules/semantic/evaluate.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/control-resources/update/enforce.py",
       "dest_rel": "L5_safety/P4_safety/control-resources/update/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/control-resources/update/track.py",
       "dest_rel": "L5_safety/P4_safety/control-resources/update/track.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/control-resources/update/update.py",
       "dest_rel": "L5_safety/P4_safety/control-resources/update/update.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
       "dest_rel": "L5_safety/P4_safety/manage_costs/update/enforce.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/manage_costs/update/track.py",
       "dest_rel": "L5_safety/P4_safety/manage_costs/update/track.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
     {
       "src_rel": "L5_safety/P4_safety/manage_costs/update/update.py",
       "dest_rel": "L5_safety/P4_safety/manage_costs/update/update.py",
-      "confidence": 1.0,
-      "reason": "already canonical L*-prefixed path",
+      "confidence": 0.1,
+      "reason": "support domain: no inference applied, leaving in place",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     }
@@ -2588,6 +2588,6 @@
     "empty_archives": 0,
     "file_moves": 286,
     "duplicate_routes": 0,
-    "protected_skips": 0
+    "protected_skips": 50
   }
 }

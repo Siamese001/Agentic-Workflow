@@ -1,0 +1,11 @@
+{
+  "hash": "132558a9611bb1c36bbab945a19f2074e68e8caf2d46e4c436e1b746aba4e354",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic_Workflow-10_10",
+      "relative": "prompt_system_v10_10.py"
+    }
+  ]
+}

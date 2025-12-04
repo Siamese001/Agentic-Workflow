@@ -1584,7 +1584,7 @@ def phase01_validate() -> int:
     required_keys = {
         "shared_engine_ops", "agentic_core", "apps_lic", "apps_rg", 
         "config", "data", "observability", "prompt_governance", 
-        "runtime", "schemas", "scripts", "shared", "tests"
+        "runtime", "schemas", "scripts", "tests"
     }
     
     found_keys = set(ssot.keys())

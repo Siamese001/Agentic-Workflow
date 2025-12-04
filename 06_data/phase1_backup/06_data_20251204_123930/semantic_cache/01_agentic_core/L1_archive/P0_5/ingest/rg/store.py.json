@@ -1,0 +1,19 @@
+{
+  "hash": "8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "l1/cms/store.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/store.py",
+  "global": {
+    "ast": "ast/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.ast",
+    "ast_meta": "ast/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.ast.meta.json",
+    "embedding": "embeddings/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.embedding",
+    "emb_meta": "embeddings/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.embedding.meta.json",
+    "diff": "diffs/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.diff.json",
+    "golden": "golden/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.golden.json",
+    "safety": "safety/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.safety.json",
+    "integrity": "integrity/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.integrity.json",
+    "meta": "meta/8c34e9762c90d187ec68394226a85015fa39ed75da6979e959e1db3ab84171c2.meta.json"
+  }
+}
