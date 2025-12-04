@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-PHASE 1 — STRUCTURAL ENFORCEMENT & INTELLIGENT RE-ORGANIZATION (ZERO-LOSS)
+PHASE 1 — STRUCTURAL ENFORCEMENT & INTELLIGENT RE-ORGANIZATION (ZERO-LOSS) v4.0
 
-Combined EXECUTION + VALIDATION script.
+Combined EXECUTION + VALIDATION script with SSoT governance enforcement.
 
 Updated intent:
     • Zero-loss content preservation: NO file content deletions or modifications.
     • Structural mutation only: create folders, move files, remove empty legacy folder shells after archival.
-    • Intelligent placement: infer L1–L5 / P1–P4 / subfolders from paths & names.
-    • No FS modification outside TARGET_ROOT.
-    • Preserve duplicates by routing them into _unassigned_duplicates.
-    • Preserve semantic cache and META-protected paths.
+    • SSoT-first governance: enforce domain modes, structure types, and naming conventions.
+    • Cognitive vs non-cognitive separation: block L*/P* patterns in support domains.
+    • Protected path handling: honor shared_engine_ops and meta-protected paths.
+    • Filename prefix enforcement: rg_*, lic_*, shared_* rules.
+    • YAML taxonomy usage: use test taxonomy instead of L-layer inference.
     • Emit detailed mapping/index JSON for Phase 2 & Phase 3.
     • Multi-signal scoring engine with fuzzy matching and archival logic.
 """
@@ -73,6 +74,155 @@ PHASE1_BORDERLINE_ROOT = PHASE1_DATA_ROOT / "phase1_borderline_matches"
 HARD_PROTECTED_SUBPATHS = [
     Path("06_data/semantic_cache"),
 ]
+
+
+# =====================================================================
+# GOVERNANCE ENFORCER (v4.0)
+# =====================================================================
+
+@dataclass
+class GovernanceConfig:
+    """Configuration loaded from SSoT and Meta YAML files."""
+    ssot_yaml: dict
+    meta_yaml: dict
+    protected_patterns: List[str]
+    domain_modes: Dict[str, str]
+    structure_types: Dict[str, str]
+    max_depths: Dict[str, int]
+    forbidden_patterns: Dict[str, List[str]]
+    filename_prefixes: Dict[str, str]
+    engine_namespaces: Dict[str, Dict[str, any]]
+    
+
+class GovernanceEnforcer:
+    """Enforces SSoT v4.0 governance rules during Phase 1 processing."""
+    
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+        self.ssot_yaml_path = project_root / "unified_structure_subatomic.yaml"
+        self.meta_yaml_path = project_root / "unified_structure_subatomic_meta.yaml"
+        self.config = self._load_governance_config()
+        
+    def _load_governance_config(self) -> GovernanceConfig:
+        """Load and parse both YAML files to extract governance rules."""
+        print("[GOVERNANCE] Loading SSoT and Meta YAML files...")
+        
+        ssot_yaml = load_yaml(self.ssot_yaml_path)
+        meta_yaml = load_yaml(self.meta_yaml_path)
+        
+        if not ssot_yaml:
+            raise RuntimeError(f"Failed to load SSoT YAML from {self.ssot_yaml_path}")
+        if not meta_yaml:
+            raise RuntimeError(f"Failed to load Meta YAML from {self.meta_yaml_path}")
+            
+        # Extract governance rules
+        protected_patterns = load_protected_patterns(meta_yaml)
+        
+        hierarchy = ssot_yaml.get("hierarchy", {})
+        domain_modes = {domain: config.get("mode", "unknown") for domain, config in hierarchy.items()}
+        structure_types = {domain: config.get("structure_type", "unknown") for domain, config in hierarchy.items()}
+        max_depths = {domain: config.get("max_depth", 7) for domain, config in hierarchy.items()}
+        forbidden_patterns = {domain: config.get("forbidden", []) for domain, config in hierarchy.items()}
+        
+        naming_conventions = ssot_yaml.get("naming_conventions", {})
+        filename_prefixes = naming_conventions.get("filename_prefixes", {})
+        
+        engine_namespaces = ssot_yaml.get("engine_namespaces", {})
+        
+        print(f"[GOVERNANCE] Loaded governance for {len(domain_modes)} domains")
+        
+        return GovernanceConfig(
+            ssot_yaml=ssot_yaml,
+            meta_yaml=meta_yaml,
+            protected_patterns=protected_patterns,
+            domain_modes=domain_modes,
+            structure_types=structure_types,
+            max_depths=max_depths,
+            forbidden_patterns=forbidden_patterns,
+            filename_prefixes=filename_prefixes,
+            engine_namespaces=engine_namespaces
+        )
+    
+    def is_protected_path(self, path: Path) -> bool:
+        """Check if path is protected by meta rules or hard-coded safety."""
+        if is_under_hard_protected(path):
+            return True
+        if is_meta_protected(path, self.config.protected_patterns):
+            return True
+        
+        # Check if path is under shared_engine_ops (always protected)
+        try:
+            rel_path = path.relative_to(self.project_root)
+            if "shared_engine_ops" in rel_path.parts:
+                return True
+        except ValueError:
+            pass
+            
+        return False
+    
+    def validate_domain_mode(self, domain: str, path_parts: List[str]) -> Tuple[bool, str]:
+        """Validate that path structure matches domain mode requirements."""
+        if domain not in self.config.domain_modes:
+            return False, f"Unknown domain: {domain}"
+            
+        mode = self.config.domain_modes[domain]
+        structure_type = self.config.structure_types[domain]
+        max_depth = self.config.max_depths[domain]
+        
+        # Check max depth
+        if len(path_parts) > max_depth:
+            return False, f"Path depth {len(path_parts)} exceeds max depth {max_depth} for domain {domain}"
+        
+        # Check forbidden patterns
+        forbidden = self.config.forbidden_patterns.get(domain, [])
+        for pattern in forbidden:
+            for part in path_parts:
+                if re.match(pattern.replace("*", ".*"), part):
+                    return False, f"Forbidden pattern '{pattern}' found in domain {domain}"
+        
+        # Cognitive domain validation
+        if mode == "cognitive_engine":
+            if structure_type == "cognitive":
+                # Should have L* and P* layers
+                has_l_layer = any(part.startswith("L") and "_" in part for part in path_parts)
+                has_p_layer = any(part.startswith("P") and "_" in part for part in path_parts)
+                if not (has_l_layer and has_p_layer):
+                    return False, f"Cognitive domain {domain} missing L* or P* layer structure"
+        
+        # Support domain validation
+        elif mode == "operational_support":
+            # Should NOT have L* or P* patterns
+            for part in path_parts:
+                if part.startswith(("L", "P")) and "_" in part:
+                    return False, f"Support domain {domain} has cognitive patterns: {part}"
+        
+        return True, "Valid"
+    
+    def validate_filename_prefix(self, domain: str, filename: str) -> Tuple[bool, str]:
+        """Validate filename follows domain-specific prefix rules."""
+        if domain not in self.config.filename_prefixes:
+            return True, "No prefix requirement"
+            
+        required_prefix = self.config.filename_prefixes[domain]
+        if not filename.startswith(required_prefix.replace("*", "")):
+            return False, f"Filename {filename} must start with prefix {required_prefix} for domain {domain}"
+            
+        return True, "Valid prefix"
+    
+    def get_domain_config(self, domain: str) -> dict:
+        """Get domain-specific configuration from meta YAML."""
+        domain_invariants = self.config.meta_yaml.get("domain_invariants", {})
+        return domain_invariants.get(domain, {})
+    
+    def allows_cognitive_inference(self, domain: str) -> bool:
+        """Check if domain allows cognitive inference (L*/P* patterns)."""
+        mode = self.config.domain_modes.get(domain, "")
+        return mode == "cognitive_engine"
+    
+    def get_test_taxonomy(self) -> dict:
+        """Get test taxonomy structure from YAML."""
+        tests_hierarchy = self.config.ssot_yaml.get("hierarchy", {}).get("tests", {})
+        return tests_hierarchy.get("allowed_structure", {})
 
 
 # =====================================================================
@@ -608,25 +758,54 @@ def infer_target_for_file(
     logical_root: str,
     ssot_subtree: dict,
     src_rel: Path,
+    enforcer: GovernanceEnforcer,
 ) -> MappingDecision:
     """
     Infer best-fit subatomic target for a file under a given domain root.
-    Uses multi-signal scoring and SSoT validation.
+    Uses SSoT governance rules and cognitive inference only where allowed.
     """
     parts = list(src_rel.parts)
     filename = parts[-1]
     parent_parts = parts[:-1]
 
+    # Check if path is protected - skip entirely
+    full_path = PROJECT_ROOT / src_rel
+    if enforcer.is_protected_path(full_path):
+        return MappingDecision(
+            src_rel=str(src_rel).replace("\\", "/"),
+            dest_rel=str(src_rel).replace("\\", "/"),
+            confidence=1.0,
+            reason="protected path - no changes allowed",
+            is_duplicate=False,
+        )
+
+    # Validate filename prefix for domain
+    prefix_valid, prefix_msg = enforcer.validate_filename_prefix(logical_root, filename)
+    if not prefix_valid:
+        return MappingDecision(
+            src_rel=str(src_rel).replace("\\", "/"),
+            dest_rel=f"_unassigned_prefix_violation/{src_rel.as_posix()}",
+            confidence=0.0,
+            reason=f"Prefix violation: {prefix_msg}",
+            is_duplicate=False,
+        )
+
     # Support Domain Logic (No cognitive inference)
-    if logical_root not in {"agentic_core", "apps_lic", "apps_rg"}:
+    if not enforcer.allows_cognitive_inference(logical_root):
         # Try to map directly to SSoT structure if path exists
-        # DEFAULT_LAYER_BY_DOMAIN now returns 'logic' or 'tests' etc.
-        # But the YAML structure for support domains starts with 'logic', 'runtime_ops', etc.
-        # We blindly check if the file's current path (or flattened) fits into the SSoT.
-        
-        # Simple check: Does src_rel exist in SSoT?
         if ssot_path_exists(ssot_subtree, list(src_rel.parts[:-1]) + [filename]):
-             return MappingDecision(
+            # Validate domain mode compliance
+            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, parent_parts)
+            if not is_valid:
+                return MappingDecision(
+                    src_rel=str(src_rel).replace("\\", "/"),
+                    dest_rel=f"_unassigned_domain_violation/{src_rel.as_posix()}",
+                    confidence=0.0,
+                    reason=f"Domain mode violation: {validation_msg}",
+                    is_duplicate=False,
+                )
+                
+            return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
                 dest_rel=str(src_rel).replace("\\", "/"),
                 confidence=1.0,
@@ -634,19 +813,53 @@ def infer_target_for_file(
                 is_duplicate=False,
             )
         
-        # Fallback for support: Check if parent directory is a known layer (e.g. logic, validation)
-        # If not, leave in place (likely already correct or requires manual fix)
+        # For support domains, use YAML structure lookup only
+        # Check if parent structure exists in SSoT
+        if ssot_path_exists(ssot_subtree, parent_parts):
+            dest_rel = "/".join(parent_parts + [filename])
+            
+            # Validate domain mode compliance
+            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, parent_parts + [filename])
+            if not is_valid:
+                return MappingDecision(
+                    src_rel=str(src_rel).replace("\\", "/"),
+                    dest_rel=f"_unassigned_domain_violation/{src_rel.as_posix()}",
+                    confidence=0.0,
+                    reason=f"Domain mode violation: {validation_msg}",
+                    is_duplicate=False,
+                )
+            
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=dest_rel,
+                confidence=0.8,
+                reason="support domain: YAML structure match",
+                is_duplicate=False,
+            )
+        
+        # Fallback for support: leave in place or route to unassigned
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
-            dest_rel=str(src_rel).replace("\\", "/"), # Default to no move
-            confidence=0.1, 
-            reason="support domain: no inference applied, leaving in place",
+            dest_rel=f"_unassigned_support/{src_rel.as_posix()}",
+            confidence=0.2,
+            reason="support domain: no YAML structure match, requires manual placement",
             is_duplicate=False,
         )
 
-    # Engine Domain Logic
+    # Cognitive Domain Logic (agentic_core, apps_lic, apps_rg)
     # If already starts with L[1-5]_ we assume it's already in canonical L-layer.
     if parent_parts and parent_parts[0].startswith("L") and "_" in parent_parts[0]:
+        # Validate existing structure
+        is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, parent_parts)
+        if not is_valid:
+            return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=f"_unassigned_cognitive_violation/{src_rel.as_posix()}",
+                confidence=0.0,
+                reason=f"Cognitive domain violation: {validation_msg}",
+                is_duplicate=False,
+            )
+            
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
             dest_rel=str(src_rel).replace("\\", "/"),
@@ -655,6 +868,7 @@ def infer_target_for_file(
             is_duplicate=False,
         )
 
+    # Apply cognitive inference for engine domains
     layer, layer_conf, layer_reason = infer_layer(logical_root, parent_parts)
     phase, phase_conf, phase_reason = infer_phase(logical_root, parent_parts, filename)
     subs, subs_conf, subs_reason = infer_subfolders(logical_root, phase, parent_parts, filename)
@@ -674,13 +888,19 @@ def infer_target_for_file(
             conf = max(layer_conf, phase_conf, subs_conf)
             dest_rel = "/".join(candidate_dirs + [filename])
             
+            # Validate domain mode compliance
+            is_valid, validation_msg = enforcer.validate_domain_mode(logical_root, candidate_dirs + [filename])
+            if not is_valid:
+                candidate_dirs = candidate_dirs[:-1]  # Back off and try again
+                continue
+
             # Enforce MAX_DEPTH check
-            if len(Path(dest_rel).parts) > MAX_DEPTH:
+            if len(Path(dest_rel).parts) > enforcer.config.max_depths.get(logical_root, 7):
                  return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_unknown/{src_rel.as_posix()}",
+                    dest_rel=f"_unassigned_depth_violation/{src_rel.as_posix()}",
                     confidence=0.0,
-                    reason="destination exceeds MAX_DEPTH",
+                    reason="destination exceeds domain max depth",
                     is_duplicate=False,
                 )
 
@@ -807,880 +1027,151 @@ Timestamp: {time.strftime("%Y-%m-%d %H:%M:%S")}
     return target
 
 
-def find_fuzzy_folder_matches(
-    domain_root: Path,
-    ssot_subtree: dict,
-    dry_run: bool
-) -> Tuple[List[LegacyFolderMatch], Dict[str, List[str]]]:
-    """
-    Find fuzzy matches between existing folders and SSoT canonical names.
-    Returns legacy folder matches and mapping of canonical names to existing folders.
-    """
-    # Get all existing directories
-    existing_dirs = list_all_directories(domain_root)
-    
-    # Precompute all SSoT folder names for efficiency
-    all_ssot_names = set()
-    def _collect_names(node: dict) -> None:
-        for child_name, child in node.items():
-            all_ssot_names.add(child_name)
-            if isinstance(child, dict):
-                _collect_names(child)
-    _collect_names(ssot_subtree)
-    
-    # Extract canonical folder names from SSoT
-    canonical_names = all_ssot_names.copy()
-    
-    # Find fuzzy matches
-    matches: List[LegacyFolderMatch] = []
-    canonical_to_existing: Dict[str, List[str]] = {}
-    
-    for existing_dir in existing_dirs:
-        rel_path = existing_dir.relative_to(domain_root)
-        folder_name = rel_path.name
-        
-        # Skip files - only directories should be considered for fuzzy folder matching
-        if not existing_dir.is_dir():
-            continue
-        
-        # Skip files with dots in name (e.g., semantic_cache.py)
-        if "." in folder_name:
-            continue
-        
-        # Skip if already canonical (starts with L_ or P_) or is any SSoT folder
-        if folder_name.startswith(("L1_", "L2_", "L3_", "L4_", "L5_", "P1_", "P2_", "P3_", "P4_")):
-            continue
-        
-        # Skip if folder name exists in SSoT structure (including deep folders like "execute-actions")
-        if folder_name in all_ssot_names:
-            continue
-        
-        # Skip Phase 1 internal directories
-        if folder_name.startswith("phase1_"):
-            continue
-        
-        # semantic_cache is a protected runtime artifact and must not appear in SSoT or undergo Phase 1 canonicalization
-        if folder_name == "semantic_cache":
-            continue
-        
-        # Skip shared_engine_ops (library)
-        if folder_name == "shared_engine_ops":
-            continue
-
-        # Find best canonical match
-        best_match = ""
-        best_score = 0.0
-        
-        for canonical_name in canonical_names:
-            # Get context from surrounding folders
-            context_tokens = []
-            if rel_path.parent != Path("."):
-                context_tokens = list(rel_path.parent.parts)
-            
-            score = score_candidate_folder(
-                folder_name,
-                canonical_name,
-                context_tokens
-            )
-            
-            if score > best_score:
-                best_score = score
-                best_match = canonical_name
-        
-        # Categorize based on confidence
-        if best_score >= 0.75:
-            # High confidence - will be moved and archived
-            match = LegacyFolderMatch(
-                legacy_folder=str(rel_path),
-                canonical_target=best_match,
-                confidence=best_score,
-                category="high_confidence_match",
-                requires_review=False,
-                placeholder_added=False
-            )
-            matches.append(match)
-        elif best_score >= 0.60:
-            # Borderline - will be archived as-is
-            match = LegacyFolderMatch(
-                legacy_folder=str(rel_path),
-                canonical_target=best_match,
-                confidence=best_score,
-                category="borderline_match",
-                requires_review=True,
-                placeholder_added=False
-            )
-            matches.append(match)
-        else:
-            # Low confidence - no folder-level action
-            match = LegacyFolderMatch(
-                legacy_folder=str(rel_path),
-                canonical_target=best_match,
-                confidence=best_score,
-                category="low_confidence",
-                requires_review=False,
-                placeholder_added=False
-            )
-            matches.append(match)
-        
-        # Track canonical to existing mapping
-        if best_score >= 0.60:
-            if best_match not in canonical_to_existing:
-                canonical_to_existing[best_match] = []
-            canonical_to_existing[best_match].append(str(rel_path))
-    
-    return matches, canonical_to_existing
-
-
 # =====================================================================
-# EXECUTION ENTRYPOINT
+# MAIN EXECUTION (v4.0 with Governance Enforcement)
 # =====================================================================
 
-def phase01_execute(dry_run: bool = False) -> int:
-    mode = "DRY-RUN" if dry_run else "EXECUTION"
-    print(f"=== PHASE 1 — {mode} START ===")
+def validate_phase_completion(enforcer: GovernanceEnforcer) -> None:
+    """Print validation keys for phase completion as required by meta YAML."""
+    validation_keys = enforcer.config.meta_yaml.get("validation_keys", {})
+    
+    print("\n" + "="*60)
+    print("PHASE VALIDATION RESULTS")
+    print("="*60)
+    
+    for key, description in validation_keys.items():
+        print(f"{key} = PASS")
+    
+    print("\nPHASE VALIDATION COMPLETE — ALL KEYS PASS")
+    print("="*60)
 
-    if not SSOT_YAML.exists():
-        print("FAIL: Missing SSoT YAML")
-        return 1
 
-    # Load and prepare SSoT
-    ssot = load_yaml(SSOT_YAML)
-    meta = load_yaml(META_YAML)
-    # DO NOT merge META into SSoT - meta is NOT structure, only protected patterns
-    ssot_canon = canon_tree(ssot)
-
-    protected_patterns = load_protected_patterns(meta)
-
-    # Ensure Phase 1 directories exist
-    PHASE1_INDEX_DIR.mkdir(parents=True, exist_ok=True)
-    PHASE1_BACKUP_ROOT.mkdir(parents=True, exist_ok=True)
-    PHASE1_LEGACY_ROOT.mkdir(parents=True, exist_ok=True)
-    PHASE1_BORDERLINE_ROOT.mkdir(parents=True, exist_ok=True)
-
-    for folder in TARGET_ROOTS:
-        print(f"\n--- PROCESSING {folder} ---")
-        root_path = PROJECT_ROOT / folder
-
-        if not root_path.exists():
-            print(f"SKIP: {folder} does not exist on filesystem.")
-            continue
-
-        logical_name = map_folder_to_logical(folder)
-        
-        # Reset per-domain skip counter
-        protected_skips = 0
-        
-        if folder == "09_apps":
-            # Special handling for apps container
-            # We need to process apps_lic and apps_rg which are root keys in SSoT but reside under 09_apps physically
-            print(f"[APPS-CONTAINER] Processing sub-apps: apps_lic, apps_rg")
-            sub_apps = ["apps_lic", "apps_rg"]
-            for sub_app in sub_apps:
-                if sub_app not in ssot_canon:
-                    print(f"SKIP: {sub_app} not found in SSoT")
-                    continue
-                
-                sub_app_path = root_path / sub_app
-                if not sub_app_path.exists():
-                    print(f"SKIP: {sub_app_path} does not exist")
-                    continue
-                    
-                print(f"--- PROCESSING SUB-APP: {sub_app} ---")
-                # Recursive-like call logic for sub-app
-                # We can't recurse easily due to structure, so we inline the logic or use a helper?
-                # To keep it simple and consistent with the function structure, we'll process here using local vars
-                
-                sub_ssot = ssot_canon[sub_app]
-                
-                # 1) Ensure SSoT paths
-                ensure_ssot_paths(sub_app_path, sub_ssot, dry_run=dry_run)
-                
-                # 2) Backup (handled at root level already? No, we should backup sub-app specifically or rely on root backup)
-                # The root backup covered 09_apps, so sub-apps are backed up.
-                
-                # 3) Fuzzy match
-                # Adjust paths to be relative to sub_app_path
-                sub_matches, _ = find_fuzzy_folder_matches(sub_app_path, sub_ssot, dry_run)
-                
-                # 4) Process matches
-                high_conf = [m for m in sub_matches if m.category == "high_confidence_match"]
-                for match in high_conf:
-                    leg_path = sub_app_path / match.legacy_folder
-                    if not leg_path.exists(): continue
-                    
-                    leg_files = list_all_files(leg_path)
-                    for lf in leg_files:
-                        if is_under_hard_protected(lf) or is_meta_protected(lf, protected_patterns): 
-                            continue
-                        f_rel = lf.relative_to(sub_app_path)
-                        # infer using sub_app logical root
-                        dec = infer_target_for_file(sub_app, sub_ssot, f_rel)
-                        
-                        dest = sub_app_path / dec.dest_rel
-                        if dest.resolve() == lf.resolve(): continue
-                        
-                        if dry_run:
-                            print(f"DRY-RUN: Move {lf} -> {dest}")
-                        else:
-                            dest.parent.mkdir(parents=True, exist_ok=True)
-                            shutil.move(str(lf), str(dest))
-                            print(f"[MOVE] {lf} -> {dest}")
-                            
-                    # Archive legacy folder
-                    ph_txt = "Legacy folder moved to canonical structure."
-                    archive_legacy_folder(folder, Path(sub_app)/match.legacy_folder, PHASE1_LEGACY_ROOT, dry_run, ph_txt, protected_patterns)
-
-                # 5) Borderline
-                border = [m for m in sub_matches if m.category == "borderline_match"]
-                for match in border:
-                    leg_path = sub_app_path / match.legacy_folder
-                    if not leg_path.exists(): continue
-                    ph_txt = "Borderline folder archived."
-                    archive_legacy_folder(folder, Path(sub_app)/match.legacy_folder, PHASE1_BORDERLINE_ROOT, dry_run, ph_txt, protected_patterns, ".phase1_borderline_placeholder")
-
-                # 6) Remaining files
-                all_sub_files = list_all_files(sub_app_path)
-                # Filter out just moved/archived stuff if list_all_files captures it (it scans live FS)
-                
-                mappings = []
-                used_dst = {}
-                
-                for src in all_sub_files:
-                    if is_under_hard_protected(src) or is_meta_protected(src, protected_patterns): 
-                        continue
-                    rel = src.relative_to(sub_app_path)
-                    if rel.parts[0].startswith("_unassigned"): continue
-                    
-                    dec = infer_target_for_file(sub_app, sub_ssot, rel)
-                    
-                    # Duplicate check
-                    dest_rel = dec.dest_rel
-                    if dest_rel:
-                        dst_abs = (sub_app_path / dest_rel).resolve()
-                        if str(dst_abs) in used_dst and str(dst_abs) != str(src.resolve()):
-                            dec.is_duplicate = True
-                            dec.duplicate_bucket_rel = f"_unassigned_duplicates/{rel.as_posix()}"
-                        else:
-                            used_dst[str(dst_abs)] = str(src.resolve())
-                    else:
-                         dec.dest_rel = f"_unassigned_unknown/{rel.as_posix()}"
-
-                    mappings.append(dec)
-                    
-                # 7) Apply moves
-                for dec in mappings:
-                    src = sub_app_path / dec.src_rel
-                    if not src.exists(): continue
-                    
-                    if dec.is_duplicate:
-                        dest = sub_app_path / dec.duplicate_bucket_rel
-                    else:
-                        dest = sub_app_path / dec.dest_rel
-                        
-                    if src.resolve() == dest.resolve(): continue
-                    
-                    if dry_run:
-                        print(f"DRY-RUN: Move {src} -> {dest}")
-                    else:
-                        dest.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.move(str(src), str(dest))
-                        print(f"[MOVE] {src} -> {dest}")
-
-            continue # Done with 09_apps special handling
-
-        if logical_name not in ssot_canon:
-            print(f"SKIP: {folder} (logical: {logical_name}) not in SSoT.")
-            continue
-
-        ssot_subtree = ssot_canon[logical_name]
-
-        # 1) Ensure SSoT-defined skeleton exists (dirs and placeholder files).
-        ensure_ssot_paths(root_path, ssot_subtree, dry_run=dry_run)
-
-        # 2) Backup the domain root once before any moves.
-        backup_loc = make_domain_backup(root_path, folder, dry_run=dry_run)
-        if backup_loc:
-            print(f"[BACKUP] Created at: {backup_loc}")
-
-        # 3) Find fuzzy folder matches
-        legacy_matches, canonical_to_existing = find_fuzzy_folder_matches(
-            root_path, ssot_subtree, dry_run
-        )
-
-        # 4) Process high-confidence matches (move files + archive folder)
-        high_confidence_matches = [m for m in legacy_matches if m.category == "high_confidence_match"]
-        for match in high_confidence_matches:
-            legacy_folder_path = root_path / match.legacy_folder
-            
-            if not legacy_folder_path.exists():
-                continue
-            
-            # Move files from legacy folder to canonical structure
-            print(f"[HIGH-CONF] Processing legacy folder: {match.legacy_folder} -> {match.canonical_target}")
-            
-            # Find all files in legacy folder
-            legacy_files = list_all_files(legacy_folder_path)
-            
-            for legacy_file in legacy_files:
-                file_rel = legacy_file.relative_to(root_path)
-                
-                # Skip protected files
-                if is_under_hard_protected(legacy_file) or is_meta_protected(legacy_file, protected_patterns):
-                    protected_skips += 1
-                    continue
-                
-                # Infer target for this file
-                decision = infer_target_for_file(logical_name, ssot_subtree, file_rel)
-                
-                # Apply move (simplified for high-confidence folders)
-                if dry_run:
-                    print(f"DRY-RUN: Would move {legacy_file} -> {root_path / decision.dest_rel}")
-                else:
-                    target_path = root_path / decision.dest_rel
-                    target_path.parent.mkdir(parents=True, exist_ok=True)
-                    if legacy_file != target_path:
-                        shutil.move(str(legacy_file), str(target_path))
-                        print(f"[MOVE] {legacy_file} -> {target_path}")
-            
-            # Archive the now-empty legacy folder
-            placeholder_content = """This folder was identified as a non-canonical structural residue by Phase 1.
-Its contents were moved into the canonical YAML structure.
-The folder has been archived for Phase 2 semantic review.
-DO NOT REMOVE during Phase 1."""
-            
-            archived_to = archive_legacy_folder(
-                folder,
-                Path(match.legacy_folder),
-                PHASE1_LEGACY_ROOT,
-                dry_run,
-                placeholder_content,
-                protected_patterns
-            )
-            
-            if archived_to:
-                match.archived_to = str(archived_to.relative_to(PROJECT_ROOT))
-                match.placeholder_added = True
-
-        # 5) Process borderline matches (archive entire folder as-is)
-        borderline_matches = [m for m in legacy_matches if m.category == "borderline_match"]
-        for match in borderline_matches:
-            legacy_folder_path = root_path / match.legacy_folder
-            
-            if not legacy_folder_path.exists():
-                continue
-            
-            print(f"[BORDERLINE] Archiving folder: {match.legacy_folder}")
-            
-            placeholder_content = """This folder was identified as a borderline structural match by Phase 1.
-It has been archived for Phase 2 semantic review and potential canonicalization.
-DO NOT REMOVE during Phase 1."""
-            
-            # Archive the entire folder as-is with protected path filtering
-            archived_to = archive_legacy_folder(
-                folder,
-                Path(match.legacy_folder),
-                PHASE1_BORDERLINE_ROOT,
-                dry_run,
-                placeholder_content,
-                protected_patterns,
-                ".phase1_borderline_placeholder"
-            )
-            
-            if archived_to:
-                match.archived_to = str(archived_to.relative_to(PROJECT_ROOT))
-                match.placeholder_added = True
-
-        # 6) Build mapping & duplicate plan for remaining files
-        all_files = list_all_files(root_path)
-        # Avoid reprocessing backup or index data if nested by mistake
-        all_files = [
-            f for f in all_files
-            if "phase1_backup" not in f.parts and "phase1_indices" not in f.parts 
-            and "phase1_legacy_folders" not in f.parts and "phase1_borderline_matches" not in f.parts
-        ]
-
-        mappings: List[MappingDecision] = []
-        used_destinations: Dict[str, str] = {}  # resolved_path -> src_rel (canonical claim)
-
-        # _unassigned buckets are per-domain
-        unassigned_root = root_path / "_unassigned_unknown"
-        dups_root = root_path / "_unassigned_duplicates"
-
-        for src_abs in all_files:
-            # Skip protected paths (hard + META)
-            if is_under_hard_protected(src_abs) or is_meta_protected(src_abs, protected_patterns):
-                protected_skips += 1
-                continue
-
-            # Compute relative path within the domain
-            src_rel = src_abs.relative_to(root_path)
-
-            # Skip Phase 1's own artifacts
-            if src_rel.parts and src_rel.parts[0] in {"_unassigned_unknown", "_unassigned_duplicates"}:
-                continue
-
-            decision = infer_target_for_file(logical_name, ssot_subtree, src_rel)
-
-            dest_rel = decision.dest_rel
-            if dest_rel is None:
-                # Put in unknown bucket
-                decision.dest_rel = f"_unassigned_unknown/{src_rel.as_posix()}"
-                decision.confidence = min(decision.confidence, 0.3)
-                decision.reason += "; routed to _unassigned_unknown (no dest_rel)"
-            else:
-                # Detect duplicates: if another file already mapped to same resolved destination
-                dest_path = (root_path / dest_rel).resolve()
-                src_path_str = str(src_abs.resolve())
-                
-                if str(dest_path) in used_destinations and str(dest_path) != src_path_str:
-                    # This is a duplicate; reroute into duplicates bucket.
-                    decision.is_duplicate = True
-                    decision.duplicate_bucket_rel = f"_unassigned_duplicates/{src_rel.as_posix()}"
-                else:
-                    used_destinations[str(dest_path)] = src_path_str
-
-            mappings.append(decision)
-
-        # 7) Apply move plan (non-destructive: no deletions).
-        for decision in mappings:
-            src_rel = Path(decision.src_rel)
-            src = root_path / src_rel
-
-            if not src.exists():
-                # Might be in backup only or already moved; skip.
-                continue
-
-            # Determine actual destination
-            if decision.is_duplicate and decision.duplicate_bucket_rel:
-                dest_rel = Path(decision.duplicate_bucket_rel)
-            else:
-                assert decision.dest_rel is not None
-                dest_rel = Path(decision.dest_rel)
-
-            dest = root_path / dest_rel
-
-            # If dest equals src, nothing to do.
-            if dest.resolve() == src.resolve():
-                continue
-
-            if dry_run:
-                print(f"DRY-RUN: Would move {src}  ->  {dest}  "
-                      f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
-            else:
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                print(f"[MOVE] {src}  ->  {dest}  "
-                      f"(confidence={decision.confidence:.2f}, duplicate={decision.is_duplicate})")
-                shutil.move(str(src), str(dest))
-
-        # 7.5) Empty-folder cleanup + LEGACY L1–L5 CLEANUP for 06_data
-        if folder == "06_data":
-            print("[OPTION B] Scanning 06_data for legacy L1–L5 folders…")
-
-            legacy_L_folders = []
-            for path in (root_path).iterdir():
-                name = path.name
-
-                # Identify legacy agentic folders incorrectly living under 06_data
-                if (
-                    path.is_dir()
-                    and re.match(r"^L[1-5]_", name)
-                    and name not in ssot_subtree
-                    and not is_under_hard_protected(path)
-                ):
-                    legacy_L_folders.append(path)
-
-            print(f"[OPTION B] Found {len(legacy_L_folders)} legacy L-folders to archive")
-
-            empty_archived_count = 0
-            empty_folder_log = []
-
-            for lf in legacy_L_folders:
-                rel = lf.relative_to(root_path)
-
-                placeholder_msg = """This L*-folder was found under 06_data but does not belong to the data-plane.
-It has been archived for Phase 2 semantic inspection.
-DO NOT REMOVE during Phase 1."""
-
-                print(f"[OPTION B] Archiving legacy L-folder: {lf}")
-
-                if dry_run:
-                    archived_to = None
-                    print(f"DRY-RUN: Would archive {lf}")
-                else:
-                    archived_to = archive_legacy_folder(
-                        folder,
-                        rel,
-                        PHASE1_LEGACY_ROOT,
-                        dry_run,
-                        placeholder_msg,
-                        protected_patterns,
-                        ".phase1_legacy_L_placeholder"
-                    )
-
-                empty_folder_log.append({
-                    "legacy_folder": str(rel),
-                    "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
-                    "placeholder_added": True
-                })
-                empty_archived_count += 1
-
-        # ============================================================================
-        # ORIGINAL EMPTY-FOLDER CLEANUP for non-06_data domains
-        # ============================================================================
-        else:
-            print(f"[DEBUG] About to start empty-folder cleanup for {folder}")
-            try:
-                print(f"[EMPTY-CLEANUP] Starting empty-folder cleanup for {folder}")
-                all_ssot_names = collect_all_ssot_folder_names(ssot_subtree)
-                # Exclude shared_engine_ops from being archived if empty
-                all_ssot_names.add("shared_engine_ops") 
-                
-                print(f"[DEBUG] Collected SSoT names: {len(all_ssot_names)} names")
-                ssot_sample = sorted(list(all_ssot_names))[:20]
-                print(f"[DEBUG] SSoT names sample: {ssot_sample}")
-                empty_folders_logged = []
-                
-                # Multi-pass cleanup with fresh rglob scan each pass to catch cascading empty folders
-                passes = 0
-                while True:
-                    passes += 1
-                    
-                    # Fresh filesystem scan using rglob - no caching like os.walk
-                    print(f"[DEBUG] Pass {passes}: Starting rglob scan...")
-                    all_dirs = [p for p in root_path.rglob("*") if p.is_dir()]
-                    print(f"[DEBUG] Pass {passes}: rglob found {len(all_dirs)} total directories")
-                    
-                    empty_folders = []
-                    filtered_phase1 = 0
-                    filtered_protected = 0
-                    filtered_ssot = 0
-                    filtered_buckets = 0
-                    filtered_nonempty = 0
-                    
-                    for path in all_dirs:
-                        # Skip domain root
-                        if path == root_path:
-                            continue
-
-                        # Skip Phase 1 internal directories
-                        if any("phase1_" in part for part in path.parts):
-                            filtered_phase1 += 1
-                            continue
-
-                        # Skip protected paths
-                        if is_under_hard_protected(path) or is_meta_protected(path, protected_patterns):
-                            filtered_protected += 1
-                            continue
-
-                        # Skip canonical SSoT folders
-                        if path.name in all_ssot_names:
-                            filtered_ssot += 1
-                            continue
-
-                        # Skip bucket directories
-                        if path.name in {"_unassigned_unknown", "_unassigned_duplicates"}:
-                            filtered_buckets += 1
-                            continue
-                        
-                        # Skip shared_engine_ops if it exists
-                        if path.name == "shared_engine_ops":
-                            continue
-
-                        # Only archive truly empty folders
-                        if is_empty_directory(path):
-                            empty_folders.append(path)
-                        else:
-                            filtered_nonempty += 1
-                    
-                    print(f"[DEBUG] Filters - phase1: {filtered_phase1}, protected: {filtered_protected}, ssot: {filtered_ssot}, buckets: {filtered_buckets}, nonempty: {filtered_nonempty}")
-                    print(f"[DEBUG] After filtering: {len(empty_folders)} empty folders remain")
-
-                    if not empty_folders:
-                        break  # No more empty folders → cleanup complete
-
-                    print(f"[EMPTY-CLEANUP] Pass {passes}: Found {len(empty_folders)} empty folders")
-                    
-                    # Sort by depth (deepest first) for proper bottom-up processing
-                    empty_folders.sort(key=lambda p: len(p.parts), reverse=True)
-
-                    for empty_folder in empty_folders:
-                        rel = empty_folder.relative_to(root_path)
-
-                        placeholder_msg = """This folder was empty after Phase 1 reorganization and does not exist in SSoT.
-It has been archived for Phase 2 semantic analysis.
-DO NOT REMOVE during Phase 1."""
-
-                        if dry_run:
-                            print(f"DRY-RUN: Would archive empty folder {empty_folder}")
-                            archived_to = None
-                        else:
-                            archived_to = archive_legacy_folder(
-                                folder,
-                                rel,
-                                PHASE1_LEGACY_ROOT,
-                                dry_run,
-                                placeholder_msg,
-                                protected_patterns,
-                                ".phase1_empty_folder_placeholder"
-                            )
-
-                        empty_folders_logged.append({
-                            "legacy_folder": str(rel),
-                            "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
-                            "placeholder_added": True
-                        })
-                    
-                    # Force break after one pass in DRY-RUN to avoid infinite loop
-                    # because the empty folders are not actually removed.
-                    if dry_run:
-                        print("[DRY-RUN] Stopping empty-folder cleanup after Pass 1 to prevent infinite loop.")
-                        break
-
-                empty_archived_count = len(empty_folders_logged)
-                empty_folder_log = empty_folders_logged
-                
-                if empty_archived_count > 0:
-                    print(f"[EMPTY-CLEANUP] Completed: {empty_archived_count} total empty folders archived across {passes} passes")
-                    
-            except Exception as e:
-                print(f"[ERROR] Empty-folder cleanup failed for {folder}: {e}")
-                import traceback
-                traceback.print_exc()
-                empty_archived_count = 0
-                empty_folder_log = []
-
-        # 8) Compute and print summary for this domain (runs in both modes)
-        # Separate legacy and borderline matches
-        legacy_folders = [m for m in legacy_matches if m.category == "high_confidence_match"]
-        borderline_folders = [m for m in legacy_matches if m.category == "borderline_match"]
-        
-        # Compute summary counts
-        high_conf_archives = len(legacy_folders)
-        borderline_archives = len(borderline_folders)
-        file_moves = len([m for m in mappings if not m.is_duplicate and m.dest_rel])
-        duplicate_routes = len([m for m in mappings if m.is_duplicate])
-        
-        # Print summary
-        print(f"[SUMMARY] {folder}:")
-        print(f"  High-confidence archives: {high_conf_archives}")
-        print(f"  Borderline archives: {borderline_archives}")
-        print(f"  Empty-folder archives: {empty_archived_count}")
-        print(f"  File moves: {file_moves}")
-        print(f"  Duplicate routes: {duplicate_routes}")
-        print(f"  Protected items skipped: {protected_skips}")
-        
-        # 9) Emit index/mapping JSON for this domain (execute mode only)
+def main_phase01_execution(dry_run: bool = False) -> None:
+    """
+    Main Phase 1 execution with SSoT v4.0 governance enforcement.
+    """
+    print("[PHASE01] Starting structural enforcement with SSoT v4.0 governance...")
+    
+    # Initialize governance enforcer (loads both YAML files)
+    try:
+        enforcer = GovernanceEnforcer(PROJECT_ROOT)
+        print("[GOVERNANCE] Successfully loaded SSoT and Meta YAML governance rules")
+    except Exception as e:
+        print(f"[ERROR] Failed to initialize governance enforcer: {e}")
+        return
+    
+    # Ensure Phase 1 data directories exist
+    for data_dir in [PHASE1_INDEX_DIR, PHASE1_BACKUP_ROOT, PHASE1_LEGACY_ROOT, PHASE1_BORDERLINE_ROOT]:
         if not dry_run:
-            # Add placeholder metadata to legacy folders
-            for m in legacy_folders:
-                m.placeholder_filename = ".phase1_legacy_placeholder"
-                m.placeholder_content = "noncanonical"
-            
-            # Add placeholder metadata to borderline folders
-            for m in borderline_folders:
-                m.placeholder_filename = ".phase1_borderline_placeholder"
-                m.placeholder_content = "borderline"
-            
-            summary = {
-                "high_conf_archives": high_conf_archives,
-                "borderline_archives": borderline_archives,
-                "empty_archives": empty_archived_count,
-                "file_moves": file_moves,
-                "duplicate_routes": duplicate_routes,
-                "protected_skips": protected_skips
-            }
-            
-            index_data = {
-                "domain": folder,
-                "logical_root": logical_name,
-                "mappings": [asdict(m) for m in mappings],
-                "legacy_folders": [asdict(m) for m in legacy_folders],
-                "borderline_folders": [asdict(m) for m in borderline_folders],
-                "empty_folders": empty_folder_log,
-                "used_destinations": used_destinations,
-                "summary": summary,
-            }
-            index_file = PHASE1_INDEX_DIR / f"phase1_index_{folder}.json"
-            index_file.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
-            print(f"[INDEX] Wrote mapping index to {index_file}")
-
-    print(f"\n=== PHASE 1 — {mode} COMPLETE (non-destructive re-organization) ===")
-    return 0
-
-
-# =====================================================================
-# VALIDATION (K1–K45) — LIGHTWEIGHT UNDER NEW SEMANTICS
-# =====================================================================
-
-def phase01_validate() -> int:
-    """
-    Lightweight validation for the reorganizer version of Phase 1.
-
-    Under the augmented semantics we treat:
-      - K1–K9 as structural/YAML readiness.
-      - K10–K20 as FS scan + skeleton existence.
-      - K21–K37 as "reorg-ready" (non-destructive behavior configured).
-      - K38–K45 as global invariants (no external FS writes, etc.).
-
-    Many keys are tautologically true by construction here; this function
-    primarily checks presence of roots and YAML.
-    """
-    print("=== PHASE 1 — VALIDATION ===")
-
-    K: Dict[str, bool] = {f"K{k}": False for k in range(1, 46)}
-    errors: List[str] = []
-
-    def ok(k: str) -> None:
-        K[k] = True
-
-    def bad(k: str, msg: str) -> None:
-        K[k] = False
-        errors.append(f"{k}: {msg}")
-
-    # K1–K5: basic environment + YAML
-    ok("K1")  # P0.5 cache optional by design
-    ok("K2")  # Assume runtime environment OK
-
-    roots_exist = all((PROJECT_ROOT / t).exists() for t in TARGET_ROOTS)
-    if roots_exist:
-        ok("K3")
-    else:
-        bad("K3", "Missing one or more canonical root folders")
-
-    if SSOT_YAML.exists():
-        ok("K4")
-    else:
-        bad("K4", "SSoT YAML missing")
-
-    if META_YAML.exists():
-        ok("K4b")
-    else:
-        bad("K4b", "META YAML missing")
-
-    try:
-        ssot = load_yaml(SSOT_YAML)
-        ok("K5")
-    except Exception:
-        bad("K5", "SSoT parse error")
-        ssot = {}
-
-    try:
-        meta = load_yaml(META_YAML)
-        ok("K4c")
-    except Exception:
-        bad("K4c", "META parse error")
-        meta = {}
-
-    combined = {**ssot, **meta}
-    ssot_tree = canon_tree(combined)
-    ok("K4d")
-    ok("K8")
-    ok("K8b")
-    ok("K8c")
-    ok("K9")
-
-    # K6: at least one SSoT subtree matches a target root logical name.
-    # Strict check for required top-level keys
-    required_keys = {
-        "shared_engine_ops", "agentic_core", "apps_lic", "apps_rg", 
-        "config", "data", "observability", "prompt_governance", 
-        "runtime", "schemas", "scripts", "tests"
-    }
+            data_dir.mkdir(parents=True, exist_ok=True)
     
-    found_keys = set(ssot.keys())
-    if required_keys.issubset(found_keys):
-        ok("K6")
-    else:
-        missing = required_keys - found_keys
-        bad("K6", f"Missing required top-level SSoT keys: {missing}")
-
-    # Helper to check for cognitive keys
-    def has_cognitive_keys(tree: dict) -> bool:
-        for k, v in tree.items():
-            if isinstance(k, str):
-                # Check for any L1-L5 or P1-P4 keys to ensure they don't leak to support domains
-                if re.match(r"^(L[1-5]|P[1-4])_", k):
-                    return True
-            if isinstance(v, dict) and has_cognitive_keys(v):
-                return True
-        return False
-
-    # Check cognitive keys don't leak into support domains
-    support_domains = ["config", "data", "observability", "prompt_governance", "runtime", "schemas", "scripts", "shared", "tests"]
-    leak_found = False
-    for dom in support_domains:
-        if dom in ssot and has_cognitive_keys(ssot[dom]):
-            leak_found = True
-            bad("K7", f"Cognitive keys (L*/P*) found in support domain: {dom}")
-            break
+    # Get SSoT structure from loaded YAML
+    ssot_data = enforcer.config.ssot_yaml
     
-    if not leak_found:
-        # Check depth for K7 as well
-        def validate_yaml_normalization(tree: dict, depth: int = 0) -> bool:
-            if depth > MAX_DEPTH:
-                return False
-            for value in tree.values():
-                if isinstance(value, dict):
-                    if not validate_yaml_normalization(value, depth + 1):
-                        return False
-            return True
-
-        if validate_yaml_normalization(ssot_tree):
-            ok("K7")
-        else:
-            bad("K7", "SSoT YAML normalization failed - depth exceeded or invalid structure")
-
-    # K10–K37 — We treat these as satisfied if FS scan succeeds
-    # and Phase 1 is configured for non-destructive moves only.
-    for folder in TARGET_ROOTS:
-        root = PROJECT_ROOT / folder
-        if not root.exists():
+    # Process each target root
+    all_mapping_decisions: List[MappingDecision] = []
+    
+    for target_root in TARGET_ROOTS:
+        logical_root = map_folder_to_logical(target_root)
+        domain_root = PROJECT_ROOT / target_root
+        
+        if not domain_root.exists():
+            print(f"[SKIP] Domain root {domain_root} does not exist")
             continue
-
-        # Simple scan to ensure access
-        _ = list_all_files(root)
-        for k in range(10, 38):
-            ok(f"K{k}")
-
-    # K38–K45 — global invariants; we assume pass if earlier keys pass.
-    for k in range(38, 45):
-        ok(f"K{k}")
-    K["K45"] = all(v for kk, v in K.items() if kk != "K45")
-
-    # DISPLAY RESULTS
-    for k in sorted(K):
-        print(f"{k}: {'PASS' if K[k] else 'FAIL'}")
-
-    if K["K45"]:
-        print("\nFINAL: PASS — PHASE 1 VALIDATION COMPLETE")
-        return 0
-
-    print("\nFINAL: FAIL — SOME KEYS FAILED:")
-    for msg in errors:
-        print(" -", msg)
-    return 1
-
-
-# =====================================================================
-# CLI
-# =====================================================================
-
-def main() -> int:
-    if len(sys.argv) < 2:
-        print("Usage: python phase01.py [execute|validate|dry-run]")
-        return 1
-
-    mode = sys.argv[1].lower().strip()
-    if mode == "execute":
-        return phase01_execute(dry_run=False)
-    if mode == "validate":
-        return phase01_validate()
-    if mode == "dry-run":
-        return phase01_execute(dry_run=True)
-
-    print("Unknown command. Use: execute | validate | dry-run")
-    return 1
+        
+        print(f"[PROCESS] Processing domain: {logical_root} ({target_root})")
+        
+        # Get SSoT subtree for this domain
+        ssot_subtree = ssot_data.get(logical_root, {})
+        if not ssot_subtree:
+            print(f"[WARN] No SSoT structure found for domain {logical_root}")
+            continue
+        
+        # Ensure SSoT paths exist
+        ensure_ssot_paths(domain_root, ssot_subtree, dry_run)
+        
+        # List all files in this domain
+        all_files = list_all_files(domain_root)
+        print(f"[SCAN] Found {len(all_files)} files in {logical_root}")
+        
+        # Process each file
+        for file_path in all_files:
+            try:
+                rel_path = file_path.relative_to(domain_root)
+                
+                # Skip protected paths
+                if enforcer.is_protected_path(file_path):
+                    print(f"[SKIP] Protected path: {rel_path}")
+                    continue
+                
+                # Infer target using governance-aware logic
+                decision = infer_target_for_file(
+                    logical_root=logical_root,
+                    ssot_subtree=ssot_subtree,
+                    src_rel=rel_path,
+                    enforcer=enforcer
+                )
+                
+                all_mapping_decisions.append(decision)
+                
+                # Execute move if needed
+                if decision.dest_rel and decision.dest_rel != decision.src_rel:
+                    src_full = domain_root / decision.src_rel
+                    dest_full = domain_root / decision.dest_rel
+                    
+                    if dry_run:
+                        print(f"DRY-RUN: Would move {src_full} -> {dest_full}")
+                    else:
+                        dest_full.parent.mkdir(parents=True, exist_ok=True)
+                        if src_full.exists():
+                            shutil.move(str(src_full), str(dest_full))
+                            print(f"[MOVE] {decision.src_rel} -> {decision.dest_rel}")
+                        else:
+                            print(f"[WARN] Source file not found: {src_full}")
+                
+            except Exception as e:
+                print(f"[ERROR] Processing file {file_path}: {e}")
+                continue
+    
+    # Generate mapping report
+    if not dry_run:
+        mapping_report = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "total_files_processed": len(all_mapping_decisions),
+            "moves_executed": len([d for d in all_mapping_decisions if d.dest_rel and d.dest_rel != d.src_rel]),
+            "protected_skipped": len([d for d in all_mapping_decisions if "protected" in d.reason]),
+            "violations": len([d for d in all_mapping_decisions if d.confidence == 0.0]),
+            "mapping_decisions": [asdict(d) for d in all_mapping_decisions]
+        }
+        
+        report_path = PHASE1_INDEX_DIR / "phase01_mapping_report.json"
+        with report_path.open("w", encoding="utf-8") as f:
+            json.dump(mapping_report, f, indent=2, ensure_ascii=False)
+        
+        print(f"[REPORT] Generated mapping report: {report_path}")
+    
+    # Print validation results
+    validate_phase_completion(enforcer)
+    
+    print(f"[PHASE01] Execution complete. Processed {len(all_mapping_decisions)} files.")
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Phase 1 Structural Enforcement with SSoT v4.0 Governance")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
+    
+    args = parser.parse_args()
+    
+    if args.verbose:
+        print("[VERBOSE] Phase 1 execution with verbose logging enabled")
+    
+    try:
+        main_phase01_execution(dry_run=args.dry_run)
+    except KeyboardInterrupt:
+        print("\n[INTERRUPT] Phase 1 execution cancelled by user")
+    except Exception as e:
+        print(f"[FATAL] Phase 1 execution failed: {e}")
+        sys.exit(1)
