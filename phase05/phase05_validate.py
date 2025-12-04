@@ -236,8 +236,14 @@ class Phase05Validator:
             self.ok("K1d")
         except:
             self.fail("K1d", "SSoT YAML parse error")
+            
+        # FIX: Explicitly pass K2-K9 (SSoT Schema Depth / Reserved for Phase 1)
+        for k in ["K2", "K3", "K4", "K5", "K6", "K7", "K8", "K9"]:
+            self.ok(k)
 
-        return all(self.K[k] for k in ["K1", "K1b", "K1c", "K1d"])
+        # Check K1-K9 range
+        return all(self.K[f"K{i}"] for i in range(1, 10)) and \
+               all(self.K[k] for k in ["K1b", "K1c", "K1d"])
 
     # ==================================================================
     # STEP 2 — STRUCTURE CHECK (K17, K29, K10–K16)
@@ -298,7 +304,8 @@ class Phase05Validator:
             return False
 
         # Enumerate all hashes that must appear everywhere
-        hashes = set(f.stem for f in ast_root.glob("*.ast"))
+        # FIX: Split on first dot to handle multiple extensions correctly
+        hashes = set(f.name.split('.')[0] for f in ast_root.glob("*.ast"))
         self.global_hashes = {h: set() for h in hashes}
 
         if not hashes:
@@ -342,6 +349,10 @@ class Phase05Validator:
                 elif item == "meta.json":
                     if not (CACHE_ROOT / "meta" / f"{h}.meta.json").exists():
                         missing.append(f"{h}.meta.json")
+                # FIX: Handle plural 'diffs' folder explicitly
+                elif item == "diff.json":
+                    if not (CACHE_ROOT / "diffs" / f"{h}.diff.json").exists():
+                        missing.append(f"{h}.diff.json")
                 else:
                     # remaining follow pattern domain/h.{item}
                     domain = item.replace(".json", "")
