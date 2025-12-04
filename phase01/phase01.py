@@ -1473,15 +1473,23 @@ def main_phase01_execution(dry_run: bool = False) -> None:
         # Get SSoT subtree for this domain and materialize canonical skeleton
         if logical_root == "apps":
             # Apps aggregate physical root uses logical apps_rg/apps_lic SSoT trees
-            apps_lic_tree = ssot_data.get("apps_lic", {})
-            apps_rg_tree = ssot_data.get("apps_rg", {})
-            if not apps_lic_tree and not apps_rg_tree:
-                print("[WARN] No SSoT structure found for apps_lic/apps_rg (apps aggregate domain)")
-                continue
-            if apps_lic_tree:
-                ensure_ssot_paths(domain_root, apps_lic_tree, dry_run)
-            if apps_rg_tree:
-                ensure_ssot_paths(domain_root, apps_rg_tree, dry_run)
+            # Create apps_lic and apps_rg subdirectories, NOT L*/P* at root level
+            apps_lic_root = domain_root / "apps_lic"
+            apps_rg_root = domain_root / "apps_rg"
+            unassigned_root = domain_root / "_unassigned_apps_unknown"
+            
+            # Create subdirectory structure
+            apps_lic_root.mkdir(parents=True, exist_ok=True)
+            apps_rg_root.mkdir(parents=True, exist_ok=True)
+            unassigned_root.mkdir(parents=True, exist_ok=True)
+            
+            # Create __init__.py files
+            for subdir in [apps_lic_root, apps_rg_root, unassigned_root]:
+                init_file = subdir / "__init__.py"
+                if not init_file.exists():
+                    init_file.touch()
+            
+            print(f"[APPS] Created apps subdirectories: apps_lic, apps_rg, _unassigned_apps_unknown")
         else:
             ssot_subtree = ssot_data.get(logical_root, {})
             if not ssot_subtree:
