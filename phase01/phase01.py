@@ -695,6 +695,14 @@ def find_fuzzy_folder_matches(
         rel_path = existing_dir.relative_to(domain_root)
         folder_name = rel_path.name
         
+        # Skip files - only directories should be considered for fuzzy folder matching
+        if not existing_dir.is_dir():
+            continue
+        
+        # Skip files with dots in name (e.g., semantic_cache.py)
+        if "." in folder_name:
+            continue
+        
         # Skip if already canonical (starts with L_ or P_) or is any SSoT folder
         if folder_name.startswith(("L1_", "L2_", "L3_", "L4_", "L5_", "P1_", "P2_", "P3_", "P4_")):
             continue
@@ -705,6 +713,10 @@ def find_fuzzy_folder_matches(
         
         # Skip Phase 1 internal directories
         if folder_name.startswith("phase1_"):
+            continue
+        
+        # semantic_cache is a protected runtime artifact and must not appear in SSoT or undergo Phase 1 canonicalization
+        if folder_name == "semantic_cache":
             continue
         
         # Find best canonical match
