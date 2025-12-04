@@ -1,0 +1,11 @@
+{
+  "hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "deprecated in v13",
+      "relative": "prompts_LIC.py"
+    }
+  ]
+}

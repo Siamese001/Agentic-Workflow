@@ -1,0 +1,11 @@
+{
+  "hash": "011e2111fc76e4d46100cd5ed60f23567795db04cf517761d7b546403d3996d7",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "strategy_ensemble_v10_7.py"
+    }
+  ]
+}

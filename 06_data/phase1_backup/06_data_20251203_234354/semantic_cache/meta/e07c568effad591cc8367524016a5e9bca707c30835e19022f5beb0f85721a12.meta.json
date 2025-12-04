@@ -1,0 +1,11 @@
+{
+  "hash": "e07c568effad591cc8367524016a5e9bca707c30835e19022f5beb0f85721a12",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/shared/mock_clients.py"
+    }
+  ]
+}

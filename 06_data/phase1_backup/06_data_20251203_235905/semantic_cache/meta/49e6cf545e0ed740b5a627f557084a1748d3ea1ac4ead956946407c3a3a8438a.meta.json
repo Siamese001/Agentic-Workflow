@@ -1,0 +1,11 @@
+{
+  "hash": "49e6cf545e0ed740b5a627f557084a1748d3ea1ac4ead956946407c3a3a8438a",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/golden/datasets/golden_resume_dataset.json"
+    }
+  ]
+}

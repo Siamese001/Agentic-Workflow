@@ -1,0 +1,11 @@
+{
+  "hash": "d811574c7fc9da165096d6e4dda4813224f247ef4eba025acdf3c1a639358119",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Old Resume Gen Python",
+      "relative": "Resume_Generation_v5_23_COSINE_RESTORED.py"
+    }
+  ]
+}

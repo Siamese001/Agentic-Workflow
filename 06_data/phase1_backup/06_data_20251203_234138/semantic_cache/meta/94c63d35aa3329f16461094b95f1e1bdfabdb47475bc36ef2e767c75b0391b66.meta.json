@@ -1,0 +1,11 @@
+{
+  "hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/model_routing/test_selector_integration.py"
+    }
+  ]
+}

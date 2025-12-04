@@ -1,0 +1,16 @@
+{
+  "hash": "ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Microservices Model",
+      "relative": "00_hop_rag_v1_2.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Microservices Model",
+      "relative": "hop_0_rag_v1_1.py"
+    }
+  ]
+}

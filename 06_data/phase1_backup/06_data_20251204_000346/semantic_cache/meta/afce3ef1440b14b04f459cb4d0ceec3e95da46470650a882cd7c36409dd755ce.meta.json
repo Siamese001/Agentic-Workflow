@@ -1,0 +1,16 @@
+{
+  "hash": "afce3ef1440b14b04f459cb4d0ceec3e95da46470650a882cd7c36409dd755ce",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "drafting_execution_stack.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "agent_stacks_v10_8/drafting_execution_stack.py"
+    }
+  ]
+}

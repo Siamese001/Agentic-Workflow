@@ -1,0 +1,19 @@
+{
+  "hash": "2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "stacks_v10_8/bullet_planning.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/bullet_planning.py",
+  "global": {
+    "ast": "ast/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.ast",
+    "ast_meta": "ast/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.ast.meta.json",
+    "embedding": "embeddings/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.embedding",
+    "emb_meta": "embeddings/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.embedding.meta.json",
+    "diff": "diffs/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.diff.json",
+    "golden": "golden/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.golden.json",
+    "safety": "safety/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.safety.json",
+    "integrity": "integrity/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.integrity.json",
+    "meta": "meta/2070f401a3b4a7a635af9a741d8eb525dc0205f33c143732ec13038814198124.meta.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "runtime/observability/spans.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/spans.py",
+  "global": {
+    "ast": "ast/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.ast",
+    "ast_meta": "ast/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.ast.meta.json",
+    "embedding": "embeddings/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.embedding",
+    "emb_meta": "embeddings/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.embedding.meta.json",
+    "diff": "diffs/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.diff.json",
+    "golden": "golden/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.golden.json",
+    "safety": "safety/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.safety.json",
+    "integrity": "integrity/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.integrity.json",
+    "meta": "meta/3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a.meta.json"
+  }
+}

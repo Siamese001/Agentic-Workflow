@@ -1,0 +1,19 @@
+{
+  "hash": "fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "v6.0",
+  "relative": "main_v6_0.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/main_v6_0.py",
+  "global": {
+    "ast": "ast/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.ast",
+    "ast_meta": "ast/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.ast.meta.json",
+    "embedding": "embeddings/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.embedding",
+    "emb_meta": "embeddings/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.embedding.meta.json",
+    "diff": "diffs/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.diff.json",
+    "golden": "golden/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.golden.json",
+    "safety": "safety/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.safety.json",
+    "integrity": "integrity/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.integrity.json",
+    "meta": "meta/fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb.meta.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "windsurf_rules/02_structure_prompts_memory.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/02_structure_prompts_memory.md",
+  "global": {
+    "ast": "ast/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.ast",
+    "ast_meta": "ast/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.ast.meta.json",
+    "embedding": "embeddings/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.embedding",
+    "emb_meta": "embeddings/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.embedding.meta.json",
+    "diff": "diffs/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.diff.json",
+    "golden": "golden/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.golden.json",
+    "safety": "safety/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.safety.json",
+    "integrity": "integrity/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.integrity.json",
+    "meta": "meta/03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7.meta.json"
+  }
+}

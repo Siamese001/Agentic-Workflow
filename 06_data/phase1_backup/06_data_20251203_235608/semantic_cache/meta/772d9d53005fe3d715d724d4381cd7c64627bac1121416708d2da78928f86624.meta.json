@@ -1,0 +1,11 @@
+{
+  "hash": "772d9d53005fe3d715d724d4381cd7c64627bac1121416708d2da78928f86624",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Old Resume Gen Python",
+      "relative": "Resume_Generation_v5_26.py"
+    }
+  ]
+}

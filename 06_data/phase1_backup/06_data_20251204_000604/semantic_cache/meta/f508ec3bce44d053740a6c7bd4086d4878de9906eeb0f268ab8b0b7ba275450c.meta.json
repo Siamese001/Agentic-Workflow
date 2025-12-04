@@ -1,0 +1,16 @@
+{
+  "hash": "f508ec3bce44d053740a6c7bd4086d4878de9906eeb0f268ab8b0b7ba275450c",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "qa_validation_stack.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "agent_stacks_v10_8/qa_validation_stack.py"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+# Cost Tracking Configuration v1.0
+# Comprehensive cost monitoring for Agentic Workflow System
+
+cost_tracking:
+  version: "1.0"
+  enabled: true
+  currency: "USD"
+  
+  # Cost models by provider
+  providers:
+    openai:
+      models:
+        gpt-4:
+          input_cost_per_1k_tokens: 0.03
+          output_cost_per_1k_tokens: 0.06
+          context_window: 8192
+          
+        gpt-4-turbo:
+          input_cost_per_1k_tokens: 0.01
+          output_cost_per_1k_tokens: 0.03
+          context_window: 128000
+          
+        gpt-3.5-turbo:
+          input_cost_per_1k_tokens: 0.0015
+          output_cost_per_1k_tokens: 0.002
+          context_window: 16384
+          
+    anthropic:
+      models:
+        claude-3-opus:
+          input_cost_per_1k_tokens: 0.015
+          output_cost_per_1k_tokens: 0.075
+          context_window: 200000
+          
+        claude-3-sonnet:
+          input_cost_per_1k_tokens: 0.003
+          output_cost_per_1k_tokens: 0.015
+          context_window: 200000
+          
+    azure:
+      models:
+        azure-gpt-4:
+          input_cost_per_1k_tokens: 0.03
+          output_cost_per_1k_tokens: 0.06
+          context_window: 8192
+
+  # Cost budgets and alerts
+  budgets:
+    daily_budget: 100.0
+    monthly_budget: 3000.0
+    
+    alerts:
+      warning_threshold: 0.80  # 80% of budget
+      critical_threshold: 0.95  # 95% of budget
+      
+      channels:
+        - type: "email"
+          recipients: ["admin@company.com"]
+        - type: "slack"
+          webhook_url: "${SLACK_WEBHOOK_URL}"
+
+  # Cost allocation by operation
+  cost_centers:
+    resume_processing:
+      budget_percentage: 0.40
+      expected_cost_per_resume: 0.15
+      
+    outreach_generation:
+      budget_percentage: 0.35
+      expected_cost_per_message: 0.08
+      
+    job_analysis:
+      budget_percentage: 0.25
+      expected_cost_per_jd: 0.12
+
+  # Tracking rules
+  tracking_rules:
+    # Track all API calls
+    track_all_calls: true
+    
+    # Sample rate for cost tracking (1.0 = 100%)
+    sampling_rate: 1.0
+    
+    # Minimum cost threshold for logging
+    min_cost_threshold: 0.001
+    
+    # Include token counts in logs
+    include_token_counts: true
+    
+    # Track by layer (L1-L5)
+    track_by_layer: true
+    
+    # Track by agent type
+    track_by_agent_type: true
+
+  # Cost optimization recommendations
+  optimization:
+    # Enable cost optimization suggestions
+    enabled: true
+    
+    # Thresholds for recommendations
+    expensive_model_threshold: 0.10  # $0.10 per request
+    
+    # Model selection rules
+    model_selection_rules:
+      - rule: "Use GPT-3.5 for simple tasks"
+        conditions:
+          complexity: "low"
+          required_accuracy: "< 0.9"
+        recommended_model: "gpt-3.5-turbo"
+        
+      - rule: "Use GPT-4 for complex analysis"
+        conditions:
+          complexity: "high"
+          required_accuracy: "> 0.95"
+        recommended_model: "gpt-4"
+
+  # Reporting configuration
+  reporting:
+    # Generate daily cost reports
+    daily_reports: true
+    
+    # Generate weekly cost summaries
+    weekly_reports: true
+    
+    # Export cost data to external systems
+    export_enabled: true
+    
+    export_format: "csv"
+    
+    # Retention period for cost data
+    retention_days: 365
+
+  # Cost attribution
+  attribution:
+    # Track costs by user/session
+    track_by_user: false
+    
+    # Track costs by tenant (for multi-tenant)
+    track_by_tenant: true
+    
+    # Track costs by project/job
+    track_by_project: true

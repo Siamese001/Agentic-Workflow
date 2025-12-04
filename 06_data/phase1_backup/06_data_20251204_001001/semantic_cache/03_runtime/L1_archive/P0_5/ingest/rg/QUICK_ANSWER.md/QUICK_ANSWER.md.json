@@ -1,0 +1,19 @@
+{
+  "hash": "eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Monolith",
+  "relative": "QUICK_ANSWER.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/QUICK_ANSWER.md",
+  "global": {
+    "ast": "ast/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.ast",
+    "ast_meta": "ast/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.ast.meta.json",
+    "embedding": "embeddings/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.embedding",
+    "emb_meta": "embeddings/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.embedding.meta.json",
+    "diff": "diffs/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.diff.json",
+    "golden": "golden/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.golden.json",
+    "safety": "safety/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.safety.json",
+    "integrity": "integrity/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.integrity.json",
+    "meta": "meta/eb1eec49a4c314dedcbe13bdb3d2f401cd304b23427e37c5232a739db341cb6c.meta.json"
+  }
+}

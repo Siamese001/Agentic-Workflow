@@ -1,0 +1,11 @@
+{
+  "hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/golden_state/judge.py"
+    }
+  ]
+}

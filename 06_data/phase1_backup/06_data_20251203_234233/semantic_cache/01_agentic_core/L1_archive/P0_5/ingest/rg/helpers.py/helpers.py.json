@@ -1,0 +1,19 @@
+{
+  "hash": "30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Microservices Model",
+  "relative": "helpers.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/helpers.py",
+  "global": {
+    "ast": "ast/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.ast",
+    "ast_meta": "ast/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.ast.meta.json",
+    "embedding": "embeddings/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.embedding",
+    "emb_meta": "embeddings/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.embedding.meta.json",
+    "diff": "diffs/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.diff.json",
+    "golden": "golden/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.golden.json",
+    "safety": "safety/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.safety.json",
+    "integrity": "integrity/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.integrity.json",
+    "meta": "meta/30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473.meta.json"
+  }
+}

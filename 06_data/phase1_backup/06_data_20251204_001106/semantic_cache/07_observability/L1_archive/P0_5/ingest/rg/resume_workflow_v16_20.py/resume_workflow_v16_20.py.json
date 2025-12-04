@@ -1,0 +1,19 @@
+{
+  "hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Monolith",
+  "relative": "resume_workflow_v16_20.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/resume_workflow_v16_20.py",
+  "global": {
+    "ast": "ast/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.ast",
+    "ast_meta": "ast/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.ast.meta.json",
+    "embedding": "embeddings/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.embedding",
+    "emb_meta": "embeddings/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.embedding.meta.json",
+    "diff": "diffs/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.diff.json",
+    "golden": "golden/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.golden.json",
+    "safety": "safety/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.safety.json",
+    "integrity": "integrity/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.integrity.json",
+    "meta": "meta/3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1.meta.json"
+  }
+}

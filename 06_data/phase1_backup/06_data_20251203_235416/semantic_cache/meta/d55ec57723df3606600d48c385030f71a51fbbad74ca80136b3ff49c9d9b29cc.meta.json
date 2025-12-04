@@ -1,0 +1,11 @@
+{
+  "hash": "d55ec57723df3606600d48c385030f71a51fbbad74ca80136b3ff49c9d9b29cc",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/integration/test_async_idempotence.py"
+    }
+  ]
+}

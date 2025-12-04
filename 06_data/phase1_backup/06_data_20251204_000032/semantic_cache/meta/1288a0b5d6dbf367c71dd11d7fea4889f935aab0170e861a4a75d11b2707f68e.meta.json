@@ -1,0 +1,11 @@
+{
+  "hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/contracts/test_typed_contracts.py"
+    }
+  ]
+}

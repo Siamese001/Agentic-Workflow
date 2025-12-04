@@ -1,0 +1,11 @@
+{
+  "hash": "66474d90beae38ca1818ce65cd596b548c4c4b3be57bacaccae1f1f290645de4",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_8/collaboration/test_collab_engine.py"
+    }
+  ]
+}

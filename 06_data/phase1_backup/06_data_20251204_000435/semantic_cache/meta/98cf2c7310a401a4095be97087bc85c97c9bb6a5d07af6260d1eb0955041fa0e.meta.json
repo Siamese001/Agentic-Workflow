@@ -1,0 +1,11 @@
+{
+  "hash": "98cf2c7310a401a4095be97087bc85c97c9bb6a5d07af6260d1eb0955041fa0e",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic_Workflow-10_10",
+      "relative": "routing.py"
+    }
+  ]
+}

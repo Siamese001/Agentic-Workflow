@@ -1,0 +1,11 @@
+{
+  "hash": "43d399a788bdfdcf418d6d869ff97b814a56cc4e9ff8953a02ca761c45b63670",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/L4_memory_state/temporal_KG/test_temporal_kg.py"
+    }
+  ]
+}

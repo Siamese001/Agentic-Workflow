@@ -1,0 +1,11 @@
+{
+  "hash": "69fb96dbf2e4b15dbadde84d6b9de2a0b393bfec9251b36e722445cedb22cd9b",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/test_flat__stacks__test_safety_constitutional_v10_7.py"
+    }
+  ]
+}

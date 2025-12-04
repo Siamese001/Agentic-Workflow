@@ -1,0 +1,11 @@
+{
+  "hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/metacognition/test_hypothesis_generation.py"
+    }
+  ]
+}

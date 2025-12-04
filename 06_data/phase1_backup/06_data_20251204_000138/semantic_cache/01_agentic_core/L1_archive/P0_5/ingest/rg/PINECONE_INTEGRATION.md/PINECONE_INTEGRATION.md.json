@@ -1,0 +1,19 @@
+{
+  "hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "root_docs/integration/PINECONE_INTEGRATION.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/PINECONE_INTEGRATION.md",
+  "global": {
+    "ast": "ast/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.ast",
+    "ast_meta": "ast/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.ast.meta.json",
+    "embedding": "embeddings/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.embedding",
+    "emb_meta": "embeddings/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.embedding.meta.json",
+    "diff": "diffs/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.diff.json",
+    "golden": "golden/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.golden.json",
+    "safety": "safety/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.safety.json",
+    "integrity": "integrity/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.integrity.json",
+    "meta": "meta/7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065.meta.json"
+  }
+}

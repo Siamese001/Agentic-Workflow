@@ -1,0 +1,19 @@
+{
+  "hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "windsurf_rules/06_safety_policy_cost.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/06_safety_policy_cost.md",
+  "global": {
+    "ast": "ast/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.ast",
+    "ast_meta": "ast/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.ast.meta.json",
+    "embedding": "embeddings/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.embedding",
+    "emb_meta": "embeddings/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.embedding.meta.json",
+    "diff": "diffs/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.diff.json",
+    "golden": "golden/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.golden.json",
+    "safety": "safety/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.safety.json",
+    "integrity": "integrity/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.integrity.json",
+    "meta": "meta/84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d.meta.json"
+  }
+}

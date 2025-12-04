@@ -1,0 +1,11 @@
+{
+  "hash": "5ae6115844baf91f09cfe9f8622287100f1dc7099e7376719a387aff8cdf5852",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "v9.0",
+      "relative": "run_learning_v9_0.py"
+    }
+  ]
+}

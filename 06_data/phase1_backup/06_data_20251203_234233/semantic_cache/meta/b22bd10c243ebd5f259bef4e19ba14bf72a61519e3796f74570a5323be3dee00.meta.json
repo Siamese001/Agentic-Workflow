@@ -1,0 +1,11 @@
+{
+  "hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json"
+    }
+  ]
+}

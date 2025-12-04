@@ -1,0 +1,16 @@
+{
+  "hash": "3c9bf8e25f814d82cb4a0874c25318fe74b6fb3f3a7b3bde818340af5a38975c",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "rag_execution.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "stacks_v10_8/rag_execution.py"
+    }
+  ]
+}

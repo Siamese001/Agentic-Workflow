@@ -1,0 +1,11 @@
+{
+  "hash": "eee97bd04582253972565aaf4008294f4c2540d72c6aaa069b0789b361f302c6",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "agent_orchestration_v10_7.py"
+    }
+  ]
+}

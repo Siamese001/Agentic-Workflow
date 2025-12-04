@@ -1,0 +1,11 @@
+{
+  "hash": "c7c19c0b9b5edf6c4e169eb9b200ae0c96817088771905d65366d84915e2cc3e",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/e2e/safety_enforced_paths/test_e2e_safety_paths.py"
+    }
+  ]
+}

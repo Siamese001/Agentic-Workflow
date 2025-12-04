@@ -1,0 +1,19 @@
+{
+  "hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "infra/context_engine/assembly.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/assembly.py",
+  "global": {
+    "ast": "ast/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.ast",
+    "ast_meta": "ast/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.ast.meta.json",
+    "embedding": "embeddings/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.embedding",
+    "emb_meta": "embeddings/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.embedding.meta.json",
+    "diff": "diffs/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.diff.json",
+    "golden": "golden/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.golden.json",
+    "safety": "safety/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.safety.json",
+    "integrity": "integrity/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.integrity.json",
+    "meta": "meta/0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d.meta.json"
+  }
+}

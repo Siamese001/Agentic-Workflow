@@ -1,0 +1,19 @@
+{
+  "hash": "5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Microservices Model",
+  "relative": "Archive/04_hop_staging.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/04_hop_staging.py",
+  "global": {
+    "ast": "ast/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.ast",
+    "ast_meta": "ast/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.ast.meta.json",
+    "embedding": "embeddings/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.embedding",
+    "emb_meta": "embeddings/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.embedding.meta.json",
+    "diff": "diffs/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.diff.json",
+    "golden": "golden/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.golden.json",
+    "safety": "safety/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.safety.json",
+    "integrity": "integrity/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.integrity.json",
+    "meta": "meta/5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2.meta.json"
+  }
+}

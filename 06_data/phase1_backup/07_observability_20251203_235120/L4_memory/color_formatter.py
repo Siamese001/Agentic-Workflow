@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""
+Base Schemas
+Section 10: Schema Layer - Foundation schemas for all agentic layers
+"""
+
+from typing import Dict, Any, Optional
+from pydantic import BaseModel, Field, validator
+from datetime import datetime
+from enum import Enum
+
+class BaseResponse(BaseModel):
+    """Base response schema for all agentic operations"""
+    success: bool = Field(..., description="Operation success status")
+    message: str = Field(..., description="Response message")
+    data: Optional[Dict[str, Any]] = Field(None, description="Response data payload")
+    timestamp: datetime = Field(default_factory=datetime.now, description="Response timestamp")
+    error_code: Optional[str] = Field(None, description="Error code if failed")
+
+class BaseRequest(BaseModel):
+    """Base request schema for all agentic operations"""
+    request_id: str = Field(..., description="Unique request identifier")
+    session_id: Optional[str] = Field(None, description="Session identifier")
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Request metadata")
+
+    @validator('request_id')
+    def validate_request_id(cls, v):
+        if not v or len(v.strip()) == 0:
+            raise ValueError("request_id cannot be empty")
+        return v.strip()
+
+class ValidationError(BaseModel):
+    """Schema validation error details"""
+    field: str = Field(..., description="Field that failed validation")
+    message: str = Field(..., description="Validation error message")
+    value: Any = Field(..., description="Invalid value")
+    constraint: Optional[str] = Field(None, description="Validation constraint that failed")
+
+class ProcessingStatus(str, Enum):
+    """Processing status enumeration"""
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+class LogLevel(str, Enum):
+    """Log level enumeration"""
+    DEBUG = "debug"
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    CRITICAL = "critical"
+
+class BaseConfig(BaseModel):
+    """Base configuration schema"""
+    enabled: bool = Field(True, description="Whether this component is enabled")
+    debug_mode: bool = Field(False, description="Enable debug logging")
+    timeout_seconds: int = Field(300, description="Operation timeout in seconds")
+    retry_attempts: int = Field(3, description="Number of retry attempts")
+    log_level: LogLevel = Field(LogLevel.INFO, description="Logging level")
+
+# Re-export commonly used types
+__all__ = [
+    'BaseResponse', 'BaseRequest', 'ValidationError',
+    'ProcessingStatus', 'LogLevel', 'BaseConfig'
+]
+
+
+
+
+

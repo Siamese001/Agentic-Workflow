@@ -1,0 +1,19 @@
+{
+  "hash": "7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc",
+  "canonical_root": "10_tests",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "tests/v10_7/mock_detection/test_mock_sweeper_v10_7.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/test_mock_sweeper_v10_7.py",
+  "global": {
+    "ast": "ast/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.ast",
+    "ast_meta": "ast/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.ast.meta.json",
+    "embedding": "embeddings/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.embedding",
+    "emb_meta": "embeddings/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.embedding.meta.json",
+    "diff": "diffs/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.diff.json",
+    "golden": "golden/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.golden.json",
+    "safety": "safety/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.safety.json",
+    "integrity": "integrity/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.integrity.json",
+    "meta": "meta/7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc.meta.json"
+  }
+}

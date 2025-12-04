@@ -1,0 +1,19 @@
+{
+  "hash": "647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7",
+  "canonical_root": "09_apps",
+  "engine": "LIC",
+  "archive_name": "Old LIC",
+  "relative": "LinkedInCanonical_2025-08-31.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/LinkedInCanonical_2025-08-31.md",
+  "global": {
+    "ast": "ast/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.ast",
+    "ast_meta": "ast/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.ast.meta.json",
+    "embedding": "embeddings/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.embedding",
+    "emb_meta": "embeddings/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.embedding.meta.json",
+    "diff": "diffs/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.diff.json",
+    "golden": "golden/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.golden.json",
+    "safety": "safety/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.safety.json",
+    "integrity": "integrity/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.integrity.json",
+    "meta": "meta/647d4b6ae9073aff020d6b363cf5a699ed88d18a37fbd4289b419c83ea667ae7.meta.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19",
+  "canonical_root": "09_apps",
+  "engine": "LIC",
+  "archive_name": "Old LIC",
+  "relative": "LinkedIn v3.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/LinkedIn v3.md",
+  "global": {
+    "ast": "ast/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.ast",
+    "ast_meta": "ast/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.ast.meta.json",
+    "embedding": "embeddings/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.embedding",
+    "emb_meta": "embeddings/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.embedding.meta.json",
+    "diff": "diffs/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.diff.json",
+    "golden": "golden/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.golden.json",
+    "safety": "safety/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.safety.json",
+    "integrity": "integrity/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.integrity.json",
+    "meta": "meta/f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19.meta.json"
+  }
+}

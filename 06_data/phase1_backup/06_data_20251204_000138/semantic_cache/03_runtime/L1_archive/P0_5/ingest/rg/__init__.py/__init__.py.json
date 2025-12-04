@@ -1,0 +1,19 @@
+{
+  "hash": "1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "v2",
+  "relative": "__init__.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/__init__.py",
+  "global": {
+    "ast": "ast/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.ast",
+    "ast_meta": "ast/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.ast.meta.json",
+    "embedding": "embeddings/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.embedding",
+    "emb_meta": "embeddings/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.embedding.meta.json",
+    "diff": "diffs/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.diff.json",
+    "golden": "golden/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.golden.json",
+    "safety": "safety/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.safety.json",
+    "integrity": "integrity/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.integrity.json",
+    "meta": "meta/1a504bfca2201ebf680c1bbb858899be4ed230a5c28b21c458d5f35cae62bab5.meta.json"
+  }
+}

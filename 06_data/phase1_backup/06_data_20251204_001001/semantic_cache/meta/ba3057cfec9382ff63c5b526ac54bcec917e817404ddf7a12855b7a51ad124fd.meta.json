@@ -1,0 +1,11 @@
+{
+  "hash": "ba3057cfec9382ff63c5b526ac54bcec917e817404ddf7a12855b7a51ad124fd",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "v7.0",
+      "relative": "Testing/V7.0_REFACTOR_SUMMARY.md"
+    }
+  ]
+}

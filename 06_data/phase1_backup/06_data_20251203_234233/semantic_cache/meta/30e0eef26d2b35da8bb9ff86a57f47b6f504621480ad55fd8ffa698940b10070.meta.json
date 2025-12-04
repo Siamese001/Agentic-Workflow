@@ -1,0 +1,11 @@
+{
+  "hash": "30e0eef26d2b35da8bb9ff86a57f47b6f504621480ad55fd8ffa698940b10070",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Old Resume Gen Python",
+      "relative": "Resume_Generation_MERGED_COMPLETE_v3_0_NO_LIMITS.py"
+    }
+  ]
+}

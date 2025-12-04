@@ -1,0 +1,11 @@
+{
+  "hash": "b3f675cd3f51aaea82b693c6ca85a231e9322b39b647842ee73a5199d848255e",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_9",
+      "relative": "run_batch_v10_9.py"
+    }
+  ]
+}

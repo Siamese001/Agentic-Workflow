@@ -1,0 +1,11 @@
+{
+  "hash": "d368124db602dd3208a81b687fff02469ea4667b4ee1573e403688032a08c596",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_8/orchestration/test_orchestration_state_isolation.py"
+    }
+  ]
+}

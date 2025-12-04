@@ -1,0 +1,11 @@
+{
+  "hash": "84f0b20dba4693fa2ace9f6ad27a5e709bcce5d1c7caf69e70075987d686c429",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l2/triplet_extraction_executor.py"
+    }
+  ]
+}

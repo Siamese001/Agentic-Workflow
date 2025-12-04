@@ -1,0 +1,19 @@
+{
+  "hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "l2/invalidation_executor.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/invalidation_executor.py",
+  "global": {
+    "ast": "ast/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.ast",
+    "ast_meta": "ast/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.ast.meta.json",
+    "embedding": "embeddings/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.embedding",
+    "emb_meta": "embeddings/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.embedding.meta.json",
+    "diff": "diffs/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.diff.json",
+    "golden": "golden/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.golden.json",
+    "safety": "safety/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.safety.json",
+    "integrity": "integrity/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.integrity.json",
+    "meta": "meta/61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d.meta.json"
+  }
+}

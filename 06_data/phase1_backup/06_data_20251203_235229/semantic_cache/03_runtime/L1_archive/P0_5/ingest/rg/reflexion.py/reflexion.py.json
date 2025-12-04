@@ -1,0 +1,19 @@
+{
+  "hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "infra/reasoning/reflexion.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/reflexion.py",
+  "global": {
+    "ast": "ast/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.ast",
+    "ast_meta": "ast/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.ast.meta.json",
+    "embedding": "embeddings/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.embedding",
+    "emb_meta": "embeddings/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.embedding.meta.json",
+    "diff": "diffs/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.diff.json",
+    "golden": "golden/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.golden.json",
+    "safety": "safety/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.safety.json",
+    "integrity": "integrity/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.integrity.json",
+    "meta": "meta/91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d.meta.json"
+  }
+}

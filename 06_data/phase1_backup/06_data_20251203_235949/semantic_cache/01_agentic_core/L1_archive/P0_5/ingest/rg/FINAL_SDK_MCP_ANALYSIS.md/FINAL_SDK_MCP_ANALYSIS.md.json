@@ -1,0 +1,19 @@
+{
+  "hash": "26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "root_docs/testing/FINAL_SDK_MCP_ANALYSIS.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/FINAL_SDK_MCP_ANALYSIS.md",
+  "global": {
+    "ast": "ast/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.ast",
+    "ast_meta": "ast/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.ast.meta.json",
+    "embedding": "embeddings/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.embedding",
+    "emb_meta": "embeddings/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.embedding.meta.json",
+    "diff": "diffs/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.diff.json",
+    "golden": "golden/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.golden.json",
+    "safety": "safety/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.safety.json",
+    "integrity": "integrity/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.integrity.json",
+    "meta": "meta/26f586407b85b376651185d07da5ed531d4e7ed9d653fdd81b2096496a1305d4.meta.json"
+  }
+}

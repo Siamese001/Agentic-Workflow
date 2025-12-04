@@ -1,0 +1,11 @@
+{
+  "hash": "b950bae2af70e2b61490050e5f539eb209bcaec5e1c3c2d721950dabc5ea5945",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/dag/test_agent_assignment_in_dag.py"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "hash": "f2441e08f23a04e91251cd210d30975e354dc1fa05012b295fac4b9c4f16cbaf",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Old Resume Gen Python",
+      "relative": "Resume_Generation_v5_21_LLM_INTEGRATED_PATCHED.py"
+    }
+  ]
+}

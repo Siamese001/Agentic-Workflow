@@ -1,0 +1,11 @@
+{
+  "hash": "dcace8f4ecbbd5132a9b4e2d367063c7a7dfb8f9e8c4f3bb1eaa27c62d59cc5f",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/meta/test_meta_learning_v10_7.py"
+    }
+  ]
+}

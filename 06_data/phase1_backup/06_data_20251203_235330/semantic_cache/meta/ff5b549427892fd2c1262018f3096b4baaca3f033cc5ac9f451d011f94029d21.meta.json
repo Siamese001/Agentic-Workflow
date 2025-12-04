@@ -1,0 +1,11 @@
+{
+  "hash": "ff5b549427892fd2c1262018f3096b4baaca3f033cc5ac9f451d011f94029d21",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "v2",
+      "relative": "enricher_RES_v2.py"
+    }
+  ]
+}

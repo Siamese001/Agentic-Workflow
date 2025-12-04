@@ -1,0 +1,19 @@
+{
+  "hash": "afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "windsurf_rules/07_concurrency_parallelism.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/07_concurrency_parallelism.md",
+  "global": {
+    "ast": "ast/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.ast",
+    "ast_meta": "ast/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.ast.meta.json",
+    "embedding": "embeddings/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.embedding",
+    "emb_meta": "embeddings/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.embedding.meta.json",
+    "diff": "diffs/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.diff.json",
+    "golden": "golden/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.golden.json",
+    "safety": "safety/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.safety.json",
+    "integrity": "integrity/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.integrity.json",
+    "meta": "meta/afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69.meta.json"
+  }
+}

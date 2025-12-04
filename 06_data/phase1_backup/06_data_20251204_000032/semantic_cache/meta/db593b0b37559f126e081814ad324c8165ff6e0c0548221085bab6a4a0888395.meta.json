@@ -1,0 +1,21 @@
+{
+  "hash": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/_deprecated/test_kg_components.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/_deprecated/test_triplet_store_and_entities.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/L4_memory_state/unit/test_triplet_store.py"
+    }
+  ]
+}

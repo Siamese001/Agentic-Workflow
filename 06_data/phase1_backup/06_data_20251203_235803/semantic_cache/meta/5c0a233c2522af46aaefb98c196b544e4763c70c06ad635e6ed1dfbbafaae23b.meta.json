@@ -1,0 +1,11 @@
+{
+  "hash": "5c0a233c2522af46aaefb98c196b544e4763c70c06ad635e6ed1dfbbafaae23b",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/mcp/registry_client.py"
+    }
+  ]
+}

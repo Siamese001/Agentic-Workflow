@@ -1,0 +1,11 @@
+{
+  "hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "agent_orchestration_v10_7.py"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "hash": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/golden_state/models.py"
+    }
+  ]
+}

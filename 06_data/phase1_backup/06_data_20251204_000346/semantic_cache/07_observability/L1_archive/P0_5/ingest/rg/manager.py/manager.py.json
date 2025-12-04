@@ -1,0 +1,19 @@
+{
+  "hash": "7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "l4/manager.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/manager.py",
+  "global": {
+    "ast": "ast/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.ast",
+    "ast_meta": "ast/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.ast.meta.json",
+    "embedding": "embeddings/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.embedding",
+    "emb_meta": "embeddings/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.embedding.meta.json",
+    "diff": "diffs/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.diff.json",
+    "golden": "golden/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.golden.json",
+    "safety": "safety/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.safety.json",
+    "integrity": "integrity/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.integrity.json",
+    "meta": "meta/7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d.meta.json"
+  }
+}

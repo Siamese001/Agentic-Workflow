@@ -1,0 +1,11 @@
+{
+  "hash": "135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/model_routing/test_budget_enforcement.py"
+    }
+  ]
+}

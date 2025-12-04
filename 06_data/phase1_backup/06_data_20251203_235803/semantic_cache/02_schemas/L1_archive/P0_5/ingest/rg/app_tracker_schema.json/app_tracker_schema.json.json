@@ -1,0 +1,19 @@
+{
+  "hash": "9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba",
+  "canonical_root": "02_schemas",
+  "engine": "RG",
+  "archive_name": "v2",
+  "relative": "app_tracker_schema.json",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/app_tracker_schema.json",
+  "global": {
+    "ast": "ast/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.ast",
+    "ast_meta": "ast/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.ast.meta.json",
+    "embedding": "embeddings/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.embedding",
+    "emb_meta": "embeddings/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.embedding.meta.json",
+    "diff": "diffs/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.diff.json",
+    "golden": "golden/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.golden.json",
+    "safety": "safety/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.safety.json",
+    "integrity": "integrity/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.integrity.json",
+    "meta": "meta/9be7a39ee422af22c3762969922a4228f241113067cb708c2e2263486e634dba.meta.json"
+  }
+}

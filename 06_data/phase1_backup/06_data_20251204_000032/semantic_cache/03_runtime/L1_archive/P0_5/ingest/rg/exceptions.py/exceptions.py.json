@@ -1,0 +1,19 @@
+{
+  "hash": "d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "core_v10_7/exceptions.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/exceptions.py",
+  "global": {
+    "ast": "ast/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.ast",
+    "ast_meta": "ast/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.ast.meta.json",
+    "embedding": "embeddings/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.embedding",
+    "emb_meta": "embeddings/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.embedding.meta.json",
+    "diff": "diffs/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.diff.json",
+    "golden": "golden/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.golden.json",
+    "safety": "safety/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.safety.json",
+    "integrity": "integrity/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.integrity.json",
+    "meta": "meta/d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66.meta.json"
+  }
+}

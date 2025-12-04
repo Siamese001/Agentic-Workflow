@@ -1,0 +1,19 @@
+{
+  "hash": "1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb",
+  "canonical_root": "10_tests",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "tests/golden/datasets/golden_job_dataset.json",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/golden_job_dataset.json",
+  "global": {
+    "ast": "ast/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.ast",
+    "ast_meta": "ast/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.ast.meta.json",
+    "embedding": "embeddings/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.embedding",
+    "emb_meta": "embeddings/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.embedding.meta.json",
+    "diff": "diffs/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.diff.json",
+    "golden": "golden/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.golden.json",
+    "safety": "safety/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.safety.json",
+    "integrity": "integrity/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.integrity.json",
+    "meta": "meta/1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb.meta.json"
+  }
+}

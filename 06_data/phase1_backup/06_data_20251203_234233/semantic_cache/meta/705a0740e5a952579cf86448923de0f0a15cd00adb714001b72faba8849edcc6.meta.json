@@ -1,0 +1,11 @@
+{
+  "hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/integration/test_tool_registry.py"
+    }
+  ]
+}

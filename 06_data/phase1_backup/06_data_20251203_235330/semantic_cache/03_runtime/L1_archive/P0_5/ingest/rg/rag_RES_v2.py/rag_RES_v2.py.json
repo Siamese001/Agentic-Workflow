@@ -1,0 +1,19 @@
+{
+  "hash": "e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "v2",
+  "relative": "rag_RES_v2.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/rag_RES_v2.py",
+  "global": {
+    "ast": "ast/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.ast",
+    "ast_meta": "ast/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.ast.meta.json",
+    "embedding": "embeddings/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.embedding",
+    "emb_meta": "embeddings/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.embedding.meta.json",
+    "diff": "diffs/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.diff.json",
+    "golden": "golden/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.golden.json",
+    "safety": "safety/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.safety.json",
+    "integrity": "integrity/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.integrity.json",
+    "meta": "meta/e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43.meta.json"
+  }
+}

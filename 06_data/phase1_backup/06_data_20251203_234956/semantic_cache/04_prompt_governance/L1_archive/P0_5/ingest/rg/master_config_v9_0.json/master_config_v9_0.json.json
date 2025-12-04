@@ -1,0 +1,19 @@
+{
+  "hash": "587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa",
+  "canonical_root": "04_prompt_governance",
+  "engine": "RG",
+  "archive_name": "v9.0",
+  "relative": "master_config_v9_0.json",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/master_config_v9_0.json",
+  "global": {
+    "ast": "ast/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.ast",
+    "ast_meta": "ast/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.ast.meta.json",
+    "embedding": "embeddings/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.embedding",
+    "emb_meta": "embeddings/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.embedding.meta.json",
+    "diff": "diffs/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.diff.json",
+    "golden": "golden/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.golden.json",
+    "safety": "safety/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.safety.json",
+    "integrity": "integrity/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.integrity.json",
+    "meta": "meta/587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa.meta.json"
+  }
+}

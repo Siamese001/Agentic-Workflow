@@ -1,0 +1,19 @@
+{
+  "hash": "08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8",
+  "canonical_root": "09_apps",
+  "engine": "LIC",
+  "archive_name": "Old LIC",
+  "relative": "LIC_2025-09-10_v2.94.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/LIC_2025-09-10_v2.94.md",
+  "global": {
+    "ast": "ast/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.ast",
+    "ast_meta": "ast/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.ast.meta.json",
+    "embedding": "embeddings/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.embedding",
+    "emb_meta": "embeddings/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.embedding.meta.json",
+    "diff": "diffs/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.diff.json",
+    "golden": "golden/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.golden.json",
+    "safety": "safety/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.safety.json",
+    "integrity": "integrity/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.integrity.json",
+    "meta": "meta/08c75e0bca5ad216263c82a1e9ed9b6ac637c615f67f3b1284dd296e4e4a8ed8.meta.json"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "hash": "ecaa790cb830e0265c52d134eea9c05296f454281940886812c513e13792a417",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tools/run_tests_with_coverage.py"
+    }
+  ]
+}

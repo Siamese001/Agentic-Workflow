@@ -1,0 +1,11 @@
+{
+  "hash": "5d008079746451f26977edf18b4f9b92ae524282acee7ce91bf3d4978e56f431",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/_deprecated/test_prompt_compiler.py"
+    }
+  ]
+}

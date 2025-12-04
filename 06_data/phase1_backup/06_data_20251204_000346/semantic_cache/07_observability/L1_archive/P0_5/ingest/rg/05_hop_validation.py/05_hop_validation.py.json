@@ -1,0 +1,19 @@
+{
+  "hash": "fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Microservices Model",
+  "relative": "Archive/05_hop_validation.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/05_hop_validation.py",
+  "global": {
+    "ast": "ast/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.ast",
+    "ast_meta": "ast/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.ast.meta.json",
+    "embedding": "embeddings/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.embedding",
+    "emb_meta": "embeddings/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.embedding.meta.json",
+    "diff": "diffs/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.diff.json",
+    "golden": "golden/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.golden.json",
+    "safety": "safety/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.safety.json",
+    "integrity": "integrity/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.integrity.json",
+    "meta": "meta/fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f.meta.json"
+  }
+}

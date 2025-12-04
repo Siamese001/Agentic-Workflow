@@ -1,0 +1,11 @@
+{
+  "hash": "587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "v9.0",
+      "relative": "master_config_v9_0.json"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "infra/sandbox/microvm.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/microvm.py",
+  "global": {
+    "ast": "ast/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.ast",
+    "ast_meta": "ast/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.ast.meta.json",
+    "embedding": "embeddings/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.embedding",
+    "emb_meta": "embeddings/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.embedding.meta.json",
+    "diff": "diffs/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.diff.json",
+    "golden": "golden/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.golden.json",
+    "safety": "safety/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.safety.json",
+    "integrity": "integrity/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.integrity.json",
+    "meta": "meta/d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55.meta.json"
+  }
+}

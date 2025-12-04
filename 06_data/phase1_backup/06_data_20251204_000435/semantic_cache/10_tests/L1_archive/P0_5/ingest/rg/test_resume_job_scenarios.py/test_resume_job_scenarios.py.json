@@ -1,0 +1,19 @@
+{
+  "hash": "a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496",
+  "canonical_root": "10_tests",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "tests/golden/datasets/test_resume_job_scenarios.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/test_resume_job_scenarios.py",
+  "global": {
+    "ast": "ast/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.ast",
+    "ast_meta": "ast/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.ast.meta.json",
+    "embedding": "embeddings/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.embedding",
+    "emb_meta": "embeddings/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.embedding.meta.json",
+    "diff": "diffs/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.diff.json",
+    "golden": "golden/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.golden.json",
+    "safety": "safety/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.safety.json",
+    "integrity": "integrity/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.integrity.json",
+    "meta": "meta/a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496.meta.json"
+  }
+}

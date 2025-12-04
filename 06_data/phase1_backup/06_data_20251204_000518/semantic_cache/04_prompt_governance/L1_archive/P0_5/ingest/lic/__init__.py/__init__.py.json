@@ -1,0 +1,19 @@
+{
+  "hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
+  "canonical_root": "04_prompt_governance",
+  "engine": "LIC",
+  "archive_name": "Agentic-LIC",
+  "relative": "mcp/__init__.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/__init__.py",
+  "global": {
+    "ast": "ast/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.ast",
+    "ast_meta": "ast/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.ast.meta.json",
+    "embedding": "embeddings/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.embedding",
+    "emb_meta": "embeddings/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.embedding.meta.json",
+    "diff": "diffs/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.diff.json",
+    "golden": "golden/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.golden.json",
+    "safety": "safety/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.safety.json",
+    "integrity": "integrity/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.integrity.json",
+    "meta": "meta/9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187.meta.json"
+  }
+}

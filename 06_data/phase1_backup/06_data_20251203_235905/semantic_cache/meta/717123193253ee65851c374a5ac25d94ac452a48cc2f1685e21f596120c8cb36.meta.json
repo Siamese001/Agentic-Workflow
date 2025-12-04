@@ -1,0 +1,11 @@
+{
+  "hash": "717123193253ee65851c374a5ac25d94ac452a48cc2f1685e21f596120c8cb36",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/rag/content_store.py"
+    }
+  ]
+}

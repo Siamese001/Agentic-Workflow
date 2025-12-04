@@ -1,0 +1,11 @@
+{
+  "hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "intelligence_service_LIC.py"
+    }
+  ]
+}

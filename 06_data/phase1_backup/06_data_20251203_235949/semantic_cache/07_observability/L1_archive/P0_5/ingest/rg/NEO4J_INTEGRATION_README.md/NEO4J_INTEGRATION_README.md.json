@@ -1,0 +1,19 @@
+{
+  "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "root_docs/integration/NEO4J_INTEGRATION_README.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/NEO4J_INTEGRATION_README.md",
+  "global": {
+    "ast": "ast/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.ast",
+    "ast_meta": "ast/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.ast.meta.json",
+    "embedding": "embeddings/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.embedding",
+    "emb_meta": "embeddings/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.embedding.meta.json",
+    "diff": "diffs/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.diff.json",
+    "golden": "golden/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.golden.json",
+    "safety": "safety/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.safety.json",
+    "integrity": "integrity/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.integrity.json",
+    "meta": "meta/48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0.meta.json"
+  }
+}

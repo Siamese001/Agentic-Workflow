@@ -1,0 +1,16 @@
+{
+  "hash": "73f927043366620e409b1de1046d678a42ce74f68d1e2f56f487d25d1e02f1f4",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_9-30-2025 v5.json"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_9-30-2025 v6.json"
+    }
+  ]
+}

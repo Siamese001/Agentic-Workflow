@@ -1,0 +1,81 @@
+{
+  "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/__init__.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/README_new(1).md"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/README_new.md"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "meta/metacognition/__init__.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/context_engine/__init__.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/control_plane/__init__.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/sandbox/__init__.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/golden_state/__init__.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "vendor/langgraph/__init__.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/__init__.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/__init__.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/agents/__init__.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/reasoning/__init__.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/safety/__init__.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "src/lic_agentic/stacks/__init__.py"
+    }
+  ]
+}

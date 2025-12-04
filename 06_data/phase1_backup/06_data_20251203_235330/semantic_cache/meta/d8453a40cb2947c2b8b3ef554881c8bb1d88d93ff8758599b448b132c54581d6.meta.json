@@ -1,0 +1,11 @@
+{
+  "hash": "d8453a40cb2947c2b8b3ef554881c8bb1d88d93ff8758599b448b132c54581d6",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/test_flat__predictive__test_predictive_caching_v10_7.py"
+    }
+  ]
+}

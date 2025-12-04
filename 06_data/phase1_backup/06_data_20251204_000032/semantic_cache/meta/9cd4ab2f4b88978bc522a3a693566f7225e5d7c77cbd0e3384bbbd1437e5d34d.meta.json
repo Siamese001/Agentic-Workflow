@@ -1,0 +1,16 @@
+{
+  "hash": "9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "agentic_design_v10_7.md"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "agentic_design_v10_7.md"
+    }
+  ]
+}

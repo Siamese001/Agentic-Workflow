@@ -1541,6 +1541,7 @@
   ],
   "legacy_folders": [],
   "borderline_folders": [],
+  "empty_folders": [],
   "used_destinations": {
     "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\check.py",
     "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
@@ -1738,6 +1739,7 @@
   "summary": {
     "high_conf_archives": 0,
     "borderline_archives": 0,
+    "empty_archives": 0,
     "file_moves": 192,
     "duplicate_routes": 0,
     "protected_skips": 0

@@ -1,0 +1,11 @@
+{
+  "hash": "df914bc805359dca42648d923018e39018525900db3940c6f8b4324023454ef2",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "vendor/google_generativeai_stub/__init__.py"
+    }
+  ]
+}

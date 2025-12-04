@@ -1,0 +1,11 @@
+{
+  "hash": "e1337143340cfc06836c064a8b668b2e8ffb65610c95726676abff9a0de42e05",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "master_config_v10_7.json"
+    }
+  ]
+}

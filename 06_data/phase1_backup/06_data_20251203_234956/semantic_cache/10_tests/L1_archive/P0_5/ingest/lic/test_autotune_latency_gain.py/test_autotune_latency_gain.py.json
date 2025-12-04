@@ -1,0 +1,19 @@
+{
+  "hash": "048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175",
+  "canonical_root": "10_tests",
+  "engine": "LIC",
+  "archive_name": "Agentic-LIC",
+  "relative": "tests/integration/test_autotune_latency_gain.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/test_autotune_latency_gain.py",
+  "global": {
+    "ast": "ast/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.ast",
+    "ast_meta": "ast/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.ast.meta.json",
+    "embedding": "embeddings/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.embedding",
+    "emb_meta": "embeddings/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.embedding.meta.json",
+    "diff": "diffs/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.diff.json",
+    "golden": "golden/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.golden.json",
+    "safety": "safety/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.safety.json",
+    "integrity": "integrity/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.integrity.json",
+    "meta": "meta/048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175.meta.json"
+  }
+}

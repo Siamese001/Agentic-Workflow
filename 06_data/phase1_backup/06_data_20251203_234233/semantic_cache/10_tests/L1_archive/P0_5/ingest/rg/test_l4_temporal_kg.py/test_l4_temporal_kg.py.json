@@ -1,0 +1,19 @@
+{
+  "hash": "22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281",
+  "canonical_root": "10_tests",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "tests/L4_memory_state/temporal_KG/test_l4_temporal_kg.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/test_l4_temporal_kg.py",
+  "global": {
+    "ast": "ast/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.ast",
+    "ast_meta": "ast/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.ast.meta.json",
+    "embedding": "embeddings/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.embedding",
+    "emb_meta": "embeddings/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.embedding.meta.json",
+    "diff": "diffs/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.diff.json",
+    "golden": "golden/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.golden.json",
+    "safety": "safety/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.safety.json",
+    "integrity": "integrity/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.integrity.json",
+    "meta": "meta/22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281.meta.json"
+  }
+}

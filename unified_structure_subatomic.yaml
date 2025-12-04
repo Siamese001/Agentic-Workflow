@@ -12,7 +12,7 @@ apps:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -51,13 +51,13 @@ apps:
           apply.py: null
           calibrate.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           diagnose.py: null
           inspect.py: null
           log.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           order.py: null
@@ -71,13 +71,13 @@ apps:
           check.py: null
           enforce.py: null
           validate.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         refinement:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -87,7 +87,7 @@ apps:
           format.py: null
           serialize.py: null
           snapshot.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -109,7 +109,7 @@ apps:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -119,7 +119,7 @@ apps:
   L2_execution:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -139,7 +139,7 @@ apps:
           score.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -161,7 +161,7 @@ apps:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -169,7 +169,7 @@ apps:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -191,7 +191,7 @@ apps:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -223,7 +223,7 @@ apps:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -242,7 +242,7 @@ agentic_core:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           build.py: null
@@ -281,7 +281,7 @@ agentic_core:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -289,7 +289,7 @@ agentic_core:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -299,7 +299,7 @@ agentic_core:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -309,7 +309,7 @@ agentic_core:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -327,7 +327,7 @@ agentic_core:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -345,7 +345,7 @@ agentic_core:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -367,7 +367,7 @@ agentic_core:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -375,7 +375,7 @@ agentic_core:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -397,7 +397,7 @@ agentic_core:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -429,7 +429,7 @@ agentic_core:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -448,7 +448,7 @@ config:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -487,7 +487,7 @@ config:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -495,7 +495,7 @@ config:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -505,7 +505,7 @@ config:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -515,7 +515,7 @@ config:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -533,7 +533,7 @@ config:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -551,7 +551,7 @@ config:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -573,7 +573,7 @@ config:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -581,7 +581,7 @@ config:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -603,7 +603,7 @@ config:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -635,7 +635,7 @@ config:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -654,7 +654,7 @@ data:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -693,7 +693,7 @@ data:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -701,7 +701,7 @@ data:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -711,7 +711,7 @@ data:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -721,7 +721,7 @@ data:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -739,7 +739,7 @@ data:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -757,7 +757,7 @@ data:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -779,7 +779,7 @@ data:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -787,7 +787,7 @@ data:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -809,7 +809,7 @@ data:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -841,7 +841,7 @@ data:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -860,7 +860,7 @@ observability:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -899,7 +899,7 @@ observability:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -907,7 +907,7 @@ observability:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -917,7 +917,7 @@ observability:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -927,7 +927,7 @@ observability:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -945,7 +945,7 @@ observability:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -963,7 +963,7 @@ observability:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -985,7 +985,7 @@ observability:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -993,7 +993,7 @@ observability:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -1015,7 +1015,7 @@ observability:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -1047,7 +1047,7 @@ observability:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1066,7 +1066,7 @@ prompt_governance:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -1105,7 +1105,7 @@ prompt_governance:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -1113,7 +1113,7 @@ prompt_governance:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -1123,7 +1123,7 @@ prompt_governance:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -1133,7 +1133,7 @@ prompt_governance:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1151,7 +1151,7 @@ prompt_governance:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1169,7 +1169,7 @@ prompt_governance:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1191,7 +1191,7 @@ prompt_governance:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -1199,7 +1199,7 @@ prompt_governance:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -1221,7 +1221,7 @@ prompt_governance:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -1253,7 +1253,7 @@ prompt_governance:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1272,7 +1272,7 @@ runtime:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -1311,7 +1311,7 @@ runtime:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -1319,7 +1319,7 @@ runtime:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -1329,7 +1329,7 @@ runtime:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -1339,7 +1339,7 @@ runtime:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1357,7 +1357,7 @@ runtime:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1375,7 +1375,7 @@ runtime:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1397,7 +1397,7 @@ runtime:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -1405,7 +1405,7 @@ runtime:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -1427,7 +1427,7 @@ runtime:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -1459,7 +1459,7 @@ runtime:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1478,7 +1478,7 @@ schemas:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -1517,7 +1517,7 @@ schemas:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -1525,7 +1525,7 @@ schemas:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -1535,7 +1535,7 @@ schemas:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -1545,7 +1545,7 @@ schemas:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1563,7 +1563,7 @@ schemas:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1581,7 +1581,7 @@ schemas:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1603,7 +1603,7 @@ schemas:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -1611,7 +1611,7 @@ schemas:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -1633,7 +1633,7 @@ schemas:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -1665,7 +1665,7 @@ schemas:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1684,7 +1684,7 @@ scripts:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -1723,7 +1723,7 @@ scripts:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -1731,7 +1731,7 @@ scripts:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -1741,7 +1741,7 @@ scripts:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -1751,7 +1751,7 @@ scripts:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1769,7 +1769,7 @@ scripts:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1787,7 +1787,7 @@ scripts:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1809,7 +1809,7 @@ scripts:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -1817,7 +1817,7 @@ scripts:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -1839,7 +1839,7 @@ scripts:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -1871,7 +1871,7 @@ scripts:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1890,7 +1890,7 @@ shared:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           build.py: null
@@ -1929,13 +1929,13 @@ shared:
           apply.py: null
           calibrate.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           diagnose.py: null
           inspect.py: null
           log.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           order.py: null
@@ -1949,13 +1949,13 @@ shared:
           check.py: null
           enforce.py: null
           validate.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         refinement:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -1965,7 +1965,7 @@ shared:
           format.py: null
           serialize.py: null
           snapshot.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -1987,7 +1987,7 @@ shared:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -1997,7 +1997,7 @@ shared:
   L2_execution:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -2017,7 +2017,7 @@ shared:
           score.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -2039,7 +2039,7 @@ shared:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -2047,7 +2047,7 @@ shared:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -2069,7 +2069,7 @@ shared:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -2101,7 +2101,7 @@ shared:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -2120,7 +2120,7 @@ tests:
           check.py: null
           enforce.py: null
           validate.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           extract.py: null
@@ -2159,7 +2159,7 @@ tests:
           apply.py: null
           compute.py: null
           normalize.py: null
-      find_problems:
+      detect-anomalies:
         __init__.py: null
         update:
           capture.py: null
@@ -2167,7 +2167,7 @@ tests:
           log.py: null
     P3_aggregate:
       __init__.py: null
-      pick_best_result:
+      select-optimal:
         __init__.py: null
         understand:
           apply.py: null
@@ -2177,7 +2177,7 @@ tests:
           adjust.py: null
           optimize.py: null
           refine.py: null
-      update_state:
+      sync-status:
         __init__.py: null
         update:
           aggregate.py: null
@@ -2187,7 +2187,7 @@ tests:
           format.py: null
           prepare.py: null
           serialize.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -2205,7 +2205,7 @@ tests:
           apply.py: null
           enforce.py: null
           validate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null
@@ -2223,7 +2223,7 @@ tests:
           validate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           execute.py: null
@@ -2245,7 +2245,7 @@ tests:
   L3_orchestration:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           coordinate.py: null
@@ -2253,7 +2253,7 @@ tests:
           orchestrate.py: null
     P3_aggregate:
       __init__.py: null
-      use_tools:
+      execute-actions:
         __init__.py: null
         use:
           call.py: null
@@ -2275,7 +2275,7 @@ tests:
   L4_memory:
     P1_retrieve:
       __init__.py: null
-      get_info:
+      gather-context-inputs:
         __init__.py: null
         understand:
           fetch.py: null
@@ -2307,7 +2307,7 @@ tests:
           assess.py: null
           compute.py: null
           evaluate.py: null
-      manage_costs:
+      control-resources:
         __init__.py: null
         update:
           enforce.py: null

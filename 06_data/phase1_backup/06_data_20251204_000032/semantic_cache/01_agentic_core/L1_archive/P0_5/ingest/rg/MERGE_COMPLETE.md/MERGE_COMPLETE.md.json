@@ -1,0 +1,19 @@
+{
+  "hash": "5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "root_docs/refactoring/11-24-2025/MERGE_COMPLETE.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/MERGE_COMPLETE.md",
+  "global": {
+    "ast": "ast/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.ast",
+    "ast_meta": "ast/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.ast.meta.json",
+    "embedding": "embeddings/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.embedding",
+    "emb_meta": "embeddings/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.embedding.meta.json",
+    "diff": "diffs/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.diff.json",
+    "golden": "golden/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.golden.json",
+    "safety": "safety/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.safety.json",
+    "integrity": "integrity/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.integrity.json",
+    "meta": "meta/5448d661ed9406df3477cbc912e54cf02983a86e04b0ea5cd6ea62b19388fa23.meta.json"
+  }
+}

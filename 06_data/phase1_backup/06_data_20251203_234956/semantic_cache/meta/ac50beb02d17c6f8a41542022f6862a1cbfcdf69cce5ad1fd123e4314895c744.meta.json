@@ -1,0 +1,11 @@
+{
+  "hash": "ac50beb02d17c6f8a41542022f6862a1cbfcdf69cce5ad1fd123e4314895c744",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "strategy_ensemble_v10_7.py"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "hash": "6d87f9f2e65d584f9cdf422c6eb0437196496edfb359a1c6c1a7181e9bc83cf2",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_v7.4_diff_manifest.json"
+    }
+  ]
+}

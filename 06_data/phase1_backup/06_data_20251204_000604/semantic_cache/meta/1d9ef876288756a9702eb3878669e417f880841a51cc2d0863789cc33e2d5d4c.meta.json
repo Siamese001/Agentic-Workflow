@@ -1,0 +1,11 @@
+{
+  "hash": "1d9ef876288756a9702eb3878669e417f880841a51cc2d0863789cc33e2d5d4c",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/test_flat__simulations__test_rag_sim.py"
+    }
+  ]
+}

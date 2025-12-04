@@ -1,0 +1,19 @@
+{
+  "hash": "95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463",
+  "canonical_root": "01_agentic_core",
+  "engine": "RG",
+  "archive_name": "Microservices Model",
+  "relative": "workflow_spec.json",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/workflow_spec.json",
+  "global": {
+    "ast": "ast/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.ast",
+    "ast_meta": "ast/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.ast.meta.json",
+    "embedding": "embeddings/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.embedding",
+    "emb_meta": "embeddings/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.embedding.meta.json",
+    "diff": "diffs/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.diff.json",
+    "golden": "golden/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.golden.json",
+    "safety": "safety/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.safety.json",
+    "integrity": "integrity/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.integrity.json",
+    "meta": "meta/95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463.meta.json"
+  }
+}

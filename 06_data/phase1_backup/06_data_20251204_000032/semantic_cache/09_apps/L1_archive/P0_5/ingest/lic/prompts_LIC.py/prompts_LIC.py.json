@@ -1,0 +1,19 @@
+{
+  "hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
+  "canonical_root": "09_apps",
+  "engine": "LIC",
+  "archive_name": "deprecated in v13",
+  "relative": "prompts_LIC.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/prompts_LIC.py",
+  "global": {
+    "ast": "ast/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.ast",
+    "ast_meta": "ast/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.ast.meta.json",
+    "embedding": "embeddings/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.embedding",
+    "emb_meta": "embeddings/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.embedding.meta.json",
+    "diff": "diffs/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.diff.json",
+    "golden": "golden/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.golden.json",
+    "safety": "safety/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.safety.json",
+    "integrity": "integrity/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.integrity.json",
+    "meta": "meta/c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0.meta.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "vendor/langgraph/graph.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/graph.py",
+  "global": {
+    "ast": "ast/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.ast",
+    "ast_meta": "ast/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.ast.meta.json",
+    "embedding": "embeddings/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.embedding",
+    "emb_meta": "embeddings/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.embedding.meta.json",
+    "diff": "diffs/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.diff.json",
+    "golden": "golden/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.golden.json",
+    "safety": "safety/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.safety.json",
+    "integrity": "integrity/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.integrity.json",
+    "meta": "meta/24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c.meta.json"
+  }
+}

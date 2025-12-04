@@ -1,0 +1,11 @@
+{
+  "hash": "56bb68d025efd5526f48fbec23831cb8b91768d8f53ce75f5bb82d151beb2ee6",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Old Resume Gen Python",
+      "relative": "Resume_Generation_v4_5_2_with_K11_Skills.py"
+    }
+  ]
+}

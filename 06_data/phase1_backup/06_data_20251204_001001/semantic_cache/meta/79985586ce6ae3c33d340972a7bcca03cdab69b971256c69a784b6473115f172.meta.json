@@ -1,0 +1,11 @@
+{
+  "hash": "79985586ce6ae3c33d340972a7bcca03cdab69b971256c69a784b6473115f172",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/world_model/test_world_model_store_v10_7.py"
+    }
+  ]
+}

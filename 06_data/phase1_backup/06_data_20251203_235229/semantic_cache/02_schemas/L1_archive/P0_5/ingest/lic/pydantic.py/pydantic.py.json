@@ -1,0 +1,19 @@
+{
+  "hash": "9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce",
+  "canonical_root": "02_schemas",
+  "engine": "LIC",
+  "archive_name": "Agentic-LIC",
+  "relative": "pydantic.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/pydantic.py",
+  "global": {
+    "ast": "ast/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.ast",
+    "ast_meta": "ast/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.ast.meta.json",
+    "embedding": "embeddings/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.embedding",
+    "emb_meta": "embeddings/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.embedding.meta.json",
+    "diff": "diffs/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.diff.json",
+    "golden": "golden/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.golden.json",
+    "safety": "safety/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.safety.json",
+    "integrity": "integrity/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.integrity.json",
+    "meta": "meta/9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce.meta.json"
+  }
+}

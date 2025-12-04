@@ -1,0 +1,19 @@
+{
+  "hash": "5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "core_v10_7/resilience.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/resilience.py",
+  "global": {
+    "ast": "ast/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.ast",
+    "ast_meta": "ast/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.ast.meta.json",
+    "embedding": "embeddings/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.embedding",
+    "emb_meta": "embeddings/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.embedding.meta.json",
+    "diff": "diffs/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.diff.json",
+    "golden": "golden/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.golden.json",
+    "safety": "safety/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.safety.json",
+    "integrity": "integrity/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.integrity.json",
+    "meta": "meta/5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3.meta.json"
+  }
+}

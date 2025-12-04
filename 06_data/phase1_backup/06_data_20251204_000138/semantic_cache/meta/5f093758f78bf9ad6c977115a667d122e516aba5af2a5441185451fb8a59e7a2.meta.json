@@ -1,0 +1,11 @@
+{
+  "hash": "5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Microservices Model",
+      "relative": "Archive/04_hop_staging.py"
+    }
+  ]
+}

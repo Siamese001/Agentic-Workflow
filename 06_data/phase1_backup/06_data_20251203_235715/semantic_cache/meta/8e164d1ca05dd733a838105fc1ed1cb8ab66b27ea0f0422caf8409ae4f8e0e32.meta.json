@@ -1,0 +1,11 @@
+{
+  "hash": "8e164d1ca05dd733a838105fc1ed1cb8ab66b27ea0f0422caf8409ae4f8e0e32",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/test_flat__validation__test_semantic_and_qa_validation_v10_7.py"
+    }
+  ]
+}

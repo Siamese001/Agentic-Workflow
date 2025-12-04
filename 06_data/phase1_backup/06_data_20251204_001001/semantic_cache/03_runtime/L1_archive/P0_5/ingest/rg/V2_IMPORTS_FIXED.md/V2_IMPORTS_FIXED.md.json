@@ -1,0 +1,19 @@
+{
+  "hash": "d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "v2",
+  "relative": "V2_IMPORTS_FIXED.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/V2_IMPORTS_FIXED.md",
+  "global": {
+    "ast": "ast/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.ast",
+    "ast_meta": "ast/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.ast.meta.json",
+    "embedding": "embeddings/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.embedding",
+    "emb_meta": "embeddings/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.embedding.meta.json",
+    "diff": "diffs/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.diff.json",
+    "golden": "golden/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.golden.json",
+    "safety": "safety/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.safety.json",
+    "integrity": "integrity/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.integrity.json",
+    "meta": "meta/d42a46241b52913671effebce43ac13754cd3a593968d82de707da130d6ef414.meta.json"
+  }
+}

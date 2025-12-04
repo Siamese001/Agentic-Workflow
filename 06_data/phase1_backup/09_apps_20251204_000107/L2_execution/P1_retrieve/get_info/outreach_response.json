@@ -1,0 +1,361 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Outreach Generation Response",
+  "description": "Schema for outreach message generation responses",
+  "type": "object",
+  "required": [
+    "success",
+    "outreach_content",
+    "metadata",
+    "generated_at"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Whether the outreach generation was successful"
+    },
+    "outreach_content": {
+      "type": "object",
+      "description": "Generated outreach message content",
+      "required": [
+        "subject",
+        "body",
+        "call_to_action"
+      ],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "Subject line of the outreach message",
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "body": {
+          "type": "string",
+          "description": "Main body content of the outreach message",
+          "minLength": 50,
+          "maxLength": 2000
+        },
+        "call_to_action": {
+          "type": "string",
+          "description": "Call to action for the recipient",
+          "minLength": 10,
+          "maxLength": 300
+        },
+        "personalization_notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100
+          },
+          "description": "Notes on how the message was personalized"
+        },
+        "tone_indicators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["formal", "professional", "casual", "friendly", "enthusiastic", "urgent"]
+          },
+          "description": "Tone indicators used in the message"
+        },
+        "key_points": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 150
+          },
+          "description": "Key points covered in the message"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata about the generated outreach",
+      "required": [
+        "word_count",
+        "character_count",
+        "personalization_score",
+        "engagement_score"
+      ],
+      "properties": {
+        "word_count": {
+          "type": "integer",
+          "minimum": 20,
+          "maximum": 500,
+          "description": "Total word count of the message"
+        },
+        "character_count": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 3000,
+          "description": "Total character count of the message"
+        },
+        "personalization_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Score indicating level of personalization (0-1)"
+        },
+        "engagement_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Predicted engagement score (0-1)"
+        },
+        "professionalism_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Professionalism score (0-1)"
+        },
+        "clarity_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Message clarity score (0-1)"
+        },
+        "compliance_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Compliance with best practices score (0-1)"
+        },
+        "readability_level": {
+          "type": "string",
+          "description": "Readability level of the message",
+          "enum": ["very_easy", "easy", "standard", "difficult", "very_difficult"]
+        },
+        "sentiment": {
+          "type": "object",
+          "description": "Sentiment analysis of the message",
+          "properties": {
+            "overall": {
+              "type": "string",
+              "enum": ["positive", "neutral", "negative"]
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Confidence score for sentiment analysis"
+            }
+          }
+        },
+        "language_indicators": {
+          "type": "object",
+          "description": "Language and style indicators",
+          "properties": {
+            "formality_level": {
+              "type": "string",
+              "enum": ["very_formal", "formal", "semi_formal", "informal", "very_informal"]
+            },
+            "complexity_level": {
+              "type": "string",
+              "enum": ["simple", "moderate", "complex", "very_complex"]
+            },
+            "action_orientation": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "How action-oriented the message is (0-1)"
+            }
+          }
+        },
+        "optimization_suggestions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": ["subject", "body", "call_to_action", "tone", "length", "personalization"]
+              },
+              "suggestion": {
+                "type": "string",
+                "minLength": 10,
+                "maxLength": 200
+              },
+              "priority": {
+                "type": "string",
+                "enum": ["low", "medium", "high"]
+              }
+            }
+          },
+          "description": "Suggestions for improving the message"
+        }
+      }
+    },
+    "processing_time": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Time taken to generate the outreach message (in seconds)"
+    },
+    "quality_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Overall quality score of the generated message (0-1)"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the outreach was generated"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Task ID for async processing (if applicable)",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the generation process",
+      "enum": ["completed", "processing", "queued", "failed"]
+    },
+    "error": {
+      "type": "object",
+      "description": "Error information if generation failed",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Error code"
+        },
+        "message": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "details": {
+          "type": "object",
+          "description": "Additional error details"
+        }
+      }
+    },
+    "alternatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "Alternative subject line"
+          },
+          "body": {
+            "type": "string",
+            "description": "Alternative body content"
+          },
+          "call_to_action": {
+            "type": "string",
+            "description": "Alternative call to action"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Quality score for this alternative"
+          },
+          "difference": {
+            "type": "string",
+            "description": "How this alternative differs from the primary"
+          }
+        }
+      },
+      "description": "Alternative message options generated"
+    },
+    "analytics": {
+      "type": "object",
+      "description": "Analytics and predictions for the message",
+      "properties": {
+        "predicted_response_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Predicted response rate (0-1)"
+        },
+        "predicted_engagement_time": {
+          "type": "string",
+          "description": "Predicted time to engagement"
+        },
+        "spam_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of being marked as spam (0-1)"
+        },
+        "delivery_optimization": {
+          "type": "object",
+          "properties": {
+            "best_send_time": {
+              "type": "string",
+              "description": "Recommended time to send"
+            },
+            "timezone_considerations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Timezone considerations"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "success": true,
+    "outreach_content": {
+      "subject": "Collaboration Opportunity: Product Development Innovation",
+      "body": "Hi Sarah,\n\nI hope this message finds you well. I came across your profile and was impressed by your work as Senior Product Manager at TechCorp Solutions, particularly your experience in agile methodologies and user research.\n\nAs a software engineer at InnovateTech specializing in full-stack development and cloud architecture, I believe there could be valuable synergy between our teams. I've been following TechCorp's recent product launches and admire the user-centric approach you've championed.\n\nI'd love to share some insights about how we could potentially enhance your product development process through innovative technical solutions.",
+      "call_to_action": "Would you be open to a brief 15-minute call next week to discuss potential collaboration opportunities?",
+      "personalization_notes": [
+        "Mentioned recipient's role and company",
+        "Referenced specific skills and achievements",
+        "Highlighted mutual professional interests"
+      ],
+      "tone_indicators": ["professional", "friendly"],
+      "key_points": [
+        "Acknowledged recipient's expertise",
+        "Established relevant connection",
+        "Proposed clear value proposition"
+      ]
+    },
+    "metadata": {
+      "word_count": 85,
+      "character_count": 620,
+      "personalization_score": 0.85,
+      "engagement_score": 0.78,
+      "professionalism_score": 0.92,
+      "clarity_score": 0.88,
+      "compliance_score": 0.95,
+      "readability_level": "standard",
+      "sentiment": {
+        "overall": "positive",
+        "confidence": 0.87
+      },
+      "language_indicators": {
+        "formality_level": "semi_formal",
+        "complexity_level": "moderate",
+        "action_orientation": 0.75
+      },
+      "optimization_suggestions": [
+        {
+          "category": "subject",
+          "suggestion": "Consider adding a question to increase open rates",
+          "priority": "medium"
+        }
+      ]
+    },
+    "processing_time": 2.3,
+    "quality_score": 0.87,
+    "generated_at": "2023-12-01T14:30:00Z",
+    "analytics": {
+      "predicted_response_rate": 0.35,
+      "predicted_engagement_time": "2-3 days",
+      "spam_probability": 0.05,
+      "delivery_optimization": {
+        "best_send_time": "Tuesday 10:00 AM recipient timezone",
+        "timezone_considerations": ["PST", "EST"]
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "hash": "9acd3fdeb03a402785536fe635b34166a3812eb2006725b8a7e2940cdd89ed8c",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/test_flat__meta__test_advanced_meta.py"
+    }
+  ]
+}

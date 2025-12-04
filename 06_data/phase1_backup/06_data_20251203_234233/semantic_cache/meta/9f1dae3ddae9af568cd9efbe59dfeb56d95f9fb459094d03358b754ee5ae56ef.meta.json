@@ -1,0 +1,11 @@
+{
+  "hash": "9f1dae3ddae9af568cd9efbe59dfeb56d95f9fb459094d03358b754ee5ae56ef",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "vendor/chromadb_stub/__init__.py"
+    }
+  ]
+}

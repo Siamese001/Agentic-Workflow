@@ -1,0 +1,19 @@
+{
+  "hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+  "canonical_root": "04_prompt_governance",
+  "engine": "RG",
+  "archive_name": "v2",
+  "relative": "gemini_service.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/gemini_service.py",
+  "global": {
+    "ast": "ast/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.ast",
+    "ast_meta": "ast/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.ast.meta.json",
+    "embedding": "embeddings/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.embedding",
+    "emb_meta": "embeddings/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.embedding.meta.json",
+    "diff": "diffs/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.diff.json",
+    "golden": "golden/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.golden.json",
+    "safety": "safety/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.safety.json",
+    "integrity": "integrity/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.integrity.json",
+    "meta": "meta/51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a.meta.json"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "hash": "166cd9ca9486211e47a40a291e44a7f885453e0346fcf90f6e1c438f1e887e75",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "dag_spec.py"
+    }
+  ]
+}

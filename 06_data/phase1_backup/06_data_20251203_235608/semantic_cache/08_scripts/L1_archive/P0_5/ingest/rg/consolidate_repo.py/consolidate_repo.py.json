@@ -1,0 +1,19 @@
+{
+  "hash": "8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c",
+  "canonical_root": "08_scripts",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_7_main",
+  "relative": "tools/consolidate_repo.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/consolidate_repo.py",
+  "global": {
+    "ast": "ast/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.ast",
+    "ast_meta": "ast/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.ast.meta.json",
+    "embedding": "embeddings/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.embedding",
+    "emb_meta": "embeddings/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.embedding.meta.json",
+    "diff": "diffs/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.diff.json",
+    "golden": "golden/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.golden.json",
+    "safety": "safety/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.safety.json",
+    "integrity": "integrity/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.integrity.json",
+    "meta": "meta/8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c.meta.json"
+  }
+}

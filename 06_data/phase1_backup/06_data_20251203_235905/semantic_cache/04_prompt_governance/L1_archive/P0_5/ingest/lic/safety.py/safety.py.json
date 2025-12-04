@@ -1,0 +1,19 @@
+{
+  "hash": "5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb",
+  "canonical_root": "04_prompt_governance",
+  "engine": "LIC",
+  "archive_name": "Agentic-LIC",
+  "relative": "stacks_v10_7/safety.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/lic/safety.py",
+  "global": {
+    "ast": "ast/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.ast",
+    "ast_meta": "ast/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.ast.meta.json",
+    "embedding": "embeddings/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.embedding",
+    "emb_meta": "embeddings/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.embedding.meta.json",
+    "diff": "diffs/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.diff.json",
+    "golden": "golden/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.golden.json",
+    "safety": "safety/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.safety.json",
+    "integrity": "integrity/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.integrity.json",
+    "meta": "meta/5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb.meta.json"
+  }
+}

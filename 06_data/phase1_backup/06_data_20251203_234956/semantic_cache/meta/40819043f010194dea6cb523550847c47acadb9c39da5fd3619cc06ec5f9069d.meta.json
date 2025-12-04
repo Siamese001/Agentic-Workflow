@@ -1,0 +1,16 @@
+{
+  "hash": "40819043f010194dea6cb523550847c47acadb9c39da5fd3619cc06ec5f9069d",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/refactoring/11-24-2025/README_PROJECT_OVERVIEW.md"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_9",
+      "relative": "README/README.md"
+    }
+  ]
+}

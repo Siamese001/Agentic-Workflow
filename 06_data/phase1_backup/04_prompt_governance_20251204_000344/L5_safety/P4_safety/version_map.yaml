@@ -1,0 +1,245 @@
+# Safety Violations Dashboard Configuration v1.0
+# Grafana-style dashboard for safety monitoring and violation tracking
+
+dashboard:
+  version: "1.0"
+  title: "Agentic Workflow - Safety Violations"
+  description: "Safety system monitoring, violation tracking, and compliance metrics"
+  
+  # Dashboard metadata
+  metadata:
+    tags: ["agentic", "safety", "violations", "compliance"]
+    refresh_interval: "30s"
+    time_range: "last_24h"
+    
+  # Dashboard panels
+  panels:
+    # Safety Overview
+    - title: "Safety Status"
+      type: "stat"
+      grid_pos: {"x": 0, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "safety_system_status"
+          legend_format: "Status"
+      field_config:
+        defaults:
+          mappings:
+            - options:
+                0: {text: "Critical", color: "red"}
+                1: {text: "Warning", color: "yellow"}
+                2: {text: "Healthy", color: "green"}
+          
+    - title: "Total Violations (24h)"
+      type: "stat"
+      grid_pos: {"x": 8, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "sum(increase(safety_violations_total[24h]))"
+          legend_format: "Violations"
+      field_config:
+        defaults:
+          unit: "short"
+          thresholds:
+            steps:
+              - color: "green"
+                value: 0
+              - color: "yellow"
+                value: 5
+              - color: "red"
+                value: 20
+        
+    - title: "Safety Score"
+      type: "stat"
+      grid_pos: {"x": 16, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "safety_compliance_score"
+          legend_format: "Score (%)"
+      field_config:
+        defaults:
+          unit: "percent"
+          max: 100
+          thresholds:
+            steps:
+              - color: "red"
+                value: 0
+              - color: "yellow"
+                value: 80
+              - color: "green"
+                value: 95
+
+    # Violation Analysis
+    - title: "Violations by Severity"
+      type: "piechart"
+      grid_pos: {"x": 0, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (severity) (increase(safety_violations_total[24h]))"
+          legend_format: "{{severity}}"
+          
+    - title: "Violation Rate Trend"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(rate(safety_violations_total[5m]))"
+          legend_format: "Violation Rate"
+      y_axes:
+        - unit: "violations/sec"
+
+    # Violation Categories
+    - title: "Violations by Category"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (category) (increase(safety_violations_total[24h]))"
+          legend_format: "{{category}}"
+      y_axes:
+        - unit: "short"
+        
+    - title: "Top Violation Types"
+      type: "table"
+      grid_pos: {"x": 12, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "topk(10, sum by (violation_type) (increase(safety_violations_total[24h])))"
+          format: "table"
+          transformations:
+            - type: "organize"
+              options:
+                excludeByName: {"Time": true}
+                indexByName: {}
+                renameByName:
+                  Value: "Count (24h)"
+                  violation_type: "Violation Type"
+
+    # Safety Checks
+    - title: "Safety Check Success Rate"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (check_type) (rate(safety_checks_total{status=\"success\"}[5m])) / sum by (check_type) (rate(safety_checks_total[5m])) * 100"
+          legend_format: "{{check_type}}"
+      y_axes:
+        - unit: "percent"
+        
+    - title: "Blocked Operations Rate"
+      type: "stat"
+      grid_pos: {"x": 12, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(rate(safety_blocks_total[5m])) / sum(rate(safety_checks_total[5m])) * 100"
+          legend_format: "Blocked (%)"
+      field_config:
+        defaults:
+          unit: "percent"
+          thresholds:
+            steps:
+              - color: "green"
+                value: 0
+              - color: "yellow"
+                value: 5
+              - color: "red"
+                value: 15
+
+    # Layer Safety
+    - title: "Violations by Layer"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (layer) (increase(safety_violations_total[24h]))"
+          legend_format: "{{layer}}"
+      y_axes:
+        - unit: "short"
+        
+    - title: "Layer Safety Scores"
+      type: "heatmap"
+      grid_pos: {"x": 12, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "safety_layer_score"
+          legend_format: "{{layer}}"
+
+    # Response Times
+    - title: "Safety Check Response Time"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 40, "w": 12, "h": 8}
+      targets:
+        - expr: "histogram_quantile(0.95, sum by (le, check_type) (rate(safety_check_duration_seconds_bucket[5m])))"
+          legend_format: "{{check_type}}"
+      y_axes:
+        - unit: "seconds"
+        
+    - title: "Critical Violations Timeline"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 40, "w": 12, "h": 8}
+      targets:
+        - expr: "increase(safety_violations_total{severity=\"critical\"}[1h])"
+          legend_format: "Critical Violations"
+      y_axes:
+        - unit: "short"
+
+  # Dashboard variables
+  variables:
+    - name: "severity"
+      type: "query"
+      query: "label_values(safety_violations_total, severity)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "category"
+      type: "query"
+      query: "label_values(safety_violations_total, category)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "layer"
+      type: "query"
+      query: "label_values(safety_violations_total, layer)"
+      include_all: true
+      all_value: ".*"
+
+  # Annotations
+  annotations:
+    - name: "Safety Incidents"
+      datasource: "prometheus"
+      expr: "safety_incident"
+      icon_color: "red"
+      
+    - name: "Safety System Changes"
+      datasource: "prometheus"
+      expr: "safety_config_changed"
+      icon_color: "blue"
+
+  # Dashboard links
+  links:
+    - title: "Safety Policies"
+      url: "/policies/safety"
+      
+    - title: "Violation Details"
+      url: "/violations"
+      
+    - title: "Safety Configuration"
+      url: "/config/safety"
+
+  # Alert thresholds
+  alert_thresholds:
+    violation_rate:
+      warning: 0.1  # violations per second
+      critical: 0.5  # violations per second
+      
+    blocked_operations_rate:
+      warning: 5.0  # percent
+      critical: 15.0  # percent
+      
+    safety_score:
+      warning: 80.0  # percent
+      critical: 70.0  # percent
+      
+    critical_violations:
+      warning: 5  # per day
+      critical: 20  # per day
+
+  # Time settings
+  time:
+    from: "now-24h"
+    to: "now"
+    
+  # Refresh settings
+  refresh: "30s"
+  
+  # Schema version
+  schema_version: 37

@@ -1,0 +1,11 @@
+{
+  "hash": "4c89cab294975bf0fe7e57c1ef33be84675f831844b5b9d6c31a40adbd0295c6",
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "tests/v10_7/test_flat__auto_tuning__test_auto_tuning_v10_7.py"
+    }
+  ]
+}
