@@ -17,6 +17,8 @@ global:
   enforce_dict_for_directories: true
   enforce_null_for_files: true
   no_duplicate_keys: true
+  cognitive_domains: ["agentic_core", "apps_lic", "apps_rg"]
+  non_cognitive_domains: ["schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "shared", "tests"]
 
 domains:
   cognitive: ["agentic_core", "apps_lic", "apps_rg"]
@@ -25,11 +27,11 @@ domains:
 
 naming_conventions:
   filename_prefixes:
-    agentic_core: "shared_*"
+    agentic_core: null      # no enforced prefix
     apps_lic: "lic_*"
     apps_rg: "rg_*"
     shared_engine_ops: "shared_*"
-  forbidden_patterns:
+  directory_prefix_exemptions:
     - "L*"
     - "P*"
   engine_prefix_rules:
@@ -44,14 +46,24 @@ engine_namespaces:
     allowed_domains: ["apps_lic"]
     prefix: "lic_"
   shared:
-    allowed_domains: ["agentic_core", "shared_engine_ops"]
+    allowed_domains:
+      - shared_engine_ops
+      - schemas
+      - runtime
+      - prompt_governance
+      - config
+      - data
+      - observability
+      - scripts
+      - shared
+      - tests
     prefix: "shared_"
 
 hierarchy:
   shared_engine_ops:
     mode: "library_support"
-    structure_type: "flat"
-    max_depth: 3
+    structure_type: "hierarchical"
+    max_depth: 4
     description: "Foundational library containing reusable cognitive, inspection, and operational logic"
   agentic_core:
     mode: "cognitive_engine"
@@ -77,55 +89,297 @@ hierarchy:
   schemas:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   runtime:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   prompt_governance:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   config:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   data:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   observability:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   scripts:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   shared:
     mode: "operational_support"
     structure_type: "hierarchical"
-    max_depth: 4
+    max_depth: 7
     forbidden: ["L*", "P*"]
   tests:
     mode: "test_taxonomy"
-    structure_type: "flat"
-    max_depth: 3
+    structure_type: "hierarchical"
+    max_depth: 7
     forbidden: ["L*", "P*"]
     allowed_structure:
-      unit: ["agentic_core", "apps_lic", "apps_rg", "runtime", "data", "schemas", "prompt_governance", "config", "observability", "scripts"]
-      integration: ["core_plus_runtime", "lic_plus_data", "rg_plus_data", "full_pipeline"]
-      e2e: ["outreach_flows", "resume_flows", "admin_flows"]
-      golden: ["prompts", "semantics", "safety"]
-      perf: ["latency", "throughput", "cost"]
-      load: ["spike", "soak"]
+      unit:
+        agentic_core:
+          L1_cognition:
+            P1_retrieve:
+              understand_request:
+                parse_registry_intent: []
+                retrieve_core_context: []
+            P2_inspect:
+              diagnostics_ops:
+                inspect_core_state: []
+                validate_constraints: []
+            P3_aggregate:
+              pick_best_result:
+                rank_core_components: []
+            P4_safety:
+              safety_ops:
+                enforce_safety_filters: []
+          L2_execution:
+            P1_retrieve:
+              load_execution_context:
+                validate_execution_inputs: []
+            P2_inspect:
+              check_structure:
+                validate_execution_schema: []
+            P3_aggregate:
+              assemble_action_sequence:
+                merge_execution_steps: []
+            P4_safety:
+              enforce_execution_policies:
+                enforce_runtime_limits: []
+          L3_orchestration:
+            P1_retrieve:
+              get_orchestration_status:
+                gather_agent_signals: []
+            P2_inspect:
+              inspect_routes:
+                route_diagnostics: []
+            P3_aggregate:
+              select_route:
+                orchestration_policy: []
+            P4_safety:
+              orchestration_safety:
+                enforce_workflow_safety: []
+          L4_memory:
+            P1_retrieve:
+              retrieve_memory:
+                load_memory_snapshot: []
+            P2_inspect:
+              inspect_memory:
+                detect_memory_anomalies: []
+            P3_aggregate:
+              update_memory_state:
+                merge_memory_segments: []
+            P4_safety:
+              memory_safety:
+                enforce_memory_policy: []
+          L5_safety:
+            P4_safety:
+              global_safety_policy:
+                evaluate_system_risk: []
+                enforce_global_constraints: []
+
+        apps_lic:
+          L1_cognition:
+            P1_retrieve:
+              personalization_query:
+                parse_outreach_target: []
+            P2_inspect:
+              message_quality:
+                tone_validation: []
+            P3_aggregate:
+              pick_message:
+                refine_message_ranking: []
+            P4_safety:
+              outreach_safety:
+                validate_ethical_standards: []
+          L2_execution:
+            P3_aggregate:
+              message_generation:
+                create_message_body: []
+
+        apps_rg:
+          L1_cognition:
+            P1_retrieve:
+              skill_query:
+                extract_resume_requirements: []
+            P2_inspect:
+              resume_quality:
+                writing_quality_checks: []
+            P3_aggregate:
+              pick_resume_content:
+                refine_resume_ranking: []
+            P4_safety:
+              resume_safety:
+                filter_inappropriate_content: []
+          L2_execution:
+            P3_aggregate:
+              generation_pipeline:
+                generate_summary_section: []
+
+        runtime:
+          orchestration_flows:
+            async_runners:
+              dispatch_ops:
+                handle_async_exceptions: []
+
+        data:
+          pipelines:
+            embedding_ops:
+              vectorization:
+                normalize_vectors: []
+
+        schemas:
+          validation:
+            schema_integrity:
+              deep_structure_rules:
+                enforce_schema_contracts: []
+
+        prompt_governance:
+          policy_flows:
+            injection_protection:
+              global_prompt_safety:
+                detect_prompt_violations: []
+
+        config:
+          registry:
+            schema_parsing:
+              load_registry_yaml:
+                resolve_overrides: []
+
+        observability:
+          metrics:
+            counters:
+              compute_runtime_metrics:
+                aggregation_pipeline: []
+
+        scripts:
+          cli:
+            commands:
+              admin_tools:
+                execute_admin_command: []
+
+      integration:
+        agentic_core_chains:
+          L1_to_L2:
+            cognition_to_execution:
+              request_to_action:
+                simulate_agent_plan: []
+          L2_to_L3:
+            execution_to_orchestration:
+              step_coordination:
+                validate_transition_handshake: []
+          L3_to_L4:
+            orchestration_to_memory:
+              state_persistence:
+                commit_memory_frame: []
+          L4_to_L5:
+            memory_to_safety:
+              risk_fusion:
+                compute_safety_threshold: []
+
+        lic_plus_data:
+          outreach_workflow:
+            profile_enrichment:
+              embedding_similarity:
+                compute_recipient_match: []
+
+        rg_plus_data:
+          resume_workflow:
+            job_alignment:
+              scoring_ops:
+                compute_fit_score: []
+
+        full_pipeline:
+          end_to_end:
+            agentic_flow:
+              multi_phase_execution:
+                safety_gate: []
+
+      e2e:
+        outreach_flows:
+          personalization_sequence:
+            multi_hop_context:
+              final_message_generation:
+                safety_validation: []
+        resume_flows:
+          job_ingest_sequence:
+            semantic_scoring:
+              resume_synthesis:
+                compliance_verification: []
+        admin_flows:
+          system_diagnostics:
+            health_check:
+              remediation_pipeline:
+                verify_state_repair: []
+
+      golden:
+        prompts:
+          canonical_sets:
+            system_prompts:
+              safety_rules:
+                enforce_prompt_invariants: []
+
+        semantics:
+          meaning_equivalence:
+            embedding_invariance:
+              stability_window:
+                tolerance_tests: []
+
+        safety:
+          harmful_content:
+            boundary_cases:
+              red_team_prompts:
+                bypass_attempts: []
+
+      perf:
+        latency:
+          cold_start:
+            warm_start:
+              sustained_throughput:
+                batch_dispatch: []
+        throughput:
+          tokens_per_second:
+            concurrency_branches:
+              peak_load:
+                scaling_behavior: []
+        cost:
+          token_budget:
+            memory_ops:
+              routing_ops:
+                dynamic_cost_bounds: []
+
+      load:
+        spike:
+          1s_peak:
+            recovery:
+              resilience_window:
+                thermal_stability: []
+        soak:
+          24h_run:
+            drift_monitoring:
+              long_horizon_behavior:
+                degradation_thresholds: []
+
+enforcement:
+  require_all_layers: false
+  require_all_phases: false
+  allow_sparse_structures: true
 
 # =================================================================
 # SHARED ENGINE OPERATIONS (Library)
