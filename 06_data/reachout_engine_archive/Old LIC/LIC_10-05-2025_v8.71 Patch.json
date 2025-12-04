@@ -1,0 +1,142 @@
+{
+  "INSTRUCTIONS_FOR_LLM": {
+    "NOTE": "This is a consolidated patch file. It includes the strategic overhaul from P870 plus all subsequent configuration changes (word counts, terminology) from our discussion."
+  },
+  "1_metadata": {
+    "patch_id": "LIC-P-871",
+    "patch_name": "Phoenix v2 (Strategic Overhaul & Configuration Refinement)",
+    "version": "2025-10-08_v1",
+    "date_created": "2025-10-08",
+    "author": "Gemini System Engineer (Editor)",
+    "severity": "CRITICAL",
+    "purpose": "A major strategic and configuration overhaul of the LIC system. Implements new 'On Steroids' reasoning toggles, introduces type-specific word count ranges, corrects workflow logic, hardens validation, and standardizes terminology by replacing 'archetype' with 'type'.",
+    "source_version": "v8.61",
+    "target_version": "v8.71",
+    "sections_modified": [
+      "metadata",
+      "1.role",
+      "2.task",
+      "3.context",
+      "4.reasoning",
+      "6.validation"
+    ]
+  },
+  "2_changes": [
+    {
+      "change_id": "P871-001",
+      "action": "GLOBAL_REPLACE",
+      "description": "Standardizes terminology across the entire artifact by replacing all instances of 'archetype' with 'type'.",
+      "rationale": "To improve clarity and consistency based on user feedback. All subsequent changes in this patch will use the new 'type' terminology.",
+      "find": "archetype",
+      "replace": "type"
+    },
+    {
+      "change_id": "P871-002",
+      "section": "3.context",
+      "module": "route_validator.route_specs",
+      "action": "CONFIG_OVERWRITE",
+      "description": "Replaces the generic length constraints for FOLLOW_UP and INMAIL_OUTREACH routes with a new, centralized `word_range_by_type` object.",
+      "rationale": "Implements new user-defined, type-specific message length requirements and centralizes them in a single configuration location.",
+      "target_paths": [
+        "3.context.route_validator.route_specs.FOLLOW_UP.constraints",
+        "3.context.route_validator.route_specs.INMAIL_OUTREACH.constraints"
+      ],
+      "new_constraints_block": {
+        "word_range_by_type": {
+          "RECRUITER": "140-170",
+          "SENIOR_TA": "150-190",
+          "EXECUTIVE": "160-220",
+          "C_LEVEL": "190-230"
+        },
+        "k_nodes_enabled": [ true, true, "full", true, "full", "full", "full" ],
+        "signature_format": "4-line",
+        "subject_line": true,
+        "attachments": true,
+        "meeting_dates": true
+      },
+      "note": "[EDITOR CORRECTION] This block explicitly sets 'attachments' to 'true' to correct a bug in v8.61 where InMail attachments were incorrectly disabled."
+    },
+    {
+      "change_id": "P871-003",
+      "action": "CLEANUP",
+      "description": "Removes obsolete and conflicting message length specifications from other sections.",
+      "rationale": "Ensures that the `route_validator` is the single source of truth for message lengths, per user instruction.",
+      "targets_to_remove": [
+        "2.task.k_node_pipeline.K.3.formats.standard",
+        "2.task.k_node_pipeline.K.3.formats.expanded",
+        "4.reasoning.k_nodes.K.3.word_range"
+      ]
+    },
+    {
+      "change_id": "P871-004",
+      "section": "2.task",
+      "module": "message_type_transitions",
+      "action": "LOGIC_OVERWRITE",
+      "description": "Replaces the flawed message transition logic with a new, corrected process.",
+      "rationale": "The previous logic incorrectly defined new lengths. The new logic correctly routes to standard templates for existing connections.",
+      "new_block": {
+        "SHORT_NEW_to_ANY_EXISTING": {
+          "trigger": "Connection accepted → follow-up",
+          "action": "Route to the standard message template for the target recipient type (e.g., EXECUTIVE, SENIOR_TA).",
+          "process": [
+            "1. Prepend the phrase 'Thanks for connecting.'",
+            "2. Generate the message body according to the type's standard word count (from route_validator).",
+            "3. Perform a continuity check against the original SHORT_NEW message to avoid redundancy."
+          ]
+        }
+      }
+    },
+    {
+      "change_id": "P871-005",
+      "section": "4.reasoning",
+      "module": "type_parameter_sets",
+      "action": "DESTRUCTIVE_OVERWRITE",
+      "description": "Replaces the entire `type_parameter_sets` with the new, final, 'On Steroids' configurations for K.3 message generation.",
+      "rationale": "Implements all final, approved settings for maximum quality and aligns each type with its strategic directives.",
+      "new_block": {
+        "C_LEVEL": { "K3": { "self_consistency": 12, "cot_min_paths": 4, "rag_hops": 6, "rag_recency_weight": 0.7, "anchor_temporal_window_days": 90, "rag_retrievers": 20, "rag_external": "web_search (12), web_fetch (6)" }},
+        "EXECUTIVE": { "K3": { "self_consistency": 8, "cot_min_paths": 10, "rag_hops": 5, "rag_recency_weight": 0.4, "anchor_temporal_window_days": 90, "rag_retrievers": 16, "rag_external": "web_search (8), web_fetch (4)" }},
+        "SENIOR_TA": { "K3": { "self_consistency": 8, "cot_min_paths": 6, "rag_hops": 5, "rag_recency_weight": 0.5, "anchor_temporal_window_days": 90, "rag_retrievers": 16, "rag_external": "web_search (8), web_fetch (4)" }},
+        "RECRUITER": { "K3": { "self_consistency": 5, "cot_min_paths": 4, "rag_hops": 3, "rag_recency_weight": 0.5, "anchor_temporal_window_days": 60, "rag_retrievers": 12, "rag_external": "web_search (5), web_fetch (2)" }}
+      }
+    },
+    {
+      "change_id": "P871-006",
+      "section": "4.reasoning",
+      "action": "ENHANCEMENT_APPEND",
+      "description": "Introduces new strategic directive parameters to control high-level messaging strategy.",
+      "rationale": "Allows the system to select the correct approach (e.g., message format, RAG focus) for each type, addressing a key strategic gap.",
+      "new_content": {
+        "strategic_directives": {
+          "message_format_template": ["ANALYST_LEVEL_PITCH", "OPERATIONAL_PITCH", "EXECUTIVE_CANDIDATE_PITCH", "SKILL_TO_ROLE_MAPPING"],
+          "rag_focus_strategy": ["COMPANY_ONLY", "WEIGHTED (40/60 Co/Person)", "WEIGHTED (80/20 Co/Person)"],
+          "cta_strategy": ["TRANSACTIONAL_WITH_ESCALATION", "RELATIONAL_EXPLORATORY"]
+        }
+      }
+    },
+    {
+      "change_id": "P871-007",
+      "section": "3.context",
+      "action": "WORKFLOW_FIX",
+      "description": "Corrects two workflow logic gaps: adds a mandatory context ingestion prompt and fixes routing for existing connections with no message history.",
+      "rationale": "Fixes a broken user experience where source files were not requested and corrects a routing flaw.",
+      "changes": [
+        { "module": "execution_flow", "append_after": "step_0", "new_step": { "step_0_5": { "action": "context_ingestion_prompt", "prompt": "Please provide all necessary source files (e.g., resumes) before proceeding.", "blocking": true }}},
+        { "module": "routing_decision_tree", "append_to_end": { "existing_connection_logic": { "trigger": "IF Connection = EXISTING AND Prior_Messages_Exist = NO", "then_action": "SET Route = INMAIL_OUTREACH", "else_behavior": "SET Route = FOLLOW_UP" }}}
+      ]
+    },
+    {
+      "change_id": "P871-008",
+      "section": "6.validation",
+      "module": "qa_rules",
+      "action": "ENHANCEMENT_APPEND",
+      "description": "Adds three new critical QA validation rules for content phrasing and numerical formatting.",
+      "rationale": "Codifies user feedback on message polish to improve the quality of all final outputs.",
+      "new_content": {
+        "LIC-QA-101": { "severity": "CRITICAL", "check": "Message must not contain phrases like 'At IBM' or 'At Unify'." },
+        "LIC-QA-102": { "severity": "CRITICAL", "check": "Numbers must be rendered as digits, not words." },
+        "LIC-QA-103": { "severity": "CRITICAL", "check": "The '%' symbol must be used instead of the word 'percent'." }
+      }
+    }
+  ]
+}
