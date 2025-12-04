@@ -80,12 +80,35 @@ HARD_PROTECTED_SUBPATHS = [
 # =====================================================================
 
 def load_yaml(path: Path) -> dict:
+    """
+    Load YAML safely. 
+    Handles cases where the YAML file content is wrapped in a literal block scalar (|),
+    which causes safe_load to return a string instead of a dict.
+    """
+    if not path.exists():
+        print(f"[WARN] YAML file not found: {path}")
+        return {}
+        
     with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+        data = yaml.safe_load(f)
+        
+    # Fix for literal block scalar (string) root
+    if isinstance(data, str):
+        print(f"[INFO] YAML at {path} loaded as string (likely block scalar). Attempting recursive parse...")
+        try:
+            data = yaml.safe_load(data)
+        except Exception as e:
+            print(f"[ERROR] Recursive YAML parse failed for {path}: {e}")
+            return {}
+
+    return data or {}
 
 
 def canon_tree(tree: dict) -> dict:
     """Sort dictionary keys recursively for stable comparisons/logging."""
+    if not isinstance(tree, dict):
+        return tree
+        
     out: dict = {}
     for k in sorted(tree.keys()):
         v = tree[k]
@@ -1406,6 +1429,12 @@ DO NOT REMOVE during Phase 1."""
                             "archived_to": str(archived_to.relative_to(PROJECT_ROOT)) if archived_to else None,
                             "placeholder_added": True
                         })
+                    
+                    # Force break after one pass in DRY-RUN to avoid infinite loop
+                    # because the empty folders are not actually removed.
+                    if dry_run:
+                        print("[DRY-RUN] Stopping empty-folder cleanup after Pass 1 to prevent infinite loop.")
+                        break
 
                 empty_archived_count = len(empty_folders_logged)
                 empty_folder_log = empty_folders_logged
