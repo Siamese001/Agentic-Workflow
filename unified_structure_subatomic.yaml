@@ -645,210 +645,127 @@ config:
   __init__.py: null
 
 data:
-  L1_cognition:
-    P1_retrieve:
-      __init__.py: null
-      check_rules:
-        __init__.py: null
-        policy:
-          check.py: null
-          enforce.py: null
-          validate.py: null
-      gather-context-inputs:
-        __init__.py: null
-        understand:
-          extract.py: null
-          fetch.py: null
-          load.py: null
-          parse.py: null
-          query.py: null
-          retrieve.py: null
-        utility:
-          build.py: null
-          format.py: null
-          prepare.py: null
-        embedding:
-          match.py: null
-          retrieve_similarity.py: null
-          search.py: null
-    P2_inspect:
-      __init__.py: null
-      check_structure:
-        __init__.py: null
-        policy:
-          check.py: null
-          enforce.py: null
-          validate.py: null
-        semantic:
-          assess.py: null
-          compute.py: null
-          validate.py: null
-      convert_content:
-        __init__.py: null
-        embedding:
-          calculate.py: null
-          compute.py: null
-          normalize.py: null
-        semantic:
-          apply.py: null
-          compute.py: null
-          normalize.py: null
-      detect-anomalies:
-        __init__.py: null
-        update:
-          capture.py: null
-          inspect.py: null
-          log.py: null
-    P3_aggregate:
-      __init__.py: null
-      select-optimal:
-        __init__.py: null
-        understand:
-          apply.py: null
-          rank.py: null
-          sort.py: null
-        refinement:
-          adjust.py: null
-          optimize.py: null
-          refine.py: null
-      sync-status:
-        __init__.py: null
-        update:
-          aggregate.py: null
-          consolidate.py: null
-          merge.py: null
-        utility:
-          format.py: null
-          prepare.py: null
-          serialize.py: null
-      execute-actions:
-        __init__.py: null
-        use:
-          execute.py: null
-          invoke.py: null
-          process.py: null
-        routing:
-          apply.py: null
-          handle.py: null
-          implement.py: null
-    P4_safety:
-      __init__.py: null
-      check_rules:
-        __init__.py: null
-        policy:
-          apply.py: null
-          enforce.py: null
-          validate.py: null
-      control-resources:
-        __init__.py: null
-        update:
-          enforce.py: null
-          track.py: null
-          update.py: null
-    __init__.py: null
-  L2_execution:
-    P2_inspect:
-      __init__.py: null
-      check_structure:
-        __init__.py: null
-        policy:
-          check.py: null
-          enforce.py: null
-          validate.py: null
-    P3_aggregate:
-      __init__.py: null
-      execute-actions:
-        __init__.py: null
-        use:
-          execute.py: null
-          invoke.py: null
-          perform.py: null
-        utility:
-          format.py: null
-          prepare.py: null
-          serialize.py: null
-    P4_safety:
-      __init__.py: null
-      check_rules:
-        __init__.py: null
-        policy:
-          apply.py: null
-          enforce.py: null
-          validate.py: null
-    __init__.py: null
-  L3_orchestration:
-    P1_retrieve:
-      __init__.py: null
-      gather-context-inputs:
-        __init__.py: null
-        understand:
-          coordinate.py: null
-          manage.py: null
-          orchestrate.py: null
-    P3_aggregate:
-      __init__.py: null
-      execute-actions:
-        __init__.py: null
-        use:
-          call.py: null
-          dispatch.py: null
-          invoke.py: null
-        routing:
-          handle.py: null
-          implement.py: null
-          retry.py: null
-    P4_safety:
-      __init__.py: null
-      check_rules:
-        __init__.py: null
-        policy:
-          apply.py: null
-          enforce.py: null
-          validate.py: null
-    __init__.py: null
-  L4_memory:
-    P1_retrieve:
-      __init__.py: null
-      gather-context-inputs:
-        __init__.py: null
-        understand:
-          fetch.py: null
-          query.py: null
-          retrieve.py: null
-        embedding:
-          find.py: null
-          match.py: null
-          search.py: null
-    P4_safety:
-      __init__.py: null
-      check_rules:
-        __init__.py: null
-        policy:
-          apply.py: null
-          enforce.py: null
-          validate.py: null
-    __init__.py: null
-  L5_safety:
-    P4_safety:
-      __init__.py: null
-      check_rules:
-        __init__.py: null
-        policy:
-          apply.py: null
-          enforce.py: null
-          validate.py: null
-        semantic:
-          assess.py: null
-          compute.py: null
-          evaluate.py: null
-      control-resources:
-        __init__.py: null
-        update:
-          enforce.py: null
-          track.py: null
-          update.py: null
-    __init__.py: null
-  __init__.py: null
+  semantic-cache-storage:
+    prepare-records:
+      intake-payloads:
+        load-file.py: null
+        validate-format.py: null
+      cleanse-contents:
+        strip-noise.py: null
+        normalize-text.py: null
+      tokenize-signals:
+        split-sentences.py: null
+        tokenize-words.py: null
+
+    hydrate-representations:
+      embed-vectors:
+        build-dense.py: null
+        build-hybrid.py: null
+      merge-metadata:
+        attach-schema.py: null
+        attach-provenance.py: null
+      assemble-representations:
+        compose-record.py: null
+        compress-record.py: null
+
+    snapshot-versions:
+      write-snapshot:
+        serialize-cache.py: null
+      load-snapshot:
+        deserialize-cache.py: null
+      diff-snapshot:
+        compute-diff.py: null
+        resolve-diff.py: null
+
+  vector-search-memory:
+    index-vectors:
+      normalize-vectors:
+        normalize-batch.py: null
+        dedupe-batch.py: null
+      assemble-index:
+        build-hnsw.py: null
+        optimize-hnsw.py: null
+        compress-index.py: null
+      validate-index:
+        verify-structure.py: null
+        check-integrity.py: null
+
+    query-results:
+      retrieve-candidates:
+        search-topk.py: null
+        range-query.py: null
+      rerank-candidates:
+        hybrid-rerank.py: null
+        score-similarity.py: null
+      refine-output:
+        trim-results.py: null
+        format-response.py: null
+
+  lineage-records-storage:
+    capture-events:
+      write-event:
+        append-log.py: null
+        stamp-event.py: null
+      load-event:
+        read-log.py: null
+        filter-log.py: null
+      resolve-events:
+        merge-log.py: null
+        prune-log.py: null
+
+    diff-records:
+      compute-deltas:
+        compare-struct-diff.py: null
+        compute-content-diff.py: null
+      assess-impact:
+        classify-impact.py: null
+        risk-score.py: null
+      resolve-deltas:
+        merge-deltas.py: null
+        align-records.py: null
+
+  ingest-artifacts:
+    validate-inputs:
+      inspect-format:
+        detect-format.py: null
+        enforce-schema.py: null
+      verify-integrity:
+        check-size.py: null
+        check-encoding.py: null
+
+    preprocess-signals:
+      cleanse-signals:
+        remove-html.py: null
+        strip-stopwords.py: null
+      normalize-signals:
+        unify-encoding.py: null
+        reformat-json.py: null
+      extract-signals:
+        extract-entities.py: null
+        extract-keywords.py: null
+
+  rag-corpus-store:
+    manage-documents:
+      update-documents:
+        add-doc.py: null
+        update-doc.py: null
+        delete-doc.py: null
+      validate-documents:
+        verify-format.py: null
+        content-safety-check.py: null
+
+    embed-documents:
+      embed-batch:
+        embed-batch.py: null
+        refresh-embedding.py: null
+      maintain-index:
+        update-index.py: null
+        purge-stale.py: null
+
+  temp-runtime-staging:
+    buffer-results:
+      write-buffer.py: null
+      load-buffer.py: null
 
 observability:
   L1_cognition:
