@@ -118,7 +118,7 @@ DRY-RUN: Would create directory C:\Git\Agentic-Workflow\01_agentic_core\L5_safet
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\01_agentic_core\L5_safety\P4_safety\manage_costs\update\enforce.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\01_agentic_core\L5_safety\P4_safety\manage_costs\update\track.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\01_agentic_core\L5_safety\P4_safety\manage_costs\update\update.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\01_agentic_core_20251203_230103 from C:\Git\Agentic-Workflow\01_agentic_core
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\01_agentic_core_20251203_231204 from C:\Git\Agentic-Workflow\01_agentic_core
 
 --- PROCESSING 02_schemas ---
 DRY-RUN: Would create directory C:\Git\Agentic-Workflow\02_schemas\L1_cognition
@@ -325,7 +325,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\02_schemas\L5_safety\P4_safet
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\02_schemas\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\02_schemas\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\02_schemas\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\02_schemas_20251203_230103 from C:\Git\Agentic-Workflow\02_schemas
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\02_schemas_20251203_231205 from C:\Git\Agentic-Workflow\02_schemas
 DRY-RUN: Would move C:\Git\Agentic-Workflow\02_schemas\archive_scanner.py  ->  C:\Git\Agentic-Workflow\02_schemas\L2_execution\P3_aggregate\archive_scanner.py  (confidence=0.60, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\02_schemas\atomic_operations_engine.py  ->  C:\Git\Agentic-Workflow\02_schemas\L2_execution\P3_aggregate\atomic_operations_engine.py  (confidence=0.60, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\02_schemas\baseline_reconciler.py  ->  C:\Git\Agentic-Workflow\02_schemas\L2_execution\P3_aggregate\baseline_reconciler.py  (confidence=0.60, duplicate=False)
@@ -652,7 +652,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\03_runtime\L5_safety\P4_safet
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\03_runtime\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\03_runtime\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\03_runtime\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\03_runtime_20251203_230104 from C:\Git\Agentic-Workflow\03_runtime
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\03_runtime_20251203_231205 from C:\Git\Agentic-Workflow\03_runtime
 DRY-RUN: Would move C:\Git\Agentic-Workflow\03_runtime\budget-manager-layer\act-phase-group\schema-validation-ops\general-operations-ops\utility-functions-ops\executor.py  ->  C:\Git\Agentic-Workflow\03_runtime\L3_orchestration\P4_safety\executor.py  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\03_runtime\budget-manager-layer\aggregate-phase-group\dag-operations-ops\general-operations-ops\utility-functions-ops\lic_validation.py  ->  C:\Git\Agentic-Workflow\03_runtime\L3_orchestration\P3_aggregate\lic_validation.py  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\03_runtime\budget-manager-layer\expand-phase-group\backoff-policy-ops\general-operations-ops\utility-functions-ops\policy_engine.py  ->  C:\Git\Agentic-Workflow\03_runtime\L3_orchestration\P4_safety\check_rules\policy_engine.py  (confidence=0.90, duplicate=False)
@@ -991,7 +991,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\04_prompt_governance\L5_safet
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\04_prompt_governance\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\04_prompt_governance\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\04_prompt_governance\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\04_prompt_governance_20251203_230104 from C:\Git\Agentic-Workflow\04_prompt_governance
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\04_prompt_governance_20251203_231206 from C:\Git\Agentic-Workflow\04_prompt_governance
 DRY-RUN: Would move C:\Git\Agentic-Workflow\04_prompt_governance\budget-manager-layer\act-phase-group\general-operations-ops\utility-functions-ops\helper-methods-ops\output_governance.yaml  ->  C:\Git\Agentic-Workflow\04_prompt_governance\L1_cognition\P4_safety\manage_costs\output_governance.yaml  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\04_prompt_governance\budget-manager-layer\aggregate-phase-group\retrieval-ops\general-operations-ops\utility-functions-ops\messaging.yaml  ->  C:\Git\Agentic-Workflow\04_prompt_governance\L1_cognition\P3_aggregate\messaging.yaml  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\04_prompt_governance\budget-manager-layer\inspect-phase-group\cost-budgeting-ops\general-operations-ops\utility-functions-ops\eval_sets.yaml  ->  C:\Git\Agentic-Workflow\04_prompt_governance\L1_cognition\P2_inspect\eval_sets.yaml  (confidence=0.90, duplicate=False)
@@ -1233,7 +1233,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\05_config\L5_safety\P4_safety
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\05_config\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\05_config\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\05_config\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\05_config_20251203_230105 from C:\Git\Agentic-Workflow\05_config
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\05_config_20251203_231206 from C:\Git\Agentic-Workflow\05_config
 DRY-RUN: Would move C:\Git\Agentic-Workflow\05_config\budget-manager-layer\act-phase-group\schema-validation-ops\general-operations-ops\utility-functions-ops\llm_overrides.yaml  ->  C:\Git\Agentic-Workflow\05_config\L3_orchestration\P4_safety\llm_overrides.yaml  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\05_config\budget-manager-layer\aggregate-phase-group\dag-operations-ops\general-operations-ops\utility-functions-ops\cadence_defaults.yaml  ->  C:\Git\Agentic-Workflow\05_config\L3_orchestration\P3_aggregate\cadence_defaults.yaml  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\05_config\budget-manager-layer\expand-phase-group\logging-metrics-ops\general-operations-ops\utility-functions-ops\output_policies.yaml  ->  C:\Git\Agentic-Workflow\05_config\L3_orchestration\P4_safety\output_policies.yaml  (confidence=0.90, duplicate=False)
@@ -1567,11 +1567,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\06_data\L5_safety\P4_safety\m
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\06_data\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\06_data\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\06_data\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\06_data_20251203_230106 from C:\Git\Agentic-Workflow\06_data
-[BORDERLINE] Archiving folder: semantic_cache
-DRY-RUN: Would archive folder C:\Git\Agentic-Workflow\06_data\semantic_cache -> C:\Git\Agentic-Workflow\06_data\phase1_borderline_matches\06_data\semantic_cache
-[BORDERLINE] Archiving folder: semantic_cache\05_config\L1_archive\P0_5\ingest\rg\semantic_cache.py
-DRY-RUN: Would archive folder C:\Git\Agentic-Workflow\06_data\semantic_cache\05_config\L1_archive\P0_5\ingest\rg\semantic_cache.py -> C:\Git\Agentic-Workflow\06_data\phase1_borderline_matches\06_data\semantic_cache\05_config\L1_archive\P0_5\ingest\rg\semantic_cache.py
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\06_data_20251203_231207 from C:\Git\Agentic-Workflow\06_data
 DRY-RUN: Would move C:\Git\Agentic-Workflow\06_data\budget-manager-layer\expand-phase-group\backoff-policy-ops\general-operations-ops\utility-functions-ops\graph_nodes.parquet  ->  C:\Git\Agentic-Workflow\06_data\L4_memory\P4_safety\check_rules\graph_nodes.parquet  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\06_data\exec-layer\act-phase\use-data-tools\general\use-a-tool\execute_data_commands.py  ->  C:\Git\Agentic-Workflow\06_data\L2_execution\P3_aggregate\use_tools\execute_data_commands.py  (confidence=0.95, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\06_data\exec-layer\act-phase\use-data-tools\general\use-a-tool\invoke_data_actions.py  ->  C:\Git\Agentic-Workflow\06_data\L2_execution\P3_aggregate\use_tools\invoke_data_actions.py  (confidence=0.95, duplicate=False)
@@ -1861,7 +1857,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\07_observability\L5_safety\P4
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\07_observability\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\07_observability\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\07_observability\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\07_observability_20251203_230111 from C:\Git\Agentic-Workflow\07_observability
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\07_observability_20251203_231209 from C:\Git\Agentic-Workflow\07_observability
 DRY-RUN: Would move C:\Git\Agentic-Workflow\07_observability\budget-manager-layer\act-phase-group\tool-adapter-ops\general-operations-ops\utility-functions-ops\span_context.py  ->  C:\Git\Agentic-Workflow\07_observability\L4_memory\P4_safety\span_context.py  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\07_observability\budget-manager-layer\aggregate-phase-group\state-management-ops\general-operations-ops\utility-functions-ops\sampling_processor.py  ->  C:\Git\Agentic-Workflow\07_observability\L4_memory\sampling_processor.py  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\07_observability\budget-manager-layer\expand-phase-group\vectorization-ops\general-operations-ops\utility-functions-ops\audit_event_normalizer.py  ->  C:\Git\Agentic-Workflow\07_observability\L4_memory\P4_safety\audit_event_normalizer.py  (confidence=0.90, duplicate=False)
@@ -2200,11 +2196,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\08_scripts\L5_safety\P4_safet
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\08_scripts\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\08_scripts\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\08_scripts\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\08_scripts_20251203_230112 from C:\Git\Agentic-Workflow\08_scripts
-DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\phase05_semantic_cache_rebuild.py  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P3_aggregate\phase05_semantic_cache_rebuild.py  (confidence=0.60, duplicate=False)
-DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\phase_0_5_semantic_cache_rebuild.py  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P3_aggregate\phase_0_5_semantic_cache_rebuild.py  (confidence=0.60, duplicate=False)
-DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\run_phase_0_5_semantic_cache.py  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P3_aggregate\run_phase_0_5_semantic_cache.py  (confidence=0.60, duplicate=False)
-DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\validate_phase_0_5.py  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P2_inspect\validate_phase_0_5.py  (confidence=0.90, duplicate=False)
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\08_scripts_20251203_231210 from C:\Git\Agentic-Workflow\08_scripts
 DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\budget-manager-layer\aggregate-phase-group\retrieval-ops\general-operations-ops\utility-functions-ops\logging_utils.py_LEVEL_3_placeholder  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P3_aggregate\logging_utils.py_LEVEL_3_placeholder  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\budget-manager-layer\expand-phase-group\vectorization-ops\general-operations-ops\utility-functions-ops\validate_runtime_integrity.py_LEVEL_3_placeholder  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P2_inspect\validate_runtime_integrity.py_LEVEL_3_placeholder  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\08_scripts\budget-manager-layer\rank-phase-group\schema-validation-ops\general-operations-ops\utility-functions-ops\tree_export.ps1_LEVEL_3_placeholder  ->  C:\Git\Agentic-Workflow\08_scripts\L2_execution\P3_aggregate\tree_export.ps1_LEVEL_3_placeholder  (confidence=0.90, duplicate=False)
@@ -2547,7 +2539,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\09_apps\L5_safety\P4_safety\m
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\09_apps\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\09_apps\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\09_apps\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\09_apps_20251203_230113 from C:\Git\Agentic-Workflow\09_apps
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\09_apps_20251203_231211 from C:\Git\Agentic-Workflow\09_apps
 DRY-RUN: Would move C:\Git\Agentic-Workflow\09_apps\budget-manager-layer\act-phase-group\general-operations-ops\utility-functions-ops\helper-methods-ops\linkedin_send_worker.py_LEVEL_3  ->  C:\Git\Agentic-Workflow\09_apps\L2_execution\P4_safety\linkedin_send_worker.py_LEVEL_3  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\09_apps\budget-manager-layer\aggregate-phase-group\retrieval-ops\general-operations-ops\utility-functions-ops\enrichment_worker.py_LEVEL_3  ->  C:\Git\Agentic-Workflow\09_apps\L2_execution\P3_aggregate\enrichment_worker.py_LEVEL_3  (confidence=0.90, duplicate=False)
 DRY-RUN: Would move C:\Git\Agentic-Workflow\09_apps\budget-manager-layer\expand-phase-group\vectorization-ops\general-operations-ops\utility-functions-ops\rate_limit.py_LEVEL_3  ->  C:\Git\Agentic-Workflow\09_apps\L2_execution\P4_safety\rate_limit.py_LEVEL_3  (confidence=0.90, duplicate=False)
@@ -2892,7 +2884,7 @@ DRY-RUN: Would create file C:\Git\Agentic-Workflow\10_tests\L5_safety\P4_safety\
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\10_tests\L5_safety\P4_safety\manage_costs\update\update.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\10_tests\L5_safety\__init__.py
 DRY-RUN: Would create file C:\Git\Agentic-Workflow\10_tests\__init__.py
-DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\10_tests_20251203_230114 from C:\Git\Agentic-Workflow\10_tests
+DRY-RUN: Would create backup C:\Git\Agentic-Workflow\06_data\phase1_backup\10_tests_20251203_231212 from C:\Git\Agentic-Workflow\10_tests
 [BORDERLINE] Archiving folder: l5_safety
 DRY-RUN: Would archive folder C:\Git\Agentic-Workflow\10_tests\l5_safety -> C:\Git\Agentic-Workflow\06_data\phase1_borderline_matches\10_tests\l5_safety
 DRY-RUN: Would move C:\Git\Agentic-Workflow\10_tests\test_semantic_cache_ast.py  ->  C:\Git\Agentic-Workflow\10_tests\L2_execution\P3_aggregate\test_semantic_cache_ast.py  (confidence=0.60, duplicate=False)
