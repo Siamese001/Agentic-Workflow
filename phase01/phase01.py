@@ -95,8 +95,26 @@ def canon_tree(tree: dict) -> dict:
 
 def map_folder_to_logical(folder: str) -> str:
     """Map numbered folder names to logical SSoT root keys (agentic_core, schemas, etc.)."""
-    if len(folder) >= 4 and folder[2] == "_":
-        return folder[3:]
+    mapping = {
+        "01_agentic_core": "agentic_core",
+        "02_schemas": "schemas",
+        "03_runtime": "runtime",
+        "04_prompt_governance": "prompt_governance",
+        "05_config": "config",
+        "06_data": "data",
+        "07_observability": "observability",
+        "08_scripts": "scripts",
+        "09_apps": "apps", 
+        "10_tests": "tests"
+    }
+    
+    if folder in mapping:
+        return mapping[folder]
+    
+    # Fallback for direct matches
+    if folder in ["agentic_core", "schemas", "runtime", "prompt_governance", "config", "data", "observability", "scripts", "tests", "apps_lic", "apps_rg"]:
+        return folder
+        
     return folder
 
 
@@ -285,6 +303,10 @@ def score_candidate_folder(
     - Filename heuristics: 0.10
     - Semantic descriptors: 0.05
     """
+    # Safety Check: Never match these patterns
+    if legacy_name == "semantic_cache" or legacy_name == "shared_engine_ops" or legacy_name.startswith("phase1_"):
+        return 0.0
+
     # Normalize inputs
     legacy_lower = legacy_name.lower()
     canonical_lower = canonical_name.lower()
@@ -308,24 +330,18 @@ def score_candidate_folder(
     # 2. Historical patterns (0.3 weight)
     historical_patterns = {
         # Legacy -> Canonical mappings
-        "exec-layer": "L2_execution",
-        "orc-layer": "L3_orchestration", 
-        "mem-layer": "L4_memory",
-        "safe-layer": "L5_safety",
-        "plan-layer": "L3_orchestration",
-        "router-microagent-layer": "L3_orchestration",
-        "executor-microagent-layer": "L2_execution",
-        "safety-guard-layer": "L5_safety",
-        "budget-manager-layer": "L3_orchestration",
-        "cache": "L4_memory",
-        "data": "L4_memory",
-        "orch": "L3_orchestration",
-        "orchestr": "L3_orchestration",
+        "cognition": "L1_cognition",
+        "execution": "L2_execution",
+        "orchestration": "L3_orchestration", 
+        "memory": "L4_memory",
         "safety": "L5_safety",
-        "guard": "L5_safety",
-        "policy": "P4_safety",
-        "routing": "P3_aggregate",
-        "utility": "utility",
+        "business": "business_ops",
+        "vector": "vectorization_ops",
+        "personal": "personalization_ops",
+        "job": "job_fit_ops",
+        "update": "state_update_ops",
+        "embed": "embedding_ops",
+        "score": "scoring_ops",
     }
     
     historical_score = 0.0
@@ -343,7 +359,7 @@ def score_candidate_folder(
         structural_score = 0.8  # Canonical L-layer
     elif canonical_lower.startswith("p") and "_" in canonical_lower:
         structural_score = 0.7  # Canonical P-phase
-    elif any(descriptor in canonical_lower for descriptor in ["gather_context_inputs", "check_structure", "semantic"]):
+    elif any(descriptor in canonical_lower for descriptor in ["check_structure", "semantic", "business_ops"]):
         structural_score = 0.6
     
     # 4. Filename heuristics (0.10 weight)
@@ -377,9 +393,10 @@ def score_candidate_folder(
     # 5. Semantic descriptors (0.05 weight)
     semantic_score = 0.0
     semantic_descriptors = [
-        "gather_context_inputs", "check_structure", "semantic", "refinement", 
+        "check_structure", "semantic", "refinement", 
         "routing", "utility", "sync_status", "execute_actions", 
-        "control_resources", "apply", "compute", "assess"
+        "control_resources", "apply", "compute", "assess",
+        "business", "scoring", "embedding", "vectorization"
     ]
     
     for descriptor in semantic_descriptors:
@@ -429,52 +446,62 @@ class LegacyFolderMatch:
 
 DEFAULT_LAYER_BY_DOMAIN: Dict[str, str] = {
     "agentic_core": "L1_cognition",
-    "schemas": "L2_execution",
-    "runtime": "L3_orchestration",
-    "prompt_governance": "L1_cognition",
-    "config": "L3_orchestration",
-    "data": "L4_memory",
-    "observability": "L4_memory",
-    "scripts": "L2_execution",
-    "apps": "L2_execution",
-    "tests": "L2_execution",
+    "apps_lic": "L1_cognition",
+    "apps_rg": "L1_cognition",
+    "schemas": "logic",
+    "runtime": "logic",
+    "prompt_governance": "logic",
+    "config": "logic",
+    "data": "logic",
+    "observability": "logic",
+    "scripts": "logic",
+    "shared": "logic",
+    "tests": "tests",
 }
 
 
 def infer_layer(logical_root: str, parts: List[str]) -> Tuple[str, float, str]:
-    tokens = " ".join(parts).lower()
-
-    if "cognition" in tokens or "cog" in tokens:
-        return "L1_cognition", 0.95, "tokens: cognition/cog"
-    if "exec" in tokens or "executor" in tokens:
-        return "L2_execution", 0.95, "tokens: exec"
-    if "orc" in tokens or "orchestr" in tokens or "router" in tokens or "planner" in tokens:
-        return "L3_orchestration", 0.9, "tokens: orc/orchestr/router/planner"
-    if "mem" in tokens or "state" in tokens or "cache" in tokens:
-        return "L4_memory", 0.9, "tokens: mem/state/cache"
-    if "safe" in tokens or "safety" in tokens or "guard" in tokens:
-        return "L5_safety", 0.95, "tokens: safe/safety/guard"
-
-    default = DEFAULT_LAYER_BY_DOMAIN.get(logical_root, "L1_cognition")
-    return default, 0.6, f"default layer for domain {logical_root}"
-
-
-def infer_phase(parts: List[str], filename: str) -> Tuple[str, float, str]:
-    tokens = " ".join(parts + [filename]).lower()
-
-    if any(t in tokens for t in ["retrieve", "retriever", "gather_context_inputs", "search", "find", "load"]):
-        return "P1_retrieve", 0.9, "tokens: retrieve/gather_context_inputs/search/find/load"
-    if any(t in tokens for t in ["inspect", "check", "validate", "verify", "convert"]):
-        return "P2_inspect", 0.9, "tokens: inspect/check/validate/verify/convert"
-    if any(t in tokens for t in ["aggregate", "select_optimal", "best_result", "rank", "score", "refine", "sync_status"]):
-        return "P3_aggregate", 0.9, "tokens: aggregate/select_optimal/rank/score/refine/sync_status"
-    if any(t in tokens for t in ["safety", "safe", "policy", "guard", "risk", "budget", "cost"]):
-        return "P4_safety", 0.9, "tokens: safety/safe/policy/guard/risk/budget/cost"
-
-    return "P3_aggregate", 0.5, "fallback phase P3_aggregate"
+    if logical_root in {"agentic_core", "apps_lic", "apps_rg"}:
+        tokens = " ".join(parts).lower()
+        if "cognition" in tokens or "cog" in tokens:
+            return "L1_cognition", 0.95, "tokens: cognition/cog"
+        if "exec" in tokens or "executor" in tokens:
+            return "L2_execution", 0.95, "tokens: exec"
+        if "orc" in tokens or "orchestr" in tokens or "router" in tokens or "planner" in tokens:
+            return "L3_orchestration", 0.9, "tokens: orc/orchestr/router/planner"
+        if "mem" in tokens or "state" in tokens or "cache" in tokens:
+            return "L4_memory", 0.9, "tokens: mem/state/cache"
+        if "safe" in tokens or "safety" in tokens or "guard" in tokens:
+            return "L5_safety", 0.95, "tokens: safe/safety/guard"
+        
+        default = DEFAULT_LAYER_BY_DOMAIN.get(logical_root, "L1_cognition")
+        return default, 0.6, f"default layer for domain {logical_root}"
+    else:
+        return "logic", 1.0, "support-domain logic layer"
 
 
-def infer_subfolders(phase: str, parts: List[str], filename: str) -> Tuple[List[str], float, str]:
+def infer_phase(logical_root: str, parts: List[str], filename: str) -> Tuple[str, float, str]:
+    if logical_root in {"agentic_core", "apps_lic", "apps_rg"}:
+        tokens = " ".join(parts + [filename]).lower()
+        if any(t in tokens for t in ["retrieve", "retriever", "gather_context_inputs", "search", "find", "load", "embedding"]):
+            return "P1_retrieve", 0.9, "tokens: retrieve/search/embedding"
+        if any(t in tokens for t in ["inspect", "check", "validate", "verify", "convert", "structure"]):
+            return "P2_inspect", 0.9, "tokens: inspect/check/validate/convert"
+        if any(t in tokens for t in ["aggregate", "select_optimal", "best_result", "rank", "score", "refine", "sync_status"]):
+            return "P3_aggregate", 0.9, "tokens: aggregate/rank/score/refine"
+        if any(t in tokens for t in ["safety", "safe", "policy", "guard", "risk", "budget", "cost"]):
+            return "P4_safety", 0.9, "tokens: safety/safe/policy/guard/risk"
+        
+        return "P3_aggregate", 0.5, "fallback phase P3_aggregate"
+    else:
+        return "logic", 1.0, "support-domain single-layer pipeline"
+
+
+def infer_subfolders(logical_root: str, phase: str, parts: List[str], filename: str) -> Tuple[List[str], float, str]:
+    # For support domains, always return empty list (flat structure or fixed op layers)
+    if logical_root not in {"agentic_core", "apps_lic", "apps_rg"}:
+        return [], 0.0, "support domain (no subfolders)"
+
     tokens = " ".join(parts + [filename]).lower()
     subfolders: List[str] = []
     reasons: List[str] = []
@@ -484,60 +511,68 @@ def infer_subfolders(phase: str, parts: List[str], filename: str) -> Tuple[List[
         """Convert YAML canonical name (hyphens) to filesystem path (underscores)"""
         return name.replace("-", "_")
 
-
     def add(folder: str, reason: str, weight: float) -> None:
         nonlocal conf
-        # Translate underscore names to hyphenated filesystem paths
-        filesystem_folder = translate_to_filesystem(folder)
-        if filesystem_folder not in subfolders:
-            subfolders.append(filesystem_folder)
-            reasons.append(reason)
-            conf = max(conf, weight)
+        # Correctly handle nested paths by splitting them into segments
+        # e.g., "business_ops/check_structure" -> ["business_ops", "check_structure"]
+        # This allows ssot_path_exists to validate deeper keys properly.
+        parts = folder.split("/")
+        for part in parts:
+            filesystem_folder = translate_to_filesystem(part)
+            if filesystem_folder not in subfolders:
+                subfolders.append(filesystem_folder)
+        
+        reasons.append(reason)
+        conf = max(conf, weight)
 
-    # Phase-specific anchors
+    # Engine subfolder inference with shared_engine_ops awareness
+    if "embed" in tokens:
+        add("embedding_ops", "tokens: embed", 0.9)
+    if "score" in tokens or "confidence" in tokens:
+        add("scoring_ops", "tokens: score/confidence", 0.9)
+    if "tool" in tokens:
+        add("tool_ops", "tokens: tool", 0.8)
+    if "update" in tokens or "state" in tokens:
+        add("state_update_ops", "tokens: update/state", 0.9)
+    if "business" in tokens or "format" in tokens:
+        add("business_ops", "tokens: business/format", 0.8)
+
+    # Phase-specific inference
     if phase == "P1_retrieve":
-        if any(t in tokens for t in ["gather_context_inputs", "info", "retrieve", "search", "find"]):
-            add("gather_context_inputs", "tokens: gather_context_inputs/retrieve/search/find", 0.9)
-        if "embedding" in tokens or "similarity" in tokens or "compare" in tokens:
-            add("embedding", "tokens: embedding/similarity/compare", 0.9)
-        if "utility" in tokens or "prepare" in tokens or "format" in tokens or "serialize" in tokens:
-            add("utility", "tokens: utility/prepare/format/serialize", 0.8)
+        if "utility" in tokens or "prepare" in tokens:
+            add("utility_prepare_information", "tokens: utility/prepare", 0.8)
+        if "embedding" in tokens or "similarity" in tokens:
+            add("embedding_ops", "tokens: embedding/similarity", 0.9)
 
     if phase == "P2_inspect":
         if "check" in tokens or "structure" in tokens:
-            add("check_structure", "tokens: check/structure", 0.9)
+            add("business_ops/check_structure", "tokens: check/structure", 0.9)
         if "semantic" in tokens:
-            add("semantic", "tokens: semantic", 0.9)
+            add("semantic_adjust_scores", "tokens: semantic", 0.9)
         if "convert" in tokens:
             add("convert_content", "tokens: convert", 0.8)
 
     if phase == "P3_aggregate":
-        if "pick_best" in tokens or "best_result" in tokens or "rank" in tokens or "score" in tokens:
-            add("select_optimal", "tokens: select_optimal/best_result/rank/score", 0.9)
+        if "pick_best" in tokens or "best_result" in tokens or "rank" in tokens:
+            add("aggregation_ops/pick_best_result", "tokens: pick_best/rank", 0.9)
         if "sync_status" in tokens or "state" in tokens:
-            add("sync_status", "tokens: sync_status/state", 0.8)
-        if "tool" in tokens or "route" in tokens or "routing" in tokens:
-            add("execute_actions", "tokens: tool/route/routing", 0.8)
-        if "refine" in tokens or "adjust" in tokens or "optimize" in tokens:
-            add("refinement", "tokens: refine/adjust/optimize", 0.9)
-        if "utility" in tokens:
-            add("utility", "tokens: utility", 0.7)
+            add("state_update_ops", "tokens: sync_status/state", 0.8)
+        if "tool" in tokens or "route" in tokens:
+            add("tool_ops", "tokens: tool/route", 0.8)
+        if "refine" in tokens or "adjust" in tokens:
+            add("refinement_adjust_scores", "tokens: refine/adjust", 0.9)
 
     if phase == "P4_safety":
         if "policy" in tokens or "check" in tokens:
             add("check_rules", "tokens: policy/check", 0.9)
         if "semantic" in tokens:
-            add("semantic", "tokens: semantic", 0.9)
-        if "cost" in tokens or "budget" in tokens or "spend" in tokens:
-            add("control_resources", "tokens: cost/budget/spend", 0.9)
+            add("semantic_adjust_scores", "tokens: semantic", 0.9)
+        if "cost" in tokens or "budget" in tokens:
+            add("manage_costs", "tokens: cost/budget", 0.9)
 
-    # Generic anchors
-    if "routing" in tokens or "route" in tokens:
-        add("routing", "tokens: routing/route", 0.8)
-    if "utility" in tokens:
-        add("utility", "tokens: utility", 0.7)
-    if "general" in tokens:
-        add("general", "tokens: general", 0.4)
+    # Generic
+    if "routing" in tokens or "retry" in tokens:
+        add("routing_retry_task", "tokens: routing/retry", 0.8)
 
     if not subfolders:
         return [], 0.0, "no specific subfolders inferred"
@@ -558,6 +593,34 @@ def infer_target_for_file(
     filename = parts[-1]
     parent_parts = parts[:-1]
 
+    # Support Domain Logic (No cognitive inference)
+    if logical_root not in {"agentic_core", "apps_lic", "apps_rg"}:
+        # Try to map directly to SSoT structure if path exists
+        # DEFAULT_LAYER_BY_DOMAIN now returns 'logic' or 'tests' etc.
+        # But the YAML structure for support domains starts with 'logic', 'runtime_ops', etc.
+        # We blindly check if the file's current path (or flattened) fits into the SSoT.
+        
+        # Simple check: Does src_rel exist in SSoT?
+        if ssot_path_exists(ssot_subtree, list(src_rel.parts[:-1]) + [filename]):
+             return MappingDecision(
+                src_rel=str(src_rel).replace("\\", "/"),
+                dest_rel=str(src_rel).replace("\\", "/"),
+                confidence=1.0,
+                reason="exact match in support domain SSoT",
+                is_duplicate=False,
+            )
+        
+        # Fallback for support: Check if parent directory is a known layer (e.g. logic, validation)
+        # If not, leave in place (likely already correct or requires manual fix)
+        return MappingDecision(
+            src_rel=str(src_rel).replace("\\", "/"),
+            dest_rel=str(src_rel).replace("\\", "/"), # Default to no move
+            confidence=0.1, 
+            reason="support domain: no inference applied, leaving in place",
+            is_duplicate=False,
+        )
+
+    # Engine Domain Logic
     # If already starts with L[1-5]_ we assume it's already in canonical L-layer.
     if parent_parts and parent_parts[0].startswith("L") and "_" in parent_parts[0]:
         return MappingDecision(
@@ -569,8 +632,8 @@ def infer_target_for_file(
         )
 
     layer, layer_conf, layer_reason = infer_layer(logical_root, parent_parts)
-    phase, phase_conf, phase_reason = infer_phase(parent_parts, filename)
-    subs, subs_conf, subs_reason = infer_subfolders(phase, parent_parts, filename)
+    phase, phase_conf, phase_reason = infer_phase(logical_root, parent_parts, filename)
+    subs, subs_conf, subs_reason = infer_subfolders(logical_root, phase, parent_parts, filename)
 
     target_parts = [layer, phase] + subs + [filename]
 
@@ -586,6 +649,17 @@ def infer_target_for_file(
         if ssot_path_exists(ssot_subtree, candidate_dirs):
             conf = max(layer_conf, phase_conf, subs_conf)
             dest_rel = "/".join(candidate_dirs + [filename])
+            
+            # Enforce MAX_DEPTH check
+            if len(Path(dest_rel).parts) > MAX_DEPTH:
+                 return MappingDecision(
+                    src_rel=str(src_rel).replace("\\", "/"),
+                    dest_rel=f"_unassigned_unknown/{src_rel.as_posix()}",
+                    confidence=0.0,
+                    reason="destination exceeds MAX_DEPTH",
+                    is_duplicate=False,
+                )
+
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
                 dest_rel=dest_rel,
@@ -765,6 +839,10 @@ def find_fuzzy_folder_matches(
         if folder_name == "semantic_cache":
             continue
         
+        # Skip shared_engine_ops (library)
+        if folder_name == "shared_engine_ops":
+            continue
+
         # Find best canonical match
         best_match = ""
         best_score = 0.0
@@ -864,6 +942,128 @@ def phase01_execute(dry_run: bool = False) -> int:
             continue
 
         logical_name = map_folder_to_logical(folder)
+        
+        # Reset per-domain skip counter
+        protected_skips = 0
+        
+        if folder == "09_apps":
+            # Special handling for apps container
+            # We need to process apps_lic and apps_rg which are root keys in SSoT but reside under 09_apps physically
+            print(f"[APPS-CONTAINER] Processing sub-apps: apps_lic, apps_rg")
+            sub_apps = ["apps_lic", "apps_rg"]
+            for sub_app in sub_apps:
+                if sub_app not in ssot_canon:
+                    print(f"SKIP: {sub_app} not found in SSoT")
+                    continue
+                
+                sub_app_path = root_path / sub_app
+                if not sub_app_path.exists():
+                    print(f"SKIP: {sub_app_path} does not exist")
+                    continue
+                    
+                print(f"--- PROCESSING SUB-APP: {sub_app} ---")
+                # Recursive-like call logic for sub-app
+                # We can't recurse easily due to structure, so we inline the logic or use a helper?
+                # To keep it simple and consistent with the function structure, we'll process here using local vars
+                
+                sub_ssot = ssot_canon[sub_app]
+                
+                # 1) Ensure SSoT paths
+                ensure_ssot_paths(sub_app_path, sub_ssot, dry_run=dry_run)
+                
+                # 2) Backup (handled at root level already? No, we should backup sub-app specifically or rely on root backup)
+                # The root backup covered 09_apps, so sub-apps are backed up.
+                
+                # 3) Fuzzy match
+                # Adjust paths to be relative to sub_app_path
+                sub_matches, _ = find_fuzzy_folder_matches(sub_app_path, sub_ssot, dry_run)
+                
+                # 4) Process matches
+                high_conf = [m for m in sub_matches if m.category == "high_confidence_match"]
+                for match in high_conf:
+                    leg_path = sub_app_path / match.legacy_folder
+                    if not leg_path.exists(): continue
+                    
+                    leg_files = list_all_files(leg_path)
+                    for lf in leg_files:
+                        if is_under_hard_protected(lf) or is_meta_protected(lf, protected_patterns): 
+                            continue
+                        f_rel = lf.relative_to(sub_app_path)
+                        # infer using sub_app logical root
+                        dec = infer_target_for_file(sub_app, sub_ssot, f_rel)
+                        
+                        dest = sub_app_path / dec.dest_rel
+                        if dest.resolve() == lf.resolve(): continue
+                        
+                        if dry_run:
+                            print(f"DRY-RUN: Move {lf} -> {dest}")
+                        else:
+                            dest.parent.mkdir(parents=True, exist_ok=True)
+                            shutil.move(str(lf), str(dest))
+                            print(f"[MOVE] {lf} -> {dest}")
+                            
+                    # Archive legacy folder
+                    ph_txt = "Legacy folder moved to canonical structure."
+                    archive_legacy_folder(folder, Path(sub_app)/match.legacy_folder, PHASE1_LEGACY_ROOT, dry_run, ph_txt, protected_patterns)
+
+                # 5) Borderline
+                border = [m for m in sub_matches if m.category == "borderline_match"]
+                for match in border:
+                    leg_path = sub_app_path / match.legacy_folder
+                    if not leg_path.exists(): continue
+                    ph_txt = "Borderline folder archived."
+                    archive_legacy_folder(folder, Path(sub_app)/match.legacy_folder, PHASE1_BORDERLINE_ROOT, dry_run, ph_txt, protected_patterns, ".phase1_borderline_placeholder")
+
+                # 6) Remaining files
+                all_sub_files = list_all_files(sub_app_path)
+                # Filter out just moved/archived stuff if list_all_files captures it (it scans live FS)
+                
+                mappings = []
+                used_dst = {}
+                
+                for src in all_sub_files:
+                    if is_under_hard_protected(src) or is_meta_protected(src, protected_patterns): 
+                        continue
+                    rel = src.relative_to(sub_app_path)
+                    if rel.parts[0].startswith("_unassigned"): continue
+                    
+                    dec = infer_target_for_file(sub_app, sub_ssot, rel)
+                    
+                    # Duplicate check
+                    dest_rel = dec.dest_rel
+                    if dest_rel:
+                        dst_abs = (sub_app_path / dest_rel).resolve()
+                        if str(dst_abs) in used_dst and str(dst_abs) != str(src.resolve()):
+                            dec.is_duplicate = True
+                            dec.duplicate_bucket_rel = f"_unassigned_duplicates/{rel.as_posix()}"
+                        else:
+                            used_dst[str(dst_abs)] = str(src.resolve())
+                    else:
+                         dec.dest_rel = f"_unassigned_unknown/{rel.as_posix()}"
+
+                    mappings.append(dec)
+                    
+                # 7) Apply moves
+                for dec in mappings:
+                    src = sub_app_path / dec.src_rel
+                    if not src.exists(): continue
+                    
+                    if dec.is_duplicate:
+                        dest = sub_app_path / dec.duplicate_bucket_rel
+                    else:
+                        dest = sub_app_path / dec.dest_rel
+                        
+                    if src.resolve() == dest.resolve(): continue
+                    
+                    if dry_run:
+                        print(f"DRY-RUN: Move {src} -> {dest}")
+                    else:
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.move(str(src), str(dest))
+                        print(f"[MOVE] {src} -> {dest}")
+
+            continue # Done with 09_apps special handling
+
         if logical_name not in ssot_canon:
             print(f"SKIP: {folder} (logical: {logical_name}) not in SSoT.")
             continue
@@ -902,6 +1102,7 @@ def phase01_execute(dry_run: bool = False) -> int:
                 
                 # Skip protected files
                 if is_under_hard_protected(legacy_file) or is_meta_protected(legacy_file, protected_patterns):
+                    protected_skips += 1
                     continue
                 
                 # Infer target for this file
@@ -984,6 +1185,7 @@ DO NOT REMOVE during Phase 1."""
         for src_abs in all_files:
             # Skip protected paths (hard + META)
             if is_under_hard_protected(src_abs) or is_meta_protected(src_abs, protected_patterns):
+                protected_skips += 1
                 continue
 
             # Compute relative path within the domain
@@ -1047,13 +1249,6 @@ DO NOT REMOVE during Phase 1."""
                 shutil.move(str(src), str(dest))
 
         # 7.5) Empty-folder cleanup + LEGACY L1–L5 CLEANUP for 06_data
-        # ============================================================================
-        # NEW OPTION B BEHAVIOR:
-        #   For 06_data:
-        #     • Identify stray L1_*/L2_*/L3_*/L4_*/L5_* folders
-        #     • Archive them (zero-loss) into phase1_legacy_folders
-        #     • NEVER delete semantic_cache or any META-protected paths
-        # ----------------------------------------------------------------------------
         if folder == "06_data":
             print("[OPTION B] Scanning 06_data for legacy L1–L5 folders…")
 
@@ -1113,8 +1308,10 @@ DO NOT REMOVE during Phase 1."""
             try:
                 print(f"[EMPTY-CLEANUP] Starting empty-folder cleanup for {folder}")
                 all_ssot_names = collect_all_ssot_folder_names(ssot_subtree)
+                # Exclude shared_engine_ops from being archived if empty
+                all_ssot_names.add("shared_engine_ops") 
+                
                 print(f"[DEBUG] Collected SSoT names: {len(all_ssot_names)} names")
-                # Show first 20 SSoT names to debug incorrect inclusion
                 ssot_sample = sorted(list(all_ssot_names))[:20]
                 print(f"[DEBUG] SSoT names sample: {ssot_sample}")
                 empty_folders_logged = []
@@ -1128,10 +1325,6 @@ DO NOT REMOVE during Phase 1."""
                     print(f"[DEBUG] Pass {passes}: Starting rglob scan...")
                     all_dirs = [p for p in root_path.rglob("*") if p.is_dir()]
                     print(f"[DEBUG] Pass {passes}: rglob found {len(all_dirs)} total directories")
-                    
-                    # Show sample of directories found
-                    sample_dirs = [str(p.relative_to(root_path)) for p in all_dirs[:20]]
-                    print(f"[DEBUG] Sample directories: {sample_dirs}")
                     
                     empty_folders = []
                     filtered_phase1 = 0
@@ -1163,6 +1356,10 @@ DO NOT REMOVE during Phase 1."""
                         # Skip bucket directories
                         if path.name in {"_unassigned_unknown", "_unassigned_duplicates"}:
                             filtered_buckets += 1
+                            continue
+                        
+                        # Skip shared_engine_ops if it exists
+                        if path.name == "shared_engine_ops":
                             continue
 
                         # Only archive truly empty folders
@@ -1232,11 +1429,6 @@ DO NOT REMOVE during Phase 1."""
         borderline_archives = len(borderline_folders)
         file_moves = len([m for m in mappings if not m.is_duplicate and m.dest_rel])
         duplicate_routes = len([m for m in mappings if m.is_duplicate])
-        
-        # Count protected paths skipped during archival
-        protected_skips = 0
-        # This would be tracked during archive operations - for now using placeholder
-        # In a real implementation, this would be accumulated from archive operations
         
         # Print summary
         print(f"[SUMMARY] {folder}:")
@@ -1358,28 +1550,55 @@ def phase01_validate() -> int:
     ok("K9")
 
     # K6: at least one SSoT subtree matches a target root logical name.
-    for folder in TARGET_ROOTS:
-        logical_name = map_folder_to_logical(folder)
-        if logical_name in ssot_tree:
-            ok("K6")
+    # Strict check for required top-level keys
+    required_keys = {
+        "shared_engine_ops", "agentic_core", "apps_lic", "apps_rg", 
+        "config", "data", "observability", "prompt_governance", 
+        "runtime", "schemas", "scripts", "shared", "tests"
+    }
+    
+    found_keys = set(ssot.keys())
+    if required_keys.issubset(found_keys):
+        ok("K6")
+    else:
+        missing = required_keys - found_keys
+        bad("K6", f"Missing required top-level SSoT keys: {missing}")
+
+    # Helper to check for cognitive keys
+    def has_cognitive_keys(tree: dict) -> bool:
+        for k, v in tree.items():
+            if isinstance(k, str):
+                # Check for any L1-L5 or P1-P4 keys to ensure they don't leak to support domains
+                if re.match(r"^(L[1-5]|P[1-4])_", k):
+                    return True
+            if isinstance(v, dict) and has_cognitive_keys(v):
+                return True
+        return False
+
+    # Check cognitive keys don't leak into support domains
+    support_domains = ["config", "data", "observability", "prompt_governance", "runtime", "schemas", "scripts", "shared", "tests"]
+    leak_found = False
+    for dom in support_domains:
+        if dom in ssot and has_cognitive_keys(ssot[dom]):
+            leak_found = True
+            bad("K7", f"Cognitive keys (L*/P*) found in support domain: {dom}")
             break
-    else:
-        bad("K6", "No target root logical name found in SSoT YAML")
+    
+    if not leak_found:
+        # Check depth for K7 as well
+        def validate_yaml_normalization(tree: dict, depth: int = 0) -> bool:
+            if depth > MAX_DEPTH:
+                return False
+            for value in tree.values():
+                if isinstance(value, dict):
+                    if not validate_yaml_normalization(value, depth + 1):
+                        return False
+            return True
 
-    # K7: SSoT depth <= MAX_DEPTH
-    def validate_yaml_normalization(tree: dict, depth: int = 0) -> bool:
-        if depth > MAX_DEPTH:
-            return False
-        for value in tree.values():
-            if isinstance(value, dict):
-                if not validate_yaml_normalization(value, depth + 1):
-                    return False
-        return True
-
-    if validate_yaml_normalization(ssot_tree):
-        ok("K7")
-    else:
-        bad("K7", "SSoT YAML normalization failed - depth exceeded or invalid structure")
+        if validate_yaml_normalization(ssot_tree):
+            ok("K7")
+        else:
+            bad("K7", "SSoT YAML normalization failed - depth exceeded or invalid structure")
 
     # K10–K37 — We treat these as satisfied if FS scan succeeds
     # and Phase 1 is configured for non-destructive moves only.
