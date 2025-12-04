@@ -36,3 +36,6 @@ outputs/
 logs/
 !observability/logs/
 
+# semantic cache - generated artifacts (exclude from git)
+06_data/semantic_cache/
+
