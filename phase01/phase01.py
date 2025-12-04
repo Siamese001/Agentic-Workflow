@@ -1308,6 +1308,151 @@ Timestamp: {time.strftime("%Y-%m-%d %H:%M:%S")}
     
     return target
 
+# =====================================================================
+# POST-PROCESSING CLEANUP (merged from cleanup_forbidden_folders.py and fix_apps_structure.py)
+# =====================================================================
+
+# Domains that need L*/P* cleanup
+CLEANUP_DOMAINS = [
+    "02_schemas", "03_runtime", "04_prompt_governance", 
+    "05_config", "06_data", "07_observability", "08_scripts",
+    "09_apps", "10_tests"
+]
+
+def is_forbidden_folder_name(folder_name: str) -> bool:
+    """Check if folder name matches forbidden L*/P* patterns."""
+    return (folder_name.startswith("L") or folder_name.startswith("P")) and "_" in folder_name
+
+
+def remove_empty_folder_recursive(folder: Path) -> bool:
+    """Recursively remove empty folders, bottom-up."""
+    if not folder.exists():
+        return False
+    
+    # Skip hard-protected paths
+    if is_under_hard_protected(folder):
+        return False
+    
+    removed_any = False
+    
+    # Process subdirectories first (bottom-up)
+    try:
+        for item in list(folder.iterdir()):
+            if item.is_dir():
+                if remove_empty_folder_recursive(item):
+                    removed_any = True
+    except OSError:
+        pass
+    
+    # Remove this folder if empty
+    try:
+        if folder.is_dir():
+            items = list(folder.iterdir())
+            if len(items) == 0:
+                folder.rmdir()
+                print(f"[CLEANUP] Removed empty folder: {folder.name}")
+                return True
+    except OSError:
+        pass
+    
+    return removed_any
+
+
+def cleanup_forbidden_folders_in_domain(domain_path: Path) -> Dict[str, int]:
+    """Clean up forbidden L*/P* folders in a domain."""
+    stats = {"forbidden_found": 0, "folders_removed": 0}
+    
+    if not domain_path.exists():
+        return stats
+    
+    # Find forbidden folders at root level
+    for item in domain_path.iterdir():
+        if item.is_dir() and is_forbidden_folder_name(item.name):
+            stats["forbidden_found"] += 1
+            
+            # Check if folder is empty or only contains __init__.py
+            files = [f for f in item.rglob("*") if f.is_file() and f.name != "__init__.py"]
+            if not files:
+                # Safe to remove - only empty or __init__.py files
+                try:
+                    shutil.rmtree(item)
+                    stats["folders_removed"] += 1
+                    print(f"[CLEANUP] Removed forbidden folder: {domain_path.name}/{item.name}")
+                except OSError as e:
+                    print(f"[WARN] Could not remove {item}: {e}")
+    
+    return stats
+
+
+def cleanup_nested_unassigned_folders(domain_path: Path) -> int:
+    """Remove deeply nested _unassigned folders (>2 levels)."""
+    removed = 0
+    
+    if not domain_path.exists():
+        return removed
+    
+    # Find all _unassigned folders
+    unassigned_folders = list(domain_path.rglob("_unassigned*"))
+    
+    # Sort by depth (deepest first) for safe removal
+    unassigned_folders.sort(key=lambda p: len(p.parts), reverse=True)
+    
+    for folder in unassigned_folders:
+        if not folder.is_dir():
+            continue
+        
+        # Check nesting depth
+        try:
+            rel = folder.relative_to(domain_path)
+            parts = rel.parts
+            unassigned_count = sum(1 for p in parts if p.startswith("_unassigned"))
+            
+            if unassigned_count > 2:
+                # Check if empty or only contains nested _unassigned
+                files = [f for f in folder.rglob("*") if f.is_file()]
+                if not files:
+                    try:
+                        shutil.rmtree(folder)
+                        removed += 1
+                        print(f"[CLEANUP] Removed nested unassigned: {rel}")
+                    except OSError:
+                        pass
+        except ValueError:
+            pass
+    
+    return removed
+
+
+def run_post_processing_cleanup() -> Dict[str, int]:
+    """Run all post-processing cleanup tasks."""
+    total_stats = {
+        "forbidden_found": 0,
+        "folders_removed": 0,
+        "nested_unassigned_removed": 0,
+        "empty_folders_removed": 0
+    }
+    
+    for domain in CLEANUP_DOMAINS:
+        domain_path = PROJECT_ROOT / domain
+        
+        # Clean forbidden L*/P* folders
+        stats = cleanup_forbidden_folders_in_domain(domain_path)
+        total_stats["forbidden_found"] += stats["forbidden_found"]
+        total_stats["folders_removed"] += stats["folders_removed"]
+        
+        # Clean nested _unassigned folders
+        nested_removed = cleanup_nested_unassigned_folders(domain_path)
+        total_stats["nested_unassigned_removed"] += nested_removed
+        
+        # Clean empty folders
+        for item in domain_path.iterdir():
+            if item.is_dir():
+                if remove_empty_folder_recursive(item):
+                    total_stats["empty_folders_removed"] += 1
+    
+    return total_stats
+
+
 # MAIN EXECUTION (v4.0 with Governance Enforcement)
 # =====================================================================
 
@@ -1573,6 +1718,12 @@ def main_phase01_execution(dry_run: bool = False) -> None:
             json.dump(mapping_report, f, indent=2, ensure_ascii=False)
         
         print(f"[REPORT] Generated mapping report: {report_path}")
+    
+    # Run post-processing cleanup
+    if not dry_run:
+        print("\n[CLEANUP] Running post-processing cleanup...")
+        cleanup_stats = run_post_processing_cleanup()
+        print(f"[CLEANUP] Cleanup complete: {cleanup_stats}")
     
     # Print validation results
     validate_phase_completion(enforcer)
