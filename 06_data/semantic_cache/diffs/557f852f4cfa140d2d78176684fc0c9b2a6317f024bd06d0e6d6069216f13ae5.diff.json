@@ -1,9 +1,5 @@
 {
   "hash": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/dag/test_dag_executor_basic.py",
-  "generated_at": "2025-12-03T17:47:45.619364",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

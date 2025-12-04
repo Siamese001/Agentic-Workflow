@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/core/di_container.py
-# Hash: None
-# Type: RG
-# Size: 4102 bytes
+{
+  "hash": "8dc024024bdc7c3641cbbe8e9f2728b13e7417804ec75bacb1cbb59ca08c9157",
+  "kind": "embedding"
+}

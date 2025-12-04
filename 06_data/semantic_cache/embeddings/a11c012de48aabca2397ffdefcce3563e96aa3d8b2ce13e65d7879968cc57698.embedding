@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/l5/safety_validator.py
-# Hash: None
-# Type: RG
-# Size: 11006 bytes
+{
+  "hash": "a11c012de48aabca2397ffdefcce3563e96aa3d8b2ce13e65d7879968cc57698",
+  "kind": "embedding"
+}

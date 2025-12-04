@@ -1,11 +1,4 @@
 {
   "hash": "005653e7868b7f5d51d8f34f94c89c38fa6de5e64f45d4ae628710652af0c773",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/fix_imports.py",
-  "generated_at": "2025-12-03T17:47:45.519719",
-  "file_size": 3409,
-  "modified_time": 1764610057.8109057,
-  "sha256": "005653e7868b7f5d51d8f34f94c89c38fa6de5e64f45d4ae628710652af0c773",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

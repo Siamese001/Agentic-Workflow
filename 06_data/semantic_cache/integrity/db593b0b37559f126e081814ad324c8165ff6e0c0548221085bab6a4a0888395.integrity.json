@@ -1,11 +1,4 @@
 {
   "hash": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_kg_components.py",
-  "generated_at": "2025-12-03T17:47:45.803948",
-  "file_size": 13072,
-  "modified_time": 1764610060.0975258,
-  "sha256": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

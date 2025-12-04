@@ -1,9 +1,5 @@
 {
   "hash": "e4f608b8528336abd55a4127a90a63fe983dafaf79e3ceecb41a2e87398eaf6a",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/simulation/metrics.py",
-  "generated_at": "2025-12-03T17:47:46.214944",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

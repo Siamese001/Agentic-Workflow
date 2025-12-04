@@ -1,11 +1,16 @@
 {
   "hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Monolithic/test_lic_v11_10.py",
-  "generated_at": "2025-12-03T17:47:46.660640",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 45899,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Monolithic",
+      "relative": "test_lic_v11_10.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Monolithic",
+      "relative": "test_lic_v11_10.py"
+    }
+  ]
 }

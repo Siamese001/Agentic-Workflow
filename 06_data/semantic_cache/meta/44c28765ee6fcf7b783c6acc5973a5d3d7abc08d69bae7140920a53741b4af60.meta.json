@@ -1,11 +1,11 @@
 {
   "hash": "44c28765ee6fcf7b783c6acc5973a5d3d7abc08d69bae7140920a53741b4af60",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/03_dag_workflow_topology.md",
-  "generated_at": "2025-12-03T17:47:45.577487",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 839,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "windsurf_rules/03_dag_workflow_topology.md"
+    }
+  ]
 }

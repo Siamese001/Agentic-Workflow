@@ -1,11 +1,4 @@
 {
   "hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/microvm.py",
-  "generated_at": "2025-12-03T17:47:46.124463",
-  "file_size": 2632,
-  "modified_time": 1764610058.5130906,
-  "sha256": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

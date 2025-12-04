@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.51.json
-# Hash: None
-# Type: LIC
-# Size: 194177 bytes
+{
+  "hash": "a2ad5d393e18d8f010170a74da36a48df569c9f0e11fc3bda2c37315fc2427d6",
+  "kind": "embedding"
+}

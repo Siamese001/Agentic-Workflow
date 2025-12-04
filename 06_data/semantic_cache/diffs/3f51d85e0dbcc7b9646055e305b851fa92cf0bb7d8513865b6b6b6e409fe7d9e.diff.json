@@ -1,9 +1,5 @@
 {
   "hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/run_workflow.py",
-  "generated_at": "2025-12-03T17:47:47.989532",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

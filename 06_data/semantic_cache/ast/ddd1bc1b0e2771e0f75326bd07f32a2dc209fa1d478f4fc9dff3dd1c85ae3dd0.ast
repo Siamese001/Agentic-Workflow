@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/deprecated in v13/validation_LIC.py
-# Hash: None
-# Type: LIC
-# Size: 22331 bytes
+{
+  "hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/deprecated in v13/validation_LIC.py"
+  ]
+}

@@ -1,9 +1,4 @@
 {
   "hash": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/requirements.txt",
-  "generated_at": "2025-12-03T17:47:44.717886",
-  "golden_status": "verified",
-  "checksum": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e"
+  "kind": "golden"
 }

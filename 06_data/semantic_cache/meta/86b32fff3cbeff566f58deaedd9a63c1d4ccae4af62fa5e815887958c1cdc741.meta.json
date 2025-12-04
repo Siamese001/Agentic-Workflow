@@ -1,11 +1,11 @@
 {
   "hash": "86b32fff3cbeff566f58deaedd9a63c1d4ccae4af62fa5e815887958c1cdc741",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/fs_template.py",
-  "generated_at": "2025-12-03T17:47:46.120612",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 491,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/sandbox/fs_template.py"
+    }
+  ]
 }

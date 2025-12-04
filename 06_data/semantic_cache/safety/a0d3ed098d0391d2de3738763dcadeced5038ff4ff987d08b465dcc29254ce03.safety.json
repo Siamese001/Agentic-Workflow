@@ -1,9 +1,5 @@
 {
   "hash": "a0d3ed098d0391d2de3738763dcadeced5038ff4ff987d08b465dcc29254ce03",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_bias_auditor.py",
-  "generated_at": "2025-12-03T17:47:46.506468",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

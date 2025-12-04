@@ -1,11 +1,4 @@
 {
   "hash": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/rules_engine.py",
-  "generated_at": "2025-12-03T17:47:46.043287",
-  "file_size": 2577,
-  "modified_time": 1764610058.7080574,
-  "sha256": "6dc011c4c88d3fa3cfb1bc2df0f039c85c434fa6019bd5399bc5b63c2d1c38c6",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,8 +1,7 @@
 {
   "hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/adapters(1).py",
-  "generated_at": "2025-12-03T17:47:45.228265",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

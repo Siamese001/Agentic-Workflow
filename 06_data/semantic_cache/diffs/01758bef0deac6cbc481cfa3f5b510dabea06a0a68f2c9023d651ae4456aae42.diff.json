@@ -1,9 +1,5 @@
 {
   "hash": "01758bef0deac6cbc481cfa3f5b510dabea06a0a68f2c9023d651ae4456aae42",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag_engine/executor.py",
-  "generated_at": "2025-12-03T17:47:46.059934",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/injection_detection(1).py",
-  "generated_at": "2025-12-03T17:47:45.242089",
-  "file_size": 17954,
-  "modified_time": 1764610058.9179442,
-  "sha256": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

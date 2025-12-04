@@ -1,5 +1,8 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/retrievers/bm25(1).py
-# Hash: None
-# Type: RG
-# Size: 2668 bytes
+{
+  "hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/retrievers/bm25(1).py",
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/retrievers/bm25.py"
+  ]
+}

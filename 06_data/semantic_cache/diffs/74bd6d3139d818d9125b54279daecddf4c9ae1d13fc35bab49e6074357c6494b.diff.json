@@ -1,9 +1,5 @@
 {
   "hash": "74bd6d3139d818d9125b54279daecddf4c9ae1d13fc35bab49e6074357c6494b",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-03-2025_v7.8.json",
-  "generated_at": "2025-12-03T17:47:46.909074",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

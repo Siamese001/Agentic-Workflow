@@ -1,11 +1,11 @@
 {
   "hash": "530ed0317ea751e41ee85bb864726f8c6e00fbccd1e51e29de9702915d140e27",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_uncertainty_model.py",
-  "generated_at": "2025-12-03T17:47:45.692069",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 570,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/metacognition/test_uncertainty_model.py"
+    }
+  ]
 }

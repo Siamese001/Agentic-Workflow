@@ -1,9 +1,5 @@
 {
   "hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_hypothesis_evaluation.py",
-  "generated_at": "2025-12-03T17:47:45.666998",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

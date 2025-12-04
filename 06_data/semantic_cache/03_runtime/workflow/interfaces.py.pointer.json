@@ -1,9 +1,0 @@
-{
-  "hash": "3a627c38518409d0eba317765cda2a3b2a83ce96e3ac7d1551d362e718a75911",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/interfaces.py",
-  "canonical_relative": "workflow/interfaces.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.138119"
-}

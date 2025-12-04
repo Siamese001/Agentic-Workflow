@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/hybrid_ranker.py
-# Hash: None
-# Type: RG
-# Size: 3912 bytes
+{
+  "hash": "aaaf900d2cf1d5d27c0fd14512b4b7cd561fd40954d2dcd05f388fc9104a880d",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/hybrid_ranker.py"
+  ]
+}

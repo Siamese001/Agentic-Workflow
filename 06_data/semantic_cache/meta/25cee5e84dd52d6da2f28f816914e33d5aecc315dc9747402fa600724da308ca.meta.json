@@ -1,11 +1,11 @@
 {
   "hash": "25cee5e84dd52d6da2f28f816914e33d5aecc315dc9747402fa600724da308ca",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/__init__.py",
-  "generated_at": "2025-12-03T17:47:45.043059",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 198,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l1/__init__.py"
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 {
   "hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_retrieval_latency_slo.py",
-  "generated_at": "2025-12-03T17:47:46.486771",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 1217,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/regression/test_retrieval_latency_slo.py"
+    }
+  ]
 }

@@ -1,11 +1,4 @@
 {
   "hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/prompts_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.031054",
-  "file_size": 8878,
-  "modified_time": 1764610055.9995582,
-  "sha256": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/workflow_graph.py
-# Hash: None
-# Type: RG
-# Size: 22785 bytes
+{
+  "hash": "ed9f96c034b11943f7a8dffbcbc218effb7ac59356cf96a1babe8030158c776e",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/orchestration/workflow_graph.py"
+  ]
+}

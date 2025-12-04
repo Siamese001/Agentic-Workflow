@@ -1,11 +1,11 @@
 {
   "hash": "10ca7257f0569bb34e3e6f0a437316ce24a74e58ecf82e3a03461e6b35b97856",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/safety_executor.py",
-  "generated_at": "2025-12-03T17:47:45.099269",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1989,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l2/safety_executor.py"
+    }
+  ]
 }

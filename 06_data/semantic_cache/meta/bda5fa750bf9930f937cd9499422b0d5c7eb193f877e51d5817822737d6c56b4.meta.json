@@ -1,11 +1,11 @@
 {
   "hash": "bda5fa750bf9930f937cd9499422b0d5c7eb193f877e51d5817822737d6c56b4",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/drafting.py",
-  "generated_at": "2025-12-03T17:47:46.382363",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 17170,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "stacks_v10_7/drafting.py"
+    }
+  ]
 }

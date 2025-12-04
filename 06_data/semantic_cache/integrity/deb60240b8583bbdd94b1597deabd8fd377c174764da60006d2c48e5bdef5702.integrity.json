@@ -1,11 +1,4 @@
 {
   "hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp.manifest.json",
-  "generated_at": "2025-12-03T17:47:46.283035",
-  "file_size": 750,
-  "modified_time": 1764609961.3307762,
-  "sha256": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

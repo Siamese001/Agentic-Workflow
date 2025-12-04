@@ -1,11 +1,4 @@
 {
   "hash": "78c6db7f6bacaaee8228cc26e3898ddc71b1ba0690016a04a8fdb86dce200962",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_release_slos.py",
-  "generated_at": "2025-12-03T17:47:46.445611",
-  "file_size": 776,
-  "modified_time": 1764609961.5137856,
-  "sha256": "78c6db7f6bacaaee8228cc26e3898ddc71b1ba0690016a04a8fdb86dce200962",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

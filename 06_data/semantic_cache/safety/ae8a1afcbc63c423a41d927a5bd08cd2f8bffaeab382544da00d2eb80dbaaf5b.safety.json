@@ -1,9 +1,5 @@
 {
   "hash": "ae8a1afcbc63c423a41d927a5bd08cd2f8bffaeab382544da00d2eb80dbaaf5b",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/bullet.py",
-  "generated_at": "2025-12-03T17:47:46.376877",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

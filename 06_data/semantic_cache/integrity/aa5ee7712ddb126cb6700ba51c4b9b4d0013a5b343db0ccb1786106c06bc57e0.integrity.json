@@ -1,11 +1,4 @@
 {
   "hash": "aa5ee7712ddb126cb6700ba51c4b9b4d0013a5b343db0ccb1786106c06bc57e0",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/model_routing/selector.py",
-  "generated_at": "2025-12-03T17:47:46.090805",
-  "file_size": 1204,
-  "modified_time": 1764610058.5897996,
-  "sha256": "aa5ee7712ddb126cb6700ba51c4b9b4d0013a5b343db0ccb1786106c06bc57e0",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

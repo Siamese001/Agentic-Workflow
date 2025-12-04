@@ -1,9 +1,0 @@
-{
-  "hash": "6e6886d9ee7258b8cf6c4e7b12ae22e59cad3d51bcba1aa0d2b965cf91347294",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/registry.py",
-  "canonical_relative": "workflow/registry.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.178759"
-}

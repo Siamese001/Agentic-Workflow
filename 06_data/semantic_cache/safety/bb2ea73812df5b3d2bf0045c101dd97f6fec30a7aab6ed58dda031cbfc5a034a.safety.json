@@ -1,9 +1,5 @@
 {
   "hash": "bb2ea73812df5b3d2bf0045c101dd97f6fec30a7aab6ed58dda031cbfc5a034a",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_7.py",
-  "generated_at": "2025-12-03T17:47:47.473458",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

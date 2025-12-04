@@ -1,11 +1,4 @@
 {
   "hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
-  "generated_at": "2025-12-03T17:47:47.528834",
-  "file_size": 68830,
-  "modified_time": 1764609962.71807,
-  "sha256": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

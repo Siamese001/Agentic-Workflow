@@ -1,11 +1,11 @@
 {
   "hash": "40a7d909b3faee28f450eece387c251ba9c5b94ea56737d48e9e6fce7297ae2c",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/update_imports_reorganization.py",
-  "generated_at": "2025-12-03T17:47:45.554314",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 7743,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tools/update_imports_reorganization.py"
+    }
+  ]
 }

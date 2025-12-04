@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/providers/anthropic_client.py
-# Hash: None
-# Type: RG
-# Size: 1338 bytes
+{
+  "hash": "f456031a9d5cad4c69093285df831bbb2b048a5fe0e65d38eb03a4afc3dec8a8",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/providers/anthropic_client.py"
+  ]
+}

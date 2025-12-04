@@ -1,11 +1,4 @@
 {
   "hash": "9dd681fda635d1d4f795047f9914835035146b90e7ecc2fa897f3a8e5d8a021b",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/state_manager.py",
-  "generated_at": "2025-12-03T17:47:45.200222",
-  "file_size": 7979,
-  "modified_time": 1764610061.0137234,
-  "sha256": "9dd681fda635d1d4f795047f9914835035146b90e7ecc2fa897f3a8e5d8a021b",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

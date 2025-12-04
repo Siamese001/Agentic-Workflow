@@ -1,11 +1,11 @@
 {
   "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/NEO4J_INTEGRATION_README.md",
-  "generated_at": "2025-12-03T17:47:45.869133",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 6608,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/integration/NEO4J_INTEGRATION_README.md"
+    }
+  ]
 }

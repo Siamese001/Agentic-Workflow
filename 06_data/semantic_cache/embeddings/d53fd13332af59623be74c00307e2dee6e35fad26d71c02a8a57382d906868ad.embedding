@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/e2e/test_policy_feedback.py
-# Hash: None
-# Type: LIC
-# Size: 901 bytes
+{
+  "hash": "d53fd13332af59623be74c00307e2dee6e35fad26d71c02a8a57382d906868ad",
+  "kind": "embedding"
+}

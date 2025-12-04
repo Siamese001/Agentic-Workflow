@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/multi_agent.py
-# Hash: None
-# Type: RG
-# Size: 13710 bytes
+{
+  "hash": "678711ee128a093c38bf9c2da423fec7f3bb4983213f70afb8fd82c7ce31d0da",
+  "kind": "embedding"
+}

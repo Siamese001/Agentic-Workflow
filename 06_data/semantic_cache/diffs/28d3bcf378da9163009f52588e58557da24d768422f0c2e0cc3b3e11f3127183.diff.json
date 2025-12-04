@@ -1,9 +1,5 @@
 {
   "hash": "28d3bcf378da9163009f52588e58557da24d768422f0c2e0cc3b3e11f3127183",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/temporal_kg_self_healing.py",
-  "generated_at": "2025-12-03T17:47:45.350962",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

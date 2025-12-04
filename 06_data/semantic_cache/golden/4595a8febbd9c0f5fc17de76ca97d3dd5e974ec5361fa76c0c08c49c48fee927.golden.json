@@ -1,9 +1,4 @@
 {
   "hash": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/retrieval_clients.py",
-  "generated_at": "2025-12-03T17:47:46.299403",
-  "golden_status": "verified",
-  "checksum": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927"
+  "kind": "golden"
 }

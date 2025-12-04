@@ -1,11 +1,11 @@
 {
   "hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/memory_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.613936",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 14028,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "memory_LIC.py"
+    }
+  ]
 }

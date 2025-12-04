@@ -1,11 +1,16 @@
 {
   "hash": "9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/agentic_design_v10_7.md",
-  "generated_at": "2025-12-03T17:47:46.240852",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 160910,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "agentic_design_v10_7.md"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "agentic_design_v10_7.md"
+    }
+  ]
 }

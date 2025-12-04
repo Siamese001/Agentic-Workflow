@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/unit/test_reasoning_toggles.py
-# Hash: None
-# Type: LIC
-# Size: 847 bytes
+{
+  "hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
+  "kind": "embedding"
+}

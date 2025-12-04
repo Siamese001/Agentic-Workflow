@@ -1,11 +1,16 @@
 {
   "hash": "ab8cf69bc1258842a0df54cfa216a9a389a5c993e8ac14cd75f19c454aaa86ea",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/prompt_system_v10_10(1).py",
-  "generated_at": "2025-12-03T17:47:44.939336",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 11026,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l1/prompt_system_v10_10(1).py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l1/prompt_system_v10_10.py"
+    }
+  ]
 }

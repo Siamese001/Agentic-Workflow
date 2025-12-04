@@ -1,11 +1,11 @@
 {
   "hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/01_core_governance.md",
-  "generated_at": "2025-12-03T17:47:45.570277",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 1654,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "windsurf_rules/01_core_governance.md"
+    }
+  ]
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/adapter.py",
-  "canonical_relative": "workflow/adapter.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.285988"
-}

@@ -1,11 +1,11 @@
 {
   "hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/decisions.py",
-  "generated_at": "2025-12-03T17:47:46.029433",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2643,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/control_plane/decisions.py"
+    }
+  ]
 }

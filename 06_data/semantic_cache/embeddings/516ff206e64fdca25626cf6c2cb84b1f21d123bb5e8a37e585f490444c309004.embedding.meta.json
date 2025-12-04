@@ -1,10 +1,4 @@
 {
   "hash": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/errors.py",
-  "generated_at": "2025-12-03T17:47:44.777388",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

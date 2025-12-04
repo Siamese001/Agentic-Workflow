@@ -1,8 +1,7 @@
 {
   "hash": "f3f7cc77e3a24776557aa9607d8d44bca10e136dbe353e8701602e4c1eac095e",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/requirements-dev.txt",
-  "generated_at": "2025-12-03T17:47:46.293073",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

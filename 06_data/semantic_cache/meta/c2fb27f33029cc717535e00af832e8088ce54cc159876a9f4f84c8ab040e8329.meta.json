@@ -1,11 +1,11 @@
 {
   "hash": "c2fb27f33029cc717535e00af832e8088ce54cc159876a9f4f84c8ab040e8329",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_metrics.py",
-  "generated_at": "2025-12-03T17:47:46.559209",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 1047,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/unit/test_qa_metrics.py"
+    }
+  ]
 }

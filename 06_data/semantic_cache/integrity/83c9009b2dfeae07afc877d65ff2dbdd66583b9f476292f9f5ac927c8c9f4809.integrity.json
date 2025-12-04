@@ -1,11 +1,4 @@
 {
   "hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/draft_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.131502",
-  "file_size": 1342,
-  "modified_time": 1764610058.1816733,
-  "sha256": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

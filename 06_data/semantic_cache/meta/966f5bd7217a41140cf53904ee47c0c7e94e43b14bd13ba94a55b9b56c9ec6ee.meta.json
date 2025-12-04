@@ -1,11 +1,11 @@
 {
   "hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_fs_isolation.py",
-  "generated_at": "2025-12-03T17:47:45.729811",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 294,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/sandbox/test_fs_isolation.py"
+    }
+  ]
 }

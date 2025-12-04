@@ -1,8 +1,7 @@
 {
   "hash": "d7c1f405e4868c29678f186b6e90fb4ab2a44b7c82d891f6c0cba868522c6643",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/models.py",
-  "generated_at": "2025-12-03T17:47:46.125881",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

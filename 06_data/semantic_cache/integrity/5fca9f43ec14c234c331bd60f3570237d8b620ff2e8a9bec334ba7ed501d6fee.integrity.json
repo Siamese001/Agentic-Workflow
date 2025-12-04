@@ -1,11 +1,4 @@
 {
   "hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/evaluator.py",
-  "generated_at": "2025-12-03T17:47:45.952832",
-  "file_size": 870,
-  "modified_time": 1764610059.2557726,
-  "sha256": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

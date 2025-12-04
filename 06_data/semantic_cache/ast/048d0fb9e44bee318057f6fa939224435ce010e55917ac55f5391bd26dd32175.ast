@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/integration/test_autotune_latency_gain.py
-# Hash: None
-# Type: LIC
-# Size: 567 bytes
+{
+  "hash": "048d0fb9e44bee318057f6fa939224435ce010e55917ac55f5391bd26dd32175",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/tests/integration/test_autotune_latency_gain.py"
+  ]
+}

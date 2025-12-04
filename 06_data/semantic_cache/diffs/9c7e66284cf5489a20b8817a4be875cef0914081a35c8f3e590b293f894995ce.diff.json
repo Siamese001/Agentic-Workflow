@@ -1,9 +1,5 @@
 {
   "hash": "9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/pydantic.py",
-  "generated_at": "2025-12-03T17:47:46.286152",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "3ce2c91f6cd2310bec8cd7a1b0a0bce38a6e864e92b4b538bc49c9ee3f32cb36",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_v11_1_Comprehensive_Test_Report.md",
-  "generated_at": "2025-12-03T17:47:47.534484",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 16937,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_v11_1_Comprehensive_Test_Report.md"
+    }
+  ]
 }

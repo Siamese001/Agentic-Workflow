@@ -1,9 +1,5 @@
 {
   "hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/sender_voice_profile.json",
-  "generated_at": "2025-12-03T17:47:46.325740",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

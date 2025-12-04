@@ -1,9 +1,5 @@
 {
   "hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/health_metrics.py",
-  "generated_at": "2025-12-03T17:47:46.207011",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

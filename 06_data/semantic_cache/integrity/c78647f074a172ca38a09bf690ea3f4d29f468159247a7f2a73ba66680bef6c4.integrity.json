@@ -1,11 +1,4 @@
 {
   "hash": "c78647f074a172ca38a09bf690ea3f4d29f468159247a7f2a73ba66680bef6c4",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/draft_executor.py",
-  "generated_at": "2025-12-03T17:47:45.053334",
-  "file_size": 1803,
-  "modified_time": 1764610058.7748497,
-  "sha256": "c78647f074a172ca38a09bf690ea3f4d29f468159247a7f2a73ba66680bef6c4",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

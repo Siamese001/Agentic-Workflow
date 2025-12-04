@@ -1,9 +1,5 @@
 {
   "hash": "0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/context_profile.py",
-  "generated_at": "2025-12-03T17:47:44.736638",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

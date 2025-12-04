@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/config/context_profile.py
-# Hash: None
-# Type: RG
-# Size: 325 bytes
+{
+  "hash": "0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4",
+  "kind": "embedding"
+}

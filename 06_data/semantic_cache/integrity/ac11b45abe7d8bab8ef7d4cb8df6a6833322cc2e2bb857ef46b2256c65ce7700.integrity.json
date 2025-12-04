@@ -1,11 +1,4 @@
 {
   "hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/LIC_V2_FILES_SUMMARY.md",
-  "generated_at": "2025-12-03T17:47:46.609839",
-  "file_size": 6852,
-  "modified_time": 1764609961.276022,
-  "sha256": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

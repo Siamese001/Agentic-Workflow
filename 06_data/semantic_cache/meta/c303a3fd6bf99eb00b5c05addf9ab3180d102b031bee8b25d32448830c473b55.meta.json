@@ -1,11 +1,11 @@
 {
   "hash": "c303a3fd6bf99eb00b5c05addf9ab3180d102b031bee8b25d32448830c473b55",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/README.md",
-  "generated_at": "2025-12-03T17:47:45.491297",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 9221,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/README.md"
+    }
+  ]
 }

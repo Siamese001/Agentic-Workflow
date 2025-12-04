@@ -1,9 +1,4 @@
 {
   "hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/networking.py",
-  "generated_at": "2025-12-03T17:47:46.132986",
-  "golden_status": "verified",
-  "checksum": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e"
+  "kind": "golden"
 }

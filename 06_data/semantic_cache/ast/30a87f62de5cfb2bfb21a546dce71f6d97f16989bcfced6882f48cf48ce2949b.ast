@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py
-# Hash: None
-# Type: LIC
-# Size: 502 bytes
+{
+  "hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py"
+  ]
+}

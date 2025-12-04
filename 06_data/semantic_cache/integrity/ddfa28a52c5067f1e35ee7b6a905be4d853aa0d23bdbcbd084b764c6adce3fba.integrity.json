@@ -1,11 +1,4 @@
 {
   "hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/vm_manager.py",
-  "generated_at": "2025-12-03T17:47:46.142745",
-  "file_size": 667,
-  "modified_time": 1764610058.528943,
-  "sha256": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

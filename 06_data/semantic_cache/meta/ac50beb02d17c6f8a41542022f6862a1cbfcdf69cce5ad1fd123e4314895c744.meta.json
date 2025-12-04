@@ -1,11 +1,11 @@
 {
   "hash": "ac50beb02d17c6f8a41542022f6862a1cbfcdf69cce5ad1fd123e4314895c744",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/strategy_ensemble_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.336545",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 13546,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "strategy_ensemble_v10_7.py"
+    }
+  ]
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_triplet_store_and_entities.py",
-  "canonical_relative": "workflow/test_triplet_store_and_entities.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.228527"
-}

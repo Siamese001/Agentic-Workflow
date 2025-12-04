@@ -1,9 +1,0 @@
-{
-  "hash": "cd56a24629295b64126a7a6068d3c204cbb668298288e548ce42a9a0663f795b",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_sandbox_observability.py",
-  "canonical_relative": "workflow/test_sandbox_observability.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.218891"
-}

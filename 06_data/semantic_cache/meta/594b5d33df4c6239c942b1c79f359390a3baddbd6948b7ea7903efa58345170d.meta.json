@@ -1,11 +1,11 @@
 {
   "hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/intelligence_service_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.606948",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 21858,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "intelligence_service_LIC.py"
+    }
+  ]
 }

@@ -1,11 +1,4 @@
 {
   "hash": "bf20c0b9f631cc139ee7d4d7143eeeab6e6d0651fbe1660510b7ef1fae9f718a",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_autotune_regression.py",
-  "generated_at": "2025-12-03T17:47:46.474971",
-  "file_size": 505,
-  "modified_time": 1764609961.5695736,
-  "sha256": "bf20c0b9f631cc139ee7d4d7143eeeab6e6d0651fbe1660510b7ef1fae9f718a",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

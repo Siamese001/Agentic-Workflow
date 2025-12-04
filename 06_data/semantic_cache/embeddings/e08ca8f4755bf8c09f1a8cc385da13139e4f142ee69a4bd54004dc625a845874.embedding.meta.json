@@ -1,10 +1,4 @@
 {
   "hash": "e08ca8f4755bf8c09f1a8cc385da13139e4f142ee69a4bd54004dc625a845874",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/REFACTORING_SUMMARY.md",
-  "generated_at": "2025-12-03T17:47:45.913127",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

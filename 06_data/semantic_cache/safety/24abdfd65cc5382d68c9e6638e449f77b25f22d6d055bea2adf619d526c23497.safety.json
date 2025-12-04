@@ -1,9 +1,5 @@
 {
   "hash": "24abdfd65cc5382d68c9e6638e449f77b25f22d6d055bea2adf619d526c23497",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/job_input.json",
-  "generated_at": "2025-12-03T17:47:46.256710",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

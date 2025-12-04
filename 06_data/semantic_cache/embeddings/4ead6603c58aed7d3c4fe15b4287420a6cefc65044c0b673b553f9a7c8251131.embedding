@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tools/import_mapping_strategy.py
-# Hash: None
-# Type: RG
-# Size: 5668 bytes
+{
+  "hash": "4ead6603c58aed7d3c4fe15b4287420a6cefc65044c0b673b553f9a7c8251131",
+  "kind": "embedding"
+}

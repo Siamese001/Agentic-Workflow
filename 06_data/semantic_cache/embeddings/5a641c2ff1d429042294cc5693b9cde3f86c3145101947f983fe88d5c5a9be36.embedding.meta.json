@@ -1,10 +1,4 @@
 {
   "hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/model_routing/__init__.py",
-  "generated_at": "2025-12-03T17:47:45.942475",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

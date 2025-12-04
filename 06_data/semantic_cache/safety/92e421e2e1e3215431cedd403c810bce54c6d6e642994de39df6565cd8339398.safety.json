@@ -1,9 +1,5 @@
 {
   "hash": "92e421e2e1e3215431cedd403c810bce54c6d6e642994de39df6565cd8339398",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/refactoring/REORGANIZATION_PLAN.md",
-  "generated_at": "2025-12-03T17:47:45.883731",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_executor.py",
-  "generated_at": "2025-12-03T17:47:46.050933",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1803,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/dag/dag_executor.py"
+    }
+  ]
 }

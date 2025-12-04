@@ -1,9 +1,5 @@
 {
   "hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/microvm.py",
-  "generated_at": "2025-12-03T17:47:46.124051",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

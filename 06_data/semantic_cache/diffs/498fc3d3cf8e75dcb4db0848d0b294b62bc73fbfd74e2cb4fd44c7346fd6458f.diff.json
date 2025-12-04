@@ -1,9 +1,5 @@
 {
   "hash": "498fc3d3cf8e75dcb4db0848d0b294b62bc73fbfd74e2cb4fd44c7346fd6458f",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_PATCH_C023_C024_diff.json",
-  "generated_at": "2025-12-03T17:47:47.510797",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

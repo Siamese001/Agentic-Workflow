@@ -1,5 +1,9 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_kg_components.py
-# Hash: None
-# Type: RG
-# Size: 13072 bytes
+{
+  "hash": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_kg_components.py",
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_triplet_store_and_entities.py",
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/L4_memory_state/unit/test_triplet_store.py"
+  ]
+}

@@ -1,11 +1,4 @@
 {
   "hash": "59dc8859f25939dcc1dabc186c8431f064bffb95657a6c2c4da4eed0ec5c632a",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/pinecone_adapter.py",
-  "generated_at": "2025-12-03T17:47:45.194857",
-  "file_size": 13294,
-  "modified_time": 1764610061.0066445,
-  "sha256": "59dc8859f25939dcc1dabc186c8431f064bffb95657a6c2c4da4eed0ec5c632a",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

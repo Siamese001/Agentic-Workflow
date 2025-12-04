@@ -1,9 +1,5 @@
 {
   "hash": "c7ea402be4d44888ec79f4329463d2c4048da71831a826ef4daf2ad63bebd912",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_models.py",
-  "generated_at": "2025-12-03T17:47:45.736032",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

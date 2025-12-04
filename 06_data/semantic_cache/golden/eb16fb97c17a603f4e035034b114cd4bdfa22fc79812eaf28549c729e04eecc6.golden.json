@@ -1,9 +1,4 @@
 {
   "hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/architecture/FOLDER_STRUCTURE_GUIDE.md",
-  "generated_at": "2025-12-03T17:47:45.863248",
-  "golden_status": "verified",
-  "checksum": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6"
+  "kind": "golden"
 }

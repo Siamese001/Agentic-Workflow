@@ -1,9 +1,5 @@
 {
   "hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/PHASE_A_DISCOVERY_MAP.md",
-  "generated_at": "2025-12-03T17:47:45.899421",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

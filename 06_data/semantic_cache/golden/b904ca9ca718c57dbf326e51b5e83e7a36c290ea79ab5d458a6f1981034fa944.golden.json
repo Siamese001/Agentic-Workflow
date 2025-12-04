@@ -1,9 +1,4 @@
 {
   "hash": "b904ca9ca718c57dbf326e51b5e83e7a36c290ea79ab5d458a6f1981034fa944",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.00.json",
-  "generated_at": "2025-12-03T17:47:46.970335",
-  "golden_status": "verified",
-  "checksum": "b904ca9ca718c57dbf326e51b5e83e7a36c290ea79ab5d458a6f1981034fa944"
+  "kind": "golden"
 }

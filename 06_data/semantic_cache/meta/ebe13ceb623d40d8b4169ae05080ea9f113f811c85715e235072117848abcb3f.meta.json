@@ -1,11 +1,11 @@
 {
   "hash": "ebe13ceb623d40d8b4169ae05080ea9f113f811c85715e235072117848abcb3f",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_PATCH_v10.21_COMPREHENSIVE.json",
-  "generated_at": "2025-12-03T17:47:47.521717",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 47951,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_PATCH_v10.21_COMPREHENSIVE.json"
+    }
+  ]
 }

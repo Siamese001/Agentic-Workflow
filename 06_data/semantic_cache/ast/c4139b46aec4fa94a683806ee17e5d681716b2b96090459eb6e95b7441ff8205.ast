@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/schema_validation.py
-# Hash: None
-# Type: RG
-# Size: 2042 bytes
+{
+  "hash": "c4139b46aec4fa94a683806ee17e5d681716b2b96090459eb6e95b7441ff8205",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/meta/schema_validation.py"
+  ]
+}

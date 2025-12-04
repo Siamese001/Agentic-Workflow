@@ -1,9 +1,5 @@
 {
   "hash": "bd9370f4d90a1c7b70ccda8ebaab20bc4ee71553d86ab3b197cf90e69be57ad4",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/validation_LIC_v_12.py",
-  "generated_at": "2025-12-03T17:47:48.003827",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,9 +1,4 @@
 {
   "hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/config_profiles_v10_10.py",
-  "generated_at": "2025-12-03T17:47:44.731820",
-  "golden_status": "verified",
-  "checksum": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe"
+  "kind": "golden"
 }

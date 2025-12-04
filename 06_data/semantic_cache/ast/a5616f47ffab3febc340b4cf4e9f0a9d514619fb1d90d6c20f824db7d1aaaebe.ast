@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/gating.py
-# Hash: None
-# Type: RG
-# Size: 1297 bytes
+{
+  "hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/gating.py"
+  ]
+}

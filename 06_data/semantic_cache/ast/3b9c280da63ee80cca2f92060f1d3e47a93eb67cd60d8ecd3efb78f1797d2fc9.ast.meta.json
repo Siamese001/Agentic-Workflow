@@ -1,8 +1,7 @@
 {
   "hash": "3b9c280da63ee80cca2f92060f1d3e47a93eb67cd60d8ecd3efb78f1797d2fc9",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_microvm_basic.py",
-  "generated_at": "2025-12-03T17:47:45.730683",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

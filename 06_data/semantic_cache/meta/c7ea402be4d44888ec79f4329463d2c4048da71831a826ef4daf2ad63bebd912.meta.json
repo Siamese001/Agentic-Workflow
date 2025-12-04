@@ -1,11 +1,11 @@
 {
   "hash": "c7ea402be4d44888ec79f4329463d2c4048da71831a826ef4daf2ad63bebd912",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_models.py",
-  "generated_at": "2025-12-03T17:47:45.737527",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 687,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/sandbox/test_models.py"
+    }
+  ]
 }

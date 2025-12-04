@@ -1,11 +1,11 @@
 {
   "hash": "84bbb3f913852d356047ecc269412fe4b46e6f11b0036c6d774b86c9adcb04d9",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/database/graph_query.py",
-  "generated_at": "2025-12-03T17:47:44.801933",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 781,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "database/graph_query.py"
+    }
+  ]
 }

@@ -1,10 +1,4 @@
 {
   "hash": "45e7f701db45593dc4b5d96a9d00a0ee7df2d35d504d775c3e8b024e32f0054d",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/master_config_v10_7.json",
-  "generated_at": "2025-12-03T17:47:46.269267",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

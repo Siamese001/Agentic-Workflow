@@ -1,5 +1,8 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/root_docs/docs_overview(1).md
-# Hash: None
-# Type: RG
-# Size: 3032 bytes
+{
+  "hash": "5818c4357b37723c5aa323c3e226aa03f03b41b7518f128a485f1a6bec3775eb",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/root_docs/docs_overview(1).md",
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/root_docs/docs_overview.md"
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "hash": "ec9b378853a420f368caade49fd0a6cc00d00bfea9f6b101c791288bf34a8da3",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/requirements.txt",
-  "generated_at": "2025-12-03T17:47:45.495286",
-  "file_type": "RG",
-  "file_extension": ".txt",
-  "file_size": 23,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/requirements.txt"
+    }
+  ]
 }

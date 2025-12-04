@@ -1,9 +1,5 @@
 {
   "hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/v6_prompt_integration.py",
-  "generated_at": "2025-12-03T17:47:45.018424",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

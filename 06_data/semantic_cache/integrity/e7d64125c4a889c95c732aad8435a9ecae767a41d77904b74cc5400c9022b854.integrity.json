@@ -1,11 +1,4 @@
 {
   "hash": "e7d64125c4a889c95c732aad8435a9ecae767a41d77904b74cc5400c9022b854",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_PATCH_v10.20.json",
-  "generated_at": "2025-12-03T17:47:47.516388",
-  "file_size": 34691,
-  "modified_time": 1764609962.2651117,
-  "sha256": "e7d64125c4a889c95c732aad8435a9ecae767a41d77904b74cc5400c9022b854",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

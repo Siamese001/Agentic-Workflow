@@ -1,11 +1,11 @@
 {
   "hash": "7d9dc1c5dd64134b5be061e40cdfb98ffe6c697b700a2186957004800ce54590",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_analyzer.py",
-  "generated_at": "2025-12-03T17:47:45.507847",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 13459,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tools/dependency_analyzer.py"
+    }
+  ]
 }

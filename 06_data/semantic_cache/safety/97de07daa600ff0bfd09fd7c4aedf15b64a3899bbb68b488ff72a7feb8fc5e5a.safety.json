@@ -1,9 +1,5 @@
 {
   "hash": "97de07daa600ff0bfd09fd7c4aedf15b64a3899bbb68b488ff72a7feb8fc5e5a",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Multiple Prompt.md",
-  "generated_at": "2025-12-03T17:47:47.561153",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

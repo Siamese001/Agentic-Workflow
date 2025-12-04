@@ -1,11 +1,4 @@
 {
   "hash": "85b91550916bd3c440d4abdb89797712789e6592d3ed0eb459961e54746cddb1",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/adapters.py",
-  "generated_at": "2025-12-03T17:47:45.126949",
-  "file_size": 4844,
-  "modified_time": 1764610058.166152,
-  "sha256": "85b91550916bd3c440d4abdb89797712789e6592d3ed0eb459961e54746cddb1",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

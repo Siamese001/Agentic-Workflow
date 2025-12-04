@@ -1,11 +1,4 @@
 {
   "hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/tot.py",
-  "generated_at": "2025-12-03T17:47:46.114622",
-  "file_size": 1301,
-  "modified_time": 1764610058.4487784,
-  "sha256": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,9 +1,4 @@
 {
   "hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/chromadb/utils/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.590786",
-  "golden_status": "verified",
-  "checksum": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a"
+  "kind": "golden"
 }

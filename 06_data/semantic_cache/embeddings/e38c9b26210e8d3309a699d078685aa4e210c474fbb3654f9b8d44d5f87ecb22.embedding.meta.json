@@ -1,10 +1,4 @@
 {
   "hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
-  "generated_at": "2025-12-03T17:47:47.527361",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

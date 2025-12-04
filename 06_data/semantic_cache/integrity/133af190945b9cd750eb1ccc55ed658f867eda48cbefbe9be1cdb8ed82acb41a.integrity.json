@@ -1,11 +1,4 @@
 {
   "hash": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/pinned.py",
-  "generated_at": "2025-12-03T17:47:46.013648",
-  "file_size": 853,
-  "modified_time": 1764610058.654159,
-  "sha256": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/runner.py",
-  "generated_at": "2025-12-03T17:47:46.192434",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2042,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/golden_state/runner.py"
+    }
+  ]
 }

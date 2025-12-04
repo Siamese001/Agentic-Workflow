@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/slots.py
-# Hash: None
-# Type: RG
-# Size: 854 bytes
+{
+  "hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
+  "kind": "embedding"
+}

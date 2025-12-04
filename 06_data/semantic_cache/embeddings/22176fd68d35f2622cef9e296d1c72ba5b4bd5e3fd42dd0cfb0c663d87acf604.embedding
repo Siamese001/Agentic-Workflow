@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/integration/test_safe_route_equivalence.py
-# Hash: None
-# Type: LIC
-# Size: 451 bytes
+{
+  "hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
+  "kind": "embedding"
+}

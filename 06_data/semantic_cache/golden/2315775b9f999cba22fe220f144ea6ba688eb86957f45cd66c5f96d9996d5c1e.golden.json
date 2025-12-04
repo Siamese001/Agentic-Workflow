@@ -1,9 +1,4 @@
 {
   "hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/routing(1).py",
-  "generated_at": "2025-12-03T17:47:45.342856",
-  "golden_status": "verified",
-  "checksum": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e"
+  "kind": "golden"
 }

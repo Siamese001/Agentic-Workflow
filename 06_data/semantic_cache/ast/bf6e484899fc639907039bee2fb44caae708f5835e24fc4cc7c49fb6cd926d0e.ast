@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/l4/temporal_kg.py
-# Hash: None
-# Type: RG
-# Size: 16881 bytes
+{
+  "hash": "bf6e484899fc639907039bee2fb44caae708f5835e24fc4cc7c49fb6cd926d0e",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/l4/temporal_kg.py"
+  ]
+}

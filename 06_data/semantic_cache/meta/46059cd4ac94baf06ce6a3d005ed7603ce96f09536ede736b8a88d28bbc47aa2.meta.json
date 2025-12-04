@@ -1,11 +1,11 @@
 {
   "hash": "46059cd4ac94baf06ce6a3d005ed7603ce96f09536ede736b8a88d28bbc47aa2",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/run_workflow_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.036489",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 10157,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "deprecated in v13",
+      "relative": "run_workflow_LIC.py"
+    }
+  ]
 }

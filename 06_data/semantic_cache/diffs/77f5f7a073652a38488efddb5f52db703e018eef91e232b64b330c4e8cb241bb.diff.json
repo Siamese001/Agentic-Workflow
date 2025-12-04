@@ -1,9 +1,5 @@
 {
   "hash": "77f5f7a073652a38488efddb5f52db703e018eef91e232b64b330c4e8cb241bb",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/config/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.356562",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

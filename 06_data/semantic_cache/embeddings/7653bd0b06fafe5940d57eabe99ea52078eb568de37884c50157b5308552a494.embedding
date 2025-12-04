@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_validator.py
-# Hash: None
-# Type: LIC
-# Size: 1595 bytes
+{
+  "hash": "7653bd0b06fafe5940d57eabe99ea52078eb568de37884c50157b5308552a494",
+  "kind": "embedding"
+}

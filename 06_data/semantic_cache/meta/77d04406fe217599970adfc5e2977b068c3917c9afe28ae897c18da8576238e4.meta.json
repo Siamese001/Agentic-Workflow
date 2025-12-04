@@ -1,11 +1,16 @@
 {
   "hash": "77d04406fe217599970adfc5e2977b068c3917c9afe28ae897c18da8576238e4",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/production_inputs/master_resume.json",
-  "generated_at": "2025-12-03T17:47:45.386874",
-  "file_type": "RG",
-  "file_extension": ".json",
-  "file_size": 13944,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "production_inputs/master_resume.json"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_9",
+      "relative": "production_inputs/master_resume.json"
+    }
+  ]
 }

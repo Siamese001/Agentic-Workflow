@@ -1,11 +1,11 @@
 {
   "hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_mcp_discovery.py",
-  "generated_at": "2025-12-03T17:47:46.527423",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 1965,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/unit/test_mcp_discovery.py"
+    }
+  ]
 }

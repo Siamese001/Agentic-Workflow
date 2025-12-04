@@ -1,11 +1,4 @@
 {
   "hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py",
-  "generated_at": "2025-12-03T17:47:45.309104",
-  "file_size": 3138,
-  "modified_time": 1764610060.9037933,
-  "sha256": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

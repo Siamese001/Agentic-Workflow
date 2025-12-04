@@ -1,9 +1,5 @@
 {
   "hash": "01e8035cdbd57a57fd450597a80779c5c72c5cb37a44096167191ba77fd52afa",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/models.py",
-  "generated_at": "2025-12-03T17:47:45.959271",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

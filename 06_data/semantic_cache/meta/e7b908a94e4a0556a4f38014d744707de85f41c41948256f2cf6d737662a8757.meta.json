@@ -1,11 +1,11 @@
 {
   "hash": "e7b908a94e4a0556a4f38014d744707de85f41c41948256f2cf6d737662a8757",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_prompt_injection.py",
-  "generated_at": "2025-12-03T17:47:46.554068",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 938,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/unit/test_prompt_injection.py"
+    }
+  ]
 }

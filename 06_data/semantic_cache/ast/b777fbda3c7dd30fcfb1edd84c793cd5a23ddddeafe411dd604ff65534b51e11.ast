@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_vector_imports.py
-# Hash: None
-# Type: RG
-# Size: 995 bytes
+{
+  "hash": "b777fbda3c7dd30fcfb1edd84c793cd5a23ddddeafe411dd604ff65534b51e11",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_vector_imports.py"
+  ]
+}

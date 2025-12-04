@@ -1,11 +1,11 @@
 {
   "hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_agent_registry_basic.py",
-  "generated_at": "2025-12-03T17:47:45.786702",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1095,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/_deprecated/test_agent_registry_basic.py"
+    }
+  ]
 }

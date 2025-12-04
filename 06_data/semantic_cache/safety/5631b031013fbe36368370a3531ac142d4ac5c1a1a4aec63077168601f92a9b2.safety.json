@@ -1,9 +1,5 @@
 {
   "hash": "5631b031013fbe36368370a3531ac142d4ac5c1a1a4aec63077168601f92a9b2",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/models.py",
-  "generated_at": "2025-12-03T17:47:47.969317",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

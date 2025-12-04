@@ -1,10 +1,4 @@
 {
   "hash": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/draft_planning(1).py",
-  "generated_at": "2025-12-03T17:47:44.867924",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

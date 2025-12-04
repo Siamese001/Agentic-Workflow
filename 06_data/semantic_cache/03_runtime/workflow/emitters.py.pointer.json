@@ -1,9 +1,0 @@
-{
-  "hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/emitters.py",
-  "canonical_relative": "workflow/emitters.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.233655"
-}

@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/reflexion.py
-# Hash: None
-# Type: RG
-# Size: 1618 bytes
+{
+  "hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/reflexion.py"
+  ]
+}

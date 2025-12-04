@@ -1,9 +1,5 @@
 {
   "hash": "2d3fb4b6476c6091bdb0eed3f86aa160ce5cbec636c4252c57efa76568e2ad99",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/__init__.py",
-  "generated_at": "2025-12-03T17:47:45.851715",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

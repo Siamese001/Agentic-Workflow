@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_meta_hybrid_ranker.py
-# Hash: None
-# Type: RG
-# Size: 2072 bytes
+{
+  "hash": "68d7a61c6f8c07009ea40a8edc6323e4a2ae1317ddfa7195cb54cbc828e5d476",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_meta_hybrid_ranker.py"
+  ]
+}

@@ -1,11 +1,4 @@
 {
   "hash": "e5ff5fbf434e4f665059aae642e9c880976a99e89e5803e8c6b5ec26ff3414bd",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/v6_prompt_adapter(1).py",
-  "generated_at": "2025-12-03T17:47:45.009501",
-  "file_size": 1820,
-  "modified_time": 1764610058.2672133,
-  "sha256": "e5ff5fbf434e4f665059aae642e9c880976a99e89e5803e8c6b5ec26ff3414bd",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

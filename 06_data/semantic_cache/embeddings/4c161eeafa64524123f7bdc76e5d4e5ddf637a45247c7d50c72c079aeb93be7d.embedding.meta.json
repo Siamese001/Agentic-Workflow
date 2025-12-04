@@ -1,10 +1,4 @@
 {
   "hash": "4c161eeafa64524123f7bdc76e5d4e5ddf637a45247c7d50c72c079aeb93be7d",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/interfaces.py",
-  "generated_at": "2025-12-03T17:47:45.176268",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

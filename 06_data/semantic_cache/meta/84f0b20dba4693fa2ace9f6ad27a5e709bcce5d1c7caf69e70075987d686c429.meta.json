@@ -1,11 +1,11 @@
 {
   "hash": "84f0b20dba4693fa2ace9f6ad27a5e709bcce5d1c7caf69e70075987d686c429",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/triplet_extraction_executor.py",
-  "generated_at": "2025-12-03T17:47:45.111668",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 16849,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l2/triplet_extraction_executor.py"
+    }
+  ]
 }

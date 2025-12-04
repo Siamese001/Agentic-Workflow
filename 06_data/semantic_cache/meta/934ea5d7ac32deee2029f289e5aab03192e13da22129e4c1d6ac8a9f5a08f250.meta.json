@@ -1,11 +1,11 @@
 {
   "hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_4.py",
-  "generated_at": "2025-12-03T17:47:47.459656",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 118444,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_AGENTIC_v11_4.py"
+    }
+  ]
 }

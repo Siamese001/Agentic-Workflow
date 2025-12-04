@@ -1,0 +1,19 @@
+{
+  "hash": "f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca",
+  "canonical_root": "07_observability",
+  "engine": "RG",
+  "archive_name": "v7.0",
+  "relative": "run_batch_v7_0.py",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/run_batch_v7_0.py",
+  "global": {
+    "ast": "ast/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.ast",
+    "ast_meta": "ast/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.ast.meta.json",
+    "embedding": "embeddings/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.embedding",
+    "emb_meta": "embeddings/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.embedding.meta.json",
+    "diff": "diffs/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.diff.json",
+    "golden": "golden/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.golden.json",
+    "safety": "safety/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.safety.json",
+    "integrity": "integrity/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.integrity.json",
+    "meta": "meta/f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca.meta.json"
+  }
+}

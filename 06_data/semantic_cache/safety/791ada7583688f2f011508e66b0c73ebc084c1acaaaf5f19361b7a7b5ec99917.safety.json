@@ -1,9 +1,5 @@
 {
   "hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_retrieval_latency_slo.py",
-  "generated_at": "2025-12-03T17:47:46.485547",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,9 +1,4 @@
 {
   "hash": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_AGENTIC_v11_6.py",
-  "generated_at": "2025-12-03T17:47:47.466372",
-  "golden_status": "verified",
-  "checksum": "7372b523407e8b18f165c7e3477f79f7fc26d122f32ad92756480d236c21f7b4"
+  "kind": "golden"
 }

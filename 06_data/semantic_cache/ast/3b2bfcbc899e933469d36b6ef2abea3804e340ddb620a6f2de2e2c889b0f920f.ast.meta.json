@@ -1,8 +1,7 @@
 {
   "hash": "3b2bfcbc899e933469d36b6ef2abea3804e340ddb620a6f2de2e2c889b0f920f",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-08_v2.5.md",
-  "generated_at": "2025-12-03T17:47:47.840506",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

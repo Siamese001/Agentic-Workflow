@@ -1,11 +1,4 @@
 {
   "hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/chromadb/utils/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.591492",
-  "file_size": 213,
-  "modified_time": 1764609961.5069258,
-  "sha256": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

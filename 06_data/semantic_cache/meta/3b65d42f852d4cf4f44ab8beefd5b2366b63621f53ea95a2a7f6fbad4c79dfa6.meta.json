@@ -1,11 +1,11 @@
 {
   "hash": "3b65d42f852d4cf4f44ab8beefd5b2366b63621f53ea95a2a7f6fbad4c79dfa6",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/scorer.py",
-  "generated_at": "2025-12-03T17:47:46.196041",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 886,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/golden_state/scorer.py"
+    }
+  ]
 }

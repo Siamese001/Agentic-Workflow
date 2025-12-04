@@ -1,11 +1,11 @@
 {
   "hash": "a11c012de48aabca2397ffdefcce3563e96aa3d8b2ce13e65d7879968cc57698",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/safety_validator.py",
-  "generated_at": "2025-12-03T17:47:45.270706",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 11006,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l5/safety_validator.py"
+    }
+  ]
 }

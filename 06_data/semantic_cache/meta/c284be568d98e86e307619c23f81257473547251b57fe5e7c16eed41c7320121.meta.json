@@ -1,11 +1,11 @@
 {
   "hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/utils.py",
-  "generated_at": "2025-12-03T17:47:47.995226",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 6456,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "utils.py"
+    }
+  ]
 }

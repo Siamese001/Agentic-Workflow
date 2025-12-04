@@ -1,11 +1,11 @@
 {
   "hash": "c33df433b5c033fc2e67c57454be319d7d01b0ec07f2c31f487bd817ea9458fd",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/storage/cache_redis.py",
-  "generated_at": "2025-12-03T17:47:46.148179",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 3424,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/storage/cache_redis.py"
+    }
+  ]
 }

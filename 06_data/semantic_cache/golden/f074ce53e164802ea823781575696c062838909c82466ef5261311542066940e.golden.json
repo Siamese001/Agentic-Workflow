@@ -1,9 +1,4 @@
 {
   "hash": "f074ce53e164802ea823781575696c062838909c82466ef5261311542066940e",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/adapters.py",
-  "generated_at": "2025-12-03T17:47:45.163478",
-  "golden_status": "verified",
-  "checksum": "f074ce53e164802ea823781575696c062838909c82466ef5261311542066940e"
+  "kind": "golden"
 }

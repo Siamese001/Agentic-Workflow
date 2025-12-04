@@ -1,9 +1,5 @@
 {
   "hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/redis.py",
-  "generated_at": "2025-12-03T17:47:46.290708",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "ae8a1afcbc63c423a41d927a5bd08cd2f8bffaeab382544da00d2eb80dbaaf5b",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/bullet.py",
-  "generated_at": "2025-12-03T17:47:46.377380",
-  "file_size": 18838,
-  "modified_time": 1764609961.6326447,
-  "sha256": "ae8a1afcbc63c423a41d927a5bd08cd2f8bffaeab382544da00d2eb80dbaaf5b",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

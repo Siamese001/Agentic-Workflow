@@ -1,11 +1,11 @@
 {
   "hash": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/CURRENT_STATUS.md",
-  "generated_at": "2025-12-03T17:47:45.487512",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 4138,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/CURRENT_STATUS.md"
+    }
+  ]
 }

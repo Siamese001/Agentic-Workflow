@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/validation/sdk_validation_results.json
-# Hash: None
-# Type: RG
-# Size: 4803 bytes
+{
+  "hash": "944a39d8039307af34ca3136a7973f903b5c09409bc10df7e93f84ff3994ebc7",
+  "kind": "embedding"
+}

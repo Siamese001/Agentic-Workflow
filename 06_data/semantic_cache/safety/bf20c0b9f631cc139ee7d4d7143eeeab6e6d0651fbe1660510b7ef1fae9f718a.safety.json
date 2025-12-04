@@ -1,9 +1,5 @@
 {
   "hash": "bf20c0b9f631cc139ee7d4d7143eeeab6e6d0651fbe1660510b7ef1fae9f718a",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_autotune_regression.py",
-  "generated_at": "2025-12-03T17:47:46.474381",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

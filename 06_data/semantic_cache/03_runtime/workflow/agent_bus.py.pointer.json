@@ -1,9 +1,0 @@
-{
-  "hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py",
-  "canonical_relative": "workflow/agent_bus.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.145358"
-}

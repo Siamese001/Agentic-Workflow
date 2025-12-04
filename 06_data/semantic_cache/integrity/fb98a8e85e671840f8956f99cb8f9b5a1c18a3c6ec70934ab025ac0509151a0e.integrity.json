@@ -1,11 +1,4 @@
 {
   "hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_call_count_drift.py",
-  "generated_at": "2025-12-03T17:47:46.480341",
-  "file_size": 387,
-  "modified_time": 1764609961.562625,
-  "sha256": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

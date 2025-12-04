@@ -1,11 +1,11 @@
 {
   "hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/LIC_V2_FILES_SUMMARY.md",
-  "generated_at": "2025-12-03T17:47:46.610241",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 6852,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "LIC_V2_FILES_SUMMARY.md"
+    }
+  ]
 }

@@ -1,9 +1,4 @@
 {
   "hash": "49b92d5788800000a224ce518e8d98b3a5c03d42e3ce9d4957b0b3340b7db537",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Single Prompt.md",
-  "generated_at": "2025-12-03T17:47:47.571466",
-  "golden_status": "verified",
-  "checksum": "49b92d5788800000a224ce518e8d98b3a5c03d42e3ce9d4957b0b3340b7db537"
+  "kind": "golden"
 }

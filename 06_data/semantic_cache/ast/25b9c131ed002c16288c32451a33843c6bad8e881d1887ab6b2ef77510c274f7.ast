@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/kg_ingestion_dag.py
-# Hash: None
-# Type: RG
-# Size: 33597 bytes
+{
+  "hash": "25b9c131ed002c16288c32451a33843c6bad8e881d1887ab6b2ef77510c274f7",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/orchestration/kg_ingestion_dag.py"
+  ]
+}

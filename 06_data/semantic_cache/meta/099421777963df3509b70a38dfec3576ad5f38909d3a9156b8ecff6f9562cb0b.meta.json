@@ -1,11 +1,11 @@
 {
   "hash": "099421777963df3509b70a38dfec3576ad5f38909d3a9156b8ecff6f9562cb0b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/rag.py",
-  "generated_at": "2025-12-03T17:47:46.399836",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 9990,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "stacks_v10_7/rag.py"
+    }
+  ]
 }

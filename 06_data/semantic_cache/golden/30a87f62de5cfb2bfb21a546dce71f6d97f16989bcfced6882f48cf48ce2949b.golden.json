@@ -1,9 +1,4 @@
 {
   "hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py",
-  "generated_at": "2025-12-03T17:47:46.496018",
-  "golden_status": "verified",
-  "checksum": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b"
+  "kind": "golden"
 }

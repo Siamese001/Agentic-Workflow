@@ -1,11 +1,11 @@
 {
   "hash": "6bd01be0e0bb4c26aba7e0f22afe550fe5e32eabcaf5bc9172798f680eb83655",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_collectors.py",
-  "generated_at": "2025-12-03T17:47:45.827513",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 476,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "runtime/observability/agentic_collectors.py"
+    }
+  ]
 }

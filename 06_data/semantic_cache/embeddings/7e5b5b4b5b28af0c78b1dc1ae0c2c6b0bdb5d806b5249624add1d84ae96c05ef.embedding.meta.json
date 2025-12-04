@@ -1,10 +1,4 @@
 {
   "hash": "7e5b5b4b5b28af0c78b1dc1ae0c2c6b0bdb5d806b5249624add1d84ae96c05ef",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/routing.py",
-  "generated_at": "2025-12-03T17:47:46.038590",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/reflexion.py",
-  "generated_at": "2025-12-03T17:47:46.104849",
-  "file_size": 1618,
-  "modified_time": 1764610058.4487784,
-  "sha256": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

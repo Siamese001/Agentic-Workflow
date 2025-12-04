@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tools/__init__.py
-# Hash: None
-# Type: RG
-# Size: 201 bytes
+{
+  "hash": "5e2c24fb0af86f2ee069e4aece740f133dd4ee157d407b2c70febea0b0a49966",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tools/__init__.py"
+  ]
+}

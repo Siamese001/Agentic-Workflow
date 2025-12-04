@@ -1,9 +1,5 @@
 {
   "hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/reflexion.py",
-  "generated_at": "2025-12-03T17:47:46.103278",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_evidence_traceability.py",
-  "generated_at": "2025-12-03T17:47:46.427680",
-  "file_size": 532,
-  "modified_time": 1764609961.5342143,
-  "sha256": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

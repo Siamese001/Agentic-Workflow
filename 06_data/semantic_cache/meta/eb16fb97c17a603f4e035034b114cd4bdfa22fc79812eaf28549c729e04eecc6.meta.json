@@ -1,11 +1,11 @@
 {
   "hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/architecture/FOLDER_STRUCTURE_GUIDE.md",
-  "generated_at": "2025-12-03T17:47:45.864772",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 6680,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/architecture/FOLDER_STRUCTURE_GUIDE.md"
+    }
+  ]
 }

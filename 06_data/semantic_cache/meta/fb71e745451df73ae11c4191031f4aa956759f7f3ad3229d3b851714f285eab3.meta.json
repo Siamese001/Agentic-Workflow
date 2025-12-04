@@ -1,11 +1,16 @@
 {
   "hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/production_inputs/job_input.json",
-  "generated_at": "2025-12-03T17:47:45.382475",
-  "file_type": "RG",
-  "file_extension": ".json",
-  "file_size": 6200,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "production_inputs/job_input.json"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_9",
+      "relative": "production_inputs/job_input.json"
+    }
+  ]
 }

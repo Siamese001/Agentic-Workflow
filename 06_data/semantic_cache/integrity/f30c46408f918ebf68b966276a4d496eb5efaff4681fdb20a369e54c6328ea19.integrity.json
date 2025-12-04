@@ -1,11 +1,4 @@
 {
   "hash": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn v3.md",
-  "generated_at": "2025-12-03T17:47:47.578751",
-  "file_size": 18728,
-  "modified_time": 1764609961.727578,
-  "sha256": "f30c46408f918ebf68b966276a4d496eb5efaff4681fdb20a369e54c6328ea19",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

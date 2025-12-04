@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py
-# Hash: None
-# Type: RG
-# Size: 3138 bytes
+{
+  "hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_bus.py"
+  ]
+}

@@ -1,10 +1,4 @@
 {
   "hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json",
-  "generated_at": "2025-12-03T17:47:47.484855",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

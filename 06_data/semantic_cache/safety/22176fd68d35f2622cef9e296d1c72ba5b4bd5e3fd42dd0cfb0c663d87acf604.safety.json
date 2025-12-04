@@ -1,9 +1,5 @@
 {
   "hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_safe_route_equivalence.py",
-  "generated_at": "2025-12-03T17:47:46.465534",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

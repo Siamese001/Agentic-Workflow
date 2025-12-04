@@ -1,11 +1,4 @@
 {
   "hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/gating.py",
-  "generated_at": "2025-12-03T17:47:46.173348",
-  "file_size": 1297,
-  "modified_time": 1764610058.0433245,
-  "sha256": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

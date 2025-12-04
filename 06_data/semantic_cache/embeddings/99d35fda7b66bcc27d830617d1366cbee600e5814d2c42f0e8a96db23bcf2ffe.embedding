@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/eval/health/repair_policies.py
-# Hash: None
-# Type: RG
-# Size: 1610 bytes
+{
+  "hash": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
+  "kind": "embedding"
+}

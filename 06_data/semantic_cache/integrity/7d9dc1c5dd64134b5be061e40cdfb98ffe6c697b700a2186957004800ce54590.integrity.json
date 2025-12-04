@@ -1,11 +1,4 @@
 {
   "hash": "7d9dc1c5dd64134b5be061e40cdfb98ffe6c697b700a2186957004800ce54590",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_analyzer.py",
-  "generated_at": "2025-12-03T17:47:45.507496",
-  "file_size": 13459,
-  "modified_time": 1764610057.8409276,
-  "sha256": "7d9dc1c5dd64134b5be061e40cdfb98ffe6c697b700a2186957004800ce54590",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/evaluator.py
-# Hash: None
-# Type: RG
-# Size: 870 bytes
+{
+  "hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
+  "kind": "embedding"
+}

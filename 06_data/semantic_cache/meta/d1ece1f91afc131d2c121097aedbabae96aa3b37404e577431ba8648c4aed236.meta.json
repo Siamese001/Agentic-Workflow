@@ -1,11 +1,11 @@
 {
   "hash": "d1ece1f91afc131d2c121097aedbabae96aa3b37404e577431ba8648c4aed236",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_report_pre_cleanup.json",
-  "generated_at": "2025-12-03T17:47:45.515772",
-  "file_type": "RG",
-  "file_extension": ".json",
-  "file_size": 144444,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tools/dependency_report_pre_cleanup.json"
+    }
+  ]
 }

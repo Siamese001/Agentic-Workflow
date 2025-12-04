@@ -1,9 +1,5 @@
 {
   "hash": "78c6db7f6bacaaee8228cc26e3898ddc71b1ba0690016a04a8fdb86dce200962",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_release_slos.py",
-  "generated_at": "2025-12-03T17:47:46.445179",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

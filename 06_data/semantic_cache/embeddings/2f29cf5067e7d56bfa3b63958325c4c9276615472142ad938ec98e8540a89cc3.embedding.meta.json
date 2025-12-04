@@ -1,10 +1,4 @@
 {
   "hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/manual_rag_input.json",
-  "generated_at": "2025-12-03T17:47:48.025360",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

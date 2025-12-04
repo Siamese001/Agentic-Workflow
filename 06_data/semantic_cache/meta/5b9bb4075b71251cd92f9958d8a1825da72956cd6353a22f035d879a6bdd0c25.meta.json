@@ -1,11 +1,11 @@
 {
   "hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/redis.py",
-  "generated_at": "2025-12-03T17:47:46.292267",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 179,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "redis.py"
+    }
+  ]
 }

@@ -1,8 +1,7 @@
 {
   "hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/di_container.py",
-  "generated_at": "2025-12-03T17:47:44.854611",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

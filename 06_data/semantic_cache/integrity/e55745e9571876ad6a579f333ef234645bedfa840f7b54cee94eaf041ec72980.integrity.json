@@ -1,11 +1,4 @@
 {
   "hash": "e55745e9571876ad6a579f333ef234645bedfa840f7b54cee94eaf041ec72980",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_provider_isolation.py",
-  "generated_at": "2025-12-03T17:47:45.718407",
-  "file_size": 2869,
-  "modified_time": 1764610059.494722,
-  "sha256": "e55745e9571876ad6a579f333ef234645bedfa840f7b54cee94eaf041ec72980",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

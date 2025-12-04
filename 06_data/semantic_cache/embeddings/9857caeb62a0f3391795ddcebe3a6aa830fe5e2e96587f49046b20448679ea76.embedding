@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/openai/__init__.py
-# Hash: None
-# Type: LIC
-# Size: 110 bytes
+{
+  "hash": "9857caeb62a0f3391795ddcebe3a6aa830fe5e2e96587f49046b20448679ea76",
+  "kind": "embedding"
+}

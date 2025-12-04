@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/control_plane/__init__.py
-# Hash: None
-# Type: RG
-# Size: 944 bytes
+{
+  "hash": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/orchestration/control_plane/__init__.py"
+  ]
+}

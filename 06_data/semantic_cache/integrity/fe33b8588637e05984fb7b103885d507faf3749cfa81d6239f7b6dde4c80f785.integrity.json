@@ -1,11 +1,4 @@
 {
   "hash": "fe33b8588637e05984fb7b103885d507faf3749cfa81d6239f7b6dde4c80f785",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/rag_LIC.py",
-  "generated_at": "2025-12-03T17:47:47.986747",
-  "file_size": 40498,
-  "modified_time": 1764609962.696,
-  "sha256": "fe33b8588637e05984fb7b103885d507faf3749cfa81d6239f7b6dde4c80f785",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

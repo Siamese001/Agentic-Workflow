@@ -1,5 +1,8 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/root_docs/injection_types(1).md
-# Hash: None
-# Type: RG
-# Size: 5888 bytes
+{
+  "hash": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/root_docs/injection_types(1).md",
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/root_docs/injection_types.md"
+  ]
+}

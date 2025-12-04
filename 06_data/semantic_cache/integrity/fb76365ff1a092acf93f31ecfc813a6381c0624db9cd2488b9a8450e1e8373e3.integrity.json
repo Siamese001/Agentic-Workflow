@@ -1,11 +1,4 @@
 {
   "hash": "fb76365ff1a092acf93f31ecfc813a6381c0624db9cd2488b9a8450e1e8373e3",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/judge_engine.py",
-  "generated_at": "2025-12-03T17:47:46.033084",
-  "file_size": 1487,
-  "modified_time": 1764610058.7114663,
-  "sha256": "fb76365ff1a092acf93f31ecfc813a6381c0624db9cd2488b9a8450e1e8373e3",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

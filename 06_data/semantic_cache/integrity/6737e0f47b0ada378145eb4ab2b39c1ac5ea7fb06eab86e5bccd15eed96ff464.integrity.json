@@ -1,11 +1,4 @@
 {
   "hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_full_pipeline_pass_rate.py",
-  "generated_at": "2025-12-03T17:47:46.433224",
-  "file_size": 2395,
-  "modified_time": 1764609961.5342143,
-  "sha256": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

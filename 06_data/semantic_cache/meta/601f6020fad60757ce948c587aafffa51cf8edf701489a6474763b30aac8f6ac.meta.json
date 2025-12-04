@@ -1,11 +1,11 @@
 {
   "hash": "601f6020fad60757ce948c587aafffa51cf8edf701489a6474763b30aac8f6ac",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/integration.py",
-  "generated_at": "2025-12-03T17:47:45.327920",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2175,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/integration.py"
+    }
+  ]
 }

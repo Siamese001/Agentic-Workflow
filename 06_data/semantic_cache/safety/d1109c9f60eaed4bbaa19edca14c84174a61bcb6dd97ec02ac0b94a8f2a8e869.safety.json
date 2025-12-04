@@ -1,9 +1,5 @@
 {
   "hash": "d1109c9f60eaed4bbaa19edca14c84174a61bcb6dd97ec02ac0b94a8f2a8e869",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-07_v2.50_full.md",
-  "generated_at": "2025-12-03T17:47:47.805368",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_judge_engine.py
-# Hash: None
-# Type: RG
-# Size: 650 bytes
+{
+  "hash": "69f858d2cbed161e9264cbf0be2216fd63a1082e1e7442c5a27d526cfe5fcea3",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_judge_engine.py"
+  ]
+}

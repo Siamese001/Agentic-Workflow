@@ -1,11 +1,11 @@
 {
   "hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/emitters.py",
-  "generated_at": "2025-12-03T17:47:45.842008",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 6060,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "runtime/observability/emitters.py"
+    }
+  ]
 }

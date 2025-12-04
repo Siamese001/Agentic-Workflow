@@ -1,11 +1,11 @@
 {
   "hash": "48694b831e935653404f361811cc1bca18cfaeb77a4261ae042a06c1c4d96194",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Old Resume Gen Python/Resume_Generation_v12.80.py",
-  "generated_at": "2025-12-03T17:47:48.047409",
-  "file_type": "OLD_PYTHON",
-  "file_extension": ".py",
-  "file_size": 513626,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Old Resume Gen Python",
+      "relative": "Resume_Generation_v12.80.py"
+    }
+  ]
 }

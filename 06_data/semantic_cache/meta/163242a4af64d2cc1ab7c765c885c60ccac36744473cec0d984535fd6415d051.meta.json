@@ -1,11 +1,16 @@
 {
   "hash": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/agent_router_policy.py",
-  "generated_at": "2025-12-03T17:47:44.766909",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1094,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "core/agent_router_policy.py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/agent_router_policy.py"
+    }
+  ]
 }

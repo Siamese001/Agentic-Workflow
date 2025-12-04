@@ -1,9 +1,0 @@
-{
-  "hash": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_safety_stack.py",
-  "canonical_relative": "lic/test_safety_stack.py",
-  "canonical_root": "09_apps",
-  "generated_at": "2025-12-03T17:47:48.339362"
-}

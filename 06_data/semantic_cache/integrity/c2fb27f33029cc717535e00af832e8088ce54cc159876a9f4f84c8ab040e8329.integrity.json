@@ -1,11 +1,4 @@
 {
   "hash": "c2fb27f33029cc717535e00af832e8088ce54cc159876a9f4f84c8ab040e8329",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_metrics.py",
-  "generated_at": "2025-12-03T17:47:46.558806",
-  "file_size": 1047,
-  "modified_time": 1764609961.5987244,
-  "sha256": "c2fb27f33029cc717535e00af832e8088ce54cc159876a9f4f84c8ab040e8329",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

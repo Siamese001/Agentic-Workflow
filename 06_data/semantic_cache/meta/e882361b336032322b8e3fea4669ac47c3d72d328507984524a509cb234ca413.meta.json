@@ -1,11 +1,11 @@
 {
   "hash": "e882361b336032322b8e3fea4669ac47c3d72d328507984524a509cb234ca413",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/stress/test_concurrent_jd_processing.py",
-  "generated_at": "2025-12-03T17:47:45.769348",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 23647,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/stress/test_concurrent_jd_processing.py"
+    }
+  ]
 }

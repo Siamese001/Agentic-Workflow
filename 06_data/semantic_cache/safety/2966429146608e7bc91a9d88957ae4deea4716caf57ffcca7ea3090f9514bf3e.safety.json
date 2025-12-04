@@ -1,9 +1,5 @@
 {
   "hash": "2966429146608e7bc91a9d88957ae4deea4716caf57ffcca7ea3090f9514bf3e",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/judge.py",
-  "generated_at": "2025-12-03T17:47:46.184006",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

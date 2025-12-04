@@ -1,11 +1,11 @@
 {
   "hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/models/dag_models.py",
-  "generated_at": "2025-12-03T17:47:45.937418",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 308,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/models/dag_models.py"
+    }
+  ]
 }

@@ -1,9 +1,5 @@
 {
   "hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/runner.py",
-  "generated_at": "2025-12-03T17:47:46.191670",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "b596e3728ece697407284bcbe37befcc1fbca1be87dfe1991548f24905e4a835",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/self_correction_injection.py",
-  "generated_at": "2025-12-03T17:47:44.988249",
-  "safety_score": 1.0,
-  "issues": []
-}

@@ -1,11 +1,4 @@
 {
   "hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_mcp_discovery.py",
-  "generated_at": "2025-12-03T17:47:46.526840",
-  "file_size": 1965,
-  "modified_time": 1764609961.5987244,
-  "sha256": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

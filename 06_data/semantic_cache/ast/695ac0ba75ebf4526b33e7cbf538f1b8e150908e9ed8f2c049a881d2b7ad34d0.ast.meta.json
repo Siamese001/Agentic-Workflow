@@ -1,8 +1,7 @@
 {
   "hash": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/models.py",
-  "generated_at": "2025-12-03T17:47:46.034318",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

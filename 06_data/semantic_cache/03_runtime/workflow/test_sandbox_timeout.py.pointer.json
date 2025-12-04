@@ -1,9 +1,0 @@
-{
-  "hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_sandbox_timeout.py",
-  "canonical_relative": "workflow/test_sandbox_timeout.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.219699"
-}

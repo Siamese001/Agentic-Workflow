@@ -1,11 +1,11 @@
 {
   "hash": "ddfa28a52c5067f1e35ee7b6a905be4d853aa0d23bdbcbd084b764c6adce3fba",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/sandbox/vm_manager.py",
-  "generated_at": "2025-12-03T17:47:46.143162",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 667,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/sandbox/vm_manager.py"
+    }
+  ]
 }

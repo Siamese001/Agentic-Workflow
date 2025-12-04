@@ -1,0 +1,19 @@
+{
+  "hash": "daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0",
+  "canonical_root": "03_runtime",
+  "engine": "RG",
+  "archive_name": "Agentic-Workflow-10_11",
+  "relative": "windsurf_rules/05_tooling_mcp_observability.md",
+  "canonical_relative": "L1_archive/P0_5/ingest/rg/05_tooling_mcp_observability.md",
+  "global": {
+    "ast": "ast/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.ast",
+    "ast_meta": "ast/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.ast.meta.json",
+    "embedding": "embeddings/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.embedding",
+    "emb_meta": "embeddings/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.embedding.meta.json",
+    "diff": "diffs/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.diff.json",
+    "golden": "golden/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.golden.json",
+    "safety": "safety/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.safety.json",
+    "integrity": "integrity/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.integrity.json",
+    "meta": "meta/daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0.meta.json"
+  }
+}

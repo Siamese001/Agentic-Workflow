@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_engine.py
-# Hash: None
-# Type: RG
-# Size: 294 bytes
+{
+  "hash": "d25fda917f57412a8370b9b2ac1988e78d513803b792507496db64fb353c9f71",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_engine.py"
+  ]
+}

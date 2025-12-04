@@ -1,11 +1,4 @@
 {
   "hash": "ab8cf69bc1258842a0df54cfa216a9a389a5c993e8ac14cd75f19c454aaa86ea",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/prompt_system_v10_10(1).py",
-  "generated_at": "2025-12-03T17:47:44.938969",
-  "file_size": 11026,
-  "modified_time": 1764610058.269429,
-  "sha256": "ab8cf69bc1258842a0df54cfa216a9a389a5c993e8ac14cd75f19c454aaa86ea",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

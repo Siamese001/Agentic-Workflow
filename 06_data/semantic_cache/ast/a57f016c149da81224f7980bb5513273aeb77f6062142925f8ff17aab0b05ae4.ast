@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/eval/health/failure_detector.py
-# Hash: None
-# Type: RG
-# Size: 1523 bytes
+{
+  "hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/eval/health/failure_detector.py"
+  ]
+}

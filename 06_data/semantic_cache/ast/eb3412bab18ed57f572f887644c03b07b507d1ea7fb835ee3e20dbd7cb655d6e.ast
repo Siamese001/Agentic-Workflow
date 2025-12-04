@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/requirements.txt
-# Hash: None
-# Type: RG
-# Size: 474 bytes
+{
+  "hash": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/requirements.txt"
+  ]
+}

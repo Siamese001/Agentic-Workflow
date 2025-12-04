@@ -1,11 +1,11 @@
 {
   "hash": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/hil.py",
-  "generated_at": "2025-12-03T17:47:46.386160",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 16003,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "stacks_v10_7/hil.py"
+    }
+  ]
 }

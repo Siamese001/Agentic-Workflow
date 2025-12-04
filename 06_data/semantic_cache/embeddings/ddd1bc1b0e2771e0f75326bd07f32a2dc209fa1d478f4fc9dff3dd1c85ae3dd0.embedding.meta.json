@@ -1,10 +1,4 @@
 {
   "hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/validation_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.038157",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

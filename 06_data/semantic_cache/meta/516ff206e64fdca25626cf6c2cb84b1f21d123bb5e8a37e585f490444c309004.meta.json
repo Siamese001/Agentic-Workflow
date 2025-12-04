@@ -1,11 +1,11 @@
 {
   "hash": "516ff206e64fdca25626cf6c2cb84b1f21d123bb5e8a37e585f490444c309004",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/core/errors.py",
-  "generated_at": "2025-12-03T17:47:44.780318",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 5314,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "core/errors.py"
+    }
+  ]
 }

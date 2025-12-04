@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic LIC/state_manager_LIC.py
-# Hash: None
-# Type: LIC
-# Size: 17887 bytes
+{
+  "hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic LIC/state_manager_LIC.py"
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/assembly.py",
-  "generated_at": "2025-12-03T17:47:46.009527",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1403,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/context_engine/assembly.py"
+    }
+  ]
 }

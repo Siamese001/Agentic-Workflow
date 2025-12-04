@@ -1,11 +1,11 @@
 {
   "hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/trace/trace_reconstruction.py",
-  "generated_at": "2025-12-03T17:47:45.857064",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1451,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "runtime/trace/trace_reconstruction.py"
+    }
+  ]
 }

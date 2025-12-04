@@ -1,9 +1,5 @@
 {
   "hash": "a6b43fd6215558903cd80b905001aa3dd225a529484f72b1566aa80ad3e23796",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn.md",
-  "generated_at": "2025-12-03T17:47:47.580848",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

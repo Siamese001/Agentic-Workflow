@@ -1,11 +1,4 @@
 {
   "hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/redis.py",
-  "generated_at": "2025-12-03T17:47:46.291877",
-  "file_size": 179,
-  "modified_time": 1764609961.3110466,
-  "sha256": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

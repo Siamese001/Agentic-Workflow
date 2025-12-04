@@ -1,11 +1,4 @@
 {
   "hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/intelligence_service_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.606600",
-  "file_size": 21858,
-  "modified_time": 1764609961.267661,
-  "sha256": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,9 +1,5 @@
 {
   "hash": "850cf1eb86cfd7a17c0ad87ae14965b34c9a9326e5b5e671c456fbc1e8f9dc35",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/agentic_design_LIC.md",
-  "generated_at": "2025-12-03T17:47:46.594043",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "2f29cf5067e7d56bfa3b63958325c4c9276615472142ad938ec98e8540a89cc3",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/manual_rag_input.json",
-  "generated_at": "2025-12-03T17:47:48.027271",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 739,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "deprecated in v13",
+      "relative": "manual_rag_input.json"
+    }
+  ]
 }

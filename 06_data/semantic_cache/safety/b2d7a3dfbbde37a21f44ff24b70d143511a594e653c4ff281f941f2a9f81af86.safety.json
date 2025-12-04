@@ -1,9 +1,5 @@
 {
   "hash": "b2d7a3dfbbde37a21f44ff24b70d143511a594e653c4ff281f941f2a9f81af86",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/routing.py",
-  "generated_at": "2025-12-03T17:47:45.292730",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

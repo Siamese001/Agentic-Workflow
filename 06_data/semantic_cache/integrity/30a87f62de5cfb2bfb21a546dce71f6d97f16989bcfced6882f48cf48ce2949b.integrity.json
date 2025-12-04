@@ -1,11 +1,4 @@
 {
   "hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py",
-  "generated_at": "2025-12-03T17:47:46.497335",
-  "file_size": 502,
-  "modified_time": 1764609961.5646417,
-  "sha256": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

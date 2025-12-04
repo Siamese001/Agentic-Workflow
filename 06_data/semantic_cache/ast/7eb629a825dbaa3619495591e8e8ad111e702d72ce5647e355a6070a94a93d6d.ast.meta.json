@@ -1,8 +1,7 @@
 {
   "hash": "7eb629a825dbaa3619495591e8e8ad111e702d72ce5647e355a6070a94a93d6d",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/manager.py",
-  "generated_at": "2025-12-03T17:47:45.187079",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

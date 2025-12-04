@@ -1,11 +1,11 @@
 {
   "hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/budget_profile.py",
-  "generated_at": "2025-12-03T17:47:44.728024",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 448,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "config/budget_profile.py"
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 {
   "hash": "d3934191a53c5668e8a14595cf914ea9fed17084dfb996cb82f040209f7a80d6",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/models_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.627189",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 6579,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "models_LIC.py"
+    }
+  ]
 }

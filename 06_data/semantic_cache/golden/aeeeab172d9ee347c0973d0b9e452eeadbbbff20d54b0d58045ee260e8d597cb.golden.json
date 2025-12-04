@@ -1,9 +1,4 @@
 {
   "hash": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/datasets.py",
-  "generated_at": "2025-12-03T17:47:46.160764",
-  "golden_status": "verified",
-  "checksum": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb"
+  "kind": "golden"
 }

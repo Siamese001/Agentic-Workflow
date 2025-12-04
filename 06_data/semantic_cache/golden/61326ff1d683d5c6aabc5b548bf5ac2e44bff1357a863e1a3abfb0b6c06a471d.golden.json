@@ -1,9 +1,4 @@
 {
   "hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/invalidation_executor.py",
-  "generated_at": "2025-12-03T17:47:45.076938",
-  "golden_status": "verified",
-  "checksum": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d"
+  "kind": "golden"
 }

@@ -1,10 +1,4 @@
 {
   "hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/utils.py",
-  "generated_at": "2025-12-03T17:47:47.992988",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

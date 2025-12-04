@@ -1,11 +1,11 @@
 {
   "hash": "82f8e301e0d5769f779896e82559694063ef513b163b9d035046588ec08dfd09",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_hypothesis_evaluation.py",
-  "generated_at": "2025-12-03T17:47:45.668324",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 702,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/metacognition/test_hypothesis_evaluation.py"
+    }
+  ]
 }

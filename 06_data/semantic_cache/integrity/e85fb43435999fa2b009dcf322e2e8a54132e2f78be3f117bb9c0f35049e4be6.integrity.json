@@ -1,11 +1,4 @@
 {
   "hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/telemetry_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.341067",
-  "file_size": 587,
-  "modified_time": 1764609961.299613,
-  "sha256": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

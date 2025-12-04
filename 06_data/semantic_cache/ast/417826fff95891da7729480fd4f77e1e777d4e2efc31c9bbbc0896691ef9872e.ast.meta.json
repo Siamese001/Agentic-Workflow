@@ -1,8 +1,7 @@
 {
   "hash": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_SCOPE_ISOLATION_FIX_v10_23.json",
-  "generated_at": "2025-12-03T17:47:47.523037",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

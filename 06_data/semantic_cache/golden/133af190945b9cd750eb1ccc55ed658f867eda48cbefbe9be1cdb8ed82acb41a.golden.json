@@ -1,9 +1,4 @@
 {
   "hash": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/pinned.py",
-  "generated_at": "2025-12-03T17:47:46.012633",
-  "golden_status": "verified",
-  "checksum": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a"
+  "kind": "golden"
 }

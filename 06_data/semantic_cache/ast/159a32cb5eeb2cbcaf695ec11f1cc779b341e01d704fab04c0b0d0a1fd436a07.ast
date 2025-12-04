@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Old LIC/LinkedInCanonical.md
-# Hash: None
-# Type: LIC
-# Size: 19047 bytes
+{
+  "hash": "159a32cb5eeb2cbcaf695ec11f1cc779b341e01d704fab04c0b0d0a1fd436a07",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Old LIC/LinkedInCanonical.md"
+  ]
+}

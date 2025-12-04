@@ -1,9 +1,5 @@
 {
   "hash": "84c8a8d708421833dde5382a39154d71f5792ee7d2149872cdf3333142b00230",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/graph_query.py",
-  "generated_at": "2025-12-03T17:47:44.698351",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

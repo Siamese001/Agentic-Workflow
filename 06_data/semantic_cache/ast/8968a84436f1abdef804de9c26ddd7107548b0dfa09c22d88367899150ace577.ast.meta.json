@@ -1,8 +1,7 @@
 {
   "hash": "8968a84436f1abdef804de9c26ddd7107548b0dfa09c22d88367899150ace577",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/control_plane/__init__.py",
-  "generated_at": "2025-12-03T17:47:45.926892",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

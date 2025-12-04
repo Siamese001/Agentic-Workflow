@@ -1,8 +1,7 @@
 {
   "hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/instructional_injection_v6(1).py",
-  "generated_at": "2025-12-03T17:47:44.875451",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

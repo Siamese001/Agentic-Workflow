@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Old LIC/LIC_FULL_v10_23_1_COMPLETE.json
-# Hash: None
-# Type: LIC
-# Size: 41211 bytes
+{
+  "hash": "fc381761d88281c9a9c695dc2ff40703f3e54b8630d62560982cddb4f403cf30",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Old LIC/LIC_FULL_v10_23_1_COMPLETE.json"
+  ]
+}

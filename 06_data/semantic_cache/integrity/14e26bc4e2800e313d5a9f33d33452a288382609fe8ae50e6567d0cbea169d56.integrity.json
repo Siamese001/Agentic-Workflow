@@ -1,11 +1,4 @@
 {
   "hash": "14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Old Resume Gen Python/Resume_Generation_v14_19.py",
-  "generated_at": "2025-12-03T17:47:48.043513",
-  "file_size": 583819,
-  "modified_time": 1764610054.7265017,
-  "sha256": "14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,9 +1,5 @@
 {
   "hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/slots.py",
-  "generated_at": "2025-12-03T17:47:46.021474",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

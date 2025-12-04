@@ -1,11 +1,4 @@
 {
   "hash": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/agent_tools_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.250519",
-  "file_size": 24623,
-  "modified_time": 1764609961.3110466,
-  "sha256": "9bdaf37e2c25dbb3eecad99c006f597a7d1002304e96a14d4ee2e91f6241c76e",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

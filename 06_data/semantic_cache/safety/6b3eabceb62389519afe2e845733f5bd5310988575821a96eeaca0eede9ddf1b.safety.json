@@ -1,9 +1,5 @@
 {
   "hash": "6b3eabceb62389519afe2e845733f5bd5310988575821a96eeaca0eede9ddf1b",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_scorer.py",
-  "generated_at": "2025-12-03T17:47:45.657597",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

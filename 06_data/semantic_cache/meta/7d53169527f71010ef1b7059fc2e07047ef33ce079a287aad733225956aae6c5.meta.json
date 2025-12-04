@@ -1,11 +1,11 @@
 {
   "hash": "7d53169527f71010ef1b7059fc2e07047ef33ce079a287aad733225956aae6c5",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-03-2025_v6.7_diff.txt",
-  "generated_at": "2025-12-03T17:47:46.765152",
-  "file_type": "LIC",
-  "file_extension": ".txt",
-  "file_size": 3319,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_10-03-2025_v6.7_diff.txt"
+    }
+  ]
 }

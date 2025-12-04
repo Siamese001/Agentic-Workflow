@@ -1,9 +1,4 @@
 {
   "hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/observability/test_telemetry_collection.py",
-  "generated_at": "2025-12-03T17:47:45.724839",
-  "golden_status": "verified",
-  "checksum": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb"
+  "kind": "golden"
 }

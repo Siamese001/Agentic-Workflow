@@ -1,11 +1,11 @@
 {
   "hash": "22176fd68d35f2622cef9e296d1c72ba5b4bd5e3fd42dd0cfb0c663d87acf604",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_safe_route_equivalence.py",
-  "generated_at": "2025-12-03T17:47:46.466460",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 451,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/integration/test_safe_route_equivalence.py"
+    }
+  ]
 }

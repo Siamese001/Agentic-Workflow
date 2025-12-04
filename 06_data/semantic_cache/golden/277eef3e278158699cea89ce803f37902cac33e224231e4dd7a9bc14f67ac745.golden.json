@@ -1,9 +1,4 @@
 {
   "hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.412368",
-  "golden_status": "verified",
-  "checksum": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745"
+  "kind": "golden"
 }

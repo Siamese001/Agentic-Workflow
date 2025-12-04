@@ -1,11 +1,4 @@
 {
   "hash": "1632103415a425977b7a98fcb61cadd2ed47359edc31e7f680e5c1073585c550",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Prompts.md",
-  "generated_at": "2025-12-03T17:47:47.568778",
-  "file_size": 10226,
-  "modified_time": 1764609961.8865442,
-  "sha256": "1632103415a425977b7a98fcb61cadd2ed47359edc31e7f680e5c1073585c550",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

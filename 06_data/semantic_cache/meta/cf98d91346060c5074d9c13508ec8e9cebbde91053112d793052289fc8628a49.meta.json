@@ -1,11 +1,11 @@
 {
   "hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/hop_agents_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.603671",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 25345,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "hop_agents_LIC.py"
+    }
+  ]
 }

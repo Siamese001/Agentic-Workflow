@@ -1,9 +1,4 @@
 {
   "hash": "c4c4b7d8b5aa9572340dcfd6b6433fe2b530a3f34a9cc139df874cd321ee7851",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_gating.py",
-  "generated_at": "2025-12-03T17:47:45.643572",
-  "golden_status": "verified",
-  "checksum": "c4c4b7d8b5aa9572340dcfd6b6433fe2b530a3f34a9cc139df874cd321ee7851"
+  "kind": "golden"
 }

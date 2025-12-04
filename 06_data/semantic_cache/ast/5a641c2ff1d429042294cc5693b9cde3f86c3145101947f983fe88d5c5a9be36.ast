@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/model_routing/__init__.py
-# Hash: None
-# Type: RG
-# Size: 723 bytes
+{
+  "hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/orchestration/model_routing/__init__.py"
+  ]
+}

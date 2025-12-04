@@ -1,11 +1,4 @@
 {
   "hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/PHASE_A_DISCOVERY_MAP.md",
-  "generated_at": "2025-12-03T17:47:45.899819",
-  "file_size": 5778,
-  "modified_time": 1764610059.0004885,
-  "sha256": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,9 +1,5 @@
 {
   "hash": "6e42118668a62a1d01a2641896a78ce3be612cc6401fe1cba24cb8470335d651",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/qa_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.140827",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

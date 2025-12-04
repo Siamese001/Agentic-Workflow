@@ -1,11 +1,11 @@
 {
   "hash": "9dd681fda635d1d4f795047f9914835035146b90e7ecc2fa897f3a8e5d8a021b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/state_manager.py",
-  "generated_at": "2025-12-03T17:47:45.200719",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 7979,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l4/state_manager.py"
+    }
+  ]
 }

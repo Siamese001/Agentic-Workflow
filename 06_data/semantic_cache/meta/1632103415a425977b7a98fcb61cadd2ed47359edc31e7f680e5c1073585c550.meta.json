@@ -1,11 +1,11 @@
 {
   "hash": "1632103415a425977b7a98fcb61cadd2ed47359edc31e7f680e5c1073585c550",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Prompts.md",
-  "generated_at": "2025-12-03T17:47:47.569163",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 10226,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LinkedIn Prompts.md"
+    }
+  ]
 }

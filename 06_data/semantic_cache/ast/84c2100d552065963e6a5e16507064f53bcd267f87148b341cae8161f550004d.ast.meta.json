@@ -1,8 +1,7 @@
 {
   "hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/06_safety_policy_cost.md",
-  "generated_at": "2025-12-03T17:47:45.586724",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

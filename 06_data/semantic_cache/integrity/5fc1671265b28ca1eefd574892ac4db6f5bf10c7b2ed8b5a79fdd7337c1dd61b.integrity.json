@@ -1,11 +1,4 @@
 {
   "hash": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/CURRENT_STATUS.md",
-  "generated_at": "2025-12-03T17:47:45.487125",
-  "file_size": 4138,
-  "modified_time": 1764610059.3268,
-  "sha256": "5fc1671265b28ca1eefd574892ac4db6f5bf10c7b2ed8b5a79fdd7337c1dd61b",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

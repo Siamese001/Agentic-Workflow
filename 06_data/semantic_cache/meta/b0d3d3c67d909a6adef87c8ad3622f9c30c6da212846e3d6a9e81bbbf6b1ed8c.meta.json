@@ -1,11 +1,11 @@
 {
   "hash": "b0d3d3c67d909a6adef87c8ad3622f9c30c6da212846e3d6a9e81bbbf6b1ed8c",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/workflow_LIC v11_10.py",
-  "generated_at": "2025-12-03T17:47:48.014785",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 31712,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "workflow_LIC v11_10.py"
+    }
+  ]
 }

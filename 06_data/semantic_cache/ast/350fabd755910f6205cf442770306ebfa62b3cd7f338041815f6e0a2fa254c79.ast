@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/l2/qa_executor.py
-# Hash: None
-# Type: RG
-# Size: 1985 bytes
+{
+  "hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/l2/qa_executor.py"
+  ]
+}

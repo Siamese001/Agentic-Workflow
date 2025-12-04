@@ -1,8 +1,7 @@
 {
   "hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.365348",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/google_genai_client.py",
-  "canonical_relative": "workflow/google_genai_client.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.159075"
-}

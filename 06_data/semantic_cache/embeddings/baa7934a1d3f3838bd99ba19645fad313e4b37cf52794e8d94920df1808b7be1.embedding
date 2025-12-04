@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/config/budget_profile.py
-# Hash: None
-# Type: RG
-# Size: 448 bytes
+{
+  "hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
+  "kind": "embedding"
+}

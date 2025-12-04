@@ -1,11 +1,11 @@
 {
   "hash": "3d62c630442275f33512e4ff12e806b55e8cf2ffced8a987780a7598c286cce7",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/run_learning_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.312951",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 24811,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "run_learning_v10_7.py"
+    }
+  ]
 }

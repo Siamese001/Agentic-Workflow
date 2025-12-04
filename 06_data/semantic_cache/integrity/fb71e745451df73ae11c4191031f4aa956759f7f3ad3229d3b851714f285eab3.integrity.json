@@ -1,11 +1,4 @@
 {
   "hash": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/production_inputs/job_input.json",
-  "generated_at": "2025-12-03T17:47:45.381877",
-  "file_size": 6200,
-  "modified_time": 1764610061.077041,
-  "sha256": "fb71e745451df73ae11c4191031f4aa956759f7f3ad3229d3b851714f285eab3",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

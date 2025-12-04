@@ -1,11 +1,11 @@
 {
   "hash": "1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-01-2025_v3.json",
-  "generated_at": "2025-12-03T17:47:46.674593",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 155605,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_10-01-2025_v3.json"
+    }
+  ]
 }

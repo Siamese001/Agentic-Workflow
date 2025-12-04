@@ -1,9 +1,4 @@
 {
   "hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/utils.py",
-  "generated_at": "2025-12-03T17:47:47.993871",
-  "golden_status": "verified",
-  "checksum": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121"
+  "kind": "golden"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "b777fbda3c7dd30fcfb1edd84c793cd5a23ddddeafe411dd604ff65534b51e11",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_vector_imports.py",
-  "generated_at": "2025-12-03T17:47:45.819860",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 995,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/_deprecated/test_vector_imports.py"
+    }
+  ]
 }

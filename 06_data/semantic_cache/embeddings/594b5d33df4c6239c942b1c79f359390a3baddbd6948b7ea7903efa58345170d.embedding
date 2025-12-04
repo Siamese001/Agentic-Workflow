@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic LIC/intelligence_service_LIC.py
-# Hash: None
-# Type: LIC
-# Size: 21858 bytes
+{
+  "hash": "594b5d33df4c6239c942b1c79f359390a3baddbd6948b7ea7903efa58345170d",
+  "kind": "embedding"
+}

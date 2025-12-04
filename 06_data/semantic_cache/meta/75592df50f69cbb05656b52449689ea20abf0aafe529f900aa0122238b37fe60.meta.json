@@ -1,11 +1,16 @@
 {
   "hash": "75592df50f69cbb05656b52449689ea20abf0aafe529f900aa0122238b37fe60",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/mission_input_LIC.json",
-  "generated_at": "2025-12-03T17:47:46.618972",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 1417,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "mission_input_LIC.json"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "mission_input.json"
+    }
+  ]
 }

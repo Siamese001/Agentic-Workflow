@@ -1,9 +1,4 @@
 {
   "hash": "38e43de6bef9cb8c4f4b7e62e7a90ccc0e497aa46824768173c0947d626f76de",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-08_v2.87.md",
-  "generated_at": "2025-12-03T17:47:47.896759",
-  "golden_status": "verified",
-  "checksum": "38e43de6bef9cb8c4f4b7e62e7a90ccc0e497aa46824768173c0947d626f76de"
+  "kind": "golden"
 }

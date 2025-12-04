@@ -1,11 +1,4 @@
 {
   "hash": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/agent_specs_LIC.json",
-  "generated_at": "2025-12-03T17:47:46.599792",
-  "file_size": 14921,
-  "modified_time": 1764609961.2467854,
-  "sha256": "a42b7adf7b393aec225a48896a51f67aa5eefe87551d7aca5637bf6ea0953281",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

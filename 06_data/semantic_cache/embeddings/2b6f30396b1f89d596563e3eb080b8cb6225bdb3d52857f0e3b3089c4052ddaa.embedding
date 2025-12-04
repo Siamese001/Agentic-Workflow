@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/orchestrator.py
-# Hash: None
-# Type: RG
-# Size: 3076 bytes
+{
+  "hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
+  "kind": "embedding"
+}

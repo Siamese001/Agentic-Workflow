@@ -1,11 +1,11 @@
 {
   "hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/config_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.023785",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 8253,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "deprecated in v13",
+      "relative": "config_LIC.py"
+    }
+  ]
 }

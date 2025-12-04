@@ -1,11 +1,11 @@
 {
   "hash": "ed9f96c034b11943f7a8dffbcbc218effb7ac59356cf96a1babe8030158c776e",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/workflow_graph.py",
-  "generated_at": "2025-12-03T17:47:45.369546",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 22785,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/workflow_graph.py"
+    }
+  ]
 }

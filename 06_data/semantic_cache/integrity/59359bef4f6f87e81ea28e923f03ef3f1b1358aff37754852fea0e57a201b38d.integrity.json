@@ -1,11 +1,4 @@
 {
   "hash": "59359bef4f6f87e81ea28e923f03ef3f1b1358aff37754852fea0e57a201b38d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/unified_workflow_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.155414",
-  "file_size": 4866,
-  "modified_time": 1764610058.173639,
-  "sha256": "59359bef4f6f87e81ea28e923f03ef3f1b1358aff37754852fea0e57a201b38d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,10 +1,4 @@
 {
   "hash": "a722dbf5f37071ddf4a88f75a514166968fc2474f55d7193bbf57de18d9ec5e9",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-03-2025_v6.6_diff.txt",
-  "generated_at": "2025-12-03T17:47:46.755875",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

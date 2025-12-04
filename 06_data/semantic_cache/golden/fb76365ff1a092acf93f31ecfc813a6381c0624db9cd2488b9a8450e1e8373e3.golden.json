@@ -1,9 +1,4 @@
 {
   "hash": "fb76365ff1a092acf93f31ecfc813a6381c0624db9cd2488b9a8450e1e8373e3",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/judge_engine.py",
-  "generated_at": "2025-12-03T17:47:46.032149",
-  "golden_status": "verified",
-  "checksum": "fb76365ff1a092acf93f31ecfc813a6381c0624db9cd2488b9a8450e1e8373e3"
+  "kind": "golden"
 }

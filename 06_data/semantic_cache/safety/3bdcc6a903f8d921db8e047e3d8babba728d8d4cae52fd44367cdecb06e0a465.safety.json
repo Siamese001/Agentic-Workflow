@@ -1,9 +1,5 @@
 {
   "hash": "3bdcc6a903f8d921db8e047e3d8babba728d8d4cae52fd44367cdecb06e0a465",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/state_manager_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.636343",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

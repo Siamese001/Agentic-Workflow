@@ -1,11 +1,11 @@
 {
   "hash": "5d008079746451f26977edf18b4f9b92ae524282acee7ce91bf3d4978e56f431",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_prompt_compiler.py",
-  "generated_at": "2025-12-03T17:47:45.811277",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 622,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/_deprecated/test_prompt_compiler.py"
+    }
+  ]
 }

@@ -1,9 +1,5 @@
 {
   "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/NEO4J_INTEGRATION_README.md",
-  "generated_at": "2025-12-03T17:47:45.868180",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

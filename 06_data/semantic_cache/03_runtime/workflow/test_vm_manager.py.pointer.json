@@ -1,9 +1,0 @@
-{
-  "hash": "cd51538d0ec9a905ffd290d42b2421660045f4248b94a9533ae0d3303a70caff",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_vm_manager.py",
-  "canonical_relative": "workflow/test_vm_manager.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.221119"
-}

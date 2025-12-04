@@ -1,9 +1,4 @@
 {
   "hash": "03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/02_structure_prompts_memory.md",
-  "generated_at": "2025-12-03T17:47:45.572627",
-  "golden_status": "verified",
-  "checksum": "03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7"
+  "kind": "golden"
 }

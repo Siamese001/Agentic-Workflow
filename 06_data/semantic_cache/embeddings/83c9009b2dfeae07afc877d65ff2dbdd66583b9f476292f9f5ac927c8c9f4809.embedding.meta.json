@@ -1,10 +1,4 @@
 {
   "hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/draft_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.129262",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

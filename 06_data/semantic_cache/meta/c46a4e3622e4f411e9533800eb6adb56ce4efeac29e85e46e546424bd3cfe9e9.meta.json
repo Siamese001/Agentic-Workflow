@@ -1,11 +1,11 @@
 {
   "hash": "c46a4e3622e4f411e9533800eb6adb56ce4efeac29e85e46e546424bd3cfe9e9",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/vector_search_executor.py",
-  "generated_at": "2025-12-03T17:47:45.118380",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2844,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l2/vector_search_executor.py"
+    }
+  ]
 }

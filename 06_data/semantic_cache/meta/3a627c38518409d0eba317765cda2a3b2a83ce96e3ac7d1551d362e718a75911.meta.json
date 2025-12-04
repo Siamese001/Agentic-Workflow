@@ -1,11 +1,16 @@
 {
   "hash": "3a627c38518409d0eba317765cda2a3b2a83ce96e3ac7d1551d362e718a75911",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/interfaces(1).py",
-  "generated_at": "2025-12-03T17:47:45.252342",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 8011,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l5/interfaces(1).py"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l5/interfaces.py"
+    }
+  ]
 }

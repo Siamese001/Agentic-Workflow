@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/regression/test_safety_regression.py
-# Hash: None
-# Type: LIC
-# Size: 350 bytes
+{
+  "hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
+  "kind": "embedding"
+}

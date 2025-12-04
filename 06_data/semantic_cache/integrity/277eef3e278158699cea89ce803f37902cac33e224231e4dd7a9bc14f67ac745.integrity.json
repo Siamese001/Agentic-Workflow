@@ -1,11 +1,4 @@
 {
   "hash": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.413735",
-  "file_size": 2451,
-  "modified_time": 1764609961.6410353,
-  "sha256": "277eef3e278158699cea89ce803f37902cac33e224231e4dd7a9bc14f67ac745",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,9 +1,5 @@
 {
   "hash": "7cef9ac71efdd9034ae8171277eeaab55412fd45da61a66c7175d4cd74fbc08d",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_reasoning_toggles.py",
-  "generated_at": "2025-12-03T17:47:46.574941",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,9 +1,5 @@
 {
   "hash": "65b44f9e4d27bfb386e2d8658f6eeb3e670fe980a760d29e498f619dce01fb9c",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_validator_agent.py",
-  "generated_at": "2025-12-03T17:47:46.587486",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

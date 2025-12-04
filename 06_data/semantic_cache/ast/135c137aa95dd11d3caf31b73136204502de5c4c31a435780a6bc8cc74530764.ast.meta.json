@@ -1,8 +1,7 @@
 {
   "hash": "135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_budget_enforcement.py",
-  "generated_at": "2025-12-03T17:47:45.692805",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

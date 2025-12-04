@@ -1,8 +1,7 @@
 {
   "hash": "cbfbcafed7d13936bf1b9addd52b87fcdddd66497700e09a5a176dd34e246f04",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_reasoning_helpers.py",
-  "generated_at": "2025-12-03T17:47:46.569476",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

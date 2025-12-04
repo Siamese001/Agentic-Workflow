@@ -1,9 +1,4 @@
 {
   "hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_reflexion_quality_gain.py",
-  "generated_at": "2025-12-03T17:47:46.441093",
-  "golden_status": "verified",
-  "checksum": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d"
+  "kind": "golden"
 }

@@ -1,10 +1,4 @@
 {
   "hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/ranking.py",
-  "generated_at": "2025-12-03T17:47:45.287911",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

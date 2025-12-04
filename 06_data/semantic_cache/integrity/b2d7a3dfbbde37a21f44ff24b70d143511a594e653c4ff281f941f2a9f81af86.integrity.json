@@ -1,11 +1,4 @@
 {
   "hash": "b2d7a3dfbbde37a21f44ff24b70d143511a594e653c4ff281f941f2a9f81af86",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/routing.py",
-  "generated_at": "2025-12-03T17:47:45.293099",
-  "file_size": 17711,
-  "modified_time": 1764610059.180494,
-  "sha256": "b2d7a3dfbbde37a21f44ff24b70d143511a594e653c4ff281f941f2a9f81af86",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

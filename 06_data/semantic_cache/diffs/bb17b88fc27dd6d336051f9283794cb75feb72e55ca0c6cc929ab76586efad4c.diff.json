@@ -1,9 +1,5 @@
 {
   "hash": "bb17b88fc27dd6d336051f9283794cb75feb72e55ca0c6cc929ab76586efad4c",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/prompts_LIC.json",
-  "generated_at": "2025-12-03T17:47:46.629490",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

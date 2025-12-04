@@ -1,11 +1,11 @@
 {
   "hash": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/pinned.py",
-  "generated_at": "2025-12-03T17:47:46.014209",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 853,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/context_engine/pinned.py"
+    }
+  ]
 }

@@ -1,10 +1,4 @@
 {
   "hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_events.py",
-  "generated_at": "2025-12-03T17:47:45.829077",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

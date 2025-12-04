@@ -1,11 +1,11 @@
 {
   "hash": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/strategy_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.151791",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1136,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l3/strategy_orchestrator.py"
+    }
+  ]
 }

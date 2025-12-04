@@ -1,11 +1,4 @@
 {
   "hash": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/models.py",
-  "generated_at": "2025-12-03T17:47:46.188427",
-  "file_size": 1471,
-  "modified_time": 1764610058.0520666,
-  "sha256": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

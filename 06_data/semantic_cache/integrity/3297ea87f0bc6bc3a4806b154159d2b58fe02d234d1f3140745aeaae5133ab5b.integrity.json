@@ -1,11 +1,4 @@
 {
   "hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_hypothesis_generation.py",
-  "generated_at": "2025-12-03T17:47:45.672872",
-  "file_size": 978,
-  "modified_time": 1764610059.8263524,
-  "sha256": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

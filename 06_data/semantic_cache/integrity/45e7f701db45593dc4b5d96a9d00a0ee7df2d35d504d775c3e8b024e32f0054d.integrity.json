@@ -1,11 +1,4 @@
 {
   "hash": "45e7f701db45593dc4b5d96a9d00a0ee7df2d35d504d775c3e8b024e32f0054d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/master_config_v10_7.json",
-  "generated_at": "2025-12-03T17:47:46.270743",
-  "file_size": 10443,
-  "modified_time": 1764609961.3307762,
-  "sha256": "45e7f701db45593dc4b5d96a9d00a0ee7df2d35d504d775c3e8b024e32f0054d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

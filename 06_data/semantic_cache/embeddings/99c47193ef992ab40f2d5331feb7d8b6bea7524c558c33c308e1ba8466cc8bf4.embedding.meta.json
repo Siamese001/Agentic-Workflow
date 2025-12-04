@@ -1,10 +1,4 @@
 {
   "hash": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/08_prompt_rag_governance.md",
-  "generated_at": "2025-12-03T17:47:45.594591",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

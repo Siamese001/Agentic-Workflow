@@ -1,8 +1,7 @@
 {
   "hash": "657aa86a47dee8f117bc46955596289206e5d165f883a2fc4e40e88cd0b54444",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/conftest.py",
-  "generated_at": "2025-12-03T17:47:45.770189",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

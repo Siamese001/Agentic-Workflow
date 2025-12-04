@@ -1,9 +1,4 @@
 {
   "hash": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/models.py",
-  "generated_at": "2025-12-03T17:47:46.035869",
-  "golden_status": "verified",
-  "checksum": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0"
+  "kind": "golden"
 }

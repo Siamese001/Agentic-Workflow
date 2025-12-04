@@ -1,9 +1,5 @@
 {
   "hash": "60a332b8662936c15aaba637c13cbc993acc8d944b8d012c945d9d0617da15cc",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/cot.py",
-  "generated_at": "2025-12-03T17:47:46.094696",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

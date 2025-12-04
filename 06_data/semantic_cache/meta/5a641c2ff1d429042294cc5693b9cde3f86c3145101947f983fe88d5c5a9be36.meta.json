@@ -1,11 +1,11 @@
 {
   "hash": "5a641c2ff1d429042294cc5693b9cde3f86c3145101947f983fe88d5c5a9be36",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/model_routing/__init__.py",
-  "generated_at": "2025-12-03T17:47:45.944714",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 723,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/model_routing/__init__.py"
+    }
+  ]
 }

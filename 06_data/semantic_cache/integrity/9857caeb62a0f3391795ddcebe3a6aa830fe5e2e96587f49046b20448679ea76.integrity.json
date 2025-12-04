@@ -1,11 +1,4 @@
 {
   "hash": "9857caeb62a0f3391795ddcebe3a6aa830fe5e2e96587f49046b20448679ea76",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/openai/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.372450",
-  "file_size": 110,
-  "modified_time": 1764609961.3562448,
-  "sha256": "9857caeb62a0f3391795ddcebe3a6aa830fe5e2e96587f49046b20448679ea76",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

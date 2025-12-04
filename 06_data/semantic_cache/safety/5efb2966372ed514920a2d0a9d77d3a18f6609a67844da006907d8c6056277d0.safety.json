@@ -1,9 +1,5 @@
 {
   "hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/config_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.023014",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

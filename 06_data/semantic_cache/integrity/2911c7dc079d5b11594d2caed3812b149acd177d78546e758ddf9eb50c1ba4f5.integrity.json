@@ -1,11 +1,4 @@
 {
   "hash": "2911c7dc079d5b11594d2caed3812b149acd177d78546e758ddf9eb50c1ba4f5",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_registry.py",
-  "generated_at": "2025-12-03T17:47:45.313613",
-  "file_size": 4120,
-  "modified_time": 1764610060.8665419,
-  "sha256": "2911c7dc079d5b11594d2caed3812b149acd177d78546e758ddf9eb50c1ba4f5",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

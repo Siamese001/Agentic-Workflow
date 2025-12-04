@@ -1,11 +1,4 @@
 {
   "hash": "358d19fc896560a7875479de9e0ccf0cc9bcedc1e30ffd6a519618927d9fa00f",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/conftest.py",
-  "generated_at": "2025-12-03T17:47:45.482702",
-  "file_size": 20928,
-  "modified_time": 1764610059.3268,
-  "sha256": "358d19fc896560a7875479de9e0ccf0cc9bcedc1e30ffd6a519618927d9fa00f",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

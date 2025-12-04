@@ -1,11 +1,4 @@
 {
   "hash": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/safety_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.146350",
-  "file_size": 1099,
-  "modified_time": 1764610058.1640377,
-  "sha256": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

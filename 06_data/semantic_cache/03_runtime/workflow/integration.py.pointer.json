@@ -1,9 +1,0 @@
-{
-  "hash": "601f6020fad60757ce948c587aafffa51cf8edf701489a6474763b30aac8f6ac",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/integration.py",
-  "canonical_relative": "workflow/integration.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.147660"
-}

@@ -1,11 +1,11 @@
 {
   "hash": "aaaf900d2cf1d5d27c0fd14512b4b7cd561fd40954d2dcd05f388fc9104a880d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/hybrid_ranker.py",
-  "generated_at": "2025-12-03T17:47:45.973030",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 3912,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "meta/retrieval/hybrid_ranker.py"
+    }
+  ]
 }

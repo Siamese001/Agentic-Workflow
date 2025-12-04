@@ -1,11 +1,4 @@
 {
   "hash": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_ENFORCEMENT_QA_GATE_MAPPING_ANALYSIS.json",
-  "generated_at": "2025-12-03T17:47:47.486890",
-  "file_size": 113515,
-  "modified_time": 1764609962.07506,
-  "sha256": "b22bd10c243ebd5f259bef4e19ba14bf72a61519e3796f74570a5323be3dee00",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

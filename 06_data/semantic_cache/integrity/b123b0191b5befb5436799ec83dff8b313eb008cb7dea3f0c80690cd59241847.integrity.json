@@ -1,11 +1,4 @@
 {
   "hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_pii_sanitizer.py",
-  "generated_at": "2025-12-03T17:47:46.544078",
-  "file_size": 937,
-  "modified_time": 1764609961.5841813,
-  "sha256": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

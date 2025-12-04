@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/baseline_test_results.md
-# Hash: None
-# Type: RG
-# Size: 1436 bytes
+{
+  "hash": "ea41e36d1d6a8497e231cab0b5b853b3a885fbd20f23f7885f85f465d1f4a38e",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/baseline_test_results.md"
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "hash": "ef7aa7c67630492939f76f14bbd33d240fb585c74e491c52d04a0e6fc0db78b7",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/agentic_events.py",
-  "generated_at": "2025-12-03T17:47:45.831083",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1322,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "runtime/observability/agentic_events.py"
+    }
+  ]
 }

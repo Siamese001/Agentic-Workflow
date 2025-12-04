@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/run_learning_v10_7.py
-# Hash: None
-# Type: LIC
-# Size: 24811 bytes
+{
+  "hash": "3d62c630442275f33512e4ff12e806b55e8cf2ffced8a987780a7598c286cce7",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/run_learning_v10_7.py"
+  ]
+}

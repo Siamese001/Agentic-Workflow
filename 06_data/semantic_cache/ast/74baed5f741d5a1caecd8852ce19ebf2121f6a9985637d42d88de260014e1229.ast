@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/models.py
-# Hash: None
-# Type: RG
-# Size: 1471 bytes
+{
+  "hash": "74baed5f741d5a1caecd8852ce19ebf2121f6a9985637d42d88de260014e1229",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/models.py"
+  ]
+}

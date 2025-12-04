@@ -1,11 +1,4 @@
 {
   "hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/context_engine/assembly.py",
-  "generated_at": "2025-12-03T17:47:46.008938",
-  "file_size": 1403,
-  "modified_time": 1764610058.6405282,
-  "sha256": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

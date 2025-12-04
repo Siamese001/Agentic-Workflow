@@ -1,11 +1,4 @@
 {
   "hash": "c3eb4eb68b1bd2d94ef469c9fc09446a56b07d544b5cb58e04c3fb7ffd8f4d54",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/factual_qa.py",
-  "generated_at": "2025-12-03T17:47:45.064266",
-  "file_size": 3382,
-  "modified_time": 1764610058.7633202,
-  "sha256": "c3eb4eb68b1bd2d94ef469c9fc09446a56b07d544b5cb58e04c3fb7ffd8f4d54",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

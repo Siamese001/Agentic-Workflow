@@ -1,9 +1,4 @@
 {
   "hash": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_fs_isolation.py",
-  "generated_at": "2025-12-03T17:47:45.728542",
-  "golden_status": "verified",
-  "checksum": "966f5bd7217a41140cf53904ee47c0c7e94e43b14bd13ba94a55b9b56c9ec6ee"
+  "kind": "golden"
 }

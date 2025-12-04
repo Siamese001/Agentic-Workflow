@@ -1,11 +1,11 @@
 {
   "hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_full_pipeline_pass_rate.py",
-  "generated_at": "2025-12-03T17:47:46.433670",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 2395,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/e2e/test_full_pipeline_pass_rate.py"
+    }
+  ]
 }

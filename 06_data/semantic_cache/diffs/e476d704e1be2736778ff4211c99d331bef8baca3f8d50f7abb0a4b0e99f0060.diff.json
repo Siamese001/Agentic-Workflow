@@ -1,9 +1,5 @@
 {
   "hash": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/evaluator.py",
-  "generated_at": "2025-12-03T17:47:46.165314",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

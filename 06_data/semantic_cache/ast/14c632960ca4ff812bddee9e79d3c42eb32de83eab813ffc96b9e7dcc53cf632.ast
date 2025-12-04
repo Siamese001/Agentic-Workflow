@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/golden/test_scoring_harness.py
-# Hash: None
-# Type: RG
-# Size: 45851 bytes
+{
+  "hash": "14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/golden/test_scoring_harness.py"
+  ]
+}

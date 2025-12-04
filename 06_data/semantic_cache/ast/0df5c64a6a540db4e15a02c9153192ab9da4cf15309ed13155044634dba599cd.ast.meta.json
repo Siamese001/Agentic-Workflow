@@ -1,8 +1,7 @@
 {
   "hash": "0df5c64a6a540db4e15a02c9153192ab9da4cf15309ed13155044634dba599cd",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_outreach_stack.py",
-  "generated_at": "2025-12-03T17:47:46.537223",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

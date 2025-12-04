@@ -1,11 +1,4 @@
 {
   "hash": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_SCOPE_ISOLATION_FIX_v10_23.json",
-  "generated_at": "2025-12-03T17:47:47.525525",
-  "file_size": 26056,
-  "modified_time": 1764609961.967027,
-  "sha256": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

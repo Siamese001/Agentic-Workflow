@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_evaluator.py
-# Hash: None
-# Type: RG
-# Size: 736 bytes
+{
+  "hash": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645",
+  "kind": "embedding"
+}

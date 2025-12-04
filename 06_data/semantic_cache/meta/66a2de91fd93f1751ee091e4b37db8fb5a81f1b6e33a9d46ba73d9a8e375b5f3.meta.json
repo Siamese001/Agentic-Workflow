@@ -1,11 +1,11 @@
 {
   "hash": "66a2de91fd93f1751ee091e4b37db8fb5a81f1b6e33a9d46ba73d9a8e375b5f3",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/prompts.py",
-  "generated_at": "2025-12-03T17:47:47.974212",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 3615,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "prompts.py"
+    }
+  ]
 }

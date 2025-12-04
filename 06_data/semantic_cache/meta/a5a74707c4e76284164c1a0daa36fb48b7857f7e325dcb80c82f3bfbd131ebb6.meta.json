@@ -1,11 +1,11 @@
 {
   "hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_retrieval_modularity.py",
-  "generated_at": "2025-12-03T17:47:45.722417",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2481,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/modularity/test_retrieval_modularity.py"
+    }
+  ]
 }

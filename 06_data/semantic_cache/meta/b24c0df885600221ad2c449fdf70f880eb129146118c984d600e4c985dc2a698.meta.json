@@ -1,11 +1,11 @@
 {
   "hash": "b24c0df885600221ad2c449fdf70f880eb129146118c984d600e4c985dc2a698",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_policy_selection.py",
-  "generated_at": "2025-12-03T17:47:45.699276",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 733,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/model_routing/test_policy_selection.py"
+    }
+  ]
 }

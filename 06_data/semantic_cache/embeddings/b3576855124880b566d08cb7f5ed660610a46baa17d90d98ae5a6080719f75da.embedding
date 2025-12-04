@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/sender_voice_profile.json
-# Hash: None
-# Type: LIC
-# Size: 1924 bytes
+{
+  "hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
+  "kind": "embedding"
+}

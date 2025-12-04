@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/unit/test_message_architect.py
-# Hash: None
-# Type: LIC
-# Size: 5771 bytes
+{
+  "hash": "51cbb0f9a613c6e5340fa44900cbd37b728c64c368fdc1783faf896422f73b43",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/tests/unit/test_message_architect.py"
+  ]
+}

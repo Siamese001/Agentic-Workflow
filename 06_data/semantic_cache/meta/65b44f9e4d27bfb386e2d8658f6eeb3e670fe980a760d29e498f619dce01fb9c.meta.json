@@ -1,11 +1,11 @@
 {
   "hash": "65b44f9e4d27bfb386e2d8658f6eeb3e670fe980a760d29e498f619dce01fb9c",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_validator_agent.py",
-  "generated_at": "2025-12-03T17:47:46.588447",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 4035,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/unit/test_validator_agent.py"
+    }
+  ]
 }

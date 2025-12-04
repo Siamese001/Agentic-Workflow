@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/conftest.py
-# Hash: None
-# Type: RG
-# Size: 20928 bytes
+{
+  "hash": "358d19fc896560a7875479de9e0ccf0cc9bcedc1e30ffd6a519618927d9fa00f",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/conftest.py"
+  ]
+}

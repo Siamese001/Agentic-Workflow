@@ -1,11 +1,11 @@
 {
   "hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.340221",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 3076,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/orchestrator.py"
+    }
+  ]
 }

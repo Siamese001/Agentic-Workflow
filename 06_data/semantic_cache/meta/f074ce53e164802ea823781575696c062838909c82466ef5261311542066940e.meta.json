@@ -1,11 +1,11 @@
 {
   "hash": "f074ce53e164802ea823781575696c062838909c82466ef5261311542066940e",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/adapters.py",
-  "generated_at": "2025-12-03T17:47:45.165416",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 16652,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l4/adapters.py"
+    }
+  ]
 }

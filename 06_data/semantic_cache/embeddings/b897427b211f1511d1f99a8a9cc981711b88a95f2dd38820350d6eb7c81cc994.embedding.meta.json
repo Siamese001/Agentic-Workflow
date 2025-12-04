@@ -1,10 +1,4 @@
 {
   "hash": "b897427b211f1511d1f99a8a9cc981711b88a95f2dd38820350d6eb7c81cc994",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-06 v1.0.md",
-  "generated_at": "2025-12-03T17:47:47.697957",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/integration/NEO4J_INTEGRATION_README.md",
-  "generated_at": "2025-12-03T17:47:45.868645",
-  "file_size": 6608,
-  "modified_time": 1764610059.0164175,
-  "sha256": "48430edb055d122f559667c6ec6699b0a04baf92fb45cbb8187a953057ce9ad0",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

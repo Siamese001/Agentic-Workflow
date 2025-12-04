@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_budget_enforcement.py
-# Hash: None
-# Type: RG
-# Size: 738 bytes
+{
+  "hash": "135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_budget_enforcement.py"
+  ]
+}

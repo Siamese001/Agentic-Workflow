@@ -1,11 +1,4 @@
 {
   "hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Monolithic/test_lic_v11_10.py",
-  "generated_at": "2025-12-03T17:47:46.660252",
-  "file_size": 45899,
-  "modified_time": 1764610055.9897895,
-  "sha256": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

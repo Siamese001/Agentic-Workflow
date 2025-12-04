@@ -1,11 +1,11 @@
 {
   "hash": "535610470612fcfe538f3eda85d207cdc3a762412f792971111968a8cda84a66",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/modularity/test_layer_imports.py",
-  "generated_at": "2025-12-03T17:47:45.714689",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 4487,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/modularity/test_layer_imports.py"
+    }
+  ]
 }

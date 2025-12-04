@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/TESTING.md
-# Hash: None
-# Type: LIC
-# Size: 518 bytes
+{
+  "hash": "ba423be65f4b9a802e4bd617564daa58cad89c8d084a3fa887935aacf7afbb6e",
+  "kind": "embedding"
+}

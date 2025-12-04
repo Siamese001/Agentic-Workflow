@@ -1,11 +1,4 @@
 {
   "hash": "e7b908a94e4a0556a4f38014d744707de85f41c41948256f2cf6d737662a8757",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_prompt_injection.py",
-  "generated_at": "2025-12-03T17:47:46.553553",
-  "file_size": 938,
-  "modified_time": 1764609961.5907116,
-  "sha256": "e7b908a94e4a0556a4f38014d744707de85f41c41948256f2cf6d737662a8757",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "ba423be65f4b9a802e4bd617564daa58cad89c8d084a3fa887935aacf7afbb6e",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/TESTING.md",
-  "generated_at": "2025-12-03T17:47:46.345056",
-  "file_size": 518,
-  "modified_time": 1764609961.3345547,
-  "sha256": "ba423be65f4b9a802e4bd617564daa58cad89c8d084a3fa887935aacf7afbb6e",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

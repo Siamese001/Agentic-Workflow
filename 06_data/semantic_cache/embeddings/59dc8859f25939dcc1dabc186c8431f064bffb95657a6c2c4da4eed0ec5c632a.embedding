@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/l4/pinecone_adapter.py
-# Hash: None
-# Type: RG
-# Size: 13294 bytes
+{
+  "hash": "59dc8859f25939dcc1dabc186c8431f064bffb95657a6c2c4da4eed0ec5c632a",
+  "kind": "embedding"
+}

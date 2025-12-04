@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_report_pre_cleanup.json
-# Hash: None
-# Type: RG
-# Size: 144444 bytes
+{
+  "hash": "d1ece1f91afc131d2c121097aedbabae96aa3b37404e577431ba8648c4aed236",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_report_pre_cleanup.json"
+  ]
+}

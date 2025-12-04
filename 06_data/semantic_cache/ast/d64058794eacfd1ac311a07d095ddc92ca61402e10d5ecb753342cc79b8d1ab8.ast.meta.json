@@ -1,8 +1,7 @@
 {
   "hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/refactoring/README_REFACTORING.md",
-  "generated_at": "2025-12-03T17:47:45.873718",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

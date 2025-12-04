@@ -1,9 +1,5 @@
 {
   "hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_policy_controller_bounds.py",
-  "generated_at": "2025-12-03T17:47:46.546741",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

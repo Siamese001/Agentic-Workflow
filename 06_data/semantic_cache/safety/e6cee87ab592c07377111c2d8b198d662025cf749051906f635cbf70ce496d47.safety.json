@@ -1,9 +1,5 @@
 {
   "hash": "e6cee87ab592c07377111c2d8b198d662025cf749051906f635cbf70ce496d47",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/dag/dag_models.py",
-  "generated_at": "2025-12-03T17:47:46.053623",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

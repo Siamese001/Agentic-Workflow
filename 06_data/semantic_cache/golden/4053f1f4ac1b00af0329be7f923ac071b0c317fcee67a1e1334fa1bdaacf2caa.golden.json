@@ -1,9 +1,4 @@
 {
   "hash": "4053f1f4ac1b00af0329be7f923ac071b0c317fcee67a1e1334fa1bdaacf2caa",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/qa_planning(1).py",
-  "generated_at": "2025-12-03T17:47:44.945442",
-  "golden_status": "verified",
-  "checksum": "4053f1f4ac1b00af0329be7f923ac071b0c317fcee67a1e1334fa1bdaacf2caa"
+  "kind": "golden"
 }

@@ -1,10 +1,4 @@
 {
   "hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/adapter.py",
-  "generated_at": "2025-12-03T17:47:46.197834",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

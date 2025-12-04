@@ -1,11 +1,11 @@
 {
   "hash": "21da1f3fcc77701d48bd13bb1fa6995821a617fed00977d4a7eafe7af0a81c17",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/test_system_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.350327",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 49456,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "test_system_v10_7.py"
+    }
+  ]
 }

@@ -1,9 +1,5 @@
 {
   "hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_selector_integration.py",
-  "generated_at": "2025-12-03T17:47:45.701244",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

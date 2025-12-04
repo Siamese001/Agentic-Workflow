@@ -1,9 +1,0 @@
-{
-  "hash": "7e42afbf8234baebcd9063e2a7443aa1334ea0f4282213f7b5fe4961e776a74a",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/di_container.py",
-  "canonical_relative": "workflow/di_container.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.078870"
-}

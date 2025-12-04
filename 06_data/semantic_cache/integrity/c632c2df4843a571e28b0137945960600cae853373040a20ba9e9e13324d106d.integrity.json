@@ -1,11 +1,4 @@
 {
   "hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_reflexion_quality_gain.py",
-  "generated_at": "2025-12-03T17:47:46.441948",
-  "file_size": 300,
-  "modified_time": 1764609961.5298607,
-  "sha256": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

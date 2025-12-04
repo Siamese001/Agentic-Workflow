@@ -1,11 +1,11 @@
 {
   "hash": "aa5ee7712ddb126cb6700ba51c4b9b4d0013a5b343db0ccb1786106c06bc57e0",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/model_routing/selector.py",
-  "generated_at": "2025-12-03T17:47:46.091270",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1204,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/model_routing/selector.py"
+    }
+  ]
 }

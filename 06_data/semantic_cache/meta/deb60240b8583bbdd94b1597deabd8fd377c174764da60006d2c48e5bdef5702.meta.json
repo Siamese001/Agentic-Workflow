@@ -1,11 +1,16 @@
 {
   "hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp.manifest.json",
-  "generated_at": "2025-12-03T17:47:46.283643",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 750,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_7_main",
+      "relative": "mcp.manifest.json"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "mcp.manifest.json"
+    }
+  ]
 }

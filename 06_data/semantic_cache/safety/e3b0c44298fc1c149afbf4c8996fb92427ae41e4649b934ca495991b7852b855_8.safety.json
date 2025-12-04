@@ -1,9 +1,0 @@
-{
-  "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/src/__init__.py",
-  "generated_at": "2025-12-03T17:47:44.847736",
-  "safety_score": 1.0,
-  "issues": []
-}

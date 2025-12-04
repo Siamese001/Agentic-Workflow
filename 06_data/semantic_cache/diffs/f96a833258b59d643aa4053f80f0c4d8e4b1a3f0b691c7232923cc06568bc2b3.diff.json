@@ -1,9 +1,5 @@
 {
   "hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/google_genai_client.py",
-  "generated_at": "2025-12-03T17:47:45.398078",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

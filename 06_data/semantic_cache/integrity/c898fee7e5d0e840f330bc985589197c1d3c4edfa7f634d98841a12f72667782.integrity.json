@@ -1,11 +1,4 @@
 {
   "hash": "c898fee7e5d0e840f330bc985589197c1d3c4edfa7f634d98841a12f72667782",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/PHASE_D_E_SUMMARY.md",
-  "generated_at": "2025-12-03T17:47:45.907269",
-  "file_size": 12523,
-  "modified_time": 1764610058.981944,
-  "sha256": "c898fee7e5d0e840f330bc985589197c1d3c4edfa7f634d98841a12f72667782",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

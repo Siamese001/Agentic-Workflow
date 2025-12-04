@@ -1,11 +1,11 @@
 {
   "hash": "371b05ac0c47aa2d24fe997453d0a5378b4c2ef7c3b07d9d5a966e80ba81917b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/simulation/test_metrics.py",
-  "generated_at": "2025-12-03T17:47:45.760541",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 659,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/simulation/test_metrics.py"
+    }
+  ]
 }

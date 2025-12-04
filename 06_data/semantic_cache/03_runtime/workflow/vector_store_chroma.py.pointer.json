@@ -1,9 +1,0 @@
-{
-  "hash": "573887c76064f3fab2c49c85a1196e7c3ba1e99f5c13aa8aaa1b315e46402bd0",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/storage/vector_store_chroma.py",
-  "canonical_relative": "workflow/vector_store_chroma.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.280906"
-}

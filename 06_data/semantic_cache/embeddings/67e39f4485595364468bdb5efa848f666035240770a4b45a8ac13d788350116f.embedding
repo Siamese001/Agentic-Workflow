@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/runner.py
-# Hash: None
-# Type: RG
-# Size: 2042 bytes
+{
+  "hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
+  "kind": "embedding"
+}

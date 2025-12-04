@@ -1,9 +1,5 @@
 {
   "hash": "25b9c131ed002c16288c32451a33843c6bad8e881d1887ab6b2ef77510c274f7",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/kg_ingestion_dag.py",
-  "generated_at": "2025-12-03T17:47:45.330524",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

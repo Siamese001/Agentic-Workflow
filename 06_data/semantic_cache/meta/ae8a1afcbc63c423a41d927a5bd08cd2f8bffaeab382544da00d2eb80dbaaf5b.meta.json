@@ -1,11 +1,11 @@
 {
   "hash": "ae8a1afcbc63c423a41d927a5bd08cd2f8bffaeab382544da00d2eb80dbaaf5b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/bullet.py",
-  "generated_at": "2025-12-03T17:47:46.377896",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 18838,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "stacks_v10_7/bullet.py"
+    }
+  ]
 }

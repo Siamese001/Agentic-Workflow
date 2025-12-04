@@ -1,9 +1,5 @@
 {
   "hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/draft_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.129849",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

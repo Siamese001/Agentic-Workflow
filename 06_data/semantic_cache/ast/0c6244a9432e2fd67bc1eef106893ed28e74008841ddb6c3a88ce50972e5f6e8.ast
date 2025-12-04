@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_agent_cards.py
-# Hash: None
-# Type: RG
-# Size: 2025 bytes
+{
+  "hash": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_agent_cards.py"
+  ]
+}

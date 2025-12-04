@@ -1,8 +1,7 @@
 {
   "hash": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/workflow_planning.py",
-  "generated_at": "2025-12-03T17:47:45.032677",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

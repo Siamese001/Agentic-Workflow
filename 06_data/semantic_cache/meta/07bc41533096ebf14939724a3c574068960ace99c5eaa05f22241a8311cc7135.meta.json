@@ -1,11 +1,11 @@
 {
   "hash": "07bc41533096ebf14939724a3c574068960ace99c5eaa05f22241a8311cc7135",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_retry_improvement.py",
-  "generated_at": "2025-12-03T17:47:46.461938",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 534,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/integration/test_retry_improvement.py"
+    }
+  ]
 }

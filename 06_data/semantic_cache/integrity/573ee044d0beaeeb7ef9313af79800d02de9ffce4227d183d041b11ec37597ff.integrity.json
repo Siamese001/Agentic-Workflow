@@ -1,11 +1,4 @@
 {
   "hash": "573ee044d0beaeeb7ef9313af79800d02de9ffce4227d183d041b11ec37597ff",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-02 v1.6.md",
-  "generated_at": "2025-12-03T17:47:47.610067",
-  "file_size": 23854,
-  "modified_time": 1764609961.8668396,
-  "sha256": "573ee044d0beaeeb7ef9313af79800d02de9ffce4227d183d041b11ec37597ff",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

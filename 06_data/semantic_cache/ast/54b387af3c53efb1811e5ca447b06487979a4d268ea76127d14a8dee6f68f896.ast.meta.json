@@ -1,8 +1,7 @@
 {
   "hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_evidence_traceability.py",
-  "generated_at": "2025-12-03T17:47:46.424108",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

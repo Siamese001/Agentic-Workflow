@@ -1,9 +1,5 @@
 {
   "hash": "944a39d8039307af34ca3136a7973f903b5c09409bc10df7e93f84ff3994ebc7",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/validation/sdk_validation_results.json",
-  "generated_at": "2025-12-03T17:47:45.561007",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

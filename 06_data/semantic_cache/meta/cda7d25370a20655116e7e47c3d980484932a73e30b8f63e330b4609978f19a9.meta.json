@@ -1,11 +1,11 @@
 {
   "hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_safety_regression.py",
-  "generated_at": "2025-12-03T17:47:46.492323",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 350,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/regression/test_safety_regression.py"
+    }
+  ]
 }

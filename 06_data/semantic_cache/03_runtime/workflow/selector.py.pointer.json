@@ -1,9 +1,0 @@
-{
-  "hash": "aa5ee7712ddb126cb6700ba51c4b9b4d0013a5b343db0ccb1786106c06bc57e0",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/model_routing/selector.py",
-  "canonical_relative": "workflow/selector.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.274301"
-}

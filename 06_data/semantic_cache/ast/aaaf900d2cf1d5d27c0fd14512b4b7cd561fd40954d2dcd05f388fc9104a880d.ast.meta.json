@@ -1,8 +1,7 @@
 {
   "hash": "aaaf900d2cf1d5d27c0fd14512b4b7cd561fd40954d2dcd05f388fc9104a880d",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/hybrid_ranker.py",
-  "generated_at": "2025-12-03T17:47:45.970326",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

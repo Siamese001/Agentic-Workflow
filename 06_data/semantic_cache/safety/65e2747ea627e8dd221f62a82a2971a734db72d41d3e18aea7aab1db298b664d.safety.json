@@ -1,9 +1,5 @@
 {
   "hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/memory_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.612778",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

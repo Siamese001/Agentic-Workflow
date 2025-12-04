@@ -1,11 +1,11 @@
 {
   "hash": "b123b0191b5befb5436799ec83dff8b313eb008cb7dea3f0c80690cd59241847",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_pii_sanitizer.py",
-  "generated_at": "2025-12-03T17:47:46.544564",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 937,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/unit/test_pii_sanitizer.py"
+    }
+  ]
 }

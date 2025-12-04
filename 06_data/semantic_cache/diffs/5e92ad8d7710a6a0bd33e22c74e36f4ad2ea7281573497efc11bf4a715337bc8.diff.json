@@ -1,9 +1,5 @@
 {
   "hash": "5e92ad8d7710a6a0bd33e22c74e36f4ad2ea7281573497efc11bf4a715337bc8",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/simulation.py",
-  "generated_at": "2025-12-03T17:47:45.548802",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

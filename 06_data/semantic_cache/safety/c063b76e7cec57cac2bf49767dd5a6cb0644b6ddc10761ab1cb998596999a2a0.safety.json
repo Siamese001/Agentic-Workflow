@@ -1,9 +1,5 @@
 {
   "hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/prompts_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.030427",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/repair_policies.py",
-  "generated_at": "2025-12-03T17:47:46.211024",
-  "file_size": 1610,
-  "modified_time": 1764610058.009833,
-  "sha256": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

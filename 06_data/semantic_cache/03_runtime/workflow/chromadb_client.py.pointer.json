@@ -1,9 +1,0 @@
-{
-  "hash": "130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/chromadb_client.py",
-  "canonical_relative": "workflow/chromadb_client.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.158552"
-}

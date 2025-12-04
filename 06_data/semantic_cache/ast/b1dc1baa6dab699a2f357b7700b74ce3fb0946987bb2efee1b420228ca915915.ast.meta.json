@@ -1,8 +1,7 @@
 {
   "hash": "b1dc1baa6dab699a2f357b7700b74ce3fb0946987bb2efee1b420228ca915915",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/cognitive_agents.py",
-  "generated_at": "2025-12-03T17:47:45.279274",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

@@ -1,11 +1,11 @@
 {
   "hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/ranking.py",
-  "generated_at": "2025-12-03T17:47:45.289885",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 18604,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "meta/ranking.py"
+    }
+  ]
 }

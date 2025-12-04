@@ -1,8 +1,7 @@
 {
   "hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_routing_and_pipeline.py",
-  "generated_at": "2025-12-03T17:47:45.606544",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

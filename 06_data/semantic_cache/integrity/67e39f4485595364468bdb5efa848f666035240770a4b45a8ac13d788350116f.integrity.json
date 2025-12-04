@@ -1,11 +1,4 @@
 {
   "hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/golden_state/runner.py",
-  "generated_at": "2025-12-03T17:47:46.192066",
-  "file_size": 2042,
-  "modified_time": 1764610058.036668,
-  "sha256": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

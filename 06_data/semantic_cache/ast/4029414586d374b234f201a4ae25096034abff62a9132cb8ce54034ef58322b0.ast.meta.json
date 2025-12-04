@@ -1,8 +1,7 @@
 {
   "hash": "4029414586d374b234f201a4ae25096034abff62a9132cb8ce54034ef58322b0",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/strategy_orchestrator.py",
-  "generated_at": "2025-12-03T17:47:45.147946",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

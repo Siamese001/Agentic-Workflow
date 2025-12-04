@@ -1,11 +1,11 @@
 {
   "hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/reflexion.py",
-  "generated_at": "2025-12-03T17:47:46.105324",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1618,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/reasoning/reflexion.py"
+    }
+  ]
 }

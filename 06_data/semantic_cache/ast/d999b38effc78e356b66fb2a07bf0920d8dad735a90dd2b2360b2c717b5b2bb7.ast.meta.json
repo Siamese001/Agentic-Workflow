@@ -1,8 +1,7 @@
 {
   "hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/tot.py",
-  "generated_at": "2025-12-03T17:47:46.106212",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

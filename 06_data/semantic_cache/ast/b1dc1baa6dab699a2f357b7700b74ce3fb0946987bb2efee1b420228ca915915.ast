@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/cognitive_agents.py
-# Hash: None
-# Type: RG
-# Size: 649 bytes
+{
+  "hash": "b1dc1baa6dab699a2f357b7700b74ce3fb0946987bb2efee1b420228ca915915",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/meta/cognitive_agents.py"
+  ]
+}

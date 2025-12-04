@@ -1,10 +1,4 @@
 {
   "hash": "78a2a93dc96a522fa29c8a3b16e925871d775415fb5e58929c62b84cd97d3355",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Old Resume Gen Python/Resume_Generation_v9_81.py",
-  "generated_at": "2025-12-03T17:47:48.049727",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

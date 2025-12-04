@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/regression/test_autotune_regression.py
-# Hash: None
-# Type: LIC
-# Size: 505 bytes
+{
+  "hash": "bf20c0b9f631cc139ee7d4d7143eeeab6e6d0651fbe1660510b7ef1fae9f718a",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/tests/regression/test_autotune_regression.py"
+  ]
+}

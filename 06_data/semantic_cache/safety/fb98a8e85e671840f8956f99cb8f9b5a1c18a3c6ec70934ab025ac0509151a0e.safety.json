@@ -1,9 +1,5 @@
 {
   "hash": "fb98a8e85e671840f8956f99cb8f9b5a1c18a3c6ec70934ab025ac0509151a0e",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_call_count_drift.py",
-  "generated_at": "2025-12-03T17:47:46.479777",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

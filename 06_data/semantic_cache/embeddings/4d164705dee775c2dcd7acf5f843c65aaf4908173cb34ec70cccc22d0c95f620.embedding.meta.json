@@ -1,10 +1,4 @@
 {
   "hash": "4d164705dee775c2dcd7acf5f843c65aaf4908173cb34ec70cccc22d0c95f620",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_rag_init.py",
-  "generated_at": "2025-12-03T17:47:46.565636",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

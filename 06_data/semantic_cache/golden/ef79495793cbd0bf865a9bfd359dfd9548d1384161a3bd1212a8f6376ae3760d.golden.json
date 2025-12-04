@@ -1,9 +1,4 @@
 {
   "hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/triplet_store.py",
-  "generated_at": "2025-12-03T17:47:45.216949",
-  "golden_status": "verified",
-  "checksum": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d"
+  "kind": "golden"
 }

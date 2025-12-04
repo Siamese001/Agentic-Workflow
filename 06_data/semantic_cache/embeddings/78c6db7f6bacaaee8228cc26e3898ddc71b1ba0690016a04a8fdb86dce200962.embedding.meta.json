@@ -1,10 +1,4 @@
 {
   "hash": "78c6db7f6bacaaee8228cc26e3898ddc71b1ba0690016a04a8fdb86dce200962",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/e2e/test_release_slos.py",
-  "generated_at": "2025-12-03T17:47:46.443932",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "f694ef0357de8cd2ae157dc53c829c0b100605d5be0f4c3cd3ca6a4d61f674c9",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_conductor.py",
-  "generated_at": "2025-12-03T17:47:46.512801",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 1838,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/unit/test_conductor.py"
+    }
+  ]
 }

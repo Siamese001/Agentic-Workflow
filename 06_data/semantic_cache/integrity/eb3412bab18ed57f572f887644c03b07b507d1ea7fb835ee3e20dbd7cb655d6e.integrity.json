@@ -1,11 +1,4 @@
 {
   "hash": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/requirements.txt",
-  "generated_at": "2025-12-03T17:47:44.718796",
-  "file_size": 474,
-  "modified_time": 1764610057.6748018,
-  "sha256": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

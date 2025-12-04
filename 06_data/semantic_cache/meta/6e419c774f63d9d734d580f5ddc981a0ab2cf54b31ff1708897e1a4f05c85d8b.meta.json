@@ -1,11 +1,11 @@
 {
   "hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/v6_prompt_integration.py",
-  "generated_at": "2025-12-03T17:47:45.020806",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 12420,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l1/v6_prompt_integration.py"
+    }
+  ]
 }

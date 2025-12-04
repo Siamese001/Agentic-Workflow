@@ -1,9 +1,4 @@
 {
   "hash": "678711ee128a093c38bf9c2da423fec7f3bb4983213f70afb8fd82c7ce31d0da",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/multi_agent.py",
-  "generated_at": "2025-12-03T17:47:45.285196",
-  "golden_status": "verified",
-  "checksum": "678711ee128a093c38bf9c2da423fec7f3bb4983213f70afb8fd82c7ce31d0da"
+  "kind": "golden"
 }

@@ -1,9 +1,4 @@
 {
   "hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/retrievers/bm25(1).py",
-  "generated_at": "2025-12-03T17:47:45.412684",
-  "golden_status": "verified",
-  "checksum": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc"
+  "kind": "golden"
 }

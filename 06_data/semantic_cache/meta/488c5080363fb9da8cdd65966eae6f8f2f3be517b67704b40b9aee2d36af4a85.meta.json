@@ -1,11 +1,11 @@
 {
   "hash": "488c5080363fb9da8cdd65966eae6f8f2f3be517b67704b40b9aee2d36af4a85",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/observability.py",
-  "generated_at": "2025-12-03T17:47:44.709392",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1108,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "observability.py"
+    }
+  ]
 }

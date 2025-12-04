@@ -1,9 +1,5 @@
 {
   "hash": "c2fb27f33029cc717535e00af832e8088ce54cc159876a9f4f84c8ab040e8329",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_qa_metrics.py",
-  "generated_at": "2025-12-03T17:47:46.557225",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

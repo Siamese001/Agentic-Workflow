@@ -1,11 +1,4 @@
 {
   "hash": "8af87ef2f5659d908390cca1af6f6dc66c6b9ac3e49d7ac28db31054d55d56b4",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/agent_profile.py",
-  "generated_at": "2025-12-03T17:47:44.723242",
-  "file_size": 353,
-  "modified_time": 1764610059.0872796,
-  "sha256": "8af87ef2f5659d908390cca1af6f6dc66c6b9ac3e49d7ac28db31054d55d56b4",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

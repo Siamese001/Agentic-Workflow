@@ -1,9 +1,4 @@
 {
   "hash": "00c12ad8f0b89c1364a4c1c99d9d6c53ca231de7177cc33722e100239bfa8c81",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/kg_writer.py",
-  "generated_at": "2025-12-03T17:47:45.086157",
-  "golden_status": "verified",
-  "checksum": "00c12ad8f0b89c1364a4c1c99d9d6c53ca231de7177cc33722e100239bfa8c81"
+  "kind": "golden"
 }

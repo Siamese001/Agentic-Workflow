@@ -1,11 +1,11 @@
 {
   "hash": "03e1c440aa7d7381ff6e0ea19fe7c7bcc4819ed351c53a1055b6d8deca0cb2a7",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/02_structure_prompts_memory.md",
-  "generated_at": "2025-12-03T17:47:45.573797",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 1173,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "windsurf_rules/02_structure_prompts_memory.md"
+    }
+  ]
 }

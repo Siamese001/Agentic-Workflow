@@ -1,11 +1,4 @@
 {
   "hash": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/draft_planning(1).py",
-  "generated_at": "2025-12-03T17:47:44.869976",
-  "file_size": 1040,
-  "modified_time": 1764610058.2404392,
-  "sha256": "fa87c8f35bad2b5cbf7117e08b147e0b68872fea53b07dcd794b701b6d48b045",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

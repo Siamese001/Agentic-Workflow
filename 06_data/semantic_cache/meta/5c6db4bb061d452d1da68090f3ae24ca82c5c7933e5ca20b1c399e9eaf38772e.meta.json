@@ -1,11 +1,11 @@
 {
   "hash": "5c6db4bb061d452d1da68090f3ae24ca82c5c7933e5ca20b1c399e9eaf38772e",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/refinement.py",
-  "generated_at": "2025-12-03T17:47:45.965137",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1045,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "meta/metacognition/refinement.py"
+    }
+  ]
 }

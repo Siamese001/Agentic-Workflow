@@ -1,11 +1,4 @@
 {
   "hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/06_safety_policy_cost.md",
-  "generated_at": "2025-12-03T17:47:45.589122",
-  "file_size": 809,
-  "modified_time": 1764610058.4200962,
-  "sha256": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

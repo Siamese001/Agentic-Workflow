@@ -1,11 +1,11 @@
 {
   "hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/fusion_governance.py",
-  "generated_at": "2025-12-03T17:47:45.323571",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 29216,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/fusion_governance.py"
+    }
+  ]
 }

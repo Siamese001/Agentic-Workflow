@@ -1,9 +1,0 @@
-{
-  "hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_tool_registry.py",
-  "canonical_relative": "lic/test_tool_registry.py",
-  "canonical_root": "09_apps",
-  "generated_at": "2025-12-03T17:47:48.323517"
-}

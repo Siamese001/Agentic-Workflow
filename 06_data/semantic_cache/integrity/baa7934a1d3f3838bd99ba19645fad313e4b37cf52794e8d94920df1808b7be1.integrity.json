@@ -1,11 +1,4 @@
 {
   "hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/config/budget_profile.py",
-  "generated_at": "2025-12-03T17:47:44.727452",
-  "file_size": 448,
-  "modified_time": 1764610059.1070952,
-  "sha256": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

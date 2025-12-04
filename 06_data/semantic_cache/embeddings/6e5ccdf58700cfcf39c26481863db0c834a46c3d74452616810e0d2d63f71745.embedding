@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/retrieval.py
-# Hash: None
-# Type: RG
-# Size: 7761 bytes
+{
+  "hash": "6e5ccdf58700cfcf39c26481863db0c834a46c3d74452616810e0d2d63f71745",
+  "kind": "embedding"
+}

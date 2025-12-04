@@ -1,11 +1,11 @@
 {
   "hash": "64c90df6c33aa84514396acd494dab6a7118c42cc9e91c78cf1514e35d171af8",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_2025-09-12_v3.3.md",
-  "generated_at": "2025-12-03T17:47:47.184877",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 16202,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_2025-09-12_v3.3.md"
+    }
+  ]
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/draft_orchestrator.py",
-  "canonical_relative": "workflow/draft_orchestrator.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.117920"
-}

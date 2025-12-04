@@ -1,11 +1,16 @@
 {
   "hash": "5818c4357b37723c5aa323c3e226aa03f03b41b7518f128a485f1a6bec3775eb",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/docs_overview(1).md",
-  "generated_at": "2025-12-03T17:47:45.438248",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 3032,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/docs_overview(1).md"
+    },
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "root_docs/docs_overview.md"
+    }
+  ]
 }

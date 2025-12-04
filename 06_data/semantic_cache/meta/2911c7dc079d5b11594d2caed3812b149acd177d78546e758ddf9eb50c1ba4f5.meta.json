@@ -1,11 +1,11 @@
 {
   "hash": "2911c7dc079d5b11594d2caed3812b149acd177d78546e758ddf9eb50c1ba4f5",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/orchestration/agent_registry.py",
-  "generated_at": "2025-12-03T17:47:45.314194",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 4120,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "orchestration/agent_registry.py"
+    }
+  ]
 }

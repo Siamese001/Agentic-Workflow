@@ -1,11 +1,4 @@
 {
   "hash": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/graph_store_neo4j.py",
-  "generated_at": "2025-12-03T17:47:44.704698",
-  "file_size": 761,
-  "modified_time": 1764610057.6748018,
-  "sha256": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

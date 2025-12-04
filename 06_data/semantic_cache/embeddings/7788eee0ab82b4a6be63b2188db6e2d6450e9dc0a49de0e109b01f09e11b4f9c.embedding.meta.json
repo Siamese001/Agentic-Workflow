@@ -1,10 +1,4 @@
 {
   "hash": "7788eee0ab82b4a6be63b2188db6e2d6450e9dc0a49de0e109b01f09e11b4f9c",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/providers/openai_client.py",
-  "generated_at": "2025-12-03T17:47:45.401795",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

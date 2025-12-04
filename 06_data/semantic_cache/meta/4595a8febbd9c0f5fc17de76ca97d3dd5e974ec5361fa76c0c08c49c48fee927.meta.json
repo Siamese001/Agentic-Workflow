@@ -1,11 +1,16 @@
 {
   "hash": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/retrieval_clients.py",
-  "generated_at": "2025-12-03T17:47:46.300914",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 1757,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "retrieval_clients.py"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "retrieval_clients.py"
+    }
+  ]
 }

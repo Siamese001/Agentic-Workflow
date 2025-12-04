@@ -1,9 +1,5 @@
 {
   "hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_selector_integration.py",
-  "generated_at": "2025-12-03T17:47:45.702020",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

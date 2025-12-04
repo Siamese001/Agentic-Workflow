@@ -1,11 +1,4 @@
 {
   "hash": "f694ef0357de8cd2ae157dc53c829c0b100605d5be0f4c3cd3ca6a4d61f674c9",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_conductor.py",
-  "generated_at": "2025-12-03T17:47:46.512292",
-  "file_size": 1838,
-  "modified_time": 1764609961.5987244,
-  "sha256": "f694ef0357de8cd2ae157dc53c829c0b100605d5be0f4c3cd3ca6a4d61f674c9",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

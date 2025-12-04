@@ -1,11 +1,11 @@
 {
   "hash": "6d87f9f2e65d584f9cdf422c6eb0437196496edfb359a1c6c1a7181e9bc83cf2",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_v7.4_diff_manifest.json",
-  "generated_at": "2025-12-03T17:47:47.549562",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 2022,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_v7.4_diff_manifest.json"
+    }
+  ]
 }

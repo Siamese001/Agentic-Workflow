@@ -1,11 +1,11 @@
 {
   "hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/integration/test_tool_registry.py",
-  "generated_at": "2025-12-03T17:47:46.470358",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 1271,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/integration/test_tool_registry.py"
+    }
+  ]
 }

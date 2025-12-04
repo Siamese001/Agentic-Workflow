@@ -1,11 +1,11 @@
 {
   "hash": "68d7a61c6f8c07009ea40a8edc6323e4a2ae1317ddfa7195cb54cbc828e5d476",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_meta_hybrid_ranker.py",
-  "generated_at": "2025-12-03T17:47:45.676856",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2072,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/metacognition/test_meta_hybrid_ranker.py"
+    }
+  ]
 }

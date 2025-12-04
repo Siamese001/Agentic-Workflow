@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/meta/retrieval/vector_store_chroma.py
-# Hash: None
-# Type: RG
-# Size: 1358 bytes
+{
+  "hash": "faeafd310b4e72d290aaedfd894999e6f7339749b054dce561ee173fcc070c3b",
+  "kind": "embedding"
+}

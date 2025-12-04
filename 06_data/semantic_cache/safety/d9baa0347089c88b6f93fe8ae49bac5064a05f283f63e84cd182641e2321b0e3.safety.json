@@ -1,9 +1,5 @@
 {
   "hash": "d9baa0347089c88b6f93fe8ae49bac5064a05f283f63e84cd182641e2321b0e3",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/rag.py",
-  "generated_at": "2025-12-03T17:47:47.977390",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

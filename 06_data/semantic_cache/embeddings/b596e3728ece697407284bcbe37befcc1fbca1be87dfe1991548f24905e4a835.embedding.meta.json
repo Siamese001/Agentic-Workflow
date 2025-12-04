@@ -1,10 +1,4 @@
 {
   "hash": "b596e3728ece697407284bcbe37befcc1fbca1be87dfe1991548f24905e4a835",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/self_correction_injection(1).py",
-  "generated_at": "2025-12-03T17:47:44.981646",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

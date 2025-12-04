@@ -1,9 +1,4 @@
 {
   "hash": "120a04677936aecee86312cb73ada5f1768a1102254ce815c4f5271c8b158e6a",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/workflow_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.652522",
-  "golden_status": "verified",
-  "checksum": "120a04677936aecee86312cb73ada5f1768a1102254ce815c4f5271c8b158e6a"
+  "kind": "golden"
 }

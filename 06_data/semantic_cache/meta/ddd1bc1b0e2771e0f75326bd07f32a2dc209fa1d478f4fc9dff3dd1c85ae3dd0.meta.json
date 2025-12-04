@@ -1,11 +1,11 @@
 {
   "hash": "ddd1bc1b0e2771e0f75326bd07f32a2dc209fa1d478f4fc9dff3dd1c85ae3dd0",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/deprecated in v13/validation_LIC.py",
-  "generated_at": "2025-12-03T17:47:48.040306",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 22331,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "deprecated in v13",
+      "relative": "validation_LIC.py"
+    }
+  ]
 }

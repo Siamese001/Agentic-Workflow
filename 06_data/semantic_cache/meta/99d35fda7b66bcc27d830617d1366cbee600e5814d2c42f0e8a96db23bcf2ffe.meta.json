@@ -1,11 +1,11 @@
 {
   "hash": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/eval/health/repair_policies.py",
-  "generated_at": "2025-12-03T17:47:46.211393",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1610,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "eval/health/repair_policies.py"
+    }
+  ]
 }

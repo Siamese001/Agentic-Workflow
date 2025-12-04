@@ -1,8 +1,7 @@
 {
   "hash": "a11c012de48aabca2397ffdefcce3563e96aa3d8b2ce13e65d7879968cc57698",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l5/safety_validator.py",
-  "generated_at": "2025-12-03T17:47:45.267503",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

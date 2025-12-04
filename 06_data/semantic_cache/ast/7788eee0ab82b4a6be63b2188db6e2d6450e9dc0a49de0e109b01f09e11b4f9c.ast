@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/providers/openai_client.py
-# Hash: None
-# Type: RG
-# Size: 1348 bytes
+{
+  "hash": "7788eee0ab82b4a6be63b2188db6e2d6450e9dc0a49de0e109b01f09e11b4f9c",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/providers/openai_client.py"
+  ]
+}

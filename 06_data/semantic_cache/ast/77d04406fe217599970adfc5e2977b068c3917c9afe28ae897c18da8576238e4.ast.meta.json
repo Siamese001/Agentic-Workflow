@@ -1,8 +1,7 @@
 {
   "hash": "77d04406fe217599970adfc5e2977b068c3917c9afe28ae897c18da8576238e4",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/production_inputs/master_resume.json",
-  "generated_at": "2025-12-03T17:47:45.383862",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

@@ -1,9 +1,5 @@
 {
   "hash": "e3341f6e168cc15ae9ee4c073308251361c29a9070efb97ac1e808c6a7f39dc9",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-04-2025_v7.13.18.json",
-  "generated_at": "2025-12-03T17:47:46.928240",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "3b9c280da63ee80cca2f92060f1d3e47a93eb67cd60d8ecd3efb78f1797d2fc9",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_microvm_basic.py",
-  "canonical_relative": "workflow/test_microvm_basic.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.215856"
-}

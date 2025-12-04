@@ -1,11 +1,11 @@
 {
   "hash": "005653e7868b7f5d51d8f34f94c89c38fa6de5e64f45d4ae628710652af0c773",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/fix_imports.py",
-  "generated_at": "2025-12-03T17:47:45.520192",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 3409,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tools/fix_imports.py"
+    }
+  ]
 }

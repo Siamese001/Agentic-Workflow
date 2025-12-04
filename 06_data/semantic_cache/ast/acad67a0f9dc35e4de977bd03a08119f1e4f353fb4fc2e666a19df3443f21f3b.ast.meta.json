@@ -1,8 +1,7 @@
 {
   "hash": "acad67a0f9dc35e4de977bd03a08119f1e4f353fb4fc2e666a19df3443f21f3b",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/temporal_schemas.py",
-  "generated_at": "2025-12-03T17:47:45.209121",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

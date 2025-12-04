@@ -1,9 +1,4 @@
 {
   "hash": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/reasoning/react.py",
-  "generated_at": "2025-12-03T17:47:46.098861",
-  "golden_status": "verified",
-  "checksum": "9072e8840083192280740b00da894bf61b3fe1bcc47318f8a8812a19f68e029e"
+  "kind": "golden"
 }

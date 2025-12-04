@@ -1,11 +1,21 @@
 {
   "hash": "f3122801557d0b8139c8e4e30b2c1b4dde595f01004376caa485cf5de8d98497",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/master_resume.json",
-  "generated_at": "2025-12-03T17:47:46.274730",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 14743,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "v2",
+      "relative": "master_resume.json"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "master_resume.json"
+    },
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "master_resume.json"
+    }
+  ]
 }

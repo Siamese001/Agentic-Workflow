@@ -1,11 +1,11 @@
 {
   "hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/integration/atomic_integration_bridge.py",
-  "generated_at": "2025-12-03T17:47:44.865874",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 5062,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "integration/atomic_integration_bridge.py"
+    }
+  ]
 }

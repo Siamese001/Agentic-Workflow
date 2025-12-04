@@ -1,11 +1,11 @@
 {
   "hash": "9558c552666ed40ff45ac59b8851e9b0eeb716559e8f847c74a031f5cf6af187",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/mcp/__init__.py",
-  "generated_at": "2025-12-03T17:47:46.368993",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 3938,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "mcp/__init__.py"
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 {
   "hash": "94c63d35aa3329f16461094b95f1e1bdfabdb47475bc36ef2e767c75b0391b66",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/model_routing/test_selector_integration.py",
-  "generated_at": "2025-12-03T17:47:45.702849",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 497,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/model_routing/test_selector_integration.py"
+    }
+  ]
 }

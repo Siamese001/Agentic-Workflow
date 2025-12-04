@@ -1,10 +1,4 @@
 {
   "hash": "5c9d6b8cb786852ececf3ba98b410bc179be7e89dbad2cede89c0f92afa31629",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/PHASE_A_DISCOVERY_MAP.md",
-  "generated_at": "2025-12-03T17:47:45.897916",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

@@ -1,11 +1,11 @@
 {
   "hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_token_drift_guard.py",
-  "generated_at": "2025-12-03T17:47:46.497883",
-  "file_type": "LIC",
-  "file_extension": ".py",
-  "file_size": 502,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic-LIC",
+      "relative": "tests/regression/test_token_drift_guard.py"
+    }
+  ]
 }

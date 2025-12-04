@@ -1,8 +1,7 @@
 {
   "hash": "faed5e7b1d80a2fc56501a2851210c73e9c4d3d5ea45ffb9fd89aeea9de6c226",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/golden_state/test_runner.py",
-  "generated_at": "2025-12-03T17:47:45.651377",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

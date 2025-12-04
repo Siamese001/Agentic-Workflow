@@ -1,11 +1,4 @@
 {
   "hash": "850cf1eb86cfd7a17c0ad87ae14965b34c9a9326e5b5e671c456fbc1e8f9dc35",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/agentic_design_LIC.md",
-  "generated_at": "2025-12-03T17:47:46.595511",
-  "file_size": 13871,
-  "modified_time": 1764609961.2569199,
-  "sha256": "850cf1eb86cfd7a17c0ad87ae14965b34c9a9326e5b5e671c456fbc1e8f9dc35",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

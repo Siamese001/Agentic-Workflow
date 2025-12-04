@@ -1,9 +1,0 @@
-{
-  "hash": "8bbdc7d51a3e146f1261cebc99a3a3ec71678e47798da7f01f929da183d12a7a",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/_deprecated/test_integration_security.py",
-  "canonical_relative": "workflow/test_integration_security.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.227388"
-}

@@ -1,8 +1,7 @@
 {
   "hash": "eb3412bab18ed57f572f887644c03b07b507d1ea7fb835ee3e20dbd7cb655d6e",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/requirements.txt",
-  "generated_at": "2025-12-03T17:47:44.715773",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

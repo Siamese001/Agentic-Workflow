@@ -1,11 +1,4 @@
 {
   "hash": "6f91530e9da244a1779aa4271cb78c39a1548e8f8a6b16a385a340933f6b2913",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/sandbox/test_tool_middleware_vm_integration.py",
-  "generated_at": "2025-12-03T17:47:45.752171",
-  "file_size": 553,
-  "modified_time": 1764610060.8028154,
-  "sha256": "6f91530e9da244a1779aa4271cb78c39a1548e8f8a6b16a385a340933f6b2913",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

@@ -1,9 +1,0 @@
-{
-  "hash": "8cf640e8e75fb5fdd2518dc10ea70f212f91738a45c290d32798615aa46c0f31",
-  "type": "golden",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/llm_clients.py",
-  "generated_at": "2025-12-03T17:47:46.262947",
-  "golden_status": "verified",
-  "checksum": "8cf640e8e75fb5fdd2518dc10ea70f212f91738a45c290d32798615aa46c0f31"
-}

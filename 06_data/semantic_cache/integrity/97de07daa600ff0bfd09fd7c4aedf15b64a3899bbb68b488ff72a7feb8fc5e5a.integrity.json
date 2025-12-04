@@ -1,11 +1,4 @@
 {
   "hash": "97de07daa600ff0bfd09fd7c4aedf15b64a3899bbb68b488ff72a7feb8fc5e5a",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn Multiple Prompt.md",
-  "generated_at": "2025-12-03T17:47:47.561525",
-  "file_size": 13286,
-  "modified_time": 1764609961.7321064,
-  "sha256": "97de07daa600ff0bfd09fd7c4aedf15b64a3899bbb68b488ff72a7feb8fc5e5a",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

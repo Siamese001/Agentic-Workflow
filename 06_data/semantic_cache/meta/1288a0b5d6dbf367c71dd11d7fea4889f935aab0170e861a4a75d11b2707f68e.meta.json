@@ -1,11 +1,11 @@
 {
   "hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/contracts/test_typed_contracts.py",
-  "generated_at": "2025-12-03T17:47:45.601851",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 2761,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/contracts/test_typed_contracts.py"
+    }
+  ]
 }

@@ -1,9 +1,5 @@
 {
   "hash": "5bea8e23d641e23f6a60834dfa4dcb421b97af53650418bf275cd3491e4cfc20",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedInCanonical_2025-09-06 v2.3.md",
-  "generated_at": "2025-12-03T17:47:47.726563",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

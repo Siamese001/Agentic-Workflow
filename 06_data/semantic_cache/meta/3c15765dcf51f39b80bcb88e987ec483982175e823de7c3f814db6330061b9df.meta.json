@@ -1,11 +1,11 @@
 {
   "hash": "3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l4/state_validation.py",
-  "generated_at": "2025-12-03T17:47:45.204640",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 8904,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l4/state_validation.py"
+    }
+  ]
 }

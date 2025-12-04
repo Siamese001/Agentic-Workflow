@@ -1,9 +1,5 @@
 {
   "hash": "7d9dc1c5dd64134b5be061e40cdfb98ffe6c697b700a2186957004800ce54590",
-  "type": "diff",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/dependency_analyzer.py",
-  "generated_at": "2025-12-03T17:47:45.506347",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,11 +1,4 @@
 {
   "hash": "3d62c630442275f33512e4ff12e806b55e8cf2ffced8a987780a7598c286cce7",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/run_learning_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.312451",
-  "file_size": 24811,
-  "modified_time": 1764609961.299613,
-  "sha256": "3d62c630442275f33512e4ff12e806b55e8cf2ffced8a987780a7598c286cce7",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

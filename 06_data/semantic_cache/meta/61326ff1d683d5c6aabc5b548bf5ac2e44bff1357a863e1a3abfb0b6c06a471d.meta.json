@@ -1,11 +1,11 @@
 {
   "hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l2/invalidation_executor.py",
-  "generated_at": "2025-12-03T17:47:45.079105",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 13932,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l2/invalidation_executor.py"
+    }
+  ]
 }

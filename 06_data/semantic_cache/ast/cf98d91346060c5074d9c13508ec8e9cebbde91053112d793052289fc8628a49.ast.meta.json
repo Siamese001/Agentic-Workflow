@@ -1,8 +1,7 @@
 {
   "hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/hop_agents_LIC.py",
-  "generated_at": "2025-12-03T17:47:46.600950",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

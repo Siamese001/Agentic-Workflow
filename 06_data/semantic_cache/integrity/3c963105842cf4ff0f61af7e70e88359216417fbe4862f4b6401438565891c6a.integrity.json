@@ -1,11 +1,4 @@
 {
   "hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/runtime/observability/spans.py",
-  "generated_at": "2025-12-03T17:47:45.849282",
-  "file_size": 1787,
-  "modified_time": 1764610057.747938,
-  "sha256": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

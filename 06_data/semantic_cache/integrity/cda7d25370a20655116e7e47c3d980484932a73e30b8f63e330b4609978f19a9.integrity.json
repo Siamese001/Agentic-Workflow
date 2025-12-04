@@ -1,11 +1,4 @@
 {
   "hash": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/regression/test_safety_regression.py",
-  "generated_at": "2025-12-03T17:47:46.491629",
-  "file_size": 350,
-  "modified_time": 1764609961.5670943,
-  "sha256": "cda7d25370a20655116e7e47c3d980484932a73e30b8f63e330b4609978f19a9",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

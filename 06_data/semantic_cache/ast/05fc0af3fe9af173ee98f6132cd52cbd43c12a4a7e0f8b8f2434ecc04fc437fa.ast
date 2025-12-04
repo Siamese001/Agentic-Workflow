@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/unit/test_agents_misc.py
-# Hash: None
-# Type: LIC
-# Size: 875 bytes
+{
+  "hash": "05fc0af3fe9af173ee98f6132cd52cbd43c12a4a7e0f8b8f2434ecc04fc437fa",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/tests/unit/test_agents_misc.py"
+  ]
+}

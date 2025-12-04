@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/01_core_governance.md
-# Hash: None
-# Type: RG
-# Size: 1654 bytes
+{
+  "hash": "64347f72b23714f65daf5fb805b50120b2fbcb0c96e8883a69f492e54d65fe05",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/01_core_governance.md"
+  ]
+}

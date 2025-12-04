@@ -1,11 +1,11 @@
 {
   "hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/control_plane/test_routing_and_pipeline.py",
-  "generated_at": "2025-12-03T17:47:45.609280",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 407,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "tests/control_plane/test_routing_and_pipeline.py"
+    }
+  ]
 }

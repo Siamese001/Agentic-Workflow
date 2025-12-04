@@ -1,11 +1,4 @@
 {
   "hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/integration/atomic_integration_bridge.py",
-  "generated_at": "2025-12-03T17:47:44.865406",
-  "file_size": 5062,
-  "modified_time": 1764610058.8928063,
-  "sha256": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

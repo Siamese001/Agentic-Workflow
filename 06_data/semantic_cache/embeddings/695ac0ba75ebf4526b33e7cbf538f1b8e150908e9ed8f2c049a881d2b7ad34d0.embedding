@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/models.py
-# Hash: None
-# Type: RG
-# Size: 2632 bytes
+{
+  "hash": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0",
+  "kind": "embedding"
+}

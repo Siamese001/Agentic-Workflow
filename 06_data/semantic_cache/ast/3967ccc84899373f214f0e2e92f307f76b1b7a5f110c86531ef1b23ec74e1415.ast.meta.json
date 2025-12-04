@@ -1,8 +1,7 @@
 {
   "hash": "3967ccc84899373f214f0e2e92f307f76b1b7a5f110c86531ef1b23ec74e1415",
-  "type": "ast",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_10-05-2025_v8.50.json",
-  "generated_at": "2025-12-03T17:47:46.993127",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "LIC"
+  ]
 }

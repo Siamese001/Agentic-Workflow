@@ -1,11 +1,11 @@
 {
   "hash": "850cf1eb86cfd7a17c0ad87ae14965b34c9a9326e5b5e671c456fbc1e8f9dc35",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic LIC/agentic_design_LIC.md",
-  "generated_at": "2025-12-03T17:47:46.595894",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 13871,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Agentic LIC",
+      "relative": "agentic_design_LIC.md"
+    }
+  ]
 }

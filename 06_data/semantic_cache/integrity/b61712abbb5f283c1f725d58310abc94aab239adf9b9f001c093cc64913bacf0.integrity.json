@@ -1,11 +1,4 @@
 {
   "hash": "b61712abbb5f283c1f725d58310abc94aab239adf9b9f001c093cc64913bacf0",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_9.26.2025_v7.7.json",
-  "generated_at": "2025-12-03T17:47:47.435697",
-  "file_size": 38881,
-  "modified_time": 1764609962.1544094,
-  "sha256": "b61712abbb5f283c1f725d58310abc94aab239adf9b9f001c093cc64913bacf0",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

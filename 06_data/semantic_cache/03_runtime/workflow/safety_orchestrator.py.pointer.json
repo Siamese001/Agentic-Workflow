@@ -1,9 +1,0 @@
-{
-  "hash": "27126342fabc67fbfd70cfea3a00e324a9ffe47552ce3caccb08340ab4d2442d",
-  "type": "pointer",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l3/safety_orchestrator.py",
-  "canonical_relative": "workflow/safety_orchestrator.py",
-  "canonical_root": "03_runtime",
-  "generated_at": "2025-12-03T17:47:48.120571"
-}

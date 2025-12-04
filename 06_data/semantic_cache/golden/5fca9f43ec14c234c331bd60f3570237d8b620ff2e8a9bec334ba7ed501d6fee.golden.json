@@ -1,9 +1,4 @@
 {
   "hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
-  "type": "golden",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/meta/metacognition/evaluator.py",
-  "generated_at": "2025-12-03T17:47:45.951866",
-  "golden_status": "verified",
-  "checksum": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee"
+  "kind": "golden"
 }

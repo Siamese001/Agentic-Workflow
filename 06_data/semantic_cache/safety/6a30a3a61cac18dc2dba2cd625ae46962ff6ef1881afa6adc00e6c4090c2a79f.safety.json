@@ -1,9 +1,5 @@
 {
   "hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
-  "type": "safety",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/agent_orchestration_v10_7.py",
-  "generated_at": "2025-12-03T17:47:46.243450",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

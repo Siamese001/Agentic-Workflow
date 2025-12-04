@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/orchestration/fusion_governance.py
-# Hash: None
-# Type: RG
-# Size: 29216 bytes
+{
+  "hash": "557e6c061c49ce2ba6a1f39e862c72bd1c0ac819c4677d1919c0166d47b3408e",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/orchestration/fusion_governance.py"
+  ]
+}

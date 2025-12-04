@@ -1,10 +1,4 @@
 {
   "hash": "ab2d6ab3458841bfc9a4aaf7c9e82e884759a14119b263102fb2f323062e61b4",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/root_docs/testing/MCP_SERVER_INSTALLATION.md",
-  "generated_at": "2025-12-03T17:47:45.893757",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

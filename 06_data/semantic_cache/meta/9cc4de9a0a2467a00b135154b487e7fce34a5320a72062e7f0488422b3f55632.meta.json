@@ -1,11 +1,11 @@
 {
   "hash": "9cc4de9a0a2467a00b135154b487e7fce34a5320a72062e7f0488422b3f55632",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/l1/builders/prompt_builder.py",
-  "generated_at": "2025-12-03T17:47:45.992268",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 26865,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "l1/builders/prompt_builder.py"
+    }
+  ]
 }

@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/l4/state_validation.py
-# Hash: None
-# Type: RG
-# Size: 8904 bytes
+{
+  "hash": "3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/l4/state_validation.py"
+  ]
+}

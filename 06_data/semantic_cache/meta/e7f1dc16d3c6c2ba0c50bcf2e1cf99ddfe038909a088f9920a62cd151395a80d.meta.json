@@ -1,11 +1,11 @@
 {
   "hash": "e7f1dc16d3c6c2ba0c50bcf2e1cf99ddfe038909a088f9920a62cd151395a80d",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LIC_v7.4_smoke_tests.json",
-  "generated_at": "2025-12-03T17:47:47.554226",
-  "file_type": "LIC",
-  "file_extension": ".json",
-  "file_size": 458,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LIC_v7.4_smoke_tests.json"
+    }
+  ]
 }

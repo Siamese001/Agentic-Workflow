@@ -1,10 +1,4 @@
 {
   "hash": "d51e1de7622a1f65d686529edd253e0dc558dcfc270ff59512730443a3b9bd7d",
-  "type": "embedding",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/golden_eval.py",
-  "generated_at": "2025-12-03T17:47:45.521670",
-  "artifact_type": "embedding",
-  "dimensions": 1536,
-  "model": "text-embedding-ada-002"
+  "kind": "embedding_meta"
 }

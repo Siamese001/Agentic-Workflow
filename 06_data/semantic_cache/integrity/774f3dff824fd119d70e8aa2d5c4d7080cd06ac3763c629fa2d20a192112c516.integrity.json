@@ -1,11 +1,4 @@
 {
   "hash": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
-  "type": "integrity",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/tests/unit/test_safety_stack.py",
-  "generated_at": "2025-12-03T17:47:46.583246",
-  "file_size": 236,
-  "modified_time": 1764609961.6063924,
-  "sha256": "774f3dff824fd119d70e8aa2d5c4d7080cd06ac3763c629fa2d20a192112c516",
-  "integrity_check": "passed"
+  "kind": "integrity"
 }

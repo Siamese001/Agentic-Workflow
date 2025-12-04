@@ -1,11 +1,11 @@
 {
   "hash": "f79e35e0fef6db0555539f77b01de070af1b2385f1971ddef918afae2c9758f1",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/infra/model_routing/cache.py",
-  "generated_at": "2025-12-03T17:47:46.077580",
-  "file_type": "RG",
-  "file_extension": ".py",
-  "file_size": 1233,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "infra/model_routing/cache.py"
+    }
+  ]
 }

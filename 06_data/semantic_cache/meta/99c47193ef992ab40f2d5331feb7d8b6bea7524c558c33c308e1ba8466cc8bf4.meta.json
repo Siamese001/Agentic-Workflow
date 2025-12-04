@@ -1,11 +1,11 @@
 {
   "hash": "99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4",
-  "type": "meta",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/windsurf_rules/08_prompt_rag_governance.md",
-  "generated_at": "2025-12-03T17:47:45.597323",
-  "file_type": "RG",
-  "file_extension": ".md",
-  "file_size": 758,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "RG",
+      "archive": "Agentic-Workflow-10_11",
+      "relative": "windsurf_rules/08_prompt_rag_governance.md"
+    }
+  ]
 }

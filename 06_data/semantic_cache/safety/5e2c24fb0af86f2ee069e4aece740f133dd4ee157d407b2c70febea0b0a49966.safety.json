@@ -1,9 +1,5 @@
 {
   "hash": "5e2c24fb0af86f2ee069e4aece740f133dd4ee157d407b2c70febea0b0a49966",
-  "type": "safety",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tools/__init__.py",
-  "generated_at": "2025-12-03T17:47:45.557415",
-  "safety_score": 1.0,
-  "issues": []
+  "kind": "safety",
+  "status": "unknown"
 }

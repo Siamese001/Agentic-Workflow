@@ -1,5 +1,4 @@
-# STUB EMBEDDING ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/integration/atomic_integration_bridge.py
-# Hash: None
-# Type: RG
-# Size: 5062 bytes
+{
+  "hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
+  "kind": "embedding"
+}

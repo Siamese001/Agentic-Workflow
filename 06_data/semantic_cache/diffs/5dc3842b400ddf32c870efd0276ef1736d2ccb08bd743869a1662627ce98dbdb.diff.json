@@ -1,9 +1,5 @@
 {
   "hash": "5dc3842b400ddf32c870efd0276ef1736d2ccb08bd743869a1662627ce98dbdb",
-  "type": "diff",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Agentic-LIC/stacks_v10_7/safety.py",
-  "generated_at": "2025-12-03T17:47:46.402024",
-  "diff_type": "baseline",
-  "changes": []
+  "kind": "diff",
+  "baseline": "empty_or_prev_version"
 }

@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/decisions.py
-# Hash: None
-# Type: RG
-# Size: 2643 bytes
+{
+  "hash": "0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/infra/control_plane/decisions.py"
+  ]
+}

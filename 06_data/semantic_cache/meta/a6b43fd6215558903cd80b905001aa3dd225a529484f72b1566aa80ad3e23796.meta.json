@@ -1,11 +1,11 @@
 {
   "hash": "a6b43fd6215558903cd80b905001aa3dd225a529484f72b1566aa80ad3e23796",
-  "type": "meta",
-  "global": true,
-  "source_file": "Reachout Engine Archive/Old LIC/LinkedIn.md",
-  "generated_at": "2025-12-03T17:47:47.582483",
-  "file_type": "LIC",
-  "file_extension": ".md",
-  "file_size": 11580,
-  "processing_stage": "phase_0_5"
+  "kind": "meta",
+  "archives": [
+    {
+      "engine": "LIC",
+      "archive": "Old LIC",
+      "relative": "LinkedIn.md"
+    }
+  ]
 }

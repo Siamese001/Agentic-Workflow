@@ -1,8 +1,7 @@
 {
   "hash": "8999f5f32ef640afb4f1cc04aaeb38c43ee6656259f594f6edf6543f5fb59475",
-  "type": "ast",
-  "global": true,
-  "source_file": "Resume Engine Archive/Agentic-Workflow-10_11/tests/metacognition/test_refinement.py",
-  "generated_at": "2025-12-03T17:47:45.685859",
-  "artifact_type": "ast"
+  "kind": "ast_meta",
+  "engines": [
+    "RG"
+  ]
 }

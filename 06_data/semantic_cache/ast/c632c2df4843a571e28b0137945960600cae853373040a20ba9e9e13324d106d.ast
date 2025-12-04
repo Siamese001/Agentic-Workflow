@@ -1,5 +1,7 @@
-# STUB AST ARTIFACT
-# Generated for: Reachout Engine Archive/Agentic-LIC/tests/e2e/test_reflexion_quality_gain.py
-# Hash: None
-# Type: LIC
-# Size: 300 bytes
+{
+  "hash": "c632c2df4843a571e28b0137945960600cae853373040a20ba9e9e13324d106d",
+  "kind": "ast",
+  "sources": [
+    "C:/Git/Reachout Engine Archive/Agentic-LIC/tests/e2e/test_reflexion_quality_gain.py"
+  ]
+}
