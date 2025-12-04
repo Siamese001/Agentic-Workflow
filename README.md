@@ -65,12 +65,12 @@ python 08_scripts/phase_0_5_semantic_cache_rebuild.py
 
 ## Archive Data
 
-Historical archives remain at the Git root level:
+Historical archives are now organized within the project structure:
 
-- `C:/Git/Resume Engine Archive/`
-- `C:/Git/Reachout Engine Archive/`
+- `C:/Git/Agentic-Workflow/06_data/resume_engine_archive/`
+- `C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/`
 
-These are external inputs and intentionally separate from the project structure.
+These provide versioned inputs for semantic lineage processing and are centrally managed in the data folder.
 
 ## Validation Results
 

@@ -1,105 +1,294 @@
-structure_version: '1.1'
-description: Single Source of Truth for Agentic Workflow Architecture
-binds_to: unified_structure_subatomic.yaml
-canonical_role: "Defines vocab constraints: domains, layers, phases, intents, axes, verb_groups, protected_paths, engines"
+# =====================================================================
+# unified_structure_subatomic_meta.yaml
+# META SIDE-CAR — HIGH-SIGNAL, CANONICAL, OPENAI-STYLE
+# =====================================================================
 
-# Add protected path rules if missing
+# ---------------------------------------------------------------------
+# 1. CANONICAL SSoT DEFINITION
+# ---------------------------------------------------------------------
+canonical_definition: >
+  Canonical Single Source of Truth (SSoT) is defined as the structural
+  merge of:
+      • unified_structure_subatomic.yaml   (primary architecture map)
+      • unified_structure_subatomic_meta.yaml (meta rules + invariants)
+  where the primary YAML defines the tree of allowable filesystem paths,
+  and the meta file defines the invariants, protected paths, and rules
+  that Phase 01–04 must enforce.
+
+
+# ---------------------------------------------------------------------
+# 2. PROTECTED PATHS — DO NOT MOVE, DELETE, REWRITE, OR TOUCH
+# ---------------------------------------------------------------------
 protected_paths:
   - "**/__init__.py"
   - "**/*.md"
+  - "06_data/semantic_cache/**"
+  - "06_data/phase1_backup/**"
+  - "06_data/phase1_indices/**"
+  - "06_data/phase1_legacy_folders/**"
+  - "06_data/phase1_borderline_matches/**"
+  - ".git/**"
+  - ".venv/**"
+  - "**/.pytest_cache/**"
+  - "**/.mypy_cache/**"
+  - "**/.ruff_cache/**"
 
-domains:
-  apps: Unified applications domain for user-facing engines (LIC + RG).
-  agentic_core: Core reasoning, decision making, and autonomous logic engine.
-  shared: Cross-domain shared utilities, base classes, and common logic.
-  config: Configuration management, registry settings, and environment variables.
-  data: Data persistence, retrieval, storage management, and database connectors.
-  observability: System monitoring, logging, metrics collection, and diagnostics.
-  prompt_governance: Management of prompt templates, versioning, and safety checks.
-  runtime: Runtime execution environment, job scheduling, and process management.
-  schemas: Data validation schemas, type definitions, and contract enforcement.
-  scripts: Maintenance scripts, automation tools, and deployment helpers.
-  tests: Test suites, integration tests, and validation frameworks.
 
-engines:
-  apps_rg: Resume Generation application engine (RG).
-  apps_lic: LinkedIn Outreach application engine (LIC).
+# ---------------------------------------------------------------------
+# 3. DOMAIN-LEVEL INVARIANTS
+# ---------------------------------------------------------------------
+domain_invariants:
 
-layers:
-  L1_cognition: High-level understanding, planning, and intent recognition.
-  L2_execution: Concrete action execution, tool invocation, and operational tasks.
-  L3_orchestration: Workflow coordination, error handling, and cross-component routing.
-  L4_memory: State management, context retrieval, and history tracking.
-  L5_safety: Guardrails, compliance checks, cost management, and ethical boundaries.
+  # === SHARED LIBRARY ===
+  shared_engine_ops:
+    description: >
+      Foundational library containing reusable cognitive, inspection, and
+      operational logic. Engines reference these patterns to reduce duplication.
+    model: "library_support"
+    allowed_roots:
+      - "cognition_ops"
+      - "inspection_ops"
+      - "aggregation_ops"
+      - "safety_ops"
+      - "embedding_ops"
+      - "scoring_ops"
+      - "update_ops"
+      - "tool_ops"
 
-phases:
-  P1_retrieve: Gathering context, understanding requests, and fetching necessary data.
-  P2_inspect: Analyzing data, vetting quality, embedding content, and converting formats.
-  P3_aggregate: Refining results, executing tools, updating state, and compiling outputs.
-  P4_safety: Final safety validation, cost accounting, and policy enforcement.
+  # === ENGINE DOMAINS (Cognitive Model) ===
+  agentic_core:
+    description: >
+      The canonical cognition/execution engine. Only domain allowed to use
+      L1–L5 cognitive layering AND P1–P4 execution phases.
+    model: "cognitive_engine"
+    allowed_layers: [L1_cognition, L2_execution, L3_orchestration, L4_memory, L5_safety]
+    allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]
 
-intents:
-  - check_format
-  - check_message_format
-  - check_outreach_rules
-  - check_prompt_rules
-  - check_prompt_structure
-  - check_resume_format
-  - check_resume_rules
-  - check_rules
-  - check_schema_rules
-  - check_schema_structure
-  - check_structure
-  - convert
-  - convert_content
-  - convert_prompt_content
-  - convert_schema_content
-  - detect_anomalies
-  - find_msg_problems
-  - find_prompt_problems
-  - find_resume_problems
-  - find_schema_problems
-  - gather_context_inputs
-  - get_prompt_info
-  - get_schema_info
-  - control_resources
-  - control_outreach_resources
-  - control_prompt_resources
-  - control_resume_resources
-  - control_schema_resources
-  - select_optimal
-  - pick_message
-  - pick_resume_content
-  - sjob_fit
-  - sperson
-  - update_outreach
-  - update_prompt_state
-  - update_schema_state
-  - sync_status
-  - execute_actions
-  - execute_prompt_actions
-  - execute_schema_actions
-  - vectorize_message
-  - vectorize_resume
+  apps_lic:
+    description: >
+      Outreach engine. Uses L1–L5/P1–P4 structure. Strict separation from
+      apps_rg resume logic.
+    model: "cognitive_engine"
+    allowed_layers: [L1_cognition, L2_execution, L3_orchestration, L4_memory, L5_safety]
+    allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]
 
-axes:
-  - embedding_compare_meaning
-  - manage_config_costs_update_memory
-  - manage_data_costs_update_memory
-  - manage_observability_costs_update_memory
-  - manage_prompt_costs_update_memory
-  - manage_runtime_costs_update_memory
-  - manage_schema_costs_update_memory
-  - manage_scripts_costs_update_memory
-  - manage_tests_costs_update_memory
-  - policy_check_safety
-  - refinement_adjust_scores
-  - routing_retry_task
-  - semantic_adjust_scores
-  - understand_request
-  - update_memory
-  - use_a_tool
-  - utility_prepare_information
+  apps_rg:
+    description: >
+      Resume engine. Uses L1–L5/P1–P4 structure. Strict separation from
+      apps_lic outreach logic.
+    model: "cognitive_engine"
+    allowed_layers: [L1_cognition, L2_execution, L3_orchestration, L4_memory, L5_safety]
+    allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]
 
-verb_groups: []
+  # === SUPPORT DOMAINS (Operational Model) ===
+  # Must use Operational Layering: logic, runtime_ops, pipeline_ops, cache_ops, security_controls
+  # STRICTLY FORBIDDEN: L1–L5, P1–P4, retrieval_ops, inspection_ops
+
+  schemas:
+    description: "Pydantic models and validation."
+    model: "operational_support"
+    disallowed_layers: true
+
+  runtime:
+    description: "Environment configurations and execution harnesses."
+    model: "operational_support"
+    disallowed_layers: true
+
+  prompt_governance:
+    description: "System prompts, templates, and versioning."
+    model: "operational_support"
+    disallowed_layers: true
+
+  config:
+    description: "System settings and environment variables."
+    model: "operational_support"
+    disallowed_layers: true
+
+  data:
+    description: "Storage, lineage, and persistence."
+    model: "operational_support"
+    disallowed_layers: true
+
+  observability:
+    description: "Telemetry, logging, and metrics."
+    model: "operational_support"
+    disallowed_layers: true
+
+  scripts:
+    description: "Developer and automation utilities."
+    model: "operational_support"
+    disallowed_layers: true
+
+  shared:
+    description: "Common non-engine utilities."
+    model: "operational_support"
+    disallowed_layers: true
+
+  # === TEST DOMAIN (Taxonomy Model) ===
+  tests:
+    description: >
+      Test plane. High-signal taxonomy. absolutely no L1–L5 mirroring.
+    model: "test_taxonomy"
+    disallowed_layers: true
+    allowed_structure:
+      unit: [agentic_core, apps_lic, apps_rg, runtime, data, schemas, prompt_governance, config, observability, scripts]
+      integration: [core_plus_runtime, lic_plus_data, rg_plus_data, full_pipeline]
+      e2e: [outreach_flows, resume_flows, admin_flows]
+      golden: [prompts, semantics, safety]
+      perf: [latency, throughput, cost]
+      load: [spike, soak]
+
+
+# ---------------------------------------------------------------------
+# 4. STRUCTURAL CONSISTENCY RULES (APPLY TO ALL DOMAINS)
+# ---------------------------------------------------------------------
+structural_rules:
+
+  no_duplicate_keys: true
+  enforce_dict_for_directories: true
+  enforce_null_for_files: true
+  max_depth: 7
+
+  # === ENGINE RULES ===
+  no_shadow_branches: true
+  no_partial_layers: true
+  no_partial_phases: true
+
+  # Canonical subfolders allowed inside P-phases for ENGINES:
+  allowed_engine_subfolders:
+    # Logic Containers
+    - "business_ops"
+    - "scoring_ops"
+    - "state_update_ops"
+    - "diagnostics_ops"
+    - "vectorization_ops"
+    - "personalization_ops"
+    - "job_fit_ops"
+    # Canonical Fillers
+    - "embedding_compare_meaning"
+    - "utility_prepare_information"
+    - "semantic_adjust_scores"
+    - "check_structure"
+    - "convert_content"
+    - "refinement_adjust_scores"
+    - "routing_retry_task"
+    - "use_tools"
+    - "check_rules"
+    - "get_info"
+    - "manage_costs"
+
+  # === SUPPORT DOMAIN RULES (Operational Model) ===
+  allowed_support_layers:
+    - "logic"
+    - "runtime_ops"
+    - "pipeline_ops"
+    - "cache_ops"
+    - "security_controls"
+
+  allowed_support_ops:
+    - "data_access"
+    - "validation"
+    - "synthesis"
+    - "guardrails"
+
+  # === SCORING RULES ===
+  scoring_canonicalization:
+    semantic_adjust_scores: "Must contain ONLY: apply_weights.py, compute_confidence.py, normalize_scores.py"
+    scoring_ops: "Must contain all domain-specific scoring logic (e.g. assess_confidence.py, evaluate_quality.py)"
+    non_engine_restriction: "Support domains may NOT contain semantic_adjust_scores blocks."
+
+  # === NAMING RULES ===
+  disallowed_low_signal_names:
+    - "general"
+    - "misc"
+    - "other"
+    - "stuff"
+    - "temp"
+    # Drift Tokens (Explicitly Forbidden)
+    - "sperson"
+    - "sjob_fit"
+    - "sengagement_potential"
+    - "seffectiveness"
+    - "sresume_effectiveness"
+
+  # No illegal cognitive layering in non-engine domains
+  forbidden_layer_tokens: ["L1_", "L2_", "L3_", "L4_", "L5_"]
+  forbidden_phase_tokens: ["P1_", "P2_", "P3_", "P4_"]
+
+
+# ---------------------------------------------------------------------
+# 5. ENGINE SEPARATION RULES
+# ---------------------------------------------------------------------
+engine_separation:
+
+  outreach_engine:
+    root: "apps_lic"
+    forbidden_tokens: ["resume", "job_fit", "work_experience", "skills_ranking"]
+
+  resume_engine:
+    root: "apps_rg"
+    forbidden_tokens: ["outreach", "recipient", "personalization", "message_template"]
+
+  shared_common_tokens:
+    allowed: ["embedding", "filters", "serialization", "normalization"]
+    description: >
+      Shared utilities allowed only under `shared:` or `shared_engine_ops`.
+
+
+# ---------------------------------------------------------------------
+# 6. SEMANTIC CACHE RULES (FOR PHASE 0.5–3)
+# ---------------------------------------------------------------------
+semantic_cache_rules:
+  required_locations:
+    - "L1_cognition/P1_retrieve"
+    - "L4_memory/P1_retrieve"
+  required_files:
+    - "load_semantic_cache_index.py"
+    - "match_semantic_history.py"
+    - "compute_semantic_distance.py"
+  description: >
+    The semantic cache is read-only during Phase 01, but required for
+    Phase 3 semantic-diffing.
+
+  forbidden_locations: ["tests/**", "scripts/**", "observability/**"]
+
+
+# ---------------------------------------------------------------------
+# 7. VALIDATION INVARIANTS (K1–K40+ EXPANDED)
+# ---------------------------------------------------------------------
+validation_invariants:
+  K1: "YAML must parse correctly."
+  K2: "META must parse correctly."
+  K3: "Root domain folders must exist on filesystem."
+  K4: "Primary YAML must exist."
+  K4b: "META YAML must exist."
+  K5: "Primary YAML must contain canonical domain keys."
+  K6: "Each TARGET_ROOT must map to a logical YAML subtree."
+  K7: "Depth normalization ≤ max_depth (7)."
+  K8: "No duplicate phase or layer keys."
+  K9: "No overwritten dict keys allowed."
+  K10: "Subatomic cognition layering allowed ONLY in engine domains."
+  K11: "Test domain must follow strict high-signal taxonomy."
+  K12: "Engine separation rules enforced."
+  K13: "Semantic cache hooks present where required."
+  K14: "Protected paths respected."
+  K15: "All directories represent dicts; all leaves represent null-files."
+  K16: "Support domains must use Operational Layering (logic/runtime_ops/etc)."
+  K17: "shared_engine_ops must exist as a library root."
+  K18: "No cognitive scoring blocks allowed in support domains."
+  K19: "L5_safety must not contain P1/P2/P3 cognitive fillers."
+
+
+# ---------------------------------------------------------------------
+# 8. META FILE VERSIONING
+# ---------------------------------------------------------------------
+meta_version: "3.2"
+created_by: "Agentic-Workflow Hardened Architecture"
+notes: >
+  Updated to Version 3.2.
+  Changes:
+  1. Enforced Operational Layering (renamed from Functional).
+  2. Codified Business Ops and Scoring Ops split.
+  3. Added invariants for shared_engine_ops and flattened depth.
+  4. Explicitly forbade cognitive fillers in L5_safety.
 

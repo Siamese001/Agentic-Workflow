@@ -8,29 +8,29 @@ Implements the ORIGINAL Phase 0.5 spec with the constraints you confirmed:
   • STRICT archive roots (v3-LITE):
 
         RG (Resume Engine):
-            C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/
-            C:/Git/Resume Engine Archive/Agentic_Workflow-10_10/
-            C:/Git/Resume Engine Archive/Agentic-Workflow-10_9/
-            C:/Git/Resume Engine Archive/Agentic-Workflow-10_8_core/
-            C:/Git/Resume Engine Archive/Agentic-Workflow-10_7_main/
-            C:/Git/Resume Engine Archive/Microservices Model/
-            C:/Git/Resume Engine Archive/Monolith/
-            C:/Git/Resume Engine Archive/Monolithic/
-            C:/Git/Resume Engine Archive/v2/
-            C:/Git/Resume Engine Archive/v6.0/
-            C:/Git/Resume Engine Archive/v7.0/
-            C:/Git/Resume Engine Archive/v7.5/
-            C:/Git/Resume Engine Archive/v8.0/
-            C:/Git/Resume Engine Archive/v9.0/
-            C:/Git/Resume Engine Archive/v10.0/
-            C:/Git/Resume Engine Archive/Old Resume Gen Python/   (ALL eligible files)
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_11/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic_Workflow-10_10/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_9/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_8_core/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Microservices Model/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Monolith/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Monolithic/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v2/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v6.0/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v7.0/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v7.5/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v8.0/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v9.0/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v10.0/
+            C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Old Resume Gen Python/   (ALL eligible files)
 
         LIC (Outreach Engine):
-            C:/Git/Reachout Engine Archive/Agentic-LIC/
-            C:/Git/Reachout Engine Archive/Agentic LIC/
-            C:/Git/Reachout Engine Archive/Monolithic/
-            C:/Git/Reachout Engine Archive/Old LIC/
-            C:/Git/Reachout Engine Archive/deprecated in v13/
+            C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Agentic-LIC/
+            C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Agentic LIC/
+            C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Monolithic/
+            C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Old LIC/
+            C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/deprecated in v13/
 
   • CLEAN WIPE of:
         C:/Git/Agentic-Workflow/06_data/semantic_cache/
@@ -160,33 +160,33 @@ ELIGIBLE_EXTS = {".py", ".json", ".yaml", ".yml", ".md", ".txt"}
 
 # RG archives (Resume Engine)
 RG_ARCHIVE_ROOTS: List[Tuple[Path, str]] = [
-    (Path(r"C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/"),      "Agentic-Workflow-10_11"),
-    (Path(r"C:/Git/Resume Engine Archive/Agentic_Workflow-10_10/"),      "Agentic_Workflow-10_10"),
-    (Path(r"C:/Git/Resume Engine Archive/Agentic-Workflow-10_9/"),       "Agentic-Workflow-10_9"),
-    (Path(r"C:/Git/Resume Engine Archive/Agentic-Workflow-10_8_core/"),  "Agentic-Workflow-10_8_core"),
-    (Path(r"C:/Git/Resume Engine Archive/Agentic-Workflow-10_7_main/"),  "Agentic-Workflow-10_7_main"),
-    (Path(r"C:/Git/Resume Engine Archive/Microservices Model/"),         "Microservices Model"),
-    (Path(r"C:/Git/Resume Engine Archive/Monolith/"),                    "Monolith"),
-    (Path(r"C:/Git/Resume Engine Archive/Monolithic/"),                  "Monolithic"),
-    (Path(r"C:/Git/Resume Engine Archive/v2/"),                          "v2"),
-    (Path(r"C:/Git/Resume Engine Archive/v6.0/"),                        "v6.0"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_11/"),      "Agentic-Workflow-10_11"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic_Workflow-10_10/"),      "Agentic_Workflow-10_10"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_9/"),       "Agentic-Workflow-10_9"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_8_core/"),  "Agentic-Workflow-10_8_core"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/"),  "Agentic-Workflow-10_7_main"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Microservices Model/"),         "Microservices Model"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Monolith/"),                    "Monolith"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Monolithic/"),                  "Monolithic"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v2/"),                          "v2"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v6.0/"),                        "v6.0"),
     # NEW: v7.0–v10.0 treated as full RG archives
-    (Path(r"C:/Git/Resume Engine Archive/v7.0/"),                        "v7.0"),
-    (Path(r"C:/Git/Resume Engine Archive/v7.5/"),                        "v7.5"),
-    (Path(r"C:/Git/Resume Engine Archive/v8.0/"),                        "v8.0"),
-    (Path(r"C:/Git/Resume Engine Archive/v9.0/"),                        "v9.0"),
-    (Path(r"C:/Git/Resume Engine Archive/v10.0/"),                       "v10.0"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v7.0/"),                        "v7.0"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v7.5/"),                        "v7.5"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v8.0/"),                        "v8.0"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v9.0/"),                        "v9.0"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/v10.0/"),                       "v10.0"),
     # Old Resume Gen Python as a full RG archive (ALL eligible files)
-    (Path(r"C:/Git/Resume Engine Archive/Old Resume Gen Python/"),       "Old Resume Gen Python"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Old Resume Gen Python/"),       "Old Resume Gen Python"),
 ]
 
 # LIC archives (Outreach Engine)
 LIC_ARCHIVE_ROOTS: List[Tuple[Path, str]] = [
-    (Path(r"C:/Git/Reachout Engine Archive/Agentic-LIC/"),       "Agentic-LIC"),
-    (Path(r"C:/Git/Reachout Engine Archive/Agentic LIC/"),       "Agentic LIC"),
-    (Path(r"C:/Git/Reachout Engine Archive/Monolithic/"),        "Monolithic"),
-    (Path(r"C:/Git/Reachout Engine Archive/Old LIC/"),           "Old LIC"),
-    (Path(r"C:/Git/Reachout Engine Archive/deprecated in v13/"), "deprecated in v13"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Agentic-LIC/"),       "Agentic-LIC"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Agentic LIC/"),       "Agentic LIC"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Monolithic/"),        "Monolithic"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/Old LIC/"),           "Old LIC"),
+    (Path(r"C:/Git/Agentic-Workflow/06_data/reachout_engine_archive/deprecated in v13/"), "deprecated in v13"),
 ]
 
 # =====================================================================
