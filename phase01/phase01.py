@@ -247,32 +247,22 @@ def is_empty_directory(path: Path) -> bool:
 
 
 def collect_all_ssot_folder_names(ssot_subtree: dict) -> set:
-    """Recursively collect only canonical SSoT folder names (L* and P* patterns) from the SSoT subtree."""
-    all_ssot_names = set()
+    """
+    Collect only true canonical directory names from the SSoT subtree.
+    This includes exactly the folder names defined in the YAML,
+    not inferred patterns, not META keys, and not leaf placeholders.
+    """
+    all_names = set()
+
     def _walk(node: dict):
         for name, child in node.items():
-            # Only add if it's a folder (dict) AND matches canonical patterns
+            # Only add entries that are directories (i.e., dicts)
             if isinstance(child, dict):
-                # Include L* folders (L1_cognition, L2_execution, etc.)
-                # Include P* folders (P1_retrieve, P2_inspect, etc.)  
-                # Include immediate structural subfolders of canonical folders
-                if (name.startswith('L') and len(name) > 1 and name[1].isdigit()) or \
-                   (name.startswith('P') and len(name) > 1 and name[1].isdigit()) or \
-                   (any(parent.startswith('L') and parent[1].isdigit() for parent in name.split('_')[:1])) or \
-                   (any(parent.startswith('P') and parent[1].isdigit() for parent in name.split('_')[:1])):
-                    # Add both hyphenated (filesystem) and underscore (Python) versions
-                    all_ssot_names.add(name)  # Original (hyphenated) version
-                    if '_' in name:
-                        all_ssot_names.add(name.replace('_', '-'))  # Hyphenated version
-                    if '-' in name:
-                        all_ssot_names.add(name.replace('-', '_'))  # Underscore version
+                all_names.add(name)
                 _walk(child)
-            elif isinstance(child, list): # Handle lists of files/folders
-                for item in child:
-                    if isinstance(item, dict):
-                        _walk(item)
+
     _walk(ssot_subtree)
-    return all_ssot_names
+    return all_names
 
 
 # =====================================================================
