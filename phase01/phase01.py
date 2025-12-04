@@ -1491,8 +1491,9 @@ def validate_phase_completion(enforcer: GovernanceEnforcer) -> None:
     try:
         if enforcer.config.domain_modes:
             vpass("K5")
+            valid_modes = ["cognitive_engine", "operational_support", "test_taxonomy", "library_support"]
             for domain, mode in enforcer.config.domain_modes.items():
-                if mode in ["cognitive_engine", "operational_support"]:
+                if mode in valid_modes:
                     vpass(f"K6:{domain}")
                 else:
                     vfail(f"K6:{domain}", f"Invalid mode: {mode}")
@@ -1508,6 +1509,7 @@ def validate_phase_completion(enforcer: GovernanceEnforcer) -> None:
         for dom, md in enforcer.config.max_depths.items():
             if isinstance(md, int) and md > 0:
                 vpass(f"K7:{dom}")
+            else:
                 vfail(f"K7:{dom}", f"Invalid depth: {md}")
     except Exception as e:
         vfail("K7", f"Depth validation error: {e}")

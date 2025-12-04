@@ -370,13 +370,13 @@ class Phase05Orchestrator:
         
         if self.stats['validation_keys_failed'] == 0:
             print()
-            print("🎉 PHASE 0.5 COMPLETED SUCCESSFULLY!")
-            print("✅ ALL VALIDATION KEYS PASSED")
-            print("✅ SEMANTIC CACHE READY FOR PHASE 2")
+            print("[SUCCESS] PHASE 0.5 COMPLETED SUCCESSFULLY!")
+            print("[PASS] ALL VALIDATION KEYS PASSED")
+            print("[PASS] SEMANTIC CACHE READY FOR PHASE 2")
         else:
             print()
-            print("⚠️  PHASE 0.5 COMPLETED WITH VALIDATION FAILURES")
-            print("❌ SOME VALIDATION KEYS FAILED")
+            print("[WARNING] PHASE 0.5 COMPLETED WITH VALIDATION FAILURES")
+            print("[FAIL] SOME VALIDATION KEYS FAILED")
     
     def _generate_cache_summary(self) -> Dict:
         """Generate summary of semantic cache contents"""
@@ -943,14 +943,14 @@ def run(dry_run: bool = False, resume_from: Optional[str] = None, strict_mode: b
                 success = orchestrator._run_step(i)
                 if success:
                     orchestrator.update_step_status(i, "COMPLETED")
-                    print(f"✓ Step completed: {step.step_name}")
+                    print(f"[PASS] Step completed: {step.step_name}")
                 else:
                     orchestrator.update_step_status(i, "FAILED", f"Step {step.step_name} failed")
-                    print(f"✗ Step failed: {step.step_name}")
+                    print(f"[FAIL] Step failed: {step.step_name}")
                     return 1
             except Exception as e:
                 orchestrator.update_step_status(i, "FAILED", str(e))
-                print(f"✗ Step failed with exception: {step.step_name}")
+                print(f"[FAIL] Step failed with exception: {step.step_name}")
                 print(f"Error: {str(e)}")
                 traceback.print_exc()
                 return 1
