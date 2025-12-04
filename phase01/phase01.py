@@ -92,6 +92,10 @@ class GovernanceConfig:
     forbidden_patterns: Dict[str, List[str]]
     filename_prefixes: Dict[str, str]
     engine_namespaces: Dict[str, Dict[str, any]]
+    cognitive_domains: List[str]
+    non_cognitive_domains: List[str]
+    directory_prefix_exemptions: List[str]
+    enforcement_rules: Dict[str, any]
     
 
 class GovernanceEnforcer:
@@ -126,10 +130,21 @@ class GovernanceEnforcer:
         
         naming_conventions = ssot_yaml.get("naming_conventions", {})
         filename_prefixes = naming_conventions.get("filename_prefixes", {})
+        directory_prefix_exemptions = naming_conventions.get("directory_prefix_exemptions", [])
         
         engine_namespaces = ssot_yaml.get("engine_namespaces", {})
         
+        # Extract global domain lists
+        global_config = ssot_yaml.get("global", {})
+        cognitive_domains = global_config.get("cognitive_domains", [])
+        non_cognitive_domains = global_config.get("non_cognitive_domains", [])
+        
+        # Extract enforcement rules
+        enforcement_rules = ssot_yaml.get("enforcement", {})
+        
         print(f"[GOVERNANCE] Loaded governance for {len(domain_modes)} domains")
+        print(f"[GOVERNANCE] Cognitive domains: {cognitive_domains}")
+        print(f"[GOVERNANCE] Directory exemptions: {directory_prefix_exemptions}")
         
         return GovernanceConfig(
             ssot_yaml=ssot_yaml,
@@ -140,7 +155,11 @@ class GovernanceEnforcer:
             max_depths=max_depths,
             forbidden_patterns=forbidden_patterns,
             filename_prefixes=filename_prefixes,
-            engine_namespaces=engine_namespaces
+            engine_namespaces=engine_namespaces,
+            cognitive_domains=cognitive_domains,
+            non_cognitive_domains=non_cognitive_domains,
+            directory_prefix_exemptions=directory_prefix_exemptions,
+            enforcement_rules=enforcement_rules
         )
     
     def is_protected_path(self, path: Path) -> bool:
@@ -183,10 +202,10 @@ class GovernanceEnforcer:
         # Cognitive domain validation
         if mode == "cognitive_engine":
             if structure_type == "cognitive":
-                # Should have L* and P* layers
+                # Should have at least one of L* or P* layers (sparse structures allowed)
                 has_l_layer = any(part.startswith("L") and "_" in part for part in path_parts)
                 has_p_layer = any(part.startswith("P") and "_" in part for part in path_parts)
-                if not (has_l_layer and has_p_layer):
+                if not (has_l_layer or has_p_layer):
                     return False, f"Cognitive domain {domain} missing L* or P* layer structure"
         
         # Support domain validation
@@ -198,12 +217,23 @@ class GovernanceEnforcer:
         
         return True, "Valid"
     
-    def validate_filename_prefix(self, domain: str, filename: str) -> Tuple[bool, str]:
+    def validate_filename_prefix(self, domain: str, filename: str, path_parts: List[str] = None) -> Tuple[bool, str]:
         """Validate filename follows domain-specific prefix rules."""
         if domain not in self.config.filename_prefixes:
             return True, "No prefix requirement"
             
         required_prefix = self.config.filename_prefixes[domain]
+        if required_prefix is None:
+            return True, "No prefix required for this domain"
+        
+        # Check if any path component matches directory exemptions (L*, P*)
+        if path_parts:
+            for part in path_parts:
+                for exemption in self.config.directory_prefix_exemptions:
+                    if re.match(exemption.replace("*", ".*"), part):
+                        return True, f"Directory exempt from prefix rules: {part}"
+        
+        # Apply prefix validation to actual filename
         if not filename.startswith(required_prefix.replace("*", "")):
             return False, f"Filename {filename} must start with prefix {required_prefix} for domain {domain}"
             
@@ -216,8 +246,7 @@ class GovernanceEnforcer:
     
     def allows_cognitive_inference(self, domain: str) -> bool:
         """Check if domain allows cognitive inference (L*/P* patterns)."""
-        mode = self.config.domain_modes.get(domain, "")
-        return mode == "cognitive_engine"
+        return domain in self.config.cognitive_domains
     
     def get_test_taxonomy(self) -> dict:
         """Get test taxonomy structure from YAML."""
@@ -780,7 +809,7 @@ def infer_target_for_file(
         )
 
     # Validate filename prefix for domain
-    prefix_valid, prefix_msg = enforcer.validate_filename_prefix(logical_root, filename)
+    prefix_valid, prefix_msg = enforcer.validate_filename_prefix(logical_root, filename, parent_parts)
     if not prefix_valid:
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
