@@ -1327,9 +1327,16 @@ def build_operations(
     ops: List[Operation] = []
 
     # K37–K42: compute every kind of operation Phase 3 may execute.
-    # This implementation is conservative: we only emit canonical_rewrite_component.
+    # For one-time monolithic → subatomic migration, we prefer completeness
+    # over conservative thresholds: if we have a semantic match and a hash,
+    # we always emit a canonical_rewrite_component op so that every file
+    # is regenerated from the cache at least once.
     for d in diffs:
-        if (d.diff_kind in ["hash_match", "semantic_symbol_match"]) and d.best_hash and d.component_id and d.confidence >= (MIN_CONFIDENCE_FOR_OPERATION if d.diff_kind == "hash_match" else 0.3):
+        if (
+            d.diff_kind in ["hash_match", "semantic_symbol_match"]
+            and d.best_hash
+            and d.component_id
+        ):
             op_type = "canonical_rewrite_component"
             if op_type not in ALLOWED_SEMANTIC_OPS:
                 validator.fail("K56", f"Semantic op type '{op_type}' not allowed")
