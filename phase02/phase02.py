@@ -861,20 +861,32 @@ def load_global_artifact_path(hash_value: str, domain: str) -> Optional[Path]:
 
 
 def load_ast_from_artifact(path: Path) -> Optional[ast.AST]:
+    """
+    Load an AST for comparison purposes.
+
+    Phase 0.5 v4 writes AST artifacts as JSON metadata (kind: "ast_group")
+    without embedding full source. In that case we *must* treat the AST as
+    unavailable rather than fabricating an empty tree, otherwise every file
+    appears structurally "different" from an empty reference.
+    """
     try:
-        # We assume the AST artifact is Python source or JSON with "source".
         text = safe_read_text(path)
         if not text.strip():
             return None
-        try:
-            # If it's valid Python, parse directly.
-            return ast.parse(text)
-        except SyntaxError:
+
+        stripped = text.lstrip()
+        # JSON metadata case: expect an object with optional "source".
+        if stripped.startswith("{"):
             data = read_json(path)
-            src = data.get("source") or ""
+            src = data.get("source")
             if not src:
+                # v4 semantic cache does not persist full AST source; treat
+                # this as "no AST available" so diff logic can skip it.
                 return None
             return ast.parse(src)
+
+        # Non-JSON: assume raw Python source.
+        return ast.parse(text)
     except Exception:  # pragma: no cover
         return None
 
