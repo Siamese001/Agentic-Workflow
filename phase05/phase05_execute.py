@@ -531,6 +531,11 @@ class Phase05Orchestrator:
 
     def _run_dual_write(self, step: PipelineStep) -> bool:
         """Create archive-local artifacts and canonical component pointers."""
+        if self.dry_run:
+            print("[DRY RUN] Would create archive-local artifacts and canonical component pointers.")
+            step.artifacts_created = ["dual_write_report.json", "canonical_component_pointers.json"]
+            return True
+            
         if not self._hash_map:
             print("[WARN] No hash map computed; skipping dual-write.")
             return True
@@ -775,6 +780,9 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         # Fallback for syntax errors: treat whole file as one 'blob'
         return analyze_non_python_file(rec)
 
+    # Include file hash for global uniqueness
+    file_hash = sha256_of(rec.path)
+
     # Helper to build an NL snippet
     def snippet_for_span(start: int, end: int) -> str:
         lines = text.splitlines()
@@ -813,7 +821,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         body_text = text.splitlines()[start - 1 : end]
         body_segment = "\n".join(body_text)
         
-        # USE rec.rel_posix FOR GLOBAL UNIQUENESS
+        # USE file_hash + rec.rel_posix + engine + archive FOR GLOBAL UNIQUENESS
         
         # 1. Classes
         if isinstance(node, ast.ClassDef):
@@ -822,7 +830,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             kind, tags, bucket, confidence = classify_component_from_name_and_body(
                 name=name, bases=bases, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
-            cid = f"{rec.rel_posix}::class::{name}"
+            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::class::{name}"
             
             comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
@@ -834,7 +842,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             kind, tags, bucket, confidence = classify_function_component(
                 name=name, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
-            cid = f"{rec.rel_posix}::func::{name}"
+            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::func::{name}"
             
             comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
@@ -845,7 +853,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             name = "imports"
             kind = "import_block"
             bucket = "05_config" 
-            cid = f"{rec.rel_posix}::imports::{start}"
+            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::imports::{start}"
             
             comp = create_component_record(rec, cid, name, kind, start, end, ["imports"], bucket, 0.95, snippet_for_span(start, end))
             components.append(comp)
@@ -872,7 +880,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
                 if target_name.isupper(): is_const = True
             
             kind = "constant" if is_const else "global_assignment"
-            cid = f"{rec.rel_posix}::{kind}::{target_name}::{start}"
+            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::{kind}::{target_name}::{start}"
             
             comp = create_component_record(rec, cid, target_name, kind, start, end, ["global"], "05_config", 0.85, snippet_for_span(start, end))
             components.append(comp)
@@ -880,7 +888,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         # 5. Catch-all
         else:
             kind = "script_block"
-            cid = f"{rec.rel_posix}::block::{start}"
+            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::block::{start}"
             comp = create_component_record(rec, cid, "script_logic", kind, start, end, ["script"], "08_scripts", 0.7, snippet_for_span(start, end))
             components.append(comp)
 
@@ -891,7 +899,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         name = rec.path.name
         start = 1
         end = rec.loc if rec.loc > 0 else 1
-        cid = f"{rec.rel_posix}::module::{start}"
+        cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::module::{start}"
         
         comp = create_component_record(rec, cid, name, kind, start, end, ["module"], "08_scripts", 0.6, snippet_for_span(start, end))
         components.append(comp)
@@ -1508,6 +1516,12 @@ def generate_canonical_component_pointers(
 
         0X_<bucket>/L1_.../P0_5/ingest/<rg|lic|current>/<component_id>.json
 
+    CRITICAL FIX:
+        Only write pointers for components originating from the canonical
+        file per hash. This prevents pointer → semantic mismatches when
+        multiple archive files share the same content hash H but only the
+        canonical file's components are present in semantic/H.semantic.json.
+
     Returns:
         bucket_counts: bucket -> pointer count
         move_plan: [(src_path, dst_path)] for CURRENT *_unassigned files
@@ -1520,7 +1534,24 @@ def generate_canonical_component_pointers(
 
     for h, recs in hash_map.items():
         comps = components_by_hash.get(h, [])
+        if not comps:
+            continue
+
+        # Sort records to match the canonical selection used in semantic extraction
+        # Preference: Archive files (RG/LIC) < Current files.
+        recs.sort(key=lambda r: (r.engine != "RG", r.engine != "LIC", r.rel_posix))
+        canonical_rec = recs[0]
+
+        # Only write pointers for components from the canonical file.
+        # This prevents pointer explosion across identical legacy files and
+        # keeps pointer → semantic mappings valid (no K11 failures).
+        canonical_file_posix = to_posix(canonical_rec.path)
+
         for comp in comps:
+            # Skip components that are not from the canonical file for this hash.
+            if comp.file != canonical_file_posix:
+                continue
+
             bucket = choose_bucket_for_component(comp)
             comp.bucket = bucket  # ensure filled
 
@@ -1575,10 +1606,6 @@ def generate_canonical_component_pointers(
 
     move_plan: List[Tuple[Path, Path]] = list(move_map.items())
     return counts, move_plan
-
-
-# =====================================================================
-# EMBEDDING GENERATION (unchanged core logic)
 # =====================================================================
 
 def generate_embedding_for_files(file_paths: List[Path]) -> List[float]:
