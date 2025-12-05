@@ -170,6 +170,39 @@ LIC_ARCHIVE_ROOTS: List[Tuple[Path, str]] = [
 # HELPERS
 # =====================================================================
 
+def build_component_id(file_hash: str, engine: str, archive: str, rel_posix: str, symbol_type: str, symbol_name: str) -> str:
+    """
+    Centralized component_id factory ensuring consistent format across all subsystems.
+    
+    Args:
+        file_hash: SHA256 hash of the source file
+        engine: "RG", "LIC", or "CURRENT"
+        archive: Archive name or current domain
+        rel_posix: Relative path (POSIX format, normalized with underscores)
+        symbol_type: "class", "func", "imports", etc.
+        symbol_name: Name of the symbol or additional identifier
+    
+    Returns:
+        Canonical component_id string
+    """
+    return f"{file_hash}::{engine}::{archive}::{rel_posix}::{symbol_type}::{symbol_name}"
+
+
+def sanitize_filename(s: str) -> str:
+    """
+    Sanitize component_id or relative path into a filesystem-safe filename.
+
+    • Keep alphanumeric, underscore, hyphen.
+    • Convert all others to underscore.
+    • Collapse multiple underscores.
+    • Trim to 150 chars to avoid Windows MAX_PATH issues with nested dirs.
+    """
+    import re
+    s = re.sub(r"[^A-Za-z0-9_\-]", "_", s)
+    s = re.sub(r"_+", "_", s).strip("_")
+    return s[:150]
+
+
 def to_posix(path: Path) -> str:
     return str(PurePosixPath(path.as_posix()))
 
@@ -830,7 +863,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             kind, tags, bucket, confidence = classify_component_from_name_and_body(
                 name=name, bases=bases, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
-            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::class::{name}"
+            cid = build_component_id(file_hash, rec.engine, rec.archive_name, rec.rel_posix.replace('/', '_'), "class", f"{name}_{start}")
             
             comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
@@ -842,7 +875,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             kind, tags, bucket, confidence = classify_function_component(
                 name=name, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
-            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::func::{name}"
+            cid = build_component_id(file_hash, rec.engine, rec.archive_name, rec.rel_posix.replace('/', '_'), "func", f"{name}_{start}")
             
             comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
@@ -853,7 +886,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             name = "imports"
             kind = "import_block"
             bucket = "05_config" 
-            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::imports::{start}"
+            cid = build_component_id(file_hash, rec.engine, rec.archive_name, rec.rel_posix.replace('/', '_'), "imports", str(start))
             
             comp = create_component_record(rec, cid, name, kind, start, end, ["imports"], bucket, 0.95, snippet_for_span(start, end))
             components.append(comp)
@@ -880,7 +913,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
                 if target_name.isupper(): is_const = True
             
             kind = "constant" if is_const else "global_assignment"
-            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::{kind}::{target_name}::{start}"
+            cid = build_component_id(file_hash, rec.engine, rec.archive_name, rec.rel_posix.replace('/', '_'), kind, f"{target_name}_{start}")
             
             comp = create_component_record(rec, cid, target_name, kind, start, end, ["global"], "05_config", 0.85, snippet_for_span(start, end))
             components.append(comp)
@@ -888,7 +921,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         # 5. Catch-all
         else:
             kind = "script_block"
-            cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::block::{start}"
+            cid = build_component_id(file_hash, rec.engine, rec.archive_name, rec.rel_posix.replace('/', '_'), "block", str(start))
             comp = create_component_record(rec, cid, "script_logic", kind, start, end, ["script"], "08_scripts", 0.7, snippet_for_span(start, end))
             components.append(comp)
 
@@ -899,7 +932,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         name = rec.path.name
         start = 1
         end = rec.loc if rec.loc > 0 else 1
-        cid = f"{file_hash}::{rec.engine}::{rec.archive_name}::{rec.rel_posix}::module::{start}"
+        cid = build_component_id(file_hash, rec.engine, rec.archive_name, rec.rel_posix.replace('/', '_'), "module", str(start))
         
         comp = create_component_record(rec, cid, name, kind, start, end, ["module"], "08_scripts", 0.6, snippet_for_span(start, end))
         components.append(comp)
@@ -1308,6 +1341,10 @@ def generate_global_and_semantic_artifacts(
 
     # Global component graph file — serialize nodes and edges in a fully
     # deterministic order (by hash, then component_id / edge tuple).
+    # K24 FIX: Only keep edges whose endpoints are valid component_ids
+    # (i.e., both appear as nodes). This drops edges to builtins / raw
+    # identifier strings like "items", "open", etc., eliminating
+    # dangling-edge violations.
     nodes_serialized: List[Dict[str, Any]] = []
     for h in sorted(components_by_hash.keys()):
         for c in components_by_hash[h]:
@@ -1320,9 +1357,19 @@ def generate_global_and_semantic_artifacts(
                 }
             )
 
+    # Build the set of all valid node ids.
+    valid_ids = {n["component_id"] for n in nodes_serialized}
+
+    # Filter out any edges whose endpoints are not real components.
+    filtered_edges: List[Tuple[str, str, str]] = [
+        (a, b, kind)
+        for (a, b, kind) in component_graph_edges
+        if a in valid_ids and b in valid_ids
+    ]
+
     edges_serialized = [
         {"from": a, "to": b, "kind": kind}
-        for (a, b, kind) in sorted(component_graph_edges, key=lambda e: (e[0], e[1], e[2]))
+        for (a, b, kind) in sorted(filtered_edges, key=lambda e: (e[0], e[1], e[2]))
     ]
 
     write_json(
@@ -1467,7 +1514,8 @@ def canonical_relative_for_component(comp: ComponentRecord) -> str:
         domain = "current"
         layer = "L1_current"
 
-    safe_id = comp.component_id.replace("/", "_").replace("\\", "_").replace("::", "__")
+    # Use comprehensive filename sanitizer for filesystem compatibility
+    safe_id = sanitize_filename(comp.component_id)
     return f"{layer}/P0_5/ingest/{domain}/{safe_id}"
 
 
