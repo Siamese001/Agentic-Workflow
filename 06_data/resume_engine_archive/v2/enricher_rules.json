@@ -1,0 +1,54 @@
+{
+  "canonical_verbs": {
+    "LED": [
+      "led",
+      "spearheaded",
+      "directed",
+      "managed",
+      "governed",
+      "oversaw"
+    ],
+    "DEVELOPED": [
+      "developed",
+      "architected",
+      "built",
+      "created",
+      "designed",
+      "engineered",
+      "implemented"
+    ],
+    "IMPROVED": [
+      "improved",
+      "enhanced",
+      "optimized",
+      "accelerated",
+      "streamlined",
+      "increased",
+      "boosted",
+      "revitalized"
+    ],
+    "REDUCED": [
+      "reduced",
+      "cut",
+      "decreased",
+      "minimized",
+      "slashed"
+    ],
+    "PARTNERED": [
+      "partnered",
+      "collaborated",
+      "aligned",
+      "negotiated",
+      "secured"
+    ],
+    "AUTOMATED": [
+      "automated",
+      "orchestrated"
+    ],
+    "DEPLOYED": [
+      "deployed",
+      "launched",
+      "rolled out"
+    ]
+  }
+}

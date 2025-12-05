@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "description": "Golden dataset for resume improvement testing",
+  "samples": [
+    {
+      "id": "sample_001",
+      "input_resume": "Software Engineer with 5 years experience",
+      "job_description": "Senior Software Engineer position",
+      "expected_sections": ["summary", "experience", "skills"]
+    },
+    {
+      "id": "sample_002",
+      "input_resume": "Data Scientist with ML background",
+      "job_description": "ML Engineer role",
+      "expected_sections": ["summary", "experience", "skills", "projects"]
+    }
+  ]
+}
