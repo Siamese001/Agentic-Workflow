@@ -1,71 +1,18 @@
 {
   "mode": "semantic_structural_unified",
-  "operations": [
-    {
-      "archive_name": "Agentic-LIC",
-      "confidence": 0.7000000000000001,
-      "engine": "LIC",
-      "op_type": "canonical_rewrite",
-      "priority": 10,
-      "reason": "ast_diff:ast_structural_difference; embedding:semantic_similarity_match:1.000; golden:golden_present_no_comparable_metadata; tools_delta_count:0; behavior_delta_count:0; layer_mismatch:True; semantic_fallback_match",
-      "semantic_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-      "target_path": "__init__.py"
-    },
-    {
-      "archive_name": "Agentic-LIC",
-      "confidence": 0.7000000000000001,
-      "engine": "LIC",
-      "op_type": "canonical_rewrite",
-      "priority": 10,
-      "reason": "ast_diff:ast_structural_difference; embedding:semantic_similarity_match:1.000; golden:golden_present_no_comparable_metadata; tools_delta_count:0; behavior_delta_count:0; layer_mismatch:True; semantic_fallback_match",
-      "semantic_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-      "target_path": "_unassigned_apps_unknown/__init__.py"
-    },
-    {
-      "archive_name": "Old LIC",
-      "confidence": 0.3999999999999999,
-      "engine": "LIC",
-      "op_type": "canonical_rewrite",
-      "priority": 10,
-      "reason": "ast_diff:ast_structural_difference; embedding:semantic_similarity_match:0.700; golden:golden_present_no_comparable_metadata; tools_delta_count:0; behavior_delta_count:0; layer_mismatch:True; semantic_fallback_match",
-      "semantic_hash": "71cbfa621795aeba4abfcfa11255fe99f06c3647790b3bb12951f23b585f1f5c",
-      "target_path": "_unassigned_apps_unknown/manage_content_workflow.py"
-    },
-    {
-      "archive_name": "Agentic-LIC",
-      "confidence": 0.7000000000000001,
-      "engine": "LIC",
-      "op_type": "canonical_rewrite",
-      "priority": 10,
-      "reason": "ast_diff:ast_structural_difference; embedding:semantic_similarity_match:1.000; golden:golden_present_no_comparable_metadata; tools_delta_count:0; behavior_delta_count:0; layer_mismatch:True; semantic_fallback_match",
-      "semantic_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-      "target_path": "apps_lic/__init__.py"
-    },
-    {
-      "archive_name": "Agentic-LIC",
-      "confidence": 0.7000000000000001,
-      "engine": "LIC",
-      "op_type": "canonical_rewrite",
-      "priority": 10,
-      "reason": "ast_diff:ast_structural_difference; embedding:semantic_similarity_match:1.000; golden:golden_present_no_comparable_metadata; tools_delta_count:0; behavior_delta_count:0; layer_mismatch:True; semantic_fallback_match",
-      "semantic_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
-      "target_path": "apps_rg/__init__.py"
-    }
-  ],
+  "operations": [],
   "phase": "phase_02_semantic_structural_unified",
   "schema_version": "v1",
   "summary": {
-    "by_type": {
-      "canonical_rewrite": 5
-    },
-    "includes_code_rewrite_counts": true,
+    "by_type": {},
+    "includes_code_rewrite_counts": false,
     "includes_structural_counts": true,
     "mode": "semantic_structural_unified",
     "no_source_content_embedded": true,
     "note": "Phase 2 only plans; no mutation. Phase 1 & Phase 0.5 remain the only mutators.",
     "operation_count_check": {
-      "sum_by_type": 5,
-      "total_operations": 5
+      "sum_by_type": 0,
+      "total_operations": 0
     },
     "structural_diff": {
       "fs_only_dirs_count": 4,
@@ -76,8 +23,8 @@
       "yaml_only_files_count": 0
     },
     "target_root": "09_apps",
-    "total_operations": 5,
-    "validation_digest": "d63adf1dbaf494b741ebc13424166f2a5a3cd2901c98dfafc8643f5247504938"
+    "total_operations": 0,
+    "validation_digest": "23da01acd9fabb7d68a56b304a73e338ac03b74818dc909addd66a92836b315e"
   },
   "target_root": "09_apps/",
   "timestamp": "0000-00-00T00:00:00Z",
@@ -149,39 +96,9 @@
       "ok": true
     },
     {
-      "description": "Semantic cache exists for target root bucket '09_apps'",
-      "detail": null,
-      "key": "K3",
-      "ok": true
-    },
-    {
-      "description": "Semantic cache considered healthy for target root (non-empty pointers)",
+      "description": "No bucket pointers found for bucket '09_apps' (advisory for local development)",
       "detail": null,
       "key": "K4",
-      "ok": true
-    },
-    {
-      "description": "Semantic cache loaded read-only for bucket '09_apps'",
-      "detail": null,
-      "key": "K11",
-      "ok": true
-    },
-    {
-      "description": "Semantic cache for target root loaded",
-      "detail": null,
-      "key": "K12",
-      "ok": true
-    },
-    {
-      "description": "Global semantic objects assumed present (ast/diffs/etc.) from K7",
-      "detail": null,
-      "key": "K13",
-      "ok": true
-    },
-    {
-      "description": "Semantic cache paths normalized (POSIX-style)",
-      "detail": null,
-      "key": "K14",
       "ok": true
     },
     {
@@ -234,7 +151,7 @@
     },
     {
       "description": "STRUCTURAL_DIFF_NOT_EMPTY \u2014 correct the following paths:",
-      "detail": "\n=== STRUCTURAL DIFF ===\n{\n  \"fs_only_dirs\": [\n    \"apps_lic/scoring_ops\",\n    \"apps_lic/state_update_ops\",\n    \"apps_rg/scoring_ops\",\n    \"apps_rg/state_update_ops\"\n  ],\n  \"fs_only_files\": [\n    \"_unassigned_apps_unknown/apply_weights.py\",\n    \"_unassigned_apps_unknown/assess_content_relevance.py\",\n    \"_unassigned_apps_unknown/assess_content_risk.py\",\n    \"_unassigned_apps_unknown/assess_safety_risk.py\",\n    \"_unassigned_apps_unknown/build_personalization_query.py\",\n    \"_unassigned_apps_unknown/build_search_filters.py\",\n    \"_unassigned_apps_unknown/build_skill_query.py\",\n    \"_unassigned_apps_unknown/calibrate_engagement_score.py\",\n    \"_unassigned_apps_unknown/calibrate_fit_score.py\",\n    \"_unassigned_apps_unknown/call_formatting_api.py\",\n    \"_unassigned_apps_unknown/call_personalization_api.py\",\n    \"_unassigned_apps_unknown/compute_confidence.py\",\n    \"_unassigned_apps_unknown/compute_personalization_match.py\",\n    \"_unassigned_apps_unknown/compute_safety_score.py\",\n    \"_unassigned_apps_unknown/compute_skill_similarity.py\",\n    \"_unassigned_apps_unknown/coordinate_execution_queries.py\",\n    \"_unassigned_apps_unknown/create_experience_bullets.py\",\n    \"_unassigned_apps_unknown/diagnose_personalization_issues.py\",\n    \"_unassigned_apps_unknown/embed_recipient_profile.py\",\n    \"_unassigned_apps_unknown/evaluate_compliance_level.py\",\n    \"_unassigned_apps_unknown/evaluate_engagement_potential.py\",\n    \"_unassigned_apps_unknown/evaluate_personalization_quality.py\",\n    \"_unassigned_apps_unknown/evaluate_safety_compliance.py\",\n    \"_unassigned_apps_unknown/evaluate_writing_quality.py\",\n    \"_unassigned_apps_unknown/fetch_recipient_interactions.py\",\n    \"_unassigned_apps_unknown/fetch_user_preferences.py\",\n    \"_unassigned_apps_unknown/find_effective_templates.py\",\n    \"_unassigned_apps_unknown/find_relevant_templates.py\",\n    \"_unassigned_apps_unknown/format_data.py\",\n    \"_unassigned_apps_unknown/format_llm_prompt.py\",\n    \"_unassigned_apps_unknown/format_metadata.py\",\n    \"_unassigned_apps_unknown/format_personalization_prompt.py\",\n    \"_unassigned_apps_unknown/generate_subject_line.py\",\n    \"_unassigned_apps_unknown/generate_summary_section.py\",\n    \"_unassigned_apps_unknown/handle_api_timeouts.py\",\n    \"_unassigned_apps_unknown/handle_service_errors.py\",\n    \"_unassigned_apps_unknown/implement_fallback_strategy.py\",\n    \"_unassigned_apps_unknown/implement_fallback_templates.py\",\n    \"_unassigned_apps_unknown/manage_content_workflow.py\",\n    \"_unassigned_apps_unknown/manage_execution_context.py\",\n    \"_unassigned_apps_unknown/match_recipient_patterns.py\",\n    \"_unassigned_apps_unknown/normalize_relevance_scores.py\",\n    \"_unassigned_apps_unknown/normalize_scores.py\",\n    \"_unassigned_apps_unknown/normalize_skill_scores.py\",\n    \"_unassigned_apps_unknown/orchestrate_execution_planning.py\",\n    \"_unassigned_apps_unknown/order_call_to_actions.py\",\n    \"_unassigned_apps_unknown/prioritize_talking_points.py\",\n    \"_unassigned_apps_unknown/serialize_data.py\",\n    \"_unassigned_apps_unknown/update_recipient_profiles.py\",\n    \"_unassigned_apps_unknown/update_user_profile.py\",\n    \"_unassigned_apps_unknown/weight_experience_match.py\",\n    \"_unassigned_apps_unknown/weight_personalization_factors.py\",\n    \"apps_lic/scoring_ops/assess_message_relevance.py\",\n    \"apps_lic/state_update_ops/aggregate_campaign_state.py\",\n    \"apps_lic/state_update_ops/merge_generation_history.py\",\n    \"apps_lic/state_update_ops/merge_outreach_history.py\",\n    \"apps_lic/state_update_ops/serialize_generation_context.py\",\n    \"apps_lic/state_update_ops/serialize_outreach_context.py\",\n    \"apps_lic/state_update_ops/snapshot_campaign_state.py\",\n    \"apps_rg/scoring_ops/evaluate_resume_effectiveness.py\",\n    \"apps_rg/state_update_ops/aggregate_resume_state.py\",\n    \"apps_rg/state_update_ops/snapshot_resume_state.py\"\n  ],\n  \"misplaced_paths\": [],\n  \"name_mismatches\": [\n    \"_unassigned_apps_unknown/evaluate_writing_quality.py\",\n    \"_unassigned_apps_unknown/weight_personalization_factors.py\",\n    \"_unassigned_apps_unknown/evaluate_compliance_level.py\",\n    \"_unassigned_apps_unknown/format_metadata.py\",\n    \"_unassigned_apps_unknown/create_experience_bullets.py\",\n    \"apps_rg/state_update_ops\",\n    \"_unassigned_apps_unknown/find_effective_templates.py\",\n    \"_unassigned_apps_unknown/evaluate_personalization_quality.py\",\n    \"apps_lic/scoring_ops/assess_message_relevance.py\",\n    \"apps_lic/state_update_ops/serialize_outreach_context.py\",\n    \"_unassigned_apps_unknown/calibrate_fit_score.py\",\n    \"_unassigned_apps_unknown/orchestrate_execution_planning.py\",\n    \"_unassigned_apps_unknown/find_relevant_templates.py\",\n    \"_unassigned_apps_unknown/call_personalization_api.py\",\n    \"_unassigned_apps_unknown/build_skill_query.py\",\n    \"_unassigned_apps_unknown/calibrate_engagement_score.py\",\n    \"_unassigned_apps_unknown/build_search_filters.py\",\n    \"_unassigned_apps_unknown/generate_summary_section.py\",\n    \"_unassigned_apps_unknown/weight_experience_match.py\",\n    \"_unassigned_apps_unknown/format_data.py\",\n    \"apps_lic/state_update_ops/merge_outreach_history.py\",\n    \"_unassigned_apps_unknown/update_recipient_profiles.py\",\n    \"apps_lic/state_update_ops\",\n    \"apps_lic/state_update_ops/snapshot_campaign_state.py\",\n    \"_unassigned_apps_unknown/manage_content_workflow.py\",\n    \"_unassigned_apps_unknown/prioritize_talking_points.py\",\n    \"apps_rg/scoring_ops\",\n    \"_unassigned_apps_unknown/diagnose_personalization_issues.py\",\n    \"_unassigned_apps_unknown/embed_recipient_profile.py\",\n    \"_unassigned_apps_unknown/call_formatting_api.py\",\n    \"_unassigned_apps_unknown/normalize_skill_scores.py\",\n    \"_unassigned_apps_unknown/compute_confidence.py\",\n    \"_unassigned_apps_unknown/assess_content_risk.py\",\n    \"_unassigned_apps_unknown/compute_safety_score.py\",\n    \"_unassigned_apps_unknown/match_recipient_patterns.py\",\n    \"_unassigned_apps_unknown/assess_safety_risk.py\",\n    \"_unassigned_apps_unknown/generate_subject_line.py\",\n    \"apps_rg/state_update_ops/aggregate_resume_state.py\",\n    \"_unassigned_apps_unknown/apply_weights.py\",\n    \"_unassigned_apps_unknown/fetch_recipient_interactions.py\",\n    \"apps_lic/state_update_ops/aggregate_campaign_state.py\",\n    \"_unassigned_apps_unknown/compute_personalization_match.py\",\n    \"_unassigned_apps_unknown/format_personalization_prompt.py\",\n    \"_unassigned_apps_unknown/serialize_data.py\",\n    \"_unassigned_apps_unknown/implement_fallback_strategy.py\",\n    \"_unassigned_apps_unknown/evaluate_safety_compliance.py\",\n    \"_unassigned_apps_unknown/order_call_to_actions.py\",\n    \"_unassigned_apps_unknown/handle_api_timeouts.py\",\n    \"apps_lic/state_update_ops/merge_generation_history.py\",\n    \"_unassigned_apps_unknown/coordinate_execution_queries.py\",\n    \"apps_rg/scoring_ops/evaluate_resume_effectiveness.py\",\n    \"apps_lic/scoring_ops\",\n    \"_unassigned_apps_unknown/compute_skill_similarity.py\",\n    \"_unassigned_apps_unknown/assess_content_relevance.py\",\n    \"_unassigned_apps_unknown/manage_execution_context.py\",\n    \"_unassigned_apps_unknown/update_user_profile.py\",\n    \"_unassigned_apps_unknown/normalize_scores.py\",\n    \"_unassigned_apps_unknown/normalize_relevance_scores.py\",\n    \"apps_lic/state_update_ops/serialize_generation_context.py\",\n    \"_unassigned_apps_unknown/implement_fallback_templates.py\",\n    \"_unassigned_apps_unknown/build_personalization_query.py\",\n    \"_unassigned_apps_unknown/fetch_user_preferences.py\",\n    \"_unassigned_apps_unknown/handle_service_errors.py\",\n    \"apps_rg/state_update_ops/snapshot_resume_state.py\",\n    \"_unassigned_apps_unknown/format_llm_prompt.py\",\n    \"_unassigned_apps_unknown/evaluate_engagement_potential.py\"\n  ],\n  \"yaml_only_dirs\": [],\n  \"yaml_only_files\": []\n}\n",
+      "detail": "\n=== STRUCTURAL DIFF ===\n{\n  \"fs_only_dirs\": [\n    \"apps_lic/scoring_ops\",\n    \"apps_lic/state_update_ops\",\n    \"apps_rg/scoring_ops\",\n    \"apps_rg/state_update_ops\"\n  ],\n  \"fs_only_files\": [\n    \"_unassigned_apps_unknown/apply_weights.py\",\n    \"_unassigned_apps_unknown/assess_content_relevance.py\",\n    \"_unassigned_apps_unknown/assess_content_risk.py\",\n    \"_unassigned_apps_unknown/assess_safety_risk.py\",\n    \"_unassigned_apps_unknown/build_personalization_query.py\",\n    \"_unassigned_apps_unknown/build_search_filters.py\",\n    \"_unassigned_apps_unknown/build_skill_query.py\",\n    \"_unassigned_apps_unknown/calibrate_engagement_score.py\",\n    \"_unassigned_apps_unknown/calibrate_fit_score.py\",\n    \"_unassigned_apps_unknown/call_formatting_api.py\",\n    \"_unassigned_apps_unknown/call_personalization_api.py\",\n    \"_unassigned_apps_unknown/compute_confidence.py\",\n    \"_unassigned_apps_unknown/compute_personalization_match.py\",\n    \"_unassigned_apps_unknown/compute_safety_score.py\",\n    \"_unassigned_apps_unknown/compute_skill_similarity.py\",\n    \"_unassigned_apps_unknown/coordinate_execution_queries.py\",\n    \"_unassigned_apps_unknown/create_experience_bullets.py\",\n    \"_unassigned_apps_unknown/diagnose_personalization_issues.py\",\n    \"_unassigned_apps_unknown/embed_recipient_profile.py\",\n    \"_unassigned_apps_unknown/evaluate_compliance_level.py\",\n    \"_unassigned_apps_unknown/evaluate_engagement_potential.py\",\n    \"_unassigned_apps_unknown/evaluate_personalization_quality.py\",\n    \"_unassigned_apps_unknown/evaluate_safety_compliance.py\",\n    \"_unassigned_apps_unknown/evaluate_writing_quality.py\",\n    \"_unassigned_apps_unknown/fetch_recipient_interactions.py\",\n    \"_unassigned_apps_unknown/fetch_user_preferences.py\",\n    \"_unassigned_apps_unknown/find_effective_templates.py\",\n    \"_unassigned_apps_unknown/find_relevant_templates.py\",\n    \"_unassigned_apps_unknown/format_data.py\",\n    \"_unassigned_apps_unknown/format_llm_prompt.py\",\n    \"_unassigned_apps_unknown/format_metadata.py\",\n    \"_unassigned_apps_unknown/format_personalization_prompt.py\",\n    \"_unassigned_apps_unknown/generate_subject_line.py\",\n    \"_unassigned_apps_unknown/generate_summary_section.py\",\n    \"_unassigned_apps_unknown/handle_api_timeouts.py\",\n    \"_unassigned_apps_unknown/handle_service_errors.py\",\n    \"_unassigned_apps_unknown/implement_fallback_strategy.py\",\n    \"_unassigned_apps_unknown/implement_fallback_templates.py\",\n    \"_unassigned_apps_unknown/manage_content_workflow.py\",\n    \"_unassigned_apps_unknown/manage_execution_context.py\",\n    \"_unassigned_apps_unknown/match_recipient_patterns.py\",\n    \"_unassigned_apps_unknown/normalize_relevance_scores.py\",\n    \"_unassigned_apps_unknown/normalize_scores.py\",\n    \"_unassigned_apps_unknown/normalize_skill_scores.py\",\n    \"_unassigned_apps_unknown/orchestrate_execution_planning.py\",\n    \"_unassigned_apps_unknown/order_call_to_actions.py\",\n    \"_unassigned_apps_unknown/prioritize_talking_points.py\",\n    \"_unassigned_apps_unknown/serialize_data.py\",\n    \"_unassigned_apps_unknown/update_recipient_profiles.py\",\n    \"_unassigned_apps_unknown/update_user_profile.py\",\n    \"_unassigned_apps_unknown/weight_experience_match.py\",\n    \"_unassigned_apps_unknown/weight_personalization_factors.py\",\n    \"apps_lic/scoring_ops/assess_message_relevance.py\",\n    \"apps_lic/state_update_ops/aggregate_campaign_state.py\",\n    \"apps_lic/state_update_ops/merge_generation_history.py\",\n    \"apps_lic/state_update_ops/merge_outreach_history.py\",\n    \"apps_lic/state_update_ops/serialize_generation_context.py\",\n    \"apps_lic/state_update_ops/serialize_outreach_context.py\",\n    \"apps_lic/state_update_ops/snapshot_campaign_state.py\",\n    \"apps_rg/scoring_ops/evaluate_resume_effectiveness.py\",\n    \"apps_rg/state_update_ops/aggregate_resume_state.py\",\n    \"apps_rg/state_update_ops/snapshot_resume_state.py\"\n  ],\n  \"misplaced_paths\": [],\n  \"name_mismatches\": [\n    \"apps_lic/state_update_ops/aggregate_campaign_state.py\",\n    \"_unassigned_apps_unknown/normalize_skill_scores.py\",\n    \"apps_lic/state_update_ops/merge_outreach_history.py\",\n    \"_unassigned_apps_unknown/calibrate_fit_score.py\",\n    \"_unassigned_apps_unknown/compute_confidence.py\",\n    \"_unassigned_apps_unknown/coordinate_execution_queries.py\",\n    \"apps_rg/scoring_ops/evaluate_resume_effectiveness.py\",\n    \"_unassigned_apps_unknown/handle_api_timeouts.py\",\n    \"apps_rg/state_update_ops/aggregate_resume_state.py\",\n    \"_unassigned_apps_unknown/orchestrate_execution_planning.py\",\n    \"_unassigned_apps_unknown/build_personalization_query.py\",\n    \"_unassigned_apps_unknown/order_call_to_actions.py\",\n    \"_unassigned_apps_unknown/generate_summary_section.py\",\n    \"_unassigned_apps_unknown/assess_safety_risk.py\",\n    \"_unassigned_apps_unknown/evaluate_personalization_quality.py\",\n    \"_unassigned_apps_unknown/format_data.py\",\n    \"_unassigned_apps_unknown/call_formatting_api.py\",\n    \"_unassigned_apps_unknown/assess_content_risk.py\",\n    \"_unassigned_apps_unknown/update_recipient_profiles.py\",\n    \"_unassigned_apps_unknown/normalize_scores.py\",\n    \"_unassigned_apps_unknown/match_recipient_patterns.py\",\n    \"_unassigned_apps_unknown/weight_experience_match.py\",\n    \"_unassigned_apps_unknown/build_search_filters.py\",\n    \"_unassigned_apps_unknown/compute_safety_score.py\",\n    \"_unassigned_apps_unknown/serialize_data.py\",\n    \"_unassigned_apps_unknown/implement_fallback_strategy.py\",\n    \"_unassigned_apps_unknown/manage_content_workflow.py\",\n    \"apps_lic/state_update_ops/merge_generation_history.py\",\n    \"apps_rg/state_update_ops\",\n    \"_unassigned_apps_unknown/manage_execution_context.py\",\n    \"_unassigned_apps_unknown/evaluate_engagement_potential.py\",\n    \"_unassigned_apps_unknown/weight_personalization_factors.py\",\n    \"_unassigned_apps_unknown/evaluate_compliance_level.py\",\n    \"_unassigned_apps_unknown/format_metadata.py\",\n    \"_unassigned_apps_unknown/diagnose_personalization_issues.py\",\n    \"_unassigned_apps_unknown/prioritize_talking_points.py\",\n    \"apps_lic/state_update_ops/serialize_generation_context.py\",\n    \"_unassigned_apps_unknown/embed_recipient_profile.py\",\n    \"_unassigned_apps_unknown/apply_weights.py\",\n    \"_unassigned_apps_unknown/find_effective_templates.py\",\n    \"_unassigned_apps_unknown/fetch_recipient_interactions.py\",\n    \"apps_rg/state_update_ops/snapshot_resume_state.py\",\n    \"_unassigned_apps_unknown/generate_subject_line.py\",\n    \"_unassigned_apps_unknown/assess_content_relevance.py\",\n    \"apps_lic/scoring_ops\",\n    \"_unassigned_apps_unknown/normalize_relevance_scores.py\",\n    \"_unassigned_apps_unknown/create_experience_bullets.py\",\n    \"_unassigned_apps_unknown/format_llm_prompt.py\",\n    \"_unassigned_apps_unknown/calibrate_engagement_score.py\",\n    \"apps_lic/state_update_ops/snapshot_campaign_state.py\",\n    \"_unassigned_apps_unknown/find_relevant_templates.py\",\n    \"apps_lic/scoring_ops/assess_message_relevance.py\",\n    \"_unassigned_apps_unknown/compute_personalization_match.py\",\n    \"_unassigned_apps_unknown/format_personalization_prompt.py\",\n    \"_unassigned_apps_unknown/update_user_profile.py\",\n    \"_unassigned_apps_unknown/call_personalization_api.py\",\n    \"_unassigned_apps_unknown/build_skill_query.py\",\n    \"_unassigned_apps_unknown/fetch_user_preferences.py\",\n    \"apps_lic/state_update_ops/serialize_outreach_context.py\",\n    \"_unassigned_apps_unknown/evaluate_safety_compliance.py\",\n    \"_unassigned_apps_unknown/handle_service_errors.py\",\n    \"apps_lic/state_update_ops\",\n    \"_unassigned_apps_unknown/evaluate_writing_quality.py\",\n    \"_unassigned_apps_unknown/implement_fallback_templates.py\",\n    \"apps_rg/scoring_ops\",\n    \"_unassigned_apps_unknown/compute_skill_similarity.py\"\n  ],\n  \"yaml_only_dirs\": [],\n  \"yaml_only_files\": []\n}\n",
       "key": "K24",
       "ok": false
     },
