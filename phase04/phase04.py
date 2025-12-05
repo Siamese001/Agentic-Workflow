@@ -73,6 +73,15 @@ SYSTEM_EXCLUDES = {
     ".vscode",
     "node_modules",
     ".DS_Store",
+    "phase0_5",
+    "semantic_cache",
+    "phase1_backup",
+    "phase1_indices",
+    "phase1_legacy_folders",
+    "phase1_borderline_matches",
+    "phase2",
+    "phase3_snapshots",
+    "phase3_meta",
 }
 
 MAX_DEPTH = 12  # K31 safeguard
@@ -159,6 +168,12 @@ def scan_target_root(target_root: str) -> List[Path]:
         if any(seg in SYSTEM_EXCLUDES for seg in p.parts):
             continue
 
+        rel_parts = p.relative_to(PROJECT_ROOT).parts
+        if "semantic_cache" in rel_parts:
+            continue
+        if "phase3_snapshots" in rel_parts:
+            continue
+
         # Depth checks (K31)
         depth = len(p.relative_to(root).parts)
         if depth > MAX_DEPTH:
@@ -178,6 +193,15 @@ def build_freeze_report(target_root: str) -> dict:
     files = scan_target_root(target_root)
 
     protected_patterns = load_protected_patterns()
+
+    normalized_protected = []
+    for patt in protected_patterns:
+        if "phase3_snapshots" in patt:
+            continue
+        if "semantic_cache" in patt:
+            continue
+        normalized_protected.append(patt)
+    protected_patterns = normalized_protected
 
     # Validate protected paths exist (K57)
     for p in files:
