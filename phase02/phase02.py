@@ -55,6 +55,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 import yaml
+import math
 
 # ======================================================================
 # GLOBAL CONSTANTS / ROOTS
@@ -144,6 +145,7 @@ ALLOWED_SEMANTIC_OPS: Set[str] = {
     "insert_semantic_block",
     "delete_semantic_block",
     "canonical_rewrite",
+    "canonical_rewrite_component",
 }
 
 # Canonical semantic op ordering (K43, K63)
@@ -155,6 +157,7 @@ SEMANTIC_OP_ORDER: List[str] = [
     "move_path",
     "rename_path",
     "canonical_rewrite",
+    "canonical_rewrite_component",
     "rewrite_file_from_cache",
     "merge_file_from_cache",
     "patch_region_from_cache",
@@ -303,12 +306,16 @@ class FilesystemState:
 @dataclass
 class SemanticPointer:
     bucket: str
+    component_id: Optional[str]
+    kind: Optional[str]
     engine: str
     archive_name: str
     relative: str
     hash: str
     canonical_relative: str
     global_paths: Dict[str, str]
+    confidence: float
+    bucket_canonical: Optional[str] = None
 
 
 @dataclass
@@ -316,6 +323,7 @@ class SemanticCacheState:
     bucket: str
     pointers: List[SemanticPointer]
     hashes: Dict[str, Dict[str, Any]]
+    component_graph: Dict[str, List[Dict[str, Any]]]
 
 
 @dataclass
@@ -331,6 +339,9 @@ class StructuralDiffResult:
 @dataclass
 class SemanticDiff:
     live_path: str
+    component_id: Optional[str]
+    kind: Optional[str]
+    bucket: Optional[str]
     best_hash: Optional[str]
     engine: Optional[str]
     archive_name: Optional[str]
@@ -347,6 +358,9 @@ class Operation:
     semantic_hash: Optional[str] = None
     engine: Optional[str] = None
     archive_name: Optional[str] = None
+    component_id: Optional[str] = None
+    kind: Optional[str] = None
+    bucket: Optional[str] = None
     confidence: float = 0.0
     reason: str = ""
     priority: int = 0
@@ -584,18 +598,28 @@ def load_bucket_pointers(bucket: str) -> List[SemanticPointer]:
         canon_rel = data.get("canonical_relative")
         global_obj = data.get("global", {})
 
+        # NEW: component-level metadata from Phase 0.5 v4
+        component_id = data.get("component_id")
+        kind = data.get("kind")
+        confidence = float(data.get("confidence", 0.5))
+        bucket_canonical = data.get("canonical_root", bucket)
+
         if not h or not engine or not archive_name or not rel or not canon_rel:
             continue
 
         pointers.append(
             SemanticPointer(
                 bucket=bucket,
+                component_id=str(component_id) if component_id is not None else None,
+                kind=str(kind) if kind is not None else None,
                 engine=str(engine),
                 archive_name=str(archive_name),
                 relative=str(rel),
                 hash=str(h),
                 canonical_relative=str(canon_rel),
                 global_paths={str(k): str(v) for k, v in global_obj.items()},
+                confidence=confidence,
+                bucket_canonical=str(bucket_canonical) if bucket_canonical is not None else None,
             )
         )
 
@@ -612,28 +636,28 @@ def load_semantic_cache_state(
 
     bucket = canonical_root_to_bucket(target_root)
     pointers = load_bucket_pointers(bucket)
-    
+
     # Debug: Count pointers by engine
     if pointers:
-        engine_counts = {}
-        archive_counts = {}
+        engine_counts: Dict[str, int] = {}
+        archive_counts: Dict[str, int] = {}
         for p in pointers:
             engine = p.engine or "Unknown"
             archive = p.archive_name or "Unknown"
             engine_counts[engine] = engine_counts.get(engine, 0) + 1
             archive_counts[archive] = archive_counts.get(archive, 0) + 1
-        
-        print(f"[DEBUG] Loaded {len(pointers)} pointers for bucket {bucket}")
+
+        print(f"[DEBUG] Loaded {len(pointers)} component pointers for bucket {bucket}")
         print(f"[DEBUG] Engine distribution: {engine_counts}")
-        print(f"[DEBUG] Archive distribution: {dict(list(archive_counts.items())[:5])}...") # Show first 5
-    
+        print(f"[DEBUG] Archive distribution: {dict(list(archive_counts.items())[:5])}...")
+
     if not pointers:
         validator.ok(
             "K4",
             f"No bucket pointers found for bucket '{bucket}' (advisory for local development)",
         )
         # Return empty cache state to allow structural-only plan generation
-        return SemanticCacheState(bucket=bucket, pointers=[], hashes={})
+        return SemanticCacheState(bucket=bucket, pointers=[], hashes={}, component_graph={})
 
     # K7 already checked global domains; here we re-affirm health for this target.
     validator.ok("K3", f"Semantic cache exists for target root bucket '{bucket}'")
@@ -643,15 +667,26 @@ def load_semantic_cache_state(
     validator.ok("K13", "Global semantic objects assumed present (ast/diffs/etc.) from K7")
 
     # K14: SEMANTIC_CACHE_PATHS_NORMALIZED
-    # We normalize all pointer canonical_relative paths and check posix style.
     bad_paths = [p.canonical_relative for p in pointers if "\\" in p.canonical_relative]
     if bad_paths:
         validator.fail("K14", f"Non-normalized paths in semantic cache pointers: {bad_paths[:5]}")
     else:
         validator.ok("K14", "Semantic cache paths normalized (POSIX-style)")
 
+    # Load component graph (optional but used for semantic context)
+    graph_path = SEMANTIC_CACHE_ROOT / "graphs" / "component_graph.json"
+    component_graph: Dict[str, List[Dict[str, Any]]] = {}
+    if graph_path.exists():
+        graph = read_json(graph_path)
+        if isinstance(graph.get("nodes"), list) and isinstance(graph.get("edges"), list):
+            edges = graph["edges"]
+            for e in edges:
+                cid_from = e.get("from")
+                if cid_from:
+                    component_graph.setdefault(cid_from, []).append(e)
+
     hashes: Dict[str, Dict[str, Any]] = {}
-    return SemanticCacheState(bucket=bucket, pointers=pointers, hashes=hashes)
+    return SemanticCacheState(bucket=bucket, pointers=pointers, hashes=hashes, component_graph=component_graph)
 
 
 # ======================================================================
@@ -778,6 +813,31 @@ def build_hash_to_pointers(cache_state: SemanticCacheState) -> Dict[str, List[Se
     for p in cache_state.pointers:
         mapping.setdefault(p.hash, []).append(p)
     return mapping
+
+
+def build_symbol_index(cache_state: SemanticCacheState) -> Dict[str, List[SemanticPointer]]:
+    """
+    Build a symbol → pointers index using component_id trailing segments.
+
+    Example component_id:
+        "core_v10_7.py::class::BaseAgent" → symbol "BaseAgent"
+        "foo.py::func::run_pipeline"      → symbol "run_pipeline"
+    """
+    index: Dict[str, List[SemanticPointer]] = {}
+    for p in cache_state.pointers:
+        try:
+            cid = p.component_id or ""
+            parts = cid.split("::")
+            if not parts:
+                continue
+            symbol = parts[-1]
+            if not symbol:
+                continue
+            index.setdefault(symbol, []).append(p)
+        except Exception:
+            # Skip malformed component_id strings
+            continue
+    return index
 
 
 def load_global_artifact_path(hash_value: str, domain: str) -> Optional[Path]:
@@ -923,6 +983,21 @@ def infer_behavior_signature(tree: Optional[ast.AST]) -> Set[str]:
     return sigs
 
 
+def extract_symbol_names_from_ast(tree: Optional[ast.AST]) -> Set[str]:
+    """
+    Extract class and function names from a live AST for semantic mapping.
+    """
+    if tree is None:
+        return set()
+    symbols: Set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            symbols.add(node.name)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            symbols.add(node.name)
+    return symbols
+
+
 def infer_layer_from_path(rel_path: str) -> Optional[str]:
     parts = Path(rel_path).parts
     for p in parts:
@@ -936,193 +1011,6 @@ def infer_layer_from_path(rel_path: str) -> Optional[str]:
 # ======================================================================
 
 
-def generate_embedding_for_file(file_path: str) -> Optional[List[float]]:
-    """
-    Generate text-based embedding vector for a single file.
-    Uses TF-IDF style approach on code tokens for semantic similarity.
-    """
-    try:
-        import math
-        import hashlib
-        from collections import Counter
-        
-        # Read file content
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-            text = f.read()
-        
-        if not text.strip():
-            # Fallback to hash-based embedding if no content
-            hash_obj = hashlib.sha256(text.encode())
-            hash_bytes = hash_obj.digest()
-            return [float(b - 128) / 128.0 for b in hash_bytes[:128]]
-        
-        # Tokenize the text (simple word-level tokenization)
-        tokens = text.lower().replace('\n', ' ').split()
-        
-        # Remove common programming keywords that don't add semantic value
-        stop_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 
-                     'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be', 'been', 'have', 'has', 
-                     'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
-                     'can', 'must', 'import', 'def', 'class', 'if', 'else', 'elif', 'for', 'while',
-                     'return', 'print', 'pass', 'break', 'continue', 'try', 'except', 'finally'}
-        
-        tokens = [t for t in tokens if t not in stop_words and len(t) > 2]
-        
-        # Count token frequencies
-        token_counts = Counter(tokens)
-        
-        if not token_counts:
-            # Fallback if no meaningful tokens
-            hash_obj = hashlib.sha256(text.encode())
-            hash_bytes = hash_obj.digest()
-            return [float(b - 128) / 128.0 for b in hash_bytes[:128]]
-        
-        # Create a simple TF-IDF style embedding
-        # Use the most frequent tokens as features
-        most_common = token_counts.most_common(100)
-        
-        # Generate 128-dimensional embedding
-        embedding = []
-        
-        # First 100 dims: TF-IDF scores for top tokens
-        for i, (token, count) in enumerate(most_common):
-            if i >= 100:
-                break
-            # Simple TF-IDF approximation
-            tf = count / len(tokens)
-            # Use log scaling for better distribution
-            tfidf = math.log(1 + tf * 10)
-            embedding.append(tfidf)
-        
-        # Pad to 128 dimensions if needed
-        while len(embedding) < 128:
-            # Add hash-based features for remaining dimensions
-            hash_obj = hashlib.sha256((text + str(len(embedding))).encode())
-            hash_bytes = hash_obj.digest()
-            next_val = float(hash_bytes[0] - 128) / 128.0
-            embedding.append(next_val)
-        
-        # Normalize the embedding
-        if embedding:
-            magnitude = math.sqrt(sum(x * x for x in embedding))
-            if magnitude > 0:
-                embedding = [x / magnitude for x in embedding]
-        
-        return embedding[:128]
-        
-    except Exception as e:
-        # Fallback to simple hash-based embedding
-        try:
-            hash_obj = hashlib.sha256(file_path.encode())
-            hash_bytes = hash_obj.digest()
-            return [float(b - 128) / 128.0 for b in hash_bytes[:128]]
-        except Exception:
-            # Return zero vector as last resort
-            return [0.0] * 128
-
-
-def find_semantic_match(live_file: FilesystemFile, cache_state: SemanticCacheState) -> Optional[Tuple[SemanticPointer, float]]:
-    """
-    Find the most semantically similar archived content for a current file.
-    Uses embedding similarity as primary method with filename/path fallback.
-    """
-    try:
-        # PRIMARY: Try embedding similarity matching
-        current_embedding = generate_embedding_for_file(live_file.abs_path)
-        if current_embedding:
-            best_match = None
-            best_similarity = 0.0
-            
-            for pointer in cache_state.pointers:
-                # Load archived embedding
-                archived_embedding_path = load_global_artifact_path(pointer.hash, "embeddings")
-                if not archived_embedding_path:
-                    continue
-                    
-                archived_embedding = load_embedding_vector(archived_embedding_path)
-                if archived_embedding is None:
-                    continue
-                
-                # Compute cosine similarity
-                similarity = compute_cosine_similarity(current_embedding, archived_embedding)
-                
-                # Only consider matches above threshold
-                if similarity > 0.5 and similarity > best_similarity:
-                    best_match = pointer
-                    best_similarity = similarity
-            
-            if best_match:
-                return (best_match, best_similarity)
-        
-        # FALLBACK: Use filename/path-based matching
-        best_match = None
-        best_score = 0.0
-        
-        for pointer in cache_state.pointers:
-            score = 0.0
-            
-            # Score based on filename similarity
-            live_filename = Path(live_file.rel_path).name
-            pointer_filename = Path(pointer.canonical_relative).name
-            
-            if live_filename == pointer_filename:
-                score += 0.5
-            
-            # Score based on path structure similarity
-            live_parts = live_file.rel_path.split('/')
-            pointer_parts = pointer.canonical_relative.split('/')
-            
-            matching_levels = 0
-            for i, (live_part, pointer_part) in enumerate(zip(live_parts, pointer_parts)):
-                if live_part == pointer_part:
-                    matching_levels += 1
-                else:
-                    break
-            
-            score += matching_levels * 0.1
-            
-            # Track best matches by engine
-            if pointer.engine == "RG":
-                if score > top_rg_score:
-                    top_rg_match = pointer
-                    top_rg_score = score
-            elif pointer.engine == "LIC":
-                if score > top_lic_score:
-                    top_lic_match = pointer
-                    top_lic_score = score
-            
-            if score > best_score:
-                best_match = pointer
-                best_score = score
-        
-        # Use a lower threshold for filename fallback
-        if best_match and best_score > 0.2:
-            return (best_match, best_score)
-        return None
-        
-    except Exception as e:
-        return None
-
-
-def compute_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
-    """
-    Compute cosine similarity between two vectors.
-    """
-    if len(vec1) != len(vec2):
-        return 0.0
-    
-    try:
-        dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        magnitude1 = math.sqrt(sum(a * a for a in vec1))
-        magnitude2 = math.sqrt(sum(b * b for b in vec2))
-        
-        if magnitude1 == 0 or magnitude2 == 0:
-            return 0.0
-        
-        return dot_product / (magnitude1 * magnitude2)
-        
-    except Exception:
-        return 0.0
 
 
 def compute_semantic_diffs(
@@ -1130,7 +1018,19 @@ def compute_semantic_diffs(
     fs_state: FilesystemState,
     cache_state: SemanticCacheState,
 ) -> List[SemanticDiff]:
+    """
+    Compute component-level semantic differences between live files and
+    Phase 0.5 semantic cache.
+
+    SM1 model:
+        1. Exact hash match (file hash -> hash pointers).
+        2. AST symbol match (class/func names) -> component_id.
+        3. Graph/context and embeddings are advisory only.
+    """
     hash_to_pointers = build_hash_to_pointers(cache_state)
+    symbol_index = build_symbol_index(cache_state)
+    component_graph = cache_state.component_graph
+
     diffs: List[SemanticDiff] = []
 
     # K25–K29: ensure we iterate per file and load core artifacts where possible.
@@ -1141,100 +1041,21 @@ def compute_semantic_diffs(
     validator.ok("K29", "FOR_EACH_FILE_INTEGRITY_LOADED (assumed via Phase 0.5)")
 
     for live in fs_state.files:
+        # --------------------------------------------------------------
+        # 1. Exact hash-based mapping (bit-identical)
+        # --------------------------------------------------------------
         pointers = hash_to_pointers.get(live.hash, [])
 
+        live_text = safe_read_text(live.abs_path)
+        live_ast: Optional[ast.AST] = None
+        if live.ext == ".py":
+            try:
+                live_ast = ast.parse(live_text)
+            except SyntaxError:
+                live_ast = None
+
         if pointers:
-            best = pointers[0]
-            global_ast_path = load_global_artifact_path(best.hash, "ast")
-            global_embedding_path = load_global_artifact_path(best.hash, "embeddings")
-            golden_path = load_global_artifact_path(best.hash, "golden")
-
-            # AST diff (K30)
-            ast_diff_value, ast_reason = compute_ast_diff(live.abs_path, global_ast_path)
-
-            # Embedding distance (K31) — optional, may be None
-            vec_live = load_embedding_vector(global_embedding_path) if global_embedding_path else None
-            vec_ref = vec_live  # in pointer-mode, we only have canonical; treat as self-match.
-            emb_distance = compute_embedding_distance(vec_live, vec_ref)
-            emb_reason = "embedding_self_match_or_missing" if emb_distance is None else "embedding_distance_computed"
-
-            # Golden diff (K32)
-            live_text = safe_read_text(live.abs_path)
-            golden_json = load_golden_json(golden_path)
-            golden_diff_value, golden_reason = compute_golden_diff(live_text, golden_json)
-
-            # Tool usage diffs (K33)
-            live_ast = None
-            if live.ext == ".py":
-                try:
-                    live_ast = ast.parse(live_text)
-                except SyntaxError:
-                    live_ast = None
-            ref_ast = load_ast_from_artifact(global_ast_path) if global_ast_path else None
-            live_tools = infer_tool_usage_from_ast(live_ast)
-            ref_tools = infer_tool_usage_from_ast(ref_ast)
-            tool_deltas = sorted((live_tools - ref_tools) | (ref_tools - live_tools))
-
-            # Behavior diffs (K34)
-            live_beh = infer_behavior_signature(live_ast)
-            ref_beh = infer_behavior_signature(ref_ast)
-            behavior_deltas = sorted((live_beh - ref_beh) | (ref_beh - live_beh))
-
-            # Layer mismatches (K35)
-            live_layer = infer_layer_from_path(live.rel_path)
-            ref_layer = infer_layer_from_path(best.canonical_relative)
-            layer_mismatch = live_layer != ref_layer
-
-            reasons = [
-                f"ast_diff:{ast_reason}",
-                f"embedding:{emb_reason}",
-                f"golden:{golden_reason}",
-                f"tools_delta_count:{len(tool_deltas)}",
-                f"behavior_delta_count:{len(behavior_deltas)}",
-                f"layer_mismatch:{layer_mismatch}",
-            ]
-
-            # Confidence: hybrid heuristic
-            confidence = 1.0
-            if ast_diff_value > 0.0:
-                confidence -= 0.3
-            if golden_diff_value > 0.0:
-                confidence -= 0.3
-            if emb_distance is not None and emb_distance > 0.1:
-                confidence -= 0.2
-            if tool_deltas:
-                confidence -= 0.1
-            if behavior_deltas:
-                confidence -= 0.1
-            if layer_mismatch:
-                confidence -= 0.1
-            confidence = max(0.0, min(1.0, confidence))
-
-            diffs.append(
-                SemanticDiff(
-                    live_path=live.rel_path,
-                    best_hash=best.hash,
-                    engine=best.engine,
-                    archive_name=best.archive_name,
-                    diff_kind="hash_match",
-                    confidence=confidence,
-                    reasons=reasons,
-                    extra={
-                        "ast_diff_value": ast_diff_value,
-                        "embedding_distance": emb_distance,
-                        "golden_diff_value": golden_diff_value,
-                        "tool_deltas": tool_deltas,
-                        "behavior_deltas": behavior_deltas,
-                        "live_layer": live_layer,
-                        "ref_layer": ref_layer,
-                    },
-                )
-            )
-        else:
-            # Fallback: semantic similarity matching using embeddings
-            semantic_match = find_semantic_match(live, cache_state)
-            if semantic_match:
-                best, similarity = semantic_match
+            for best in pointers:
                 global_ast_path = load_global_artifact_path(best.hash, "ast")
                 global_embedding_path = load_global_artifact_path(best.hash, "embeddings")
                 golden_path = load_global_artifact_path(best.hash, "golden")
@@ -1242,22 +1063,16 @@ def compute_semantic_diffs(
                 # AST diff (K30)
                 ast_diff_value, ast_reason = compute_ast_diff(live.abs_path, global_ast_path)
 
-                # Embedding distance (K31) - use computed similarity
-                emb_distance = 1.0 - similarity  # Convert similarity to distance
-                emb_reason = f"semantic_similarity_match:{similarity:.3f}"
+                # Embedding distance (K31) — self-match, purely advisory
+                vec_ref = load_embedding_vector(global_embedding_path) if global_embedding_path else None
+                emb_distance = compute_embedding_distance(vec_ref, vec_ref)
+                emb_reason = "embedding_self_match_or_missing" if emb_distance is None else "embedding_distance_computed"
 
                 # Golden diff (K32)
-                live_text = safe_read_text(live.abs_path)
                 golden_json = load_golden_json(golden_path)
                 golden_diff_value, golden_reason = compute_golden_diff(live_text, golden_json)
 
                 # Tool usage diffs (K33)
-                live_ast = None
-                if live.ext == ".py":
-                    try:
-                        live_ast = ast.parse(live_text)
-                    except SyntaxError:
-                        live_ast = None
                 ref_ast = load_ast_from_artifact(global_ast_path) if global_ast_path else None
                 live_tools = infer_tool_usage_from_ast(live_ast)
                 ref_tools = infer_tool_usage_from_ast(ref_ast)
@@ -1268,10 +1083,14 @@ def compute_semantic_diffs(
                 ref_beh = infer_behavior_signature(ref_ast)
                 behavior_deltas = sorted((live_beh - ref_beh) | (ref_beh - live_beh))
 
-                # Layer mismatches (K35)
+                # Layer mismatch heuristic (still path-based, advisory)
                 live_layer = infer_layer_from_path(live.rel_path)
                 ref_layer = infer_layer_from_path(best.canonical_relative)
                 layer_mismatch = live_layer != ref_layer
+
+                # Component graph context (B1) — advisory in this implementation
+                comp_edges = component_graph.get(best.component_id or "", [])
+                edge_kinds = sorted({e.get("kind", "") for e in comp_edges if isinstance(e, dict)})
 
                 reasons = [
                     f"ast_diff:{ast_reason}",
@@ -1280,30 +1099,33 @@ def compute_semantic_diffs(
                     f"tools_delta_count:{len(tool_deltas)}",
                     f"behavior_delta_count:{len(behavior_deltas)}",
                     f"layer_mismatch:{layer_mismatch}",
-                    f"semantic_fallback_match",
+                    f"edge_kinds:{edge_kinds}",
                 ]
 
-                # Confidence: based on semantic similarity
-                confidence = similarity
+                # Confidence heuristic (conservative)
+                confidence = best.confidence
                 if ast_diff_value > 0.0:
-                    confidence -= 0.2
+                    confidence -= 0.1
                 if golden_diff_value > 0.0:
-                    confidence -= 0.2
+                    confidence -= 0.1
                 if tool_deltas:
-                    confidence -= 0.1
+                    confidence -= 0.05
                 if behavior_deltas:
-                    confidence -= 0.1
+                    confidence -= 0.05
                 if layer_mismatch:
-                    confidence -= 0.1
+                    confidence -= 0.05
                 confidence = max(0.0, min(1.0, confidence))
 
                 diffs.append(
                     SemanticDiff(
                         live_path=live.rel_path,
+                        component_id=best.component_id,
+                        kind=best.kind,
+                        bucket=best.bucket_canonical,
                         best_hash=best.hash,
                         engine=best.engine,
                         archive_name=best.archive_name,
-                        diff_kind="semantic_match",
+                        diff_kind="hash_match",
                         confidence=confidence,
                         reasons=reasons,
                         extra={
@@ -1314,24 +1136,129 @@ def compute_semantic_diffs(
                             "behavior_deltas": behavior_deltas,
                             "live_layer": live_layer,
                             "ref_layer": ref_layer,
-                            "semantic_similarity": similarity,
+                            "edge_kinds": edge_kinds,
                         },
                     )
                 )
-            else:
-                # No semantic match found
+            continue
+
+        # --------------------------------------------------------------
+        # 2. Symbol-based mapping (AST symbol names ↔ component_id)
+        # --------------------------------------------------------------
+        live_symbols = extract_symbol_names_from_ast(live_ast)
+        candidate_pointers: List[SemanticPointer] = []
+        seen_p_hashes: Set[Tuple[str, str]] = set()
+
+        for sym in live_symbols:
+            for p in symbol_index.get(sym, []):
+                key = (p.hash, p.component_id or "")
+                if key not in seen_p_hashes:
+                    candidate_pointers.append(p)
+                    seen_p_hashes.add(key)
+
+        if candidate_pointers:
+            for best in candidate_pointers:
+                global_ast_path = load_global_artifact_path(best.hash, "ast")
+                global_embedding_path = load_global_artifact_path(best.hash, "embeddings")
+                golden_path = load_global_artifact_path(best.hash, "golden")
+
+                # AST diff (K30)
+                ast_diff_value, ast_reason = compute_ast_diff(live.abs_path, global_ast_path)
+
+                # Embedding distance (K31) — advisory only
+                vec_ref = load_embedding_vector(global_embedding_path) if global_embedding_path else None
+                emb_distance = compute_embedding_distance(vec_ref, vec_ref)
+                emb_reason = "embedding_self_match_or_missing" if emb_distance is None else "embedding_distance_computed"
+
+                # Golden diff (K32)
+                golden_json = load_golden_json(golden_path)
+                golden_diff_value, golden_reason = compute_golden_diff(live_text, golden_json)
+
+                # Tool usage / behavior diffs
+                ref_ast = load_ast_from_artifact(global_ast_path) if global_ast_path else None
+                live_tools = infer_tool_usage_from_ast(live_ast)
+                ref_tools = infer_tool_usage_from_ast(ref_ast)
+                tool_deltas = sorted((live_tools - ref_tools) | (ref_tools - live_tools))
+
+                live_beh = infer_behavior_signature(live_ast)
+                ref_beh = infer_behavior_signature(ref_ast)
+                behavior_deltas = sorted((live_beh - ref_beh) | (ref_beh - live_beh))
+
+                live_layer = infer_layer_from_path(live.rel_path)
+                ref_layer = infer_layer_from_path(best.canonical_relative)
+                layer_mismatch = live_layer != ref_layer
+
+                comp_edges = component_graph.get(best.component_id or "", [])
+                edge_kinds = sorted({e.get("kind", "") for e in comp_edges if isinstance(e, dict)})
+
+                reasons = [
+                    f"ast_diff:{ast_reason}",
+                    f"embedding:{emb_reason}",
+                    f"golden:{golden_reason}",
+                    f"tools_delta_count:{len(tool_deltas)}",
+                    f"behavior_delta_count:{len(behavior_deltas)}",
+                    f"layer_mismatch:{layer_mismatch}",
+                    f"edge_kinds:{edge_kinds}",
+                    "semantic_symbol_match",
+                ]
+
+                confidence = best.confidence
+                if ast_diff_value > 0.0:
+                    confidence -= 0.1
+                if golden_diff_value > 0.0:
+                    confidence -= 0.1
+                if tool_deltas:
+                    confidence -= 0.05
+                if behavior_deltas:
+                    confidence -= 0.05
+                if layer_mismatch:
+                    confidence -= 0.05
+                confidence = max(0.0, min(1.0, confidence))
+
                 diffs.append(
                     SemanticDiff(
                         live_path=live.rel_path,
-                        best_hash=None,
-                        engine=None,
-                        archive_name=None,
-                        diff_kind="no_cache",
-                        confidence=0.0,
-                        reasons=["no_phase0_5_pointer_for_hash", "no_semantic_match_found"],
-                        extra={},
+                        component_id=best.component_id,
+                        kind=best.kind,
+                        bucket=best.bucket_canonical,
+                        best_hash=best.hash,
+                        engine=best.engine,
+                        archive_name=best.archive_name,
+                        diff_kind="semantic_symbol_match",
+                        confidence=confidence,
+                        reasons=reasons,
+                        extra={
+                            "ast_diff_value": ast_diff_value,
+                            "embedding_distance": emb_distance,
+                            "golden_diff_value": golden_diff_value,
+                            "tool_deltas": tool_deltas,
+                            "behavior_deltas": behavior_deltas,
+                            "live_layer": live_layer,
+                            "ref_layer": ref_layer,
+                            "edge_kinds": edge_kinds,
+                        },
                     )
                 )
+            continue
+
+        # --------------------------------------------------------------
+        # 3. No semantic match found for any component in this file
+        # --------------------------------------------------------------
+        diffs.append(
+            SemanticDiff(
+                live_path=live.rel_path,
+                component_id=None,
+                kind=None,
+                bucket=None,
+                best_hash=None,
+                engine=None,
+                archive_name=None,
+                diff_kind="no_cache",
+                confidence=0.0,
+                reasons=["no_phase0_5_component_for_file", "no_semantic_symbol_match_found"],
+                extra={},
+            )
+        )
 
     validator.ok("K30", "AST_DIFF_FOR_EACH_FILE_COMPUTED (best-effort AST comparison)")
     validator.ok("K31", "EMBEDDING_DISTANCE_COMPUTED (best-effort where vectors exist)")
@@ -1339,6 +1266,12 @@ def compute_semantic_diffs(
     validator.ok("K33", "TOOL_USAGE_DIFFS_IDENTIFIED (AST call-set comparison)")
     validator.ok("K34", "BEHAVIOR_DIFFS_IDENTIFIED (function name deltas)")
     validator.ok("K35", "L1_L5_LAYER_MISMATCHES_IDENTIFIED (path-based layer inference)")
+
+    # Debug: SM1 model matching statistics
+    hash_matches = sum(1 for d in diffs if d.diff_kind == "hash_match")
+    symbol_matches = sum(1 for d in diffs if d.diff_kind == "semantic_symbol_match")
+    no_matches = sum(1 for d in diffs if d.diff_kind == "no_cache")
+    print(f"[DEBUG] SM1 Model Results: {hash_matches} hash matches, {symbol_matches} symbol matches, {no_matches} no matches")
 
     # META canonical intent/axes/verb_groups (K34b–K34d) are properties of META_YAML,
     # not per-file; they are checked in a separate step after META load.
@@ -1382,10 +1315,10 @@ def build_operations(
     ops: List[Operation] = []
 
     # K37–K42: compute every kind of operation Phase 3 may execute.
-    # This implementation is conservative: we only emit canonical_rewrite.
+    # This implementation is conservative: we only emit canonical_rewrite_component.
     for d in diffs:
-        if (d.diff_kind in ["hash_match", "semantic_match"]) and d.best_hash and d.confidence >= (MIN_CONFIDENCE_FOR_OPERATION if d.diff_kind == "hash_match" else 0.3):
-            op_type = "canonical_rewrite"
+        if (d.diff_kind in ["hash_match", "semantic_symbol_match"]) and d.best_hash and d.component_id and d.confidence >= (MIN_CONFIDENCE_FOR_OPERATION if d.diff_kind == "hash_match" else 0.3):
+            op_type = "canonical_rewrite_component"
             if op_type not in ALLOWED_SEMANTIC_OPS:
                 validator.fail("K56", f"Semantic op type '{op_type}' not allowed")
                 continue
@@ -1400,6 +1333,9 @@ def build_operations(
                     semantic_hash=d.best_hash,
                     engine=d.engine,
                     archive_name=d.archive_name,
+                    component_id=d.component_id,
+                    kind=d.kind,
+                    bucket=d.bucket,
                     confidence=d.confidence,
                     reason=reason,
                     priority=priority,
@@ -1491,7 +1427,7 @@ def build_migration_plan(
     summary["includes_structural_counts"] = True
     validator.ok("K81", "SUMMARY_INCLUDES_STRUCTURAL_COUNTS")
 
-    summary["includes_code_rewrite_counts"] = "canonical_rewrite" in counts
+    summary["includes_code_rewrite_counts"] = "canonical_rewrite_component" in counts
     validator.ok("K82", "SUMMARY_INCLUDES_CODE_REWRITE_COUNTS")
 
     summary["no_source_content_embedded"] = True
