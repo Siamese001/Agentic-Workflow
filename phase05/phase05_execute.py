@@ -198,9 +198,20 @@ def sanitize_filename(s: str) -> str:
     • Trim to 150 chars to avoid Windows MAX_PATH issues with nested dirs.
     """
     import re
+    import hashlib
+
     s = re.sub(r"[^A-Za-z0-9_\-]", "_", s)
     s = re.sub(r"_+", "_", s).strip("_")
-    return s[:150]
+
+    # For reasonably short names, keep the sanitized form as-is.
+    if len(s) <= 120:
+        return s
+
+    # For very long names, preserve a short human-readable prefix and
+    # append a stable hash suffix to keep total length compact while
+    # remaining unique and deterministic.
+    digest = hashlib.sha256(s.encode("utf-8")).hexdigest()[:8]
+    return f"{s[:40]}_{digest}"
 
 
 def to_posix(path: Path) -> str:
@@ -1087,9 +1098,12 @@ def classify_component_from_name_and_body(
         tags.append("analysis")
         confidence = 0.8
     else:
+        # Default fallback for classes that do not match any heuristic.
+        # Assign them to the core agentic bucket so that every component
+        # participates in downstream bucket-based semantics.
         kind = "class"
         tags.append("class")
-        bucket = None
+        bucket = "01_agentic_core"
         confidence = 0.5
 
     if engine == "LIC":
@@ -1144,9 +1158,11 @@ def classify_function_component(
         tags.append("service")
         confidence = 0.8
     else:
+        # Default fallback for general-purpose functions so that every
+        # Python component is assigned a semantic bucket.
         kind = "function"
         tags.append("function")
-        bucket = None
+        bucket = "01_agentic_core"
         confidence = 0.5
 
     if engine == "LIC":
@@ -1514,8 +1530,18 @@ def canonical_relative_for_component(comp: ComponentRecord) -> str:
         domain = "current"
         layer = "L1_current"
 
-    # Use comprehensive filename sanitizer for filesystem compatibility
-    safe_id = sanitize_filename(comp.component_id)
+    # Use a compact, hashed identifier for pointer filenames to keep paths
+    # safely below Windows MAX_PATH limits while remaining deterministic.
+    import hashlib
+
+    raw_id = comp.component_id.encode("utf-8", errors="ignore")
+    digest = hashlib.sha256(raw_id).hexdigest()[:16]
+
+    # Include a short, sanitized name prefix for minimal human readability.
+    name_prefix = sanitize_filename(comp.name) or "component"
+    name_prefix = name_prefix[:24]
+
+    safe_id = f"{name_prefix}_{digest}"
     return f"{layer}/P0_5/ingest/{domain}/{safe_id}"
 
 
