@@ -184,6 +184,13 @@ ROOT_TO_BUCKET = {
 
 MAX_PATH_DEPTH = 12  # safety bound for paths under TARGET_ROOT
 
+# One-time migration flag:
+# When True, Phase 3 will fall back to writing golden content for a file
+# instead of aborting the entire run if component-level regeneration for
+# that file encounters bad spans or missing components. This preserves
+# correctness (golden is canonical) while avoiding unnecessary rollbacks.
+MIGRATION_TOLERANT = True
+
 # Numeric keys K1–K119 for coverage; lettered keys are tracked but not required by K119.
 REQUIRED_NUMERIC_K_KEYS = [f"K{i}" for i in range(1, 120)]
 
@@ -994,9 +1001,9 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
             print(f"[DEBUG] Loading golden content for hash: {h}")
             golden_content = load_golden_content(h)
             if golden_content is None:
-                # For zero-loss semantics, a plan that references a missing
-                # golden artifact is considered invalid and must trigger
-                # rollback rather than being silently skipped.
+                # Golden content is the canonical source-of-truth; if it is
+                # missing, we cannot regenerate this file safely. This must
+                # remain a hard error even in MIGRATION_TOLERANT mode.
                 raise RuntimeError(
                     f"Golden content missing for semantic op {op.op_type} on {op.target_path} (hash={h})"
                 )
@@ -1058,9 +1065,27 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         # Load semantic component metadata.
         comps_meta = load_semantic_components(h) or []
         if not comps_meta:
-            raise RuntimeError(
-                f"No semantic components found for hash {h} required by canonical_rewrite_component on {target_rel}"
+            msg = (
+                f"No semantic components found for hash {h} required by "
+                f"canonical_rewrite_component on {target_rel}"
             )
+            if MIGRATION_TOLERANT:
+                print(f"[WARN] {msg} — falling back to golden content for {target_rel}")
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                target_path.write_text(golden_content, encoding="utf-8")
+                log_mutation(
+                    ctx,
+                    {
+                        "op": "canonical_rewrite_component_fallback_golden",
+                        "path": normalize_repo_rel(target_path),
+                        "semantic_hash": h,
+                        "engine": ops_for_file[0].engine,
+                        "archive_name": ops_for_file[0].archive_name,
+                        "reason": "no_semantic_components_for_hash",
+                    },
+                )
+                continue
+            raise RuntimeError(msg)
 
         # Ensure that every component_id referenced in the plan for this file
         # actually exists in the semantic metadata for H.
@@ -1068,9 +1093,28 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         referenced_ids = {op.component_id for op in ops_for_file if op.component_id}
         missing_ids = sorted(cid for cid in referenced_ids if cid not in semantic_ids)
         if missing_ids:
-            raise RuntimeError(
-                f"Plan references unknown component_id(s) for hash {h} at {target_rel}: {missing_ids[:5]}"
+            msg = (
+                f"Plan references unknown component_id(s) for hash {h} at "
+                f"{target_rel}: {missing_ids[:5]}"
             )
+            if MIGRATION_TOLERANT:
+                print(f"[WARN] {msg} — falling back to golden content for {target_rel}")
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                target_path.write_text(golden_content, encoding="utf-8")
+                log_mutation(
+                    ctx,
+                    {
+                        "op": "canonical_rewrite_component_fallback_golden",
+                        "path": normalize_repo_rel(target_path),
+                        "semantic_hash": h,
+                        "engine": ops_for_file[0].engine,
+                        "archive_name": ops_for_file[0].archive_name,
+                        "reason": "missing_component_ids",
+                        "missing_component_ids": missing_ids,
+                    },
+                )
+                continue
+            raise RuntimeError(msg)
 
         target_filename = target_path.name
 
@@ -1139,9 +1183,24 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
             last_end = end
 
         if not parts:
-            raise RuntimeError(
-                f"canonical_rewrite_component produced no valid spans for {target_rel} (hash={h})"
-            )
+            msg = f"canonical_rewrite_component produced no valid spans for {target_rel} (hash={h})"
+            if MIGRATION_TOLERANT:
+                print(f"[WARN] {msg} — falling back to golden content for {target_rel}")
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                target_path.write_text(golden_content, encoding="utf-8")
+                log_mutation(
+                    ctx,
+                    {
+                        "op": "canonical_rewrite_component_fallback_golden",
+                        "path": normalize_repo_rel(target_path),
+                        "semantic_hash": h,
+                        "engine": ops_for_file[0].engine,
+                        "archive_name": ops_for_file[0].archive_name,
+                        "reason": "no_valid_spans",
+                    },
+                )
+                continue
+            raise RuntimeError(msg)
 
         # F2: Pretty formatting: header + blank lines between components.
         header = (
@@ -1237,6 +1296,61 @@ def postcommit_verification(ctx: ExecutionContext) -> None:
 
 
 # ======================================================================
+# OPTIONAL POST-MIGRATION SMOKE TESTS (ADVISORY)
+# ======================================================================
+
+def run_post_migration_smoke_tests(ctx: ExecutionContext) -> None:
+    """
+    Best-effort import smoke tests to surface obvious breakages after Phase 3.
+    These are advisory only and do not affect rollback or completion keys.
+    """
+    try:
+        import importlib
+        import sys as _sys
+
+        # Ensure PROJECT_ROOT is on sys.path for imports
+        proj_str = str(PROJECT_ROOT)
+        if proj_str not in _sys.path:
+            _sys.path.insert(0, proj_str)
+
+        candidates = [
+            "agentic_core",
+            "schemas",
+            "runtime",
+            "prompt_governance",
+            "config",
+            "observability",
+            "scripts",
+            "apps_rg",
+            "apps_lic",
+        ]
+
+        results = {}
+        for mod in candidates:
+            try:
+                importlib.import_module(mod)
+                results[mod] = "import_ok"
+            except Exception as e:  # pragma: no cover
+                results[mod] = f"import_failed: {type(e).__name__}: {e}"
+
+        if ctx.cfg.verbose:
+            print("[SMOKE TEST] Post-migration import results:")
+            for mod, status in results.items():
+                print(f"  {mod}: {status}")
+
+        # Persist advisory results to meta for later inspection
+        if not ctx.cfg.dry_run:
+            ensure_dirs(PHASE3_META_ROOT)
+            out = PHASE3_META_ROOT / f"phase3_{ctx.target_root}_smoketests.json"
+            with out.open("w", encoding="utf-8") as f:
+                json.dump(results, f, indent=2)
+    except Exception:
+        # Smoke tests are advisory; never fail Phase 3 because of them.
+        if ctx.cfg.verbose:
+            print("[SMOKE TEST] Encountered an error running smoke tests (ignored).")
+
+
+# ======================================================================
 # EXECUTION REPORTING (K111–K115)
 # ======================================================================
 
@@ -1258,6 +1372,19 @@ def write_execution_report(ctx: ExecutionContext, success: bool, rolled_back: bo
         "mutations": ctx.mutations,
         "validation_keys": ctx.k.to_list(),
     }
+
+    # Add fallback rate metrics for migration quality assessment
+    component_rewrites = sum(1 for m in ctx.mutations if m.get("op") == "canonical_rewrite_component")
+    fallback_golden = sum(1 for m in ctx.mutations if m.get("op") == "canonical_rewrite_component_fallback_golden")
+    
+    if component_rewrites > 0 or fallback_golden > 0:
+        fallback_rate = fallback_golden / (component_rewrites + fallback_golden) * 100
+        summary["migration_metrics"] = {
+            "successful_component_rewrites": component_rewrites,
+            "golden_fallbacks": fallback_golden,
+            "fallback_rate_percent": round(fallback_rate, 2),
+        }
+        print(f"[METRICS] Component rewrites: {component_rewrites}, Golden fallbacks: {fallback_golden}, Fallback rate: {fallback_rate:.1f}%")
 
     if ctx.cfg.dry_run:
         print(f"[DRY-RUN] Would write execution report to {report_path}")
@@ -1469,6 +1596,9 @@ def run_phase3(cfg: Phase3Config) -> int:
 
         # Postcommit verification
         postcommit_verification(ctx)
+
+        # Advisory smoke tests (do not affect rollback/completion).
+        run_post_migration_smoke_tests(ctx)
 
         # Completion gate
         finalize_completion_keys(ctx, rolled_back=False)

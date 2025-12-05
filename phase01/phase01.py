@@ -1710,22 +1710,42 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                 print(f"[ERROR] Processing file {file_path}: {e}")
                 continue
     
-    # Generate mapping report
+    # Generate mapping report + orphan summary
     if not dry_run:
         mapping_report = {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             "total_files_processed": len(all_mapping_decisions),
             "moves_executed": len([d for d in all_mapping_decisions if d.dest_rel and d.dest_rel != d.src_rel]),
-            "protected_skipped": len([d for d in all_mapping_decisions if "protected" in d.reason]),
+            "protected_skipped": len([d for d in all_mapping_decisions if "protected" in d.reason.lower()]),
             "violations": len([d for d in all_mapping_decisions if d.confidence == 0.0]),
             "mapping_decisions": [asdict(d) for d in all_mapping_decisions]
         }
-        
+
+        # One-time migration accuracy: explicitly surface any files that Phase 1
+        # could not confidently place and that remain under _unassigned paths.
+        orphan_decisions = [
+            d for d in all_mapping_decisions
+            if d.dest_rel and d.dest_rel.startswith("_unassigned")
+        ]
+        orphan_report = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "total_orphans": len(orphan_decisions),
+            "orphans": [asdict(d) for d in orphan_decisions],
+        }
+        mapping_report["orphan_summary"] = {
+            "total_orphans": orphan_report["total_orphans"]
+        }
+
         report_path = PHASE1_INDEX_DIR / "phase01_mapping_report.json"
+        orphans_path = PHASE1_INDEX_DIR / "phase01_orphans_report.json"
+
         with report_path.open("w", encoding="utf-8") as f:
             json.dump(mapping_report, f, indent=2, ensure_ascii=False)
-        
+        with orphans_path.open("w", encoding="utf-8") as f:
+            json.dump(orphan_report, f, indent=2, ensure_ascii=False)
+
         print(f"[REPORT] Generated mapping report: {report_path}")
+        print(f"[REPORT] Generated orphan summary: {orphans_path}")
     
     # Run post-processing cleanup
     if not dry_run:
