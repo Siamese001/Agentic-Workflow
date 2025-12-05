@@ -761,18 +761,8 @@ def scan_current_unassigned() -> List[ArchiveFileRecord]:
 
 def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], List[Tuple[str, str, str]]]:
     """
-    Analyze a Python file into components + intra-file semantic edges.
-
-    Components:
-        • Classes
-        • Functions
-        • Top-level CONSTANTS (D2 — uppercase with primitive RHS)
-
-    Edges (A1, B2, C2):
-        • ("child_component_id", base_class_name, "inherits_from")
-        • ("component_id", import_target, "imports_module" / "imports_symbol")
-        • ("component_id", callee_name, "calls")
-        • ("comp_a", "comp_b", "co_defined") is added at the hash level.
+    Analyze a Python file into TOP-LEVEL components + intra-file semantic edges.
+    Guarantees 100% coverage of top-level code to prevent data loss during regeneration.
     """
     text = safe_read_text(rec.path, max_bytes=200_000)
     if not text.strip():
@@ -781,85 +771,22 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
     try:
         tree = ast.parse(text)
     except SyntaxError:
-        return [], []
+        # Fallback for syntax errors: treat whole file as one 'blob'
+        return analyze_non_python_file(rec)
 
     components: List[ComponentRecord] = []
     edges: List[Tuple[str, str, str]] = []
 
-    # Collect import targets at module level (B2).
-    import_targets: List[Tuple[str, str]] = []  # (target_name, edge_kind)
-    for node in tree.body:
-        if isinstance(node, ast.Import):
-            for alias in node.names:
-                target = alias.asname or alias.name
-                import_targets.append((target, "imports_module"))
-        elif isinstance(node, ast.ImportFrom):
-            module = node.module or ""
-            for alias in node.names:
-                name = alias.asname or alias.name
-                target = f"{module}.{name}" if module else name
-                import_targets.append((target, "imports_symbol"))
-
-    # Helper to build an NL snippet (E1).
+    # Helper to build an NL snippet
     def snippet_for_span(start: int, end: int) -> str:
         lines = text.splitlines()
-        # Guard against out-of-range
         start_idx = max(start - 1, 0)
         end_idx = min(end, len(lines))
+        # Cap snippet length
         snippet_lines = lines[start_idx:end_idx][:10]
         return "\n".join(snippet_lines)
 
-    # Process top-level constants (D2).
-    for node in tree.body:
-        if isinstance(node, ast.Assign):
-            # Only consider simple Name targets (no tuple unpacking).
-            if len(node.targets) != 1 or not isinstance(node.targets[0], ast.Name):
-                continue
-            const_name = node.targets[0].id
-            # Uppercase heuristic for constants.
-            if not const_name.isupper():
-                continue
-            # Primitive RHS only: ast.Constant (str, int, float, bool, None).
-            if not isinstance(node.value, ast.Constant):
-                continue
-
-            start = getattr(node, "lineno", 1)
-            end = getattr(node, "end_lineno", start)
-            snippet = snippet_for_span(start, end)
-
-            kind = "constant"
-            tags = ["constant"]
-            bucket = "05_config"
-            confidence = 0.85
-            cid = f"{rec.path.name}::const::{const_name}"
-            short, long = make_nl_summary(
-                name=const_name,
-                kind=kind,
-                engine=rec.engine,
-                archive=rec.archive_name,
-                body_text=snippet,
-            )
-
-            comp = ComponentRecord(
-                component_id=cid,
-                name=const_name,
-                kind=kind,
-                engine=rec.engine,
-                archive_source=rec.archive_name,
-                version_tag=rec.version_tag,
-                file=to_posix(rec.path),
-                relative=rec.rel_posix,
-                span_start=start,
-                span_end=end,
-                tags=tags,
-                bucket=bucket,
-                confidence=confidence,
-                nl_summary_short=short,
-                nl_summary_long=long,
-            )
-            components.append(comp)
-
-    # Helper to walk a component body and find call edges (C2).
+    # Helper to collect edges from a node (recursive walk WITHIN the node)
     def collect_call_edges(root_node: ast.AST, from_cid: str):
         for n in ast.walk(root_node):
             if isinstance(n, ast.Call):
@@ -871,111 +798,121 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
                     callee_name = func.attr
                 if callee_name:
                     edges.append((from_cid, callee_name, "calls"))
+            # Inheritance edges
+            if isinstance(n, ast.ClassDef):
+                 for base in n.bases:
+                    if isinstance(base, ast.Name):
+                        edges.append((from_cid, base.id, "inherits_from"))
 
-    # Process classes and functions as components.
+    # --- TOP-LEVEL ITERATION ONLY (Fixes Duplication) ---
     for node in tree.body:
+        # Defaults
+        start = getattr(node, "lineno", 0)
+        end = getattr(node, "end_lineno", start)
+        if start == 0: continue # Skip nodes without location info
+
+        body_text = text.splitlines()[start - 1 : end]
+        body_segment = "\n".join(body_text)
+        
+        # 1. Classes
         if isinstance(node, ast.ClassDef):
             name = node.name
-            start = getattr(node, "lineno", 1)
-            end = getattr(node, "end_lineno", start)
-            body_text = text.splitlines()[start - 1 : end]
-            body_segment = "\n".join(body_text)
-
+            bases = [b.id for b in node.bases if isinstance(b, ast.Name)]
             kind, tags, bucket, confidence = classify_component_from_name_and_body(
-                name=name,
-                bases=[b.id for b in node.bases if isinstance(b, ast.Name)],
-                body_text=body_segment,
-                engine=rec.engine,
-                archive=rec.archive_name,
+                name=name, bases=bases, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
             cid = f"{rec.path.name}::class::{name}"
-            snippet = snippet_for_span(start, end)
-            short, long = make_nl_summary(
-                name=name,
-                kind=kind,
-                engine=rec.engine,
-                archive=rec.archive_name,
-                body_text=snippet,
-            )
-
-            comp = ComponentRecord(
-                component_id=cid,
-                name=name,
-                kind=kind,
-                engine=rec.engine,
-                archive_source=rec.archive_name,
-                version_tag=rec.version_tag,
-                file=to_posix(rec.path),
-                relative=rec.rel_posix,
-                span_start=start,
-                span_end=end,
-                tags=tags,
-                bucket=bucket,
-                confidence=confidence,
-                nl_summary_short=short,
-                nl_summary_long=long,
-            )
+            
+            comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
-
-            # Inheritance edges (A1).
-            for base in node.bases:
-                if isinstance(base, ast.Name):
-                    edges.append((cid, base.id, "inherits_from"))
-
-            # Call edges from this class (methods).
             collect_call_edges(node, cid)
 
-        elif isinstance(node, ast.FunctionDef):
+        # 2. Functions
+        elif isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
             name = node.name
-            start = getattr(node, "lineno", 1)
-            end = getattr(node, "end_lineno", start)
-            body_text = text.splitlines()[start - 1 : end]
-            body_segment = "\n".join(body_text)
-
             kind, tags, bucket, confidence = classify_function_component(
-                name=name,
-                body_text=body_segment,
-                engine=rec.engine,
-                archive=rec.archive_name,
+                name=name, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
             cid = f"{rec.path.name}::func::{name}"
-            snippet = snippet_for_span(start, end)
-            short, long = make_nl_summary(
-                name=name,
-                kind=kind,
-                engine=rec.engine,
-                archive=rec.archive_name,
-                body_text=snippet,
-            )
-
-            comp = ComponentRecord(
-                component_id=cid,
-                name=name,
-                kind=kind,
-                engine=rec.engine,
-                archive_source=rec.archive_name,
-                version_tag=rec.version_tag,
-                file=to_posix(rec.path),
-                relative=rec.rel_posix,
-                span_start=start,
-                span_end=end,
-                tags=tags,
-                bucket=bucket,
-                confidence=confidence,
-                nl_summary_short=short,
-                nl_summary_long=long,
-            )
+            
+            comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
-
-            # Call edges from this function.
             collect_call_edges(node, cid)
 
-    # Import edges from all components in this file (B2).
-    for comp in components:
-        for target, kind in import_targets:
-            edges.append((comp.component_id, target, kind))
+        # 3. Imports (Fixes Data Loss)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            # Capture imports as a component so they are preserved
+            name = "imports"
+            kind = "import_block"
+            bucket = "05_config" # Config bucket is safe for imports
+            cid = f"{rec.path.name}::imports::{start}"
+            
+            comp = create_component_record(rec, cid, name, kind, start, end, ["imports"], bucket, 0.95, snippet_for_span(start, end))
+            components.append(comp)
 
+            # Generate edges
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    target = alias.asname or alias.name
+                    edges.append((cid, target, "imports_module"))
+            else:
+                module = node.module or ""
+                for alias in node.names:
+                    target = f"{module}.{alias.name}" if module else alias.name
+                    edges.append((cid, target, "imports_symbol"))
+
+        # 4. Assignments / Constants
+        elif isinstance(node, (ast.Assign, ast.AnnAssign)):
+            # Try to identify constant name
+            target_name = "assignment"
+            is_const = False
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+                target_name = node.targets[0].id
+                if target_name.isupper(): is_const = True
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                target_name = node.target.id
+                if target_name.isupper(): is_const = True
+            
+            kind = "constant" if is_const else "global_assignment"
+            cid = f"{rec.path.name}::{kind}::{target_name}::{start}"
+            
+            comp = create_component_record(rec, cid, target_name, kind, start, end, ["global"], "05_config", 0.85, snippet_for_span(start, end))
+            components.append(comp)
+
+        # 5. Catch-all for other top-level nodes (Expr, Decorators, etc.)
+        else:
+            kind = "script_block"
+            cid = f"{rec.path.name}::block::{start}"
+            comp = create_component_record(rec, cid, "script_logic", kind, start, end, ["script"], "08_scripts", 0.7, snippet_for_span(start, end))
+            components.append(comp)
+
+    # Debug logging to identify empty component lists
+    if not components:
+        print(f"[DEBUG] No components extracted from {rec.path.name} - this may cause None component_id issues")
+    else:
+        print(f"[DEBUG] Extracted {len(components)} components from {rec.path.name}: {[c.component_id for c in components[:3]]}")
+    
     return components, edges
+
+def create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet):
+    short, long = make_nl_summary(name, kind, rec.engine, rec.archive_name, snippet)
+    return ComponentRecord(
+        component_id=cid,
+        name=name,
+        kind=kind,
+        engine=rec.engine,
+        archive_source=rec.archive_name,
+        version_tag=rec.version_tag,
+        file=to_posix(rec.path),
+        relative=rec.rel_posix,
+        span_start=start,
+        span_end=end,
+        tags=tags,
+        bucket=bucket,
+        confidence=confidence,
+        nl_summary_short=short,
+        nl_summary_long=long,
+    )
 
 
 def analyze_non_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], List[Tuple[str, str, str]]]:
@@ -1477,7 +1414,7 @@ def canonical_relative_for_component(comp: ComponentRecord) -> str:
         domain = "current"
         layer = "L1_current"
 
-    safe_id = comp.component_id.replace("/", "_").replace("\\", "_")
+    safe_id = comp.component_id.replace("/", "_").replace("\\", "_").replace("::", "__")
     return f"{layer}/P0_5/ingest/{domain}/{safe_id}"
 
 
