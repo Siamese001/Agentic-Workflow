@@ -612,6 +612,21 @@ def load_semantic_cache_state(
 
     bucket = canonical_root_to_bucket(target_root)
     pointers = load_bucket_pointers(bucket)
+    
+    # Debug: Count pointers by engine
+    if pointers:
+        engine_counts = {}
+        archive_counts = {}
+        for p in pointers:
+            engine = p.engine or "Unknown"
+            archive = p.archive_name or "Unknown"
+            engine_counts[engine] = engine_counts.get(engine, 0) + 1
+            archive_counts[archive] = archive_counts.get(archive, 0) + 1
+        
+        print(f"[DEBUG] Loaded {len(pointers)} pointers for bucket {bucket}")
+        print(f"[DEBUG] Engine distribution: {engine_counts}")
+        print(f"[DEBUG] Archive distribution: {dict(list(archive_counts.items())[:5])}...") # Show first 5
+    
     if not pointers:
         validator.ok(
             "K4",
@@ -1044,35 +1059,37 @@ def find_semantic_match(live_file: FilesystemFile, cache_state: SemanticCacheSta
         best_score = 0.0
         
         for pointer in cache_state.pointers:
+            score = 0.0
+            
             # Score based on filename similarity
             live_filename = Path(live_file.rel_path).name
-            archived_filename = Path(pointer.canonical_relative).name
+            pointer_filename = Path(pointer.canonical_relative).name
             
-            # Exact filename match gets highest score
-            if live_filename == archived_filename:
-                score = 1.0
-            # Partial filename match
-            elif live_filename.lower() in archived_filename.lower() or archived_filename.lower() in live_filename.lower():
-                score = 0.7
-            # Same extension
-            elif Path(live_filename).suffix == Path(archived_filename).suffix:
-                score = 0.3
-            else:
-                score = 0.0
+            if live_filename == pointer_filename:
+                score += 0.5
             
-            # Bonus for similar directory structure
+            # Score based on path structure similarity
             live_parts = live_file.rel_path.split('/')
-            archived_parts = pointer.canonical_relative.split('/')
+            pointer_parts = pointer.canonical_relative.split('/')
             
-            # Count matching directory levels
             matching_levels = 0
-            for i in range(min(len(live_parts), len(archived_parts))):
-                if live_parts[i] == archived_parts[i]:
+            for i, (live_part, pointer_part) in enumerate(zip(live_parts, pointer_parts)):
+                if live_part == pointer_part:
                     matching_levels += 1
                 else:
                     break
             
             score += matching_levels * 0.1
+            
+            # Track best matches by engine
+            if pointer.engine == "RG":
+                if score > top_rg_score:
+                    top_rg_match = pointer
+                    top_rg_score = score
+            elif pointer.engine == "LIC":
+                if score > top_lic_score:
+                    top_lic_match = pointer
+                    top_lic_score = score
             
             if score > best_score:
                 best_match = pointer
@@ -1125,12 +1142,6 @@ def compute_semantic_diffs(
 
     for live in fs_state.files:
         pointers = hash_to_pointers.get(live.hash, [])
-
-        # Filter out empty-file hash matches (SHA-256 of empty string)
-        EMPTY_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        if live.hash == EMPTY_HASH:
-            # Force semantic matching for empty current files
-            pointers = []
 
         if pointers:
             best = pointers[0]
