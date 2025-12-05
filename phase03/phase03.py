@@ -994,16 +994,19 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
             print(f"[DEBUG] Loading golden content for hash: {h}")
             golden_content = load_golden_content(h)
             if golden_content is None:
-                print(f"[DEBUG] Golden content missing for {op.target_path} - SKIPPING")
-                k.ok("K89", "CANONICAL_REWRITE_OP_REPLACES_WITH_GOLDEN vacuously true (golden missing, advisory)")
-                print(f"[SKIP] Semantic op {op.op_type} for {op.target_path}: golden content missing (advisory)")
-                continue
+                # For zero-loss semantics, a plan that references a missing
+                # golden artifact is considered invalid and must trigger
+                # rollback rather than being silently skipped.
+                raise RuntimeError(
+                    f"Golden content missing for semantic op {op.op_type} on {op.target_path} (hash={h})"
+                )
             new_content = golden_content
         elif op.op_type == "merge_file_from_cache":
             golden_content = load_golden_content(h)
             if golden_content is None:
-                print(f"[SKIP] Semantic op {op.op_type} for {op.target_path}: golden content missing (advisory)")
-                continue
+                raise RuntimeError(
+                    f"Golden content missing for merge op on {op.target_path} (hash={h})"
+                )
             new_content = merge_content(live_content, golden_content)
         else:
             raise RuntimeError(f"Unexpected semantic op_type: {op.op_type}")
@@ -1031,7 +1034,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
 
         print(f"[DEBUG] Regenerating file from components: {target_rel} ({len(ops_for_file)} component ops)")
 
-        # All component-level ops for a given file SHOULD share the same hash.
+        # All component-level ops for a given file MUST share the same hash.
         hashes = {op.semantic_hash for op in ops_for_file if op.semantic_hash}
         if not hashes:
             raise RuntimeError(f"No semantic_hash provided for component ops targeting {target_rel}")
@@ -1046,16 +1049,28 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         # Load golden file content (for slicing component spans).
         golden_content = load_golden_content(h)
         if golden_content is None:
-            print(f"[SKIP] canonical_rewrite_component for {target_rel}: golden content missing (advisory)")
-            continue
+            raise RuntimeError(
+                f"Golden content missing for canonical_rewrite_component on {target_rel} (hash={h})"
+            )
 
         golden_lines = golden_content.splitlines()
 
         # Load semantic component metadata.
         comps_meta = load_semantic_components(h) or []
         if not comps_meta:
-            print(f"[SKIP] canonical_rewrite_component for {target_rel}: no semantic components for hash {h}")
-            continue
+            raise RuntimeError(
+                f"No semantic components found for hash {h} required by canonical_rewrite_component on {target_rel}"
+            )
+
+        # Ensure that every component_id referenced in the plan for this file
+        # actually exists in the semantic metadata for H.
+        semantic_ids = {c.get("component_id") for c in comps_meta if c.get("component_id")}
+        referenced_ids = {op.component_id for op in ops_for_file if op.component_id}
+        missing_ids = sorted(cid for cid in referenced_ids if cid not in semantic_ids)
+        if missing_ids:
+            raise RuntimeError(
+                f"Plan references unknown component_id(s) for hash {h} at {target_rel}: {missing_ids[:5]}"
+            )
 
         target_filename = target_path.name
 
@@ -1124,8 +1139,9 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
             last_end = end
 
         if not parts:
-            print(f"[SKIP] canonical_rewrite_component for {target_rel}: no valid component spans")
-            continue
+            raise RuntimeError(
+                f"canonical_rewrite_component produced no valid spans for {target_rel} (hash={h})"
+            )
 
         # F2: Pretty formatting: header + blank lines between components.
         header = (

@@ -1174,7 +1174,10 @@ def generate_global_and_semantic_artifacts(
     components_by_hash: Dict[str, List[ComponentRecord]] = {}
     component_graph_edges: List[Tuple[str, str, str]] = []
 
-    for h, recs in hash_map.items():
+    # Iterate hashes in sorted order so global artifacts, semantic files,
+    # and graph emission are fully deterministic given identical inputs.
+    for h in sorted(hash_map.keys()):
+        recs = hash_map[h]
         # Sort records to ensure deterministic choice of the "canonical" file.
         # Preference: Archive files (RG/LIC) < Current files.
         # This ensures we credit the original archive source if a match exists.
@@ -1295,26 +1298,60 @@ def generate_global_and_semantic_artifacts(
         # Add all edges from this hash to global graph
         component_graph_edges.extend(edges_for_hash)
 
-    # Global component graph file
-    write_json(
-        CACHE_ROOT / "graphs" / "component_graph.json",
-        {
-            "nodes": [
+    # Global component graph file — serialize nodes and edges in a fully
+    # deterministic order (by hash, then component_id / edge tuple).
+    nodes_serialized: List[Dict[str, Any]] = []
+    for h in sorted(components_by_hash.keys()):
+        for c in components_by_hash[h]:
+            nodes_serialized.append(
                 {
                     "component_id": c.component_id,
                     "kind": c.kind,
                     "bucket": c.bucket,
                     "engine": c.engine,
                 }
-                for comps in components_by_hash.values()
-                for c in comps
-            ],
-            "edges": [
-                {"from": a, "to": b, "kind": kind}
-                for (a, b, kind) in component_graph_edges
-            ],
+            )
+
+    edges_serialized = [
+        {"from": a, "to": b, "kind": kind}
+        for (a, b, kind) in sorted(component_graph_edges, key=lambda e: (e[0], e[1], e[2]))
+    ]
+
+    write_json(
+        CACHE_ROOT / "graphs" / "component_graph.json",
+        {
+            "nodes": nodes_serialized,
+            "edges": edges_serialized,
         },
     )
+
+    # Emit deterministic component ordering per-hash for Phase 3 span-based
+    # regeneration (sorted by span_start, span_end, component_id).
+    sorted_components: Dict[str, List[Dict[str, Any]]] = {}
+    for h in sorted(components_by_hash.keys()):
+        comps = sorted(
+            components_by_hash[h],
+            key=lambda c: (int(c.span_start or 0), int(c.span_end or 0), c.component_id),
+        )
+        sorted_components[h] = [
+            {
+                "component_id": c.component_id,
+                "name": c.name,
+                "kind": c.kind,
+                "engine": c.engine,
+                "archive_source": c.archive_source,
+                "version_tag": c.version_tag,
+                "file": c.file,
+                "relative": c.relative,
+                "span_start": c.span_start,
+                "span_end": c.span_end,
+                "bucket": c.bucket,
+                "confidence": c.confidence,
+            }
+            for c in comps
+        ]
+
+    write_json(CACHE_ROOT / "meta" / "sorted_components.json", sorted_components)
 
     return hash_map, components_by_hash, component_graph_edges
 
@@ -1477,7 +1514,9 @@ def generate_canonical_component_pointers(
                    with high-confidence classification (for RESOLVE_UNASSIGNED).
     """
     counts: Dict[str, int] = {b: 0 for b in CANONICAL_BUCKETS}
-    move_plan: List[Tuple[Path, Path]] = []
+    # Ensure at most one move per physical CURRENT file; the first
+    # high-confidence classification wins.
+    move_map: Dict[Path, Path] = {}
 
     for h, recs in hash_map.items():
         comps = components_by_hash.get(h, [])
@@ -1527,8 +1566,14 @@ def generate_canonical_component_pointers(
                 # Target domain root is the bucket root at PROJECT_ROOT level.
                 target_domain_root = PROJECT_ROOT / bucket
                 dst_path = target_domain_root / Path(comp.file).name
-                move_plan.append((src_path, dst_path))
 
+                # First classification wins; subsequent conflicting buckets
+                # for the same file are treated as ambiguous but do not
+                # cause additional moves or errors.
+                if src_path not in move_map:
+                    move_map[src_path] = dst_path
+
+    move_plan: List[Tuple[Path, Path]] = list(move_map.items())
     return counts, move_plan
 
 

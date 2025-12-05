@@ -381,6 +381,17 @@ class Phase05Validator:
                 if cid in cid_set:
                     self.fail("K23", f"Duplicate component_id in {sf}: {cid}")
                     ok = False
+
+                # NEW: basic span sanity checks for v4 component slicing.
+                start = c.get("span_start")
+                end = c.get("span_end")
+                if not isinstance(start, int) or not isinstance(end, int) or start <= 0 or end < start:
+                    self.fail(
+                        "K23",
+                        f"Invalid span for component {cid} in {sf}: span_start={start}, span_end={end}",
+                    )
+                    ok = False
+
                 cid_set.add(cid)
 
             self.components_by_hash[h] = cid_set
@@ -452,6 +463,15 @@ class Phase05Validator:
                 data = read_json(ptr)
                 h = data.get("hash")
                 cid = data.get("component_id")
+
+                # NEW: bucket <-> canonical_root coherence check.
+                canonical_root = data.get("canonical_root")
+                if canonical_root and canonical_root != bucket:
+                    self.fail(
+                        "K11",
+                        f"Pointer {ptr} has canonical_root={canonical_root} but lives under bucket={bucket}",
+                    )
+                    ok = False
 
                 if h not in self.global_hashes:
                     self.fail("K11", f"Pointer {ptr} references unknown hash {h}")
