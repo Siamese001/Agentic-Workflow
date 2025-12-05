@@ -1159,12 +1159,15 @@ def generate_global_and_semantic_artifacts(
 ]:
     """
     For each unique hash H:
+
         • Write global artifacts (ast, embeddings, diffs, golden, safety, integrity, meta).
         • Build semantic/H.semantic.json with component-level records.
         • Accumulate a simple component graph (co_defined edges).
 
-    CRITICAL FIX: Only analyze the FIRST (canonical) file for each hash to 
-    prevent duplicate components in the semantic artifact.
+    Returns:
+        hash_map: H -> [ArchiveFileRecord, ...]
+        components_by_hash: H -> [ComponentRecord, ...]
+        component_graph_edges: [(component_id_a, component_id_b, "co_defined"), ...]
     """
     hash_map: Dict[str, List[ArchiveFileRecord]] = {}
     for rec in records:
@@ -1175,11 +1178,6 @@ def generate_global_and_semantic_artifacts(
     component_graph_edges: List[Tuple[str, str, str]] = []
 
     for h, recs in hash_map.items():
-        # Sort records to ensure deterministic choice of the "canonical" file.
-        # Preference: Archive files (RG/LIC) < Current files.
-        # This ensures we credit the original archive source if a match exists.
-        recs.sort(key=lambda r: (r.engine != "RG", r.engine != "LIC", r.rel_posix))
-        
         sources = [to_posix(r.path) for r in recs]
         engines = sorted({r.engine for r in recs})
 
@@ -1202,8 +1200,7 @@ def generate_global_and_semantic_artifacts(
         )
 
         # Embeddings
-        # Use the canonical file for embedding generation to save compute
-        embedding_vector = generate_embedding_for_files([recs[0].path])
+        embedding_vector = generate_embedding_for_files([r.path for r in recs])
         write_json(
             CACHE_ROOT / "embeddings" / f"{h}.embedding",
             {"hash": h, "kind": "embedding", "vector": embedding_vector},
@@ -1219,15 +1216,15 @@ def generate_global_and_semantic_artifacts(
             {"hash": h, "kind": "diff", "baseline": "empty_or_prev_version"},
         )
 
-        # Golden - Use the canonical record
+        # Golden
         golden_content = None
-        canonical_rec = recs[0]
-        try:
-            with canonical_rec.path.open("r", encoding="utf-8", errors="ignore") as f:
-                golden_content = f.read()
-        except Exception:
-            golden_content = ""
-            
+        for r in recs:
+            try:
+                with r.path.open("r", encoding="utf-8", errors="ignore") as f:
+                    golden_content = f.read()
+                break
+            except Exception:
+                continue
         write_json(
             CACHE_ROOT / "golden" / f"{h}.golden.json",
             {
@@ -1262,18 +1259,16 @@ def generate_global_and_semantic_artifacts(
         )
 
         # Semantic components + edges per hash
-        # FIX: Only analyze the CANONICAL record (recs[0])
         comps_for_hash: List[ComponentRecord] = []
         edges_for_hash: List[Tuple[str, str, str]] = []
         
-        # Analyze only the representative file
-        if canonical_rec.path.suffix.lower() == ".py":
-            comps, edges = analyze_python_file(canonical_rec)
-        else:
-            comps, edges = analyze_non_python_file(canonical_rec)
-            
-        comps_for_hash.extend(comps)
-        edges_for_hash.extend(edges)
+        for rec in recs:
+            if rec.path.suffix.lower() == ".py":
+                comps, edges = analyze_python_file(rec)
+            else:
+                comps, edges = analyze_non_python_file(rec)
+            comps_for_hash.extend(comps)
+            edges_for_hash.extend(edges)
 
         components_by_hash[h] = comps_for_hash
 
