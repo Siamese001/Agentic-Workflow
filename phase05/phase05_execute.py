@@ -766,7 +766,8 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
     """
     text = safe_read_text(rec.path, max_bytes=200_000)
     if not text.strip():
-        return [], []
+        # Handle truly empty files (0 bytes or whitespace only)
+        return analyze_non_python_file(rec)
 
     try:
         tree = ast.parse(text)
@@ -774,15 +775,11 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
         # Fallback for syntax errors: treat whole file as one 'blob'
         return analyze_non_python_file(rec)
 
-    components: List[ComponentRecord] = []
-    edges: List[Tuple[str, str, str]] = []
-
     # Helper to build an NL snippet
     def snippet_for_span(start: int, end: int) -> str:
         lines = text.splitlines()
         start_idx = max(start - 1, 0)
         end_idx = min(end, len(lines))
-        # Cap snippet length
         snippet_lines = lines[start_idx:end_idx][:10]
         return "\n".join(snippet_lines)
 
@@ -804,15 +801,19 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
                     if isinstance(base, ast.Name):
                         edges.append((from_cid, base.id, "inherits_from"))
 
-    # --- TOP-LEVEL ITERATION ONLY (Fixes Duplication) ---
+    # --- TOP-LEVEL ITERATION ONLY ---
+    components: List[ComponentRecord] = []
+    edges: List[Tuple[str, str, str]] = []
+
     for node in tree.body:
-        # Defaults
         start = getattr(node, "lineno", 0)
         end = getattr(node, "end_lineno", start)
-        if start == 0: continue # Skip nodes without location info
+        if start == 0: continue 
 
         body_text = text.splitlines()[start - 1 : end]
         body_segment = "\n".join(body_text)
+        
+        # USE rec.rel_posix FOR GLOBAL UNIQUENESS
         
         # 1. Classes
         if isinstance(node, ast.ClassDef):
@@ -821,7 +822,7 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             kind, tags, bucket, confidence = classify_component_from_name_and_body(
                 name=name, bases=bases, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
-            cid = f"{rec.path.name}::class::{name}"
+            cid = f"{rec.rel_posix}::class::{name}"
             
             comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
@@ -833,24 +834,22 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
             kind, tags, bucket, confidence = classify_function_component(
                 name=name, body_text=body_segment, engine=rec.engine, archive=rec.archive_name
             )
-            cid = f"{rec.path.name}::func::{name}"
+            cid = f"{rec.rel_posix}::func::{name}"
             
             comp = create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet_for_span(start, end))
             components.append(comp)
             collect_call_edges(node, cid)
 
-        # 3. Imports (Fixes Data Loss)
+        # 3. Imports
         elif isinstance(node, (ast.Import, ast.ImportFrom)):
-            # Capture imports as a component so they are preserved
             name = "imports"
             kind = "import_block"
-            bucket = "05_config" # Config bucket is safe for imports
-            cid = f"{rec.path.name}::imports::{start}"
+            bucket = "05_config" 
+            cid = f"{rec.rel_posix}::imports::{start}"
             
             comp = create_component_record(rec, cid, name, kind, start, end, ["imports"], bucket, 0.95, snippet_for_span(start, end))
             components.append(comp)
 
-            # Generate edges
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     target = alias.asname or alias.name
@@ -863,7 +862,6 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
 
         # 4. Assignments / Constants
         elif isinstance(node, (ast.Assign, ast.AnnAssign)):
-            # Try to identify constant name
             target_name = "assignment"
             is_const = False
             if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
@@ -874,24 +872,30 @@ def analyze_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], 
                 if target_name.isupper(): is_const = True
             
             kind = "constant" if is_const else "global_assignment"
-            cid = f"{rec.path.name}::{kind}::{target_name}::{start}"
+            cid = f"{rec.rel_posix}::{kind}::{target_name}::{start}"
             
             comp = create_component_record(rec, cid, target_name, kind, start, end, ["global"], "05_config", 0.85, snippet_for_span(start, end))
             components.append(comp)
 
-        # 5. Catch-all for other top-level nodes (Expr, Decorators, etc.)
+        # 5. Catch-all
         else:
             kind = "script_block"
-            cid = f"{rec.path.name}::block::{start}"
+            cid = f"{rec.rel_posix}::block::{start}"
             comp = create_component_record(rec, cid, "script_logic", kind, start, end, ["script"], "08_scripts", 0.7, snippet_for_span(start, end))
             components.append(comp)
 
-    # Debug logging to identify empty component lists
+    # FAIL-SAFE: If file parses but yields no components (e.g. only comments/docstrings),
+    # create a module-level component to ensure K23 (Zero-Loss) compliance.
     if not components:
-        print(f"[DEBUG] No components extracted from {rec.path.name} - this may cause None component_id issues")
-    else:
-        print(f"[DEBUG] Extracted {len(components)} components from {rec.path.name}: {[c.component_id for c in components[:3]]}")
-    
+        kind = "module_doc"
+        name = rec.path.name
+        start = 1
+        end = rec.loc if rec.loc > 0 else 1
+        cid = f"{rec.rel_posix}::module::{start}"
+        
+        comp = create_component_record(rec, cid, name, kind, start, end, ["module"], "08_scripts", 0.6, snippet_for_span(start, end))
+        components.append(comp)
+
     return components, edges
 
 def create_component_record(rec, cid, name, kind, start, end, tags, bucket, confidence, snippet):
@@ -918,11 +922,9 @@ def create_component_record(rec, cid, name, kind, start, end, tags, bucket, conf
 def analyze_non_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecord], List[Tuple[str, str, str]]]:
     """
     Treat JSON/YAML/MD/TXT as config-like or document components.
-    Non-Python files do not currently produce edges.
     """
     text = safe_read_text(rec.path, max_bytes=200_000)
-    if not text.strip():
-        return [], []
+    # Allow empty text for Zero-Loss (don't return empty list)
 
     name = rec.path.name
     start = 1
@@ -942,7 +944,8 @@ def analyze_non_python_file(rec: ArchiveFileRecord) -> Tuple[List[ComponentRecor
     snippet_lines = text.splitlines()[:10]
     snippet = "\n".join(snippet_lines)
 
-    cid = f"{rec.path.name}::blob"
+    # USE rec.rel_posix FOR GLOBAL UNIQUENESS
+    cid = f"{rec.rel_posix}::blob"
     short, long = make_nl_summary(
         name=name,
         kind=kind,
@@ -1156,15 +1159,12 @@ def generate_global_and_semantic_artifacts(
 ]:
     """
     For each unique hash H:
-
         • Write global artifacts (ast, embeddings, diffs, golden, safety, integrity, meta).
         • Build semantic/H.semantic.json with component-level records.
         • Accumulate a simple component graph (co_defined edges).
 
-    Returns:
-        hash_map: H -> [ArchiveFileRecord, ...]
-        components_by_hash: H -> [ComponentRecord, ...]
-        component_graph_edges: [(component_id_a, component_id_b, "co_defined"), ...]
+    CRITICAL FIX: Only analyze the FIRST (canonical) file for each hash to 
+    prevent duplicate components in the semantic artifact.
     """
     hash_map: Dict[str, List[ArchiveFileRecord]] = {}
     for rec in records:
@@ -1175,6 +1175,11 @@ def generate_global_and_semantic_artifacts(
     component_graph_edges: List[Tuple[str, str, str]] = []
 
     for h, recs in hash_map.items():
+        # Sort records to ensure deterministic choice of the "canonical" file.
+        # Preference: Archive files (RG/LIC) < Current files.
+        # This ensures we credit the original archive source if a match exists.
+        recs.sort(key=lambda r: (r.engine != "RG", r.engine != "LIC", r.rel_posix))
+        
         sources = [to_posix(r.path) for r in recs]
         engines = sorted({r.engine for r in recs})
 
@@ -1197,7 +1202,8 @@ def generate_global_and_semantic_artifacts(
         )
 
         # Embeddings
-        embedding_vector = generate_embedding_for_files([r.path for r in recs])
+        # Use the canonical file for embedding generation to save compute
+        embedding_vector = generate_embedding_for_files([recs[0].path])
         write_json(
             CACHE_ROOT / "embeddings" / f"{h}.embedding",
             {"hash": h, "kind": "embedding", "vector": embedding_vector},
@@ -1213,15 +1219,15 @@ def generate_global_and_semantic_artifacts(
             {"hash": h, "kind": "diff", "baseline": "empty_or_prev_version"},
         )
 
-        # Golden
+        # Golden - Use the canonical record
         golden_content = None
-        for r in recs:
-            try:
-                with r.path.open("r", encoding="utf-8", errors="ignore") as f:
-                    golden_content = f.read()
-                break
-            except Exception:
-                continue
+        canonical_rec = recs[0]
+        try:
+            with canonical_rec.path.open("r", encoding="utf-8", errors="ignore") as f:
+                golden_content = f.read()
+        except Exception:
+            golden_content = ""
+            
         write_json(
             CACHE_ROOT / "golden" / f"{h}.golden.json",
             {
@@ -1256,16 +1262,18 @@ def generate_global_and_semantic_artifacts(
         )
 
         # Semantic components + edges per hash
+        # FIX: Only analyze the CANONICAL record (recs[0])
         comps_for_hash: List[ComponentRecord] = []
         edges_for_hash: List[Tuple[str, str, str]] = []
         
-        for rec in recs:
-            if rec.path.suffix.lower() == ".py":
-                comps, edges = analyze_python_file(rec)
-            else:
-                comps, edges = analyze_non_python_file(rec)
-            comps_for_hash.extend(comps)
-            edges_for_hash.extend(edges)
+        # Analyze only the representative file
+        if canonical_rec.path.suffix.lower() == ".py":
+            comps, edges = analyze_python_file(canonical_rec)
+        else:
+            comps, edges = analyze_non_python_file(canonical_rec)
+            
+        comps_for_hash.extend(comps)
+        edges_for_hash.extend(edges)
 
         components_by_hash[h] = comps_for_hash
 
