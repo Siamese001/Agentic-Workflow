@@ -139,6 +139,7 @@ ALLOWED_OP_TYPES = {
     "insert_semantic_block",
     "delete_semantic_block",
     "canonical_rewrite",
+    "canonical_rewrite_component",
     "noop",
 }
 
@@ -158,6 +159,7 @@ SEMANTIC_OPS = {
     "insert_semantic_block",
     "delete_semantic_block",
     "canonical_rewrite",
+    "canonical_rewrite_component",
 }
 
 UNSUPPORTED_SEMANTIC_OPS = {
@@ -217,6 +219,10 @@ class PlanOperation:
     reason: Optional[str] = None
     priority: Optional[str] = None
     dest_path: Optional[str] = None  # For move/rename, if present in plan
+    # NEW: component-level metadata from Phase 2 / Phase 0.5 v4
+    component_id: Optional[str] = None
+    kind: Optional[str] = None
+    bucket: Optional[str] = None
 
 
 @dataclass
@@ -517,6 +523,9 @@ def load_phase2_plan(cfg: Phase3Config, k: ValidationTracker) -> Phase2Plan:
                 reason=op.get("reason"),
                 priority=op.get("priority"),
                 dest_path=fs_dest_path,
+                component_id=op.get("component_id"),
+                kind=op.get("kind"),
+                bucket=op.get("bucket"),
             )
         )
 
@@ -872,6 +881,42 @@ def load_golden_content(hash_value: str) -> str:
         return None
 
 
+def load_semantic_components(hash_value: str) -> Optional[List[Dict[str, Any]]]:
+    """
+    Load semantic component metadata for a given hash from:
+        06_data/semantic_cache/semantic/{hash}.semantic.json
+
+    Expected structure:
+        {
+          "hash": "H",
+          "components": [
+              {
+                 "component_id": "...",
+                 "name": "...",
+                 "kind": "...",
+                 "file": "C:/.../path.py",
+                 "relative": "foo/bar.py",
+                 "span_start": int,
+                 "span_end": int,
+                 ...
+              },
+              ...
+          ]
+        }
+    """
+    sem_path = SEMANTIC_CACHE_ROOT / "semantic" / f"{hash_value}.semantic.json"
+    if not sem_path.exists():
+        return None
+    try:
+        data = json.loads(sem_path.read_text(encoding="utf-8"))
+        comps = data.get("components")
+        if not isinstance(comps, list):
+            return None
+        return comps
+    except Exception:
+        return None
+
+
 def merge_content(live: str, golden: str) -> str:
     """
     Deterministic, conservative merge strategy:
@@ -909,8 +954,21 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         k.ok("K92", "ALL_CODE_OPS_LOGGED true by transaction logging")
         return
 
-    for i, op in enumerate(semantic_ops):
-        print(f"[DEBUG] Processing operation {i+1}/{len(semantic_ops)}: {op.op_type} -> {op.target_path}")
+    # Split semantic ops into legacy full-file ops and component-level ops.
+    legacy_ops: List[PlanOperation] = []
+    component_ops_by_path: Dict[str, List[PlanOperation]] = {}
+
+    for op in semantic_ops:
+        if op.op_type == "canonical_rewrite_component":
+            component_ops_by_path.setdefault(op.target_path, []).append(op)
+        else:
+            legacy_ops.append(op)
+
+    # ------------------------------------------------------------------
+    # 1. Handle legacy full-file ops (rewrite_file_from_cache, merge, canonical_rewrite)
+    # ------------------------------------------------------------------
+    for i, op in enumerate(legacy_ops):
+        print(f"[DEBUG] Processing legacy semantic op {i+1}/{len(legacy_ops)}: {op.op_type} -> {op.target_path}")
         if op.op_type in UNSUPPORTED_SEMANTIC_OPS:
             raise RuntimeError(
                 f"Semantic op_type '{op.op_type}' is not yet supported in Phase 3; "
@@ -923,7 +981,6 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         h = op.semantic_hash
         target_path = repo_path_for_op(ctx, op.target_path)
         ensure_under_target_root(ctx, target_path)
-        # Protected paths MAY be rewritten; spec only forbids delete/move/rename.
 
         if ctx.cfg.dry_run:
             print(f"[DRY-RUN][SEMANTIC] {op.op_type} {target_path} ← {h}")
@@ -935,7 +992,6 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
 
         if op.op_type in {"rewrite_file_from_cache", "canonical_rewrite"}:
             print(f"[DEBUG] Loading golden content for hash: {h}")
-            # Load golden content
             golden_content = load_golden_content(h)
             if golden_content is None:
                 print(f"[DEBUG] Golden content missing for {op.target_path} - SKIPPING")
@@ -963,6 +1019,135 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
                 "engine": op.engine,
                 "archive_name": op.archive_name,
                 "confidence": op.confidence,
+            },
+        )
+
+    # ------------------------------------------------------------------
+    # 2. Handle component-level canonical rewrites (P3: full regeneration)
+    # ------------------------------------------------------------------
+    for target_rel, ops_for_file in component_ops_by_path.items():
+        target_path = repo_path_for_op(ctx, target_rel)
+        ensure_under_target_root(ctx, target_path)
+
+        print(f"[DEBUG] Regenerating file from components: {target_rel} ({len(ops_for_file)} component ops)")
+
+        # All component-level ops for a given file SHOULD share the same hash.
+        hashes = {op.semantic_hash for op in ops_for_file if op.semantic_hash}
+        if not hashes:
+            raise RuntimeError(f"No semantic_hash provided for component ops targeting {target_rel}")
+        if len(hashes) > 1:
+            raise RuntimeError(f"Multiple semantic_hash values for {target_rel}: {hashes}")
+        h = next(iter(hashes))
+
+        if ctx.cfg.dry_run:
+            print(f"[DRY-RUN][SEMANTIC][COMPONENT] canonical_rewrite_component {target_path} ← {h}")
+            continue
+
+        # Load golden file content (for slicing component spans).
+        golden_content = load_golden_content(h)
+        if golden_content is None:
+            print(f"[SKIP] canonical_rewrite_component for {target_rel}: golden content missing (advisory)")
+            continue
+
+        golden_lines = golden_content.splitlines()
+
+        # Load semantic component metadata.
+        comps_meta = load_semantic_components(h) or []
+        if not comps_meta:
+            print(f"[SKIP] canonical_rewrite_component for {target_rel}: no semantic components for hash {h}")
+            continue
+
+        target_filename = target_path.name
+
+        # Filter components that correspond to this file (by filename match).
+        selected_comps: List[Dict[str, Any]] = []
+        for c in comps_meta:
+            c_file = c.get("file") or ""
+            try:
+                if Path(c_file).name == target_filename:
+                    selected_comps.append(c)
+            except Exception:
+                continue
+
+        # If no filename match, fall back to all components for this hash.
+        if not selected_comps:
+            print(f"[WARN] No filename-matched components for {target_rel}, using all components for hash {h}")
+            selected_comps = comps_meta
+
+        # Sort components STRICTLY by span_start to preserve file order (Determinism).
+        # Kind is only a tie-breaker.
+        def comp_sort_key(c: Dict[str, Any]) -> tuple:
+            start = int(c.get("span_start") or 0)
+            # Secondary sort by end to put larger blocks first if starting same line (rare)
+            end = int(c.get("span_end") or 0) 
+            return (start, end)
+
+        selected_comps.sort(key=comp_sort_key)
+
+        # Build regenerated file content from component spans.
+        parts: List[str] = []
+        last_end = 0
+        
+        for c in selected_comps:
+            start = int(c.get("span_start") or 0)
+            end = int(c.get("span_end") or 0)
+            
+            # Validation: Zero-Loss check for skipped code
+            # Note: Because we use "tree.body" in Phase 0.5, we might miss newlines 
+            # between classes. This is acceptable for "semantic" regeneration, 
+            # but we must ensure we don't accidentally reorder or overlap.
+            
+            if start <= 0 or end <= 0 or end < start:
+                continue
+                
+            # Overlap check (Determinism)
+            if start < last_end:
+                print(f"[WARN] Component overlap detected in {target_rel}: {c.get('component_id')} starts at {start} but previous ended at {last_end}. Skipping to prevent duplication.")
+                continue
+
+            # Bounds checking
+            if start > len(golden_lines):
+                 continue
+            if end > len(golden_lines):
+                end = len(golden_lines)
+
+            # Convert 1-based line numbers to 0-based indices.
+            # We preserve the EXACT lines from the golden file.
+            snippet_lines = golden_lines[start - 1 : end]
+            if not snippet_lines:
+                continue
+            
+            snippet = "\n".join(snippet_lines).rstrip()
+            if snippet:
+                parts.append(snippet)
+            
+            last_end = end
+
+        if not parts:
+            print(f"[SKIP] canonical_rewrite_component for {target_rel}: no valid component spans")
+            continue
+
+        # F2: Pretty formatting: header + blank lines between components.
+        header = (
+            "# This file was regenerated by Phase 3 using the semantic cache.\n"
+            "# Do not edit this file directly; edits may be overwritten.\n\n"
+        )
+        body = "\n\n\n".join(parts) + "\n"
+        new_content = header + body
+
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(new_content, encoding="utf-8")
+
+        log_mutation(
+            ctx,
+            {
+                "op": "canonical_rewrite_component",
+                "path": normalize_repo_rel(target_path),
+                "semantic_hash": h,
+                "engine": ops_for_file[0].engine,
+                "archive_name": ops_for_file[0].archive_name,
+                "confidence": ops_for_file[0].confidence,
+                "components": [op.component_id for op in ops_for_file],
             },
         )
 
