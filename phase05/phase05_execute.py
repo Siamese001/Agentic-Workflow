@@ -645,9 +645,11 @@ def generate_global_artifacts(
         })
 
         # Embeddings
+        embedding_vector = generate_embedding_for_files([f for f, _, _, _ in files])
         write_json(CACHE_ROOT / "embeddings" / f"{h}.embedding", {
             "hash": h,
             "kind": "embedding",
+            "vector": embedding_vector,
         })
         write_json(CACHE_ROOT / "embeddings" / f"{h}.embedding.meta.json", {
             "hash": h,
@@ -662,9 +664,22 @@ def generate_global_artifacts(
         })
 
         # Golden
+        # Use the first file's content as the golden reference
+        golden_content = None
+        for file_path, _, _, _ in files:
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    golden_content = f.read()
+                break
+            except Exception:
+                continue
+        
         write_json(CACHE_ROOT / "golden" / f"{h}.golden.json", {
             "hash": h,
             "kind": "golden",
+            "content": golden_content,
+            "length": len(golden_content) if golden_content else 0,
+            "file_hash": h,
         })
 
         # Safety
@@ -906,6 +921,104 @@ def generate_canonical_bucket_pointers(
             counts[bucket] += 1
 
     return counts
+
+
+# =====================================================================
+# EMBEDDING GENERATION
+# =====================================================================
+
+
+def generate_embedding_for_files(file_paths: List[Path]) -> List[float]:
+    """
+    Generate text-based embedding vector for a list of files.
+    Uses TF-IDF style approach on code tokens for semantic similarity.
+    """
+    try:
+        import math
+        import hashlib
+        from collections import Counter
+        
+        # Collect all text content
+        all_text = ""
+        for file_path in file_paths:
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    text = f.read()
+                    all_text += text + " "
+            except Exception:
+                continue
+        
+        if not all_text.strip():
+            # Fallback to hash-based embedding if no content
+            hash_obj = hashlib.sha256(all_text.encode())
+            hash_bytes = hash_obj.digest()
+            return [float(b - 128) / 128.0 for b in hash_bytes[:128]]
+        
+        # Tokenize the text (simple word-level tokenization)
+        tokens = all_text.lower().replace('\n', ' ').split()
+        
+        # Remove common programming keywords that don't add semantic value
+        stop_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 
+                     'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be', 'been', 'have', 'has', 
+                     'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
+                     'can', 'must', 'import', 'def', 'class', 'if', 'else', 'elif', 'for', 'while',
+                     'return', 'print', 'pass', 'break', 'continue', 'try', 'except', 'finally'}
+        
+        tokens = [t for t in tokens if t not in stop_words and len(t) > 2]
+        
+        # Count token frequencies
+        token_counts = Counter(tokens)
+        
+        if not token_counts:
+            # Fallback if no meaningful tokens
+            hash_obj = hashlib.sha256(all_text.encode())
+            hash_bytes = hash_obj.digest()
+            return [float(b - 128) / 128.0 for b in hash_bytes[:128]]
+        
+        # Create a simple TF-IDF style embedding
+        # Use the most frequent tokens as features
+        most_common = token_counts.most_common(100)
+        
+        # Generate 128-dimensional embedding
+        embedding = []
+        
+        # First 100 dims: TF-IDF scores for top tokens
+        for i, (token, count) in enumerate(most_common):
+            if i >= 100:
+                break
+            # Simple TF-IDF approximation
+            tf = count / len(tokens)
+            # Use log scaling for better distribution
+            tfidf = math.log(1 + tf * 10)
+            embedding.append(tfidf)
+        
+        # Pad to 128 dimensions if needed
+        while len(embedding) < 128:
+            # Add hash-based features for remaining dimensions
+            hash_obj = hashlib.sha256((all_text + str(len(embedding))).encode())
+            hash_bytes = hash_obj.digest()
+            next_val = float(hash_bytes[0] - 128) / 128.0
+            embedding.append(next_val)
+        
+        # Normalize the embedding
+        if embedding:
+            magnitude = math.sqrt(sum(x * x for x in embedding))
+            if magnitude > 0:
+                embedding = [x / magnitude for x in embedding]
+        
+        return embedding[:128]
+        
+    except Exception as e:
+        # Fallback to simple hash-based embedding
+        try:
+            import hashlib
+            combined_text = " ".join(str(p) for p in file_paths)
+            hash_obj = hashlib.sha256(combined_text.encode())
+            hash_bytes = hash_obj.digest()
+            return [float(b - 128) / 128.0 for b in hash_bytes[:128]]
+        except Exception:
+            # Return zero vector as last resort
+            return [0.0] * 128
 
 
 # =====================================================================
