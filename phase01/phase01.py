@@ -305,7 +305,7 @@ class GovernanceEnforcer:
         if name.startswith("lic_"):
             return "apps_lic"
         # Unknown → must NOT remain under apps/, route to unassigned
-        return "_unassigned_apps_unknown"
+        return "_unassigned"
 
     def map_target_root(self, target_root: str, src_rel: Path) -> str:
         """
@@ -884,7 +884,7 @@ def infer_target_for_file(
     if not prefix_valid:
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
-            dest_rel=f"_unassigned_prefix_violation/{src_rel.as_posix()}",
+            dest_rel=f"_unassigned/prefix_violation/{src_rel.as_posix()}",
             confidence=0.0,
             reason=f"Prefix violation: {prefix_msg}",
             is_duplicate=False,
@@ -927,10 +927,10 @@ def infer_target_for_file(
         
         # If still no bucket, route to flat unassigned (no nested paths)
         if bucket is None:
-            print(f"[DEBUG] Routing {filename} to _unassigned_tests_invalid (no taxonomy match)")
+            print(f"[DEBUG] Routing {filename} to _unassigned/tests_invalid (no taxonomy match)")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=f"_unassigned_tests_invalid/{filename}",
+                dest_rel=f"_unassigned/tests_invalid/{filename}",
                 confidence=0.0,
                 reason="Test path does not match allowed taxonomy",
                 is_duplicate=False,
@@ -939,10 +939,10 @@ def infer_target_for_file(
         # Enforce depth / forbidden patterns via generic domain validator
         ok, msg = enforcer.validate_domain_mode(logical_root, clean_parent_parts + [filename])
         if not ok:
-            print(f"[DEBUG] Routing {filename} to _unassigned_tests_violation")
+            print(f"[DEBUG] Routing {filename} to _unassigned/tests_violation")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=f"_unassigned_tests_violation/{filename}",
+                dest_rel=f"_unassigned/tests_violation/{filename}",
                 confidence=0.0,
                 reason=msg,
                 is_duplicate=False,
@@ -1007,10 +1007,10 @@ def infer_target_for_file(
             
             # If still no match, route to unassigned with just the filename (no nested paths)
             if target_subdomain is None:
-                print(f"[DEBUG] Routing {filename} to _unassigned_apps_unknown (no recognizable patterns)")
+                print(f"[DEBUG] Routing {filename} to _unassigned/apps_unknown (no recognizable patterns)")
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_apps_unknown/{filename}",
+                    dest_rel=f"_unassigned/apps_unknown/{filename}",
                     confidence=0.2,
                     reason="Apps file lacks rg_/lic_ prefix and recognizable patterns",
                     is_duplicate=False,
@@ -1065,10 +1065,10 @@ def infer_target_for_file(
         if ssot_path_exists(ssot_subtree, clean_parent_parts + [filename]):
             ok, msg = enforcer.validate_domain_mode(logical_root, clean_parent_parts + [filename])
             if not ok:
-                print(f"[DEBUG] Routing {filename} to _unassigned_support_violation")
+                print(f"[DEBUG] Routing {filename} to _unassigned/support_violation")
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_support_violation/{filename}",
+                    dest_rel=f"_unassigned/support_violation/{filename}",
                     confidence=0.0,
                     reason=msg,
                     is_duplicate=False,
@@ -1084,10 +1084,10 @@ def infer_target_for_file(
             )
 
         # No match → route to flat unassigned bucket (no nested paths)
-        print(f"[DEBUG] Routing {filename} to _unassigned_support_nomatch (no YAML match)")
+        print(f"[DEBUG] Routing {filename} to _unassigned/support_nomatch (no YAML match)")
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
-            dest_rel=f"_unassigned_support_nomatch/{filename}",
+            dest_rel=f"_unassigned/support_nomatch/{filename}",
             confidence=0.2,
             reason="support domain no-match; cognitive inference blocked",
             is_duplicate=False,
@@ -1101,7 +1101,7 @@ def infer_target_for_file(
         if not is_valid:
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
-                dest_rel=f"_unassigned_cognitive_violation/{src_rel.as_posix()}",
+                dest_rel=f"_unassigned/cognitive_violation/{src_rel.as_posix()}",
                 confidence=0.0,
                 reason=f"Cognitive domain violation: {validation_msg}",
                 is_duplicate=False,
@@ -1149,7 +1149,7 @@ def infer_target_for_file(
             if len(candidate_dirs) + 1 > maxd:
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_depth_violation/{src_rel.as_posix()}",
+                    dest_rel=f"_unassigned/depth_violation/{src_rel.as_posix()}",
                     confidence=0.0,
                     reason=f"Depth exceeds max_depth {maxd}",
                 )
@@ -1163,7 +1163,7 @@ def infer_target_for_file(
                     if re.match(pattern.replace("*",".*"), p):
                         return MappingDecision(
                             src_rel=str(src_rel).replace("\\", "/"),
-                            dest_rel=f"_unassigned_forbidden/{src_rel.as_posix()}",
+                            dest_rel=f"_unassigned/forbidden/{src_rel.as_posix()}",
                             confidence=0.0,
                             reason=f"Forbidden pattern {pattern} detected",
                         )
@@ -1180,7 +1180,7 @@ def infer_target_for_file(
             if len(Path(dest_rel).parts) > enforcer.config.max_depths.get(logical_root, 7):
                  return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
-                    dest_rel=f"_unassigned_depth_violation/{src_rel.as_posix()}",
+                    dest_rel=f"_unassigned/depth_violation/{src_rel.as_posix()}",
                     confidence=0.0,
                     reason="destination exceeds domain max depth",
                     is_duplicate=False,
@@ -1628,7 +1628,8 @@ def main_phase01_execution(dry_run: bool = False) -> None:
             # Create apps_lic and apps_rg subdirectories, NOT L*/P* at root level
             apps_lic_root = domain_root / "apps_lic"
             apps_rg_root = domain_root / "apps_rg"
-            unassigned_root = domain_root / "_unassigned_apps_unknown"
+            # Unified unassigned root so Phase 0.5 can ingest CURRENT *_unassigned
+            unassigned_root = domain_root / "_unassigned"
             
             # Create subdirectory structure
             apps_lic_root.mkdir(parents=True, exist_ok=True)
@@ -1641,7 +1642,7 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                 if not init_file.exists():
                     init_file.touch()
             
-            print(f"[APPS] Created apps subdirectories: apps_lic, apps_rg, _unassigned_apps_unknown")
+            print(f"[APPS] Created apps subdirectories: apps_lic, apps_rg, _unassigned")
         else:
             ssot_subtree = ssot_data.get(logical_root, {})
             if not ssot_subtree:
