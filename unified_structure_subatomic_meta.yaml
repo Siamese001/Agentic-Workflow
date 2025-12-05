@@ -77,10 +77,10 @@ domain_invariants:
       - L4_memory
       - L5_safety
     allowed_phases:
-      - P1_retrieve
       - P2_inspect
       - P3_aggregate
       - P4_safety
+    # P1_retrieve now restricted to L1 only
     forbidden_patterns: []
 
   apps_lic:
@@ -94,10 +94,10 @@ domain_invariants:
       - L4_memory
       - L5_safety
     allowed_phases:
-      - P1_retrieve
       - P2_inspect
       - P3_aggregate
       - P4_safety
+    # P1_retrieve now restricted to L1 only
     forbidden_patterns: []
 
   apps_rg:
@@ -111,10 +111,10 @@ domain_invariants:
       - L4_memory
       - L5_safety
     allowed_phases:
-      - P1_retrieve
       - P2_inspect
       - P3_aggregate
       - P4_safety
+    # P1_retrieve now restricted to L1 only
     forbidden_patterns: []
 
   # ============================
@@ -227,6 +227,18 @@ domain_invariants:
         - spike
         - soak
 
+  cognitive_layer_phase_rules:
+    L1_cognition:
+      allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]
+    L2_execution:
+      allowed_phases: [P2_inspect, P3_aggregate, P4_safety]
+    L3_orchestration:
+      allowed_phases: [P3_aggregate, P4_safety]
+    L4_memory:
+      allowed_phases: [P1_retrieve, P3_aggregate, P4_safety]
+    L5_safety:
+      allowed_phases: [P4_safety]
+
 # ---------------------------------------------------------------------
 # 4. STRUCTURAL CONSISTENCY RULES (GLOBAL)
 # ---------------------------------------------------------------------
@@ -250,6 +262,7 @@ domain_overrides:
     domains: [agentic_core, apps_lic, apps_rg]
     allow_cognitive_inference: true
     require_filename_prefixes: true
+    enforce_layer_phase_matrix: true
 
   support_domains:
     domains:
@@ -349,6 +362,12 @@ validation_invariants:
     - get_info
     - manage_costs
 
+  forbidden_phase_layer_combinations:
+    - "L2_execution/P1_retrieve"
+    - "L3_orchestration/P1_retrieve"
+    - "L3_orchestration/P2_inspect"
+    - "L4_memory/P2_inspect"
+
   allowed_support_layers:
     - logic
     - runtime_ops
@@ -422,6 +441,10 @@ semantic_cache_rules:
     - "tests/**"
     - "scripts/**"
     - "observability/**"
+    - "L2_execution/P1_retrieve/**"
+    - "L3_orchestration/P1_retrieve/**"
+    - "L3_orchestration/P2_inspect/**"
+    - "L4_memory/P2_inspect/**"
 
   description: >
     Semantic cache is read-only in Phase 1, required for Phase 3 semantic diff.

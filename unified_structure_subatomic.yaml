@@ -577,18 +577,6 @@ agentic_core:
       utility_prepare_information: {}
     __init__.py: null
   L2_execution:
-    P1_retrieve:
-      check_rules: {}
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
     P2_inspect:
       business_ops:
         check_structure:
@@ -641,33 +629,6 @@ agentic_core:
       utility_prepare_information: {}
     __init__.py: null
   L3_orchestration:
-    P1_retrieve:
-      get_info:
-        understand_request:
-          coordinate_core_queries.py: null
-          manage_core_context.py: null
-          orchestrate_core_planning.py: null
-      check_rules: {}
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
-    P2_inspect:
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
     P3_aggregate:
       use_tools:
         use_a_tool:
@@ -717,17 +678,6 @@ agentic_core:
       check_rules: {}
       check_structure: {}
       convert_content: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
-    P2_inspect:
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
       refinement_adjust_scores: {}
       routing_retry_task: {}
       semantic_adjust_scores: {}
@@ -929,22 +879,6 @@ apps_lic:
       semantic_adjust_scores: {}
     __init__.py: null
   L2_execution:
-    P1_retrieve:
-      __init__.py: null
-      get_info:
-        understand_request:
-          coordinate_execution_queries.py: null
-          manage_execution_context.py: null
-          orchestrate_execution_planning.py: null
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
     P2_inspect:
       __init__.py: null
       business_ops:
@@ -1003,40 +937,6 @@ apps_lic:
       utility_prepare_information: {}
     __init__.py: null
   L3_orchestration:
-    P1_retrieve:
-      __init__.py: null
-      get_info:
-        understand_request:
-          coordinate_message_generation.py: null
-          manage_campaign_workflow.py: null
-          orchestrate_outreach_planning.py: null
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
-    P2_inspect:
-      __init__.py: null
-      business_ops:
-        find_msg_problems:
-          diagnostics_ops:
-            diagnose_personalization_issues.py: null
-            inspect_message_quality.py: null
-            log_campaign_metrics.py: null
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
     P3_aggregate:
       __init__.py: null
       use_tools:
@@ -1088,17 +988,6 @@ apps_lic:
           search_similar_messages.py: null
       check_structure: {}
       convert_content: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
-    P2_inspect:
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
       refinement_adjust_scores: {}
       routing_retry_task: {}
       semantic_adjust_scores: {}
@@ -1297,22 +1186,6 @@ apps_rg:
       semantic_adjust_scores: {}
     __init__.py: null
   L2_execution:
-    P1_retrieve:
-      __init__.py: null
-      get_info:
-        understand_request:
-          coordinate_execution_queries.py: null
-          manage_execution_context.py: null
-          orchestrate_execution_planning.py: null
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
     P2_inspect:
       __init__.py: null
       business_ops:
@@ -1371,40 +1244,6 @@ apps_rg:
       utility_prepare_information: {}
     __init__.py: null
   L3_orchestration:
-    P1_retrieve:
-      __init__.py: null
-      get_info:
-        understand_request:
-          coordinate_section_generation.py: null
-          manage_content_workflow.py: null
-          orchestrate_resume_planning.py: null
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
-    P2_inspect:
-      __init__.py: null
-      business_ops:
-        find_resume_problems:
-          diagnostics_ops:
-            diagnose_personalization_issues.py: null
-            inspect_resume_quality.py: null
-            log_orchestration_metrics.py: null
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
     P3_aggregate:
       __init__.py: null
       use_tools:
@@ -1456,17 +1295,6 @@ apps_rg:
           search_similar_resumes.py: null
       check_structure: {}
       convert_content: {}
-      refinement_adjust_scores: {}
-      routing_retry_task: {}
-      semantic_adjust_scores: {}
-      scoring_ops: {}
-      use_tools: {}
-      utility_prepare_information: {}
-    P2_inspect:
-      check_structure: {}
-      convert_content: {}
-      embedding_compare_meaning: {}
-      get_info: {}
       refinement_adjust_scores: {}
       routing_retry_task: {}
       semantic_adjust_scores: {}
