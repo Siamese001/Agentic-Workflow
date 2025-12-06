@@ -1,7 +1,12 @@
-
+---
+title: Instructional Injection v5
+version: 5.0
+domain: prompt_governance
+category: injection_patterns
+description: Condensed reference table of 30 instructional injection types across 6 layers
 ---
 
-# **Instructional Injection v5 — Condensed Table**
+# Instructional Injection v5 — Condensed Table
 
 | #      | Category        | Instruction Type                         | Description                                                                 |
 | ------ | --------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
@@ -35,5 +40,3 @@
 | **28** | Output Layer    | Stability Contracts                      | Preserve field order and naming across repeated outputs.                    |
 | **29** | Output Layer    | Error Envelope Normalization             | Standardize failures into simple, structured error objects.                 |
 | **30** | Output Layer    | Minimality Constraints                   | Limit output size to enforce clarity and conciseness.                       |
-
-If you want, I can generate the **v5 full canon document**, **Codex integration patch**, or **PromptProfile bundles** for the stacks.
