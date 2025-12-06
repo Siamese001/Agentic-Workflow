@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
-SUBATOMIC PIPELINE CONTROLLER — ZERO-LOSS MERGE (SUPER-PROMPT v3.5)
-
-Patched with Gemini Repair Loop Completion Rule to break Phase 2 deadlock.
+SUBATOMIC PIPELINE CONTROLLER — ZERO-LOSS MERGE (SUPER-PROMPT v3.2)
 
 Orchestrates the full pipeline execution sequence:
     Phase 0.5 (1st pass) -> Phase 1 -> Phase 0.5 (re-index) -> Phase 2 -> Phase 3A -> Phase 3 -> Phase 4 -> Freeze Aggregator
@@ -14,8 +12,8 @@ This controller:
     - Emits validation keys for each phase
     - Only prints success message when ALL invariants pass
 
-Version: 1.1
-Created: SUPER-PROMPT v3.5 (Patched)
+Version: 1.0
+Created: SUPER-PROMPT v3.2
 """
 
 from __future__ import annotations
@@ -69,42 +67,6 @@ class PhaseResult:
     duration_seconds: float
     validation_keys: List[ValidationResult]
     error_message: Optional[str] = None
-
-
-# =====================================================================
-# CANONICAL ROOTS FOR PHASE 2
-# =====================================================================
-
-CANONICAL_ROOTS = [
-    "01_agentic_core",
-    "02_schemas",
-    "03_runtime",
-    "04_prompt_governance",
-    "05_config",
-    "07_observability",
-    "08_scripts",
-    "09_apps",
-]
-
-
-# =====================================================================
-# HELPER FUNCTIONS
-# =====================================================================
-
-def check_stubs() -> int:
-    """
-    Read the stub audit and return the canonical_stub_count.
-    Returns 0 if audit doesn't exist or can't be read.
-    """
-    stub_audit_path = CACHE_ROOT / "meta" / "phase03_stub_audit.json"
-    if not stub_audit_path.exists():
-        return 0
-    try:
-        with stub_audit_path.open("r", encoding="utf-8") as f:
-            audit = json.load(f)
-        return audit.get("canonical_stub_count", 0)
-    except Exception:
-        return 0
 
 
 # =====================================================================
@@ -276,21 +238,14 @@ def run_phase02() -> PhaseResult:
     """
     Run Phase 2 (rewrite planning) for all target roots.
     
-    PATCHED VERSION — Implements Gemini Repair Loop Completion Rule:
+    PATCHED LOGIC (Gemini Repair Loop Completion Rule):
+    Phase 2 is promoted to SUCCESS when:
+      - All domain-level Phase 2 calls pass, OR
+      - Repository is fully hydrated (canonical_stub_count == 0) AND plan files exist
     
-    Phase 2 originally fails because it evaluates legacy migration keys 
-    (K1, K2, K24, K_END) which are no longer relevant once the repository 
-    is fully hydrated (canonical_stub_count == 0).
-    
-    This causes an infinite migration loop:
-        Phase 2 FAIL → Phase 3 rewrites → Phase 0.5 re-index → Phase 2 FAIL → repeat…
-    
-    The patched logic breaks this deadlock by promoting Phase 2 to SUCCESS 
-    when the repository is in a *stable, fully hydrated, post-migration state*:
-        • All canonical stubs eliminated
-        • All plan files generated
-        • Phase 3 and Phase 3A succeeding
-        • Freeze + Merkle deterministic
+    This breaks the infinite migration loop that occurs when Phase 2 evaluates
+    legacy migration keys (K1, K2, K24, K_END) which are no longer relevant
+    once the repository is fully hydrated.
     """
     print(f"\n{'='*60}")
     print("EXECUTING: Phase 2 — PER-DOMAIN REWRITE PLANNING (PATCHED LOGIC)")
@@ -298,35 +253,49 @@ def run_phase02() -> PhaseResult:
     
     start_time = time.time()
     
-    phase2_raw_pass = True             # True only if all domain-level runs succeed
-    plan_files_written = True          # True only if all phase02_plan.json files exist
-    domains_with_missing_plans = []    # Track which domains lack plan files
+    # Target roots for Phase 2
+    TARGET_ROOTS = [
+        "01_agentic_core",
+        "02_schemas",
+        "03_runtime",
+        "04_prompt_governance",
+        "05_config",
+        "07_observability",
+        "08_scripts",
+        "09_apps",
+    ]
+    
+    phase2_raw_pass = True           # True only if all domain-level runs succeed
+    plan_files_written = True        # True only if all phase02_plan.json files exist
+    domains_with_missing_plans = []  # Track which domains lack plan files
     all_stdout = []
     all_stderr = []
     
-    # --- Execute Phase 2 for each canonical root ---
-    for root in CANONICAL_ROOTS:
-        print(f"\n  --> Phase 2 Planning for: {root}")
+    for target_root in TARGET_ROOTS:
+        print(f"  --> Phase 2 Planning for: {target_root}")
         returncode, stdout, stderr = run_python_script(
             PHASE02_SCRIPT,
-            ["--target-root", root, "--dry-run"]
+            ["--target-root", target_root, "--dry-run"]
         )
         
-        all_stdout.append(f"=== {root} ===\n{stdout}")
+        all_stdout.append(f"=== {target_root} ===\n{stdout}")
         if stderr:
-            all_stderr.append(f"=== {root} ===\n{stderr}")
+            all_stderr.append(f"=== {target_root} ===\n{stderr}")
         
         if returncode != 0:
-            # Failure does NOT immediately terminate pipeline — handled by patched logic below
             phase2_raw_pass = False
-            print(f"    [WARN] Phase 2 for {root} returned non-zero")
+            print(f"    [WARN] Phase 2 for {target_root} returned non-zero")
         
-        # --- Validate plan file existence for this domain ---
-        plan_path = PROJECT_ROOT / root / "_plan" / "phase02_plan.json"
-        if not plan_path.exists():
+        # Validate plan file existence for this domain
+        # Phase 2 writes to: 02_schemas/<TARGET_ROOT>_migration_and_rewrite_plan.json
+        # May also be in _unassigned/support_nomatch/ after Phase 1 moves
+        plan_filename = f"{target_root}_migration_and_rewrite_plan.json"
+        plan_path_primary = PROJECT_ROOT / "02_schemas" / plan_filename
+        plan_path_alt = PROJECT_ROOT / "02_schemas" / "_unassigned" / "support_nomatch" / plan_filename
+        if not (plan_path_primary.exists() or plan_path_alt.exists()):
             plan_files_written = False
-            domains_with_missing_plans.append(root)
-            print(f"    [WARN] Phase 2 did not write plan file for domain: {root}")
+            domains_with_missing_plans.append(target_root)
+            print(f"    [WARN] Phase 2 did not write plan file for domain: {target_root}")
     
     duration = time.time() - start_time
     
@@ -340,56 +309,50 @@ def run_phase02() -> PhaseResult:
         for err in all_stderr:
             print(err[:200] + "..." if len(err) > 200 else err)
     
-    # ----------------------------------------------------------------------------------------------------
-    # --- Determine Phase 2 Success Under the Gemini Repair Loop Completion Rule ---
-    # ----------------------------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+    # Determine Phase 2 Success Under the Gemini Repair Loop Completion Rule
+    # ---------------------------------------------------------------------------
     
-    # Read stub audit
-    stubs_remaining = check_stubs()
-    
-    validation_keys = []
-    phase2_pass = False
+    # Read stub audit to check canonical_stub_count
+    # CRITICAL: If stub audit doesn't exist, we CANNOT assume stubs_remaining = 0
+    # We must treat this as "unknown" and require the audit to exist for soft-success
+    stubs_remaining = -1  # -1 means "unknown/audit not available"
+    stub_audit_path = CACHE_ROOT / "meta" / "phase03_stub_audit.json"
+    if stub_audit_path.exists():
+        try:
+            with stub_audit_path.open("r", encoding="utf-8") as f:
+                audit = json.load(f)
+            stubs_remaining = audit.get("canonical_stub_count", -1)
+        except Exception:
+            pass
     
     # Condition A: True SUCCESS — all domain-level Phase 2 calls passed
     if phase2_raw_pass:
         print("\n[INFO] Phase 2 completed successfully for ALL domains.")
         phase2_pass = True
-        validation_keys.append(ValidationResult(
-            key="K_PHASE02_COMPLETE",
-            status="PASS",
-            message=f"Phase 2 execution completed for {len(CANONICAL_ROOTS)} roots (all passed)",
-        ))
     
-    # Condition B: Soft SUCCESS — stubs fully hydrated AND plan files exist (or not required)
-    elif stubs_remaining == 0:
+    # Condition B: Soft SUCCESS — stubs fully hydrated AND plan files exist
+    elif stubs_remaining == 0 and plan_files_written:
         print("\n[INFO] Phase 2 returned warnings but repository is FULLY hydrated.")
         print("[INFO] Per Repair Loop semantics, Phase 2 is promoted to SUCCESS.")
         print("[INFO] This is correct behavior once all stubs are eliminated.")
         phase2_pass = True
-        validation_keys.append(ValidationResult(
-            key="K_PHASE02_COMPLETE",
-            status="PASS",
-            message=f"Phase 2 promoted to SUCCESS (canonical_stub_count=0, fully hydrated)",
-        ))
-        validation_keys.append(ValidationResult(
-            key="K_REPAIR_LOOP_COMPLETE",
-            status="PASS",
-            message="Gemini Repair Loop Completion Rule satisfied",
-        ))
     
-    # Condition C: FAILURE — migration is incomplete, stubs remain
+    # Condition C: FAILURE — migration is incomplete, stubs remain, or plan files are missing
     else:
         print("\n[CRITICAL] Phase 2 cannot be promoted to SUCCESS.")
         print(f"[CRITICAL] Remaining stubs       : {stubs_remaining}")
         print(f"[CRITICAL] Missing plan files    : {domains_with_missing_plans}")
         print("[CRITICAL] Phase 2 failure blocks deterministic migration.")
         phase2_pass = False
-        validation_keys.append(ValidationResult(
+    
+    validation_keys = [
+        ValidationResult(
             key="K_PHASE02_COMPLETE",
-            status="FAIL",
-            message=f"Phase 2 failed: {stubs_remaining} stubs remaining",
-            details={"stubs_remaining": stubs_remaining, "missing_plans": domains_with_missing_plans},
-        ))
+            status="PASS" if phase2_pass else "FAIL",
+            message=f"Phase 2 execution completed for {len(TARGET_ROOTS)} roots (patched logic)",
+        )
+    ]
     
     return PhaseResult(
         phase="Phase 2",
@@ -586,7 +549,10 @@ def run_full_pipeline() -> bool:
     """
     Run the full pipeline sequence:
         Phase 0.5 -> Phase 1 -> Pointer Reconciliation -> Phase 0.5 (re-index) -> 
-        Phase 2 -> Phase 3A -> Phase 3 -> Phase 4 -> Freeze Aggregator
+        Phase 3A (stub scan) -> Phase 2 -> Phase 3 -> Phase 4 -> Freeze Aggregator
+    
+    NOTE: Phase 3A runs BEFORE Phase 2 so the stub audit is available for the
+    Gemini Repair Loop Completion Rule to determine if the repository is fully hydrated.
     """
     print("="*70)
     print("SUBATOMIC PIPELINE + STRUCTURAL HARDENING")
@@ -622,13 +588,13 @@ def run_full_pipeline() -> bool:
     all_results.append(result)
     all_validation_keys.extend(result.validation_keys)
     
-    # Phase 2
-    result = run_phase02()
+    # Phase 3A (stub scanner) - RUN BEFORE Phase 2 so stub audit is available
+    result = run_phase03a()
     all_results.append(result)
     all_validation_keys.extend(result.validation_keys)
     
-    # Phase 3A (stub scanner)
-    result = run_phase03a()
+    # Phase 2 - Now has access to stub audit for Gemini Repair Loop Completion Rule
+    result = run_phase02()
     all_results.append(result)
     all_validation_keys.extend(result.validation_keys)
     
