@@ -1,9 +1,121 @@
 {
-  "timestamp": "2025-12-05 21:27:08",
-  "total_orphans": 225,
+  "timestamp": "2025-12-06 09:05:36",
+  "total_orphans": 246,
   "orphans": [
     {
-      "src_rel": "_unassigned_support_nomatch/adjust_observability_weights.py",
+      "src_rel": "_unassigned/support_nomatch/01_agentic_core_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/01_agentic_core_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/02_schemas_freeze_report.json",
+      "dest_rel": "_unassigned/support_nomatch/02_schemas_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/02_schemas_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/02_schemas_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/03_runtime_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/03_runtime_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/04_prompt_governance_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/04_prompt_governance_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/05_config_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/05_config_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/07_observability_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/07_observability_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/08_scripts_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/08_scripts_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/09_apps_migration_and_rewrite_plan.json",
+      "dest_rel": "_unassigned/support_nomatch/09_apps_migration_and_rewrite_plan.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/phase01_status.json",
+      "dest_rel": "_unassigned/support_nomatch/phase01_status.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/03_runtime_freeze_report.json",
+      "dest_rel": "_unassigned/support_nomatch/03_runtime_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/04_prompt_governance_freeze_report.json",
+      "dest_rel": "_unassigned/support_nomatch/04_prompt_governance_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/05_config_freeze_report.json",
+      "dest_rel": "_unassigned/support_nomatch/05_config_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/07_observability_freeze_report.json",
+      "dest_rel": "_unassigned/support_nomatch/07_observability_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/adjust_observability_weights.py",
       "dest_rel": "_unassigned/support_nomatch/adjust_observability_weights.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -11,7 +123,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/always_on_sampler.py",
+      "src_rel": "_unassigned/support_nomatch/always_on_sampler.py",
       "dest_rel": "_unassigned/support_nomatch/always_on_sampler.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -19,7 +131,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/append_only_store.py",
+      "src_rel": "_unassigned/support_nomatch/append_only_store.py",
       "dest_rel": "_unassigned/support_nomatch/append_only_store.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -27,7 +139,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/apply_observability_algorithm.py",
+      "src_rel": "_unassigned/support_nomatch/apply_observability_algorithm.py",
       "dest_rel": "_unassigned/support_nomatch/apply_observability_algorithm.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -35,7 +147,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/apply_observability_safety.py",
+      "src_rel": "_unassigned/support_nomatch/apply_observability_safety.py",
       "dest_rel": "_unassigned/support_nomatch/apply_observability_safety.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -43,7 +155,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/apply_observability_weights.py",
+      "src_rel": "_unassigned/support_nomatch/apply_observability_weights.py",
       "dest_rel": "_unassigned/support_nomatch/apply_observability_weights.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -51,7 +163,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/assess_observability_confidence.py",
+      "src_rel": "_unassigned/support_nomatch/assess_observability_confidence.py",
       "dest_rel": "_unassigned/support_nomatch/assess_observability_confidence.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -59,7 +171,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/assess_observability_risk.py",
+      "src_rel": "_unassigned/support_nomatch/assess_observability_risk.py",
       "dest_rel": "_unassigned/support_nomatch/assess_observability_risk.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -67,7 +179,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/audit_event_normalizer.py",
+      "src_rel": "_unassigned/support_nomatch/audit_event_normalizer.py",
       "dest_rel": "_unassigned/support_nomatch/audit_event_normalizer.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -75,7 +187,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/baggage_propagator.py",
+      "src_rel": "_unassigned/support_nomatch/baggage_propagator.py",
       "dest_rel": "_unassigned/support_nomatch/baggage_propagator.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -83,7 +195,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/base_collector.py",
+      "src_rel": "_unassigned/support_nomatch/base_collector.py",
       "dest_rel": "_unassigned/support_nomatch/base_collector.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -91,7 +203,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/base_formatter.py",
+      "src_rel": "_unassigned/support_nomatch/base_formatter.py",
       "dest_rel": "_unassigned/support_nomatch/base_formatter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -99,7 +211,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/build_observability_filters.py",
+      "src_rel": "_unassigned/support_nomatch/build_observability_filters.py",
       "dest_rel": "_unassigned/support_nomatch/build_observability_filters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -107,7 +219,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/build_observability_orchestration.py",
+      "src_rel": "_unassigned/support_nomatch/build_observability_orchestration.py",
       "dest_rel": "_unassigned/support_nomatch/build_observability_orchestration.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -115,7 +227,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/calculate_observability_similarity.py",
+      "src_rel": "_unassigned/support_nomatch/calculate_observability_similarity.py",
       "dest_rel": "_unassigned/support_nomatch/calculate_observability_similarity.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -123,7 +235,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/check_observability_compliance.py",
+      "src_rel": "_unassigned/support_nomatch/check_observability_compliance.py",
       "dest_rel": "_unassigned/support_nomatch/check_observability_compliance.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -131,7 +243,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/check_observability_policy.py",
+      "src_rel": "_unassigned/support_nomatch/check_observability_policy.py",
       "dest_rel": "_unassigned/support_nomatch/check_observability_policy.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -139,7 +251,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/color_formatter.py",
+      "src_rel": "_unassigned/support_nomatch/color_formatter.py",
       "dest_rel": "_unassigned/support_nomatch/color_formatter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -147,7 +259,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_observability_confidence.py",
+      "src_rel": "_unassigned/support_nomatch/compute_observability_confidence.py",
       "dest_rel": "_unassigned/support_nomatch/compute_observability_confidence.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -155,7 +267,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_observability_embeddings.py",
+      "src_rel": "_unassigned/support_nomatch/compute_observability_embeddings.py",
       "dest_rel": "_unassigned/support_nomatch/compute_observability_embeddings.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -163,7 +275,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_observability_score.py",
+      "src_rel": "_unassigned/support_nomatch/compute_observability_score.py",
       "dest_rel": "_unassigned/support_nomatch/compute_observability_score.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -171,7 +283,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_observability_validation.py",
+      "src_rel": "_unassigned/support_nomatch/compute_observability_validation.py",
       "dest_rel": "_unassigned/support_nomatch/compute_observability_validation.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -179,7 +291,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/console_trace_exporter.py",
+      "src_rel": "_unassigned/support_nomatch/console_trace_exporter.py",
       "dest_rel": "_unassigned/support_nomatch/console_trace_exporter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -187,7 +299,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/coordinate_observability_operations.py",
+      "src_rel": "_unassigned/support_nomatch/coordinate_observability_operations.py",
       "dest_rel": "_unassigned/support_nomatch/coordinate_observability_operations.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -195,7 +307,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/cost_profiler.py",
+      "src_rel": "_unassigned/support_nomatch/cost_profiler.py",
       "dest_rel": "_unassigned/support_nomatch/cost_profiler.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -203,7 +315,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/cpu_check.py",
+      "src_rel": "_unassigned/support_nomatch/cpu_check.py",
       "dest_rel": "_unassigned/support_nomatch/cpu_check.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -211,7 +323,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/dag_runtime_inspector.py",
+      "src_rel": "_unassigned/support_nomatch/dag_runtime_inspector.py",
       "dest_rel": "_unassigned/support_nomatch/dag_runtime_inspector.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -219,7 +331,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/diagnose_observability_issues.py",
+      "src_rel": "_unassigned/support_nomatch/diagnose_observability_issues.py",
       "dest_rel": "_unassigned/support_nomatch/diagnose_observability_issues.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -227,7 +339,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_observability_boundaries.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_observability_boundaries.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_observability_boundaries.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -235,7 +347,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_observability_budget.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_observability_budget.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_observability_budget.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -243,7 +355,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_observability_contracts.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_observability_contracts.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_observability_contracts.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -251,7 +363,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_observability_filters.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_observability_filters.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_observability_filters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -259,7 +371,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_observability_limits.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_observability_limits.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_observability_limits.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -267,7 +379,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/evaluate_observability_compliance.py",
+      "src_rel": "_unassigned/support_nomatch/evaluate_observability_compliance.py",
       "dest_rel": "_unassigned/support_nomatch/evaluate_observability_compliance.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -275,7 +387,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/execute_observability_commands.py",
+      "src_rel": "_unassigned/support_nomatch/execute_observability_commands.py",
       "dest_rel": "_unassigned/support_nomatch/execute_observability_commands.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -283,7 +395,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/extract_observability_parameters.py",
+      "src_rel": "_unassigned/support_nomatch/extract_observability_parameters.py",
       "dest_rel": "_unassigned/support_nomatch/extract_observability_parameters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -291,7 +403,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/file_audit_store.py",
+      "src_rel": "_unassigned/support_nomatch/file_audit_store.py",
       "dest_rel": "_unassigned/support_nomatch/file_audit_store.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -299,7 +411,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/file_logger.py",
+      "src_rel": "_unassigned/support_nomatch/file_logger.py",
       "dest_rel": "_unassigned/support_nomatch/file_logger.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -307,7 +419,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/format_observability_context.py",
+      "src_rel": "_unassigned/support_nomatch/format_observability_context.py",
       "dest_rel": "_unassigned/support_nomatch/format_observability_context.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -315,7 +427,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/hash_chain_verifier.py",
+      "src_rel": "_unassigned/support_nomatch/hash_chain_verifier.py",
       "dest_rel": "_unassigned/support_nomatch/hash_chain_verifier.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -323,7 +435,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/histogram.py",
+      "src_rel": "_unassigned/support_nomatch/histogram.py",
       "dest_rel": "_unassigned/support_nomatch/histogram.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -331,7 +443,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/implement_observability_fallback.py",
+      "src_rel": "_unassigned/support_nomatch/implement_observability_fallback.py",
       "dest_rel": "_unassigned/support_nomatch/implement_observability_fallback.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -339,7 +451,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/inspect_observability_quality.py",
+      "src_rel": "_unassigned/support_nomatch/inspect_observability_quality.py",
       "dest_rel": "_unassigned/support_nomatch/inspect_observability_quality.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -347,7 +459,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/invoke_observability_actions.py",
+      "src_rel": "_unassigned/support_nomatch/invoke_observability_actions.py",
       "dest_rel": "_unassigned/support_nomatch/invoke_observability_actions.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -355,7 +467,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/jaeger_adapter.py",
+      "src_rel": "_unassigned/support_nomatch/jaeger_adapter.py",
       "dest_rel": "_unassigned/support_nomatch/jaeger_adapter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -363,7 +475,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/json_exporter.py",
+      "src_rel": "_unassigned/support_nomatch/json_exporter.py",
       "dest_rel": "_unassigned/support_nomatch/json_exporter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -371,7 +483,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/json_formatter.py",
+      "src_rel": "_unassigned/support_nomatch/json_formatter.py",
       "dest_rel": "_unassigned/support_nomatch/json_formatter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -379,7 +491,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/json_trace_exporter.py",
+      "src_rel": "_unassigned/support_nomatch/json_trace_exporter.py",
       "dest_rel": "_unassigned/support_nomatch/json_trace_exporter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -387,7 +499,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/logger.py",
+      "src_rel": "_unassigned/support_nomatch/logger.py",
       "dest_rel": "_unassigned/support_nomatch/logger.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -395,7 +507,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/log_config.py",
+      "src_rel": "_unassigned/support_nomatch/log_config.py",
       "dest_rel": "_unassigned/support_nomatch/log_config.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -403,7 +515,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/log_event.py",
+      "src_rel": "_unassigned/support_nomatch/log_event.py",
       "dest_rel": "_unassigned/support_nomatch/log_event.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -411,7 +523,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/log_observability_metrics.py",
+      "src_rel": "_unassigned/support_nomatch/log_observability_metrics.py",
       "dest_rel": "_unassigned/support_nomatch/log_observability_metrics.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -419,7 +531,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/manage_observability_parameters.py",
+      "src_rel": "_unassigned/support_nomatch/manage_observability_parameters.py",
       "dest_rel": "_unassigned/support_nomatch/manage_observability_parameters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -427,7 +539,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/memory_check.py",
+      "src_rel": "_unassigned/support_nomatch/memory_check.py",
       "dest_rel": "_unassigned/support_nomatch/memory_check.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -435,7 +547,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/metadata_enricher.py",
+      "src_rel": "_unassigned/support_nomatch/metadata_enricher.py",
       "dest_rel": "_unassigned/support_nomatch/metadata_enricher.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -443,7 +555,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/metric_config.py",
+      "src_rel": "_unassigned/support_nomatch/metric_config.py",
       "dest_rel": "_unassigned/support_nomatch/metric_config.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -451,7 +563,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/metric_registry.py",
+      "src_rel": "_unassigned/support_nomatch/metric_registry.py",
       "dest_rel": "_unassigned/support_nomatch/metric_registry.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -459,7 +571,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/normalize_observability_scores.py",
+      "src_rel": "_unassigned/support_nomatch/normalize_observability_scores.py",
       "dest_rel": "_unassigned/support_nomatch/normalize_observability_scores.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -467,7 +579,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/normalize_observability_vectors.py",
+      "src_rel": "_unassigned/support_nomatch/normalize_observability_vectors.py",
       "dest_rel": "_unassigned/support_nomatch/normalize_observability_vectors.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -475,7 +587,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/openai_logger_adapter.py",
+      "src_rel": "_unassigned/support_nomatch/openai_logger_adapter.py",
       "dest_rel": "_unassigned/support_nomatch/openai_logger_adapter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -483,7 +595,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/opentelemetry_adapter.py",
+      "src_rel": "_unassigned/support_nomatch/opentelemetry_adapter.py",
       "dest_rel": "_unassigned/support_nomatch/opentelemetry_adapter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -491,7 +603,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/opentelemetry_tracing_adapter.py",
+      "src_rel": "_unassigned/support_nomatch/opentelemetry_tracing_adapter.py",
       "dest_rel": "_unassigned/support_nomatch/opentelemetry_tracing_adapter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -499,7 +611,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/optimize_observability_order.py",
+      "src_rel": "_unassigned/support_nomatch/optimize_observability_order.py",
       "dest_rel": "_unassigned/support_nomatch/optimize_observability_order.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -507,7 +619,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/orchestrate_observability_planning.py",
+      "src_rel": "_unassigned/support_nomatch/orchestrate_observability_planning.py",
       "dest_rel": "_unassigned/support_nomatch/orchestrate_observability_planning.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -515,7 +627,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/otlp_exporter.py",
+      "src_rel": "_unassigned/support_nomatch/otlp_exporter.py",
       "dest_rel": "_unassigned/support_nomatch/otlp_exporter.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -523,7 +635,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/parse_observability_settings.py",
+      "src_rel": "_unassigned/support_nomatch/parse_observability_settings.py",
       "dest_rel": "_unassigned/support_nomatch/parse_observability_settings.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -531,7 +643,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/perform_observability_operations.py",
+      "src_rel": "_unassigned/support_nomatch/perform_observability_operations.py",
       "dest_rel": "_unassigned/support_nomatch/perform_observability_operations.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -539,7 +651,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/pii_redaction.py",
+      "src_rel": "_unassigned/support_nomatch/pii_redaction.py",
       "dest_rel": "_unassigned/support_nomatch/pii_redaction.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -547,7 +659,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/pipeline_metrics_collector.py",
+      "src_rel": "_unassigned/support_nomatch/pipeline_metrics_collector.py",
       "dest_rel": "_unassigned/support_nomatch/pipeline_metrics_collector.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -555,7 +667,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/planning_snapshot.py",
+      "src_rel": "_unassigned/support_nomatch/planning_snapshot.py",
       "dest_rel": "_unassigned/support_nomatch/planning_snapshot.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -563,7 +675,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/prepare_observability_orchestration.py",
+      "src_rel": "_unassigned/support_nomatch/prepare_observability_orchestration.py",
       "dest_rel": "_unassigned/support_nomatch/prepare_observability_orchestration.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -571,7 +683,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/rank_observability_components.py",
+      "src_rel": "_unassigned/support_nomatch/rank_observability_components.py",
       "dest_rel": "_unassigned/support_nomatch/rank_observability_components.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -579,7 +691,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/refine_observability_ranking.py",
+      "src_rel": "_unassigned/support_nomatch/refine_observability_ranking.py",
       "dest_rel": "_unassigned/support_nomatch/refine_observability_ranking.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -587,7 +699,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/runtime_metrics_collector.py",
+      "src_rel": "_unassigned/support_nomatch/runtime_metrics_collector.py",
       "dest_rel": "_unassigned/support_nomatch/runtime_metrics_collector.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -595,7 +707,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/runtime_snapshot.py",
+      "src_rel": "_unassigned/support_nomatch/runtime_snapshot.py",
       "dest_rel": "_unassigned/support_nomatch/runtime_snapshot.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -603,7 +715,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/sampling_processor.py",
+      "src_rel": "_unassigned/support_nomatch/sampling_processor.py",
       "dest_rel": "_unassigned/support_nomatch/sampling_processor.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -611,7 +723,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/signature_verifier.py",
+      "src_rel": "_unassigned/support_nomatch/signature_verifier.py",
       "dest_rel": "_unassigned/support_nomatch/signature_verifier.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -619,7 +731,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/sort_observability_results.py",
+      "src_rel": "_unassigned/support_nomatch/sort_observability_results.py",
       "dest_rel": "_unassigned/support_nomatch/sort_observability_results.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -627,7 +739,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/span.py",
+      "src_rel": "_unassigned/support_nomatch/span.py",
       "dest_rel": "_unassigned/support_nomatch/span.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -635,7 +747,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/sqlite_audit_store.py",
+      "src_rel": "_unassigned/support_nomatch/sqlite_audit_store.py",
       "dest_rel": "_unassigned/support_nomatch/sqlite_audit_store.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -643,7 +755,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/state_inspector.py",
+      "src_rel": "_unassigned/support_nomatch/state_inspector.py",
       "dest_rel": "_unassigned/support_nomatch/state_inspector.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -651,7 +763,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/structured_json_logger.py",
+      "src_rel": "_unassigned/support_nomatch/structured_json_logger.py",
       "dest_rel": "_unassigned/support_nomatch/structured_json_logger.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -659,7 +771,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/token_budget_inspector.py",
+      "src_rel": "_unassigned/support_nomatch/token_budget_inspector.py",
       "dest_rel": "_unassigned/support_nomatch/token_budget_inspector.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -667,7 +779,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/track_observability_cost.py",
+      "src_rel": "_unassigned/support_nomatch/track_observability_cost.py",
       "dest_rel": "_unassigned/support_nomatch/track_observability_cost.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -675,7 +787,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/track_observability_usage.py",
+      "src_rel": "_unassigned/support_nomatch/track_observability_usage.py",
       "dest_rel": "_unassigned/support_nomatch/track_observability_usage.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -683,7 +795,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/update_observability_budget.py",
+      "src_rel": "_unassigned/support_nomatch/update_observability_budget.py",
       "dest_rel": "_unassigned/support_nomatch/update_observability_budget.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -691,7 +803,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/update_observability_usage.py",
+      "src_rel": "_unassigned/support_nomatch/update_observability_usage.py",
       "dest_rel": "_unassigned/support_nomatch/update_observability_usage.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -699,7 +811,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_observability_constraints.py",
+      "src_rel": "_unassigned/support_nomatch/validate_observability_constraints.py",
       "dest_rel": "_unassigned/support_nomatch/validate_observability_constraints.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -707,7 +819,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_observability_ethics.py",
+      "src_rel": "_unassigned/support_nomatch/validate_observability_ethics.py",
       "dest_rel": "_unassigned/support_nomatch/validate_observability_ethics.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -715,7 +827,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_observability_quality.py",
+      "src_rel": "_unassigned/support_nomatch/validate_observability_quality.py",
       "dest_rel": "_unassigned/support_nomatch/validate_observability_quality.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -723,7 +835,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_observability_schema.py",
+      "src_rel": "_unassigned/support_nomatch/validate_observability_schema.py",
       "dest_rel": "_unassigned/support_nomatch/validate_observability_schema.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -731,7 +843,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/w3c_trace_context.py",
+      "src_rel": "_unassigned/support_nomatch/w3c_trace_context.py",
       "dest_rel": "_unassigned/support_nomatch/w3c_trace_context.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -739,7 +851,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/.gitkeep                            # LEVEL 3",
+      "src_rel": "_unassigned/support_nomatch/.gitkeep                            # LEVEL 3",
       "dest_rel": "_unassigned/support_nomatch/.gitkeep                            # LEVEL 3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -747,7 +859,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/.gitkeep______________________________LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/.gitkeep______________________________LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/.gitkeep______________________________LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -755,7 +867,15 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/adjust_scripts_weights.py",
+      "src_rel": "_unassigned/support_nomatch/08_scripts_freeze_report.json",
+      "dest_rel": "_unassigned/support_nomatch/08_scripts_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/adjust_scripts_weights.py",
       "dest_rel": "_unassigned/support_nomatch/adjust_scripts_weights.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -763,7 +883,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/apply_scripts_algorithm.py",
+      "src_rel": "_unassigned/support_nomatch/apply_scripts_algorithm.py",
       "dest_rel": "_unassigned/support_nomatch/apply_scripts_algorithm.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -771,7 +891,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/apply_scripts_safety.py",
+      "src_rel": "_unassigned/support_nomatch/apply_scripts_safety.py",
       "dest_rel": "_unassigned/support_nomatch/apply_scripts_safety.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -779,7 +899,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/apply_scripts_weights.py",
+      "src_rel": "_unassigned/support_nomatch/apply_scripts_weights.py",
       "dest_rel": "_unassigned/support_nomatch/apply_scripts_weights.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -787,7 +907,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/assess_scripts_risk.py",
+      "src_rel": "_unassigned/support_nomatch/assess_scripts_risk.py",
       "dest_rel": "_unassigned/support_nomatch/assess_scripts_risk.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -795,7 +915,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/ast_purity_scanner.py_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/ast_purity_scanner.py_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/ast_purity_scanner.py_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -803,7 +923,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/build_scripts_filters.py",
+      "src_rel": "_unassigned/support_nomatch/build_scripts_filters.py",
       "dest_rel": "_unassigned/support_nomatch/build_scripts_filters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -811,7 +931,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/build_scripts_orchestration.py",
+      "src_rel": "_unassigned/support_nomatch/build_scripts_orchestration.py",
       "dest_rel": "_unassigned/support_nomatch/build_scripts_orchestration.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -819,7 +939,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/calculate_scripts_similarity.py",
+      "src_rel": "_unassigned/support_nomatch/calculate_scripts_similarity.py",
       "dest_rel": "_unassigned/support_nomatch/calculate_scripts_similarity.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -827,7 +947,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/check_for_large_files.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/check_for_large_files.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/check_for_large_files.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -835,7 +955,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/check_schemas.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/check_schemas.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/check_schemas.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -843,7 +963,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/check_scripts_compliance.py",
+      "src_rel": "_unassigned/support_nomatch/check_scripts_compliance.py",
       "dest_rel": "_unassigned/support_nomatch/check_scripts_compliance.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -851,7 +971,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/check_scripts_policy.py",
+      "src_rel": "_unassigned/support_nomatch/check_scripts_policy.py",
       "dest_rel": "_unassigned/support_nomatch/check_scripts_policy.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -859,7 +979,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/cleanup_observability.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/cleanup_observability.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/cleanup_observability.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -867,7 +987,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_scripts_confidence.py",
+      "src_rel": "_unassigned/support_nomatch/compute_scripts_confidence.py",
       "dest_rel": "_unassigned/support_nomatch/compute_scripts_confidence.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -875,7 +995,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_scripts_embeddings.py",
+      "src_rel": "_unassigned/support_nomatch/compute_scripts_embeddings.py",
       "dest_rel": "_unassigned/support_nomatch/compute_scripts_embeddings.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -883,7 +1003,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/compute_scripts_score.py",
+      "src_rel": "_unassigned/support_nomatch/compute_scripts_score.py",
       "dest_rel": "_unassigned/support_nomatch/compute_scripts_score.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -891,7 +1011,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/contract_registry_validator.py_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/contract_registry_validator.py_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/contract_registry_validator.py_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -899,7 +1019,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/coordinate_scripts_operations.py",
+      "src_rel": "_unassigned/support_nomatch/coordinate_scripts_operations.py",
       "dest_rel": "_unassigned/support_nomatch/coordinate_scripts_operations.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -907,7 +1027,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/data_meta_artifacts.json",
+      "src_rel": "_unassigned/support_nomatch/data_meta_artifacts.json",
       "dest_rel": "_unassigned/support_nomatch/data_meta_artifacts.json",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -915,7 +1035,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/diagnose_scripts_issues.py",
+      "src_rel": "_unassigned/support_nomatch/diagnose_scripts_issues.py",
       "dest_rel": "_unassigned/support_nomatch/diagnose_scripts_issues.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -923,7 +1043,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/diff_folder_structure.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/diff_folder_structure.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/diff_folder_structure.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -931,7 +1051,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_config_structure.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/enforce_config_structure.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/enforce_config_structure.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -939,7 +1059,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_data_structure.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/enforce_data_structure.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/enforce_data_structure.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -947,7 +1067,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_scripts_boundaries.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_scripts_boundaries.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_scripts_boundaries.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -955,7 +1075,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_scripts_budget.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_scripts_budget.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_scripts_budget.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -963,7 +1083,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_scripts_contracts.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_scripts_contracts.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_scripts_contracts.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -971,7 +1091,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_scripts_filters.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_scripts_filters.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_scripts_filters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -979,7 +1099,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/enforce_scripts_limits.py",
+      "src_rel": "_unassigned/support_nomatch/enforce_scripts_limits.py",
       "dest_rel": "_unassigned/support_nomatch/enforce_scripts_limits.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -987,7 +1107,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/evaluate_scripts_compliance.py",
+      "src_rel": "_unassigned/support_nomatch/evaluate_scripts_compliance.py",
       "dest_rel": "_unassigned/support_nomatch/evaluate_scripts_compliance.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -995,7 +1115,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/extract_scripts_parameters.py",
+      "src_rel": "_unassigned/support_nomatch/extract_scripts_parameters.py",
       "dest_rel": "_unassigned/support_nomatch/extract_scripts_parameters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1003,7 +1123,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/file_ops.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/file_ops.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/file_ops.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1011,7 +1131,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/format_scripts_context.py",
+      "src_rel": "_unassigned/support_nomatch/format_scripts_context.py",
       "dest_rel": "_unassigned/support_nomatch/format_scripts_context.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1019,7 +1139,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/golden_trace_auditor.py_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/golden_trace_auditor.py_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/golden_trace_auditor.py_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1027,7 +1147,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/hashing.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/hashing.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/hashing.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1035,7 +1155,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/ingest_resume_inputs.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/ingest_resume_inputs.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/ingest_resume_inputs.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1043,7 +1163,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/ingest_taxonomy_data.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/ingest_taxonomy_data.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/ingest_taxonomy_data.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1051,7 +1171,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/inspect_scripts_quality.py",
+      "src_rel": "_unassigned/support_nomatch/inspect_scripts_quality.py",
       "dest_rel": "_unassigned/support_nomatch/inspect_scripts_quality.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1059,7 +1179,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/io_helpers.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/io_helpers.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/io_helpers.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1067,7 +1187,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/load_scripts_planning.py",
+      "src_rel": "_unassigned/support_nomatch/load_scripts_planning.py",
       "dest_rel": "_unassigned/support_nomatch/load_scripts_planning.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1075,7 +1195,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/logging_utils.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/logging_utils.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/logging_utils.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1083,7 +1203,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/log_scripts_metrics.py",
+      "src_rel": "_unassigned/support_nomatch/log_scripts_metrics.py",
       "dest_rel": "_unassigned/support_nomatch/log_scripts_metrics.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1091,7 +1211,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/manage_scripts_parameters.py",
+      "src_rel": "_unassigned/support_nomatch/manage_scripts_parameters.py",
       "dest_rel": "_unassigned/support_nomatch/manage_scripts_parameters.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1099,7 +1219,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/manifest_validator.py_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/manifest_validator.py_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/manifest_validator.py_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1107,7 +1227,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/metrics.json_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/metrics.json_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/metrics.json_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1115,7 +1235,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/migrate_scripts.py_LEVEL_2",
+      "src_rel": "_unassigned/support_nomatch/migrate_scripts.py_LEVEL_2",
       "dest_rel": "_unassigned/support_nomatch/migrate_scripts.py_LEVEL_2",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1123,7 +1243,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/normalize_permissions.ps1_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/normalize_permissions.ps1_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/normalize_permissions.ps1_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1131,7 +1251,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/normalize_scripts_scores.py",
+      "src_rel": "_unassigned/support_nomatch/normalize_scripts_scores.py",
       "dest_rel": "_unassigned/support_nomatch/normalize_scripts_scores.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1139,7 +1259,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/normalize_scripts_vectors.py",
+      "src_rel": "_unassigned/support_nomatch/normalize_scripts_vectors.py",
       "dest_rel": "_unassigned/support_nomatch/normalize_scripts_vectors.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1147,7 +1267,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/optimize_scripts_order.py",
+      "src_rel": "_unassigned/support_nomatch/optimize_scripts_order.py",
       "dest_rel": "_unassigned/support_nomatch/optimize_scripts_order.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1155,7 +1275,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/orchestrate_scripts_planning.py",
+      "src_rel": "_unassigned/support_nomatch/orchestrate_scripts_planning.py",
       "dest_rel": "_unassigned/support_nomatch/orchestrate_scripts_planning.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1163,7 +1283,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/parse_scripts_settings.py",
+      "src_rel": "_unassigned/support_nomatch/parse_scripts_settings.py",
       "dest_rel": "_unassigned/support_nomatch/parse_scripts_settings.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1171,7 +1291,23 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/pipeline_test_001_results.json_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/phase03A_stub_scan.py",
+      "dest_rel": "_unassigned/support_nomatch/phase03A_stub_scan.py",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/phase04_freeze_aggregator.py",
+      "dest_rel": "_unassigned/support_nomatch/phase04_freeze_aggregator.py",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/pipeline_test_001_results.json_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/pipeline_test_001_results.json_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1179,7 +1315,15 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/prepare_scripts_orchestration.py",
+      "src_rel": "_unassigned/support_nomatch/pointer_reconcile.py",
+      "dest_rel": "_unassigned/support_nomatch/pointer_reconcile.py",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/prepare_scripts_orchestration.py",
       "dest_rel": "_unassigned/support_nomatch/prepare_scripts_orchestration.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1187,7 +1331,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/prepare_scripts_payload.py",
+      "src_rel": "_unassigned/support_nomatch/prepare_scripts_payload.py",
       "dest_rel": "_unassigned/support_nomatch/prepare_scripts_payload.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1195,7 +1339,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/rank_scripts_components.py",
+      "src_rel": "_unassigned/support_nomatch/rank_scripts_components.py",
       "dest_rel": "_unassigned/support_nomatch/rank_scripts_components.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1203,7 +1347,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/refine_scripts_ranking.py",
+      "src_rel": "_unassigned/support_nomatch/refine_scripts_ranking.py",
       "dest_rel": "_unassigned/support_nomatch/refine_scripts_ranking.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1211,7 +1355,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/remove_pycache.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/remove_pycache.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/remove_pycache.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1219,7 +1363,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/run_lint.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/run_lint.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/run_lint.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1227,7 +1371,15 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/run_tests.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/run_pipeline.py",
+      "dest_rel": "_unassigned/support_nomatch/run_pipeline.py",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/run_tests.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/run_tests.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1235,7 +1387,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/sanitize_inputs.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/sanitize_inputs.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/sanitize_inputs.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1243,7 +1395,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/scripts-tree.txt_LEVEL_2",
+      "src_rel": "_unassigned/support_nomatch/scripts-tree.txt_LEVEL_2",
       "dest_rel": "_unassigned/support_nomatch/scripts-tree.txt_LEVEL_2",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1251,7 +1403,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/semantic_validation_engine.py_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/semantic_validation_engine.py_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/semantic_validation_engine.py_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1259,7 +1411,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/show_repo_summary.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/show_repo_summary.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/show_repo_summary.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1267,7 +1419,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/sort_scripts_results.py",
+      "src_rel": "_unassigned/support_nomatch/sort_scripts_results.py",
       "dest_rel": "_unassigned/support_nomatch/sort_scripts_results.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1275,7 +1427,15 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/test_matrix_validator.py_LEVEL_3",
+      "src_rel": "_unassigned/support_nomatch/stub_definition.yaml",
+      "dest_rel": "_unassigned/support_nomatch/stub_definition.yaml",
+      "confidence": 0.2,
+      "reason": "support domain no-match; cognitive inference blocked",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/support_nomatch/test_matrix_validator.py_LEVEL_3",
       "dest_rel": "_unassigned/support_nomatch/test_matrix_validator.py_LEVEL_3",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1283,7 +1443,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/track_scripts_usage.py",
+      "src_rel": "_unassigned/support_nomatch/track_scripts_usage.py",
       "dest_rel": "_unassigned/support_nomatch/track_scripts_usage.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1291,7 +1451,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/tree_export.ps1_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/tree_export.ps1_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/tree_export.ps1_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1299,7 +1459,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/update_scripts_budget.py",
+      "src_rel": "_unassigned/support_nomatch/update_scripts_budget.py",
       "dest_rel": "_unassigned/support_nomatch/update_scripts_budget.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1307,7 +1467,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_config_schemas.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/validate_config_schemas.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/validate_config_schemas.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1315,7 +1475,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_observability_structure.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/validate_observability_structure.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/validate_observability_structure.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1323,7 +1483,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_prompt_governance.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/validate_prompt_governance.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/validate_prompt_governance.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1331,7 +1491,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_root_folders.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/validate_root_folders.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/validate_root_folders.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1339,7 +1499,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_runtime_integrity.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/validate_runtime_integrity.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/validate_runtime_integrity.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1347,7 +1507,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_scripts_constraints.py",
+      "src_rel": "_unassigned/support_nomatch/validate_scripts_constraints.py",
       "dest_rel": "_unassigned/support_nomatch/validate_scripts_constraints.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1355,7 +1515,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_scripts_ethics.py",
+      "src_rel": "_unassigned/support_nomatch/validate_scripts_ethics.py",
       "dest_rel": "_unassigned/support_nomatch/validate_scripts_ethics.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1363,7 +1523,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_scripts_schema.py",
+      "src_rel": "_unassigned/support_nomatch/validate_scripts_schema.py",
       "dest_rel": "_unassigned/support_nomatch/validate_scripts_schema.py",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1371,7 +1531,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/validate_test_structure.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/validate_test_structure.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/validate_test_structure.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1379,7 +1539,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_support_nomatch/verify_golden_sets.py_LEVEL_3_placeholder",
+      "src_rel": "_unassigned/support_nomatch/verify_golden_sets.py_LEVEL_3_placeholder",
       "dest_rel": "_unassigned/support_nomatch/verify_golden_sets.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
@@ -1387,7 +1547,15 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/apply_weights.py",
+      "src_rel": "_unassigned/apps_unknown/09_apps_freeze_report.json",
+      "dest_rel": "_unassigned/apps_unknown/09_apps_freeze_report.json",
+      "confidence": 0.2,
+      "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
+      "is_duplicate": false,
+      "duplicate_bucket_rel": null
+    },
+    {
+      "src_rel": "_unassigned/apps_unknown/apply_weights.py",
       "dest_rel": "_unassigned/apps_unknown/apply_weights.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1395,7 +1563,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/assess_content_relevance.py",
+      "src_rel": "_unassigned/apps_unknown/assess_content_relevance.py",
       "dest_rel": "_unassigned/apps_unknown/assess_content_relevance.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1403,7 +1571,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/assess_content_risk.py",
+      "src_rel": "_unassigned/apps_unknown/assess_content_risk.py",
       "dest_rel": "_unassigned/apps_unknown/assess_content_risk.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1411,7 +1579,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/assess_safety_risk.py",
+      "src_rel": "_unassigned/apps_unknown/assess_safety_risk.py",
       "dest_rel": "_unassigned/apps_unknown/assess_safety_risk.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1419,7 +1587,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/build_personalization_query.py",
+      "src_rel": "_unassigned/apps_unknown/build_personalization_query.py",
       "dest_rel": "_unassigned/apps_unknown/build_personalization_query.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1427,7 +1595,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/build_search_filters.py",
+      "src_rel": "_unassigned/apps_unknown/build_search_filters.py",
       "dest_rel": "_unassigned/apps_unknown/build_search_filters.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1435,7 +1603,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/build_skill_query.py",
+      "src_rel": "_unassigned/apps_unknown/build_skill_query.py",
       "dest_rel": "_unassigned/apps_unknown/build_skill_query.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1443,7 +1611,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/calibrate_engagement_score.py",
+      "src_rel": "_unassigned/apps_unknown/calibrate_engagement_score.py",
       "dest_rel": "_unassigned/apps_unknown/calibrate_engagement_score.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1451,7 +1619,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/calibrate_fit_score.py",
+      "src_rel": "_unassigned/apps_unknown/calibrate_fit_score.py",
       "dest_rel": "_unassigned/apps_unknown/calibrate_fit_score.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1459,7 +1627,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/call_formatting_api.py",
+      "src_rel": "_unassigned/apps_unknown/call_formatting_api.py",
       "dest_rel": "_unassigned/apps_unknown/call_formatting_api.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1467,7 +1635,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/call_personalization_api.py",
+      "src_rel": "_unassigned/apps_unknown/call_personalization_api.py",
       "dest_rel": "_unassigned/apps_unknown/call_personalization_api.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1475,7 +1643,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/compute_confidence.py",
+      "src_rel": "_unassigned/apps_unknown/compute_confidence.py",
       "dest_rel": "_unassigned/apps_unknown/compute_confidence.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1483,7 +1651,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/compute_personalization_match.py",
+      "src_rel": "_unassigned/apps_unknown/compute_personalization_match.py",
       "dest_rel": "_unassigned/apps_unknown/compute_personalization_match.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1491,7 +1659,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/compute_safety_score.py",
+      "src_rel": "_unassigned/apps_unknown/compute_safety_score.py",
       "dest_rel": "_unassigned/apps_unknown/compute_safety_score.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1499,7 +1667,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/compute_skill_similarity.py",
+      "src_rel": "_unassigned/apps_unknown/compute_skill_similarity.py",
       "dest_rel": "_unassigned/apps_unknown/compute_skill_similarity.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1507,7 +1675,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/coordinate_execution_queries.py",
+      "src_rel": "_unassigned/apps_unknown/coordinate_execution_queries.py",
       "dest_rel": "_unassigned/apps_unknown/coordinate_execution_queries.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1515,7 +1683,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/create_experience_bullets.py",
+      "src_rel": "_unassigned/apps_unknown/create_experience_bullets.py",
       "dest_rel": "_unassigned/apps_unknown/create_experience_bullets.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1523,7 +1691,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/diagnose_personalization_issues.py",
+      "src_rel": "_unassigned/apps_unknown/diagnose_personalization_issues.py",
       "dest_rel": "_unassigned/apps_unknown/diagnose_personalization_issues.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1531,7 +1699,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/embed_recipient_profile.py",
+      "src_rel": "_unassigned/apps_unknown/embed_recipient_profile.py",
       "dest_rel": "_unassigned/apps_unknown/embed_recipient_profile.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1539,7 +1707,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/evaluate_compliance_level.py",
+      "src_rel": "_unassigned/apps_unknown/evaluate_compliance_level.py",
       "dest_rel": "_unassigned/apps_unknown/evaluate_compliance_level.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1547,7 +1715,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/evaluate_engagement_potential.py",
+      "src_rel": "_unassigned/apps_unknown/evaluate_engagement_potential.py",
       "dest_rel": "_unassigned/apps_unknown/evaluate_engagement_potential.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1555,7 +1723,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/evaluate_personalization_quality.py",
+      "src_rel": "_unassigned/apps_unknown/evaluate_personalization_quality.py",
       "dest_rel": "_unassigned/apps_unknown/evaluate_personalization_quality.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1563,7 +1731,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/evaluate_safety_compliance.py",
+      "src_rel": "_unassigned/apps_unknown/evaluate_safety_compliance.py",
       "dest_rel": "_unassigned/apps_unknown/evaluate_safety_compliance.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1571,7 +1739,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/evaluate_writing_quality.py",
+      "src_rel": "_unassigned/apps_unknown/evaluate_writing_quality.py",
       "dest_rel": "_unassigned/apps_unknown/evaluate_writing_quality.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1579,7 +1747,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/fetch_recipient_interactions.py",
+      "src_rel": "_unassigned/apps_unknown/fetch_recipient_interactions.py",
       "dest_rel": "_unassigned/apps_unknown/fetch_recipient_interactions.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1587,7 +1755,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/fetch_user_preferences.py",
+      "src_rel": "_unassigned/apps_unknown/fetch_user_preferences.py",
       "dest_rel": "_unassigned/apps_unknown/fetch_user_preferences.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1595,7 +1763,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/find_effective_templates.py",
+      "src_rel": "_unassigned/apps_unknown/find_effective_templates.py",
       "dest_rel": "_unassigned/apps_unknown/find_effective_templates.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1603,7 +1771,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/find_relevant_templates.py",
+      "src_rel": "_unassigned/apps_unknown/find_relevant_templates.py",
       "dest_rel": "_unassigned/apps_unknown/find_relevant_templates.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1611,7 +1779,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/format_data.py",
+      "src_rel": "_unassigned/apps_unknown/format_data.py",
       "dest_rel": "_unassigned/apps_unknown/format_data.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1619,7 +1787,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/format_llm_prompt.py",
+      "src_rel": "_unassigned/apps_unknown/format_llm_prompt.py",
       "dest_rel": "_unassigned/apps_unknown/format_llm_prompt.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1627,7 +1795,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/format_metadata.py",
+      "src_rel": "_unassigned/apps_unknown/format_metadata.py",
       "dest_rel": "_unassigned/apps_unknown/format_metadata.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1635,7 +1803,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/format_personalization_prompt.py",
+      "src_rel": "_unassigned/apps_unknown/format_personalization_prompt.py",
       "dest_rel": "_unassigned/apps_unknown/format_personalization_prompt.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1643,7 +1811,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/generate_subject_line.py",
+      "src_rel": "_unassigned/apps_unknown/generate_subject_line.py",
       "dest_rel": "_unassigned/apps_unknown/generate_subject_line.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1651,7 +1819,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/generate_summary_section.py",
+      "src_rel": "_unassigned/apps_unknown/generate_summary_section.py",
       "dest_rel": "_unassigned/apps_unknown/generate_summary_section.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1659,7 +1827,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/handle_api_timeouts.py",
+      "src_rel": "_unassigned/apps_unknown/handle_api_timeouts.py",
       "dest_rel": "_unassigned/apps_unknown/handle_api_timeouts.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1667,7 +1835,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/handle_service_errors.py",
+      "src_rel": "_unassigned/apps_unknown/handle_service_errors.py",
       "dest_rel": "_unassigned/apps_unknown/handle_service_errors.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1675,7 +1843,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/implement_fallback_strategy.py",
+      "src_rel": "_unassigned/apps_unknown/implement_fallback_strategy.py",
       "dest_rel": "_unassigned/apps_unknown/implement_fallback_strategy.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1683,7 +1851,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/implement_fallback_templates.py",
+      "src_rel": "_unassigned/apps_unknown/implement_fallback_templates.py",
       "dest_rel": "_unassigned/apps_unknown/implement_fallback_templates.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1691,7 +1859,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/manage_content_workflow.py",
+      "src_rel": "_unassigned/apps_unknown/manage_content_workflow.py",
       "dest_rel": "_unassigned/apps_unknown/manage_content_workflow.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1699,7 +1867,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/manage_execution_context.py",
+      "src_rel": "_unassigned/apps_unknown/manage_execution_context.py",
       "dest_rel": "_unassigned/apps_unknown/manage_execution_context.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1707,7 +1875,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/match_recipient_patterns.py",
+      "src_rel": "_unassigned/apps_unknown/match_recipient_patterns.py",
       "dest_rel": "_unassigned/apps_unknown/match_recipient_patterns.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1715,7 +1883,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/normalize_relevance_scores.py",
+      "src_rel": "_unassigned/apps_unknown/normalize_relevance_scores.py",
       "dest_rel": "_unassigned/apps_unknown/normalize_relevance_scores.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1723,7 +1891,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/normalize_scores.py",
+      "src_rel": "_unassigned/apps_unknown/normalize_scores.py",
       "dest_rel": "_unassigned/apps_unknown/normalize_scores.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1731,7 +1899,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/normalize_skill_scores.py",
+      "src_rel": "_unassigned/apps_unknown/normalize_skill_scores.py",
       "dest_rel": "_unassigned/apps_unknown/normalize_skill_scores.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1739,7 +1907,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/orchestrate_execution_planning.py",
+      "src_rel": "_unassigned/apps_unknown/orchestrate_execution_planning.py",
       "dest_rel": "_unassigned/apps_unknown/orchestrate_execution_planning.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1747,7 +1915,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/order_call_to_actions.py",
+      "src_rel": "_unassigned/apps_unknown/order_call_to_actions.py",
       "dest_rel": "_unassigned/apps_unknown/order_call_to_actions.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1755,7 +1923,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/prioritize_talking_points.py",
+      "src_rel": "_unassigned/apps_unknown/prioritize_talking_points.py",
       "dest_rel": "_unassigned/apps_unknown/prioritize_talking_points.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1763,7 +1931,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/serialize_data.py",
+      "src_rel": "_unassigned/apps_unknown/serialize_data.py",
       "dest_rel": "_unassigned/apps_unknown/serialize_data.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1771,7 +1939,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/update_recipient_profiles.py",
+      "src_rel": "_unassigned/apps_unknown/update_recipient_profiles.py",
       "dest_rel": "_unassigned/apps_unknown/update_recipient_profiles.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1779,7 +1947,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/update_user_profile.py",
+      "src_rel": "_unassigned/apps_unknown/update_user_profile.py",
       "dest_rel": "_unassigned/apps_unknown/update_user_profile.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1787,7 +1955,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/weight_experience_match.py",
+      "src_rel": "_unassigned/apps_unknown/weight_experience_match.py",
       "dest_rel": "_unassigned/apps_unknown/weight_experience_match.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
@@ -1795,7 +1963,7 @@
       "duplicate_bucket_rel": null
     },
     {
-      "src_rel": "_unassigned_apps_unknown/weight_personalization_factors.py",
+      "src_rel": "_unassigned/apps_unknown/weight_personalization_factors.py",
       "dest_rel": "_unassigned/apps_unknown/weight_personalization_factors.py",
       "confidence": 0.2,
       "reason": "Apps file lacks rg_/lic_ prefix and recognizable patterns",
