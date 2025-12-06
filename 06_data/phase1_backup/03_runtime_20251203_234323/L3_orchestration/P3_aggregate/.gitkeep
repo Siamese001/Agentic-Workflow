@@ -1,2 +1,0 @@
-# This file ensures the runtime/data directory is tracked by git
-# The directory is populated at runtime with temporary data files
