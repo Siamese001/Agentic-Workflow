@@ -493,7 +493,7 @@
       "size_bytes": 0
     },
     "01_agentic_core/L1_cognition/P3_aggregate/01_agentic_core_freeze_report.json": {
-      "sha256": "28844833032b0bcf2b787777c5af12266948a942cddfac2e41c8d2335d3d16c8",
+      "sha256": "76b7d17589a29cf07de1b55dbbc11a0e4330f73c625d0db3701a6fefe050b137",
       "size_bytes": 94171
     },
     "01_agentic_core/L1_cognition/P3_aggregate/__init__.py": {
