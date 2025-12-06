@@ -1,0 +1,1071 @@
+{
+  "target_root": "07_observability",
+  "started_at": "2025-12-05T22:08:14.058033",
+  "mutations": [
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/always_on_sampler.py",
+      "semantic_hash": "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_8_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::apply_ranker_278",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::apply_ranker_80",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::bm25_rank_130",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::bm25_rank_195",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dedupe_results_51",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dedupe_results_249",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dense_rank_139",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dense_rank_204",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::fuse_results_94",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::fuse_sources_67",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::fuse_sources_265",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::hybrid_rank_148",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::hybrid_rank_213",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::normalize_documents_237",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::normalize_documents_39",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_order_and_rank_177",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_order_and_rank_112",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::rerank_results_260",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::rerank_results_62",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_stable_dense_score_172",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_stable_dense_score_107",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::truncate_by_budget_271",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::truncate_by_budget_73",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::11",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::7",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::9",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::33",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::36",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::8",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::10",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::91",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::12",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::35",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::class::RetrievalConfig_20",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::block::88",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/append_only_store.py",
+      "semantic_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.25000000000000006,
+      "components": [
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::func::create_triplet_268",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TemporalType_16",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TripletQuery_89",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TripletStatus_23",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TripletStore_102",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::Triplet_31",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::global_assignment::__all___316",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::13",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::12",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::9",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::10",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::11",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::7",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::constant::PREDICATES_298",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/baggage_propagator.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/console_trace_exporter.py",
+      "semantic_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::func::get_routing_trace_8",
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::imports::5",
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::imports::1",
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::imports::3"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/hash_chain_verifier.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/log_config.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/metric_config.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/opentelemetry_tracing_adapter.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/signature_verifier.py",
+      "semantic_hash": "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9",
+      "engine": "LIC",
+      "archive_name": "Agentic-LIC",
+      "confidence": 0.7999999999999999,
+      "components": [
+        "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9::LIC::Agentic-LIC::src_lic_agentic_agents_k6_signature_agent.py::class::SignatureAgent_5",
+        "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9::LIC::Agentic-LIC::src_lic_agentic_agents_k6_signature_agent.py::imports::2",
+        "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9::LIC::Agentic-LIC::src_lic_agentic_agents_k6_signature_agent.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/state_inspector.py",
+      "semantic_hash": "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2",
+      "engine": "RG",
+      "archive_name": "v2",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::func::create_state_snapshot_255",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::func::merge_state_updates_294",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::func::validate_state_snapshot_274",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::class::ManifestManager_31",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::19",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::18",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::20",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::21",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::23",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::16",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::17",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::block::4"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/token_budget_inspector.py",
+      "semantic_hash": "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776",
+      "engine": "LIC",
+      "archive_name": "Agentic-LIC",
+      "confidence": 0.7999999999999998,
+      "components": [
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::imports::3",
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::imports::1",
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::imports::4",
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::func::test_token_drift_guard_7"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/w3c_trace_context.py",
+      "semantic_hash": "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4",
+      "engine": "RG",
+      "archive_name": "v2",
+      "confidence": 0.25000000000000006,
+      "components": [
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::class::ValidationContext_14",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::9",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::12",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::7",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::10",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::11",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::8"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/embedding_compare_meaning/find_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/embedding_compare_meaning/match_patterns.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/embedding_compare_meaning/search_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/understand_request/fetch_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/understand_request/query_observability_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/understand_request/retrieve_observability_memory.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/check_rules/policy_check_safety/apply_memory_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/check_rules/policy_check_safety/enforce_memory_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/check_rules/policy_check_safety/validate_memory_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/check_rules/policy_check_safety/check_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/check_rules/policy_check_safety/enforce_boundaries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/check_rules/policy_check_safety/validate_constraints.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/embedding_compare_meaning/match_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/embedding_compare_meaning/retrieve_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/embedding_compare_meaning/search_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/extract_parameters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/fetch_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/load_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/parse_settings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/query_store.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/retrieve_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/utility_prepare_information/build_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/utility_prepare_information/format_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/utility_prepare_information/prepare_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/check_rules/policy_check_safety/apply_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/check_rules/policy_check_safety/enforce_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/check_rules/policy_check_safety/validate_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/manage_costs/state_update_ops/enforce_observability_limits.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/manage_costs/state_update_ops/track_observability_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/manage_costs/state_update_ops/update_observability_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_weights.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_order.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_ranking.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/understand_request/apply_algorithm.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/understand_request/rank_components.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/understand_request/sort_results.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/aggregate_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/consolidate_updates.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/format_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/merge_contexts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/prepare_snapshot.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/serialize_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/routing_retry_task/apply_backoff.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/routing_retry_task/handle_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/routing_retry_task/implement_retry.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/use_a_tool/execute_action.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/use_a_tool/process_response.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/check_structure/policy_check_safety/check_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/check_structure/policy_check_safety/enforce_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/check_structure/policy_check_safety/validate_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/convert_content/embedding_compare_meaning/calculate_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/convert_content/embedding_compare_meaning/compute_embeddings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/convert_content/embedding_compare_meaning/normalize_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/find_problems/diagnostics_ops/capture_diagnostics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/find_problems/diagnostics_ops/inspect_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/find_problems/diagnostics_ops/log_inspection.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/get_info/understand_request/coordinate_observability_queries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/get_info/understand_request/manage_observability_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/get_info/understand_request/orchestrate_observability_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/check_rules/policy_check_safety/apply_orchestration_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/check_rules/policy_check_safety/enforce_orchestration_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/check_rules/policy_check_safety/validate_orchestration_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/routing_retry_task/handle_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/routing_retry_task/implement_fallback.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/routing_retry_task/retry_operations.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/use_a_tool/call_observability_api.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/use_a_tool/dispatch_observability_tools.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/check_rules/policy_check_safety/apply_execution_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/check_rules/policy_check_safety/enforce_execution_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/check_rules/policy_check_safety/validate_execution_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/use_a_tool/execute_observability_execution.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/use_a_tool/invoke_observability_tool.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/use_a_tool/perform_observability_operation.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/utility_prepare_information/format_execution_request.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/utility_prepare_information/prepare_execution_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/utility_prepare_information/serialize_execution_params.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/check_structure/policy_check_safety/check_execution_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/check_structure/policy_check_safety/enforce_execution_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/check_structure/policy_check_safety/validate_execution_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/enforce_safety_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/track_safety_cost.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/update_safety_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/policy_check_safety/apply_safety_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/policy_check_safety/enforce_safety_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/policy_check_safety/validate_safety_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    }
+  ]
+}

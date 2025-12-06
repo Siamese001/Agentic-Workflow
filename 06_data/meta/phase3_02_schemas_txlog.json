@@ -1,0 +1,830 @@
+{
+  "target_root": "02_schemas",
+  "started_at": "2025-12-05T22:08:07.745623",
+  "mutations": [
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/find_schema_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/match_schema_patterns.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/search_schema_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/get_schema_info/understand_request/fetch_schema_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/get_schema_info/understand_request/query_schema_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/data_access/get_schema_info/understand_request/retrieve_schema_memory.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/apply_memory_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/enforce_memory_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/validate_memory_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/check_schema_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/enforce_schema_boundaries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/validate_schema_constraints.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/match_schema_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/retrieve_schema_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/search_schema_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/understand_request/extract_schema_parameters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/understand_request/fetch_schema_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/understand_request/load_schema_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/understand_request/parse_schema_settings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/understand_request/query_schema_store.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/understand_request/retrieve_schema_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/build_schema_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/format_schema_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/prepare_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/apply_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/enforce_schema_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/validate_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/enforce_schema_limits.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/track_schema_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/update_schema_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_schema_weights.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_schema_order.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_schema_ranking.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/pick_best_result/understand_request/apply_schema_algorithm.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/pick_best_result/understand_request/rank_schema_components.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/pick_best_result/understand_request/sort_schema_results.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/state_update_ops/aggregate_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/state_update_ops/consolidate_updates.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/state_update_ops/format_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/state_update_ops/merge_contexts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/state_update_ops/prepare_snapshot.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/state_update_ops/serialize_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/apply_schema_backoff.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/handle_schema_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/implement_schema_retry.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/execute_action.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/process_response.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/check_schema_structure/policy_check_safety/check_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/check_schema_structure/policy_check_safety/enforce_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/check_schema_structure/policy_check_safety/validate_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/calculate_schema_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/compute_schema_embeddings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/normalize_schema_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/capture_schema_diagnostics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/inspect_schema_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/log_schema_inspection.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/coordinate_schema_queries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/manage_schema_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/orchestrate_schema_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/apply_orchestration_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/enforce_orchestration_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/validate_orchestration_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/handle_schema_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/implement_schema_fallback.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/retry_schema_operations.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/call_schema_api.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/dispatch_schema_tools.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/apply_execution_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/enforce_execution_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/validate_execution_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/execute_schema_execution.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/invoke_schema_tool.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/perform_schema_operation.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/format_execution_request.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/prepare_execution_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/serialize_execution_params.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/check_execution_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/enforce_execution_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/validate_execution_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/enforce_safety_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/track_safety_cost.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/update_safety_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/apply_safety_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/enforce_safety_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/validate_safety_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    }
+  ]
+}

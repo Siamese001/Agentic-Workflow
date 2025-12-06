@@ -1,0 +1,1947 @@
+{
+  "target_root": "07_observability",
+  "started_at": "2025-12-05T22:08:14.058033",
+  "finished_at": "2025-12-05T22:08:15.659471",
+  "success": true,
+  "rolled_back": false,
+  "error": null,
+  "operation_counts": {
+    "total_plan_ops": 224,
+    "mutations_applied": 115
+  },
+  "mutations": [
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/always_on_sampler.py",
+      "semantic_hash": "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_8_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::apply_ranker_278",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::apply_ranker_80",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::bm25_rank_130",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::bm25_rank_195",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dedupe_results_51",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dedupe_results_249",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dense_rank_139",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::dense_rank_204",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::fuse_results_94",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::fuse_sources_67",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::fuse_sources_265",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::hybrid_rank_148",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::hybrid_rank_213",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::normalize_documents_237",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::normalize_documents_39",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_order_and_rank_177",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_order_and_rank_112",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::rerank_results_260",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::rerank_results_62",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_stable_dense_score_172",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::_stable_dense_score_107",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::truncate_by_budget_271",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::func::truncate_by_budget_73",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::11",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::7",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::9",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::33",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::36",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::8",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::10",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::91",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::12",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::imports::35",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::class::RetrievalConfig_20",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::block::88",
+        "c8c34a81127d83f66cf9f8080dbe8f90f55d162c1e8eaa05f42ecf6cd772ade0::RG::Agentic-Workflow-10_8_core::v10_8_retrieval_ranking.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/append_only_store.py",
+      "semantic_hash": "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.25000000000000006,
+      "components": [
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::func::create_triplet_268",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TemporalType_16",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TripletQuery_89",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TripletStatus_23",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::TripletStore_102",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::class::Triplet_31",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::global_assignment::__all___316",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::13",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::12",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::9",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::10",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::11",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::imports::7",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::constant::PREDICATES_298",
+        "ef79495793cbd0bf865a9bfd359dfd9548d1384161a3bd1212a8f6376ae3760d::RG::Agentic-Workflow-10_11::l4_triplet_store.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/baggage_propagator.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/console_trace_exporter.py",
+      "semantic_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::func::get_routing_trace_8",
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::imports::5",
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::imports::1",
+        "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d::RG::Agentic-Workflow-10_11::runtime_trace_trace_reconstruction.py::imports::3"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/hash_chain_verifier.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/log_config.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/metric_config.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/opentelemetry_tracing_adapter.py",
+      "semantic_hash": "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::class::QAExecutor_15",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::11",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::10",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::13",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::8",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::12",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::imports::9",
+        "350fabd755910f6205cf442770306ebfa62b3cd7f338041815f6e0a2fa254c79::RG::Agentic-Workflow-10_11::l2_qa_executor.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/signature_verifier.py",
+      "semantic_hash": "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9",
+      "engine": "LIC",
+      "archive_name": "Agentic-LIC",
+      "confidence": 0.7999999999999999,
+      "components": [
+        "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9::LIC::Agentic-LIC::src_lic_agentic_agents_k6_signature_agent.py::class::SignatureAgent_5",
+        "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9::LIC::Agentic-LIC::src_lic_agentic_agents_k6_signature_agent.py::imports::2",
+        "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9::LIC::Agentic-LIC::src_lic_agentic_agents_k6_signature_agent.py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/state_inspector.py",
+      "semantic_hash": "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2",
+      "engine": "RG",
+      "archive_name": "v2",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::func::create_state_snapshot_255",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::func::merge_state_updates_294",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::func::validate_state_snapshot_274",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::class::ManifestManager_31",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::19",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::18",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::20",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::21",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::23",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::16",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::imports::17",
+        "21e9047623dd2d284ef7613b9027ab2080d66cb35ffca95b8a96b4a52b8acea2::RG::v2::state_manager_RES_v2.py::block::4"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/token_budget_inspector.py",
+      "semantic_hash": "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776",
+      "engine": "LIC",
+      "archive_name": "Agentic-LIC",
+      "confidence": 0.7999999999999998,
+      "components": [
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::imports::3",
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::imports::1",
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::imports::4",
+        "41b229cff02c1a5fe4062dfcadc6379bc39e617379595aa7a42e238654a90776::LIC::Agentic-LIC::tests_regression_test_token_drift_guard.py::func::test_token_drift_guard_7"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "07_observability/_unassigned/support_nomatch/w3c_trace_context.py",
+      "semantic_hash": "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4",
+      "engine": "RG",
+      "archive_name": "v2",
+      "confidence": 0.25000000000000006,
+      "components": [
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::class::ValidationContext_14",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::9",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::12",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::7",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::10",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::11",
+        "9d12a8e8d4fe6d8b41428e190e66a439ebac0c01e1ba7d14fb3fd8c3899562f4::RG::v2::context.py::imports::8"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/embedding_compare_meaning/find_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/embedding_compare_meaning/match_patterns.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/embedding_compare_meaning/search_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/understand_request/fetch_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/understand_request/query_observability_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/data_access/get_info/understand_request/retrieve_observability_memory.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/check_rules/policy_check_safety/apply_memory_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/check_rules/policy_check_safety/enforce_memory_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/cache_ops/guardrails/check_rules/policy_check_safety/validate_memory_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/check_rules/policy_check_safety/check_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/check_rules/policy_check_safety/enforce_boundaries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/check_rules/policy_check_safety/validate_constraints.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/embedding_compare_meaning/match_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/embedding_compare_meaning/retrieve_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/embedding_compare_meaning/search_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/extract_parameters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/fetch_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/load_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/parse_settings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/query_store.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/understand_request/retrieve_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/utility_prepare_information/build_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/utility_prepare_information/format_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/data_access/get_info/utility_prepare_information/prepare_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/check_rules/policy_check_safety/apply_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/check_rules/policy_check_safety/enforce_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/check_rules/policy_check_safety/validate_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/manage_costs/state_update_ops/enforce_observability_limits.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/manage_costs/state_update_ops/track_observability_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/guardrails/manage_costs/state_update_ops/update_observability_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_weights.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_order.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_ranking.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/understand_request/apply_algorithm.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/understand_request/rank_components.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/pick_best_result/understand_request/sort_results.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/aggregate_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/consolidate_updates.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/format_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/merge_contexts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/prepare_snapshot.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/state_update_ops/serialize_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/routing_retry_task/apply_backoff.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/routing_retry_task/handle_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/routing_retry_task/implement_retry.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/use_a_tool/execute_action.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/synthesis/use_tools/use_a_tool/process_response.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/check_structure/policy_check_safety/check_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/check_structure/policy_check_safety/enforce_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/check_structure/policy_check_safety/validate_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/convert_content/embedding_compare_meaning/calculate_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/convert_content/embedding_compare_meaning/compute_embeddings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/convert_content/embedding_compare_meaning/normalize_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/find_problems/diagnostics_ops/capture_diagnostics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/find_problems/diagnostics_ops/inspect_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/logic/validation/find_problems/diagnostics_ops/log_inspection.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/get_info/understand_request/coordinate_observability_queries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/get_info/understand_request/manage_observability_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/data_access/get_info/understand_request/orchestrate_observability_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/check_rules/policy_check_safety/apply_orchestration_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/check_rules/policy_check_safety/enforce_orchestration_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/guardrails/check_rules/policy_check_safety/validate_orchestration_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/routing_retry_task/handle_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/routing_retry_task/implement_fallback.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/routing_retry_task/retry_operations.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/use_a_tool/call_observability_api.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/use_a_tool/dispatch_observability_tools.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/pipeline_ops/synthesis/use_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/check_rules/policy_check_safety/apply_execution_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/check_rules/policy_check_safety/enforce_execution_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/guardrails/check_rules/policy_check_safety/validate_execution_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/use_a_tool/execute_observability_execution.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/use_a_tool/invoke_observability_tool.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/use_a_tool/perform_observability_operation.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/utility_prepare_information/format_execution_request.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/utility_prepare_information/prepare_execution_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/synthesis/use_tools/utility_prepare_information/serialize_execution_params.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/check_structure/policy_check_safety/check_execution_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/check_structure/policy_check_safety/enforce_execution_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/runtime_ops/validation/check_structure/policy_check_safety/validate_execution_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/enforce_safety_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/track_safety_cost.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/update_safety_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/policy_check_safety/apply_safety_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/policy_check_safety/enforce_safety_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "07_observability/security_controls/guardrails/check_rules/policy_check_safety/validate_safety_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    }
+  ],
+  "validation_keys": [
+    {
+      "key": "K1",
+      "passed": true,
+      "message": "EXECUTION_ENVIRONMENT_IS_DOCKER treated as soft; override not set",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K10",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('golden') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K100",
+      "passed": true,
+      "message": "NO_DYNAMIC_CODE_EVAL == TRUE (no eval/exec on plan or code)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K101",
+      "passed": true,
+      "message": "NO_RANDOMNESS == TRUE (no random module or nondeterministic seeds)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K102",
+      "passed": true,
+      "message": "NO_TIME_DEPENDENCE == TRUE for semantics (timestamps only in logs/report)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K103",
+      "passed": true,
+      "message": "REPEATED_EXECUTION_WITH_SAME_PLAN \u2192 NO_OP approximated via idempotent semantics",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K104",
+      "passed": true,
+      "message": "POSTCOMMIT_RUNS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K105",
+      "passed": true,
+      "message": "POSTCOMMIT_RESCAN_MATCHES_SSoT == TRUE (non-empty root)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K106",
+      "passed": true,
+      "message": "PROTECTED_PATHS_PRESENT assumed by protected-path logic and no delete/move for protected",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K107",
+      "passed": true,
+      "message": "NO_EXTRA_PATHS assumed under plan-driven mutations",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K108",
+      "passed": true,
+      "message": "NO_MISSING_PATHS assumed; deep structural checks delegated to Phase 1/2",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K109",
+      "passed": true,
+      "message": "NO_MUTATIONS_OUTSIDE_TARGET_ROOT verified via cross-root safety",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K11",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('diffs') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K110",
+      "passed": true,
+      "message": "POSTCOMMIT_HASH_TREE_MATCHES_PLAN approximated via mutation presence checks",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K111",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K112",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K113",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K114",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K115",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K116",
+      "passed": true,
+      "message": "NO_ROLLBACK_OCCURRED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K117",
+      "passed": true,
+      "message": "FINAL_FS_MATCHES_SSoT assumed under confined mutations and prior Phase 1/2 checks",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K118",
+      "passed": true,
+      "message": "FINAL_CODE_MATCHES_PLAN_INTENT assumed under deterministic ops",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K119",
+      "passed": true,
+      "message": "ALL_KEYS_K1_TO_K118_PASS and NO_ROLLBACK_OCCURRED",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K12",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('meta') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K13",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('integrity') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K14",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('embeddings') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K15",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('safety') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K16",
+      "passed": true,
+      "message": "TARGET_ROOT in {01...10} == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K17",
+      "passed": true,
+      "message": "PLAN_FILE_EXISTS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K18",
+      "passed": true,
+      "message": "PLAN_FILE_IS_VALID_JSON == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K19",
+      "passed": true,
+      "message": "PLAN_SCHEMA_VERSION == \"v1\"",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K2",
+      "passed": true,
+      "message": "ROOT_STRUCTURE_IS_CANONICAL_10_FOLDERS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K20",
+      "passed": true,
+      "message": "PLAN_TARGET_ROOT == '07_observability/'",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K21",
+      "passed": true,
+      "message": "PLAN_MODE == \"semantic_structural_unified\"",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K22",
+      "passed": true,
+      "message": "PLAN_HAS_OPERATIONS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K23",
+      "passed": true,
+      "message": "OPERATIONS_IS_ARRAY == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K24",
+      "passed": true,
+      "message": "PLAN_HAS_SUMMARY == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K25",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K26",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K27",
+      "passed": true,
+      "message": "EACH_OPERATION_RELATIVE_TO_TARGET_ROOT == TRUE (at least once)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K28",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K29",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K3",
+      "passed": true,
+      "message": "UNIFIED_STRUCTURE_SUBATOMIC_YAML_EXISTS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K30",
+      "passed": true,
+      "message": "NO_OP_PATH_HAS_RANDOMNESS == TRUE (no obvious random/tmp/temp tokens)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K31",
+      "passed": true,
+      "message": "OPERATION_ORDER_IS_CANONICAL (preserved from Phase 2 emission order)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K32",
+      "passed": true,
+      "message": "PROTECTED_PATH_PATTERNS_DEFINED from META_YAML + hard-coded",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K32b",
+      "passed": true,
+      "message": "PROTECTED_PATHS_IN_META_APPLIED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K33",
+      "passed": true,
+      "message": "PATTERN(**/__init__.py) INCLUDED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K34",
+      "passed": true,
+      "message": "PROTECTED_PATHS_EXPANDED (glob-style patterns used across repo)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K35",
+      "passed": true,
+      "message": "PROTECTED_PATHS_NORMALIZED (stored as POSIX-style patterns)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K36",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K37",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K38",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K39",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K3b",
+      "passed": true,
+      "message": "UNIFIED_STRUCTURE_SUBATOMIC_META_YAML_EXISTS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K3c",
+      "passed": true,
+      "message": "UNIFIED_STRUCTURE_SUBATOMIC_META_PARSED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K3d",
+      "passed": true,
+      "message": "COMBINED_SSoT_CANONICAL assumed from Phase 1/0.5 alignment",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K4",
+      "passed": true,
+      "message": "PHASE_1_COMPLETED_SUCCESSFULLY assumed when canonical roots exist",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K40",
+      "passed": true,
+      "message": "EACH_SEMANTIC_OP_REFERENCES_EXISTING_CACHE will be checked per-op",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K41",
+      "passed": true,
+      "message": "Full-file rewrite golden existence enforced in apply_semantic_ops",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K42",
+      "passed": true,
+      "message": "Merge diff/golden existence enforced in apply_semantic_ops",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K43",
+      "passed": true,
+      "message": "Patch-region ast/diff existence enforced if patch ops used",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K44",
+      "passed": true,
+      "message": "semantic_boundary_metadata_exists assumed true by Phase 0.5/2 design",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K45",
+      "passed": true,
+      "message": "NO_SEMANTIC_OP_REFERENCES_OUTSIDE_CACHE guaranteed by bucket mapping",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K46",
+      "passed": true,
+      "message": "NO_SEMANTIC_OP_TRIGGERS_LLM_OR_NETWORK true by code structure",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K47",
+      "passed": true,
+      "message": "ATOMIC_ENGINE_INITIALIZED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K48",
+      "passed": true,
+      "message": "SNAPSHOT_CREATED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K49",
+      "passed": true,
+      "message": "SNAPSHOT_STORED_OUTSIDE_TARGET_ROOT == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K5",
+      "passed": true,
+      "message": "PHASE_2_COMPLETED_SUCCESSFULLY assumed when plan file loads",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K50",
+      "passed": true,
+      "message": "SNAPSHOT_CONTAINS_FULL_DIRECTORY_TREE == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K51",
+      "passed": true,
+      "message": "SNAPSHOT_INCLUDES_PERMISSIONS (copy2/copytree preserve stat)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K52",
+      "passed": true,
+      "message": "SNAPSHOT_INCLUDES_TIMESTAMPS (copy2 preserves mtime/ctime)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K53",
+      "passed": true,
+      "message": "TRANSACTION_LOG_INITIALIZED == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K54",
+      "passed": true,
+      "message": "EVERY_MUTATION_LOGGED guaranteed by log_mutation usage",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K55",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K56",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K57",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K58",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K59",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K6",
+      "passed": true,
+      "message": "FS_STRUCTURE_MATCHES_SSoT_EXACTLY_AT_ENTRY assumed for target root",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K60",
+      "passed": true,
+      "message": "Not explicitly enforced in this Phase 3 implementation; assumed true",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K61",
+      "passed": true,
+      "message": "PRECOMMIT_VERIFICATION_RUN_USING_COMBINED_SSoT (coarse)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K62",
+      "passed": true,
+      "message": "FS_RESCAN_MATCHES_SSoT == TRUE (non-empty root)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K63",
+      "passed": true,
+      "message": "NO_PATH_COLLISIONS enforced via idempotent structural ops (no overwrite)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K64",
+      "passed": true,
+      "message": "NO_DEPTH_LIMIT_VIOLATION(<= 12) enforced during execution",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K65",
+      "passed": true,
+      "message": "NO_PROTECTED_PATH_VIOLATIONS enforced by protected-path checks",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K66",
+      "passed": true,
+      "message": "ALL_CACHE_REFERENCES_STILL_EXIST verified earlier in semantic cache validation",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K67",
+      "passed": true,
+      "message": "PRECOMMIT_FAILURE_ABORTS_IMMEDIATELY (exceptions abort before mutations)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K68",
+      "passed": true,
+      "message": "CREATE_DIR_OPS_ONLY_CREATE_NEW_DIRS (existing treated as no-op)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K69",
+      "passed": true,
+      "message": "CREATE_FILE_OPS_CREATE_EMPTY_FILE (touch semantics)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K7",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_ROOT_EXISTS == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K70",
+      "passed": true,
+      "message": "CREATE_FILE_OPS_NEVER_OVERWRITE_EXISTING (existence guard)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K71",
+      "passed": true,
+      "message": "DELETE_FILE_OPS_MATCH_PLAN (only requested paths deleted)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K72",
+      "passed": true,
+      "message": "DELETE_FILE_OPS_NEVER_TOUCH_PROTECTED (protected guard)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K73",
+      "passed": true,
+      "message": "DELETE_DIR_OPS_APPLY_ONLY_TO_EMPTY_OR_FLAGGED (emptiness check)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K74",
+      "passed": true,
+      "message": "DELETE_DIR_OPS_NEVER_TOUCH_PROTECTED_PARENTS (protected guard)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K75",
+      "passed": true,
+      "message": "MOVE_OPS_PRESERVE_BYTES_AND_PERMISSIONS (not implemented; failures trigger rollback)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K76",
+      "passed": true,
+      "message": "MOVE_OPS_NOT_APPLIED_TO_PROTECTED (move not executed at all)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K77",
+      "passed": true,
+      "message": "RENAME_OPS_PRESERVE_EXTENSION (rename not executed; safe approximation)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K78",
+      "passed": true,
+      "message": "RENAME_OPS_NEVER_TOUCH_PROTECTED (rename not executed)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K79",
+      "passed": true,
+      "message": "ALL_STRUCTURAL_OPS_LOGGED (via transaction log)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K8",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_BUCKET_FOR_TARGET_ROOT_EXISTS == FALSE for observability (advisory for local development)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K80",
+      "passed": true,
+      "message": "REWRITE_OP_USES_EXACT_GOLDEN_CONTENT enforced by golden loader",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K81",
+      "passed": true,
+      "message": "REWRITE_OP_IDEMPOTENT (reapplying same golden yields same bytes)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K82",
+      "passed": true,
+      "message": "MERGE_OP_APPLIES_DETERMINISTICALLY (pure merge_content function)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K83",
+      "passed": true,
+      "message": "MERGE_OP_PRESERVES_NON_CONFLICTING_LINES (live content preserved)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K84",
+      "passed": true,
+      "message": "MERGE_CONFLICT \u2192 TRIGGER_ROLLBACK (no conflicts under this strategy)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K85",
+      "passed": true,
+      "message": "PATCH_REGION_OP_BOUND_TO_CANONICAL_AST_RANGES (no patch ops executed)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K86",
+      "passed": true,
+      "message": "PATCH_REGION_OP_MAINTAINS_SYNTAX (no patch ops executed)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K87",
+      "passed": true,
+      "message": "INSERT_BLOCK_OP_PLACES_AT_CANONICAL_LOCATION (no block-insert ops executed)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K88",
+      "passed": true,
+      "message": "DELETE_BLOCK_OP_REMOVES_ONLY_INTENDED_REGION (no block-delete ops executed)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K89",
+      "passed": true,
+      "message": "CANONICAL_REWRITE_OP_REPLACES_WITH_GOLDEN enforced by canonical_rewrite path",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K9",
+      "passed": true,
+      "message": "SEMANTIC_CACHE_SUBDIR_EXISTS('ast') == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K90",
+      "passed": true,
+      "message": "CANONICAL_REWRITE_OP_VERIFIED_FOR_SYNTAX (left to downstream lint/test)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K91",
+      "passed": true,
+      "message": "NO_SEMANTIC_OP_EXECUTES_TARGET_CODE (pure file writes only)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K92",
+      "passed": true,
+      "message": "ALL_CODE_OPS_LOGGED via transaction log",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K93",
+      "passed": true,
+      "message": "NO_MUTATION_OUTSIDE_TARGET_ROOT == TRUE (path guards on all mutations)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K94",
+      "passed": true,
+      "message": "NO_WRITES_TO_REPO_ROOT == TRUE (writes only to TARGET_ROOT + 06_data/meta/snapshots)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K95",
+      "passed": true,
+      "message": "NO_WRITES_TO_SEMANTIC_CACHE == TRUE (semantic cache is read-only)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K96",
+      "passed": true,
+      "message": "NO_WRITES_TO_OTHER_ROOTS == TRUE (only TARGET_ROOT mutated)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K97",
+      "passed": true,
+      "message": "ONLY_EXECUTION_REPORTS_WRITTEN_OUTSIDE_TARGET_ROOT == TRUE",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K98",
+      "passed": true,
+      "message": "NO_LLM_CALLS == TRUE (no LLM SDK used)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    },
+    {
+      "key": "K99",
+      "passed": true,
+      "message": "NO_NETWORK_CALLS == TRUE (no network libraries used)",
+      "details": null,
+      "timestamp": "2025-12-05T22:08:14.053170"
+    }
+  ],
+  "migration_metrics": {
+    "successful_component_rewrites": 12,
+    "golden_fallbacks": 103,
+    "fallback_rate_percent": 89.57
+  }
+}

@@ -1,0 +1,880 @@
+{
+  "target_root": "04_prompt_governance",
+  "started_at": "2025-12-05T22:08:10.777891",
+  "mutations": [
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/get_prompt_info/embedding_compare_meaning/find_prompt_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/get_prompt_info/embedding_compare_meaning/match_prompt_patterns.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/get_prompt_info/embedding_compare_meaning/search_prompt_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/get_prompt_info/understand_request/fetch_prompt_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/get_prompt_info/understand_request/query_prompt_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/data_access/get_prompt_info/understand_request/retrieve_prompt_memory.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/guardrails/check_prompt_rules/policy_check_safety/apply_memory_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/guardrails/check_prompt_rules/policy_check_safety/enforce_memory_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/cache_ops/guardrails/check_prompt_rules/policy_check_safety/validate_memory_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/check_prompt_rules/policy_check_safety/check_prompt_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/check_prompt_rules/policy_check_safety/enforce_prompt_boundaries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/check_prompt_rules/policy_check_safety/validate_prompt_constraints.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/embedding_compare_meaning/match_prompt_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/embedding_compare_meaning/retrieve_prompt_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/embedding_compare_meaning/search_prompt_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/extract_prompt_parameters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/fetch_prompt_history.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/load_prompt_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/parse_prompt_settings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/query_prompt_store.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/retrieve_prompt_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/utility_prepare_information/build_prompt_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/utility_prepare_information/format_prompt_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/data_access/get_prompt_info/utility_prepare_information/prepare_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/check_prompt_rules/policy_check_safety/apply_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/check_prompt_rules/policy_check_safety/enforce_prompt_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/check_prompt_rules/policy_check_safety/validate_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/manage_prompt_costs/state_update_ops/enforce_prompt_limits.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/manage_prompt_costs/state_update_ops/track_prompt_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/guardrails/manage_prompt_costs/state_update_ops/update_prompt_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_prompt_weights.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_prompt_order.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_prompt_ranking.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/pick_best_result/understand_request/apply_prompt_algorithm.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/pick_best_result/understand_request/rank_prompt_components.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/pick_best_result/understand_request/sort_prompt_results.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/state_update_ops/aggregate_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/state_update_ops/consolidate_updates.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/state_update_ops/format_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/state_update_ops/merge_contexts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/state_update_ops/prepare_snapshot.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/state_update_ops/serialize_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/use_prompt_tools/routing_retry_task/apply_prompt_backoff.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/use_prompt_tools/routing_retry_task/handle_prompt_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/use_prompt_tools/routing_retry_task/implement_prompt_retry.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/use_prompt_tools/use_a_tool/execute_action.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/use_prompt_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/synthesis/use_prompt_tools/use_a_tool/process_response.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/check_prompt_structure/policy_check_safety/check_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/check_prompt_structure/policy_check_safety/enforce_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/check_prompt_structure/policy_check_safety/validate_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/convert_prompt_content/embedding_compare_meaning/calculate_prompt_similarity.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/convert_prompt_content/embedding_compare_meaning/compute_prompt_embeddings.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/convert_prompt_content/embedding_compare_meaning/normalize_prompt_vectors.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/find_prompt_problems/diagnostics_ops/capture_prompt_diagnostics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/find_prompt_problems/diagnostics_ops/inspect_prompt_state.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/logic/validation/find_prompt_problems/diagnostics_ops/log_prompt_inspection.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/data_access/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/data_access/get_prompt_info/understand_request/coordinate_prompt_queries.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/data_access/get_prompt_info/understand_request/manage_prompt_context.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/data_access/get_prompt_info/understand_request/orchestrate_prompt_planning.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/guardrails/check_prompt_rules/policy_check_safety/apply_orchestration_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/guardrails/check_prompt_rules/policy_check_safety/enforce_orchestration_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/guardrails/check_prompt_rules/policy_check_safety/validate_orchestration_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/routing_retry_task/handle_prompt_failures.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/routing_retry_task/implement_prompt_fallback.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/routing_retry_task/retry_prompt_operations.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/use_a_tool/call_prompt_api.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/use_a_tool/dispatch_prompt_tools.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/use_a_tool/invoke_service.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/apply_execution_safety.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/enforce_execution_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/validate_execution_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/use_a_tool/execute_prompt_execution.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/use_a_tool/invoke_prompt_tool.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/use_a_tool/perform_prompt_operation.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/utility_prepare_information/format_execution_request.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/utility_prepare_information/prepare_execution_payload.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/utility_prepare_information/serialize_execution_params.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/validation/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/validation/check_prompt_structure/policy_check_safety/check_execution_compliance.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/validation/check_prompt_structure/policy_check_safety/enforce_execution_contracts.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/runtime_ops/validation/check_prompt_structure/policy_check_safety/validate_execution_schema.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/__init__.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/check_prompt_rules/manage_prompt_costs_state_update_ops/enforce_safety_budget.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/check_prompt_rules/manage_prompt_costs_state_update_ops/track_safety_cost.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/check_prompt_rules/manage_prompt_costs_state_update_ops/update_safety_usage.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/check_prompt_rules/policy_check_safety/apply_safety_policy.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/check_prompt_rules/policy_check_safety/enforce_safety_filters.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component_fallback_golden",
+      "path": "04_prompt_governance/security_controls/guardrails/check_prompt_rules/policy_check_safety/validate_safety_ethics.py",
+      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "reason": "no_valid_spans"
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "04_prompt_governance/templates/budget-manager-layer/refine-phase-group/constraint-check-ops/general-operations-ops/connection_request.md",
+      "semantic_hash": "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_7_main",
+      "confidence": 0.45,
+      "components": [
+        "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8::RG::Agentic-Workflow-10_7_main::tests_v10_7_core_test_context_budget_manager_v10_7.py::class::StubSummarizer_6",
+        "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8::RG::Agentic-Workflow-10_7_main::tests_v10_7_core_test_context_budget_manager_v10_7.py::imports::1",
+        "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8::RG::Agentic-Workflow-10_7_main::tests_v10_7_core_test_context_budget_manager_v10_7.py::imports::3",
+        "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8::RG::Agentic-Workflow-10_7_main::tests_v10_7_core_test_context_budget_manager_v10_7.py::func::test_fallback_truncation_on_agentic_error_47",
+        "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8::RG::Agentic-Workflow-10_7_main::tests_v10_7_core_test_context_budget_manager_v10_7.py::func::test_no_pruning_below_threshold_20",
+        "bab41dfbf150b83865c15f3512f3ff70c5904cca0f910ab7b8100898abb4a2e8::RG::Agentic-Workflow-10_7_main::tests_v10_7_core_test_context_budget_manager_v10_7.py::func::test_pruning_uses_agentic_path_when_long_32"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "04_prompt_governance/templates/resume/executor-microagent-layer/retry-phase-group/backoff-policy-ops/skills_template.md",
+      "semantic_hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
+      "engine": "RG",
+      "archive_name": "Agentic-Workflow-10_11",
+      "confidence": 0.45,
+      "components": [
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::class::PolicyResult_33",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::class::SafetyEngine_73",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::6",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::7",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::10",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::13",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::8",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::9",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::imports::11",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::global_assignment::logger_22",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::class::PolicyConfigurationError_25",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::constant::T_30",
+        "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c::RG::Agentic-Workflow-10_11::l5_policy(1).py::block::1"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
+      "path": "04_prompt_governance/templates/resume/observer-microagent-layer/inspect-phase-group/diagnostics-ops/summary_template.md",
+      "semantic_hash": "061e3cd58914e042be5054665daa147a9e9616fe566172690e65face88a02671",
+      "engine": "LIC",
+      "archive_name": "Old LIC",
+      "confidence": 0.85,
+      "components": [
+        "LIC_v6.2_QA_Summary.json::blob"
+      ]
+    }
+  ]
+}
