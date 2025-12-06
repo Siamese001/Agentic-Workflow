@@ -1,8 +1,0 @@
-{
-  "hash": "6d4bf1d1c24ee2185376ca7c63de3769585e3fe475b2d2201b0811e4d346bdad",
-  "kind": "ast",
-  "sources": [
-    "C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/prompt_builder_stack.py",
-    "C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/agent_stacks_v10_8/prompt_builder_stack.py"
-  ]
-}
