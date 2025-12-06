@@ -1,0 +1,4 @@
+# Agentic-Workflow Pipeline Dependencies
+# Required for Phase 0.5 through Phase 4 execution
+
+PyYAML>=6.0
