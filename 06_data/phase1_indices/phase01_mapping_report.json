@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-12-06 09:05:36",
-  "total_files_processed": 1110,
-  "moves_executed": 11,
+  "timestamp": "2025-12-06 16:10:27",
+  "total_files_processed": 1100,
+  "moves_executed": 1,
   "protected_skipped": 0,
   "violations": 0,
   "mapping_decisions": [
@@ -8378,86 +8378,6 @@
       "dest_rel": "_unassigned/support_nomatch/verify_golden_sets.py_LEVEL_3_placeholder",
       "confidence": 0.2,
       "reason": "support domain no-match; cognitive inference blocked",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/scoring_ops/assess_message_relevance.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/scoring_ops/assess_message_relevance.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/aggregate_campaign_state.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/aggregate_campaign_state.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/merge_generation_history.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/merge_generation_history.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/merge_outreach_history.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/merge_outreach_history.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/serialize_generation_context.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/serialize_generation_context.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/serialize_outreach_context.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/serialize_outreach_context.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/snapshot_campaign_state.py",
-      "dest_rel": "apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/snapshot_campaign_state.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_lic (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_rg/apps_rg/apps_rg/apps_rg/scoring_ops/evaluate_resume_effectiveness.py",
-      "dest_rel": "apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/scoring_ops/evaluate_resume_effectiveness.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_rg (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_rg/apps_rg/apps_rg/apps_rg/state_update_ops/aggregate_resume_state.py",
-      "dest_rel": "apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/state_update_ops/aggregate_resume_state.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_rg (patterns stripped)",
-      "is_duplicate": false,
-      "duplicate_bucket_rel": null
-    },
-    {
-      "src_rel": "apps_rg/apps_rg/apps_rg/apps_rg/state_update_ops/snapshot_resume_state.py",
-      "dest_rel": "apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/state_update_ops/snapshot_resume_state.py",
-      "confidence": 1.0,
-      "reason": "Apps file routed to apps_rg (patterns stripped)",
       "is_duplicate": false,
       "duplicate_bucket_rel": null
     },
