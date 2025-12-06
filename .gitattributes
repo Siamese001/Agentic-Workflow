@@ -1,3 +1,10 @@
+# Git LFS tracking for large binary files in semantic cache
+*.embedding filter=lfs diff=lfs merge=lfs -text
+*.ast filter=lfs diff=lfs merge=lfs -text
+
+# Keep JSON files in regular git (text-based, compressible)
+*.json text
+06_data/semantic_cache/**/*.json filter=lfs diff=lfs merge=lfs -text
 *.sqlite filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.pkl filter=lfs diff=lfs merge=lfs -text
