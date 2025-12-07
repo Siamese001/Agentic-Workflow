@@ -1,0 +1,490 @@
+{
+  "files": {
+    "02_schemas/01_agentic_core_migration_and_rewrite_plan.json": {
+      "sha256": "2b1ccf4b862f6da64510143cf1f8066d9d92054aa3ebc41d60107fdd8ca17108",
+      "size_bytes": 1840737
+    },
+    "02_schemas/02_schemas_migration_and_rewrite_plan.json": {
+      "sha256": "0be312bfcd8ea9cc978f5f043bc6de1ede5d048d6cb820e90efdd90e04aa6367",
+      "size_bytes": 103260
+    },
+    "02_schemas/03_runtime_migration_and_rewrite_plan.json": {
+      "sha256": "8288e732c1d4a2dd5372617c254510378ffea0672cedab8d1e9b6424bfc96cd4",
+      "size_bytes": 302871
+    },
+    "02_schemas/04_prompt_governance_migration_and_rewrite_plan.json": {
+      "sha256": "e82c6e773e7caf7ebe7c62256f692d52686bb136e918d0ba3568f7551dd980ef",
+      "size_bytes": 109806
+    },
+    "02_schemas/05_config_migration_and_rewrite_plan.json": {
+      "sha256": "3b513eb88331b7b21884571ab44531c13835308fd8fdc36c73f3673a596c3b90",
+      "size_bytes": 257093
+    },
+    "02_schemas/07_observability_migration_and_rewrite_plan.json": {
+      "sha256": "9bb5fe4b213cf28143c9f922e68802cdfe729afc4c2dc0196d5ef3f0d84736f1",
+      "size_bytes": 1481907
+    },
+    "02_schemas/08_scripts_migration_and_rewrite_plan.json": {
+      "sha256": "f63948f8f0f044364c8406742c1ca6fa0fbbc14e401370f03b1e20f6e5e1eabc",
+      "size_bytes": 1044045
+    },
+    "02_schemas/09_apps_migration_and_rewrite_plan.json": {
+      "sha256": "b545ee4f164a82b364c879b4b793882764a80e2af45404c5c5da63dc24d85ac4",
+      "size_bytes": 69882
+    },
+    "02_schemas/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/_unassigned/support_nomatch/01_agentic_core_migration_and_rewrite_plan.json": {
+      "sha256": "38ea8f5f8efbc27707071f21d02950387b24cb0760c1b1fd87cb9c6aea6843da",
+      "size_bytes": 1297010
+    },
+    "02_schemas/_unassigned/support_nomatch/02_schemas_freeze_report.json": {
+      "sha256": "9f49075d486327f97363a749b9ec609d820c457518114818108dbe514fdb1b6d",
+      "size_bytes": 23606
+    },
+    "02_schemas/_unassigned/support_nomatch/02_schemas_migration_and_rewrite_plan.json": {
+      "sha256": "539d9878020d055bc455abb61659eea7f15ecfcf7e72e75b3b4129e4ce363431",
+      "size_bytes": 86522
+    },
+    "02_schemas/_unassigned/support_nomatch/03_runtime_migration_and_rewrite_plan.json": {
+      "sha256": "bd598029f01bbf267956dd2fb5393a76aef0682dfd8a1ade78ba5a8971503142",
+      "size_bytes": 85453
+    },
+    "02_schemas/_unassigned/support_nomatch/04_prompt_governance_migration_and_rewrite_plan.json": {
+      "sha256": "e07952c992254a6515cc27a9d3045e7181a700bb08e29facf378fa59c73d097f",
+      "size_bytes": 106073
+    },
+    "02_schemas/_unassigned/support_nomatch/05_config_migration_and_rewrite_plan.json": {
+      "sha256": "44285642df62e29d8f10c119c914e347510609351cc9d9538e8790251bc52257",
+      "size_bytes": 85455
+    },
+    "02_schemas/_unassigned/support_nomatch/07_observability_migration_and_rewrite_plan.json": {
+      "sha256": "9db938aec0dabf3b10f791fcd9e34090c442b4d25e5a8fa2e17f926daede7472",
+      "size_bytes": 193126
+    },
+    "02_schemas/_unassigned/support_nomatch/08_scripts_migration_and_rewrite_plan.json": {
+      "sha256": "1e09aa9bf27c378846bb5a5ecc0d9838c2966a5542b0671a81c97051a61d8ae1",
+      "size_bytes": 91163
+    },
+    "02_schemas/_unassigned/support_nomatch/09_apps_migration_and_rewrite_plan.json": {
+      "sha256": "0063657c59b36b1f4b5fe796029e3c6c581b2f3a7a595291ebbe4d294a60b917",
+      "size_bytes": 67560
+    },
+    "02_schemas/_unassigned/support_nomatch/phase01_status.json": {
+      "sha256": "7a47370ceadb5f119f41848744524c7aba25240029ecca3e9765299dd4e817da",
+      "size_bytes": 269
+    },
+    "02_schemas/cache_ops/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/find_schema_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/match_schema_patterns.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/search_schema_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/understand_request/fetch_schema_history.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/understand_request/query_schema_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/understand_request/retrieve_schema_memory.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/apply_memory_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/enforce_memory_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/validate_memory_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/check_schema_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/enforce_schema_boundaries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/validate_schema_constraints.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/match_schema_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/retrieve_schema_similarity.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/search_schema_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/extract_schema_parameters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/fetch_schema_history.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/load_schema_planning.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/parse_schema_settings.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/query_schema_store.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/retrieve_schema_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/build_schema_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/format_schema_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/prepare_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/apply_safety.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/enforce_schema_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/validate_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/enforce_schema_limits.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/track_schema_usage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/update_schema_budget.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_schema_weights.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_schema_order.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_schema_ranking.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/understand_request/apply_schema_algorithm.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/understand_request/rank_schema_components.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/understand_request/sort_schema_results.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/aggregate_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/consolidate_updates.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/format_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/merge_contexts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/prepare_snapshot.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/serialize_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/apply_schema_backoff.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/handle_schema_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/implement_schema_retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/execute_action.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/invoke_service.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/process_response.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/check_schema_structure/policy_check_safety/check_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/check_schema_structure/policy_check_safety/enforce_contracts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/check_schema_structure/policy_check_safety/validate_schema.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/calculate_schema_similarity.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/compute_schema_embeddings.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/normalize_schema_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/capture_schema_diagnostics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/inspect_schema_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/log_schema_inspection.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/coordinate_schema_queries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/manage_schema_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/orchestrate_schema_planning.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/apply_orchestration_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/enforce_orchestration_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/validate_orchestration_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/handle_schema_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/implement_schema_fallback.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/retry_schema_operations.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/call_schema_api.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/dispatch_schema_tools.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/invoke_service.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/apply_execution_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/enforce_execution_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/validate_execution_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/execute_schema_execution.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/invoke_schema_tool.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/perform_schema_operation.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/format_execution_request.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/prepare_execution_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/serialize_execution_params.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/validation/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/check_execution_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/enforce_execution_contracts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/validate_execution_schema.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/enforce_safety_budget.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/track_safety_cost.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/update_safety_usage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/apply_safety_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/enforce_safety_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/validate_safety_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    }
+  },
+  "root": "02_schemas/",
+  "schema_version": "v1"
+}

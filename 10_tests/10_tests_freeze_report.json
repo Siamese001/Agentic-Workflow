@@ -1,5 +1,9 @@
 {
   "files": {
+    "10_tests/10_tests_freeze_report.json": {
+      "sha256": "62442d680b21610f3dd7b22e7f6825b9e5b38ec5213ba51d4c9aa5ed744724dc",
+      "size_bytes": 19565
+    },
     "10_tests/__init__.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
@@ -175,6 +179,10 @@
     "10_tests/integration/cross_domain/__init__.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
+    },
+    "10_tests/integration/e2e_validation.py": {
+      "sha256": "97ba56406cc3d650329dbf3e09dad3588b8383bcfdc3b020316cacc49254b278",
+      "size_bytes": 3032
     },
     "10_tests/integration/test_e2e_multi_turn_state.py": {
       "sha256": "8916476272f4bfc602fde1594738514a9cf975920022537621c143602cc003fd",

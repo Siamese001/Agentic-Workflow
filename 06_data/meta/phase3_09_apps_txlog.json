@@ -1,7 +1,18 @@
 {
   "target_root": "09_apps",
-  "started_at": "2025-12-05T22:08:17.344455",
+  "started_at": "2025-12-06T19:46:40.271580",
   "mutations": [
+    {
+      "op": "canonical_rewrite_component",
+      "path": "09_apps/09_apps_freeze_report.json",
+      "semantic_hash": "cb17e21b6b59b09d41e7d0d537c885a3de6d468e4c2296fb965fd7164a80191e",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.75,
+      "components": [
+        "09_apps_freeze_report.json::blob"
+      ]
+    },
     {
       "op": "canonical_rewrite_component_fallback_golden",
       "path": "09_apps/__init__.py",
@@ -19,12 +30,43 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
+      "path": "09_apps/_unassigned/apps_unknown/09_apps_freeze_report.json",
+      "semantic_hash": "60b85c8cf6de4f5024f1b5d1287b74072656f50390fc89fa98c5b068451dcc02",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.75,
+      "components": [
+        "_unassigned/apps_unknown/09_apps_freeze_report.json::blob"
+      ]
+    },
+    {
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/apply_weights.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3",
+      "engine": "CURRENT",
+      "archive_name": "01_agentic_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanConstraints_29",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanFactory_151",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanImpl_58",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanInterface_130",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanProcessor_45",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanResult_37",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::ApplyDataWeightsPlanType_22",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::func::apply_data_weights_162",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::class::SecurityError_125",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::imports::16",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::imports::12",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::imports::15",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::imports::13",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::imports::14",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::global_assignment::logger_20",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::block::7",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::block::19",
+        "0b02152fd655127d595dfe4afb4955576aeb58df5ee9592f38915f43328910c3::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_apply_weights.py::block::179"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -35,20 +77,62 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/assess_content_risk.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetyConstraints_30",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetyFactory_276",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetyImpl_60",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetyInterface_254",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetyResult_38",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetySafety_47",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::AssessDataRiskSafetyType_23",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::func::assess_data_risk_287",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::class::SecurityError_249",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::imports::12",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::imports::13",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::imports::16",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::imports::14",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::imports::17",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::imports::15",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::global_assignment::logger_21",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::block::304",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::block::20",
+        "66e1bb9df746e14713707fa95a668596644a4ac9f6d2cd8d15f335e210dde8b6::CURRENT::09_apps::_unassigned_apps_unknown_assess_content_risk.py::block::7"
+      ]
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/assess_safety_risk.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d",
+      "engine": "CURRENT",
+      "archive_name": "01_agentic_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetyConstraints_30",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetyFactory_276",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetyImpl_60",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetyInterface_254",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetyResult_38",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetySafety_47",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::AssessDataRiskSafetyType_23",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::func::assess_data_risk_287",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::class::SecurityError_249",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::imports::17",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::imports::16",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::imports::12",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::imports::14",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::imports::15",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::imports::13",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::global_assignment::logger_21",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::block::20",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::block::7",
+        "1dbc39b850045cb16fca50dea6e9e19f4731ee2d2ab3c9c4dc82f24d45ed501d::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_assess_safety_risk.py::block::304"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -59,12 +143,32 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/build_search_filters.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanConstraints_29",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanFactory_151",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanImpl_58",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanInterface_130",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanProcessor_45",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanResult_37",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::BuildDataFiltersPlanType_22",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::func::build_data_filters_162",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::class::SecurityError_125",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::imports::15",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::imports::13",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::imports::12",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::imports::14",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::imports::16",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::global_assignment::logger_20",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::block::19",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::block::7",
+        "45f2485a26efa845e14cf5a6fd776c86f931706ed3c1ee8c9794ae7b6d35e504::CURRENT::09_apps::_unassigned_apps_unknown_build_search_filters.py::block::179"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -107,12 +211,32 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/compute_confidence.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16",
+      "engine": "CURRENT",
+      "archive_name": "01_agentic_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanResult_37",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanImpl_58",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanInterface_130",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanProcessor_45",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanConstraints_29",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanFactory_151",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::ComputeDataConfidencePlanType_22",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::func::compute_data_confidence_162",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::class::SecurityError_125",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::imports::16",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::imports::12",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::imports::14",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::imports::13",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::imports::15",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::global_assignment::logger_20",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::block::179",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::block::7",
+        "41c19e3bdfd83459a3d228e16dc74a60549d2dde31ddf90121f08a12ac1daf16::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_compute_confidence.py::block::19"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -123,12 +247,33 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/compute_safety_score.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6",
+      "engine": "CURRENT",
+      "archive_name": "01_agentic_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetyConstraints_30",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetyFactory_276",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetyImpl_60",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetyInterface_254",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetyResult_38",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetySafety_47",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::ComputeDataScoreSafetyType_23",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::func::compute_data_score_287",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::class::SecurityError_249",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::imports::15",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::imports::16",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::imports::14",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::imports::12",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::imports::17",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::imports::13",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::global_assignment::logger_21",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::block::7",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::block::304",
+        "9e795d471863e7269801f5ad7e69682e74ae72a1cd28e975ddae03488d78d5e6::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_compute_safety_score.py::block::20"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -155,12 +300,32 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/diagnose_personalization_issues.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorImpl_58",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorProcessor_45",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorConstraints_29",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorFactory_151",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorResult_37",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorInterface_130",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::DiagnoseObservabilityIssuesExecutorType_22",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::func::diagnose_observability_issues_162",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::class::SecurityError_125",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::imports::12",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::imports::15",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::imports::16",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::imports::14",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::imports::13",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::global_assignment::logger_20",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::block::19",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::block::179",
+        "38099e0bcc7620539121d06a7a48d006075b459a96bdeeedf46340881c79cdaf::CURRENT::09_apps::_unassigned_apps_unknown_diagnose_personalization_issues.py::block::7"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -171,12 +336,33 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/evaluate_compliance_level.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetyFactory_276",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetyInterface_254",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetyConstraints_30",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetyType_23",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetySafety_47",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetyImpl_60",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::EvaluateDataComplianceSafetyResult_38",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::func::evaluate_data_compliance_287",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::class::SecurityError_249",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::imports::16",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::imports::14",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::imports::15",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::imports::13",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::imports::12",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::imports::17",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::global_assignment::logger_21",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::block::20",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::block::304",
+        "20c3de66a4fc11e9a1162fc3a2cf0ecf87931a72ff831605c6858081bea82529::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_compliance_level.py::block::7"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -195,20 +381,61 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/evaluate_safety_compliance.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783",
+      "engine": "CURRENT",
+      "archive_name": "01_agentic_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetyType_23",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetySafety_47",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetyInterface_254",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetyConstraints_30",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetyResult_38",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetyFactory_276",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::EvaluateDataComplianceSafetyImpl_60",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::func::evaluate_data_compliance_287",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::class::SecurityError_249",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::imports::15",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::imports::12",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::imports::13",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::imports::14",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::imports::17",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::imports::16",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::global_assignment::logger_21",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::block::304",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::block::20",
+        "3105c758e72e55c0961fad33efdd00993ee980381908e28ae5522e2d6421e783::CURRENT::01_agentic_core::L5_safety_P4_safety_check_rules_semantic_semantic_adjust_scores_evaluate_safety_compliance.py::block::7"
+      ]
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/evaluate_writing_quality.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::SecurityError_125",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanConstraints_29",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanFactory_151",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanInterface_130",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanImpl_58",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanProcessor_45",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanResult_37",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::class::ValidateDataQualityPlanType_22",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::func::validate_data_quality_162",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::imports::16",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::imports::14",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::imports::15",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::imports::13",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::imports::12",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::global_assignment::logger_20",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::block::19",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::block::7",
+        "c94588778662394444ec4aa46b9940c39b7b072a678a76e18e992211b17fa19f::CURRENT::09_apps::_unassigned_apps_unknown_evaluate_writing_quality.py::block::179"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -243,12 +470,32 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/format_data.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanConstraints_29",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanFactory_151",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanImpl_58",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanInterface_130",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanProcessor_45",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanResult_37",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::FormatDataContextPlanType_22",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::func::format_data_context_162",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::class::SecurityError_125",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::imports::15",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::imports::13",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::imports::12",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::imports::16",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::imports::14",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::global_assignment::logger_20",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::block::19",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::block::7",
+        "58e4ed06971623e019edb73c72a995eac31111cd919b62b82bbc6e93b2251bc9::CURRENT::09_apps::_unassigned_apps_unknown_format_data.py::block::179"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -291,12 +538,32 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/handle_api_timeouts.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::func::handle_data_timeouts_162",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::SecurityError_125",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorFactory_151",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorImpl_58",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorType_22",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorProcessor_45",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorConstraints_29",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorInterface_130",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::class::HandleDataTimeoutsOrchestratorResult_37",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::imports::15",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::imports::13",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::imports::12",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::imports::14",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::imports::16",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::global_assignment::logger_20",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::block::19",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::block::179",
+        "3bba10b39a80e54b9abc27118a89f87f34d7e32c9ef37df795a9128c6e210dd6::CURRENT::09_apps::_unassigned_apps_unknown_handle_api_timeouts.py::block::7"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -307,20 +574,60 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/implement_fallback_strategy.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::func::implement_data_fallback_162",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::SecurityError_125",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorType_22",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorInterface_130",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorConstraints_29",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorProcessor_45",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorImpl_58",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorFactory_151",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::class::ImplementDataFallbackOrchestratorResult_37",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::imports::14",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::imports::13",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::imports::16",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::imports::12",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::imports::15",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::global_assignment::logger_20",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::block::179",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::block::7",
+        "c8587170016098ee86b973549b340d655a748f612cdc0c3cce9e569834fda4dc::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_strategy.py::block::19"
+      ]
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/implement_fallback_templates.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::func::implement_data_fallback_162",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::SecurityError_125",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorProcessor_45",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorConstraints_29",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorFactory_151",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorResult_37",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorType_22",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorImpl_58",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::class::ImplementDataFallbackOrchestratorInterface_130",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::imports::15",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::imports::14",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::imports::13",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::imports::16",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::imports::12",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::global_assignment::logger_20",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::block::7",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::block::19",
+        "370a2a97241c5d98fb53cd032aa7a4766e043fa56ffd7fce61d65c2b3aead116::CURRENT::09_apps::_unassigned_apps_unknown_implement_fallback_templates.py::block::179"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -347,36 +654,116 @@
       "reason": "no_valid_spans"
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/normalize_relevance_scores.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanConstraints_29",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanFactory_151",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanInterface_130",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanImpl_58",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanProcessor_45",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanResult_37",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::NormalizeDataScoresPlanType_22",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::func::normalize_data_scores_162",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::class::SecurityError_125",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::imports::13",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::imports::14",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::imports::16",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::imports::12",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::imports::15",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::global_assignment::logger_20",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::block::179",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::block::7",
+        "5939402fd0f7c4361c7c038c46c1b5fec4a5434b716ca66598679529c7e8208b::CURRENT::09_apps::_unassigned_apps_unknown_normalize_relevance_scores.py::block::19"
+      ]
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/normalize_scores.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab",
+      "engine": "CURRENT",
+      "archive_name": "01_agentic_core",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanConstraints_29",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanFactory_151",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanImpl_58",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanInterface_130",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanProcessor_45",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanResult_37",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::NormalizeDataScoresPlanType_22",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::func::normalize_data_scores_162",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::class::SecurityError_125",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::imports::16",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::imports::12",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::imports::15",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::imports::13",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::imports::14",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::global_assignment::logger_20",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::block::7",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::block::179",
+        "c53ae83c2da81334bf5fdd511f835148431449fce15eff6a833489ff76835aab::CURRENT::01_agentic_core::L1_cognition_P2_inspect_semantic_adjust_scores_normalize_scores.py::block::19"
+      ]
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/normalize_skill_scores.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanImpl_58",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanInterface_130",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanProcessor_45",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanConstraints_29",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanResult_37",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanFactory_151",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::NormalizeScriptsScoresPlanType_22",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::func::normalize_scripts_scores_162",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::class::SecurityError_125",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::imports::16",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::imports::14",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::imports::13",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::imports::12",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::imports::15",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::global_assignment::logger_20",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::block::179",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::block::7",
+        "29c1d87a8020e1a06a4b524428df36f46da6f8d35db3f7d2a6183ba001657f05::CURRENT::09_apps::_unassigned_apps_unknown_normalize_skill_scores.py::block::19"
+      ]
     },
     {
-      "op": "canonical_rewrite_component_fallback_golden",
+      "op": "canonical_rewrite_component",
       "path": "09_apps/_unassigned/apps_unknown/orchestrate_execution_planning.py",
-      "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "engine": "RG",
-      "archive_name": "Agentic-Workflow-10_11",
-      "reason": "no_valid_spans"
+      "semantic_hash": "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19",
+      "engine": "CURRENT",
+      "archive_name": "09_apps",
+      "confidence": 0.35000000000000003,
+      "components": [
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::func::orchestrate_data_planning_162",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::SecurityError_125",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorConstraints_29",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorResult_37",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorInterface_130",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorImpl_58",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorFactory_151",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorType_22",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::class::OrchestrateDataPlanningOrchestratorProcessor_45",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::imports::14",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::imports::16",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::imports::15",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::imports::12",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::imports::13",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::global_assignment::logger_20",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::block::19",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::block::179",
+        "19e8900991753eeb6bc37d99058cac65202e93258c434e1306521fabcadc9f19::CURRENT::09_apps::_unassigned_apps_unknown_orchestrate_execution_planning.py::block::7"
+      ]
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
@@ -452,7 +839,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/scoring_ops/assess_message_relevance.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/scoring_ops/assess_message_relevance.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -460,7 +847,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/state_update_ops/aggregate_campaign_state.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/aggregate_campaign_state.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -468,7 +855,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/state_update_ops/merge_generation_history.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/merge_generation_history.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -476,7 +863,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/state_update_ops/merge_outreach_history.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/merge_outreach_history.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -484,7 +871,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/state_update_ops/serialize_generation_context.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/serialize_generation_context.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -492,7 +879,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/state_update_ops/serialize_outreach_context.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/serialize_outreach_context.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -500,7 +887,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_lic/apps_lic/state_update_ops/snapshot_campaign_state.py",
+      "path": "09_apps/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/apps_lic/state_update_ops/snapshot_campaign_state.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -516,7 +903,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_rg/apps_rg/scoring_ops/evaluate_resume_effectiveness.py",
+      "path": "09_apps/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/scoring_ops/evaluate_resume_effectiveness.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -524,7 +911,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_rg/apps_rg/state_update_ops/aggregate_resume_state.py",
+      "path": "09_apps/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/state_update_ops/aggregate_resume_state.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
@@ -532,7 +919,7 @@
     },
     {
       "op": "canonical_rewrite_component_fallback_golden",
-      "path": "09_apps/apps_rg/apps_rg/state_update_ops/snapshot_resume_state.py",
+      "path": "09_apps/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/apps_rg/state_update_ops/snapshot_resume_state.py",
       "semantic_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "engine": "RG",
       "archive_name": "Agentic-Workflow-10_11",
