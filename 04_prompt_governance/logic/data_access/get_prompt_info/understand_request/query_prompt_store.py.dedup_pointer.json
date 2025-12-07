@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "02_schemas\\logic\\data_access\\get_schema_info\\understand_request\\query_schema_store.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "9364b607d29efe5c",
+  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\query_prompt_store.py",
+  "created": "2025-12-07T11:54:50.834845"
+}

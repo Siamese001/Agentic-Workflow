@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\logic\\validation\\convert_content\\embedding_compare_meaning\\normalize_vectors.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "6e409f76fe473f6b",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\convert_content\\embedding\\normalize.py",
+  "created": "2025-12-07T11:54:50.757040"
+}

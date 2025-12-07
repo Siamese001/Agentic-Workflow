@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\runtime_ops\\runtime_ops\\validation\\check_prompt_structure\\policy_check_safety\\enforce_execution_contracts.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "f6f56ae90ccddca9",
+  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\pipeline_ops\\pipeline_ops\\guardrails\\check_rules\\policy_check_safety\\enforce_orchestration_policy.py",
+  "created": "2025-12-07T11:54:50.848789"
+}

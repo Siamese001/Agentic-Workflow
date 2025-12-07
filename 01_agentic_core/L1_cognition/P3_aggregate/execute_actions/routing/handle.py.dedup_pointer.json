@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\handle.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "9b74fa0999314878",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P3_aggregate\\execute_actions\\routing\\handle.py",
+  "created": "2025-12-07T11:54:50.419137"
+}

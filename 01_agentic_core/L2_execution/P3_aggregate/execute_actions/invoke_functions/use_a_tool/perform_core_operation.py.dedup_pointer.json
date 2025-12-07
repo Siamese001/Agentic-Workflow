@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\perform_runtime_operation.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "f18b9253e3950228",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\perform_core_operation.py",
+  "created": "2025-12-07T11:54:50.486412"
+}

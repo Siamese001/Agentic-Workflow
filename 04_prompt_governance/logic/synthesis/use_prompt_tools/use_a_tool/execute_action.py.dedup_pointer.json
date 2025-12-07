@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\logic\\synthesis\\use_tools\\use_a_tool\\execute_action.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "3d5a54e3dbffddf2",
+  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\synthesis\\use_prompt_tools\\use_a_tool\\execute_action.py",
+  "created": "2025-12-07T11:54:50.818348"
+}

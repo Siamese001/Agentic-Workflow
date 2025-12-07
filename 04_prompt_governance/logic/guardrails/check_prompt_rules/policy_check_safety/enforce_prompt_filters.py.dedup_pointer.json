@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\enforce_core_filters.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "0348ff19b5d5960a",
+  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\guardrails\\check_prompt_rules\\policy_check_safety\\enforce_prompt_filters.py",
+  "created": "2025-12-07T11:54:50.632071"
+}

@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\logic\\data_access\\check_rules\\policy_check_safety\\enforce_boundaries.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "86623f25030cdd50",
+  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\logic\\data_access\\check_schema_rules\\policy_check_safety\\enforce_schema_boundaries.py",
+  "created": "2025-12-07T11:54:50.836728"
+}

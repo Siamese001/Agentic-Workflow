@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\search_vectors.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "139255cd2bca20af",
+  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\cache_ops\\data_access\\get_schema_info\\embedding_compare_meaning\\search_schema_vectors.py",
+  "created": "2025-12-07T11:54:50.319050"
+}

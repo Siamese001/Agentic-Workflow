@@ -1,9 +1,0 @@
-"""
-08_scripts/__init__.py
-AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
-L5 CANONICAL — WINDSURF Ω — 2025-12-07
-MERKLE-INTENDED: 4466337736ee2016e740b4cdd916819eca8f05bf3a30e1535300d31dc18396f1
-"""
-
-
-from __future__ import annotations

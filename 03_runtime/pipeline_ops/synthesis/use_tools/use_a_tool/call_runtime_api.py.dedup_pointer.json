@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "09_apps\\__init__.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "a8f46d884f284d88",
+  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\call_runtime_api.py",
+  "created": "2025-12-07T11:54:46.051847"
+}
