@@ -29,6 +29,7 @@
     "K5: Domain 'scripts' model 'operational_support' valid.",
     "K5: Domain 'shared' model 'operational_support' valid.",
     "K11: shared_engine_ops structure checked.",
+    "K13: semantic_cache migrated to durable knowledge plane \u2014 runtime checks removed",
     "K10: Test taxonomy high-level groups checked."
   ]
 }

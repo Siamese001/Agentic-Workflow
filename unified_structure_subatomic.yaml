@@ -1,13 +1,13 @@
 # =====================================================================
-# unified_structure_subatomic.yaml (SSoT v4.1 - Static Governance)
+# unified_structure_subatomic.yaml (SSoT v4.2 - Static Governance)
 # =====================================================================
 meta_sidecar: unified_structure_subatomic_meta.yaml
 canonical_definition: "Canonical SSoT = MERGE(main_yaml, meta_yaml)"
 
 # ---------------------------------------------------------------------
-# GOVERNANCE LAYER (v4.1 - Static SSoT Governance)
+# GOVERNANCE LAYER (v4.2 - Static SSoT Governance)
 # ---------------------------------------------------------------------
-structure_version: "4.1"
+structure_version: "4.2"
 description: "Agentic-Workflow SSoT with domain modes, structure types, and static governance enforcement"
 binds_to: "unified_structure_subatomic_meta.yaml"
 canonical_role: "primary architectural map defining allowable filesystem paths"
@@ -1306,176 +1306,42 @@ config:
   __init__.py: null
 
 data:
-  logic:
-    data_access:
-      __init__.py: null
-      check_rules:
-        policy_check_safety:
-          check_policy.py: null
-          enforce_boundaries.py: null
-          validate_constraints.py: null
-      get_info:
-        understand_request:
-          extract_parameters.py: null
-          fetch_history.py: null
-          load_planning.py: null
-          parse_settings.py: null
-          query_store.py: null
-          retrieve_context.py: null
-        utility_prepare_information:
-          build_filters.py: null
-          format_context.py: null
-          prepare_payload.py: null
-        embedding_compare_meaning:
-          match_context.py: null
-          retrieve_similarity.py: null
-          search_vectors.py: null
-    validation:
-      __init__.py: null
-      check_structure:
-        policy_check_safety:
-          check_compliance.py: null
-          enforce_contracts.py: null
-          validate_schema.py: null
-        # Item B: Removed semantic_adjust_scores
-      convert_content:
-        embedding_compare_meaning:
-          calculate_similarity.py: null
-          compute_embeddings.py: null
-          normalize_vectors.py: null
-        # Item B: Removed semantic_adjust_scores
-      find_problems:
-        diagnostics_ops:
-          capture_diagnostics.py: null
-          inspect_state.py: null
-          log_inspection.py: null
-    synthesis:
-      __init__.py: null
-      pick_best_result:
-        understand_request:
-          apply_algorithm.py: null
-          rank_components.py: null
-          sort_results.py: null
-        refinement_adjust_scores:
-          adjust_weights.py: null
-          optimize_order.py: null
-          refine_ranking.py: null
-      state_update_ops:
-        aggregate_state.py: null
-        consolidate_updates.py: null
-        merge_contexts.py: null
-        format_payload.py: null
-        prepare_snapshot.py: null
-        serialize_state.py: null
-      use_tools:
-        use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
-        routing_retry_task:
-          apply_backoff.py: null
-          handle_failures.py: null
-          implement_retry.py: null
-    guardrails:
-      __init__.py: null
-      check_rules:
-        policy_check_safety:
-          apply_safety.py: null
-          enforce_filters.py: null
-          validate_ethics.py: null
-      manage_costs:
-        state_update_ops:
-          enforce_data_limits.py: null
-          track_data_usage.py: null
-          update_data_budget.py: null
-    __init__.py: null
-  runtime_ops:
-    validation:
-      __init__.py: null
-      check_structure:
-        policy_check_safety:
-          check_execution_compliance.py: null
-          enforce_execution_contracts.py: null
-          validate_execution_schema.py: null
-    synthesis:
-      __init__.py: null
-      use_tools:
-        use_a_tool:
-          execute_data_execution.py: null
-          invoke_data_tool.py: null
-          perform_data_operation.py: null
-        utility_prepare_information:
-          format_execution_request.py: null
-          prepare_execution_payload.py: null
-          serialize_execution_params.py: null
-    guardrails:
-      __init__.py: null
-      check_rules:
-        policy_check_safety:
-          apply_execution_safety.py: null
-          enforce_execution_policy.py: null
-          validate_execution_ethics.py: null
-  pipeline_ops:
-    data_access:
-      __init__.py: null
-      get_info:
-        understand_request:
-          coordinate_data_queries.py: null
-          manage_data_context.py: null
-          orchestrate_data_planning.py: null
-    synthesis:
-      __init__.py: null
-      use_tools:
-        use_a_tool:
-          call_data_api.py: null
-          dispatch_data_tools.py: null
-          invoke_service.py: null
-        routing_retry_task:
-          handle_failures.py: null
-          implement_fallback.py: null
-          retry_operations.py: null
-    guardrails:
-      __init__.py: null
-      check_rules:
-        policy_check_safety:
-          apply_orchestration_safety.py: null
-          enforce_orchestration_policy.py: null
-          validate_orchestration_ethics.py: null
-  cache_ops:
-    data_access:
-      __init__.py: null
-      get_info:
-        understand_request:
-          fetch_history.py: null
-          query_data_state.py: null
-          retrieve_data_memory.py: null
-        embedding_compare_meaning:
-          find_context.py: null
-          match_patterns.py: null
-          search_vectors.py: null
-    guardrails:
-      __init__.py: null
-      check_rules:
-        policy_check_safety:
-          apply_memory_safety.py: null
-          enforce_memory_policy.py: null
-          validate_memory_ethics.py: null
-  security_controls:
-    guardrails:
-      __init__.py: null
-      check_rules:
-        policy_check_safety:
-          apply_safety_policy.py: null
-          enforce_safety_filters.py: null
-          validate_safety_ethics.py: null
-        # Item B: Removed semantic_adjust_scores
-        manage_costs:
-          state_update_ops:
-            enforce_safety_budget.py: null
-            track_safety_cost.py: null
-            update_safety_usage.py: null
-    __init__.py: null
-  __init__.py: null
+  semantic_cache:
+    v1_curated: {}
+    v2_curated: {}
+    lineage.json: null
+    curated_chunks:
+      README.md: null
+  prompt_libraries:
+    injections: {}
+    templates: {}
+    safety: {}
+    exemplars: {}
+  eval_benchmarks:
+    retrieval: {}
+    tool_use: {}
+    safety: {}
+    consistency: {}
+    scoring_schemas: {}
+  openai_best_practices:
+    sdk_reference: {}
+    agentic_patterns: {}
+    safety_cascades: {}
+    prompt_injection_catalog: {}
+  reference_playbooks:
+    migrations: {}
+    debugging: {}
+    safety: {}
+    red_teaming: {}
+  examples:
+    sdk: {}
+    structured_outputs: {}
+    agentic_flows: {}
+    tool_calling: {}
+  archives:
+    deprecated: {}
+    historical:
+      2025_q4_freeze: {}
 
 observability:
   logic:

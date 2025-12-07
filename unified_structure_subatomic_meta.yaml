@@ -28,15 +28,18 @@ protected_paths:
   - "**/.mypy_cache/**"
   - "**/.ruff_cache/**"
 
-  # Phase 0.5 / Phase 1 internal backups
-  - "06_data/semantic_cache/**"
-  - "06_data/phase1_backup/**"
-  - "06_data/phase1_indices/**"
-  - "06_data/phase1_legacy_folders/**"
-  - "06_data/phase1_borderline_matches/**"
-
   # Entire shared-engine library must be immutable
   - "shared_engine_ops/**"
+
+  # 06_data curated knowledge zones (SSoT v4.2)
+  - "06_data/semantic_cache/v*_curated/**"
+  - "06_data/prompt_libraries/**"
+  - "06_data/eval_benchmarks/**"
+  - "06_data/openai_best_practices/**"
+  - "06_data/reference_playbooks/**"
+  - "06_data/examples/**"
+  - "06_data/archives/**.json"
+  - "06_data/**.md"
 
 # ---------------------------------------------------------------------
 # 3. DOMAIN-LEVEL INVARIANTS
@@ -158,12 +161,30 @@ domain_invariants:
     max_depth: 7
 
   data:
-    description: "Persistence, lineage, semantic-store integration."
+    description: "Durable, versioned, human-curated data plane. No executables. No runtime artifacts."
     model: "operational_support"
-    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
-    # Rec 3: Aligned with actual repo directory structure
-    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
-    max_depth: 7
+    forbidden_patterns:
+      - "*.py"
+      - "__pycache__"
+      - "phase*"
+      - "backup"
+      - "index"
+      - "log*"
+      - "temp*"
+      - "dedup*"
+      - "stub*"
+      - "freeze*"
+      - "merge*"
+      - "manifest*"
+    allowed_layers:
+      - semantic_cache
+      - prompt_libraries
+      - eval_benchmarks
+      - openai_best_practices
+      - reference_playbooks
+      - examples
+      - archives
+    max_depth: 5
 
   observability:
     description: "Telemetry, monitoring, metrics."
@@ -411,33 +432,25 @@ validation_invariants:
   forbidden_phase_layer_combinations: []
 
   allowed_support_layers:
+    - semantic_cache
+    - prompt_libraries
+    - eval_benchmarks
+    - openai_best_practices
+    - reference_playbooks
+    - examples
+    - archives
+    # Non-data support domains retain their original layers
     - logic
     - runtime_ops
     - pipeline_ops
     - cache_ops
     - security_controls
-    # Additional support domain directories found in actual repo
     - templates
     - YAML
     - compat
     - shared
     - migration
     - utilities
-    - dedup_analysis
-    - dedup_pointers
-    - execution_logs
-    - final_merkle
-    - meta
-    - phase01
-    - phase02
-    - phase03
-    - phase04
-    - phase05
-    - phase1_indices
-    - semantic_cache
-    - stub_elimination
-    - Agentic AI
-    - Agentic Folder Structure
 
   allowed_support_ops:
     - data_access
@@ -491,35 +504,20 @@ engine_separation:
 # 9. SEMANTIC CACHE RULES
 # ---------------------------------------------------------------------
 semantic_cache_rules:
-  required_locations:
-    - "L1_cognition/P1_retrieve"
-    - "L4_memory/P1_retrieve"
-
-  required_files:
-    - "load_semantic_cache_index.py"
-    - "match_semantic_history.py"
-    - "compute_semantic_distance.py"
-
-  forbidden_locations:
-    - "tests/**"
-    - "scripts/**"
-    - "observability/**"
-    - "L2_execution/P1_retrieve/**"
-    - "L3_orchestration/P1_retrieve/**"
-    - "L3_orchestration/P2_inspect/**"
-    - "L4_memory/P2_inspect/**"
-
-  description: >
-    Semantic cache provides history matching and distance computation for retrieval operations.
-    Required in L1_cognition/P1_retrieve and L4_memory/P1_retrieve for all cognitive engines.
+  required_locations: []
+  required_files: []
+  forbidden_locations: []
+  description: "semantic_cache is now a durable curated asset under 06_data/semantic_cache/v*_curated/. No longer runtime-coupled."
 
 # ---------------------------------------------------------------------
 # 10. META VERSIONING
 # ---------------------------------------------------------------------
-meta_version: "4.1"
+meta_version: "4.2"
 created_by: "Agentic-Workflow Hardened Architecture"
 notes: >
-  Hardened meta-YAML aligned to SSoT v4.1 (static governance model).
+  Hardened meta-YAML aligned to SSoT v4.2 (static governance model).
+  - v4.2: 06_data converted to pure durable knowledge plane (OpenAI-grade).
+  - semantic_cache migrated from runtime component to curated asset.
   - No Phase 0.5–4 execution; YAML pair is static, authoritative specification.
   - Rec 1: Test taxonomy unified into META as single authoritative definition.
   - Rec 2: Cognitive domain allowed_phases now inclusive (P1–P4); layer rules gate placement.
