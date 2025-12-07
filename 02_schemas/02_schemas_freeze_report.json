@@ -1,0 +1,494 @@
+{
+  "files": {
+    "02_schemas/01_agentic_core_migration_and_rewrite_plan.json": {
+      "sha256": "050dc2645c822f4b99b34ca19bb6df454c0f8a42f299b4a7c3cd6eaa585356e0",
+      "size_bytes": 5635286
+    },
+    "02_schemas/02_schemas_freeze_report.json": {
+      "sha256": "078028b1a7cf001fbee7effe5794459d2c06de22b897dc5a34bbfc4cd0df4d49",
+      "size_bytes": 25559
+    },
+    "02_schemas/02_schemas_migration_and_rewrite_plan.json": {
+      "sha256": "055afa5cd77e72883f43d81328f697549252ec38262ffafd7fb4bd88efcd0c38",
+      "size_bytes": 103391
+    },
+    "02_schemas/03_runtime_migration_and_rewrite_plan.json": {
+      "sha256": "f4aea6a4fd79a2325e58fe8235881ded9ce20c909b203cc7679ca109e8da830c",
+      "size_bytes": 1131665
+    },
+    "02_schemas/04_prompt_governance_migration_and_rewrite_plan.json": {
+      "sha256": "c3a3cae228ac52ad3b01482d19c9eaf2571d583b16f5870ebff6f427e39cbb68",
+      "size_bytes": 1157321
+    },
+    "02_schemas/05_config_migration_and_rewrite_plan.json": {
+      "sha256": "90df44b89d9002e1f798e2f76d211950885e7362e5fb0e0ce4e90020577e4132",
+      "size_bytes": 1103921
+    },
+    "02_schemas/07_observability_migration_and_rewrite_plan.json": {
+      "sha256": "e7168b828a5a65e6a39fbcc7570344f325bb5149669fa79852c2633b873a6f36",
+      "size_bytes": 2438593
+    },
+    "02_schemas/08_scripts_migration_and_rewrite_plan.json": {
+      "sha256": "c3b7fbfe1328811dcaeef4d0f8a0f9619486dc59265dfcfaf6082a6b22217c9f",
+      "size_bytes": 1903038
+    },
+    "02_schemas/09_apps_migration_and_rewrite_plan.json": {
+      "sha256": "3b8812364390f1b196d37f8cbe10031d91b106b94e6344aef82c649edade6a6f",
+      "size_bytes": 332573
+    },
+    "02_schemas/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/_unassigned/support_nomatch/01_agentic_core_migration_and_rewrite_plan.json": {
+      "sha256": "5a23d5cd27121d4887be36e6dd92404115e33a5a7320a4d33a2745fc3d645717",
+      "size_bytes": 1297139
+    },
+    "02_schemas/_unassigned/support_nomatch/02_schemas_freeze_report.json": {
+      "sha256": "1c5df82d72d58a0c475e94078feadcc4523dd795cccf88a0676995b5fdad85f2",
+      "size_bytes": 23735
+    },
+    "02_schemas/_unassigned/support_nomatch/02_schemas_migration_and_rewrite_plan.json": {
+      "sha256": "fcb6e7b0e855d2f4abd864d5f8083867c538d3b39619d0b6a2c219de9ef8f81f",
+      "size_bytes": 86651
+    },
+    "02_schemas/_unassigned/support_nomatch/03_runtime_migration_and_rewrite_plan.json": {
+      "sha256": "bcc58390d1fba4b9448b022538302ce106cacfa5952d3aa5f5e3d294c31c9e24",
+      "size_bytes": 85582
+    },
+    "02_schemas/_unassigned/support_nomatch/04_prompt_governance_migration_and_rewrite_plan.json": {
+      "sha256": "2ab55c07424d326631c8fa08ace5bac310add4c22d6fa9746e4bb5d1d450fab3",
+      "size_bytes": 106202
+    },
+    "02_schemas/_unassigned/support_nomatch/05_config_migration_and_rewrite_plan.json": {
+      "sha256": "25c7724927d95302fac05bfc38cb3b2b8fe09121660c1d52385478f482048b18",
+      "size_bytes": 85584
+    },
+    "02_schemas/_unassigned/support_nomatch/07_observability_migration_and_rewrite_plan.json": {
+      "sha256": "dc9b7feeca15630e1764b47ec4367cfe7d5c0b974f82ef43e587e0ea5de9eef2",
+      "size_bytes": 193255
+    },
+    "02_schemas/_unassigned/support_nomatch/08_scripts_migration_and_rewrite_plan.json": {
+      "sha256": "b97fb890570322b29d8fdc5b35d5f01a6c941f1199f0e48b1691209a47925cd2",
+      "size_bytes": 91292
+    },
+    "02_schemas/_unassigned/support_nomatch/09_apps_migration_and_rewrite_plan.json": {
+      "sha256": "3d623be9be57b044fe61af895032f53894ac485c3532e9dbb7ec7ad1cbb09bec",
+      "size_bytes": 67689
+    },
+    "02_schemas/_unassigned/support_nomatch/phase01_status.json": {
+      "sha256": "159749d9f98a6a8627a748824e3edb833a376f531df2acce62174e0bdaba2168",
+      "size_bytes": 398
+    },
+    "02_schemas/cache_ops/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/find_schema_context.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/match_schema_patterns.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/embedding_compare_meaning/search_schema_vectors.py": {
+      "sha256": "0fe5f434c2eacb673a74aadd58f09d8264ee9b6dd1dbaf4c7683f8d3fa8e3f7f",
+      "size_bytes": 6725
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/understand_request/fetch_schema_history.py": {
+      "sha256": "46092375fbdd3414e97274d057281c873bb6288a6b517d93c63a26248df83f95",
+      "size_bytes": 6701
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/understand_request/query_schema_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/data_access/get_schema_info/understand_request/retrieve_schema_memory.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/apply_memory_safety.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/enforce_memory_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/cache_ops/guardrails/check_schema_rules/policy_check_safety/validate_memory_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "02_schemas/logic/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/check_schema_policy.py": {
+      "sha256": "00c63fb31a0f414e444bf03ee682c4ce59612b0853eed80dbfe58ff5bf23435b",
+      "size_bytes": 6639
+    },
+    "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/enforce_schema_boundaries.py": {
+      "sha256": "12ad9231868b70237ef564df606307178496ae7b43a30b1986e8e59d56623bdc",
+      "size_bytes": 6783
+    },
+    "02_schemas/logic/data_access/check_schema_rules/policy_check_safety/validate_schema_constraints.py": {
+      "sha256": "f5f9dbf24ad148d77a7e2d831eb185d7b428ba3e1aefcbe3c80d7f7f1a6226e1",
+      "size_bytes": 6831
+    },
+    "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/match_schema_context.py": {
+      "sha256": "fcb56d9199731117f3ae634fefc86373d0fc6e2437d6e114bc05be18d680fcdd",
+      "size_bytes": 6701
+    },
+    "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/retrieve_schema_similarity.py": {
+      "sha256": "e21fc941f7e9350c583516457add4e544d37f293f1fc07cf0551ed3d16ea5128",
+      "size_bytes": 6845
+    },
+    "02_schemas/logic/data_access/get_schema_info/embedding_compare_meaning/search_schema_vectors.py": {
+      "sha256": "0fe5f434c2eacb673a74aadd58f09d8264ee9b6dd1dbaf4c7683f8d3fa8e3f7f",
+      "size_bytes": 6725
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/extract_schema_parameters.py": {
+      "sha256": "7a2a637fd97509240e23ebc8ef147fb324b922f8c6b3f912aae094538902f80b",
+      "size_bytes": 6783
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/fetch_schema_history.py": {
+      "sha256": "46092375fbdd3414e97274d057281c873bb6288a6b517d93c63a26248df83f95",
+      "size_bytes": 6701
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/load_schema_planning.py": {
+      "sha256": "b9147bcbf2ff31013dc77e2b18f2836bc4577cbec3097e8c8e9eec8abe709125",
+      "size_bytes": 6663
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/parse_schema_settings.py": {
+      "sha256": "cade9a6db829195c6910fb6c845fb0736fe1971f4bbbbc9a2306b84a465d82f8",
+      "size_bytes": 6687
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/query_schema_store.py": {
+      "sha256": "eb1342db92cadace6a53d4771ab213a4ae79fcb6a1a24ca2447c4efe355ade1b",
+      "size_bytes": 6653
+    },
+    "02_schemas/logic/data_access/get_schema_info/understand_request/retrieve_schema_context.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/build_schema_filters.py": {
+      "sha256": "a4ac4619855cdfa64566bfbbce049178bf154f09a5372ee6c8889afd0f0934ac",
+      "size_bytes": 6663
+    },
+    "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/format_schema_context.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "02_schemas/logic/data_access/get_schema_info/utility_prepare_information/prepare_payload.py": {
+      "sha256": "cd3e5de12df302ff910280f6b224849c37966b3ed19b0afba25d69530a580d1a",
+      "size_bytes": 6711
+    },
+    "02_schemas/logic/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/apply_safety.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/enforce_schema_filters.py": {
+      "sha256": "eb61b836802d1c2c59122de07ccbfa43a8715f2b032910e873a60556e0da1a0f",
+      "size_bytes": 11353
+    },
+    "02_schemas/logic/guardrails/check_schema_rules/policy_check_safety/validate_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/enforce_schema_limits.py": {
+      "sha256": "a805c1110d3a5c2b7a4e594f2bd98d4628d9046a485a70543d3a9be5391fdaac",
+      "size_bytes": 11329
+    },
+    "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/track_schema_usage.py": {
+      "sha256": "c6808a4053e7ae56860ce58449e4e9b08cd1a06c49a7a3ff5d82ab16fa155c21",
+      "size_bytes": 11257
+    },
+    "02_schemas/logic/guardrails/manage_schema_costs/state_update_ops/update_schema_budget.py": {
+      "sha256": "2e56d32b482b4837662f51382bfa5832e1c1fd64a5eea44a846996d0f62c1d7a",
+      "size_bytes": 11305
+    },
+    "02_schemas/logic/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_schema_weights.py": {
+      "sha256": "45895c3c9a1721e1c241815ffc1a5287673f16d1a57f32e6b5f364a9c05ca09b",
+      "size_bytes": 6687
+    },
+    "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_schema_order.py": {
+      "sha256": "722962cc428a184bd9f46a664bf2259642208d65d970fa1271425c17043cefdf",
+      "size_bytes": 6687
+    },
+    "02_schemas/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_schema_ranking.py": {
+      "sha256": "720a35ba956045f385ab373313fb7673925417a1b03ebc9ee8188d5a0abe1cff",
+      "size_bytes": 4057
+    },
+    "02_schemas/logic/synthesis/pick_best_result/understand_request/apply_schema_algorithm.py": {
+      "sha256": "36748e422636c46ffa192ceb2765bd4323f09d94462666cbb972ae3246f0eaa3",
+      "size_bytes": 6711
+    },
+    "02_schemas/logic/synthesis/pick_best_result/understand_request/rank_schema_components.py": {
+      "sha256": "a823388488a44bf9f7e972d0a1e99ae95b248ef81160b742f29ab322cc83c925",
+      "size_bytes": 6711
+    },
+    "02_schemas/logic/synthesis/pick_best_result/understand_request/sort_schema_results.py": {
+      "sha256": "0189fe6825f6331527bcff50aa786a27c2f26be0156114fce02623e5aca57565",
+      "size_bytes": 6639
+    },
+    "02_schemas/logic/synthesis/state_update_ops/aggregate_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/consolidate_updates.py": {
+      "sha256": "f5b92bb3b0e4496ff0174ee0850823838fe95f4773b4c133bfb919232e60b3e5",
+      "size_bytes": 9860
+    },
+    "02_schemas/logic/synthesis/state_update_ops/format_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/merge_contexts.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "02_schemas/logic/synthesis/state_update_ops/prepare_snapshot.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/state_update_ops/serialize_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/apply_schema_backoff.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/handle_schema_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/routing_retry_task/implement_schema_retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/execute_action.py": {
+      "sha256": "19863e825df8753a4271f4fd98166914f1cba4ebb9ce2074c15348f4d1f4b96f",
+      "size_bytes": 22537
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/invoke_service.py": {
+      "sha256": "f4eecff2256d9462d912839d1798f531c887cafeccc7ffaba63d59be25f293bb",
+      "size_bytes": 24590
+    },
+    "02_schemas/logic/synthesis/use_schema_tools/use_a_tool/process_response.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/check_schema_structure/policy_check_safety/check_compliance.py": {
+      "sha256": "5304e29ed56250c74c1d8353093eb79f75f3125b9ea0cd777d4d546694dbe86d",
+      "size_bytes": 6735
+    },
+    "02_schemas/logic/validation/check_schema_structure/policy_check_safety/enforce_contracts.py": {
+      "sha256": "a6ad2f2df9cf027dd2af7b48c2650a62dbd0ccedf3553f111a898ecf0fe6ac61",
+      "size_bytes": 6759
+    },
+    "02_schemas/logic/validation/check_schema_structure/policy_check_safety/validate_schema.py": {
+      "sha256": "f4718433a28a91b5bb2766108a2aea35e38d7f5b8e4a866736d2be786c838e38",
+      "size_bytes": 6711
+    },
+    "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/calculate_schema_similarity.py": {
+      "sha256": "c47a7ce12ca82f619ff66e0c0ce1b8a42c40dbadca3ddacb7b208fab75bb2905",
+      "size_bytes": 6831
+    },
+    "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/compute_schema_embeddings.py": {
+      "sha256": "d2ee52a33da3ffd8fff9bd871ea51d36b3f217e5ac25d205282b578e321e2935",
+      "size_bytes": 6783
+    },
+    "02_schemas/logic/validation/convert_schema_content/embedding_compare_meaning/normalize_schema_vectors.py": {
+      "sha256": "22c697614b2c52f064a0d5195a49885ee1f4fcbda97432358548ab89b71c2c8a",
+      "size_bytes": 6759
+    },
+    "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/capture_schema_diagnostics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/inspect_schema_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/logic/validation/find_schema_problems/diagnostics_ops/log_schema_inspection.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/coordinate_schema_queries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/manage_schema_context.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "02_schemas/pipeline_ops/data_access/get_schema_info/understand_request/orchestrate_schema_planning.py": {
+      "sha256": "8a46a4078fd301ce755c7dec1e11f2623d44227c3ecc3cbef2536f69baff1552",
+      "size_bytes": 6983
+    },
+    "02_schemas/pipeline_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/apply_orchestration_safety.py": {
+      "sha256": "88a832756a0dfcf40da62cfb6a10ee837e5ac5077705fcb023abcb1552c1bfb9",
+      "size_bytes": 597
+    },
+    "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/enforce_orchestration_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/guardrails/check_schema_rules/policy_check_safety/validate_orchestration_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "02_schemas/pipeline_ops/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/handle_schema_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/implement_schema_fallback.py": {
+      "sha256": "a52470f1ec4a5ef0bed65b1c175777a2ec8c26451a87ac76ef76e5d06e775062",
+      "size_bytes": 6935
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/routing_retry_task/retry_schema_operations.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/call_schema_api.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/dispatch_schema_tools.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/pipeline_ops/synthesis/use_schema_tools/use_a_tool/invoke_service.py": {
+      "sha256": "f4eecff2256d9462d912839d1798f531c887cafeccc7ffaba63d59be25f293bb",
+      "size_bytes": 24590
+    },
+    "02_schemas/runtime_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/apply_execution_safety.py": {
+      "sha256": "ab03a3b851a3a9c9bb248a62b485f847816e79cfd51685cba4adfefe92068c61",
+      "size_bytes": 11281
+    },
+    "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/enforce_execution_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/guardrails/check_schema_rules/policy_check_safety/validate_execution_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "02_schemas/runtime_ops/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/execute_schema_execution.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/invoke_schema_tool.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/use_a_tool/perform_schema_operation.py": {
+      "sha256": "830e509b4f1b6f447529c8dbbae0ca2a25e7ed8e13349fc809e4d0449d8c202c",
+      "size_bytes": 6935
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/format_execution_request.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/prepare_execution_payload.py": {
+      "sha256": "cd3e5de12df302ff910280f6b224849c37966b3ed19b0afba25d69530a580d1a",
+      "size_bytes": 6711
+    },
+    "02_schemas/runtime_ops/synthesis/use_schema_tools/utility_prepare_information/serialize_execution_params.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/validation/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/check_execution_compliance.py": {
+      "sha256": "5304e29ed56250c74c1d8353093eb79f75f3125b9ea0cd777d4d546694dbe86d",
+      "size_bytes": 6735
+    },
+    "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/enforce_execution_contracts.py": {
+      "sha256": "a6ad2f2df9cf027dd2af7b48c2650a62dbd0ccedf3553f111a898ecf0fe6ac61",
+      "size_bytes": 6759
+    },
+    "02_schemas/runtime_ops/validation/check_schema_structure/policy_check_safety/validate_execution_schema.py": {
+      "sha256": "f4718433a28a91b5bb2766108a2aea35e38d7f5b8e4a866736d2be786c838e38",
+      "size_bytes": 6711
+    },
+    "02_schemas/security_controls/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/enforce_safety_budget.py": {
+      "sha256": "e75e4179e7a7ccf42902a9563058214855c2e9eb3714d526f99a485686da1a8c",
+      "size_bytes": 11329
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/track_safety_cost.py": {
+      "sha256": "d287ff353b1076f96007e1a1a0d02b35286c853f3db600b224703ab50ec5d1ce",
+      "size_bytes": 11233
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/manage_schema_costs_state_update_ops/update_safety_usage.py": {
+      "sha256": "086b826eae7b73670c9ab2fca181c895bd1abd86d57d0b57cbdfb3f65aeb5559",
+      "size_bytes": 11281
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/apply_safety_policy.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/enforce_safety_filters.py": {
+      "sha256": "eb61b836802d1c2c59122de07ccbfa43a8715f2b032910e873a60556e0da1a0f",
+      "size_bytes": 11353
+    },
+    "02_schemas/security_controls/guardrails/check_schema_rules/policy_check_safety/validate_safety_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    }
+  },
+  "root": "02_schemas/",
+  "schema_version": "v1"
+}

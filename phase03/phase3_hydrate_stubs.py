@@ -85,7 +85,15 @@ def load_stub_audit() -> List[Stub]:
         sys.exit(1)
 
     raw = json.loads(STUB_AUDIT_PATH.read_text(encoding="utf-8"))
-    return [Stub(**s) for s in raw.get("stub_files", [])]
+    stubs = []
+    for s in raw.get("stub_files", []):
+        # Extract only the fields the Stub dataclass expects
+        stubs.append(Stub(
+            relative_path=s.get("relative_path", ""),
+            reason="; ".join(s.get("stub_reasons", [])) if isinstance(s.get("stub_reasons"), list) else s.get("reason", "unknown"),
+            domain=s.get("domain"),
+        ))
+    return stubs
 
 
 def load_global_components() -> Dict[str, dict]:
