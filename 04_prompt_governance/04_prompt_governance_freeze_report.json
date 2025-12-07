@@ -1,0 +1,466 @@
+{
+  "files": {
+    "04_prompt_governance/04_prompt_governance_freeze_report.json": {
+      "sha256": "b5985ab0f7bfaebaa1713f79bf341f99b4bcc8c92a582e3b27d9144afce63ba7",
+      "size_bytes": 25586
+    },
+    "04_prompt_governance/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/_unassigned/support_nomatch/04_prompt_governance_freeze_report.json": {
+      "sha256": "c30af06ef46998f8fa696a47015669c7b0ad1b28b530954f9f4b8d84770059ed",
+      "size_bytes": 24663
+    },
+    "04_prompt_governance/cache_ops/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/cache_ops/data_access/get_prompt_info/embedding_compare_meaning/find_prompt_context.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "04_prompt_governance/cache_ops/data_access/get_prompt_info/embedding_compare_meaning/match_prompt_patterns.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/cache_ops/data_access/get_prompt_info/embedding_compare_meaning/search_prompt_vectors.py": {
+      "sha256": "0fe5f434c2eacb673a74aadd58f09d8264ee9b6dd1dbaf4c7683f8d3fa8e3f7f",
+      "size_bytes": 6725
+    },
+    "04_prompt_governance/cache_ops/data_access/get_prompt_info/understand_request/fetch_prompt_history.py": {
+      "sha256": "46092375fbdd3414e97274d057281c873bb6288a6b517d93c63a26248df83f95",
+      "size_bytes": 6701
+    },
+    "04_prompt_governance/cache_ops/data_access/get_prompt_info/understand_request/query_prompt_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/cache_ops/data_access/get_prompt_info/understand_request/retrieve_prompt_memory.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/cache_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/cache_ops/guardrails/check_prompt_rules/policy_check_safety/apply_memory_safety.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "04_prompt_governance/cache_ops/guardrails/check_prompt_rules/policy_check_safety/enforce_memory_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/cache_ops/guardrails/check_prompt_rules/policy_check_safety/validate_memory_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "04_prompt_governance/logic/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/data_access/check_prompt_rules/policy_check_safety/check_prompt_policy.py": {
+      "sha256": "632de4fe0821a93104a864712b063bc4ca7862d1413988020968f8f084f5ca95",
+      "size_bytes": 6711
+    },
+    "04_prompt_governance/logic/data_access/check_prompt_rules/policy_check_safety/enforce_prompt_boundaries.py": {
+      "sha256": "9763ce953816232018bca79eb5bab83e56e5ed1913d49face33db2993eaff992",
+      "size_bytes": 6855
+    },
+    "04_prompt_governance/logic/data_access/check_prompt_rules/policy_check_safety/validate_prompt_constraints.py": {
+      "sha256": "08e4736013c957fd76e8bdc595b282cf1114656aba81ed488d77a8a49bc4d9f6",
+      "size_bytes": 6903
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/embedding_compare_meaning/match_prompt_context.py": {
+      "sha256": "fcb56d9199731117f3ae634fefc86373d0fc6e2437d6e114bc05be18d680fcdd",
+      "size_bytes": 6701
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/embedding_compare_meaning/retrieve_prompt_similarity.py": {
+      "sha256": "e21fc941f7e9350c583516457add4e544d37f293f1fc07cf0551ed3d16ea5128",
+      "size_bytes": 6845
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/embedding_compare_meaning/search_prompt_vectors.py": {
+      "sha256": "0fe5f434c2eacb673a74aadd58f09d8264ee9b6dd1dbaf4c7683f8d3fa8e3f7f",
+      "size_bytes": 6725
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/extract_prompt_parameters.py": {
+      "sha256": "834baeb36bfac9965972660dc13b5cf7629d1074c52f21eba487c31b126045b2",
+      "size_bytes": 6855
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/fetch_prompt_history.py": {
+      "sha256": "46092375fbdd3414e97274d057281c873bb6288a6b517d93c63a26248df83f95",
+      "size_bytes": 6701
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/load_prompt_planning.py": {
+      "sha256": "5e802bd755467692ae04700ae9e761a6c841a13d849a2e7dbd74297c7efbed5d",
+      "size_bytes": 6735
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/parse_prompt_settings.py": {
+      "sha256": "6d5b0a63966e1a83b3db0da44718e6bf5c4b4e1c47b4b30e0da3ff52c2013f03",
+      "size_bytes": 6759
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/query_prompt_store.py": {
+      "sha256": "eb1342db92cadace6a53d4771ab213a4ae79fcb6a1a24ca2447c4efe355ade1b",
+      "size_bytes": 6653
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/understand_request/retrieve_prompt_context.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/utility_prepare_information/build_prompt_filters.py": {
+      "sha256": "57ad4d7a15699157d28f41c49d01aba327f283e70887dcb10c4b863877eeba28",
+      "size_bytes": 6735
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/utility_prepare_information/format_prompt_context.py": {
+      "sha256": "d5ecd08967a313f2c7011321f1c3fdab3ff2fca170396fc3c1448736aae2178e",
+      "size_bytes": 6911
+    },
+    "04_prompt_governance/logic/data_access/get_prompt_info/utility_prepare_information/prepare_payload.py": {
+      "sha256": "cd3e5de12df302ff910280f6b224849c37966b3ed19b0afba25d69530a580d1a",
+      "size_bytes": 6711
+    },
+    "04_prompt_governance/logic/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/guardrails/check_prompt_rules/policy_check_safety/apply_safety.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "04_prompt_governance/logic/guardrails/check_prompt_rules/policy_check_safety/enforce_prompt_filters.py": {
+      "sha256": "32564aa6d137dbddddab28d03448389a6cbc8ccccc4d7340fb5b8a5e25d20e18",
+      "size_bytes": 11425
+    },
+    "04_prompt_governance/logic/guardrails/check_prompt_rules/policy_check_safety/validate_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "04_prompt_governance/logic/guardrails/manage_prompt_costs/state_update_ops/enforce_prompt_limits.py": {
+      "sha256": "af2ab81b38316f047304b9218de2b469901912587e3e6b9e81b9e9c6d0ab1f63",
+      "size_bytes": 11401
+    },
+    "04_prompt_governance/logic/guardrails/manage_prompt_costs/state_update_ops/track_prompt_usage.py": {
+      "sha256": "90329f94aa8849efbef0bbd3a8197e49770a06993dfdb1980e7781b35144f3a4",
+      "size_bytes": 11329
+    },
+    "04_prompt_governance/logic/guardrails/manage_prompt_costs/state_update_ops/update_prompt_budget.py": {
+      "sha256": "8171e98e9a2f922952db47345e1fb1864cab4820b77c600b71aec2c81de518d2",
+      "size_bytes": 11377
+    },
+    "04_prompt_governance/logic/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/pick_best_result/refinement_adjust_scores/adjust_prompt_weights.py": {
+      "sha256": "7fbdf5810a8856aeff71d93ab11947c1b3153abf4739c696bb30bb853985cb9d",
+      "size_bytes": 6759
+    },
+    "04_prompt_governance/logic/synthesis/pick_best_result/refinement_adjust_scores/optimize_prompt_order.py": {
+      "sha256": "1e4f8fce5c1810072b034474db2a57e1d0dabd9d74022edc3ea9837c4c181d00",
+      "size_bytes": 6759
+    },
+    "04_prompt_governance/logic/synthesis/pick_best_result/refinement_adjust_scores/refine_prompt_ranking.py": {
+      "sha256": "94666aefcdf6f25eac6976a80b494d84920e91b4f3cab6f5cf834119ad3afcc3",
+      "size_bytes": 6759
+    },
+    "04_prompt_governance/logic/synthesis/pick_best_result/understand_request/apply_prompt_algorithm.py": {
+      "sha256": "426edd22e6825ec7e07e7cc6dd842f7cf047e7d250b7268a81136187ddbb1d71",
+      "size_bytes": 6783
+    },
+    "04_prompt_governance/logic/synthesis/pick_best_result/understand_request/rank_prompt_components.py": {
+      "sha256": "d4900bd3711f2ee5ed3a6ed19929b02020f9a50e30b2ea89558090c34fbac236",
+      "size_bytes": 6783
+    },
+    "04_prompt_governance/logic/synthesis/pick_best_result/understand_request/sort_prompt_results.py": {
+      "sha256": "62f652716474a9e193be2a79084f0e9c0a36519c9b080c0ffb2b3cb940c2eee2",
+      "size_bytes": 6711
+    },
+    "04_prompt_governance/logic/synthesis/state_update_ops/aggregate_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/state_update_ops/consolidate_updates.py": {
+      "sha256": "f5b92bb3b0e4496ff0174ee0850823838fe95f4773b4c133bfb919232e60b3e5",
+      "size_bytes": 9860
+    },
+    "04_prompt_governance/logic/synthesis/state_update_ops/format_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/state_update_ops/merge_contexts.py": {
+      "sha256": "c59933818c4062940142cd9970484c5b63155430233420271488fd987d6e4e63",
+      "size_bytes": 35428
+    },
+    "04_prompt_governance/logic/synthesis/state_update_ops/prepare_snapshot.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/state_update_ops/serialize_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/use_prompt_tools/routing_retry_task/apply_prompt_backoff.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/use_prompt_tools/routing_retry_task/handle_prompt_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/use_prompt_tools/routing_retry_task/implement_prompt_retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/synthesis/use_prompt_tools/use_a_tool/execute_action.py": {
+      "sha256": "19863e825df8753a4271f4fd98166914f1cba4ebb9ce2074c15348f4d1f4b96f",
+      "size_bytes": 22537
+    },
+    "04_prompt_governance/logic/synthesis/use_prompt_tools/use_a_tool/invoke_service.py": {
+      "sha256": "f4eecff2256d9462d912839d1798f531c887cafeccc7ffaba63d59be25f293bb",
+      "size_bytes": 24590
+    },
+    "04_prompt_governance/logic/synthesis/use_prompt_tools/use_a_tool/process_response.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/validation/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/validation/check_prompt_structure/policy_check_safety/check_compliance.py": {
+      "sha256": "5304e29ed56250c74c1d8353093eb79f75f3125b9ea0cd777d4d546694dbe86d",
+      "size_bytes": 6735
+    },
+    "04_prompt_governance/logic/validation/check_prompt_structure/policy_check_safety/enforce_contracts.py": {
+      "sha256": "a6ad2f2df9cf027dd2af7b48c2650a62dbd0ccedf3553f111a898ecf0fe6ac61",
+      "size_bytes": 6759
+    },
+    "04_prompt_governance/logic/validation/check_prompt_structure/policy_check_safety/validate_schema.py": {
+      "sha256": "f4718433a28a91b5bb2766108a2aea35e38d7f5b8e4a866736d2be786c838e38",
+      "size_bytes": 6711
+    },
+    "04_prompt_governance/logic/validation/convert_prompt_content/embedding_compare_meaning/calculate_prompt_similarity.py": {
+      "sha256": "0f6f60ce0a09b34b37449e112ee6b61c182b1aa05e4d2669251e2a2069e4a89b",
+      "size_bytes": 6903
+    },
+    "04_prompt_governance/logic/validation/convert_prompt_content/embedding_compare_meaning/compute_prompt_embeddings.py": {
+      "sha256": "984851e90febc6b28d183c08be28b715f5f298bab123642ee3074ad12f307282",
+      "size_bytes": 6855
+    },
+    "04_prompt_governance/logic/validation/convert_prompt_content/embedding_compare_meaning/normalize_prompt_vectors.py": {
+      "sha256": "e05bad9a66e3f04ca2c99551e8c3244b9d42b316c2c812022d701c5785710a3e",
+      "size_bytes": 6831
+    },
+    "04_prompt_governance/logic/validation/find_prompt_problems/diagnostics_ops/capture_prompt_diagnostics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/validation/find_prompt_problems/diagnostics_ops/inspect_prompt_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/logic/validation/find_prompt_problems/diagnostics_ops/log_prompt_inspection.py": {
+      "sha256": "750ea05100e75fb941bd72bc2654339dcb0cb1e01db6ac1942b33ee6a9a6916d",
+      "size_bytes": 1103
+    },
+    "04_prompt_governance/pipeline_ops/data_access/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/data_access/get_prompt_info/understand_request/coordinate_prompt_queries.py": {
+      "sha256": "fef96e5fdb0e87ea7fd05c22c58c06e23af88beece9dc1851deb2ce358143143",
+      "size_bytes": 7079
+    },
+    "04_prompt_governance/pipeline_ops/data_access/get_prompt_info/understand_request/manage_prompt_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/data_access/get_prompt_info/understand_request/orchestrate_prompt_planning.py": {
+      "sha256": "1d593db135c9614a7da5f6a9df62923266466062c31ad4f23630de5441461ea3",
+      "size_bytes": 7055
+    },
+    "04_prompt_governance/pipeline_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/guardrails/check_prompt_rules/policy_check_safety/apply_orchestration_safety.py": {
+      "sha256": "88a832756a0dfcf40da62cfb6a10ee837e5ac5077705fcb023abcb1552c1bfb9",
+      "size_bytes": 597
+    },
+    "04_prompt_governance/pipeline_ops/guardrails/check_prompt_rules/policy_check_safety/enforce_orchestration_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/guardrails/check_prompt_rules/policy_check_safety/validate_orchestration_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/routing_retry_task/handle_prompt_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/routing_retry_task/implement_prompt_fallback.py": {
+      "sha256": "a52470f1ec4a5ef0bed65b1c175777a2ec8c26451a87ac76ef76e5d06e775062",
+      "size_bytes": 6935
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/routing_retry_task/retry_prompt_operations.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/use_a_tool/call_prompt_api.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/use_a_tool/dispatch_prompt_tools.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/pipeline_ops/synthesis/use_prompt_tools/use_a_tool/invoke_service.py": {
+      "sha256": "f4eecff2256d9462d912839d1798f531c887cafeccc7ffaba63d59be25f293bb",
+      "size_bytes": 24590
+    },
+    "04_prompt_governance/runtime_ops/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/apply_execution_safety.py": {
+      "sha256": "ab03a3b851a3a9c9bb248a62b485f847816e79cfd51685cba4adfefe92068c61",
+      "size_bytes": 11281
+    },
+    "04_prompt_governance/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/enforce_execution_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/validate_execution_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "04_prompt_governance/runtime_ops/synthesis/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/use_a_tool/execute_prompt_execution.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/use_a_tool/invoke_prompt_tool.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/use_a_tool/perform_prompt_operation.py": {
+      "sha256": "830e509b4f1b6f447529c8dbbae0ca2a25e7ed8e13349fc809e4d0449d8c202c",
+      "size_bytes": 6935
+    },
+    "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/utility_prepare_information/format_execution_request.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/utility_prepare_information/prepare_execution_payload.py": {
+      "sha256": "cd3e5de12df302ff910280f6b224849c37966b3ed19b0afba25d69530a580d1a",
+      "size_bytes": 6711
+    },
+    "04_prompt_governance/runtime_ops/synthesis/use_prompt_tools/utility_prepare_information/serialize_execution_params.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/validation/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/runtime_ops/validation/check_prompt_structure/policy_check_safety/check_execution_compliance.py": {
+      "sha256": "5304e29ed56250c74c1d8353093eb79f75f3125b9ea0cd777d4d546694dbe86d",
+      "size_bytes": 6735
+    },
+    "04_prompt_governance/runtime_ops/validation/check_prompt_structure/policy_check_safety/enforce_execution_contracts.py": {
+      "sha256": "a6ad2f2df9cf027dd2af7b48c2650a62dbd0ccedf3553f111a898ecf0fe6ac61",
+      "size_bytes": 6759
+    },
+    "04_prompt_governance/runtime_ops/validation/check_prompt_structure/policy_check_safety/validate_execution_schema.py": {
+      "sha256": "f4718433a28a91b5bb2766108a2aea35e38d7f5b8e4a866736d2be786c838e38",
+      "size_bytes": 6711
+    },
+    "04_prompt_governance/security_controls/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/security_controls/adversarial_patterns/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/security_controls/adversarial_patterns/pg_dependency_prompt_injection_patterns.md": {
+      "sha256": "18dad1418b861b44bae4a613a851df358e2f6cc32b11a1a11343d871f3370a3e",
+      "size_bytes": 9608
+    },
+    "04_prompt_governance/security_controls/guardrails/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/security_controls/guardrails/check_prompt_rules/manage_prompt_costs_state_update_ops/enforce_safety_budget.py": {
+      "sha256": "e75e4179e7a7ccf42902a9563058214855c2e9eb3714d526f99a485686da1a8c",
+      "size_bytes": 11329
+    },
+    "04_prompt_governance/security_controls/guardrails/check_prompt_rules/manage_prompt_costs_state_update_ops/track_safety_cost.py": {
+      "sha256": "d287ff353b1076f96007e1a1a0d02b35286c853f3db600b224703ab50ec5d1ce",
+      "size_bytes": 11233
+    },
+    "04_prompt_governance/security_controls/guardrails/check_prompt_rules/manage_prompt_costs_state_update_ops/update_safety_usage.py": {
+      "sha256": "086b826eae7b73670c9ab2fca181c895bd1abd86d57d0b57cbdfb3f65aeb5559",
+      "size_bytes": 11281
+    },
+    "04_prompt_governance/security_controls/guardrails/check_prompt_rules/policy_check_safety/apply_safety_policy.py": {
+      "sha256": "0be91eff17e4a2a9beb6ff07d0a85f077a4368069a11d1a1089bb67646041e95",
+      "size_bytes": 9177
+    },
+    "04_prompt_governance/security_controls/guardrails/check_prompt_rules/policy_check_safety/enforce_safety_filters.py": {
+      "sha256": "eb61b836802d1c2c59122de07ccbfa43a8715f2b032910e873a60556e0da1a0f",
+      "size_bytes": 11353
+    },
+    "04_prompt_governance/security_controls/guardrails/check_prompt_rules/policy_check_safety/validate_safety_ethics.py": {
+      "sha256": "9a43d4ab123750e125338e2ad284b7dab27dc9aba374217bb7f3d80ca5c1fd7c",
+      "size_bytes": 11353
+    },
+    "04_prompt_governance/templates/budget-manager-layer/refine-phase-group/constraint-check-ops/general-operations-ops/connection_request.md": {
+      "sha256": "e35a0be3a930556551848ea3c77785a45b8f26038e34cf9813373ab1e5f538fe",
+      "size_bytes": 2276
+    },
+    "04_prompt_governance/templates/injection_patterns/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "04_prompt_governance/templates/injection_patterns/pg_instructional_injection_v5.md": {
+      "sha256": "8767cb62c62fb6a11777717c7c26cc7df355b1bd27383962b0382f459d47fbe0",
+      "size_bytes": 5352
+    },
+    "04_prompt_governance/templates/resume/executor-microagent-layer/retry-phase-group/backoff-policy-ops/skills_template.md": {
+      "sha256": "484b491e59af20cad8ae5b8175bae0328effd41160038db56e06f83626e91ce7",
+      "size_bytes": 9485
+    },
+    "04_prompt_governance/templates/resume/observer-microagent-layer/inspect-phase-group/diagnostics-ops/summary_template.md": {
+      "sha256": "3a0460b01bf6fbeb60e7444f23d88b2df84ab625f42a43a3d2858baa7742f48c",
+      "size_bytes": 631
+    },
+    "04_prompt_governance/templates/resume/planner-microagent-layer/act-phase-group/tool-adapter-ops/experience_template.md": {
+      "sha256": "a092e04a822218759976f02fd66abb6e34a0c452b35176bbc6c4c69203318426",
+      "size_bytes": 14570
+    },
+    "04_prompt_governance/templates/router-microagent-layer/expand-phase-group/vectorization-ops/general-operations-ops/cold_outreach_template.md": {
+      "sha256": "03fb053ce9c6284c11846efa533ee39fe0ad0d00b3366100ff30964554983f7d",
+      "size_bytes": 3086
+    },
+    "04_prompt_governance/templates/safety-guard-layer/validate-phase-group/retrieval-ops/general-operations-ops/followup_template.md": {
+      "sha256": "06ffcfa7fe7c4aad6aa83c055f6f6a4ece5f0037500808571a8a4e137c3cf96c",
+      "size_bytes": 1642
+    }
+  },
+  "root": "04_prompt_governance/",
+  "schema_version": "v1"
+}
