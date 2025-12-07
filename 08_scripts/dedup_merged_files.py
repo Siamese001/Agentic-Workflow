@@ -28,18 +28,26 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_DIR = REPO_ROOT / "06_data" / "dedup_archive"
 MANIFEST_PATH = REPO_ROOT / "06_data" / "dedup_manifest.json"
 
-# Folders to scan for duplicates (from the merge)
+# Folders to scan for duplicates (all canonical folders)
 SCAN_FOLDERS = [
-    "07_observability/logic",
-    "08_scripts/utilities",
-    "08_scripts/migration",
-    "09_apps/apps_rg",
-    "09_apps/apps_lic",
-    "09_apps/shared",
-    "06_data/cache_ops",
-    "01_agentic_core/L5_safety",
-    "03_runtime/runtime_ops/support",
-    "05_config/logic/settings",
+    "01_agentic_core",
+    "02_schemas",
+    "03_runtime",
+    "04_prompt_governance",
+    "05_config",
+    "07_observability",
+    "08_scripts",
+    "09_apps",
+    "10_tests",
+]
+
+# Exclusion patterns (archives, snapshots)
+EXCLUDE_PATTERNS = [
+    "phase3_snapshots",
+    "dedup_archive",
+    "unassigned_archive",
+    "rollback",
+    "backup",
 ]
 
 
@@ -74,6 +82,11 @@ def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
             continue
         
         for filepath in folder_path.rglob("*.py"):
+            # Skip excluded paths
+            path_str = str(filepath)
+            if any(excl in path_str for excl in EXCLUDE_PATTERNS):
+                continue
+            
             if filepath.is_file():
                 file_hash = compute_hash(filepath)
                 hash_to_files[file_hash].append(filepath)
