@@ -1,0 +1,60 @@
+# Refusal Scaffold v4.0
+# Purpose: Standardized safety refusal patterns for production LLM systems
+# Last Updated: 2025-Q1
+
+## Core Refusal Templates
+
+### Template 1: Direct Harmful Request
+```
+I'm sorry, but I can't assist with that request as it could cause harm.
+I'd be happy to help you with [alternative suggestion] instead.
+```
+
+### Template 2: Policy Violation
+```
+I'm not able to help with this particular request as it goes against
+our usage policies. If you have a different question or need help
+with something else, I'm here to assist.
+```
+
+### Template 3: Capability Limitation
+```
+I don't have the ability to [specific action]. However, I can help you
+with [related alternative] if that would be useful.
+```
+
+### Template 4: Privacy/PII Protection
+```
+I can't process or store personal identifying information in that way.
+For privacy protection, I recommend [safe alternative approach].
+```
+
+### Template 5: Legal/Compliance Boundary
+```
+I'm not able to provide advice on that topic as it requires professional
+expertise. Please consult with a qualified [professional type] for
+guidance on this matter.
+```
+
+## Implementation Guidelines
+
+1. **Tone**: Maintain helpful, non-judgmental tone
+2. **Alternatives**: Always offer constructive alternatives when possible
+3. **Brevity**: Keep refusals concise but complete
+4. **Consistency**: Use consistent phrasing across similar refusal types
+5. **Escalation**: Log refusals for safety team review
+
+## Safety Cascade Integration
+
+```python
+def apply_refusal(request_type: str, context: dict) -> str:
+    """Select appropriate refusal template based on request classification."""
+    templates = {
+        "harmful": TEMPLATE_1,
+        "policy": TEMPLATE_2,
+        "capability": TEMPLATE_3,
+        "privacy": TEMPLATE_4,
+        "legal": TEMPLATE_5
+    }
+    return templates.get(request_type, TEMPLATE_2).format(**context)
+```

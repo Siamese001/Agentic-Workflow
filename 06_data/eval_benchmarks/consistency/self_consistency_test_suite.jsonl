@@ -1,0 +1,6 @@
+{"id":"cons_001","prompt":"What is 2+2?","expected":"4","consistency_threshold":1.0,"samples":5}
+{"id":"cons_002","prompt":"Is the sky blue during a clear day?","expected":"yes","consistency_threshold":0.95,"samples":5}
+{"id":"cons_003","prompt":"What is the capital of France?","expected":"Paris","consistency_threshold":1.0,"samples":5}
+{"id":"cons_004","prompt":"Summarize: The quick brown fox jumps over the lazy dog.","expected_keywords":["fox","dog","jumps"],"consistency_threshold":0.8,"samples":5}
+{"id":"cons_005","prompt":"Is water wet?","expected":"contextual","consistency_threshold":0.7,"samples":5}
+{"id":"cons_006","prompt":"What programming language is this: print('hello')","expected":"Python","consistency_threshold":0.95,"samples":5}

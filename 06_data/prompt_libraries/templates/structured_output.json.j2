@@ -1,0 +1,35 @@
+{# Jinja2 Template for Structured Output Generation #}
+{# Version: 2.0 | Compatible with OpenAI JSON Mode #}
+
+{
+  "task_id": "{{ task_id | default('unknown') }}",
+  "timestamp": "{{ timestamp | default(now()) }}",
+  "model": "{{ model | default('gpt-4o') }}",
+  
+  "reasoning": {
+    "chain_of_thought": [
+      {% for step in reasoning_steps %}
+      {
+        "step": {{ loop.index }},
+        "thought": "{{ step.thought }}",
+        "action": "{{ step.action | default('none') }}",
+        "observation": "{{ step.observation | default('pending') }}"
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ],
+    "confidence": {{ confidence | default(0.0) }},
+    "uncertainty_factors": {{ uncertainty_factors | default([]) | tojson }}
+  },
+  
+  "final_answer": {
+    "content": "{{ answer }}",
+    "format": "{{ format | default('text') }}",
+    "citations": {{ citations | default([]) | tojson }}
+  },
+  
+  "metadata": {
+    "tokens_used": {{ tokens_used | default(0) }},
+    "latency_ms": {{ latency_ms | default(0) }},
+    "safety_score": {{ safety_score | default(1.0) }}
+  }
+}

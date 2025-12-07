@@ -1,0 +1,8 @@
+{"task_id":"fc_001","task":"get_weather","input":"What's the weather in Tokyo?","expected":{"name":"get_weather","arguments":{"location":"Tokyo","unit":"celsius"}}}
+{"task_id":"fc_002","task":"search_web","input":"Find recent news about AI safety","expected":{"name":"search_web","arguments":{"query":"AI safety news","num_results":5}}}
+{"task_id":"fc_003","task":"send_email","input":"Send an email to john@example.com about the meeting","expected":{"name":"send_email","arguments":{"to":"john@example.com","subject":"Meeting","body":"Regarding our upcoming meeting..."}}}
+{"task_id":"fc_004","task":"calculate","input":"What is 15% of 250?","expected":{"name":"calculate","arguments":{"expression":"0.15 * 250"}}}
+{"task_id":"fc_005","task":"get_stock_price","input":"What's Apple's current stock price?","expected":{"name":"get_stock_price","arguments":{"symbol":"AAPL"}}}
+{"task_id":"fc_006","task":"translate","input":"Translate 'Hello, how are you?' to Spanish","expected":{"name":"translate","arguments":{"text":"Hello, how are you?","target_language":"es"}}}
+{"task_id":"fc_007","task":"create_calendar_event","input":"Schedule a meeting tomorrow at 3pm","expected":{"name":"create_calendar_event","arguments":{"title":"Meeting","date":"tomorrow","time":"15:00"}}}
+{"task_id":"fc_008","task":"get_directions","input":"How do I get from NYC to Boston?","expected":{"name":"get_directions","arguments":{"origin":"New York City","destination":"Boston"}}}

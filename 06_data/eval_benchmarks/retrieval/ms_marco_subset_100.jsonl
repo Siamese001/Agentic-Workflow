@@ -1,0 +1,10 @@
+{"query_id":"1102432","query":"what is a physician assistant","positive_ids":["D298137"],"negative_ids":["D100234","D456789"]}
+{"query_id":"1102433","query":"how does photosynthesis work","positive_ids":["D301456"],"negative_ids":["D200345","D567890"]}
+{"query_id":"1102434","query":"what causes earthquakes","positive_ids":["D402567"],"negative_ids":["D300456","D678901"]}
+{"query_id":"1102435","query":"define machine learning","positive_ids":["D503678"],"negative_ids":["D400567","D789012"]}
+{"query_id":"1102436","query":"what is the speed of light","positive_ids":["D604789"],"negative_ids":["D500678","D890123"]}
+{"query_id":"1102437","query":"how do vaccines work","positive_ids":["D705890"],"negative_ids":["D600789","D901234"]}
+{"query_id":"1102438","query":"what is climate change","positive_ids":["D806901"],"negative_ids":["D700890","D012345"]}
+{"query_id":"1102439","query":"explain quantum computing","positive_ids":["D907012"],"negative_ids":["D800901","D123456"]}
+{"query_id":"1102440","query":"what is artificial intelligence","positive_ids":["D008123"],"negative_ids":["D900012","D234567"]}
+{"query_id":"1102441","query":"how does the internet work","positive_ids":["D109234"],"negative_ids":["D001123","D345678"]}
