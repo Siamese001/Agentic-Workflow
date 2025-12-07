@@ -1,3 +1,6 @@
+# TODO[HUMAN_OWNER]: Unmapped legacy/unassigned module.
+# No Phase 2 mapping and no safe canonical placement inferred.
+
 """
 AUTO-GENERATED PLACEHOLDER — ZERO-LOSS
 

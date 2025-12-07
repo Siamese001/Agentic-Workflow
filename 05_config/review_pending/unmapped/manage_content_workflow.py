@@ -1,3 +1,6 @@
+# TODO[HUMAN_OWNER]: Unmapped legacy/unassigned module.
+# No Phase 2 mapping and no safe canonical placement inferred.
+
 """
 L5 CANONICAL MIGRATION — WINDSURF Ω — 2025-12-07 14:10:05Z
 MERKLE ROOT: 8b5fa155d74b63bbc1fac25c46a156a78235693a63e4617902faf9988d652679
