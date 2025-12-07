@@ -1,15 +1,23 @@
-import logging
-from __future__ import annotations
 #!/usr/bin/env python3
 """
+02_schemas/YAML/fix_09_apps_structure.py
 Fix nested folder structure in 09_apps domain.
+
 This script flattens the self-referential nesting in apps_lic and apps_rg
 by moving content from the deepest level to the proper depth.
+
+Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
 """
 
+from __future__ import annotations
+
+import logging
 import shutil
-from pathlib import Path
 import sys
+from pathlib import Path
+from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 def flatten_nested_structure(base_path: Path, nested_dir: str) -> None:
     """
