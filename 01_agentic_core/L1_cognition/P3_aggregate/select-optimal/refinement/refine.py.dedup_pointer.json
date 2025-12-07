@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\refinement\\refine.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "3af9d2fa0fd314f5",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\refine.py",
-  "created": "2025-12-07T11:54:50.685141"
-}
