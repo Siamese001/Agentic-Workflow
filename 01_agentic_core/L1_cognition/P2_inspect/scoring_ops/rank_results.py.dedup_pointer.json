@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "09_apps\\__init__.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "a8f46d884f284d88",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\scoring_ops\\rank_results.py",
+  "created": "2025-12-07T11:54:45.895232"
+}

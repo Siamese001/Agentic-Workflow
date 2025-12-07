@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\pipeline_ops\\synthesis\\use_tools\\routing_retry_task\\implement_fallback.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "961eb96a5f785dbd",
+  "original_path": "C:\\Git\\Agentic-Workflow\\07_observability\\pipeline_ops\\synthesis\\use_tools\\routing_retry_task\\implement_fallback.py",
+  "created": "2025-12-07T11:54:50.413612"
+}
