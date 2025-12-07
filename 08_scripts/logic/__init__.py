@@ -1,6 +1,9 @@
 """
-08_scripts\logic\__init__.py
-Auto-hardened by WINDSURF v2
+08_scripts/logic/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: def0e54b3913085b65093689925818c4622e4b5e820884362a9eeea2b20a84bd
 """
+
 
 from __future__ import annotations

@@ -1,0 +1,1146 @@
+{
+  "timestamp": "20251207_144926",
+  "total_files": 190,
+  "migrations": [
+    {
+      "source": "09_apps\\_canonicalized_unknown\\adjust_scripts_weights.py",
+      "target": "08_scripts/utilities/adjust_scripts_weights.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\adjust_scripts_weights.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\always_on_sampler.py",
+      "target": "07_observability/logic/tracing/sampling/always_on_sampler.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\always_on_sampler.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\append_only_store.py",
+      "target": "07_observability/security_controls/audit/append_only_store.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\append_only_store.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_observability_algorithm.py",
+      "target": "07_observability/logic/operations/apply_observability_algorithm.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_observability_algorithm.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_observability_safety.py",
+      "target": "07_observability/logic/operations/apply_observability_safety.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_observability_safety.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_observability_weights.py",
+      "target": "07_observability/logic/operations/apply_observability_weights.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_observability_weights.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_scripts_algorithm.py",
+      "target": "08_scripts/utilities/apply_scripts_algorithm.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_scripts_algorithm.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_scripts_safety.py",
+      "target": "08_scripts/utilities/apply_scripts_safety.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_scripts_safety.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_scripts_weights.py",
+      "target": "08_scripts/utilities/apply_scripts_weights.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_scripts_weights.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\apply_weights.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/apply_weights.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\apply_weights.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\assess_content_risk.py",
+      "target": "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/assess_content_risk.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\assess_content_risk.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\assess_observability_confidence.py",
+      "target": "07_observability/logic/operations/assess_observability_confidence.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\assess_observability_confidence.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\assess_observability_risk.py",
+      "target": "07_observability/logic/operations/assess_observability_risk.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\assess_observability_risk.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\assess_safety_risk.py",
+      "target": "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/assess_safety_risk.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\assess_safety_risk.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\assess_scripts_risk.py",
+      "target": "08_scripts/utilities/assess_scripts_risk.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\assess_scripts_risk.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\audit_event_normalizer.py",
+      "target": "07_observability/security_controls/audit/audit_event_normalizer.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\audit_event_normalizer.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\baggage_propagator.py",
+      "target": "07_observability/logic/tracing/baggage_propagator.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\baggage_propagator.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\base_collector.py",
+      "target": "05_config/review_pending/unmapped/base_collector.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\base_collector.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\base_formatter.py",
+      "target": "07_observability/logic/logging/formatters/base_formatter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\base_formatter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_observability_filters.py",
+      "target": "07_observability/logic/operations/build_observability_filters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_observability_filters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_observability_orchestration.py",
+      "target": "07_observability/logic/operations/build_observability_orchestration.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_observability_orchestration.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_personalization_query.py",
+      "target": "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand_request/build_personalization_query.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_personalization_query.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_scripts_filters.py",
+      "target": "08_scripts/utilities/build_scripts_filters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_scripts_filters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_scripts_orchestration.py",
+      "target": "08_scripts/utilities/build_scripts_orchestration.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_scripts_orchestration.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_search_filters.py",
+      "target": "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand_request/build_search_filters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_search_filters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\build_skill_query.py",
+      "target": "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand_request/build_skill_query.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\build_skill_query.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\calculate_observability_similarity.py",
+      "target": "07_observability/logic/operations/calculate_observability_similarity.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\calculate_observability_similarity.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\calculate_scripts_similarity.py",
+      "target": "08_scripts/utilities/calculate_scripts_similarity.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\calculate_scripts_similarity.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\calibrate_engagement_score.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/calibrate_engagement_score.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\calibrate_engagement_score.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\calibrate_fit_score.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/calibrate_fit_score.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\calibrate_fit_score.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\call_formatting_api.py",
+      "target": "01_agentic_core/L2_execution/use_tools/use_a_tool/call_formatting_api.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\call_formatting_api.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\call_personalization_api.py",
+      "target": "01_agentic_core/L2_execution/use_tools/use_a_tool/call_personalization_api.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\call_personalization_api.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\check_observability_compliance.py",
+      "target": "07_observability/logic/operations/check_observability_compliance.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\check_observability_compliance.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\check_observability_policy.py",
+      "target": "07_observability/logic/operations/check_observability_policy.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\check_observability_policy.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\check_scripts_compliance.py",
+      "target": "08_scripts/utilities/check_scripts_compliance.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\check_scripts_compliance.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\check_scripts_policy.py",
+      "target": "08_scripts/utilities/check_scripts_policy.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\check_scripts_policy.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\color_formatter.py",
+      "target": "07_observability/logic/logging/formatters/color_formatter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\color_formatter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_confidence.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/compute_confidence.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_confidence.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_observability_confidence.py",
+      "target": "07_observability/logic/operations/compute_observability_confidence.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_observability_confidence.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_observability_embeddings.py",
+      "target": "07_observability/logic/operations/compute_observability_embeddings.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_observability_embeddings.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_observability_score.py",
+      "target": "07_observability/logic/operations/compute_observability_score.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_observability_score.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_observability_validation.py",
+      "target": "07_observability/logic/operations/compute_observability_validation.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_observability_validation.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_personalization_match.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/compute_personalization_match.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_personalization_match.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_safety_score.py",
+      "target": "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/compute_safety_score.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_safety_score.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_scripts_confidence.py",
+      "target": "08_scripts/utilities/compute_scripts_confidence.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_scripts_confidence.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_scripts_embeddings.py",
+      "target": "08_scripts/utilities/compute_scripts_embeddings.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_scripts_embeddings.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_scripts_score.py",
+      "target": "08_scripts/utilities/compute_scripts_score.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_scripts_score.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\compute_skill_similarity.py",
+      "target": "05_config/review_pending/unmapped/compute_skill_similarity.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\compute_skill_similarity.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\console_trace_exporter.py",
+      "target": "07_observability/logic/logging/exporters/console_trace_exporter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\console_trace_exporter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\coordinate_execution_queries.py",
+      "target": "01_agentic_core/L2_execution/data_access/get_info/coordinate_execution_queries.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\coordinate_execution_queries.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\coordinate_observability_operations.py",
+      "target": "07_observability/logic/operations/coordinate_observability_operations.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\coordinate_observability_operations.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\coordinate_scripts_operations.py",
+      "target": "08_scripts/utilities/coordinate_scripts_operations.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\coordinate_scripts_operations.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\cost_profiler.py",
+      "target": "07_observability/logic/metrics/profiling/cost_profiler.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\cost_profiler.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\cpu_check.py",
+      "target": "03_runtime/runtime_ops/health/cpu_check.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\cpu_check.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\create_experience_bullets.py",
+      "target": "04_prompt_governance/templates/create_experience_bullets.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\create_experience_bullets.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\dag_runtime_inspector.py",
+      "target": "03_runtime/runtime_ops/inspection/dag_runtime_inspector.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\dag_runtime_inspector.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\diagnose_observability_issues.py",
+      "target": "07_observability/logic/operations/diagnose_observability_issues.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\diagnose_observability_issues.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\diagnose_personalization_issues.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/diagnostics/diagnose_personalization_issues.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\diagnose_personalization_issues.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\diagnose_scripts_issues.py",
+      "target": "08_scripts/utilities/diagnose_scripts_issues.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\diagnose_scripts_issues.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\embed_recipient_profile.py",
+      "target": "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embed_recipient_profile.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\embed_recipient_profile.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_observability_boundaries.py",
+      "target": "07_observability/logic/operations/enforce_observability_boundaries.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_observability_boundaries.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_observability_budget.py",
+      "target": "07_observability/logic/operations/enforce_observability_budget.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_observability_budget.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_observability_contracts.py",
+      "target": "07_observability/logic/operations/enforce_observability_contracts.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_observability_contracts.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_observability_filters.py",
+      "target": "07_observability/logic/operations/enforce_observability_filters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_observability_filters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_observability_limits.py",
+      "target": "07_observability/logic/operations/enforce_observability_limits.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_observability_limits.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_scripts_boundaries.py",
+      "target": "08_scripts/utilities/enforce_scripts_boundaries.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_scripts_boundaries.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_scripts_budget.py",
+      "target": "08_scripts/utilities/enforce_scripts_budget.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_scripts_budget.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_scripts_contracts.py",
+      "target": "08_scripts/utilities/enforce_scripts_contracts.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_scripts_contracts.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_scripts_filters.py",
+      "target": "08_scripts/utilities/enforce_scripts_filters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_scripts_filters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\enforce_scripts_limits.py",
+      "target": "08_scripts/utilities/enforce_scripts_limits.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\enforce_scripts_limits.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_compliance_level.py",
+      "target": "05_config/review_pending/unmapped/evaluate_compliance_level.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_compliance_level.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_engagement_potential.py",
+      "target": "05_config/review_pending/unmapped/evaluate_engagement_potential.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_engagement_potential.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_observability_compliance.py",
+      "target": "07_observability/logic/operations/evaluate_observability_compliance.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_observability_compliance.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_personalization_quality.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/diagnostics/evaluate_personalization_quality.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_personalization_quality.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_safety_compliance.py",
+      "target": "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/evaluate_safety_compliance.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_safety_compliance.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_scripts_compliance.py",
+      "target": "08_scripts/utilities/evaluate_scripts_compliance.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_scripts_compliance.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\evaluate_writing_quality.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/diagnostics/evaluate_writing_quality.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\evaluate_writing_quality.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\execute_observability_commands.py",
+      "target": "07_observability/logic/operations/execute_observability_commands.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\execute_observability_commands.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\extract_observability_parameters.py",
+      "target": "07_observability/logic/operations/extract_observability_parameters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\extract_observability_parameters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\extract_scripts_parameters.py",
+      "target": "08_scripts/utilities/extract_scripts_parameters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\extract_scripts_parameters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\fetch_recipient_interactions.py",
+      "target": "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand_request/fetch_recipient_interactions.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\fetch_recipient_interactions.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\fetch_user_preferences.py",
+      "target": "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand_request/fetch_user_preferences.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\fetch_user_preferences.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\file_audit_store.py",
+      "target": "07_observability/security_controls/audit/file_audit_store.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\file_audit_store.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\file_logger.py",
+      "target": "07_observability/logic/logging/exporters/file_logger.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\file_logger.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\find_effective_templates.py",
+      "target": "04_prompt_governance/templates/find_effective_templates.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\find_effective_templates.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\find_relevant_templates.py",
+      "target": "04_prompt_governance/templates/find_relevant_templates.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\find_relevant_templates.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\format_data.py",
+      "target": "03_runtime/runtime_ops/serialization/format_data.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\format_data.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\format_llm_prompt.py",
+      "target": "04_prompt_governance/templates/format_llm_prompt.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\format_llm_prompt.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\format_metadata.py",
+      "target": "03_runtime/runtime_ops/serialization/format_metadata.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\format_metadata.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\format_observability_context.py",
+      "target": "07_observability/logic/operations/format_observability_context.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\format_observability_context.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\format_personalization_prompt.py",
+      "target": "04_prompt_governance/templates/format_personalization_prompt.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\format_personalization_prompt.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\format_scripts_context.py",
+      "target": "08_scripts/utilities/format_scripts_context.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\format_scripts_context.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\generate_subject_line.py",
+      "target": "04_prompt_governance/templates/generate_subject_line.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\generate_subject_line.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\generate_summary_section.py",
+      "target": "04_prompt_governance/templates/generate_summary_section.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\generate_summary_section.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\handle_api_timeouts.py",
+      "target": "01_agentic_core/L2_execution/use_tools/routing_retry_task/handle_api_timeouts.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\handle_api_timeouts.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\handle_service_errors.py",
+      "target": "01_agentic_core/L2_execution/use_tools/routing_retry_task/handle_service_errors.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\handle_service_errors.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\hash_chain_verifier.py",
+      "target": "07_observability/security_controls/integrity/hash_chain_verifier.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\hash_chain_verifier.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\histogram.py",
+      "target": "07_observability/logic/metrics/histogram.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\histogram.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\implement_fallback_strategy.py",
+      "target": "01_agentic_core/L2_execution/use_tools/routing_retry_task/implement_fallback_strategy.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\implement_fallback_strategy.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\implement_fallback_templates.py",
+      "target": "01_agentic_core/L2_execution/use_tools/routing_retry_task/implement_fallback_templates.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\implement_fallback_templates.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\implement_observability_fallback.py",
+      "target": "07_observability/logic/operations/implement_observability_fallback.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\implement_observability_fallback.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\inspect_observability_quality.py",
+      "target": "07_observability/logic/operations/inspect_observability_quality.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\inspect_observability_quality.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\inspect_scripts_quality.py",
+      "target": "08_scripts/utilities/inspect_scripts_quality.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\inspect_scripts_quality.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\invoke_observability_actions.py",
+      "target": "07_observability/logic/operations/invoke_observability_actions.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\invoke_observability_actions.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\jaeger_adapter.py",
+      "target": "07_observability/logic/tracing/adapters/jaeger_adapter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\jaeger_adapter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\json_exporter.py",
+      "target": "07_observability/logic/exporters/json_exporter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\json_exporter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\json_formatter.py",
+      "target": "07_observability/logic/logging/formatters/json_formatter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\json_formatter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\json_trace_exporter.py",
+      "target": "07_observability/logic/logging/exporters/json_trace_exporter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\json_trace_exporter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\load_scripts_planning.py",
+      "target": "08_scripts/utilities/load_scripts_planning.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\load_scripts_planning.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\log_config.py",
+      "target": "07_observability/logic/logging/log_config.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\log_config.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\log_event.py",
+      "target": "07_observability/logic/logging/log_event.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\log_event.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\log_observability_metrics.py",
+      "target": "07_observability/logic/operations/log_observability_metrics.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\log_observability_metrics.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\log_scripts_metrics.py",
+      "target": "08_scripts/utilities/log_scripts_metrics.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\log_scripts_metrics.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\logger.py",
+      "target": "07_observability/logic/logging/logger.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\logger.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\manage_content_workflow.py",
+      "target": "05_config/review_pending/unmapped/manage_content_workflow.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\manage_content_workflow.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\manage_execution_context.py",
+      "target": "01_agentic_core/L2_execution/data_access/get_info/manage_execution_context.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\manage_execution_context.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\manage_observability_parameters.py",
+      "target": "07_observability/logic/operations/manage_observability_parameters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\manage_observability_parameters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\manage_scripts_parameters.py",
+      "target": "08_scripts/utilities/manage_scripts_parameters.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\manage_scripts_parameters.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\match_recipient_patterns.py",
+      "target": "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/match_recipient_patterns.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\match_recipient_patterns.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\memory_check.py",
+      "target": "03_runtime/runtime_ops/health/memory_check.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\memory_check.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\metadata_enricher.py",
+      "target": "07_observability/logic/enrichment/metadata_enricher.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\metadata_enricher.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\metric_config.py",
+      "target": "07_observability/logic/metrics/metric_config.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\metric_config.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\metric_registry.py",
+      "target": "07_observability/logic/metrics/metric_registry.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\metric_registry.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_observability_scores.py",
+      "target": "07_observability/logic/operations/normalize_observability_scores.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_observability_scores.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_observability_vectors.py",
+      "target": "07_observability/logic/operations/normalize_observability_vectors.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_observability_vectors.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_relevance_scores.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/normalize_relevance_scores.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_relevance_scores.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_scores.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/normalize_scores.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_scores.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_scripts_scores.py",
+      "target": "08_scripts/utilities/normalize_scripts_scores.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_scripts_scores.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_scripts_vectors.py",
+      "target": "08_scripts/utilities/normalize_scripts_vectors.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_scripts_vectors.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\normalize_skill_scores.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/normalize_skill_scores.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\normalize_skill_scores.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\openai_logger_adapter.py",
+      "target": "07_observability/logic/logging/adapters/openai_logger_adapter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\openai_logger_adapter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\opentelemetry_adapter.py",
+      "target": "07_observability/logic/tracing/adapters/opentelemetry_adapter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\opentelemetry_adapter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\opentelemetry_tracing_adapter.py",
+      "target": "07_observability/logic/tracing/adapters/opentelemetry_tracing_adapter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\opentelemetry_tracing_adapter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\optimize_observability_order.py",
+      "target": "07_observability/logic/operations/optimize_observability_order.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\optimize_observability_order.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\optimize_scripts_order.py",
+      "target": "08_scripts/utilities/optimize_scripts_order.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\optimize_scripts_order.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\orchestrate_execution_planning.py",
+      "target": "01_agentic_core/L3_orchestration/planning/orchestrate_execution_planning.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\orchestrate_execution_planning.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\orchestrate_observability_planning.py",
+      "target": "07_observability/logic/operations/orchestrate_observability_planning.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\orchestrate_observability_planning.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\orchestrate_scripts_planning.py",
+      "target": "08_scripts/utilities/orchestrate_scripts_planning.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\orchestrate_scripts_planning.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\order_call_to_actions.py",
+      "target": "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/order_call_to_actions.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\order_call_to_actions.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\otlp_exporter.py",
+      "target": "07_observability/logic/tracing/adapters/otlp_exporter.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\otlp_exporter.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\parse_observability_settings.py",
+      "target": "07_observability/logic/operations/parse_observability_settings.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\parse_observability_settings.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\parse_scripts_settings.py",
+      "target": "08_scripts/utilities/parse_scripts_settings.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\parse_scripts_settings.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\perform_observability_operations.py",
+      "target": "07_observability/logic/operations/perform_observability_operations.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\perform_observability_operations.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\phase03A_stub_scan.py",
+      "target": "08_scripts/migration/phase03A_stub_scan.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\phase03A_stub_scan.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\phase04_freeze_aggregator.py",
+      "target": "08_scripts/migration/phase04_freeze_aggregator.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\phase04_freeze_aggregator.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\pii_redaction.py",
+      "target": "07_observability/security_controls/privacy/pii_redaction.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\pii_redaction.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\pipeline_metrics_collector.py",
+      "target": "07_observability/logic/metrics/collectors/pipeline_metrics_collector.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\pipeline_metrics_collector.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\planning_snapshot.py",
+      "target": "03_runtime/runtime_ops/snapshots/planning_snapshot.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\planning_snapshot.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\pointer_reconcile.py",
+      "target": "03_runtime/runtime_ops/reconciliation/pointer_reconcile.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\pointer_reconcile.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\prepare_observability_orchestration.py",
+      "target": "07_observability/logic/operations/prepare_observability_orchestration.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\prepare_observability_orchestration.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\prepare_scripts_orchestration.py",
+      "target": "08_scripts/utilities/prepare_scripts_orchestration.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\prepare_scripts_orchestration.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\prepare_scripts_payload.py",
+      "target": "08_scripts/utilities/prepare_scripts_payload.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\prepare_scripts_payload.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\prioritize_talking_points.py",
+      "target": "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/prioritize_talking_points.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\prioritize_talking_points.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\rank_observability_components.py",
+      "target": "07_observability/logic/operations/rank_observability_components.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\rank_observability_components.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\rank_scripts_components.py",
+      "target": "08_scripts/utilities/rank_scripts_components.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\rank_scripts_components.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\refine_observability_ranking.py",
+      "target": "07_observability/logic/operations/refine_observability_ranking.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\refine_observability_ranking.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\refine_scripts_ranking.py",
+      "target": "08_scripts/utilities/refine_scripts_ranking.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\refine_scripts_ranking.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\run_pipeline.py",
+      "target": "03_runtime/pipeline_ops/execution/run_pipeline.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\run_pipeline.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\runtime_metrics_collector.py",
+      "target": "07_observability/logic/metrics/collectors/runtime_metrics_collector.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\runtime_metrics_collector.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\runtime_snapshot.py",
+      "target": "03_runtime/runtime_ops/snapshots/runtime_snapshot.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\runtime_snapshot.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\sampling_processor.py",
+      "target": "07_observability/logic/tracing/sampling/sampling_processor.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\sampling_processor.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\serialize_data.py",
+      "target": "03_runtime/runtime_ops/serialization/serialize_data.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\serialize_data.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\signature_verifier.py",
+      "target": "07_observability/security_controls/integrity/signature_verifier.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\signature_verifier.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\sort_observability_results.py",
+      "target": "07_observability/logic/operations/sort_observability_results.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\sort_observability_results.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\sort_scripts_results.py",
+      "target": "08_scripts/utilities/sort_scripts_results.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\sort_scripts_results.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\span.py",
+      "target": "07_observability/logic/tracing/span.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\span.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\sqlite_audit_store.py",
+      "target": "07_observability/security_controls/audit/sqlite_audit_store.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\sqlite_audit_store.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\state_inspector.py",
+      "target": "03_runtime/runtime_ops/inspection/state_inspector.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\state_inspector.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\structured_json_logger.py",
+      "target": "07_observability/logic/logging/structured_json_logger.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\structured_json_logger.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\token_budget_inspector.py",
+      "target": "03_runtime/runtime_ops/inspection/token_budget_inspector.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\token_budget_inspector.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\track_observability_cost.py",
+      "target": "07_observability/logic/operations/track_observability_cost.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\track_observability_cost.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\track_observability_usage.py",
+      "target": "07_observability/logic/operations/track_observability_usage.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\track_observability_usage.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\track_scripts_usage.py",
+      "target": "08_scripts/utilities/track_scripts_usage.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\track_scripts_usage.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\update_observability_budget.py",
+      "target": "07_observability/logic/operations/update_observability_budget.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\update_observability_budget.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\update_observability_usage.py",
+      "target": "07_observability/logic/operations/update_observability_usage.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\update_observability_usage.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\update_recipient_profiles.py",
+      "target": "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/update_recipient_profiles.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\update_recipient_profiles.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\update_scripts_budget.py",
+      "target": "08_scripts/utilities/update_scripts_budget.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\update_scripts_budget.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\update_user_profile.py",
+      "target": "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/update_user_profile.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\update_user_profile.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_observability_constraints.py",
+      "target": "07_observability/logic/operations/validate_observability_constraints.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_observability_constraints.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_observability_ethics.py",
+      "target": "07_observability/logic/operations/validate_observability_ethics.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_observability_ethics.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_observability_quality.py",
+      "target": "07_observability/logic/operations/validate_observability_quality.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_observability_quality.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_observability_schema.py",
+      "target": "07_observability/logic/operations/validate_observability_schema.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_observability_schema.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_scripts_constraints.py",
+      "target": "08_scripts/utilities/validate_scripts_constraints.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_scripts_constraints.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_scripts_ethics.py",
+      "target": "08_scripts/utilities/validate_scripts_ethics.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_scripts_ethics.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\validate_scripts_schema.py",
+      "target": "08_scripts/utilities/validate_scripts_schema.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\validate_scripts_schema.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\w3c_trace_context.py",
+      "target": "07_observability/logic/tracing/w3c_trace_context.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\w3c_trace_context.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\weight_experience_match.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/weight_experience_match.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\weight_experience_match.py"
+    },
+    {
+      "source": "09_apps\\_canonicalized_unknown\\weight_personalization_factors.py",
+      "target": "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/weight_personalization_factors.py",
+      "mode": "CODE_AWARE_CANONICAL",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\09_apps\\_canonicalized_unknown\\weight_personalization_factors.py"
+    },
+    {
+      "source": "_unassigned\\__init__.py",
+      "target": "05_config/review_pending/unmapped/__init__.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\_unassigned\\__init__.py"
+    },
+    {
+      "source": "_unassigned_apps_unknown\\__init__.py",
+      "target": "05_config/review_pending/unmapped/__init__.py",
+      "mode": "UNMAPPED_REVIEW_PENDING",
+      "archive": "06_data\\unassigned_archive\\final_purge_20251207_144926\\_unassigned_apps_unknown\\__init__.py"
+    }
+  ]
+}
