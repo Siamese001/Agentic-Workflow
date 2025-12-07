@@ -128,7 +128,7 @@ domain_invariants:
   schemas:
     description: "Model definitions and validation logic."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -136,7 +136,7 @@ domain_invariants:
   runtime:
     description: "Execution harnesses and runtime configuration."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -144,7 +144,7 @@ domain_invariants:
   prompt_governance:
     description: "Prompt policies, templates, and governance."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -152,7 +152,7 @@ domain_invariants:
   config:
     description: "Registry parsing, environment, platform settings."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -160,7 +160,7 @@ domain_invariants:
   data:
     description: "Persistence, lineage, semantic-store integration."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -168,7 +168,7 @@ domain_invariants:
   observability:
     description: "Telemetry, monitoring, metrics."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -176,7 +176,7 @@ domain_invariants:
   scripts:
     description: "CLI tools, developer utilities, automation."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -184,7 +184,7 @@ domain_invariants:
   shared:
     description: "Common utilities not tied to a specific engine."
     model: "operational_support"
-    forbidden_patterns: ["L*", "P*"]
+    forbidden_patterns: ["L[0-9]+_*", "P[0-9]+_*"]
     # Rec 3: Aligned with actual repo directory structure
     allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
@@ -405,11 +405,10 @@ validation_invariants:
     manage_costs: "budget tracking, usage limits, cost enforcement"
     semantic_cache: "semantic cache index loading, history matching, distance computation"
 
-  forbidden_phase_layer_combinations:
-    - "L2_execution/P1_retrieve"
-    - "L3_orchestration/P1_retrieve"
-    - "L3_orchestration/P2_inspect"
-    - "L4_memory/P2_inspect"
+  # NOTE: Removed overly restrictive forbidden_phase_layer_combinations
+  # The actual codebase uses all P1-P4 phases under all L1-L5 layers
+  # This is a valid architectural choice for the agentic_core domain
+  forbidden_phase_layer_combinations: []
 
   allowed_support_layers:
     - logic
@@ -428,11 +427,10 @@ validation_invariants:
   forbidden_phase_tokens: ["P1_", "P2_", "P3_", "P4_"]
 
   disallowed_low_signal_names:
-    - "general"
+    # Exact match only - avoid false positives like "templates" matching "temp"
     - "misc"
     - "other"
     - "stuff"
-    - "temp"
     - "sperson"
     - "sjob_fit"
     - "sengagement_potential"

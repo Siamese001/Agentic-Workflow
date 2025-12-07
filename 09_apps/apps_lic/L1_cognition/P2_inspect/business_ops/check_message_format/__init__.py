@@ -1,7 +1,7 @@
 """
-09_apps/apps_lic/L1_cognition/P2_inspect/business_ops/check_message_format package initialization.
+09_apps/apps_lic/L1_cognition/P2_inspect/business_ops/check_message_format/policy_check_safety package initialization.
 
-Generated: 2025-12-07T13:28:54.044718
+Generated: 2025-12-07T13:28:54.044180
 """
 
 from __future__ import annotations
