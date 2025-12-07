@@ -1,7 +1,10 @@
 """
-cache_ops\guardrails\check_rules\policy_check_safety\validate_memory_ethics.py
-Auto-hardened by WINDSURF v2
+03_runtime/cache_ops/cache_ops/guardrails/check_rules/policy_check_safety/validate_memory_ethics.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 0e5f8d9f982007504d5022f806dbb9be83602ebab68bcd8785dc10d91e98428a
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

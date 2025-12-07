@@ -1,3 +1,9 @@
+"""
+03_runtime/cache_ops/cache_ops/data_access/get_info/understand_request/retrieve_observability_memory.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: de278c89e3e37e1072df1d7de49177e0639ddbc8fc909d60b7bd9d8e4b1d3548
+"""
 import logging
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,7 +1,10 @@
 """
-pipeline_ops\guardrails\__init__.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/guardrails/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: c20666c89c094e56605e3ddceed8c8d9abb6bf6a05dc8866500e3827f4f697e2
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

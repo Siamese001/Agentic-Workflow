@@ -1,3 +1,9 @@
+"""
+02_schemas/YAML/fix_09_apps_structure.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: e5ce3964d178f0060b22a02b53d8dfe147fe384d6fd10e6fc9380c99111c1641
+"""
 #!/usr/bin/env python3
 """
 02_schemas/YAML/fix_09_apps_structure.py

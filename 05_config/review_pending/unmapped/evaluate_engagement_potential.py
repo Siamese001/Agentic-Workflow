@@ -1,3 +1,9 @@
+"""
+05_config/review_pending/unmapped/evaluate_engagement_potential.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 2b647ed3f4d71dc7b6e7473daffe4a847a8f1289bbf9fbbb9f199730ebcbf662
+"""
 # TODO[HUMAN_OWNER]: Unmapped legacy/unassigned module.
 # No Phase 2 mapping and no safe canonical placement inferred.
 

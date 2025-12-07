@@ -1,15 +1,10 @@
 """
 01_agentic_core/L1_cognition/__init__.py
-L1 Cognition Layer - Core Cognitive Processing.
-
-This layer handles the primary cognitive functions including:
-- P1_retrieve: Context retrieval and information gathering
-- P2_inspect: Structure and semantic inspection
-- P3_aggregate: Action aggregation and execution
-- P4_safety: Safety policy enforcement
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: f756594ee06111f8d8af77ba603d6292ecf2ad8ebe950395d30582c434ec1a28
 """
+
 
 from __future__ import annotations
 

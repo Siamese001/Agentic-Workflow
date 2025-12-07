@@ -1,7 +1,10 @@
 """
-security_controls\guardrails\__init__.py
-Auto-hardened by WINDSURF v2
+04_prompt_governance/security_controls/security_controls/guardrails/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 406c88fb23276443bfa5ead22a8c3efcd185a5609a36598857f3fa019e492d04
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

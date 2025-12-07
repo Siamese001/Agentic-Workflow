@@ -1,7 +1,10 @@
 """
-apps_lic\__init__.py
-Auto-hardened by WINDSURF v2
+09_apps/apps_lic/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 880f1ba1da1ce380282ed456a29344680955fbc970dc9d90a21fe8047307f7ff
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
