@@ -1,3 +1,5 @@
+import logging
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 COMPREHENSIVE TEST SUITE FOR ALL PHASES (0.5, 1, 2, 3, 4)
@@ -86,18 +88,18 @@ def run_test(name: str, test_fn, category: str = "general") -> TestResult:
 def print_result(result: TestResult):
     """Print a single test result."""
     status = "✓ PASS" if result.passed else "✗ FAIL"
-    print(f"  {status}: [{result.category}] {result.name} ({result.duration:.2f}s)")
+    logging.debug(f"  {status}: [{result.category}] {result.name} ({result.duration:.2f}s)")
     if not result.passed:
-        print(f"         → {result.message}")
+        logging.debug(f"         → {result.message}")
 
 def print_suite_summary(suite: TestSuite):
     """Print summary for a test suite."""
-    print(f"\n{'='*70}")
-    print(f"SUITE: {suite.name}")
-    print(f"{'='*70}")
+    logging.debug(f"\n{'='*70}")
+    logging.debug(f"SUITE: {suite.name}")
+    logging.debug(f"{'='*70}")
     for result in suite.results:
         print_result(result)
-    print(f"\nTotal: {len(suite.results)} | Passed: {suite.passed_count} | Failed: {suite.failed_count}")
+    logging.debug(f"\nTotal: {len(suite.results)} | Passed: {suite.passed_count} | Failed: {suite.failed_count}")
 
 # ======================================================================
 # YAML GOVERNANCE TESTS
@@ -571,51 +573,51 @@ def run_integration_tests() -> TestSuite:
 # ======================================================================
 
 def main():
-    print("="*70)
-    print("COMPREHENSIVE TEST SUITE FOR ALL PHASES")
-    print("="*70)
-    print(f"Project Root: {PROJECT_ROOT}")
-    print(f"Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    logging.debug("="*70)
+    logging.debug("COMPREHENSIVE TEST SUITE FOR ALL PHASES")
+    logging.debug("="*70)
+    logging.debug(f"Project Root: {PROJECT_ROOT}")
+    logging.debug(f"Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}")
     
     all_suites: List[TestSuite] = []
     
     # Run all test suites
-    print("\n[1/8] Running YAML Governance tests...")
+    logging.debug("\n[1/8] Running YAML Governance tests...")
     all_suites.append(run_yaml_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[2/8] Running Phase 0.5 tests...")
+    logging.debug("\n[2/8] Running Phase 0.5 tests...")
     all_suites.append(run_phase05_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[3/8] Running Phase 1 tests...")
+    logging.debug("\n[3/8] Running Phase 1 tests...")
     all_suites.append(run_phase01_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[4/8] Running Phase 2 tests...")
+    logging.debug("\n[4/8] Running Phase 2 tests...")
     all_suites.append(run_phase02_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[5/8] Running Phase 3 tests...")
+    logging.debug("\n[5/8] Running Phase 3 tests...")
     all_suites.append(run_phase03_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[6/8] Running Phase 4 tests...")
+    logging.debug("\n[6/8] Running Phase 4 tests...")
     all_suites.append(run_phase04_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[7/8] Running Regression tests...")
+    logging.debug("\n[7/8] Running Regression tests...")
     all_suites.append(run_regression_tests())
     print_suite_summary(all_suites[-1])
     
-    print("\n[8/8] Running Integration tests...")
+    logging.debug("\n[8/8] Running Integration tests...")
     all_suites.append(run_integration_tests())
     print_suite_summary(all_suites[-1])
     
     # Final summary
-    print("\n" + "="*70)
-    print("FINAL SUMMARY")
-    print("="*70)
+    logging.debug("\n" + "="*70)
+    logging.debug("FINAL SUMMARY")
+    logging.debug("="*70)
     
     total_tests = sum(len(s.results) for s in all_suites)
     total_passed = sum(s.passed_count for s in all_suites)
@@ -623,19 +625,19 @@ def main():
     
     for suite in all_suites:
         status = "✓" if suite.all_passed else "✗"
-        print(f"  {status} {suite.name}: {suite.passed_count}/{len(suite.results)} passed")
+        logging.debug(f"  {status} {suite.name}: {suite.passed_count}/{len(suite.results)} passed")
     
-    print(f"\nOVERALL: {total_passed}/{total_tests} tests passed")
+    logging.debug(f"\nOVERALL: {total_passed}/{total_tests} tests passed")
     
     if total_failed > 0:
-        print("\nFAILED TESTS:")
+        logging.debug("\nFAILED TESTS:")
         for suite in all_suites:
             for result in suite.results:
                 if not result.passed:
-                    print(f"  - [{suite.name}] {result.name}: {result.message}")
+                    logging.debug(f"  - [{suite.name}] {result.name}: {result.message}")
         return 1
     
-    print("\n✓ ALL TESTS PASSED")
+    logging.debug("\n✓ ALL TESTS PASSED")
     return 0
 
 if __name__ == "__main__":

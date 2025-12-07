@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 2 — SEMANTIC STRUCTURAL & CODE DIFF PLANNING (ZERO-LOSS, STANDALONE)
@@ -396,7 +397,7 @@ class Phase2Validator:
             msg = f"[{status}] {result.key}: {result.description}"
             if result.detail:
                 msg += f" — {result.detail}"
-            print(msg)
+            logging.debug(msg)
         if self.fail_fast and not result.ok:
             raise RuntimeError(f"Validation {result.key} failed: {result.description}")
 
@@ -419,11 +420,11 @@ class Phase2Validator:
         total = len(self.results)
         passed = sum(1 for r in self.results if r.ok)
         failed = total - passed
-        print("=== Phase 2 Validation Summary ===")
-        print(f"  Total : {total}")
-        print(f"  Passed: {passed}")
-        print(f"  Failed: {failed}")
-        print("  Keys  : " + ", ".join(f"{r.key}={'OK' if r.ok else 'FAIL'}" for r in self.results))
+        logging.debug("=== Phase 2 Validation Summary ===")
+        logging.debug(f"  Total : {total}")
+        logging.debug(f"  Passed: {passed}")
+        logging.debug(f"  Failed: {failed}")
+        logging.debug("  Keys  : " + ", ".join(f"{r.key}={'OK' if r.ok else 'FAIL'}" for r in self.results))
 
 
 # ======================================================================
@@ -668,9 +669,9 @@ def load_semantic_cache_state(
             engine_counts[engine] = engine_counts.get(engine, 0) + 1
             archive_counts[archive] = archive_counts.get(archive, 0) + 1
 
-        print(f"[DEBUG] Loaded {len(pointers)} component pointers from ALL buckets (target: {bucket})")
-        print(f"[DEBUG] Engine distribution: {engine_counts}")
-        print(f"[DEBUG] Archive distribution: {dict(list(archive_counts.items())[:5])}...")
+        logging.debug(f"[DEBUG] Loaded {len(pointers)} component pointers from ALL buckets (target: {bucket})")
+        logging.debug(f"[DEBUG] Engine distribution: {engine_counts}")
+        logging.debug(f"[DEBUG] Archive distribution: {dict(list(archive_counts.items())[:5])}...")
 
     if not pointers:
         validator.ok(
@@ -1304,7 +1305,7 @@ def compute_semantic_diffs(
     hash_matches = sum(1 for d in diffs if d.diff_kind == "hash_match")
     symbol_matches = sum(1 for d in diffs if d.diff_kind == "semantic_symbol_match")
     no_matches = sum(1 for d in diffs if d.diff_kind == "no_cache")
-    print(f"[DEBUG] SM1 Model Results: {hash_matches} hash matches, {symbol_matches} symbol matches, {no_matches} no matches")
+    logging.debug(f"[DEBUG] SM1 Model Results: {hash_matches} hash matches, {symbol_matches} symbol matches, {no_matches} no matches")
 
     # META canonical intent/axes/verb_groups (K34b–K34d) are properties of META_YAML,
     # not per-file; they are checked in a separate step after META load.
@@ -1737,20 +1738,20 @@ def check_required_k_coverage(validator: Phase2Validator) -> None:
 
 def run_phase2(cfg: Phase2Config) -> int:
     if cfg.verbose:
-        print("=== Phase 2 — Semantic Structural & Code Diff Planning ===")
-        print(f"Project root : {PROJECT_ROOT}")
-        print(f"Target root  : {cfg.target_root}")
-        print(f"Semantic cache: {SEMANTIC_CACHE_ROOT}")
-        print(f"Dry run      : {cfg.dry_run}")
-        print("==========================================================")
+        logging.debug("=== Phase 2 — Semantic Structural & Code Diff Planning ===")
+        logging.debug(f"Project root : {PROJECT_ROOT}")
+        logging.debug(f"Target root  : {cfg.target_root}")
+        logging.debug(f"Semantic cache: {SEMANTIC_CACHE_ROOT}")
+        logging.debug(f"Dry run      : {cfg.dry_run}")
+        logging.debug("==========================================================")
 
     # ================================================================
     # SKIP NON-CODE DOMAINS (06_data AND 10_tests)
     # ================================================================
     if cfg.target_root in {"06_data", "10_tests"}:
-        print(f"[SKIP] Phase 2 does not apply to {cfg.target_root} (non-code or generated domain).")
-        print("Passed: 0")
-        print("Failed: 0")
+        logging.debug(f"[SKIP] Phase 2 does not apply to {cfg.target_root} (non-code or generated domain).")
+        logging.debug("Passed: 0")
+        logging.debug("Failed: 0")
         return 0
 
     validator = Phase2Validator(verbose=cfg.verbose)
@@ -1815,11 +1816,11 @@ def run_phase2(cfg: Phase2Config) -> int:
 
     # Write plan (K44–K46)
     if cfg.dry_run:
-        print(json.dumps(asdict(plan), indent=2, sort_keys=True))
-        print("\n[DRY-RUN] Plan not written to disk.")
+        logging.debug(json.dumps(asdict(plan), indent=2, sort_keys=True))
+        logging.debug("\n[DRY-RUN] Plan not written to disk.")
     else:
         out_path = write_plan_to_disk(cfg, validator, plan)
-        print(f"[OK] Plan written to {out_path}")
+        logging.debug(f"[OK] Plan written to {out_path}")
 
     # Required K coverage + completion gate (K84–K88)
     check_required_k_coverage(validator)

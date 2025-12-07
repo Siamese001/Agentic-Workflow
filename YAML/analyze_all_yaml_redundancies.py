@@ -1,3 +1,5 @@
+import logging
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Comprehensive analysis of all 10 folders in unified_structure_subatomic.yaml
@@ -17,8 +19,8 @@ def load_yaml_structure():
 def analyze_all_folders():
     """Analyze all 10 folders for architectural redundancies."""
     
-    print("🏗️ COMPREHENSIVE ANALYSIS OF ALL 10 FOLDERS")
-    print("=" * 80)
+    logging.debug("🏗️ COMPREHENSIVE ANALYSIS OF ALL 10 FOLDERS")
+    logging.debug("=" * 80)
     
     structure = load_yaml_structure()
     
@@ -82,20 +84,20 @@ def analyze_all_folders():
     # Get domain modes from YAML
     domain_modes = structure.get('domain_modes', {})
     
-    print("📋 Folder Classification & Rules:")
+    logging.debug("📋 Folder Classification & Rules:")
     for yaml_key, folder_name in yaml_to_folder.items():
         if yaml_key in domain_modes:
             mode = domain_modes[yaml_key]
-            print(f"\n{folder_name}:")
-            print(f"  YAML key: {yaml_key}")
-            print(f"  Mode: {mode}")
+            logging.debug(f"\n{folder_name}:")
+            logging.debug(f"  YAML key: {yaml_key}")
+            logging.debug(f"  Mode: {mode}")
             if mode in folder_rules:
                 rules = folder_rules[mode]
-                print(f"  Allowed layers: {rules['allowed_layers']}")
-                print(f"  Allowed phases: {rules['allowed_phases']}")
-                print(f"  Forbidden patterns: {rules['forbidden_patterns']}")
+                logging.debug(f"  Allowed layers: {rules['allowed_layers']}")
+                logging.debug(f"  Allowed phases: {rules['allowed_phases']}")
+                logging.debug(f"  Forbidden patterns: {rules['forbidden_patterns']}")
                 if 'rationale' in rules:
-                    print(f"  Rationale: {rules['rationale']}")
+                    logging.debug(f"  Rationale: {rules['rationale']}")
     
     return structure, yaml_to_folder, folder_rules, domain_modes
 
@@ -104,9 +106,9 @@ def find_redundancies_across_all_folders():
     
     structure, yaml_to_folder, folder_rules, domain_modes = analyze_all_folders()
     
-    print(f"\n" + "=" * 80)
-    print("🔍 REDUNDANCY ANALYSIS ACROSS ALL FOLDERS")
-    print("=" * 80)
+    logging.debug(f"\n" + "=" * 80)
+    logging.debug("🔍 REDUNDANCY ANALYSIS ACROSS ALL FOLDERS")
+    logging.debug("=" * 80)
     
     redundancies = []
     
@@ -118,8 +120,8 @@ def find_redundancies_across_all_folders():
         mode = domain_modes.get(yaml_key, 'unknown')
         folder_content = structure[yaml_key]
         
-        print(f"\n📁 Analyzing {folder_name} ({yaml_key}, mode: {mode}):")
-        print("-" * 60)
+        logging.debug(f"\n📁 Analyzing {folder_name} ({yaml_key}, mode: {mode}):")
+        logging.debug("-" * 60)
         
         if mode in folder_rules:
             rules = folder_rules[mode]
@@ -138,7 +140,7 @@ def find_redundancies_across_all_folders():
                             'location': f"{folder_name}/{'/'.join(cognitive_layers)}",
                             'recommendation': f'Remove cognitive layers from {mode} folder'
                         })
-                        print(f"  ❌ FOUND: Cognitive layers {cognitive_layers}")
+                        logging.debug(f"  ❌ FOUND: Cognitive layers {cognitive_layers}")
                 
                 elif pattern in ['P1_', 'P2_', 'P3_', 'P4_']:
                     # Check for cognitive phases in non-cognitive folders
@@ -158,7 +160,7 @@ def find_redundancies_across_all_folders():
                             'location': f"{folder_name}/{'/'.join(cognitive_phases[:3])}...",
                             'recommendation': f'Remove cognitive phases from {mode} folder'
                         })
-                        print(f"  ❌ FOUND: Cognitive phases in {len(cognitive_phases)} locations")
+                        logging.debug(f"  ❌ FOUND: Cognitive phases in {len(cognitive_phases)} locations")
             
             # For cognitive engines, check phase appropriateness
             if mode == 'cognitive_engine':
@@ -176,7 +178,7 @@ def find_redundancies_across_all_folders():
                                 'location': f"{folder_name}/{layer_key}/P1_retrieve",
                                 'recommendation': 'Remove P1_retrieve from execution layers'
                             })
-                            print(f"  ❌ FOUND: P1_retrieve in {layer_key}")
+                            logging.debug(f"  ❌ FOUND: P1_retrieve in {layer_key}")
                         
                         elif layer_key == 'L3_orchestration':
                             redundant_phases = [p for p in ['P1_retrieve', 'P2_inspect'] if p in phases]
@@ -189,7 +191,7 @@ def find_redundancies_across_all_folders():
                                     'location': f"{folder_name}/{layer_key}/{'/'.join(redundant_phases)}",
                                     'recommendation': 'Consider removing P1-P2 from orchestration'
                                 })
-                                print(f"  ⚠️  FOUND: {redundant_phases} in {layer_key}")
+                                logging.debug(f"  ⚠️  FOUND: {redundant_phases} in {layer_key}")
                         
                         elif layer_key == 'L4_memory' and 'P2_inspect' in phases:
                             redundancies.append({
@@ -200,7 +202,7 @@ def find_redundancies_across_all_folders():
                                 'location': f"{folder_name}/{layer_key}/P2_inspect",
                                 'recommendation': 'Consider removing P2_inspect from memory layers'
                             })
-                            print(f"  ℹ️  FOUND: P2_inspect in {layer_key}")
+                            logging.debug(f"  ℹ️  FOUND: P2_inspect in {layer_key}")
                         
                         elif layer_key == 'L5_safety':
                             redundant_phases = [p for p in ['P1_retrieve', 'P2_inspect', 'P3_aggregate'] if p in phases]
@@ -213,19 +215,19 @@ def find_redundancies_across_all_folders():
                                     'location': f"{folder_name}/{layer_key}/{'/'.join(redundant_phases)}",
                                     'recommendation': 'Remove P1-P3 from safety layers'
                                 })
-                                print(f"  ❌ FOUND: {redundant_phases} in {layer_key}")
+                                logging.debug(f"  ❌ FOUND: {redundant_phases} in {layer_key}")
             
             if not any(r['folder'] == folder_name for r in redundancies[-10:]):  # Check last 10 for this folder
-                print(f"  ✅ No architectural violations found")
+                logging.debug(f"  ✅ No architectural violations found")
     
     return redundancies
 
 def summarize_all_redundancies(redundancies):
     """Summarize all redundancies found across the 10 folders."""
     
-    print(f"\n" + "=" * 80)
-    print("🚨 COMPREHENSIVE REDUNDANCY SUMMARY")
-    print("=" * 80)
+    logging.debug(f"\n" + "=" * 80)
+    logging.debug("🚨 COMPREHENSIVE REDUNDANCY SUMMARY")
+    logging.debug("=" * 80)
     
     # Group by severity
     by_severity = defaultdict(list)
@@ -235,32 +237,32 @@ def summarize_all_redundancies(redundancies):
         by_severity[redundancy['severity']].append(redundancy)
         by_folder[redundancy['folder']].append(redundancy)
     
-    print(f"\n📊 Overall Statistics:")
-    print(f"  Total redundancies: {len(redundancies)}")
-    print(f"  High severity: {len(by_severity['HIGH'])}")
-    print(f"  Medium severity: {len(by_severity['MEDIUM'])}")
-    print(f"  Low severity: {len(by_severity['LOW'])}")
+    logging.debug(f"\n📊 Overall Statistics:")
+    logging.debug(f"  Total redundancies: {len(redundancies)}")
+    logging.debug(f"  High severity: {len(by_severity['HIGH'])}")
+    logging.debug(f"  Medium severity: {len(by_severity['MEDIUM'])}")
+    logging.debug(f"  Low severity: {len(by_severity['LOW'])}")
     
-    print(f"\n📁 Redundancies by Folder:")
+    logging.debug(f"\n📁 Redundancies by Folder:")
     for folder_name, folder_issues in sorted(by_folder.items()):
-        print(f"\n{folder_name}:")
+        logging.debug(f"\n{folder_name}:")
         for issue in folder_issues:
-            print(f"  [{issue['severity']}] {issue['issue']}")
-            print(f"    Location: {issue['location']}")
-            print(f"    Recommendation: {issue['recommendation']}")
+            logging.debug(f"  [{issue['severity']}] {issue['issue']}")
+            logging.debug(f"    Location: {issue['location']}")
+            logging.debug(f"    Recommendation: {issue['recommendation']}")
     
-    print(f"\n🎯 Priority Fix Order:")
-    print(f"1. HIGH SEVERITY ({len(by_severity['HIGH'])} issues):")
+    logging.debug(f"\n🎯 Priority Fix Order:")
+    logging.debug(f"1. HIGH SEVERITY ({len(by_severity['HIGH'])} issues):")
     for issue in by_severity['HIGH']:
-        print(f"   • {issue['folder']}: {issue['issue']}")
+        logging.debug(f"   • {issue['folder']}: {issue['issue']}")
     
-    print(f"\n2. MEDIUM SEVERITY ({len(by_severity['MEDIUM'])} issues):")
+    logging.debug(f"\n2. MEDIUM SEVERITY ({len(by_severity['MEDIUM'])} issues):")
     for issue in by_severity['MEDIUM']:
-        print(f"   • {issue['folder']}: {issue['issue']}")
+        logging.debug(f"   • {issue['folder']}: {issue['issue']}")
     
-    print(f"\n3. LOW SEVERITY ({len(by_severity['LOW'])} issues):")
+    logging.debug(f"\n3. LOW SEVERITY ({len(by_severity['LOW'])} issues):")
     for issue in by_severity['LOW']:
-        print(f"   • {issue['folder']}: {issue['issue']}")
+        logging.debug(f"   • {issue['folder']}: {issue['issue']}")
     
     return redundancies
 

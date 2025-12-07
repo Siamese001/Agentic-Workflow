@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 0.5 — SEMANTIC LINEAGE CACHE REBUILD (v4, FULL SEMANTIC, ARCHIVE + UNASSIGNED)
@@ -420,7 +421,7 @@ class Phase05Orchestrator:
                         break
                 else:
                     self.current_step_index = len(self.transaction_manifest.steps)
-                print(f"Resuming from step index: {self.current_step_index}")
+                logging.debug(f"Resuming from step index: {self.current_step_index}")
                 return True
             else:
                 self.transaction_manifest = TransactionManifest(
@@ -435,7 +436,7 @@ class Phase05Orchestrator:
                 )
                 return True
         except Exception as e:
-            print(f"Error loading/creating manifest: {str(e)}")
+            logging.debug(f"Error loading/creating manifest: {str(e)}")
             return False
 
     def save_manifest(self) -> bool:
@@ -448,7 +449,7 @@ class Phase05Orchestrator:
                     json.dump(asdict(self.transaction_manifest), f, indent=2)
             return True
         except Exception as e:
-            print(f"Error saving manifest: {str(e)}")
+            logging.debug(f"Error saving manifest: {str(e)}")
             return False
 
     def update_step_status(self, step_index: int, status: str, error_message: Optional[str] = None):
@@ -493,21 +494,21 @@ class Phase05Orchestrator:
         if step.step_id == "CLEANUP":
             return self._run_cleanup(step)
 
-        print(f"Unknown step id: {step.step_id}")
+        logging.debug(f"Unknown step id: {step.step_id}")
         return False
 
     def _run_ssot_load(self, step: PipelineStep) -> bool:
         """SSOT load + clean-wipe + structure creation."""
         if not SSOT_YAML.exists():
-            print("[WARN] SSoT YAML not found; proceeding in heuristic-only mode.")
+            logging.debug("[WARN] SSoT YAML not found; proceeding in heuristic-only mode.")
 
         if not self.dry_run:
-            print("Cleaning semantic cache...")
+            logging.debug("Cleaning semantic cache...")
             wipe_semantic_cache()
-            print("Creating semantic cache structure...")
+            logging.debug("Creating semantic cache structure...")
             create_semantic_cache_structure()
         else:
-            print("[DRY RUN] Would clean/create semantic cache structure.")
+            logging.debug("[DRY RUN] Would clean/create semantic cache structure.")
 
         step.artifacts_created = ["ssot_validation_report.json"]
         return True
@@ -527,7 +528,7 @@ class Phase05Orchestrator:
             f"integrity_records_archives_{total}.json",
         ]
 
-        print(f"Archive scan complete: total={total}, RG={rg_count}, LIC={lic_count}")
+        logging.debug(f"Archive scan complete: total={total}, RG={rg_count}, LIC={lic_count}")
         return True
 
     def _run_current_scan(self, step: PipelineStep) -> bool:
@@ -558,7 +559,7 @@ class Phase05Orchestrator:
             f"integrity_records_current_{total_cnt}.json",
         ]
 
-        print(f"Current scan complete: unassigned={unassigned_cnt}, canonical={canonical_cnt}, total={total_cnt}")
+        logging.debug(f"Current scan complete: unassigned={unassigned_cnt}, canonical={canonical_cnt}, total={total_cnt}")
         return True
 
     def _run_artifact_generation(self, step: PipelineStep) -> bool:
@@ -566,13 +567,13 @@ class Phase05Orchestrator:
         self._all_records = list(self._archive_records) + list(self._current_unassigned_records)
 
         if not self._all_records:
-            print("[WARN] No eligible files found for artifact generation.")
+            logging.debug("[WARN] No eligible files found for artifact generation.")
             self._hash_map = {}
             self._components_by_hash = {}
             self._component_graph_edges = []
             return True
 
-        print(f"Generating global + semantic artifacts for {len(self._all_records)} files...")
+        logging.debug(f"Generating global + semantic artifacts for {len(self._all_records)} files...")
 
         (
             self._hash_map,
@@ -587,18 +588,18 @@ class Phase05Orchestrator:
             "component_graph.json",
         ]
 
-        print(f"Generated artifacts for {len(self._hash_map)} unique hashes.")
+        logging.debug(f"Generated artifacts for {len(self._hash_map)} unique hashes.")
         return True
 
     def _run_dual_write(self, step: PipelineStep) -> bool:
         """Create archive-local artifacts and canonical component pointers."""
         if self.dry_run:
-            print("[DRY RUN] Would create archive-local artifacts and canonical component pointers.")
+            logging.debug("[DRY RUN] Would create archive-local artifacts and canonical component pointers.")
             step.artifacts_created = ["dual_write_report.json", "canonical_component_pointers.json"]
             return True
             
         if not self._hash_map:
-            print("[WARN] No hash map computed; skipping dual-write.")
+            logging.debug("[WARN] No hash map computed; skipping dual-write.")
             return True
 
         generate_archive_local_artifacts(self._hash_map)
@@ -616,7 +617,7 @@ class Phase05Orchestrator:
             "canonical_component_pointers.json",
         ]
 
-        print(f"Created {total_pointers} canonical component pointers.")
+        logging.debug(f"Created {total_pointers} canonical component pointers.")
         return True
 
     def _run_resolve_unassigned(self, step: PipelineStep) -> bool:
@@ -631,7 +632,7 @@ class Phase05Orchestrator:
         _PHASE05_READ_ONLY = True  # Pre-flight 0.1 enforcement
         
         if not self._unassigned_move_plan:
-            print("[PHASE 0.5 READ-ONLY] No CURRENT *_unassigned move plan; nothing to resolve.")
+            logging.debug("[PHASE 0.5 READ-ONLY] No CURRENT *_unassigned move plan; nothing to resolve.")
             return True
 
         # Emit recommendations ONLY — no actual file moves
@@ -651,7 +652,7 @@ class Phase05Orchestrator:
                 "action": "RECOMMEND_MOVE",
                 "executor": "Phase1"
             })
-            print(f"[PHASE 0.5 READ-ONLY] Recommend move: {src} -> {dst}")
+            logging.debug(f"[PHASE 0.5 READ-ONLY] Recommend move: {src} -> {dst}")
         
         # Write resolution plan for Phase 1 consumption
         resolution_plan_path = CACHE_ROOT / "meta" / "phase05_resolution_plan.json"
@@ -660,7 +661,7 @@ class Phase05Orchestrator:
         self.stats["current_unassigned_files_moved"] = 0  # Always 0 in read-only mode
         step.artifacts_created = ["phase05_resolution_plan.json"]
 
-        print(f"[PHASE 0.5 READ-ONLY] Emitted {len(self._unassigned_move_plan)} move recommendations (no actual moves)")
+        logging.debug(f"[PHASE 0.5 READ-ONLY] Emitted {len(self._unassigned_move_plan)} move recommendations (no actual moves)")
         return True
 
     def _run_validation(self, step: PipelineStep) -> bool:
@@ -675,7 +676,7 @@ class Phase05Orchestrator:
             step.artifacts_created = ["validation_report.json"]
             return result == 0
         except Exception as e:
-            print(f"Validation failed: {e}")
+            logging.debug(f"Validation failed: {e}")
             self.stats["validation_keys_passed"] = 0
             self.stats["validation_keys_failed"] = 1
             return False
@@ -712,17 +713,17 @@ class Phase05Orchestrator:
     # -----------------------------------------------------------------
 
     def print_final_summary(self):
-        print("=== Final Summary ===")
+        logging.debug("=== Final Summary ===")
         for k, v in self.stats.items():
-            print(f"{k}: {v}")
+            logging.debug(f"{k}: {v}")
 
         if self.stats["validation_keys_failed"] == 0:
-            print("\n[SUCCESS] PHASE 0.5 COMPLETED SUCCESSFULLY")
-            print("[PASS] All validation keys passed.")
-            print("[PASS] Semantic cache ready for Phase 2.")
+            logging.debug("\n[SUCCESS] PHASE 0.5 COMPLETED SUCCESSFULLY")
+            logging.debug("[PASS] All validation keys passed.")
+            logging.debug("[PASS] Semantic cache ready for Phase 2.")
         else:
-            print("\n[WARNING] PHASE 0.5 COMPLETED WITH VALIDATION FAILURES")
-            print("[FAIL] Some validation keys failed.")
+            logging.debug("\n[WARNING] PHASE 0.5 COMPLETED WITH VALIDATION FAILURES")
+            logging.debug("[FAIL] Some validation keys failed.")
 
 
 # =====================================================================
@@ -737,7 +738,7 @@ def wipe_semantic_cache() -> None:
         try:
             shutil.rmtree(CACHE_ROOT, ignore_errors=True)
         except Exception as e:
-            print(f"[WARN] Could not fully remove semantic cache: {e}")
+            logging.debug(f"[WARN] Could not fully remove semantic cache: {e}")
             # Fallback: try individual file deletion
             for p in sorted(CACHE_ROOT.rglob("*"), reverse=True):
                 try:
@@ -2003,11 +2004,11 @@ def run(
     strict_mode: bool = False,
 ) -> int:
     """Run Phase 0.5 with orchestrator."""
-    print("=== PHASE 0.5 — SEMANTIC LINEAGE CACHE REBUILD (v4, ARCHIVE + UNASSIGNED) ===")
-    print("Project root      :", PROJECT_ROOT)
-    print("Semantic cache    :", CACHE_ROOT)
+    logging.debug("=== PHASE 0.5 — SEMANTIC LINEAGE CACHE REBUILD (v4, ARCHIVE + UNASSIGNED) ===")
+    logging.debug("Project root      :", PROJECT_ROOT)
+    logging.debug("Semantic cache    :", CACHE_ROOT)
     if not SSOT_YAML.exists():
-        print("[WARN] unified_structure_subatomic.yaml not found; canonical mapping uses heuristics only.")
+        logging.debug("[WARN] unified_structure_subatomic.yaml not found; canonical mapping uses heuristics only.")
 
     orchestrator = Phase05Orchestrator(
         dry_run=dry_run,
@@ -2016,51 +2017,51 @@ def run(
     )
 
     if not orchestrator.load_or_create_manifest():
-        print("Failed to load/create transaction manifest.")
+        logging.debug("Failed to load/create transaction manifest.")
         return 1
 
     try:
         for i, step in enumerate(orchestrator.pipeline_steps):
             if i < orchestrator.current_step_index:
-                print(f"Skipping previously completed step: {step.step_name}")
+                logging.debug(f"Skipping previously completed step: {step.step_name}")
                 continue
 
-            print(f"Running step {i + 1}/{len(orchestrator.pipeline_steps)}: {step.step_name}")
+            logging.debug(f"Running step {i + 1}/{len(orchestrator.pipeline_steps)}: {step.step_name}")
             orchestrator.update_step_status(i, "RUNNING")
 
             try:
                 success = orchestrator._run_step(i)
                 if success:
                     orchestrator.update_step_status(i, "COMPLETED")
-                    print(f"[PASS] Step completed: {step.step_name}")
+                    logging.debug(f"[PASS] Step completed: {step.step_name}")
                 else:
                     orchestrator.update_step_status(i, "FAILED", f"Step {step.step_name} failed")
-                    print(f"[FAIL] Step failed: {step.step_name}")
+                    logging.debug(f"[FAIL] Step failed: {step.step_name}")
                     return 1
             except Exception as e:
                 orchestrator.update_step_status(i, "FAILED", str(e))
-                print(f"[FAIL] Step failed with exception: {step.step_name}")
-                print(f"Error: {e}")
+                logging.debug(f"[FAIL] Step failed with exception: {step.step_name}")
+                logging.debug(f"Error: {e}")
                 traceback.print_exc()
                 return 1
 
-            print()
+            logging.debug()
 
         orchestrator.transaction_manifest.status = "COMPLETED"
         orchestrator.save_manifest()
 
-        print("=== Pipeline Completed ===")
+        logging.debug("=== Pipeline Completed ===")
         orchestrator.print_final_summary()
         return 0
 
     except KeyboardInterrupt:
-        print("\nPipeline interrupted by user.")
+        logging.debug("\nPipeline interrupted by user.")
         if orchestrator.transaction_manifest:
             orchestrator.transaction_manifest.status = "INTERRUPTED"
             orchestrator.save_manifest()
         return 1
     except Exception as e:
-        print(f"Pipeline failed with exception: {e}")
+        logging.debug(f"Pipeline failed with exception: {e}")
         if orchestrator.transaction_manifest:
             orchestrator.transaction_manifest.status = "FAILED"
             orchestrator.save_manifest()
@@ -2085,15 +2086,15 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.list_steps:
-        print("Available pipeline steps:")
-        print("  SSOT_LOAD")
-        print("  ARCHIVE_SCAN")
-        print("  CURRENT_SCAN")
-        print("  ARTIFACT_GENERATION")
-        print("  DUAL_WRITE")
-        print("  RESOLVE_UNASSIGNED")
-        print("  VALIDATION")
-        print("  CLEANUP")
+        logging.debug("Available pipeline steps:")
+        logging.debug("  SSOT_LOAD")
+        logging.debug("  ARCHIVE_SCAN")
+        logging.debug("  CURRENT_SCAN")
+        logging.debug("  ARTIFACT_GENERATION")
+        logging.debug("  DUAL_WRITE")
+        logging.debug("  RESOLVE_UNASSIGNED")
+        logging.debug("  VALIDATION")
+        logging.debug("  CLEANUP")
         return 0
 
     if args.validate_only:
