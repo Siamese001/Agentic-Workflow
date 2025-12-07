@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-12-07T12:08:05.859995",
+  "total_files_scanned": 215,
+  "stub_files_found": 3,
+  "corrupted_files": 0,
+  "files_needing_rewrite": 3,
+  "stub_files": [
+    {
+      "path": "08_scripts\\comprehensive_dedup_analysis.py",
+      "stub_types": [
+        "placeholder_header",
+        "not_implemented",
+        "pass_todo",
+        "level_placeholder"
+      ],
+      "size": 21243,
+      "line_count": 580,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\populate_hardened_code.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 56098,
+      "line_count": 1720,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\stub_elimination_scan.py",
+      "stub_types": [
+        "placeholder_header",
+        "not_implemented",
+        "pass_todo"
+      ],
+      "size": 59930,
+      "line_count": 1796,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    }
+  ]
+}

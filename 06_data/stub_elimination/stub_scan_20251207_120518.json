@@ -1,0 +1,694 @@
+{
+  "timestamp": "2025-12-07T12:05:18.055944",
+  "total_files_scanned": 214,
+  "stub_files_found": 63,
+  "corrupted_files": 42,
+  "files_needing_rewrite": 62,
+  "stub_files": [
+    {
+      "path": "01_agentic_core\\L5_safety\\pii\\pii_redaction.py",
+      "stub_types": [
+        "not_implemented"
+      ],
+      "size": 36765,
+      "line_count": 980,
+      "is_corrupted": false,
+      "needs_full_rewrite": false
+    },
+    {
+      "path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\orchestrate.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 31650,
+      "line_count": 730,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 19357,
+      "line_count": 553,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\runtime_ops\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\invoke_observability_tool.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 163064,
+      "line_count": 1686,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\runtime_ops\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\invoke_runtime_tool.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29735,
+      "line_count": 482,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\runtime_ops\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\invoke_scripts_tool.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 163058,
+      "line_count": 1686,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\runtime_ops\\runtime_ops\\synthesis\\use_prompt_tools\\utility_prepare_information\\serialize_execution_params.py",
+      "stub_types": [
+        "json_in_python"
+      ],
+      "size": 68067,
+      "line_count": 1446,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 24883,
+      "line_count": 698,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\pipeline_ops\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\call_observability_api.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 163063,
+      "line_count": 1686,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\pipeline_ops\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\call_runtime_api.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29734,
+      "line_count": 482,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\pipeline_ops\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\call_scripts_api.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 175983,
+      "line_count": 3515,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 36426,
+      "line_count": 1018,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\cache_ops\\cache_ops\\data_access\\get_info\\understand_request\\retrieve_observability_memory.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 57266,
+      "line_count": 1324,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "03_runtime\\cache_ops\\cache_ops\\data_access\\get_info\\understand_request\\retrieve_runtime_memory.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29744,
+      "line_count": 482,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\general\\sort_observability_results.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29563,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\general\\track_observability_cost.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29561,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\inspection\\dag_runtime_inspector.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29558,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\inspection\\signature_verifier.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29555,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\inspection\\token_budget_inspector.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29559,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\logging\\log_observability_metrics.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 350396,
+      "line_count": 8338,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\base_collector.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 162874,
+      "line_count": 1683,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\metric_config.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict"
+      ],
+      "size": 30410,
+      "line_count": 506,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\metric_registry.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict"
+      ],
+      "size": 30412,
+      "line_count": 506,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\runtime_metrics_collector.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29562,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\operations\\coordinate_observability_operations.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 792,
+      "line_count": 26,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\support\\sampling_processor.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 162878,
+      "line_count": 1683,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\baggage_propagator.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict"
+      ],
+      "size": 163738,
+      "line_count": 1710,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\console_trace_exporter.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29559,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\json_exporter.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 162873,
+      "line_count": 1683,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\json_trace_exporter.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 29556,
+      "line_count": 479,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\opentelemetry_tracing_adapter.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 162889,
+      "line_count": 1683,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\otlp_exporter.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 162873,
+      "line_count": 1683,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\w3c_trace_context.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68715,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\comprehensive_dedup_analysis.py",
+      "stub_types": [
+        "placeholder_header",
+        "not_implemented",
+        "pass_todo",
+        "level_placeholder"
+      ],
+      "size": 21243,
+      "line_count": 580,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\phase_4_1_08_scripts_purge.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 23691,
+      "line_count": 673,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\stub_elimination_scan.py",
+      "stub_types": [
+        "placeholder_header",
+        "not_implemented",
+        "pass_todo"
+      ],
+      "size": 59930,
+      "line_count": 1796,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\windsurf_unassigned_purge.py",
+      "stub_types": [
+        "git_conflict"
+      ],
+      "size": 30650,
+      "line_count": 584,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\zero_loss_merge_engine.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 42690,
+      "line_count": 1097,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\migration\\phase03A_stub_scan.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict"
+      ],
+      "size": 19129,
+      "line_count": 636,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\migration\\phase04_freeze_aggregator.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict"
+      ],
+      "size": 163745,
+      "line_count": 1710,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\adjust_scripts_weights.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68720,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\assess_scripts_risk.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68717,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\calculate_scripts_similarity.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68726,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\check_scripts_compliance.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68722,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\check_scripts_policy.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68718,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\compute_scripts_confidence.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68724,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\compute_scripts_embeddings.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68724,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\compute_scripts_score.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68719,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\coordinate_scripts_operations.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68727,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\diagnose_scripts_issues.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68721,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\evaluate_scripts_compliance.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68725,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\format_scripts_context.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68720,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\inspect_scripts_quality.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68721,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\manage_scripts_parameters.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68723,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\normalize_scripts_scores.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68722,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\normalize_scripts_vectors.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68723,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\optimize_scripts_order.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68720,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\sort_scripts_results.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict"
+      ],
+      "size": 30417,
+      "line_count": 506,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\update_scripts_budget.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68719,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\validate_scripts_constraints.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68726,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\validate_scripts_ethics.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68721,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "08_scripts\\utilities\\validate_scripts_schema.py",
+      "stub_types": [
+        "placeholder_header",
+        "git_conflict",
+        "json_in_python"
+      ],
+      "size": 68721,
+      "line_count": 1470,
+      "is_corrupted": true,
+      "needs_full_rewrite": true
+    },
+    {
+      "path": "09_apps\\apps_rg\\scoring_ops\\evaluate_resume_effectiveness.py",
+      "stub_types": [
+        "placeholder_header"
+      ],
+      "size": 437,
+      "line_count": 14,
+      "is_corrupted": false,
+      "needs_full_rewrite": true
+    }
+  ]
+}
