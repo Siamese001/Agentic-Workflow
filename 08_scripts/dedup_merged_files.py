@@ -41,13 +41,21 @@ SCAN_FOLDERS = [
     "10_tests",
 ]
 
-# Exclusion patterns (archives, snapshots)
+# Exclusion patterns (archives, snapshots, staging areas)
 EXCLUDE_PATTERNS = [
     "phase3_snapshots",
     "dedup_archive",
     "unassigned_archive",
     "rollback",
     "backup",
+    "review_pending",
+    "stray_root_archive",
+    "final_archive",
+    "conflicts",
+    "resume_engine_archive",
+    "reachout_engine_archive",
+    "rollback_snapshot",
+    "06_data",  # Exclude entire data folder from dedup
 ]
 
 
