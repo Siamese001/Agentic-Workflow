@@ -1,7 +1,7 @@
 """
-09_apps/apps_rg/L1_cognition/P3_aggregate/business_ops/check_resume_format package initialization.
+09_apps/apps_rg/L1_cognition/P3_aggregate/business_ops/check_resume_format/policy_check_safety package initialization.
 
-Generated: 2025-12-07T13:28:54.229558
+Generated: 2025-12-07T13:28:54.228832
 """
 
 from __future__ import annotations

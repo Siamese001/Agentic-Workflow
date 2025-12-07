@@ -1,7 +1,7 @@
 """
-09_apps/apps_rg/L1_cognition/P2_inspect/business_ops/find_resume_problems package initialization.
+09_apps/apps_rg/L1_cognition/P2_inspect/business_ops/find_resume_problems/diagnostics_ops package initialization.
 
-Generated: 2025-12-07T13:28:54.213967
+Generated: 2025-12-07T13:28:54.213239
 """
 
 from __future__ import annotations

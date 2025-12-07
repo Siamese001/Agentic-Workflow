@@ -1,7 +1,7 @@
 """
-09_apps/apps_lic/L1_cognition/P2_inspect/business_ops/vectorization_ops package initialization.
+09_apps/apps_lic/L1_cognition/P2_inspect/business_ops/vectorization_ops/embedding_compare_meaning package initialization.
 
-Generated: 2025-12-07T13:28:54.054430
+Generated: 2025-12-07T13:28:54.053687
 """
 
 from __future__ import annotations
