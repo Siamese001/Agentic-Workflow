@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 SUBATOMIC PIPELINE CONTROLLER — ZERO-LOSS MERGE (SUPER-PROMPT v3.2)
@@ -100,9 +101,9 @@ def run_python_script(script_path: Path, args: List[str] = None) -> Tuple[int, s
 def run_phase05(reindex: bool = False) -> PhaseResult:
     """Run Phase 0.5 (semantic cache generation)."""
     phase_name = "Phase 0.5 (re-index)" if reindex else "Phase 0.5"
-    print(f"\n{'='*60}")
-    print(f"EXECUTING: {phase_name}")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug(f"EXECUTING: {phase_name}")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -110,9 +111,9 @@ def run_phase05(reindex: bool = False) -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     # Parse validation keys from output or manifest
     validation_keys = []
@@ -151,9 +152,9 @@ def run_phase05(reindex: bool = False) -> PhaseResult:
 
 def run_phase01() -> PhaseResult:
     """Run Phase 1 (structural normalization)."""
-    print(f"\n{'='*60}")
-    print("EXECUTING: Phase 1")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Phase 1")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -161,9 +162,9 @@ def run_phase01() -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     validation_keys = [
         ValidationResult(
@@ -200,9 +201,9 @@ def run_phase01() -> PhaseResult:
 
 def run_pointer_reconciliation() -> PhaseResult:
     """Run pointer reconciliation after Phase 1."""
-    print(f"\n{'='*60}")
-    print("EXECUTING: Pointer Reconciliation")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Pointer Reconciliation")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -213,9 +214,9 @@ def run_pointer_reconciliation() -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     validation_keys = [
         ValidationResult(
@@ -247,9 +248,9 @@ def run_phase02() -> PhaseResult:
     legacy migration keys (K1, K2, K24, K_END) which are no longer relevant
     once the repository is fully hydrated.
     """
-    print(f"\n{'='*60}")
-    print("EXECUTING: Phase 2 — PER-DOMAIN REWRITE PLANNING (PATCHED LOGIC)")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Phase 2 — PER-DOMAIN REWRITE PLANNING (PATCHED LOGIC)")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -272,7 +273,7 @@ def run_phase02() -> PhaseResult:
     all_stderr = []
     
     for target_root in TARGET_ROOTS:
-        print(f"  --> Phase 2 Planning for: {target_root}")
+        logging.debug(f"  --> Phase 2 Planning for: {target_root}")
         returncode, stdout, stderr = run_python_script(
             PHASE02_SCRIPT,
             ["--target-root", target_root, "--dry-run"]
@@ -284,7 +285,7 @@ def run_phase02() -> PhaseResult:
         
         if returncode != 0:
             phase2_raw_pass = False
-            print(f"    [WARN] Phase 2 for {target_root} returned non-zero")
+            logging.debug(f"    [WARN] Phase 2 for {target_root} returned non-zero")
         
         # Validate plan file existence for this domain
         # Phase 2 writes to: 02_schemas/<TARGET_ROOT>_migration_and_rewrite_plan.json
@@ -295,19 +296,19 @@ def run_phase02() -> PhaseResult:
         if not (plan_path_primary.exists() or plan_path_alt.exists()):
             plan_files_written = False
             domains_with_missing_plans.append(target_root)
-            print(f"    [WARN] Phase 2 did not write plan file for domain: {target_root}")
+            logging.debug(f"    [WARN] Phase 2 did not write plan file for domain: {target_root}")
     
     duration = time.time() - start_time
     
     # Print summary
     for out in all_stdout:
         if "K1 = PASS" in out or "K88 = PASS" in out:
-            print(out[:500] + "..." if len(out) > 500 else out)
+            logging.debug(out[:500] + "..." if len(out) > 500 else out)
     
     if all_stderr:
-        print("[STDERR]")
+        logging.debug("[STDERR]")
         for err in all_stderr:
-            print(err[:200] + "..." if len(err) > 200 else err)
+            logging.debug(err[:200] + "..." if len(err) > 200 else err)
     
     # ---------------------------------------------------------------------------
     # Determine Phase 2 Success Under the Gemini Repair Loop Completion Rule
@@ -328,22 +329,22 @@ def run_phase02() -> PhaseResult:
     
     # Condition A: True SUCCESS — all domain-level Phase 2 calls passed
     if phase2_raw_pass:
-        print("\n[INFO] Phase 2 completed successfully for ALL domains.")
+        logging.debug("\n[INFO] Phase 2 completed successfully for ALL domains.")
         phase2_pass = True
     
     # Condition B: Soft SUCCESS — stubs fully hydrated AND plan files exist
     elif stubs_remaining == 0 and plan_files_written:
-        print("\n[INFO] Phase 2 returned warnings but repository is FULLY hydrated.")
-        print("[INFO] Per Repair Loop semantics, Phase 2 is promoted to SUCCESS.")
-        print("[INFO] This is correct behavior once all stubs are eliminated.")
+        logging.debug("\n[INFO] Phase 2 returned warnings but repository is FULLY hydrated.")
+        logging.debug("[INFO] Per Repair Loop semantics, Phase 2 is promoted to SUCCESS.")
+        logging.debug("[INFO] This is correct behavior once all stubs are eliminated.")
         phase2_pass = True
     
     # Condition C: FAILURE — migration is incomplete, stubs remain, or plan files are missing
     else:
-        print("\n[CRITICAL] Phase 2 cannot be promoted to SUCCESS.")
-        print(f"[CRITICAL] Remaining stubs       : {stubs_remaining}")
-        print(f"[CRITICAL] Missing plan files    : {domains_with_missing_plans}")
-        print("[CRITICAL] Phase 2 failure blocks deterministic migration.")
+        logging.debug("\n[CRITICAL] Phase 2 cannot be promoted to SUCCESS.")
+        logging.debug(f"[CRITICAL] Remaining stubs       : {stubs_remaining}")
+        logging.debug(f"[CRITICAL] Missing plan files    : {domains_with_missing_plans}")
+        logging.debug("[CRITICAL] Phase 2 failure blocks deterministic migration.")
         phase2_pass = False
     
     validation_keys = [
@@ -365,9 +366,9 @@ def run_phase02() -> PhaseResult:
 
 def run_phase03a() -> PhaseResult:
     """Run Phase 3A (stub scanner)."""
-    print(f"\n{'='*60}")
-    print("EXECUTING: Phase 3A (Stub Scanner)")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Phase 3A (Stub Scanner)")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -375,9 +376,9 @@ def run_phase03a() -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     validation_keys = []
     
@@ -421,9 +422,9 @@ def run_phase03a() -> PhaseResult:
 
 def run_phase03() -> PhaseResult:
     """Run Phase 3 (rewrite executor)."""
-    print(f"\n{'='*60}")
-    print("EXECUTING: Phase 3")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Phase 3")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -431,9 +432,9 @@ def run_phase03() -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     validation_keys = [
         ValidationResult(
@@ -454,9 +455,9 @@ def run_phase03() -> PhaseResult:
 
 def run_phase04() -> PhaseResult:
     """Run Phase 4 (per-domain freeze generator)."""
-    print(f"\n{'='*60}")
-    print("EXECUTING: Phase 4")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Phase 4")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -464,9 +465,9 @@ def run_phase04() -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     validation_keys = [
         ValidationResult(
@@ -487,9 +488,9 @@ def run_phase04() -> PhaseResult:
 
 def run_freeze_aggregator() -> PhaseResult:
     """Run Freeze Aggregator (global Merkle-root)."""
-    print(f"\n{'='*60}")
-    print("EXECUTING: Freeze Aggregator")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug("EXECUTING: Freeze Aggregator")
+    logging.debug(f"{'='*60}")
     
     start_time = time.time()
     
@@ -497,9 +498,9 @@ def run_freeze_aggregator() -> PhaseResult:
     
     duration = time.time() - start_time
     
-    print(stdout)
+    logging.debug(stdout)
     if stderr:
-        print(f"[STDERR] {stderr}")
+        logging.debug(f"[STDERR] {stderr}")
     
     validation_keys = []
     
@@ -554,12 +555,12 @@ def run_full_pipeline() -> bool:
     NOTE: Phase 3A runs BEFORE Phase 2 so the stub audit is available for the
     Gemini Repair Loop Completion Rule to determine if the repository is fully hydrated.
     """
-    print("="*70)
-    print("SUBATOMIC PIPELINE + STRUCTURAL HARDENING")
-    print("SUPER-PROMPT v3.5 - ZERO-LOSS MERGE (PATCHED)")
-    print("="*70)
-    print(f"Project root: {PROJECT_ROOT}")
-    print(f"Start time: {datetime.now().isoformat()}")
+    logging.debug("="*70)
+    logging.debug("SUBATOMIC PIPELINE + STRUCTURAL HARDENING")
+    logging.debug("SUPER-PROMPT v3.5 - ZERO-LOSS MERGE (PATCHED)")
+    logging.debug("="*70)
+    logging.debug(f"Project root: {PROJECT_ROOT}")
+    logging.debug(f"Start time: {datetime.now().isoformat()}")
     
     all_results: List[PhaseResult] = []
     all_validation_keys: List[ValidationResult] = []
@@ -569,14 +570,14 @@ def run_full_pipeline() -> bool:
     all_results.append(result)
     all_validation_keys.extend(result.validation_keys)
     if not result.success:
-        print(f"\n[FAIL] {result.phase} failed")
+        logging.debug(f"\n[FAIL] {result.phase} failed")
     
     # Phase 1
     result = run_phase01()
     all_results.append(result)
     all_validation_keys.extend(result.validation_keys)
     if not result.success:
-        print(f"\n[FAIL] {result.phase} failed")
+        logging.debug(f"\n[FAIL] {result.phase} failed")
     
     # Pointer Reconciliation
     result = run_pointer_reconciliation()
@@ -606,7 +607,7 @@ def run_full_pipeline() -> bool:
             with stub_audit_path.open("r", encoding="utf-8") as f:
                 audit = json.load(f)
             if audit.get("canonical_stub_count", 0) > 0:
-                print("\n[WARN] Canonical stubs detected. Phase 3 will be skipped.")
+                logging.debug("\n[WARN] Canonical stubs detected. Phase 3 will be skipped.")
                 can_run_phase3 = False
         except Exception:
             pass
@@ -628,37 +629,37 @@ def run_full_pipeline() -> bool:
     all_validation_keys.extend(result.validation_keys)
     
     # Final validation summary
-    print("\n" + "="*70)
-    print("FINAL VALIDATION SUMMARY")
-    print("="*70)
+    logging.debug("\n" + "="*70)
+    logging.debug("FINAL VALIDATION SUMMARY")
+    logging.debug("="*70)
     
     all_pass = True
     for vk in all_validation_keys:
         status_icon = "[OK]" if vk.status == "PASS" else "[X]"
-        print(f"{vk.key} = {vk.status} {status_icon}")
+        logging.debug(f"{vk.key} = {vk.status} {status_icon}")
         if vk.status != "PASS":
             all_pass = False
     
     # Phase summary
-    print("\n" + "-"*70)
-    print("PHASE EXECUTION SUMMARY")
-    print("-"*70)
+    logging.debug("\n" + "-"*70)
+    logging.debug("PHASE EXECUTION SUMMARY")
+    logging.debug("-"*70)
     
     total_duration = sum(r.duration_seconds for r in all_results)
     for result in all_results:
         status = "PASS" if result.success else "FAIL"
-        print(f"{result.phase}: {status} ({result.duration_seconds:.1f}s)")
+        logging.debug(f"{result.phase}: {status} ({result.duration_seconds:.1f}s)")
     
-    print(f"\nTotal duration: {total_duration:.1f}s")
+    logging.debug(f"\nTotal duration: {total_duration:.1f}s")
     
     # Final verdict
-    print("\n" + "="*70)
+    logging.debug("\n" + "="*70)
     if all_pass:
-        print(">>> SUBATOMIC PIPELINE + STRUCTURAL HARDENING SUCCESSFUL <<<")
+        logging.debug(">>> SUBATOMIC PIPELINE + STRUCTURAL HARDENING SUCCESSFUL <<<")
     else:
-        print(">>> PIPELINE COMPLETED WITH FAILURES <<<")
-        print("Review validation keys above for details.")
-    print("="*70)
+        logging.debug(">>> PIPELINE COMPLETED WITH FAILURES <<<")
+        logging.debug("Review validation keys above for details.")
+    logging.debug("="*70)
     
     return all_pass
 
@@ -669,10 +670,10 @@ def main() -> int:
         success = run_full_pipeline()
         return 0 if success else 1
     except KeyboardInterrupt:
-        print("\n[INTERRUPTED] Pipeline interrupted by user")
+        logging.debug("\n[INTERRUPTED] Pipeline interrupted by user")
         return 1
     except Exception as e:
-        print(f"\n[ERROR] Pipeline failed with exception: {e}")
+        logging.debug(f"\n[ERROR] Pipeline failed with exception: {e}")
         import traceback
         traceback.print_exc()
         return 1

@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 4 — CRYPTOGRAPHIC FREEZE (ZERO-LOSS OVERWRITE)
@@ -359,7 +360,7 @@ def main():
 
     path = run_phase4(target_root)
 
-    print(f"[PHASE 4 COMPLETE] Freeze report written: {path}")
+    logging.debug(f"[PHASE 4 COMPLETE] Freeze report written: {path}")
     return 0
 
 

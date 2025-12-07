@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 3 — ATOMIC STRUCTURAL + CODE REWRITE EXECUTION (ZERO-LOSS)
@@ -277,7 +278,7 @@ class ValidationTracker:
         self.keys[key] = vk
         if self.verbose:
             status = "PASS" if passed else "FAIL"
-            print(f"{key}: {status} - {message}")
+            logging.debug(f"{key}: {status} - {message}")
 
     def ok(self, key: str, message: str, details: Optional[dict] = None):
         self._set(key, True, message, details)
@@ -628,7 +629,7 @@ def create_snapshot(target_root_path: Path, cfg: Phase3Config, k: ValidationTrac
     snapshot_dir = PHASE3_SNAPSHOT_ROOT / f"{cfg.target_root}_{ts}"
 
     if cfg.dry_run:
-        print(f"[DRY-RUN] Would create snapshot at {snapshot_dir}")
+        logging.debug(f"[DRY-RUN] Would create snapshot at {snapshot_dir}")
         k.ok("K47", "ATOMIC_ENGINE_INITIALIZED (dry-run)")
         k.ok("K48", "SNAPSHOT_CREATED (dry-run)")
         k.ok("K49", "SNAPSHOT_STORED_OUTSIDE_TARGET_ROOT (dry-run)")
@@ -640,7 +641,7 @@ def create_snapshot(target_root_path: Path, cfg: Phase3Config, k: ValidationTrac
     def ignore_func(src: str, names: List[str]) -> List[str]:
         return [n for n in names if n in SYSTEM_EXCLUDES]
 
-    print(f"[SNAPSHOT] Copying {target_root_path} -> {snapshot_dir}")
+    logging.debug(f"[SNAPSHOT] Copying {target_root_path} -> {snapshot_dir}")
     shutil.copytree(target_root_path, snapshot_dir, ignore=ignore_func, copy_function=shutil.copy2)
 
     k.ok("K47", "ATOMIC_ENGINE_INITIALIZED == TRUE")
@@ -658,7 +659,7 @@ def rollback_from_snapshot(target_root_path: Path, snapshot_path: Path, cfg: Pha
     Restore TARGET_ROOT from snapshot if not dry-run.
     """
     if cfg.dry_run:
-        print(f"[DRY-RUN] Would rollback {target_root_path} from snapshot {snapshot_path}")
+        logging.debug(f"[DRY-RUN] Would rollback {target_root_path} from snapshot {snapshot_path}")
         k.ok("K55", "ROLLBACK_ENGINE_READY (dry-run)")
         k.ok("K56", "ANY_FAILURE_TRIGGERS_FULL_ROLLBACK (dry-run semantic)")
         k.ok("K57", "ROLLBACK_RESTORES_ALL_FILES (dry-run semantic)")
@@ -667,7 +668,7 @@ def rollback_from_snapshot(target_root_path: Path, snapshot_path: Path, cfg: Pha
         k.ok("K60", "ROLLBACK_RESTORES_TIMESTAMPS (dry-run semantic)")
         return
 
-    print(f"[ROLLBACK] Restoring {target_root_path} from snapshot {snapshot_path}")
+    logging.debug(f"[ROLLBACK] Restoring {target_root_path} from snapshot {snapshot_path}")
 
     # Remove current TARGET_ROOT contents
     for child in sorted(target_root_path.iterdir(), key=lambda p: len(p.parts), reverse=True):
@@ -702,7 +703,7 @@ def rollback_from_snapshot(target_root_path: Path, snapshot_path: Path, cfg: Pha
 def init_transaction_log(ctx: ExecutionContext) -> None:
     ensure_dirs(PHASE3_META_ROOT)
     if ctx.cfg.dry_run:
-        print(f"[DRY-RUN] Would initialize transaction log at {ctx.transaction_log_path}")
+        logging.debug(f"[DRY-RUN] Would initialize transaction log at {ctx.transaction_log_path}")
         return
     log = {
         "target_root": ctx.target_root,
@@ -794,7 +795,7 @@ def apply_structural_ops(ctx: ExecutionContext, structural_ops: List[PlanOperati
         if op_type == "create_dir":
             ensure_under_target_root(ctx, target_path)
             if ctx.cfg.dry_run:
-                print(f"[DRY-RUN][STRUCT] mkdir {target_path}")
+                logging.debug(f"[DRY-RUN][STRUCT] mkdir {target_path}")
             else:
                 if not target_path.exists():
                     target_path.mkdir(parents=True, exist_ok=False)
@@ -804,7 +805,7 @@ def apply_structural_ops(ctx: ExecutionContext, structural_ops: List[PlanOperati
         elif op_type == "create_file":
             ensure_under_target_root(ctx, target_path)
             if ctx.cfg.dry_run:
-                print(f"[DRY-RUN][STRUCT] create file {target_path}")
+                logging.debug(f"[DRY-RUN][STRUCT] create file {target_path}")
             else:
                 if not target_path.exists():
                     target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -817,7 +818,7 @@ def apply_structural_ops(ctx: ExecutionContext, structural_ops: List[PlanOperati
             if is_protected(target_path, ctx.protected_patterns):
                 raise RuntimeError(f"Attempt to delete protected file: {target_path}")
             if ctx.cfg.dry_run:
-                print(f"[DRY-RUN][STRUCT] delete file {target_path}")
+                logging.debug(f"[DRY-RUN][STRUCT] delete file {target_path}")
             else:
                 if target_path.exists() and target_path.is_file():
                     target_path.unlink()
@@ -829,7 +830,7 @@ def apply_structural_ops(ctx: ExecutionContext, structural_ops: List[PlanOperati
             if is_protected(target_path, ctx.protected_patterns):
                 raise RuntimeError(f"Attempt to delete protected dir: {target_path}")
             if ctx.cfg.dry_run:
-                print(f"[DRY-RUN][STRUCT] delete dir {target_path}")
+                logging.debug(f"[DRY-RUN][STRUCT] delete dir {target_path}")
             else:
                 if target_path.exists() and target_path.is_dir():
                     # K73–K74: delete only empty or flagged; we enforce emptiness
@@ -942,7 +943,7 @@ def merge_content(live: str, golden: str) -> str:
 def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation]) -> None:
     k = ctx.k
     
-    print(f"[DEBUG] apply_semantic_ops called with {len(semantic_ops)} operations")
+    logging.debug(f"[DEBUG] apply_semantic_ops called with {len(semantic_ops)} operations")
     
     if not semantic_ops:
         # No semantic ops; trivially satisfy relevant keys.
@@ -975,7 +976,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
     # 1. Handle legacy full-file ops (rewrite_file_from_cache, merge, canonical_rewrite)
     # ------------------------------------------------------------------
     for i, op in enumerate(legacy_ops):
-        print(f"[DEBUG] Processing legacy semantic op {i+1}/{len(legacy_ops)}: {op.op_type} -> {op.target_path}")
+        logging.debug(f"[DEBUG] Processing legacy semantic op {i+1}/{len(legacy_ops)}: {op.op_type} -> {op.target_path}")
         if op.op_type in UNSUPPORTED_SEMANTIC_OPS:
             raise RuntimeError(
                 f"Semantic op_type '{op.op_type}' is not yet supported in Phase 3; "
@@ -990,7 +991,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         ensure_under_target_root(ctx, target_path)
 
         if ctx.cfg.dry_run:
-            print(f"[DRY-RUN][SEMANTIC] {op.op_type} {target_path} ← {h}")
+            logging.debug(f"[DRY-RUN][SEMANTIC] {op.op_type} {target_path} ← {h}")
             continue
 
         live_content = ""
@@ -998,7 +999,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
             live_content = target_path.read_text(encoding="utf-8")
 
         if op.op_type in {"rewrite_file_from_cache", "canonical_rewrite"}:
-            print(f"[DEBUG] Loading golden content for hash: {h}")
+            logging.debug(f"[DEBUG] Loading golden content for hash: {h}")
             golden_content = load_golden_content(h)
             if golden_content is None:
                 # Golden content is the canonical source-of-truth; if it is
@@ -1039,7 +1040,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         target_path = repo_path_for_op(ctx, target_rel)
         ensure_under_target_root(ctx, target_path)
 
-        print(f"[DEBUG] Regenerating file from components: {target_rel} ({len(ops_for_file)} component ops)")
+        logging.debug(f"[DEBUG] Regenerating file from components: {target_rel} ({len(ops_for_file)} component ops)")
 
         # All component-level ops for a given file MUST share the same hash.
         hashes = {op.semantic_hash for op in ops_for_file if op.semantic_hash}
@@ -1050,7 +1051,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         h = next(iter(hashes))
 
         if ctx.cfg.dry_run:
-            print(f"[DRY-RUN][SEMANTIC][COMPONENT] canonical_rewrite_component {target_path} ← {h}")
+            logging.debug(f"[DRY-RUN][SEMANTIC][COMPONENT] canonical_rewrite_component {target_path} ← {h}")
             continue
 
         # Load golden file content (for slicing component spans).
@@ -1070,7 +1071,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
                 f"canonical_rewrite_component on {target_rel}"
             )
             if MIGRATION_TOLERANT:
-                print(f"[WARN] {msg} — falling back to golden content for {target_rel}")
+                logging.debug(f"[WARN] {msg} — falling back to golden content for {target_rel}")
                 target_path.parent.mkdir(parents=True, exist_ok=True)
                 target_path.write_text(golden_content, encoding="utf-8")
                 log_mutation(
@@ -1098,7 +1099,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
                 f"{target_rel}: {missing_ids[:5]}"
             )
             if MIGRATION_TOLERANT:
-                print(f"[WARN] {msg} — falling back to golden content for {target_rel}")
+                logging.debug(f"[WARN] {msg} — falling back to golden content for {target_rel}")
                 target_path.parent.mkdir(parents=True, exist_ok=True)
                 target_path.write_text(golden_content, encoding="utf-8")
                 log_mutation(
@@ -1130,7 +1131,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
 
         # If no filename match, fall back to all components for this hash.
         if not selected_comps:
-            print(f"[WARN] No filename-matched components for {target_rel}, using all components for hash {h}")
+            logging.debug(f"[WARN] No filename-matched components for {target_rel}, using all components for hash {h}")
             selected_comps = comps_meta
 
         # Sort components STRICTLY by span_start to preserve file order (Determinism).
@@ -1161,7 +1162,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
                 
             # Overlap check (Determinism)
             if start < last_end:
-                print(f"[WARN] Component overlap detected in {target_rel}: {c.get('component_id')} starts at {start} but previous ended at {last_end}. Skipping to prevent duplication.")
+                logging.debug(f"[WARN] Component overlap detected in {target_rel}: {c.get('component_id')} starts at {start} but previous ended at {last_end}. Skipping to prevent duplication.")
                 continue
 
             # Bounds checking
@@ -1185,7 +1186,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         if not parts:
             msg = f"canonical_rewrite_component produced no valid spans for {target_rel} (hash={h})"
             if MIGRATION_TOLERANT:
-                print(f"[WARN] {msg} — falling back to golden content for {target_rel}")
+                logging.debug(f"[WARN] {msg} — falling back to golden content for {target_rel}")
                 target_path.parent.mkdir(parents=True, exist_ok=True)
                 target_path.write_text(golden_content, encoding="utf-8")
                 log_mutation(
@@ -1334,9 +1335,9 @@ def run_post_migration_smoke_tests(ctx: ExecutionContext) -> None:
                 results[mod] = f"import_failed: {type(e).__name__}: {e}"
 
         if ctx.cfg.verbose:
-            print("[SMOKE TEST] Post-migration import results:")
+            logging.debug("[SMOKE TEST] Post-migration import results:")
             for mod, status in results.items():
-                print(f"  {mod}: {status}")
+                logging.debug(f"  {mod}: {status}")
 
         # Persist advisory results to meta for later inspection
         if not ctx.cfg.dry_run:
@@ -1347,7 +1348,7 @@ def run_post_migration_smoke_tests(ctx: ExecutionContext) -> None:
     except Exception:
         # Smoke tests are advisory; never fail Phase 3 because of them.
         if ctx.cfg.verbose:
-            print("[SMOKE TEST] Encountered an error running smoke tests (ignored).")
+            logging.debug("[SMOKE TEST] Encountered an error running smoke tests (ignored).")
 
 
 # ======================================================================
@@ -1384,10 +1385,10 @@ def write_execution_report(ctx: ExecutionContext, success: bool, rolled_back: bo
             "golden_fallbacks": fallback_golden,
             "fallback_rate_percent": round(fallback_rate, 2),
         }
-        print(f"[METRICS] Component rewrites: {component_rewrites}, Golden fallbacks: {fallback_golden}, Fallback rate: {fallback_rate:.1f}%")
+        logging.debug(f"[METRICS] Component rewrites: {component_rewrites}, Golden fallbacks: {fallback_golden}, Fallback rate: {fallback_rate:.1f}%")
 
     if ctx.cfg.dry_run:
-        print(f"[DRY-RUN] Would write execution report to {report_path}")
+        logging.debug(f"[DRY-RUN] Would write execution report to {report_path}")
     else:
         with report_path.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2)
@@ -1509,7 +1510,7 @@ def run_phase3(cfg: Phase3Config) -> int:
     # PHASE 3 DOES NOT APPLY TO NON-CODE DOMAINS OR GENERATED DOMAINS
     # ================================================================
     if cfg.target_root in {"06_data", "10_tests"}:
-        print(f"[SKIP] Phase 3 does not run on {cfg.target_root}.")
+        logging.debug(f"[SKIP] Phase 3 does not run on {cfg.target_root}.")
         return 0
 
     # Precondition checks
@@ -1607,7 +1608,7 @@ def run_phase3(cfg: Phase3Config) -> int:
 
     except Exception as e:
         error_msg = f"{type(e).__name__}: {e}"
-        print("[PHASE 3 ERROR]", error_msg)
+        logging.debug("[PHASE 3 ERROR]", error_msg)
         if cfg.verbose:
             traceback.print_exc()
 
