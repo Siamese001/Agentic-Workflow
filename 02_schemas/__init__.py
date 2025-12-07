@@ -1,6 +1,9 @@
 """
-02_schemas\__init__.py
-Auto-hardened by WINDSURF v2
+02_schemas/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: d67957749e8c75c9aa1799fc8c94cd957536ee7b381362c841f4968e9729f3bc
 """
+
 
 from __future__ import annotations
