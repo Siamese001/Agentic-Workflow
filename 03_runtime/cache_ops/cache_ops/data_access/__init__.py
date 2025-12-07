@@ -1,7 +1,10 @@
 """
-cache_ops\data_access\__init__.py
-Auto-hardened by WINDSURF v2
+03_runtime/cache_ops/cache_ops/data_access/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 1a411e0e5715279b444990ef1a5a100cadf860ac5d43c57576e44c0be85fad75
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

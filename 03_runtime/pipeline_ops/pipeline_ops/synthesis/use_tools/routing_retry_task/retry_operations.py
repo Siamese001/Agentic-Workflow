@@ -1,7 +1,10 @@
 """
-pipeline_ops\synthesis\use_tools\routing_retry_task\retry_operations.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/synthesis/use_tools/routing_retry_task/retry_operations.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 15c268be2cb3bdd6afe5539c7e452007ce30ce6a2b31407dc6750e9ad9a0e194
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,13 +1,10 @@
 """
-embedding_compare_meaning - Semantic Comparison Operations.
-
-This module provides semantic comparison and meaning matching operations:
-- match_core_context: Context matching operations
-- retrieve_core_similarity: Similarity retrieval operations
-- search_core_vectors: Vector search operations
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 1348ffdf786850482b7e343dca8cf7f9c98d04ba3c51371b66a6a8ada6518d96
 """
+
 
 from __future__ import annotations
 

@@ -1,15 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/__init__.py
-Gather Context Inputs - Context Gathering and Embedding Operations.
-
-This module handles context gathering operations including:
-- embedding: Embedding comparison and similarity operations
-- integrate_source_signals: Source signal integration
-- understand: Request understanding operations
-- utility: Utility functions for context preparation
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: e02a49c9cb1c7a36cc1dfee42a1bff996967781ff24ccb7730c9592b19170288
 """
+
 
 from __future__ import annotations
 

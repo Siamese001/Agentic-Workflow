@@ -1,7 +1,10 @@
 """
-pipeline_ops\synthesis\use_tools\routing_retry_task\implement_fallback.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/synthesis/use_tools/routing_retry_task/implement_fallback.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: e0a55b2ea0f3d8d6607b97973d506d2f1e64b2937046df2610c2bc91822d11f2
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

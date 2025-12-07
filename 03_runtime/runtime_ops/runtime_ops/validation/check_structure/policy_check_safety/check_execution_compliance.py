@@ -1,7 +1,10 @@
 """
-runtime_ops\validation\check_structure\policy_check_safety\check_execution_compliance.py
-Auto-hardened by WINDSURF v2
+03_runtime/runtime_ops/runtime_ops/validation/check_structure/policy_check_safety/check_execution_compliance.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 2a3760b101f9aa4ee5dc826d73e92581713d115b31e592594b1f5a2a8f100067
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,7 +1,10 @@
 """
-logic\guardrails\__init__.py
-Auto-hardened by WINDSURF v2
+08_scripts/logic/logic/guardrails/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 02b8ab7f6539bf1bee6186590e962329306dc6dddd8e2312255e6936c8bb29ec
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

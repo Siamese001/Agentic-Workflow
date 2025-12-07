@@ -1,12 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy/enforce.py
-L5 Safety/Policy Layer - Data Budget Enforcement.
-
-Implements data budget enforcement operations with fail-closed safety behavior.
-Part of the L1-L5 cognitive architecture stack.
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 67f2d671dc15d5de00c4a796234383852fd07f916408cf0c56dfa7c2e6e68f35
 """
+
 
 from __future__ import annotations
 

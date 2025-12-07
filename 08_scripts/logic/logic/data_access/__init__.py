@@ -1,7 +1,10 @@
 """
-logic\data_access\__init__.py
-Auto-hardened by WINDSURF v2
+08_scripts/logic/logic/data_access/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 43ee683f48f687a08a93b331f23949e80d4a2bd145195a66c050778cce86af7f
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

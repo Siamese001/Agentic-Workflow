@@ -1,7 +1,10 @@
 """
-logic\synthesis\__init__.py
-Auto-hardened by WINDSURF v2
+08_scripts/logic/logic/synthesis/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 0d3dc57cabcb126fd7bd35c89448c8211884a434de5d9a9789d7667fc7af94c9
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

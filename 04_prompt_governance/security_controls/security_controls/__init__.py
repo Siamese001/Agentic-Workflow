@@ -1,7 +1,10 @@
 """
-security_controls\__init__.py
-Auto-hardened by WINDSURF v2
+04_prompt_governance/security_controls/security_controls/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: b41e28e649e958e331dfc5ef133640858974cbd883e5e969c4a7d09f36a22d83
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

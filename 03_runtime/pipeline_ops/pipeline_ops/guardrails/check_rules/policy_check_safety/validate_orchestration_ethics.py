@@ -1,7 +1,10 @@
 """
-pipeline_ops\guardrails\check_rules\policy_check_safety\validate_orchestration_ethics.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/guardrails/check_rules/policy_check_safety/validate_orchestration_ethics.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 387b57798d8963599c36b98ddbe56f2b58134cb7489f89397d5931ad1d5846e6
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

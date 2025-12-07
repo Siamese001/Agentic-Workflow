@@ -1,13 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/__init__.py
-P1 Retrieve Phase - Context Retrieval and Information Gathering.
-
-This phase handles:
-- check_rules: Policy and safety rule checking
-- gather_context_inputs: Context gathering and embedding operations
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 771319a4a88e532b04c8c7c3d26bc8fa96e82c84b29c3c0f337b723baf076bfc
 """
+
 
 from __future__ import annotations
 

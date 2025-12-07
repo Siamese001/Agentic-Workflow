@@ -1,15 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/__init__.py
-Embedding Operations - Semantic Similarity and Vector Search.
-
-This module handles embedding-related operations including:
-- match: Context matching and workflow state management
-- retrieve_similarity: Similarity retrieval operations
-- search: Vector search operations
-- embedding_compare_meaning: Semantic comparison operations
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 95d37c54f362a22b51e02faf8766f2704c9da6ac26645018a01aa8e5fe45a97f
 """
+
 
 from __future__ import annotations
 
