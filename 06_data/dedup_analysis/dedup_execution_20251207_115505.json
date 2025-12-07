@@ -1,0 +1,9 @@
+{
+  "timestamp": "2025-12-07T11:55:05.176916",
+  "dry_run": false,
+  "clusters_processed": 1,
+  "files_archived": 1,
+  "pointers_created": 1,
+  "bytes_recovered": 36669,
+  "errors": []
+}

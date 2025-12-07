@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L1_cognition\\P2_inspect\\detect_anomalies\\update\\inspect.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "3c4d229e016b2985",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\detect-anomalies\\update\\inspect.py",
+  "created": "2025-12-07T11:54:50.731053"
+}

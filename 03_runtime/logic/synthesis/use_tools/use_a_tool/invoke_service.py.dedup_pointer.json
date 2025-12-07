@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "5fb95cf1b5841574",
+  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+  "created": "2025-12-07T11:54:50.449078"
+}
