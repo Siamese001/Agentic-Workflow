@@ -108,42 +108,42 @@ hierarchy:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   runtime:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   prompt_governance:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   config:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   data:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   observability:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   scripts:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   shared:
     mode: "operational_support"
     structure_type: "hierarchical"
     max_depth: 7
-    forbidden: ["L*", "P*"]
+    forbidden: ["L[0-9]+_*", "P[0-9]+_*"]
   tests:
     mode: "test_taxonomy"
     structure_type: "hierarchical"
