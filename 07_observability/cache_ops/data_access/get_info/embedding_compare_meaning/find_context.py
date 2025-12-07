@@ -702,48 +702,66 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
     return result
 
 
+@dataclass
 class ResumeContext:
+    """Context for resume data."""
     master_resume: Dict[str, Any] = field(default_factory=dict)
     sanitized_resume: Dict[str, Any] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
 
 
+@dataclass
 class JobContext:
+    """Context for job description data."""
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
     parsed_requirements: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
 class StrategyContext:
+    """Context for strategy planning."""
     strategy_plan: Optional[StrategyPlan] = None
     tot_branches: List[Dict] = field(default_factory=list)
 
 
+@dataclass
 class PromptContext:
+    """Context for generated prompts."""
     prompts: Optional[GeneratedPrompts] = None
 
 
+@dataclass
 class BulletContext:
+    """Context for bullet points."""
     generated_bullets: List[Dict] = field(default_factory=list)
     critiqued_bullets: List[Dict] = field(default_factory=list)
 
 
+@dataclass
 class DraftContext:
+    """Context for draft sections."""
     sections: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
 class QAContext:
+    """Context for QA validation."""
     validation_results: Dict[str, Any] = field(default_factory=dict)
     qa_passed: bool = False
-    constitutional_review: Optional[ConstitutionalReviewResult] = None  # v10.7 (Fix #30)
+    constitutional_review: Optional[ConstitutionalReviewResult] = None
 
 
+@dataclass
 class ArtifactContext:
+    """Context for generated artifacts."""
     artifacts: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
 class MetadataContext:
+    """Context for workflow metadata."""
     workflow_id: str = ""
     timestamp: str = ""
     cost: float = 0.0
@@ -753,27 +771,35 @@ class MetadataContext:
     complexity: str = "unknown"
 
 
+@dataclass
 class SafetyContext:
+    """Context for safety checks."""
     pii_detected: bool = False
     bias_detected: bool = False
     safety_notes: List[str] = field(default_factory=list)
     injection_detected: bool = False
 
 
+@dataclass
 class FeedbackContext:
+    """Context for feedback data."""
     recent_feedback: List[FeedbackEntry] = field(default_factory=list)
     applied_rules: List[str] = field(default_factory=list)
     selected_agents: Dict[str, str] = field(default_factory=dict)
 
 
+@dataclass
 class HILContext:
+    """Context for human-in-the-loop interactions."""
     ambiguity_detected: bool = False
     ambiguity_report: Optional[HILAmbiguityReport] = None
     next_step: str = ""
     payload: Optional[str] = None
 
 
+@dataclass
 class A2AMessage:
+    """Agent-to-agent message."""
     sender: str
     recipient: str  # Can be "ALL"
     message_type: str  # e.g., "ERROR", "METRIC", "UI_EVENT"
@@ -793,7 +819,9 @@ class A2AMessage:
         return self.to_dict()
 
 
+@dataclass
 class A2AContext:
+    """Context for agent-to-agent communication."""
     messages: List[A2AMessage] = field(default_factory=list)
 
     def __post_init__(self) -> None:
