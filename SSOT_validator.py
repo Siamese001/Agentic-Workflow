@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-Static SSoT Validator v4.1 — unified_structure_subatomic.yaml + META YAML
+Static SSoT Validator v4.2 — unified_structure_subatomic.yaml + META YAML
 Fast, deterministic, zero side-effects. Designed for Agentic-Workflow.
 ===============================================================================
 
 Validates the LIVE repository structure (no phases, no rewrites) against:
 
-  - unified_structure_subatomic.yaml       (SSoT v4.1 – main)
-  - unified_structure_subatomic_meta.yaml  (META v4.1 – invariants)
+  - unified_structure_subatomic.yaml       (SSoT v4.2 – main)
+  - unified_structure_subatomic_meta.yaml  (META v4.2 – invariants)
 
 Enforced invariants (partial list):
   - K1–K2: YAML parse
@@ -21,7 +21,7 @@ Enforced invariants (partial list):
   - K10: Test taxonomy high-level structure
   - K11: shared_engine_ops immutability
   - K12: No cognitive fillers in L5_safety (only P4_safety)
-  - K13: Semantic cache presence + forbidden locations
+  - K13: DISABLED — semantic_cache migrated to durable knowledge plane
   - K14: Protected paths respected (no spurious errors)
   - Engine separation (LIC vs RG)
   - Low-signal names
@@ -273,38 +273,10 @@ for domain in cognitive_domains:
         if child.is_dir() and child.name not in allowed_l5_children:
             err(f"K12: Disallowed folder '{child.name}' under L5_safety in {domain}: {rel(child)}")
 
-# ── K13 – Semantic cache rules: required + forbidden locations ────────
-
-semantic_rules = meta["semantic_cache_rules"]
-req_files = semantic_rules["required_files"]
-req_locs = semantic_rules["required_locations"]
-forbidden_locs = semantic_rules["forbidden_locations"]
-
-# required locations & files
-for domain in cognitive_domains:
-    root = get_domain_root(domain)
-    if not root.exists():
-        continue
-
-    for loc in req_locs:
-        # Example loc: "L1_cognition/P1_retrieve"
-        sc_dir = root / loc / "semantic_cache"
-        if not sc_dir.exists():
-            err(f"K13: Missing semantic_cache dir at {rel(sc_dir)}")
-            continue
-
-        for f in req_files:
-            fpath = sc_dir / f
-            if not fpath.exists():
-                err(f"K13: Missing semantic_cache file '{f}' at {rel(sc_dir)}")
-
-# forbidden locations (glob patterns)
-for pattern in forbidden_locs:
-    # Patterns are repo-relative
-    for p in REPO.glob(pattern):
-        # if a matching path (or its descendants) contains semantic_cache
-        if "semantic_cache" in p.parts or any("semantic_cache" in c.parts for c in p.rglob("*")):
-            err(f"K13: Forbidden semantic_cache location under '{pattern}': {rel(p)}")
+# ── K13 – DISABLED: semantic_cache migrated to durable knowledge plane ────────
+# K13: semantic_cache is now a durable curated asset under 06_data/semantic_cache/v*_curated/
+# Runtime checks removed as semantic_cache is no longer runtime-coupled.
+ok_msg("K13: semantic_cache migrated to durable knowledge plane — runtime checks removed")
 
 # ── Engine separation rules (LIC ↔ RG) ────────────────────────────────
 
@@ -474,7 +446,7 @@ REPORT_FILE = REPO / "ssot_validation_report.json"
 REPORT_FILE.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
 print("=" * 70)
-print("STATIC SSoT VALIDATION COMPLETE — SSoT v4.1 / META v4.1")
+print("STATIC SSoT VALIDATION COMPLETE — SSoT v4.2 / META v4.2")
 print("=" * 70)
 print(f"Errors:   {len(errors)}")
 print(f"Warnings: {len(warnings)}")
