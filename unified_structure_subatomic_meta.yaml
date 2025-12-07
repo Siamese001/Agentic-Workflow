@@ -416,6 +416,28 @@ validation_invariants:
     - pipeline_ops
     - cache_ops
     - security_controls
+    # Additional support domain directories found in actual repo
+    - templates
+    - YAML
+    - compat
+    - shared
+    - migration
+    - utilities
+    - dedup_analysis
+    - dedup_pointers
+    - execution_logs
+    - final_merkle
+    - meta
+    - phase01
+    - phase02
+    - phase03
+    - phase04
+    - phase05
+    - phase1_indices
+    - semantic_cache
+    - stub_elimination
+    - Agentic AI
+    - Agentic Folder Structure
 
   allowed_support_ops:
     - data_access
