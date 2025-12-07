@@ -1,12 +1,10 @@
 """
 01_agentic_core/L2_execution/P2_inspect/check_structure/policy/check.py
-Import validity checker for the resume generation system.
-
-Verifies all modules can be imported without errors to maintain
-code quality and ensure smooth resume generation functionality.
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: c03856b305761de1984f47bb31cb8370911745c1e5c58cefefc718413378ccbe
 """
+
 
 from __future__ import annotations
 

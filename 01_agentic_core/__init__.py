@@ -1,17 +1,10 @@
 """
 01_agentic_core/__init__.py
-Core Agentic Package - L1-L5 Cognitive Architecture.
-
-This package provides the cognitive layer implementations for the
-Agentic Workflow system following the subatomic architecture:
-- L1_cognition: Core cognitive processing
-- L2_execution: Action execution layer
-- L3_orchestration: Workflow orchestration
-- L4_memory: Memory and state management
-- L5_safety: Safety and policy enforcement
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 0a76ec9b8658917737eb654b36482d05a1285fe64bc2bf3ef5c32ad606e81dde
 """
+
 
 from __future__ import annotations
 

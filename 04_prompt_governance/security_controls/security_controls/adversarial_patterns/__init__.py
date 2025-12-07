@@ -1,7 +1,10 @@
 """
-security_controls\adversarial_patterns\__init__.py
-Auto-hardened by WINDSURF v2
+04_prompt_governance/security_controls/security_controls/adversarial_patterns/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: d47c3d880831b81624000a23506cf91819ec44e91bf1070ad47a1ba5b118ed83
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

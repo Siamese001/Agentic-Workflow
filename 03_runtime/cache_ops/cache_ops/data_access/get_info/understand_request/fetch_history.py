@@ -1,7 +1,10 @@
 """
-cache_ops\data_access\get_info\understand_request\fetch_history.py
-Auto-hardened by WINDSURF v2
+03_runtime/cache_ops/cache_ops/data_access/get_info/understand_request/fetch_history.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 13e704b8911077005aa6e751b5ecd35e8efa9676f8b52e4d1cee70f0017e6c97
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

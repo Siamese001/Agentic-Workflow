@@ -1,3 +1,9 @@
+"""
+03_runtime/cache_ops/cache_ops/guardrails/check_rules/policy_check_safety/enforce_memory_policy.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 2f357499344f9291645610abc1df159defb6d56cc78c946976d771fd06a144b7
+"""
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # Source: SSoT taxonomy + golden fallback
 # ======================================================================

@@ -1,7 +1,10 @@
 """
-templates\injection_patterns\__init__.py
-Auto-hardened by WINDSURF v2
+02_schemas/templates/injection_patterns/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 0c0f6ea773adf8c6acc95501ba8b3c2fd39f6a157bec876a09c98faa6579ea72
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,3 +1,9 @@
+"""
+02_schemas/YAML/validate_yaml_fixes.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 889a0017e7c6d50397e7c0d7c387d217777d9bfa7ab286965c04e6677b4c9d0a
+"""
 #!/usr/bin/env python3
 """
 02_schemas/YAML/validate_yaml_fixes.py

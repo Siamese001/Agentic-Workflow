@@ -1,13 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/check_rules/__init__.py
-Check Rules - Policy and Safety Rule Checking.
-
-This module handles rule checking operations including:
-- policy: General policy enforcement
-- policy_check_safety: Safety-specific policy checks
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: c79af256336688e12df184c40cbfcdb982d27e5a2a2a2ae50f4d12dabde790e7
 """
+
 
 from __future__ import annotations
 

@@ -1,3 +1,9 @@
+"""
+04_prompt_governance/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 651fd9b16ec9021ac6c09d85da96925775b4a0b040efafb0ba7fdff7b19558e5
+"""
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.242767+00:00
 # Original location: 09_apps\_unassigned_apps_unknown\_unassigned_apps_unknown\__init__.py
 # High-signal content preserved below — zero-loss migration

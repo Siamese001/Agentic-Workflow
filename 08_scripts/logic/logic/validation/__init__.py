@@ -1,7 +1,10 @@
 """
-logic\validation\__init__.py
-Auto-hardened by WINDSURF v2
+08_scripts/logic/logic/validation/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 5a9ca7b58884a36ea3019c693adba4b55c32f75afc69b572baa005fe8df04d43
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
