@@ -1,0 +1,696 @@
+{
+  "timestamp": "2025-12-07T11:31:41.473483",
+  "total_scanned": 114,
+  "duplicate_groups": 18,
+  "files_removed": 96,
+  "bytes_saved": 4719026,
+  "kept_files": [
+    {
+      "path": "07_observability\\logic\\logging\\log_observability_metrics.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "duplicates_removed": 11
+    },
+    {
+      "path": "07_observability\\logic\\general\\orchestrate_observability_planning.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "duplicates_removed": 30
+    },
+    {
+      "path": "07_observability\\logic\\general\\enforce_observability_boundaries.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "duplicates_removed": 12
+    },
+    {
+      "path": "07_observability\\logic\\general\\prepare_observability_orchestration.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "duplicates_removed": 7
+    },
+    {
+      "path": "07_observability\\logic\\general\\rank_observability_components.py",
+      "hash": "d64c061c29ae5a76",
+      "size": 4896,
+      "duplicates_removed": 2
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\opentelemetry_adapter.py",
+      "hash": "8474dc4304ff4902",
+      "size": 2800,
+      "duplicates_removed": 1
+    },
+    {
+      "path": "07_observability\\logic\\validation\\convert_content\\embedding_compare_meaning\\compute_embeddings.py",
+      "hash": "216a427b3355fb7b",
+      "size": 6819,
+      "duplicates_removed": 1
+    },
+    {
+      "path": "07_observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "hash": "c59933818c406294",
+      "size": 35428,
+      "duplicates_removed": 3
+    },
+    {
+      "path": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\apply_safety.py",
+      "hash": "62a17468302ce99b",
+      "size": 9213,
+      "duplicates_removed": 2
+    },
+    {
+      "path": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\enforce_filters.py",
+      "hash": "47a35d112390bb00",
+      "size": 11389,
+      "duplicates_removed": 1
+    },
+    {
+      "path": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\validate_ethics.py",
+      "hash": "d5f28c38cc54fa21",
+      "size": 11389,
+      "duplicates_removed": 1
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "duplicates_removed": 12
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\enforce_safety_budget.py",
+      "hash": "9cafdca6b260ae6d",
+      "size": 11365,
+      "duplicates_removed": 4
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\track_safety_cost.py",
+      "hash": "676be061151f6b2b",
+      "size": 11269,
+      "duplicates_removed": 3
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\update_safety_usage.py",
+      "hash": "723b4389c7081ec9",
+      "size": 11317,
+      "duplicates_removed": 3
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\assess_safety_risk.py",
+      "hash": "eea551adb8729b57",
+      "size": 11293,
+      "duplicates_removed": 1
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\compute_safety_score.py",
+      "hash": "07fb1190b4f078a8",
+      "size": 11341,
+      "duplicates_removed": 1
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\evaluate_safety_compliance.py",
+      "hash": "749c0f0f1c48fe13",
+      "size": 11485,
+      "duplicates_removed": 1
+    }
+  ],
+  "removed_files": [
+    {
+      "path": "07_observability\\logic\\logging\\openai_logger_adapter.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\logging\\log_scripts_metrics.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\always_on_sampler.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\formatters\\color_formatter.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\formatters\\base_formatter.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\formatters\\json_formatter.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\logging\\file_logger.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\histogram.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\logging\\logger.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\span.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\prepare_scripts_payload.py",
+      "hash": "f98e886a9cc42dfe",
+      "size": 350396,
+      "canonical": "07_observability\\logic\\logging\\log_observability_metrics.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\build_observability_orchestration.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\apply_observability_algorithm.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\refine_observability_ranking.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\apply_observability_weights.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\build_observability_filters.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\apply_observability_safety.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\logging\\structured_json_logger.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\inspection\\state_inspector.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "03_runtime\\runtime_ops\\support\\planning_snapshot.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\orchestrate_scripts_planning.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\build_scripts_orchestration.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\apply_scripts_algorithm.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\refine_scripts_ranking.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\apply_scripts_weights.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\build_scripts_filters.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\load_scripts_planning.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\apply_scripts_safety.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\shared\\utils\\orchestrate_execution_planning.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\logic\\format_personalization_prompt.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\logic\\build_personalization_query.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\assess_content_relevance.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\generate_summary_section.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\manage_content_workflow.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\generate_subject_line.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\build_search_filters.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\assess_content_risk.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_rg\\logic\\build_skill_query.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_lic\\generation\\format_llm_prompt.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "09_apps\\apps_rg\\scoring\\apply_weights.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "06_data\\cache_ops\\audit\\append_only_store.py",
+      "hash": "7b6095dc9ff4bfef",
+      "size": 3660,
+      "canonical": "07_observability\\logic\\general\\orchestrate_observability_planning.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\enforce_observability_contracts.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\enforce_observability_filters.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\enforce_observability_budget.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\enforce_observability_limits.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\update_observability_usage.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\track_observability_usage.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\enforce_scripts_boundaries.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\enforce_scripts_contracts.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\enforce_scripts_filters.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\enforce_scripts_budget.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\enforce_scripts_limits.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\track_scripts_usage.py",
+      "hash": "fedc62628602e4ec",
+      "size": 742,
+      "canonical": "07_observability\\logic\\general\\enforce_observability_boundaries.py"
+    },
+    {
+      "path": "07_observability\\logic\\general\\extract_observability_parameters.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "07_observability\\logic\\metrics\\pipeline_metrics_collector.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "07_observability\\logic\\inspection\\hash_chain_verifier.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "07_observability\\logic\\logging\\log_config.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\prepare_scripts_orchestration.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\extract_scripts_parameters.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "08_scripts\\migration\\run_pipeline.py",
+      "hash": "9065d2e3d7de0613",
+      "size": 56982,
+      "canonical": "07_observability\\logic\\general\\prepare_observability_orchestration.py"
+    },
+    {
+      "path": "07_observability\\logic\\logging\\log_event.py",
+      "hash": "d64c061c29ae5a76",
+      "size": 4896,
+      "canonical": "07_observability\\logic\\general\\rank_observability_components.py"
+    },
+    {
+      "path": "08_scripts\\utilities\\rank_scripts_components.py",
+      "hash": "d64c061c29ae5a76",
+      "size": 4896,
+      "canonical": "07_observability\\logic\\general\\rank_observability_components.py"
+    },
+    {
+      "path": "07_observability\\logic\\tracing\\jaeger_adapter.py",
+      "hash": "8474dc4304ff4902",
+      "size": 2800,
+      "canonical": "07_observability\\logic\\tracing\\opentelemetry_adapter.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py",
+      "hash": "216a427b3355fb7b",
+      "size": 6819,
+      "canonical": "07_observability\\logic\\validation\\convert_content\\embedding_compare_meaning\\compute_embeddings.py"
+    },
+    {
+      "path": "07_observability\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "hash": "c59933818c406294",
+      "size": 35428,
+      "canonical": "07_observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py"
+    },
+    {
+      "path": "07_observability\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "hash": "c59933818c406294",
+      "size": 35428,
+      "canonical": "07_observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py"
+    },
+    {
+      "path": "07_observability\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "hash": "c59933818c406294",
+      "size": 35428,
+      "canonical": "07_observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\apply_safety_policy.py",
+      "hash": "62a17468302ce99b",
+      "size": 9213,
+      "canonical": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\apply_safety.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy\\apply.py",
+      "hash": "62a17468302ce99b",
+      "size": 9213,
+      "canonical": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\apply_safety.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\enforce_safety_filters.py",
+      "hash": "47a35d112390bb00",
+      "size": 11389,
+      "canonical": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\enforce_filters.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\validate_safety_ethics.py",
+      "hash": "d5f28c38cc54fa21",
+      "size": 11389,
+      "canonical": "07_observability\\logic\\guardrails\\check_rules\\policy_check_safety\\validate_ethics.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control-resources\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\__init__.py",
+      "hash": "6d8c829c3a131a77",
+      "size": 2738,
+      "canonical": "01_agentic_core\\L5_safety\\__init__.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\enforce_safety_budget.py",
+      "hash": "9cafdca6b260ae6d",
+      "size": 11365,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\enforce_safety_budget.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy\\enforce.py",
+      "hash": "9cafdca6b260ae6d",
+      "size": 11365,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\enforce_safety_budget.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\update\\enforce.py",
+      "hash": "9cafdca6b260ae6d",
+      "size": 11365,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\enforce_safety_budget.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control-resources\\update\\enforce.py",
+      "hash": "9cafdca6b260ae6d",
+      "size": 11365,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\enforce_safety_budget.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\track_safety_cost.py",
+      "hash": "676be061151f6b2b",
+      "size": 11269,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\track_safety_cost.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\update\\track.py",
+      "hash": "676be061151f6b2b",
+      "size": 11269,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\track_safety_cost.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control-resources\\update\\track.py",
+      "hash": "676be061151f6b2b",
+      "size": 11269,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\track_safety_cost.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\update_safety_usage.py",
+      "hash": "723b4389c7081ec9",
+      "size": 11317,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\update_safety_usage.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control_resources\\update\\update.py",
+      "hash": "723b4389c7081ec9",
+      "size": 11317,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\update_safety_usage.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\control-resources\\update\\update.py",
+      "hash": "723b4389c7081ec9",
+      "size": 11317,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\update_safety_usage.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\assess_safety_risk.py",
+      "hash": "eea551adb8729b57",
+      "size": 11293,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\assess_safety_risk.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\compute_safety_score.py",
+      "hash": "07fb1190b4f078a8",
+      "size": 11341,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\compute_safety_score.py"
+    },
+    {
+      "path": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\evaluate_safety_compliance.py",
+      "hash": "749c0f0f1c48fe13",
+      "size": 11485,
+      "canonical": "01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\evaluate_safety_compliance.py"
+    }
+  ],
+  "errors": []
+}
