@@ -1,7 +1,10 @@
 """
-pipeline_ops\data_access\get_info\understand_request\manage_runtime_context.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/data_access/get_info/understand_request/manage_runtime_context.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: efc7f87969129e0f730e9ab5594a8932a7e526b65fe9bd56674f8d96fa42dd2f
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

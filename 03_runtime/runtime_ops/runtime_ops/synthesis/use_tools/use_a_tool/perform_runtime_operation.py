@@ -1,7 +1,10 @@
 """
-runtime_ops\synthesis\use_tools\use_a_tool\perform_runtime_operation.py
-Auto-hardened by WINDSURF v2
+03_runtime/runtime_ops/runtime_ops/synthesis/use_tools/use_a_tool/perform_runtime_operation.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 62a8cf8fb9b1fa4727aa5258ec646be854834e5fa31f44c9482256f9c3516094
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

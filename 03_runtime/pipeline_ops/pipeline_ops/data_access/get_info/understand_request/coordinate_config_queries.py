@@ -1,7 +1,10 @@
 """
-pipeline_ops\data_access\get_info\understand_request\coordinate_config_queries.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/data_access/get_info/understand_request/coordinate_config_queries.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 2ecedeb1d4893a65a268c3ad84198a06d3285e319a02f249d10670d861daf7fd
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

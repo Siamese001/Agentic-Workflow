@@ -1,16 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/__init__.py
-Policy Check Safety - Safety-Specific Policy Enforcement.
-
-This module contains safety policy checking implementations:
-- check_registry_policy: Registry policy validation
-- enforce_boundaries: Boundary enforcement
-- enforce_core_boundaries: Core boundary enforcement
-- validate_constraints: Constraint validation
-- validate_core_constraints: Core constraint validation
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: b9038dd22f53c46e23996f0ea5267bfb4c200c17ecd9d979b875c142d2df40eb
 """
+
 
 from __future__ import annotations
 

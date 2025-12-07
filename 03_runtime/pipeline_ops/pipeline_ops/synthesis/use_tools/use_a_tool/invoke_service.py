@@ -1,7 +1,10 @@
 """
-pipeline_ops\synthesis\use_tools\use_a_tool\invoke_service.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/synthesis/use_tools/use_a_tool/invoke_service.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 004fe30d008a0b9e5a430ad7b0538672fbd200bde6f16538d01dc1097315025e
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,3 +1,10 @@
+"""
+05_config/review_pending/unmapped/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 9bf823efac3ec716433bb0d004607fd05d5737ac80a57f0d1259b749b3636e52
+"""
+from __future__ import annotations
 # TODO[HUMAN_OWNER]: Unmapped legacy/unassigned module.
 # No Phase 2 mapping and no safe canonical placement inferred.
 

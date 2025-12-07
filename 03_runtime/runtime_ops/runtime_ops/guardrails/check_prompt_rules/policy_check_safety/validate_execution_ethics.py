@@ -1,7 +1,10 @@
 """
-runtime_ops\guardrails\check_prompt_rules\policy_check_safety\validate_execution_ethics.py
-Auto-hardened by WINDSURF v2
+03_runtime/runtime_ops/runtime_ops/guardrails/check_prompt_rules/policy_check_safety/validate_execution_ethics.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 10fd202acafc4bb75828a8702d65526932c600ed634ce105357b50fd6ab1343e
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

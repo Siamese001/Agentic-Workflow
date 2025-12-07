@@ -1,3 +1,9 @@
+"""
+03_runtime/pipeline_ops/pipeline_ops/data_access/get_prompt_info/understand_request/manage_prompt_context.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: cd074149d6b5070977602735127b20c9b49d03ed341cd8a8ba2560304e3d803d
+"""
 import logging
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

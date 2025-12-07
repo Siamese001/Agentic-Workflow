@@ -1,7 +1,10 @@
 """
-cache_ops\data_access\get_info\understand_request\retrieve_runtime_memory.py
-Auto-hardened by WINDSURF v2
+03_runtime/cache_ops/cache_ops/data_access/get_info/understand_request/retrieve_runtime_memory.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 179b1ebe3dc1addcb19903edc2ab6ce3bc8ddd13a8e20ee8029f4debbe0086f2
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,7 +1,10 @@
 """
-security_controls\guardrails\check_rules\manage_observability_costs_state_update_ops\track_safety_cost.py
-Auto-hardened by WINDSURF v2
+04_prompt_governance/security_controls/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/track_safety_cost.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 32d3fe45536aa497c570ac51b2bbd4e23b703f9b9f7f19c0b7011eb820d444f7
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

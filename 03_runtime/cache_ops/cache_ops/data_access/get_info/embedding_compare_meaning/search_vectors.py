@@ -1,7 +1,10 @@
 """
-cache_ops\data_access\get_info\embedding_compare_meaning\search_vectors.py
-Auto-hardened by WINDSURF v2
+03_runtime/cache_ops/cache_ops/data_access/get_info/embedding_compare_meaning/search_vectors.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: f34cf96ee3d794143327255524a4280e762909d5b4519fb7447a6d754f3bb80b
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

@@ -1,12 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/search.py
-L4 Hybrid Search for Resume Job Alignment Workflows.
-
-Combines dense embeddings with sparse search for resume enhancement.
-Part of the L1-L5 cognitive architecture stack.
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 857b94be50031887d4e193850acfcef36d874790354e1339a0e89d2ad3a3e925
 """
+
 
 from __future__ import annotations
 

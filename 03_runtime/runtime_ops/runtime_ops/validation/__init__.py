@@ -1,7 +1,10 @@
 """
-runtime_ops\validation\__init__.py
-Auto-hardened by WINDSURF v2
+03_runtime/runtime_ops/runtime_ops/validation/__init__.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 8b7c0e70fdc5e93dd9cd3baf0ac58f255b4a3ab5a398c78a99c2b94c87437ef9
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

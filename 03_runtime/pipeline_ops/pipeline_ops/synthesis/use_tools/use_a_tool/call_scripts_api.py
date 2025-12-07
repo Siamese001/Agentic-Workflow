@@ -1,7 +1,10 @@
 """
-pipeline_ops\synthesis\use_tools\use_a_tool\call_scripts_api.py
-Auto-hardened by WINDSURF v2
+03_runtime/pipeline_ops/pipeline_ops/synthesis/use_tools/use_a_tool/call_scripts_api.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: bc37338407a528ee91c15327871dee6d88c798e4933d34309810144d6880d310
 """
+
 
 from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07

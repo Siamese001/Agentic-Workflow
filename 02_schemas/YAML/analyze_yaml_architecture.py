@@ -1,3 +1,9 @@
+"""
+02_schemas/YAML/analyze_yaml_architecture.py
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: de43cfc8cc19a9effb001752a0be55810d4f02e394a85f8d1298a8197e9edce7
+"""
 #!/usr/bin/env python3
 """
 02_schemas/YAML/analyze_yaml_architecture.py

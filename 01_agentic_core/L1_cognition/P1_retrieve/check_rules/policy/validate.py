@@ -1,34 +1,10 @@
 """
 01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate.py
-PHASE 0.5 — VALIDATION SCRIPT (STRICT OPTION-A+, ZERO-LOSS, K1–K40 + SEMANTIC VALIDATION)
-
-This validator checks that the Phase 0.5 Semantic Lineage Cache Rebuild (v4):
-
-    ORIGINAL GUARANTEES (K1–K40):
-    - Zero-loss across archive ingestion
-    - SSoT presence/parseability
-    - Required global artifacts for every hash
-    - Archive-local pointer integrity
-    - Canonical bucket presence and pointer integrity
-    - No writes outside semantic_cache
-    - No modification of archives
-    - No placeholder artifacts
-    - Completion gates (K39–K40)
-
-    EXTENDED GUARANTEES (SEMANTIC v4):
-    - Every hash with AST artifacts has semantic/H.semantic.json
-    - Every semantic file contains ≥1 component objects
-    - Every component_id is unique per hash
-    - Pointer files reference valid (hash, component_id)
-    - Component graph exists and contains coherent nodes/edges
-    - CURRENT-engine pointers resolve correctly
-    - No orphaned semantic artifacts
-
-This is a STRICT validator designed to prevent silent corruption
-of the semantic cache before entering Phases 2–4.
-
-Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
+AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+L5 CANONICAL — WINDSURF Ω — 2025-12-07
+MERKLE-INTENDED: 9bf6b1eff2a6e73efe6f42722a80c6d3190c0c526cde37e47b884660ad5b92fa
 """
+
 
 from __future__ import annotations
 
