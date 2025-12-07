@@ -1,0 +1,72 @@
+--- LIC_10-03-2025_v6.7.json
++++ LIC_10-03-2025_v6.8.json
+@@ -2,7 +2,7 @@
+   "artifact": "LinkedIn Outreach Orchestrator (LIC)",
+   "version": "LIC_10-01-2025_v4",
+   "metadata": {
+-    "version": "LIC_10-03-2025_v6.7",
++    "version": "LIC_10-03-2025_v6.8",
+     "patches": [
+       "C001",
+       "C002",
+@@ -17,7 +17,9 @@
+       "C011",
+       "C012",
+       "C013",
+-      "C014"
++      "C014",
++      "C015",
++      "C016"
+     ],
+     "changelog": "external://CHANGELOG.md",
+     "sha256": "70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09",
+@@ -806,6 +808,24 @@
+         }
+       ],
+       "blocking": false
++    },
++    "job_workflow_tracker_integration": {
++      "trigger_point": "Section 3, Step 4: Job Application Context",
++      "if_tracker_exists": {
++        "action": "Parse tracker for applications to recipient company; present numbered list",
++        "on_selection": "Load job details into context"
++      },
++      "formats": [
++        "CSV",
++        "JSON",
++        "Excel"
++      ],
++      "required_fields": [
++        "company",
++        "job_title",
++        "req_number",
++        "application_date"
++      ]
+     }
+   },
+   "4.reasoning": {
+@@ -3348,6 +3368,24 @@
+         ],
+         "action_on_violation": "BLOCK"
+       }
++    },
++    "validation_architecture_v2": {
++      "layers": {
++        "layer_1": "Configuration Validation (pre-execution; after Section 3)",
++        "layer_2": "Per K-node Execution Evidence Validation",
++        "layer_3": "K.7 Final Quality Gate"
++      },
++      "execution_contract": {
++        "show_reasoning_off_still_validates": true,
++        "failure_behavior": "BLOCK on any CRITICAL"
++      }
++    },
++    "validation_executor_stub": {
++      "class": "ValidationExecutor",
++      "notes": "Pseudo-contract for rule execution; see C015",
++      "ensures": [
++        "audit_trail evidence checked when RAG_Mode=ON"
++      ]
+     }
+   },
+   "5.output": {

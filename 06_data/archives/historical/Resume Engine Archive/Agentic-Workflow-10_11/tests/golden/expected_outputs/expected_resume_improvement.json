@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "description": "Expected outputs for resume improvement",
+  "outputs": [
+    {
+      "sample_id": "sample_001",
+      "expected_sections": ["summary", "experience", "skills", "education"],
+      "expected_keywords": ["software", "engineer", "python"],
+      "min_quality_score": 0.80
+    },
+    {
+      "sample_id": "sample_002",
+      "expected_sections": ["summary", "experience", "skills", "projects"],
+      "expected_keywords": ["data", "machine learning", "python"],
+      "min_quality_score": 0.85
+    }
+  ]
+}

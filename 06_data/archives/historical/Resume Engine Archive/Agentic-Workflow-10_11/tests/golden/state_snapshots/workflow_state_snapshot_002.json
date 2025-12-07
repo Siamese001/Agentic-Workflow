@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "snapshot_id": "snapshot_002",
+  "workflow_id": "wf_002",
+  "timestamp": 1700001000,
+  "state": {
+    "phase": "completed",
+    "completed_steps": ["analyze", "plan", "draft", "review"],
+    "pending_steps": [],
+    "context": {
+      "job_id": "job_002",
+      "resume_id": "resume_002"
+    },
+    "result": {
+      "quality_score": 0.92,
+      "sections_generated": 4
+    }
+  }
+}

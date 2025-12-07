@@ -1,0 +1,59 @@
+--- LIC_10-03-2025_v6.8.json
++++ LIC_10-03-2025_v6.9.json
+@@ -2,7 +2,7 @@
+   "artifact": "LinkedIn Outreach Orchestrator (LIC)",
+   "version": "LIC_10-01-2025_v4",
+   "metadata": {
+-    "version": "LIC_10-03-2025_v6.8",
++    "version": "LIC_10-03-2025_v6.9",
+     "patches": [
+       "C001",
+       "C002",
+@@ -19,7 +19,9 @@
+       "C013",
+       "C014",
+       "C015",
+-      "C016"
++      "C016",
++      "C017",
++      "C018"
+     ],
+     "changelog": "external://CHANGELOG.md",
+     "sha256": "70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09",
+@@ -3386,6 +3388,22 @@
+       "ensures": [
+         "audit_trail evidence checked when RAG_Mode=ON"
+       ]
++    },
++    "flow_control_corrections": {
++      "section_3_to_4": {
++        "auto_proceed": true,
++        "remove_prompt": true
++      },
++      "k1_pause_for_type_confirm": true,
++      "k2_k7_flow": {
++        "simplified_mode": {
++          "no_pauses": true,
++          "pause_on_validation_fail_only": true
++        },
++        "detailed_mode": {
++          "pause_after_each_k": true
++        }
++      }
+     }
+   },
+   "5.output": {
+@@ -4362,6 +4380,13 @@
+         "multiline_block": "Regards,\\n\\n{sender_name}\\n{phone}\\n{email}\\n{linkedin_url}",
+         "source": "runtime_context.sender_profile (loaded from global_sender_profile per PATCH_C011)"
+       }
++    },
++    "text_wrapping": {
++      "enabled": true,
++      "width": 72,
++      "preserve_bullets": true,
++      "preserve_signature": true,
++      "function": "wrap_message_output(text, width=72)"
+     }
+   },
+   "6.conditions": {

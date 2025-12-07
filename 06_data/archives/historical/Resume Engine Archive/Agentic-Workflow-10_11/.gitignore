@@ -1,0 +1,26 @@
+# archives / snapshots
+*.zip
+
+# python noise
+__pycache__/
+*.pyc
+
+# temp extraction folders
+temp_*/
+
+# virtual environments
+.venv/
+venv/
+env/
+
+# IDE and OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# logs and outputs
+*.log
+outputs/
+logs/
+

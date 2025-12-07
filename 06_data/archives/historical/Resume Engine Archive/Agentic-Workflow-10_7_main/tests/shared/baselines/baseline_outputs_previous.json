@@ -1,0 +1,10 @@
+{
+  "strategy": {
+    "fields": ["steps", "goal"],
+    "version": "legacy"
+  },
+  "qa": {
+    "fields": ["confidence", "summary"],
+    "version": "legacy"
+  }
+}

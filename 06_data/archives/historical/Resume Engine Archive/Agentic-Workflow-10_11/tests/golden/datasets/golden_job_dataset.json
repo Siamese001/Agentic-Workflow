@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "description": "Golden dataset for job description testing",
+  "samples": [
+    {
+      "id": "job_001",
+      "title": "Senior Software Engineer",
+      "company": "Tech Corp",
+      "requirements": ["Python", "AWS", "Docker", "Kubernetes"],
+      "experience_years": 5
+    },
+    {
+      "id": "job_002",
+      "title": "ML Engineer",
+      "company": "AI Startup",
+      "requirements": ["Python", "TensorFlow", "PyTorch", "MLOps"],
+      "experience_years": 3
+    }
+  ]
+}
