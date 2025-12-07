@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\cache_ops\\cache_ops\\data_access\\get_info\\understand_request\\retrieve_observability_memory.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "2d42a9410cb434e0",
+  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\cache_ops\\cache_ops\\data_access\\get_info\\understand_request\\retrieve_config_memory.py",
+  "created": "2025-12-07T11:54:50.883708"
+}

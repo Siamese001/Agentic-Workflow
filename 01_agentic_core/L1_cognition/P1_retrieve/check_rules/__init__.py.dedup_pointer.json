@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L1_cognition\\__init__.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "4a3f841c7e40c4f3",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\__init__.py",
+  "created": "2025-12-07T11:54:45.600414"
+}

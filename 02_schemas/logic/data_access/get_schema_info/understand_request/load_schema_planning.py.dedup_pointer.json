@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\logic\\data_access\\get_info\\understand_request\\load_planning.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "dae37d39d69be28f",
+  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\logic\\data_access\\get_schema_info\\understand_request\\load_schema_planning.py",
+  "created": "2025-12-07T11:54:50.831704"
+}

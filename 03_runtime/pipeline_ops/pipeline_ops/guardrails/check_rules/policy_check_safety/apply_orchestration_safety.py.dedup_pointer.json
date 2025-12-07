@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\pipeline_ops\\pipeline_ops\\guardrails\\check_prompt_rules\\policy_check_safety\\apply_orchestration_safety.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "a8168ec9664d81ee",
+  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\pipeline_ops\\pipeline_ops\\guardrails\\check_rules\\policy_check_safety\\apply_orchestration_safety.py",
+  "created": "2025-12-07T11:54:46.308610"
+}

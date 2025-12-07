@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\orchestrate.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "8b60d524891e0a4c",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\orchestrate.py",
+  "created": "2025-12-07T11:54:50.472398"
+}

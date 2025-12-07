@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "5d2b2cc40f5b1907",
+  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\logic\\data_access\\get_schema_info\\understand_request\\retrieve_schema_context.py",
+  "created": "2025-12-07T11:54:46.735826"
+}

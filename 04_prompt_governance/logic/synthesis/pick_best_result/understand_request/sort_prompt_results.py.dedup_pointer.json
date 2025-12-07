@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\evaluate_options\\understand_request\\sort_core_results.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "1d54bf4a5ead28bf",
+  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\synthesis\\pick_best_result\\understand_request\\sort_prompt_results.py",
+  "created": "2025-12-07T11:54:50.722780"
+}

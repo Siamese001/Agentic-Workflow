@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "03_runtime\\cache_ops\\data_access\\get_info\\understand_request\\fetch_history.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "c040e0a0be7370ff",
+  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\fetch_core_history.py",
+  "created": "2025-12-07T11:54:50.339905"
+}

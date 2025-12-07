@@ -1,0 +1,8 @@
+{
+  "pointer_type": "dedup",
+  "canonical_path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\embedding\\embedding_compare_meaning\\compute_core_embeddings.py",
+  "reason": "AST+semantic duplicate - zero-loss merge",
+  "source_hash": "d61b724230599e57",
+  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\validation\\convert_prompt_content\\embedding_compare_meaning\\compute_prompt_embeddings.py",
+  "created": "2025-12-07T11:54:50.737341"
+}
