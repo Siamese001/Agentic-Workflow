@@ -12,8 +12,9 @@ canonical_definition: >
       • unified_structure_subatomic_meta.yaml (meta rules + invariants)
   The primary YAML defines the filesystem shape, domain hierarchy,
   cognitive structure, and allowed paths. The meta YAML defines
-  invariants, protected paths, enforcement policies, and domain rules
-  that Phase 0.5–4 must honor.
+  invariants, protected paths, enforcement policies, and domain rules.
+  This is a static, authoritative specification for how the repository
+  should be shaped and interpreted—no phase execution is required.
 
 # ---------------------------------------------------------------------
 # 2. PROTECTED PATHS — DO NOT MOVE, DELETE, REWRITE, OR MODIFY
@@ -70,6 +71,7 @@ domain_invariants:
     description: "Primary cognitive engine. Full L1–L5 and P1–P4 structure."
     model: "cognitive_engine"
     filename_prefix: null
+    require_filename_prefixes: false  # Rec 6: Explicit prefix exemption
     allowed_layers:
       - L1_cognition
       - L2_execution
@@ -77,10 +79,11 @@ domain_invariants:
       - L4_memory
       - L5_safety
     allowed_phases:
+      - P1_retrieve
       - P2_inspect
       - P3_aggregate
       - P4_safety
-    # P1_retrieve now restricted to L1 only
+    # Rec 2: P1_retrieve included at domain level; layer rules gate actual placement
     forbidden_patterns: []
 
   apps_lic:
@@ -94,10 +97,11 @@ domain_invariants:
       - L4_memory
       - L5_safety
     allowed_phases:
+      - P1_retrieve
       - P2_inspect
       - P3_aggregate
       - P4_safety
-    # P1_retrieve now restricted to L1 only
+    # Rec 2: P1_retrieve included at domain level; layer rules gate actual placement
     forbidden_patterns: []
 
   apps_rg:
@@ -111,10 +115,11 @@ domain_invariants:
       - L4_memory
       - L5_safety
     allowed_phases:
+      - P1_retrieve
       - P2_inspect
       - P3_aggregate
       - P4_safety
-    # P1_retrieve now restricted to L1 only
+    # Rec 2: P1_retrieve included at domain level; layer rules gate actual placement
     forbidden_patterns: []
 
   # ============================
@@ -124,56 +129,64 @@ domain_invariants:
     description: "Model definitions and validation logic."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "validation"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   runtime:
     description: "Execution harnesses and runtime configuration."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "runtime_ops", "pipeline_ops"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   prompt_governance:
     description: "Prompt policies, templates, and governance."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "versioning"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   config:
     description: "Registry parsing, environment, platform settings."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "environment"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   data:
     description: "Persistence, lineage, semantic-store integration."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "cache_ops", "lineage"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   observability:
     description: "Telemetry, monitoring, metrics."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "logging", "monitoring"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   scripts:
     description: "CLI tools, developer utilities, automation."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "automation", "utilities"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   shared:
     description: "Common utilities not tied to a specific engine."
     model: "operational_support"
     forbidden_patterns: ["L*", "P*"]
-    allowed_layers: ["logic", "non_engine_utilities"]
+    # Rec 3: Aligned with actual repo directory structure
+    allowed_layers: ["logic", "runtime_ops", "pipeline_ops", "cache_ops", "security_controls"]
     max_depth: 7
 
   # ============================
@@ -264,6 +277,10 @@ domain_overrides:
     require_filename_prefixes: true
     enforce_layer_phase_matrix: true
 
+  # Rec 6: Explicit prefix exemption for agentic_core
+  agentic_core:
+    require_filename_prefixes: false
+
   support_domains:
     domains:
       - schemas
@@ -284,9 +301,11 @@ domain_overrides:
     use_yaml_taxonomy_only: true
 
 # ---------------------------------------------------------------------
-# 6. PHASE 1 ENFORCEMENT RULES
+# 6. RUNTIME ENFORCEMENT RULES (SSoT Governance)
 # ---------------------------------------------------------------------
-phase1_enforcement:
+# NOTE: These rules govern repo structure at runtime, not via phase execution.
+# The YAML pair is a static, authoritative specification.
+runtime_enforcement:
 
   # YAML Requirements
   require_meta_yaml: true
@@ -319,7 +338,7 @@ phase1_enforcement:
   no_l_layer_inference_in_tests: true
 
 # ---------------------------------------------------------------------
-# 7. VALIDATION INVARIANTS (PHASE 1–4)
+# 7. VALIDATION INVARIANTS (SSoT Governance)
 # ---------------------------------------------------------------------
 validation_invariants:
   K1: "YAML must parse correctly."
@@ -361,6 +380,30 @@ validation_invariants:
     - check_rules
     - get_info
     - manage_costs
+    - semantic_cache
+
+  # Rec 9: Semantic role map for engine subfolders
+  # Tightens domain definition and makes repo self-explanatory
+  engine_subfolder_roles:
+    business_ops: "domain-specific transformations and decision rules"
+    scoring_ops: "numerical ranking, scoring, weighting"
+    state_update_ops: "modification of engine persistent or transient state"
+    diagnostics_ops: "inspection, telemetry, state introspection"
+    vectorization_ops: "embedding, vector operations, similarity"
+    personalization_ops: "outreach-specific personalization logic (apps_lic)"
+    job_fit_ops: "resume-job matching logic (apps_rg)"
+    embedding_compare_meaning: "semantic similarity and embedding comparison"
+    utility_prepare_information: "data formatting, payload preparation, serialization"
+    semantic_adjust_scores: "semantic-aware score adjustments"
+    check_structure: "structural validation and schema enforcement"
+    convert_content: "content transformation and format conversion"
+    refinement_adjust_scores: "post-scoring fine-tuning and weight adjustment"
+    routing_retry_task: "retry logic, backoff, failure handling"
+    use_tools: "LLM/tool call logic and external service invocation"
+    check_rules: "policy enforcement and rule validation"
+    get_info: "information retrieval and context gathering"
+    manage_costs: "budget tracking, usage limits, cost enforcement"
+    semantic_cache: "semantic cache index loading, history matching, distance computation"
 
   forbidden_phase_layer_combinations:
     - "L2_execution/P1_retrieve"
@@ -447,17 +490,27 @@ semantic_cache_rules:
     - "L4_memory/P2_inspect/**"
 
   description: >
-    Semantic cache is read-only in Phase 1, required for Phase 3 semantic diff.
+    Semantic cache provides history matching and distance computation for retrieval operations.
+    Required in L1_cognition/P1_retrieve and L4_memory/P1_retrieve for all cognitive engines.
 
 # ---------------------------------------------------------------------
 # 10. META VERSIONING
 # ---------------------------------------------------------------------
-meta_version: "4.0"
+meta_version: "4.1"
 created_by: "Agentic-Workflow Hardened Architecture"
 notes: >
-  Hardened meta-YAML aligned to SSoT v4.0.
+  Hardened meta-YAML aligned to SSoT v4.1 (static governance model).
+  - No Phase 0.5–4 execution; YAML pair is static, authoritative specification.
+  - Rec 1: Test taxonomy unified into META as single authoritative definition.
+  - Rec 2: Cognitive domain allowed_phases now inclusive (P1–P4); layer rules gate placement.
+  - Rec 3: Support-domain allowed_layers aligned with actual repo structure.
+  - Rec 4: Cost-management directories normalized to hierarchical manage_costs/state_update_ops.
+  - Rec 5: Global structural invariants consolidated into META only.
+  - Rec 6: agentic_core explicitly exempt from filename prefixes.
+  - Rec 7: apps aggregate folder removed; apps_rg/apps_lic are top-level logical domains.
+  - Rec 8: Semantic-cache structure exposed directly in YAML under L1/L4 P1_retrieve.
+  - Rec 9: Engine subfolder semantic roles added for self-documenting repo.
   - Max depth standardized to 7 across all domains.
-  - Test taxonomy upgraded to ≥5-depth high-signal hierarchy.
   - L/P forbidden only in support domains.
   - Engine prefixing and separation rules fully formalized.
   - Protected paths normalized.

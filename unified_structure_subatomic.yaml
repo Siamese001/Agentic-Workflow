@@ -1,23 +1,21 @@
 # =====================================================================
-# unified_structure_subatomic.yaml (SSoT v4.0)
+# unified_structure_subatomic.yaml (SSoT v4.1 - Static Governance)
 # =====================================================================
 meta_sidecar: unified_structure_subatomic_meta.yaml
 canonical_definition: "Canonical SSoT = MERGE(main_yaml, meta_yaml)"
 
 # ---------------------------------------------------------------------
-# GOVERNANCE LAYER (v4.0)
+# GOVERNANCE LAYER (v4.1 - Static SSoT Governance)
 # ---------------------------------------------------------------------
-structure_version: "4.0"
-description: "Agentic-Workflow SSoT with domain modes, structure types, and governance enforcement"
+structure_version: "4.1"
+description: "Agentic-Workflow SSoT with domain modes, structure types, and static governance enforcement"
 binds_to: "unified_structure_subatomic_meta.yaml"
 canonical_role: "primary architectural map defining allowable filesystem paths"
 
 global:
-  max_depth: 7
-  enforce_dict_for_directories: true
-  enforce_null_for_files: true
-  no_duplicate_keys: true
-  # removed redundant cognitive/non-cognitive lists
+  # Structural invariants are consolidated in META YAML (Section 4)
+  # This avoids duplication and ensures META is the single governing contract
+  inherits_from_meta_structural_rules: true
   # domain_modes now acts as the authoritative mapping
 
 domains:
@@ -153,250 +151,9 @@ hierarchy:
     forbidden: []
     auto_generate_missing_paths: false
     enforce_allowed_structure: true
-    allowed_structure:
-      unit:
-        agentic_core:
-          L1_cognition:
-            P1_retrieve:
-              understand_request:
-                parse_registry_intent: []
-                retrieve_core_context: []
-            P2_inspect:
-              diagnostics_ops:
-                inspect_core_state: []
-                validate_constraints: []
-            P3_aggregate:
-              pick_best_result:
-                rank_core_components: []
-            P4_safety:
-              safety_ops:
-                enforce_safety_filters: []
-          L2_execution:
-            P1_retrieve:
-              load_execution_context:
-                validate_execution_inputs: []
-            P2_inspect:
-              check_structure:
-                validate_execution_schema: []
-            P3_aggregate:
-              assemble_action_sequence:
-                merge_execution_steps: []
-            P4_safety:
-              enforce_execution_policies:
-                enforce_runtime_limits: []
-          L3_orchestration:
-            P1_retrieve:
-              get_orchestration_status:
-                gather_agent_signals: []
-            P2_inspect:
-              inspect_routes:
-                route_diagnostics: []
-            P3_aggregate:
-              select_route:
-                orchestration_policy: []
-            P4_safety:
-              orchestration_safety:
-                enforce_workflow_safety: []
-          L4_memory:
-            P1_retrieve:
-              retrieve_memory:
-                load_memory_snapshot: []
-            P2_inspect:
-              inspect_memory:
-                detect_memory_anomalies: []
-            P3_aggregate:
-              update_memory_state:
-                merge_memory_segments: []
-            P4_safety:
-              memory_safety:
-                enforce_memory_policy: []
-          L5_safety:
-            P4_safety:
-              global_safety_policy:
-                evaluate_system_risk: []
-                enforce_global_constraints: []
-
-        apps_lic:
-          L1_cognition:
-            P1_retrieve:
-              personalization_query:
-                parse_outreach_target: []
-            P2_inspect:
-              message_quality:
-                tone_validation: []
-            P3_aggregate:
-              pick_message:
-                refine_message_ranking: []
-            P4_safety:
-              outreach_safety:
-                validate_ethical_standards: []
-          L2_execution:
-            P3_aggregate:
-              message_generation:
-                create_message_body: []
-
-        apps_rg:
-          L1_cognition:
-            P1_retrieve:
-              skill_query:
-                extract_resume_requirements: []
-            P2_inspect:
-              resume_quality:
-                writing_quality_checks: []
-            P3_aggregate:
-              pick_resume_content:
-                refine_resume_ranking: []
-            P4_safety:
-              resume_safety:
-                filter_inappropriate_content: []
-          L2_execution:
-            P3_aggregate:
-              generation_pipeline:
-                generate_summary_section: []
-
-        runtime:
-          orchestration_flows:
-            async_runners:
-              dispatch_ops:
-                handle_async_exceptions: []
-
-        data:
-          pipelines:
-            embedding_ops:
-              vectorization:
-                normalize_vectors: []
-
-        schemas:
-          validation:
-            schema_integrity:
-              deep_structure_rules:
-                enforce_schema_contracts: []
-
-        prompt_governance:
-          policy_flows:
-            injection_protection:
-              global_prompt_safety:
-                detect_prompt_violations: []
-
-        config:
-          registry:
-            schema_parsing:
-              load_registry_yaml:
-                resolve_overrides: []
-
-        observability:
-          metrics:
-            counters:
-              compute_runtime_metrics:
-                aggregation_pipeline: []
-
-        scripts:
-          cli:
-            commands:
-              admin_tools:
-                execute_admin_command: []
-
-      integration:
-        agentic_core_chains:
-          L1_to_L2:
-            cognition_to_execution:
-              request_to_action:
-                simulate_agent_plan: []
-          L2_to_L3:
-            execution_to_orchestration:
-              step_coordination:
-                validate_transition_handshake: []
-          L3_to_L4:
-            orchestration_to_memory:
-              state_persistence:
-                commit_memory_frame: []
-          L4_to_L5:
-            memory_to_safety:
-              risk_fusion:
-                compute_safety_threshold: []
-
-        lic_plus_data:
-          outreach_workflow:
-            profile_enrichment:
-              embedding_similarity:
-                compute_recipient_match: []
-
-        rg_plus_data:
-          resume_workflow:
-            job_alignment:
-              scoring_ops:
-                compute_fit_score: []
-
-        full_pipeline:
-          end_to_end:
-            agentic_flow:
-              multi_phase_execution:
-                safety_gate: []
-
-      e2e:
-        outreach_flows:
-          personalization_sequence:
-            multi_hop_context:
-              final_message_generation:
-                safety_validation: []
-        resume_flows:
-          job_ingest_sequence:
-            semantic_scoring:
-              resume_synthesis:
-                compliance_verification: []
-        admin_flows:
-          system_diagnostics:
-            health_check:
-              remediation_pipeline:
-                verify_state_repair: []
-
-      golden:
-        prompts:
-          canonical_sets:
-            system_prompts:
-              safety_rules:
-                enforce_prompt_invariants: []
-
-        semantics:
-          meaning_equivalence:
-            embedding_invariance:
-              stability_window:
-                tolerance_tests: []
-
-        safety:
-          harmful_content:
-            boundary_cases:
-              red_team_prompts:
-                bypass_attempts: []
-
-      perf:
-        latency:
-          cold_start:
-            warm_start:
-              sustained_throughput:
-                batch_dispatch: []
-        throughput:
-          tokens_per_second:
-            concurrency_branches:
-              peak_load:
-                scaling_behavior: []
-        cost:
-          token_budget:
-            memory_ops:
-              routing_ops:
-                dynamic_cost_bounds: []
-
-      load:
-        spike:
-          1s_peak:
-            recovery:
-              resilience_window:
-                thermal_stability: []
-        soak:
-          24h_run:
-            drift_monitoring:
-              long_horizon_behavior:
-                degradation_thresholds: []
+    # Full test taxonomy is governed by meta.domain_invariants.tests.allowed_structure
+    # This stub indicates physical presence; META YAML is authoritative for structure rules
+    allowed_structure_governed_by: "meta.domain_invariants.tests.allowed_structure"
 
   enforcement:
     require_all_layers: false
@@ -467,6 +224,10 @@ agentic_core:
   L1_cognition:
     P1_retrieve:
       __init__.py: null
+      semantic_cache:
+        load_semantic_cache_index.py: null
+        match_semantic_history.py: null
+        compute_semantic_distance.py: null
       check_rules:
         __init__.py: null
         policy_check_safety:
@@ -666,6 +427,10 @@ agentic_core:
     __init__.py: null
   L4_memory:
     P1_retrieve:
+      semantic_cache:
+        load_semantic_cache_index.py: null
+        match_semantic_history.py: null
+        compute_semantic_distance.py: null
       get_info:
         understand_request:
           fetch_core_history.py: null
@@ -750,6 +515,10 @@ apps_lic:
   L1_cognition:
     P1_retrieve:
       __init__.py: null
+      semantic_cache:
+        load_semantic_cache_index.py: null
+        match_semantic_history.py: null
+        compute_semantic_distance.py: null
       check_outreach_rules:
         policy_check_safety:
           check_outreach_policy.py: null
@@ -977,6 +746,10 @@ apps_lic:
   L4_memory:
     P1_retrieve:
       __init__.py: null
+      semantic_cache:
+        load_semantic_cache_index.py: null
+        match_semantic_history.py: null
+        compute_semantic_distance.py: null
       get_info:
         understand_request:
           fetch_recipient_interactions.py: null
@@ -1057,6 +830,10 @@ apps_rg:
   L1_cognition:
     P1_retrieve:
       __init__.py: null
+      semantic_cache:
+        load_semantic_cache_index.py: null
+        match_semantic_history.py: null
+        compute_semantic_distance.py: null
       check_resume_rules:
         policy_check_safety:
           check_resume_policy.py: null
@@ -1284,6 +1061,10 @@ apps_rg:
   L4_memory:
     P1_retrieve:
       __init__.py: null
+      semantic_cache:
+        load_semantic_cache_index.py: null
+        match_semantic_history.py: null
+        compute_semantic_distance.py: null
       get_info:
         understand_request:
           fetch_user_preferences.py: null
@@ -1526,10 +1307,11 @@ config:
           apply_safety_policy.py: null
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
-        manage_config_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -1697,10 +1479,11 @@ data:
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
         # Item B: Removed semantic_adjust_scores
-        manage_data_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -1868,10 +1651,11 @@ observability:
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
         # Item B: Removed semantic_adjust_scores
-        manage_observability_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -2039,10 +1823,11 @@ prompt_governance:
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
         # Item B: Removed semantic_adjust_scores
-        manage_prompt_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -2210,10 +1995,11 @@ runtime:
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
         # Item B: Removed semantic_adjust_scores
-        manage_runtime_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -2381,10 +2167,11 @@ schemas:
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
         # Item B: Removed semantic_adjust_scores
-        manage_schema_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -2552,10 +2339,11 @@ scripts:
           enforce_safety_filters.py: null
           validate_safety_ethics.py: null
         # Item B: Removed semantic_adjust_scores
-        manage_scripts_costs_state_update_ops:
-          enforce_safety_budget.py: null
-          track_safety_cost.py: null
-          update_safety_usage.py: null
+        manage_costs:
+          state_update_ops:
+            enforce_safety_budget.py: null
+            track_safety_cost.py: null
+            update_safety_usage.py: null
     __init__.py: null
   __init__.py: null
 
@@ -2746,15 +2534,9 @@ shared:
     __init__.py: null
   __init__.py: null
 
-# Apps aggregate structure (physical 09_apps contains apps_rg and apps_lic subfolders)
-apps:
-  apps_rg:
-    __init__.py: null
-  apps_lic:
-    __init__.py: null
-  _unassigned_apps_unknown:
-    __init__.py: null
-  __init__.py: null
+# NOTE: apps_rg and apps_lic are top-level logical domains (defined in domain_modes)
+# The physical folder 09_apps is purely a filesystem aggregator, not a domain
+# Removed 'apps:' block to prevent tools from misclassifying 09_apps/apps_rg as domain 'apps'
 
 # Tests structure (physical 10_tests contains test taxonomy)
 tests:
