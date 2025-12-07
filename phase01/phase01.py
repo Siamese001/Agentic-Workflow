@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 1 — STRUCTURAL ENFORCEMENT & INTELLIGENT RE-ORGANIZATION (ZERO-LOSS) v4.0
@@ -109,7 +110,7 @@ class GovernanceEnforcer:
         
     def _load_governance_config(self) -> GovernanceConfig:
         """Load and parse both YAML files to extract governance rules."""
-        print("[GOVERNANCE] Loading SSoT and Meta YAML files...")
+        logging.debug("[GOVERNANCE] Loading SSoT and Meta YAML files...")
         
         ssot_yaml = load_yaml(self.ssot_yaml_path)
         meta_yaml = load_yaml(self.meta_yaml_path)
@@ -172,9 +173,9 @@ class GovernanceEnforcer:
         # Enforcement rules are under hierarchy.tests and meta.phase1_enforcement
         enforcement_rules = meta_yaml.get("phase1_enforcement", {})
         
-        print(f"[GOVERNANCE] Loaded governance for {len(domain_modes)} domains")
-        print(f"[GOVERNANCE] Cognitive domains: {cognitive_domains}")
-        print(f"[GOVERNANCE] Domain-scoped exemptions: {prefix_exemptions}")
+        logging.debug(f"[GOVERNANCE] Loaded governance for {len(domain_modes)} domains")
+        logging.debug(f"[GOVERNANCE] Cognitive domains: {cognitive_domains}")
+        logging.debug(f"[GOVERNANCE] Domain-scoped exemptions: {prefix_exemptions}")
         
         return GovernanceConfig(
             ssot_yaml=ssot_yaml,
@@ -328,7 +329,7 @@ def load_yaml(path: Path) -> dict:
     which causes safe_load to return a string instead of a dict.
     """
     if not path.exists():
-        print(f"[WARN] YAML file not found: {path}")
+        logging.debug(f"[WARN] YAML file not found: {path}")
         return {}
         
     with path.open("r", encoding="utf-8") as f:
@@ -336,11 +337,11 @@ def load_yaml(path: Path) -> dict:
         
     # Fix for literal block scalar (string) root
     if isinstance(data, str):
-        print(f"[INFO] YAML at {path} loaded as string (likely block scalar). Attempting recursive parse...")
+        logging.debug(f"[INFO] YAML at {path} loaded as string (likely block scalar). Attempting recursive parse...")
         try:
             data = yaml.safe_load(data)
         except Exception as e:
-            print(f"[ERROR] Recursive YAML parse failed for {path}: {e}")
+            logging.debug(f"[ERROR] Recursive YAML parse failed for {path}: {e}")
             return {}
 
     return data or {}
@@ -469,7 +470,7 @@ def ensure_ssot_paths(root: Path, ssot_subtree: dict, dry_run: bool) -> None:
             if isinstance(child, dict):
                 if dry_run:
                     if not full.exists():
-                        print(f"DRY-RUN: Would create directory {full}")
+                        logging.debug(f"DRY-RUN: Would create directory {full}")
                 else:
                     full.mkdir(parents=True, exist_ok=True)
                 _walk(child, curr_parts)
@@ -477,7 +478,7 @@ def ensure_ssot_paths(root: Path, ssot_subtree: dict, dry_run: bool) -> None:
                 # Leaf value => treat as file placeholder
                 if dry_run:
                     if not full.exists():
-                        print(f"DRY-RUN: Would create file {full}")
+                        logging.debug(f"DRY-RUN: Would create file {full}")
                 else:
                     full.parent.mkdir(parents=True, exist_ok=True)
                     if not full.exists():
@@ -902,7 +903,7 @@ def infer_target_for_file(
         for p in parent_parts:
             if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned"):
                 has_forbidden_pattern = True
-                print(f"[DEBUG] Stripping pattern {p} from tests domain path")
+                logging.debug(f"[DEBUG] Stripping pattern {p} from tests domain path")
             else:
                 clean_parent_parts.append(p)
 
@@ -927,7 +928,7 @@ def infer_target_for_file(
         
         # If still no bucket, route to flat unassigned (no nested paths)
         if bucket is None:
-            print(f"[DEBUG] Routing {filename} to _unassigned/tests_invalid (no taxonomy match)")
+            logging.debug(f"[DEBUG] Routing {filename} to _unassigned/tests_invalid (no taxonomy match)")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
                 dest_rel=f"_unassigned/tests_invalid/{filename}",
@@ -939,7 +940,7 @@ def infer_target_for_file(
         # Enforce depth / forbidden patterns via generic domain validator
         ok, msg = enforcer.validate_domain_mode(logical_root, clean_parent_parts + [filename])
         if not ok:
-            print(f"[DEBUG] Routing {filename} to _unassigned/tests_violation")
+            logging.debug(f"[DEBUG] Routing {filename} to _unassigned/tests_violation")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
                 dest_rel=f"_unassigned/tests_violation/{filename}",
@@ -950,7 +951,7 @@ def infer_target_for_file(
 
         # Route to clean path under taxonomy bucket
         clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else f"{bucket}/{filename}"
-        print(f"[DEBUG] Successfully routing {filename} to tests/{clean_path}")
+        logging.debug(f"[DEBUG] Successfully routing {filename} to tests/{clean_path}")
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
             dest_rel=clean_path,
@@ -963,7 +964,7 @@ def infer_target_for_file(
     # APPS DOMAIN — Handle apps_rg/apps_lic with hierarchical structure
     # ================================================================
     if logical_root in ["apps", "apps_rg", "apps_lic"]:
-        print(f"[DEBUG] Apps domain routing triggered for file: {filename} (logical_root: {logical_root})")
+        logging.debug(f"[DEBUG] Apps domain routing triggered for file: {filename} (logical_root: {logical_root})")
         filename = parts[-1]
         
         # For apps domain (not yet split), strip L*/P* and _unassigned_* patterns and route to appropriate subdomain
@@ -972,7 +973,7 @@ def infer_target_for_file(
             clean_parent_parts = []
             for p in parent_parts:
                 if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned"):
-                    print(f"[DEBUG] Stripping pattern {p} from apps domain path")
+                    logging.debug(f"[DEBUG] Stripping pattern {p} from apps domain path")
                 else:
                     clean_parent_parts.append(p)
             
@@ -980,34 +981,34 @@ def infer_target_for_file(
             target_subdomain = None
             if filename.lower().startswith("rg_"):
                 target_subdomain = "apps_rg"
-                print(f"[DEBUG] Routing {filename} to apps_rg (rg_ prefix)")
+                logging.debug(f"[DEBUG] Routing {filename} to apps_rg (rg_ prefix)")
             elif filename.lower().startswith("lic_"):
                 target_subdomain = "apps_lic"
-                print(f"[DEBUG] Routing {filename} to apps_lic (lic_ prefix)")
+                logging.debug(f"[DEBUG] Routing {filename} to apps_lic (lic_ prefix)")
             
             # If no prefix, try folder patterns
             if target_subdomain is None:
                 folder_path = "/".join(clean_parent_parts).lower()
                 if any(pattern in folder_path for pattern in ["outreach", "message", "campaign", "generation"]):
                     target_subdomain = "apps_lic"
-                    print(f"[DEBUG] Routing {filename} to apps_lic (inferred from folder patterns)")
+                    logging.debug(f"[DEBUG] Routing {filename} to apps_lic (inferred from folder patterns)")
                 elif any(pattern in folder_path for pattern in ["resume", "recruiting", "job", "candidate"]):
                     target_subdomain = "apps_rg"
-                    print(f"[DEBUG] Routing {filename} to apps_rg (inferred from folder patterns)")
+                    logging.debug(f"[DEBUG] Routing {filename} to apps_rg (inferred from folder patterns)")
             
             # If still no match, try filename-based pattern matching (fallback)
             if target_subdomain is None:
                 fn_lower = filename.lower()
                 if any(pattern in fn_lower for pattern in ["outreach", "message", "campaign", "generation", "lic"]):
                     target_subdomain = "apps_lic"
-                    print(f"[DEBUG] Routing {filename} to apps_lic (inferred from filename patterns)")
+                    logging.debug(f"[DEBUG] Routing {filename} to apps_lic (inferred from filename patterns)")
                 elif any(pattern in fn_lower for pattern in ["resume", "recruiting", "job", "candidate", "contact", "rg"]):
                     target_subdomain = "apps_rg"
-                    print(f"[DEBUG] Routing {filename} to apps_rg (inferred from filename patterns)")
+                    logging.debug(f"[DEBUG] Routing {filename} to apps_rg (inferred from filename patterns)")
             
             # If still no match, route to unassigned with just the filename (no nested paths)
             if target_subdomain is None:
-                print(f"[DEBUG] Routing {filename} to _unassigned/apps_unknown (no recognizable patterns)")
+                logging.debug(f"[DEBUG] Routing {filename} to _unassigned/apps_unknown (no recognizable patterns)")
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
                     dest_rel=f"_unassigned/apps_unknown/{filename}",
@@ -1018,7 +1019,7 @@ def infer_target_for_file(
             
             # Route to appropriate subdomain with clean path (all junk stripped)
             clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else filename
-            print(f"[DEBUG] Successfully routing {filename} to {target_subdomain}/{clean_path}")
+            logging.debug(f"[DEBUG] Successfully routing {filename} to {target_subdomain}/{clean_path}")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
                 dest_rel=f"{target_subdomain}/{clean_path}",
@@ -1031,13 +1032,13 @@ def infer_target_for_file(
         clean_parent_parts = []
         for p in parent_parts:
             if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned") or p in ["apps_rg", "apps_lic"]:
-                print(f"[DEBUG] Stripping pattern {p} from apps subdomain {logical_root}")
+                logging.debug(f"[DEBUG] Stripping pattern {p} from apps subdomain {logical_root}")
             else:
                 clean_parent_parts.append(p)
         
         # Route to clean hierarchical path
         clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else filename
-        print(f"[DEBUG] Successfully routing {filename} to clean path in {logical_root}: {clean_path}")
+        logging.debug(f"[DEBUG] Successfully routing {filename} to clean path in {logical_root}: {clean_path}")
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
             dest_rel=clean_path,
@@ -1057,7 +1058,7 @@ def infer_target_for_file(
         clean_parent_parts = []
         for p in parent_parts:
             if p.startswith("L") or p.startswith("P") or p.startswith("_unassigned"):
-                print(f"[DEBUG] Stripping pattern {p} from support domain {logical_root} path")
+                logging.debug(f"[DEBUG] Stripping pattern {p} from support domain {logical_root} path")
             else:
                 clean_parent_parts.append(p)
 
@@ -1065,7 +1066,7 @@ def infer_target_for_file(
         if ssot_path_exists(ssot_subtree, clean_parent_parts + [filename]):
             ok, msg = enforcer.validate_domain_mode(logical_root, clean_parent_parts + [filename])
             if not ok:
-                print(f"[DEBUG] Routing {filename} to _unassigned/support_violation")
+                logging.debug(f"[DEBUG] Routing {filename} to _unassigned/support_violation")
                 return MappingDecision(
                     src_rel=str(src_rel).replace("\\", "/"),
                     dest_rel=f"_unassigned/support_violation/{filename}",
@@ -1074,7 +1075,7 @@ def infer_target_for_file(
                     is_duplicate=False,
                 )
             clean_path = "/".join(clean_parent_parts + [filename]) if clean_parent_parts else filename
-            print(f"[DEBUG] Successfully routing {filename} to support domain: {clean_path}")
+            logging.debug(f"[DEBUG] Successfully routing {filename} to support domain: {clean_path}")
             return MappingDecision(
                 src_rel=str(src_rel).replace("\\", "/"),
                 dest_rel=clean_path,
@@ -1084,7 +1085,7 @@ def infer_target_for_file(
             )
 
         # No match → route to flat unassigned bucket (no nested paths)
-        print(f"[DEBUG] Routing {filename} to _unassigned/support_nomatch (no YAML match)")
+        logging.debug(f"[DEBUG] Routing {filename} to _unassigned/support_nomatch (no YAML match)")
         return MappingDecision(
             src_rel=str(src_rel).replace("\\", "/"),
             dest_rel=f"_unassigned/support_nomatch/{filename}",
@@ -1215,14 +1216,14 @@ def make_domain_backup(root: Path, domain: str, dry_run: bool) -> Optional[Path]
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     target = PHASE1_BACKUP_ROOT / f"{domain}_{timestamp}"
     if dry_run:
-        print(f"DRY-RUN: Would create backup {target} from {root}")
+        logging.debug(f"DRY-RUN: Would create backup {target} from {root}")
         return None
 
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists():
         # Very unlikely but avoid overwriting
         target = PHASE1_BACKUP_ROOT / f"{domain}_{timestamp}_{int(time.time())}"
-    print(f"[BACKUP] Copying {root} -> {target}")
+    logging.debug(f"[BACKUP] Copying {root} -> {target}")
     
     def ignore_phase1_artifacts(path: str, names: List[str]) -> List[str]:
         """Ignore Phase 1 artifacts and system directories during backup."""
@@ -1259,14 +1260,14 @@ def archive_legacy_folder(
     target = archive_root / domain / legacy_rel_path
     
     if dry_run:
-        print(f"DRY-RUN: Would archive folder {source} -> {target}")
+        logging.debug(f"DRY-RUN: Would archive folder {source} -> {target}")
         return None
     
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists():
         target = target.parent / f"{legacy_rel_path.name}_{int(time.time())}"
     
-    print(f"[ARCHIVE] Moving legacy folder {source} -> {target}")
+    logging.debug(f"[ARCHIVE] Moving legacy folder {source} -> {target}")
     
     # Copy directory tree while skipping protected paths
     def copy_tree_skip_protected(src: Path, dst: Path) -> bool:
@@ -1274,7 +1275,7 @@ def archive_legacy_folder(
         dst.mkdir(parents=True, exist_ok=True)
         for item in src.iterdir():
             if is_under_hard_protected(item) or (protected_patterns and is_meta_protected(item, protected_patterns)):
-                print(f"[SKIP] Protected path during archive: {item}")
+                logging.debug(f"[SKIP] Protected path during archive: {item}")
                 had_protected = True
                 continue
             
@@ -1289,12 +1290,12 @@ def archive_legacy_folder(
     # Only remove source if NO protected content was skipped
     try:
         if source.exists() and not had_protected:
-            print(f"[STRUCTURAL-DELETE] Removed legacy folder shell {source} after archival")
+            logging.debug(f"[STRUCTURAL-DELETE] Removed legacy folder shell {source} after archival")
             shutil.rmtree(source)
         elif had_protected:
-            print(f"[INFO] Preserving source folder {source} because it contains protected paths")
+            logging.debug(f"[INFO] Preserving source folder {source} because it contains protected paths")
     except OSError as e:
-        print(f"[WARN] Could not remove source folder {source}: {e}")
+        logging.debug(f"[WARN] Could not remove source folder {source}: {e}")
     
     # Add placeholder
     placeholder_file = target / placeholder_filename
@@ -1350,7 +1351,7 @@ def remove_empty_folder_recursive(folder: Path) -> bool:
             items = list(folder.iterdir())
             if len(items) == 0:
                 folder.rmdir()
-                print(f"[CLEANUP] Removed empty folder: {folder.name}")
+                logging.debug(f"[CLEANUP] Removed empty folder: {folder.name}")
                 return True
     except OSError:
         pass
@@ -1377,9 +1378,9 @@ def cleanup_forbidden_folders_in_domain(domain_path: Path) -> Dict[str, int]:
                 try:
                     shutil.rmtree(item)
                     stats["folders_removed"] += 1
-                    print(f"[CLEANUP] Removed forbidden folder: {domain_path.name}/{item.name}")
+                    logging.debug(f"[CLEANUP] Removed forbidden folder: {domain_path.name}/{item.name}")
                 except OSError as e:
-                    print(f"[WARN] Could not remove {item}: {e}")
+                    logging.debug(f"[WARN] Could not remove {item}: {e}")
     
     return stats
 
@@ -1414,7 +1415,7 @@ def cleanup_nested_unassigned_folders(domain_path: Path) -> int:
                     try:
                         shutil.rmtree(folder)
                         removed += 1
-                        print(f"[CLEANUP] Removed nested unassigned: {rel}")
+                        logging.debug(f"[CLEANUP] Removed nested unassigned: {rel}")
                     except OSError:
                         pass
         except ValueError:
@@ -1458,15 +1459,15 @@ def run_post_processing_cleanup() -> Dict[str, int]:
 
 def validate_phase_completion(enforcer: GovernanceEnforcer) -> None:
     """Print validation keys for phase completion as required by meta YAML."""
-    print("\n" + "="*60)
-    print("PHASE VALIDATION RESULTS")
-    print("="*60)
+    logging.debug("\n" + "="*60)
+    logging.debug("PHASE VALIDATION RESULTS")
+    logging.debug("="*60)
     
     # ================================================================
     # REAL VALIDATION (K1–K40)
     # ================================================================
-    def vpass(k): print(f"{k} = PASS")
-    def vfail(k, msg): print(f"{k} = FAIL — {msg}")
+    def vpass(k): logging.debug(f"{k} = PASS")
+    def vfail(k, msg): logging.debug(f"{k} = FAIL — {msg}")
 
     # K1–K2 YAML loads
     try:
@@ -1578,22 +1579,22 @@ def validate_phase_completion(enforcer: GovernanceEnforcer) -> None:
         vpass("K15")  # Advisory: enforcement_rules optional
         vpass("K16")  # Advisory: enforcement_rules optional
 
-    print("\nPHASE VALIDATION COMPLETE")
-    print("="*60)
+    logging.debug("\nPHASE VALIDATION COMPLETE")
+    logging.debug("="*60)
 
 
 def main_phase01_execution(dry_run: bool = False) -> None:
     """
     Main Phase 1 execution with SSoT v4.0 governance enforcement.
     """
-    print("[PHASE01] Starting structural enforcement with SSoT v4.0 governance...")
+    logging.debug("[PHASE01] Starting structural enforcement with SSoT v4.0 governance...")
     
     # Initialize governance enforcer (loads both YAML files)
     try:
         enforcer = GovernanceEnforcer(PROJECT_ROOT)
-        print("[GOVERNANCE] Successfully loaded SSoT and Meta YAML governance rules")
+        logging.debug("[GOVERNANCE] Successfully loaded SSoT and Meta YAML governance rules")
     except Exception as e:
-        print(f"[ERROR] Failed to initialize governance enforcer: {e}")
+        logging.debug(f"[ERROR] Failed to initialize governance enforcer: {e}")
         return
     
     # Ensure Phase 1 data directories exist
@@ -1612,15 +1613,15 @@ def main_phase01_execution(dry_run: bool = False) -> None:
         domain_root = PROJECT_ROOT / target_root
         
         if not domain_root.exists():
-            print(f"[SKIP] Domain root {domain_root} does not exist")
+            logging.debug(f"[SKIP] Domain root {domain_root} does not exist")
             continue
         
         # Do not reorganize non-code domains
         if target_root in {"06_data", "10_tests"}:
-            print(f"[SKIP] Phase 1 skipping {target_root} (non-code domain).")
+            logging.debug(f"[SKIP] Phase 1 skipping {target_root} (non-code domain).")
             continue
         
-        print(f"[PROCESS] Processing domain: {logical_root} ({target_root})")
+        logging.debug(f"[PROCESS] Processing domain: {logical_root} ({target_root})")
         
         # Get SSoT subtree for this domain and materialize canonical skeleton
         if logical_root == "apps":
@@ -1642,17 +1643,17 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                 if not init_file.exists():
                     init_file.touch()
             
-            print(f"[APPS] Created apps subdirectories: apps_lic, apps_rg, _unassigned")
+            logging.debug(f"[APPS] Created apps subdirectories: apps_lic, apps_rg, _unassigned")
         else:
             ssot_subtree = ssot_data.get(logical_root, {})
             if not ssot_subtree:
-                print(f"[WARN] No SSoT structure found for domain {logical_root}")
+                logging.debug(f"[WARN] No SSoT structure found for domain {logical_root}")
                 continue
             ensure_ssot_paths(domain_root, ssot_subtree, dry_run)
         
         # List all files in this domain
         all_files = list_all_files(domain_root)
-        print(f"[SCAN] Found {len(all_files)} files in {logical_root}")
+        logging.debug(f"[SCAN] Found {len(all_files)} files in {logical_root}")
         
         # Process each file
         for file_path in all_files:
@@ -1661,7 +1662,7 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                 
                 # Skip protected paths
                 if enforcer.is_protected_path(file_path):
-                    print(f"[SKIP] Protected path: {rel_path}")
+                    logging.debug(f"[SKIP] Protected path: {rel_path}")
                     continue
                 
                 # For apps domain, resolve RG/LIC split using filename
@@ -1671,10 +1672,10 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                     # If file couldn't be resolved to RG/LIC, still process with "apps" for pattern inference
                     if file_logical_root.startswith("_unassigned"):
                         file_logical_root = "apps"  # Use "apps" to trigger pattern inference routing logic
-                        print(f"[DEBUG] Processing unassigned apps file with pattern inference: {rel_path}")
+                        logging.debug(f"[DEBUG] Processing unassigned apps file with pattern inference: {rel_path}")
                 
                 # Infer target using governance-aware logic
-                print(f"[DEBUG] About to call infer_target_for_file with logical_root={file_logical_root} for file: {rel_path}")
+                logging.debug(f"[DEBUG] About to call infer_target_for_file with logical_root={file_logical_root} for file: {rel_path}")
                 decision = infer_target_for_file(
                     logical_root=file_logical_root,
                     ssot_subtree=ssot_data.get(file_logical_root, {}),
@@ -1682,7 +1683,7 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                     enforcer=enforcer,
                     domain_root=domain_root,
                 )
-                print(f"[DEBUG] infer_target_for_file returned: {decision.dest_rel} (reason: {decision.reason})")
+                logging.debug(f"[DEBUG] infer_target_for_file returned: {decision.dest_rel} (reason: {decision.reason})")
                 
                 all_mapping_decisions.append(decision)
                 
@@ -1693,21 +1694,21 @@ def main_phase01_execution(dry_run: bool = False) -> None:
                     
                     # Never move content into protected destinations (e.g., shared_engine_ops, semantic_cache)
                     if enforcer.is_protected_path(dest_full):
-                        print(f"[SKIP] Protected destination: {dest_full} (from {rel_path})")
+                        logging.debug(f"[SKIP] Protected destination: {dest_full} (from {rel_path})")
                         continue
                     
                     if dry_run:
-                        print(f"DRY-RUN: Would move {src_full} -> {dest_full}")
+                        logging.debug(f"DRY-RUN: Would move {src_full} -> {dest_full}")
                     else:
                         dest_full.parent.mkdir(parents=True, exist_ok=True)
                         
                         if src_full.exists():
                             shutil.move(str(src_full), str(dest_full))
-                            print(f"[MOVE] {decision.src_rel} -> {decision.dest_rel}")
+                            logging.debug(f"[MOVE] {decision.src_rel} -> {decision.dest_rel}")
                         else:
-                            print(f"[WARN] Source file not found: {src_full}")
+                            logging.debug(f"[WARN] Source file not found: {src_full}")
             except Exception as e:
-                print(f"[ERROR] Processing file {file_path}: {e}")
+                logging.debug(f"[ERROR] Processing file {file_path}: {e}")
                 continue
     
     # Generate mapping report + orphan summary
@@ -1744,19 +1745,19 @@ def main_phase01_execution(dry_run: bool = False) -> None:
         with orphans_path.open("w", encoding="utf-8") as f:
             json.dump(orphan_report, f, indent=2, ensure_ascii=False)
 
-        print(f"[REPORT] Generated mapping report: {report_path}")
-        print(f"[REPORT] Generated orphan summary: {orphans_path}")
+        logging.debug(f"[REPORT] Generated mapping report: {report_path}")
+        logging.debug(f"[REPORT] Generated orphan summary: {orphans_path}")
     
     # Run post-processing cleanup
     if not dry_run:
-        print("\n[CLEANUP] Running post-processing cleanup...")
+        logging.debug("\n[CLEANUP] Running post-processing cleanup...")
         cleanup_stats = run_post_processing_cleanup()
-        print(f"[CLEANUP] Cleanup complete: {cleanup_stats}")
+        logging.debug(f"[CLEANUP] Cleanup complete: {cleanup_stats}")
     
     # Print validation results
     validate_phase_completion(enforcer)
     
-    print(f"[PHASE01] Execution complete. Processed {len(all_mapping_decisions)} files.")
+    logging.debug(f"[PHASE01] Execution complete. Processed {len(all_mapping_decisions)} files.")
 
 
 if __name__ == "__main__":
@@ -1769,12 +1770,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.verbose:
-        print("[VERBOSE] Phase 1 execution with verbose logging enabled")
+        logging.debug("[VERBOSE] Phase 1 execution with verbose logging enabled")
     
     try:
         main_phase01_execution(dry_run=args.dry_run)
     except KeyboardInterrupt:
-        print("\n[INTERRUPT] Phase 1 execution cancelled by user")
+        logging.debug("\n[INTERRUPT] Phase 1 execution cancelled by user")
     except Exception as e:
-        print(f"[FATAL] Phase 1 execution failed: {e}")
+        logging.debug(f"[FATAL] Phase 1 execution failed: {e}")
         sys.exit(1)

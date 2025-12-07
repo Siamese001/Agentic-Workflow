@@ -1,3 +1,5 @@
+import logging
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 END-TO-END TEST SUITE FOR PHASE 0.5 AND PHASE 1
@@ -87,18 +89,18 @@ def run_test(name: str, test_fn) -> TestResult:
 def print_result(result: TestResult):
     """Print a single test result."""
     status = "✓ PASS" if result.passed else "✗ FAIL"
-    print(f"  {status}: {result.name} ({result.duration:.2f}s)")
+    logging.debug(f"  {status}: {result.name} ({result.duration:.2f}s)")
     if not result.passed:
-        print(f"         → {result.message}")
+        logging.debug(f"         → {result.message}")
 
 def print_suite_summary(suite: TestSuite):
     """Print summary for a test suite."""
-    print(f"\n{'='*60}")
-    print(f"SUITE: {suite.name}")
-    print(f"{'='*60}")
+    logging.debug(f"\n{'='*60}")
+    logging.debug(f"SUITE: {suite.name}")
+    logging.debug(f"{'='*60}")
     for result in suite.results:
         print_result(result)
-    print(f"\nTotal: {len(suite.results)} | Passed: {suite.passed_count} | Failed: {suite.failed_count}")
+    logging.debug(f"\nTotal: {len(suite.results)} | Passed: {suite.passed_count} | Failed: {suite.failed_count}")
 
 # ======================================================================
 # PHASE 0.5 TESTS
@@ -411,36 +413,36 @@ def run_execution_tests() -> TestSuite:
 # ======================================================================
 
 def main():
-    print("="*60)
-    print("END-TO-END TEST SUITE FOR PHASE 0.5 AND PHASE 1")
-    print("="*60)
-    print(f"Project Root: {PROJECT_ROOT}")
-    print(f"Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    logging.debug("="*60)
+    logging.debug("END-TO-END TEST SUITE FOR PHASE 0.5 AND PHASE 1")
+    logging.debug("="*60)
+    logging.debug(f"Project Root: {PROJECT_ROOT}")
+    logging.debug(f"Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}")
     
     all_suites: List[TestSuite] = []
     
     # Run Phase 0.5 tests
-    print("\n[1/3] Running Phase 0.5 tests...")
+    logging.debug("\n[1/3] Running Phase 0.5 tests...")
     suite05 = run_phase05_tests()
     all_suites.append(suite05)
     print_suite_summary(suite05)
     
     # Run Phase 1 tests
-    print("\n[2/3] Running Phase 1 tests...")
+    logging.debug("\n[2/3] Running Phase 1 tests...")
     suite01 = run_phase01_tests()
     all_suites.append(suite01)
     print_suite_summary(suite01)
     
     # Run execution tests
-    print("\n[3/3] Running execution tests...")
+    logging.debug("\n[3/3] Running execution tests...")
     suite_exec = run_execution_tests()
     all_suites.append(suite_exec)
     print_suite_summary(suite_exec)
     
     # Final summary
-    print("\n" + "="*60)
-    print("FINAL SUMMARY")
-    print("="*60)
+    logging.debug("\n" + "="*60)
+    logging.debug("FINAL SUMMARY")
+    logging.debug("="*60)
     
     total_tests = sum(len(s.results) for s in all_suites)
     total_passed = sum(s.passed_count for s in all_suites)
@@ -448,19 +450,19 @@ def main():
     
     for suite in all_suites:
         status = "✓" if suite.all_passed else "✗"
-        print(f"  {status} {suite.name}: {suite.passed_count}/{len(suite.results)} passed")
+        logging.debug(f"  {status} {suite.name}: {suite.passed_count}/{len(suite.results)} passed")
     
-    print(f"\nOVERALL: {total_passed}/{total_tests} tests passed")
+    logging.debug(f"\nOVERALL: {total_passed}/{total_tests} tests passed")
     
     if total_failed > 0:
-        print("\nFAILED TESTS:")
+        logging.debug("\nFAILED TESTS:")
         for suite in all_suites:
             for result in suite.results:
                 if not result.passed:
-                    print(f"  - [{suite.name}] {result.name}: {result.message}")
+                    logging.debug(f"  - [{suite.name}] {result.name}: {result.message}")
         return 1
     
-    print("\n✓ ALL TESTS PASSED")
+    logging.debug("\n✓ ALL TESTS PASSED")
     return 0
 
 if __name__ == "__main__":

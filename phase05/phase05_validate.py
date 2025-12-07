@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 0.5 — VALIDATION SCRIPT (STRICT OPTION-A+, ZERO-LOSS, K1–K40 + SEMANTIC VALIDATION)
@@ -166,7 +167,7 @@ class Phase05Validator:
     # -------------------------------------------------------------------
 
     def run(self) -> bool:
-        print("=== PHASE 0.5 VALIDATION (K1–K40 + SEMANTIC) ===")
+        logging.debug("=== PHASE 0.5 VALIDATION (K1–K40 + SEMANTIC) ===")
 
         self._run_step(0, self._validate_ssot)
         self._run_step(1, self._validate_structure)
@@ -528,16 +529,16 @@ class Phase05Validator:
     # ==================================================================
 
     def _report(self):
-        print("\n=== VALIDATION KEYS ===")
+        logging.debug("\n=== VALIDATION KEYS ===")
         for k in sorted(self.K.keys(), key=lambda x:int(x[1:]) if x[1:].isdigit() else 999):
-            print(f"{k}: {'PASS' if self.K[k] else 'FAIL'}")
+            logging.debug(f"{k}: {'PASS' if self.K[k] else 'FAIL'}")
 
         if self.errors:
-            print("\nErrors:")
+            logging.debug("\nErrors:")
             for e in self.errors:
-                print(" -", e)
+                logging.debug(" -", e)
 
-        print("\nFINAL STATUS:", "PASS" if self.K["K40"] else "FAIL")
+        logging.debug("\nFINAL STATUS:", "PASS" if self.K["K40"] else "FAIL")
 
 # ======================================================================
 # RUNNER

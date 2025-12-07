@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 PHASE 3H — CANONICAL STUB HYDRATION (ZERO-LOSS, DETERMINISTIC, FULL OVERWRITE)
@@ -81,7 +82,7 @@ class HydrationAction:
 
 def load_stub_audit() -> List[Stub]:
     if not STUB_AUDIT_PATH.exists():
-        print("[FATAL] Stub audit missing – run Phase 3A first", file=sys.stderr)
+        logging.debug("[FATAL] Stub audit missing – run Phase 3A first", file=sys.stderr)
         sys.exit(1)
 
     raw = json.loads(STUB_AUDIT_PATH.read_text(encoding="utf-8"))
@@ -208,7 +209,7 @@ def hydrate_stub(stub: Stub, components_index: dict) -> Optional[HydrationAction
 
     # Safety boundary
     if not is_allowed_stub_path(stub_path):
-        print(f"[SKIP] Non-canonical stub location: {stub.relative_path}", file=sys.stderr)
+        logging.debug(f"[SKIP] Non-canonical stub location: {stub.relative_path}", file=sys.stderr)
         return None
 
     # -------------------------------------------------------------
@@ -225,7 +226,7 @@ def hydrate_stub(stub: Stub, components_index: dict) -> Optional[HydrationAction
             confidence=1.0,
         )
     if len(filename_matches) > 1:
-        print(f"[AMBIGUOUS] {stub.relative_path} → {len(filename_matches)} filename matches")
+        logging.debug(f"[AMBIGUOUS] {stub.relative_path} → {len(filename_matches)} filename matches")
         return None
 
     # -------------------------------------------------------------
@@ -256,7 +257,7 @@ def hydrate_stub(stub: Stub, components_index: dict) -> Optional[HydrationAction
                 confidence=score,
             )
 
-    print(f"[NO DONOR] {stub.relative_path} – no usable source found")
+    logging.debug(f"[NO DONOR] {stub.relative_path} – no usable source found")
     return None
 
 
@@ -265,15 +266,15 @@ def hydrate_stub(stub: Stub, components_index: dict) -> Optional[HydrationAction
 # ======================================================================
 
 def main() -> int:
-    print("=== PHASE 3H — STUB HYDRATION ===")
+    logging.debug("=== PHASE 3H — STUB HYDRATION ===")
     stubs = load_stub_audit()
 
     if not stubs:
-        print("No canonical stubs found.")
+        logging.debug("No canonical stubs found.")
         return 0
 
     components_index = load_global_components()
-    print(f"[INFO] Loaded global-components index: {GLOBAL_COMPONENTS_INDEX}")
+    logging.debug(f"[INFO] Loaded global-components index: {GLOBAL_COMPONENTS_INDEX}")
 
     actions: List[HydrationAction] = []
 
@@ -281,7 +282,7 @@ def main() -> int:
         action = hydrate_stub(stub, components_index)
         if action:
             actions.append(action)
-            print(f"[HYDRATED] {action.stub_path} ← {action.donor_path} [{action.strategy}]")
+            logging.debug(f"[HYDRATED] {action.stub_path} ← {action.donor_path} [{action.strategy}]")
 
     report = {
         "timestamp": datetime.utcnow().isoformat() + "Z",
@@ -291,8 +292,8 @@ def main() -> int:
     }
 
     HYDRATION_REPORT_PATH.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print(f"\nHydrated {len(actions)} / {len(stubs)} stubs")
-    print(f"Report → {HYDRATION_REPORT_PATH.as_posix()}")
+    logging.debug(f"\nHydrated {len(actions)} / {len(stubs)} stubs")
+    logging.debug(f"Report → {HYDRATION_REPORT_PATH.as_posix()}")
 
     return 0
 
