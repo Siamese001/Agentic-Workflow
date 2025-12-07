@@ -1,0 +1,614 @@
+[
+  {
+    "Path": "01_agentic_core\\__init__.py",
+    "Reasons": "TODO_MARKER",
+    "Lines": 41,
+    "Size": 1408
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\__init__.py",
+    "Reasons": "TODO_MARKER",
+    "Lines": 40,
+    "Size": 1482
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\enforce.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 396,
+    "Size": 13723
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\search.py",
+    "Reasons": "TODO_MARKER",
+    "Lines": 371,
+    "Size": 12229
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
+    "Reasons": "TODO_MARKER",
+    "Lines": 415,
+    "Size": 13649
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\__init__.py",
+    "Reasons": "TODO_MARKER",
+    "Lines": 16,
+    "Size": 458
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\retrieve_core_similarity.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 200,
+    "Size": 7213
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\search_core_vectors.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 200,
+    "Size": 7077
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\utility_prepare_information\\build_core_filters.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7096
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\utility_prepare_information\\format_registry_context.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7277
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\utility_prepare_information\\prepare_core_payload.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7146
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\policy_check_safety\\check_core_compliance.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7148
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\policy_check_safety\\enforce_core_contracts.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7173
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\policy_check_safety\\validate_core_schema.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7123
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\semantic_adjust_scores\\assess_core_confidence.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7113
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\semantic_adjust_scores\\compute_core_validation.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7138
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\semantic_adjust_scores\\validate_core_quality.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7088
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\embedding\\embedding_compare_meaning\\calculate_core_similarity.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7269
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\embedding\\embedding_compare_meaning\\compute_core_embeddings.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7219
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\embedding\\embedding_compare_meaning\\normalize_core_vectors.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7194
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\semantic\\semantic_adjust_scores\\apply_core_weights.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7090
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\semantic\\semantic_adjust_scores\\compute_core_confidence.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7215
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\semantic\\semantic_adjust_scores\\normalize_core_scores.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7165
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\detect_anomalies\\update\\inspect.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7102
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P2_inspect\\detect_anomalies\\update\\log.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7002
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\evaluate_options\\understand_request\\apply_core_algorithm.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7140
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\evaluate_options\\understand_request\\rank_core_components.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7140
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\evaluate_options\\understand_request\\sort_core_results.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7065
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\refinement\\semantic_adjust_scores\\adjust_core_weights.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7113
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P3_aggregate\\select_optimal\\refinement\\semantic_adjust_scores\\optimize_core_order.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7113
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\enforce_core_filters.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11736
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\validate_core_ethics.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11736
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P4_safety\\control_resources\\track_usage\\update_memory\\enforce_core_limits.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11723
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P4_safety\\control_resources\\track_usage\\update_memory\\track_core_usage.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11648
+  },
+  {
+    "Path": "01_agentic_core\\L1_cognition\\P4_safety\\control_resources\\track_usage\\update_memory\\update_core_budget.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11698
+  },
+  {
+    "Path": "01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\use\\execute.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 1745,
+    "Size": 63152
+  },
+  {
+    "Path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\orchestrate_core_planning.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7435
+  },
+  {
+    "Path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\coordinate.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7411
+  },
+  {
+    "Path": "01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\handle.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7183
+  },
+  {
+    "Path": "01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\use\\call.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11787
+  },
+  {
+    "Path": "01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\use\\dispatch.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7221
+  },
+  {
+    "Path": "02_schemas\\logic\\data_access\\check_schema_rules\\policy_check_safety\\check_schema_policy.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 6970
+  },
+  {
+    "Path": "02_schemas\\logic\\data_access\\get_schema_info\\embedding_compare_meaning\\match_schema_context.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7036
+  },
+  {
+    "Path": "02_schemas\\logic\\data_access\\get_schema_info\\understand_request\\query_schema_store.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 6979
+  },
+  {
+    "Path": "02_schemas\\logic\\synthesis\\pick_best_result\\understand_request\\rank_schema_components.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7040
+  },
+  {
+    "Path": "03_runtime\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\search_vectors.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7051
+  },
+  {
+    "Path": "03_runtime\\cache_ops\\data_access\\get_info\\understand_request\\fetch_history.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7019
+  },
+  {
+    "Path": "03_runtime\\compat\\__init__.py",
+    "Reasons": "TODO_MARKER",
+    "Lines": 16,
+    "Size": 637
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\check_rules\\policy_check_safety\\check_policy.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 268,
+    "Size": 9484
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\check_rules\\policy_check_safety\\enforce_boundaries.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7106
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\check_rules\\policy_check_safety\\validate_constraints.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7156
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\get_info\\embedding_compare_meaning\\retrieve_similarity.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7172
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\get_info\\understand_request\\extract_parameters.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7102
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\get_info\\understand_request\\load_planning.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 6977
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\get_info\\understand_request\\parse_settings.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7002
+  },
+  {
+    "Path": "03_runtime\\logic\\data_access\\get_info\\utility_prepare_information\\build_filters.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 6986
+  },
+  {
+    "Path": "03_runtime\\logic\\guardrails\\manage_costs\\state_update_ops\\enforce_runtime_limits.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11629
+  },
+  {
+    "Path": "03_runtime\\logic\\guardrails\\manage_costs\\state_update_ops\\track_runtime_usage.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11554
+  },
+  {
+    "Path": "03_runtime\\logic\\guardrails\\manage_costs\\state_update_ops\\update_runtime_budget.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11604
+  },
+  {
+    "Path": "03_runtime\\logic\\synthesis\\pick_best_result\\refinement_adjust_scores\\adjust_weights.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7014
+  },
+  {
+    "Path": "03_runtime\\logic\\synthesis\\pick_best_result\\refinement_adjust_scores\\optimize_order.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7014
+  },
+  {
+    "Path": "03_runtime\\logic\\synthesis\\pick_best_result\\understand_request\\apply_algorithm.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7033
+  },
+  {
+    "Path": "03_runtime\\logic\\synthesis\\pick_best_result\\understand_request\\sort_results.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 6958
+  },
+  {
+    "Path": "03_runtime\\logic\\synthesis\\use_tools\\use_a_tool\\execute_action.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 698,
+    "Size": 22783
+  },
+  {
+    "Path": "03_runtime\\logic\\validation\\convert_content\\embedding_compare_meaning\\calculate_similarity.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7165
+  },
+  {
+    "Path": "03_runtime\\logic\\validation\\convert_content\\embedding_compare_meaning\\compute_embeddings.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7115
+  },
+  {
+    "Path": "03_runtime\\logic\\validation\\convert_content\\embedding_compare_meaning\\normalize_vectors.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7090
+  },
+  {
+    "Path": "03_runtime\\pipeline_ops\\data_access\\get_info\\understand_request\\orchestrate_runtime_planning.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7319
+  },
+  {
+    "Path": "03_runtime\\pipeline_ops\\guardrails\\check_rules\\policy_check_safety\\validate_orchestration_ethics.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11669
+  },
+  {
+    "Path": "03_runtime\\pipeline_ops\\synthesis\\use_tools\\routing_retry_task\\implement_fallback.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7260
+  },
+  {
+    "Path": "03_runtime\\runtime_ops\\guardrails\\check_rules\\policy_check_safety\\apply_execution_safety.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11589
+  },
+  {
+    "Path": "03_runtime\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\perform_runtime_operation.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7258
+  },
+  {
+    "Path": "03_runtime\\runtime_ops\\synthesis\\use_tools\\utility_prepare_information\\prepare_execution_payload.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7051
+  },
+  {
+    "Path": "03_runtime\\runtime_ops\\validation\\check_structure\\policy_check_safety\\check_execution_compliance.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7075
+  },
+  {
+    "Path": "03_runtime\\runtime_ops\\validation\\check_structure\\policy_check_safety\\enforce_execution_contracts.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7100
+  },
+  {
+    "Path": "03_runtime\\runtime_ops\\validation\\check_structure\\policy_check_safety\\validate_execution_schema.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7050
+  },
+  {
+    "Path": "03_runtime\\security_controls\\guardrails\\check_rules\\manage_runtime_costs_state_update_ops\\enforce_safety_budget.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11660
+  },
+  {
+    "Path": "03_runtime\\security_controls\\guardrails\\check_rules\\manage_runtime_costs_state_update_ops\\track_safety_cost.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11560
+  },
+  {
+    "Path": "03_runtime\\security_controls\\guardrails\\check_rules\\manage_runtime_costs_state_update_ops\\update_safety_usage.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11610
+  },
+  {
+    "Path": "03_runtime\\security_controls\\guardrails\\check_rules\\policy_check_safety\\enforce_safety_filters.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11667
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\data_access\\check_prompt_rules\\policy_check_safety\\check_prompt_policy.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7052
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\data_access\\check_prompt_rules\\policy_check_safety\\enforce_prompt_boundaries.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7202
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\data_access\\check_prompt_rules\\policy_check_safety\\validate_prompt_constraints.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7252
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\extract_prompt_parameters.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7198
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\load_prompt_planning.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7073
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\parse_prompt_settings.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7098
+  },
+  {
+    "Path": "04_prompt_governance\\logic\\synthesis\\pick_best_result\\refinement_adjust_scores\\refine_prompt_ranking.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7103
+  },
+  {
+    "Path": "07_observability\\cache_ops\\data_access\\get_info\\understand_request\\query_observability_state.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11809
+  },
+  {
+    "Path": "07_observability\\cache_ops\\data_access\\get_info\\understand_request\\retrieve_observability_memory.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7243
+  },
+  {
+    "Path": "07_observability\\logic\\general\\rank_observability_components.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 156,
+    "Size": 4896
+  },
+  {
+    "Path": "07_observability\\logic\\guardrails\\manage_costs\\state_update_ops\\enforce_observability_limits.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11857
+  },
+  {
+    "Path": "07_observability\\logic\\guardrails\\manage_costs\\state_update_ops\\track_observability_usage.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11782
+  },
+  {
+    "Path": "07_observability\\logic\\guardrails\\manage_costs\\state_update_ops\\update_observability_budget.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 336,
+    "Size": 11832
+  },
+  {
+    "Path": "07_observability\\logic\\tracing\\json_exporter.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 75,
+    "Size": 2207
+  },
+  {
+    "Path": "07_observability\\logic\\tracing\\otlp_exporter.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 75,
+    "Size": 2207
+  },
+  {
+    "Path": "07_observability\\pipeline_ops\\data_access\\get_info\\understand_request\\coordinate_observability_queries.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7569
+  },
+  {
+    "Path": "07_observability\\pipeline_ops\\data_access\\get_info\\understand_request\\manage_observability_context.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7245
+  },
+  {
+    "Path": "07_observability\\pipeline_ops\\data_access\\get_info\\understand_request\\orchestrate_observability_planning.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7547
+  },
+  {
+    "Path": "07_observability\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\execute_observability_execution.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7438
+  },
+  {
+    "Path": "07_observability\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\invoke_observability_tool.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7384
+  },
+  {
+    "Path": "07_observability\\runtime_ops\\synthesis\\use_tools\\use_a_tool\\perform_observability_operation.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 209,
+    "Size": 7486
+  },
+  {
+    "Path": "08_scripts\\cache_ops\\guardrails\\check_rules\\policy_check_safety\\validate_memory_ethics.py",
+    "Reasons": "PASS_STATEMENT",
+    "Lines": 424,
+    "Size": 14384
+  }
+]
