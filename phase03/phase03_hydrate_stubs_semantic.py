@@ -1,3 +1,5 @@
+import logging
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 PHASE 3 — SEMANTIC HYDRATION OF EMPTY STUBS (FILENAME-BASED VERSION)
@@ -65,7 +67,7 @@ def load_golden_cache():
 
 
 GOLDEN_CACHE = load_golden_cache()
-print(f"[LOAD] Loaded {len(GOLDEN_CACHE)} golden content entries")
+logging.debug(f"[LOAD] Loaded {len(GOLDEN_CACHE)} golden content entries")
 
 
 # =====================================================================
@@ -99,7 +101,7 @@ def normalize_name(name: str) -> str:
 
 
 DONORS = load_donors()
-print(f"[LOAD] Loaded {len(DONORS)} donor files")
+logging.debug(f"[LOAD] Loaded {len(DONORS)} donor files")
 
 
 # =====================================================================
@@ -124,7 +126,7 @@ def write_hydrated(target: Path, source_desc: str, content: str, score: float):
         f"# ============================================================\n\n"
     )
     target.write_text(header + content, encoding="utf-8")
-    print(f"[HYDRATED] {target.name}  ←  {source_desc}  ({score:.4f})")
+    logging.debug(f"[HYDRATED] {target.name}  ←  {source_desc}  ({score:.4f})")
 
 
 # =====================================================================
@@ -171,17 +173,17 @@ def main():
                     write_hydrated(stub, str(donor_path.name), content, best_score)
                     hydrated += 1
                 except Exception as e:
-                    print(f"[ERROR] Failed to read donor {donor_path}: {e}")
+                    logging.debug(f"[ERROR] Failed to read donor {donor_path}: {e}")
                     skipped += 1
             else:
                 # Try exact name match in golden cache (less common)
-                print(f"[NO MATCH] {stub} (best: {best_score:.2f})")
+                logging.debug(f"[NO MATCH] {stub} (best: {best_score:.2f})")
                 skipped += 1
 
-    print("\n=================== SUMMARY ===================")
-    print(f"Hydrated: {hydrated}")
-    print(f"Skipped (no donor ≥{SIMILARITY_THRESHOLD}): {skipped}")
-    print("===============================================")
+    logging.debug("\n=================== SUMMARY ===================")
+    logging.debug(f"Hydrated: {hydrated}")
+    logging.debug(f"Skipped (no donor ≥{SIMILARITY_THRESHOLD}): {skipped}")
+    logging.debug("===============================================")
 
 
 if __name__ == "__main__":

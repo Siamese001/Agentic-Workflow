@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """Phase 0.5 — semantic cache rebuild tests (semantic extraction, artifacts, pointers).
 
@@ -142,7 +143,7 @@ def test_05_py_02_syntax_error_fallback(tmp_path: Path) -> None:
 
     # Intentionally invalid Python
     src = """def broken(
-    print("x")
+    logging.debug("x")
 """
     rec = _make_archive_record(project_root, "py02_broken.py", src)
 

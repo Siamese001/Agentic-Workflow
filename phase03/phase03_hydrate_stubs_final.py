@@ -1,3 +1,5 @@
+import logging
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 FINAL PASS — GET 900+ STUBS HYDRATED
@@ -31,11 +33,11 @@ if embed_dir.exists():
         except:
             pass
 
-print(f"[LOAD] Loaded {len(EMBEDDINGS)} embeddings")
+logging.debug(f"[LOAD] Loaded {len(EMBEDDINGS)} embeddings")
 
 # All real .py files (canonical + archives)
 DONORS = [p for p in PROJECT_ROOT.rglob("*.py") if p.stat().st_size >= 120 and "_unassigned" not in str(p)]
-print(f"[LOAD] Found {len(DONORS)} donor files")
+logging.debug(f"[LOAD] Found {len(DONORS)} donor files")
 
 
 @dataclass
@@ -49,7 +51,7 @@ class Result:
 def load_stubs():
     stub_audit_path = CACHE_ROOT / "meta" / "phase03_stub_audit.json"
     if not stub_audit_path.exists():
-        print("[ERROR] phase03_stub_audit.json not found")
+        logging.debug("[ERROR] phase03_stub_audit.json not found")
         return []
     data = json.loads(stub_audit_path.read_text(encoding="utf-8"))
     return [s["relative_path"] for s in data.get("stub_files", [])]
@@ -68,7 +70,7 @@ def main():
     threshold = 0.68  # ← lowered
     
     stubs = load_stubs()
-    print(f"[STUBS] Processing {len(stubs)} stubs")
+    logging.debug(f"[STUBS] Processing {len(stubs)} stubs")
 
     for stub_rel in stubs:
         stub_path = PROJECT_ROOT / stub_rel
@@ -93,7 +95,7 @@ def main():
                     content = d.read_text(encoding="utf-8")
                     stub_path.write_text(content, encoding="utf-8")
                     results.append(Result(stub_rel, str(d.relative_to(PROJECT_ROOT)), 1.0, "exact_name"))
-                    print(f"[EXACT] {stub_rel} ← {d.name}")
+                    logging.debug(f"[EXACT] {stub_rel} ← {d.name}")
                     best = 2
                     break
                 except:
@@ -128,9 +130,9 @@ def main():
                 header = f"# AUTO-HYDRATED FINAL ({method}) score={best:.3f} from {best_donor.relative_to(PROJECT_ROOT)}\n\n"
                 stub_path.write_text(header + content, encoding="utf-8")
                 results.append(Result(stub_rel, str(best_donor.relative_to(PROJECT_ROOT)), float(best), method))
-                print(f"[HYDRATED] {stub_rel} ← {best_donor.name} ({best:.3f}) {method}")
+                logging.debug(f"[HYDRATED] {stub_rel} ← {best_donor.name} ({best:.3f}) {method}")
             except Exception as e:
-                print(f"[ERROR] {stub_rel}: {e}")
+                logging.debug(f"[ERROR] {stub_rel}: {e}")
 
     # Final report
     report = {
@@ -148,12 +150,12 @@ def main():
     meta_dir.mkdir(parents=True, exist_ok=True)
     (meta_dir / "phase03_hydration_final.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     
-    print(f"\n=================== FINAL SUMMARY ===================")
-    print(f"Total Hydrated: {len(results)}")
-    print(f"  - Exact name: {report['methods']['exact_name']}")
-    print(f"  - Substring:  {report['methods']['substring']}")
-    print(f"  - Semantic:   {report['methods']['semantic']}")
-    print(f"=====================================================")
+    logging.debug(f"\n=================== FINAL SUMMARY ===================")
+    logging.debug(f"Total Hydrated: {len(results)}")
+    logging.debug(f"  - Exact name: {report['methods']['exact_name']}")
+    logging.debug(f"  - Substring:  {report['methods']['substring']}")
+    logging.debug(f"  - Semantic:   {report['methods']['semantic']}")
+    logging.debug(f"=====================================================")
 
 
 if __name__ == "__main__":
