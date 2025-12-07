@@ -97,6 +97,25 @@ from .utils import (
     build_generation_prompt_with_reinforced_constraints,
 )
 
+from .clients import (
+    get_openai_client,
+    get_openai_sync_client,
+    reset_clients,
+    get_default_seed,
+    OPENAI_MAX_RETRIES,
+    OPENAI_TIMEOUT,
+    OPENAI_DEFAULT_SEED,
+)
+
+from .cache import (
+    generate_llm_cache_key,
+    generate_llm_cache_key_with_fingerprint,
+    extract_cache_metadata,
+    should_invalidate_cache,
+    CACHE_KEY_PREFIX,
+    CACHE_KEY_VERSION,
+)
+
 __all__ = [
     # Exceptions
     "AgenticWorkflowError",
@@ -175,4 +194,19 @@ __all__ = [
     "reasoning_config_to_api_params",
     "enhance_system_prompt_with_reasoning",
     "build_generation_prompt_with_reinforced_constraints",
+    # Clients
+    "get_openai_client",
+    "get_openai_sync_client",
+    "reset_clients",
+    "get_default_seed",
+    "OPENAI_MAX_RETRIES",
+    "OPENAI_TIMEOUT",
+    "OPENAI_DEFAULT_SEED",
+    # Cache
+    "generate_llm_cache_key",
+    "generate_llm_cache_key_with_fingerprint",
+    "extract_cache_metadata",
+    "should_invalidate_cache",
+    "CACHE_KEY_PREFIX",
+    "CACHE_KEY_VERSION",
 ]

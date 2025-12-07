@@ -10,7 +10,7 @@ import json
 import re
 
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 from pydantic import BaseModel, Field
@@ -23,6 +23,9 @@ from core_v10_7 import (
     _format_prompt_with_defaults,
     detect_bias,
 )
+
+# SDK Hardening: Import centralized OpenAI client
+from agentic_workflow.runtime.shared.clients import get_openai_client, get_default_seed
 
 
 class PIISanitizerAgent(BaseAgent):
@@ -108,21 +111,29 @@ class PromptInjectionDetectorAgent(BaseAgent):
             client.top_failures,
         )
 
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.prompt_injection_model.temperature,
-            response_format="json_object",
-        )
-
-        validated_output, error = self.validator.validate(
-            response["content"],
-            self.PIDetectionOutput,
-        )
-        if error:
-            self.log_error(f"PromptInjectionDetector failed validation: {error}")
+        # SDK Hardening: Use parse() for type-safe structured outputs
+        openai_client = get_openai_client()
+        try:
+            completion = await openai_client.beta.chat.completions.parse(
+                model=client.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.config.model_config.prompt_injection_model.temperature,
+                response_format=self.PIDetectionOutput,
+                seed=get_default_seed(),
+            )
+            validated_output = completion.choices[0].message.parsed
+            if validated_output is None:
+                self.log_error("PromptInjectionDetector: parse() returned None")
+                return {
+                    "injection_detected": True,
+                    "reason": "Detector parse failed: no parsed output",
+                    "confidence": 1.0,
+                }
+        except Exception as e:
+            self.log_error(f"PromptInjectionDetector failed: {e}")
             return {
                 "injection_detected": True,
-                "reason": f"Detector validation failed: {error}",
+                "reason": f"Detector failed: {e}",
                 "confidence": 1.0,
             }
 
@@ -193,24 +204,34 @@ class ConstitutionalReviewerAgent(BaseAgent):
             self.config.model_config.constitutional_review_model.temperature,
         )
 
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            response_format="json_object",
-        )
-
-        validated_output, error = self.validator.validate(
-            response["content"],
-            ConstitutionalReviewResult,
-        )
-        if error:
+        # SDK Hardening: Use parse() for type-safe structured outputs
+        openai_client = get_openai_client()
+        try:
+            completion = await openai_client.beta.chat.completions.parse(
+                model=client.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                response_format=ConstitutionalReviewResult,
+                seed=get_default_seed(),
+            )
+            validated_output = completion.choices[0].message.parsed
+            if validated_output is None:
+                self.log_error(
+                    "ConstitutionalReviewer: parse() returned None. Failing open (passing draft)."
+                )
+                return ConstitutionalReviewResult(
+                    review_passed=True,
+                    violations_found=["PARSE_ERROR"],
+                    feedback="parse() returned None",
+                )
+        except Exception as e:
             self.log_error(
-                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
+                f"ConstitutionalReviewer failed: {e}. Failing open (passing draft)."
             )
             return ConstitutionalReviewResult(
                 review_passed=True,
                 violations_found=["VALIDATION_ERROR"],
-                feedback=error,
+                feedback=str(e),
             )
 
         if not validated_output.review_passed:
