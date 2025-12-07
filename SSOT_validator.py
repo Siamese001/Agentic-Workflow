@@ -393,26 +393,58 @@ else:
 
 # ── YAML ↔ filesystem shape (warnings-only) ───────────────────────────
 
+# Keys to skip (metadata, not structure)
+SKIP_SHAPE_KEYS = {
+    "meta_sidecar", "canonical_definition", "structure_version",
+    "description", "binds_to", "canonical_role", "global",
+    "domains", "domain_modes", "naming_conventions",
+    "engine_namespaces", "hierarchy", "enforcement",
+    # Skip metadata within hierarchy entries
+    "mode", "structure_type", "max_depth", "allowed_layers",
+    "allowed_phases", "forbidden", "protected",
+    "auto_generate_missing_paths", "enforce_allowed_structure",
+    "allowed_structure_governed_by"
+}
+
+def resolve_yaml_path(yaml_path: Path) -> Path:
+    """
+    Resolve a YAML-defined path to actual filesystem path.
+    Handles domain name mapping (e.g., agentic_core -> 01_agentic_core).
+    """
+    parts = yaml_path.parts
+    if not parts:
+        return REPO
+    
+    first_part = parts[0]
+    
+    # Check if first part is a domain name that needs mapping
+    if first_part in DOMAIN_ROOT_MAP:
+        mapped = DOMAIN_ROOT_MAP[first_part]
+        if len(parts) > 1:
+            return REPO / mapped / Path(*parts[1:])
+        return REPO / mapped
+    
+    return REPO / yaml_path
+
 def check_shape(node: Any, prefix: Path = Path(".")) -> None:
     """
     Ensure: dict => directory, None => file, aligned with YAML.
     Emits warnings only (shape drift), no hard errors.
+    Uses DOMAIN_ROOT_MAP to resolve logical domain names to filesystem paths.
     """
     if node is None:
         return
 
     if isinstance(node, dict):
         for key, value in node.items():
-            # Skip non-structural keys in top-level main YAML
-            if prefix == Path(".") and key in {
-                "meta_sidecar", "canonical_definition", "structure_version",
-                "description", "binds_to", "canonical_role", "global",
-                "domains", "domain_modes", "naming_conventions",
-                "engine_namespaces", "hierarchy"
-            }:
+            # Skip non-structural keys
+            if key in SKIP_SHAPE_KEYS:
                 continue
 
-            path = REPO / prefix / key if str(prefix) != "." else REPO / key
+            # Build YAML path and resolve to filesystem path
+            yaml_path = (prefix / key) if str(prefix) != "." else Path(key)
+            path = resolve_yaml_path(yaml_path)
+            
             if value is None:
                 # expected file
                 if not path.is_file():
@@ -420,12 +452,13 @@ def check_shape(node: Any, prefix: Path = Path(".")) -> None:
                     if not is_protected(path):
                         warnings.append(f"Shape: Expected file missing for YAML node: {rel(path)}")
             elif isinstance(value, dict):
-                # expected directory
+                # expected directory (even empty dict {})
                 if not path.is_dir():
                     if not is_protected(path):
                         warnings.append(f"Shape: Expected directory missing for YAML node: {rel(path)}")
-                # recurse
-                check_shape(value, (prefix / key) if str(prefix) != "." else Path(key))
+                # recurse into non-empty dicts
+                if value:
+                    check_shape(value, yaml_path)
 
 check_shape(main)
 
