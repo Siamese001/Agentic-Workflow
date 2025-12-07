@@ -551,24 +551,21 @@ apps_lic:
       __init__.py: null
       business_ops:
         check_message_format:
-          policy_check_safety:
-            check_message_quality.py: null
-            enforce_tone_guidelines.py: null
-            validate_generated_message.py: null
+          check_message_quality.py: null
+          enforce_tone_guidelines.py: null
+          validate_generated_message.py: null
         personalization_ops:
           order_call_to_actions.py: null
           prioritize_talking_points.py: null
           rank_message_variants.py: null
         vectorization_ops:
-          embedding_compare_meaning:
-            compute_personalization_match.py: null
-            embed_message_template.py: null
-            embed_recipient_profile.py: null
+          compute_personalization_match.py: null
+          embed_message_template.py: null
+          embed_recipient_profile.py: null
         find_msg_problems:
-          diagnostics_ops:
-            diagnose_personalization_issues.py: null
-            inspect_message_quality.py: null
-            log_campaign_metrics.py: null
+          diagnose_personalization_issues.py: null
+          inspect_message_quality.py: null
+          log_campaign_metrics.py: null
       semantic_adjust_scores:
         apply_weights.py: null
         compute_confidence.py: null
@@ -591,10 +588,9 @@ apps_lic:
       __init__.py: null
       business_ops:
         check_message_format:
-          policy_check_safety:
-            check_message_compliance.py: null
-            enforce_message_contracts.py: null
-            validate_message_schema.py: null
+          check_message_compliance.py: null
+          enforce_message_contracts.py: null
+          validate_message_schema.py: null
       pick_message:
         refinement_adjust_scores:
           adjust_tone_weights.py: null
@@ -652,10 +648,9 @@ apps_lic:
       __init__.py: null
       business_ops:
         check_message_format:
-          policy_check_safety:
-            check_message_quality.py: null
-            enforce_tone_guidelines.py: null
-            validate_generated_message.py: null
+          check_message_quality.py: null
+          enforce_tone_guidelines.py: null
+          validate_generated_message.py: null
       scoring_ops:
         assess_message_relevance.py: null
         evaluate_personalization_quality.py: null
@@ -866,24 +861,21 @@ apps_rg:
       __init__.py: null
       business_ops:
         check_resume_format:
-          policy_check_safety:
-            check_output_quality.py: null
-            enforce_length_limits.py: null
-            validate_generated_content.py: null
+          check_output_quality.py: null
+          enforce_length_limits.py: null
+          validate_generated_content.py: null
         job_fit_ops:
           order_skills_by_relevance.py: null
           prioritize_achievements.py: null
           rank_resume_sections.py: null
         vectorization_ops:
-          embedding_compare_meaning:
-            compute_skill_similarity.py: null
-            embed_job_description.py: null
-            embed_resume_sections.py: null
+          compute_skill_similarity.py: null
+          embed_job_description.py: null
+          embed_resume_sections.py: null
         find_resume_problems:
-          diagnostics_ops:
-            diagnose_generation_issues.py: null
-            inspect_resume_quality.py: null
-            log_orchestration_metrics.py: null
+          diagnose_generation_issues.py: null
+          inspect_resume_quality.py: null
+          log_orchestration_metrics.py: null
       semantic_adjust_scores:
         apply_weights.py: null
         compute_confidence.py: null
@@ -906,10 +898,9 @@ apps_rg:
       __init__.py: null
       business_ops:
         check_resume_format:
-          policy_check_safety:
-            check_resume_compliance.py: null
-            enforce_resume_contracts.py: null
-            validate_resume_schema.py: null
+          check_resume_compliance.py: null
+          enforce_resume_contracts.py: null
+          validate_resume_schema.py: null
       pick_resume_content:
         refinement_adjust_scores:
           adjust_section_weights.py: null
@@ -967,10 +958,9 @@ apps_rg:
       __init__.py: null
       business_ops:
         check_resume_format:
-          policy_check_safety:
-            check_output_quality.py: null
-            enforce_length_limits.py: null
-            validate_generated_content.py: null
+          check_output_quality.py: null
+          enforce_length_limits.py: null
+          validate_generated_content.py: null
       scoring_ops:
         assess_content_relevance.py: null
         evaluate_writing_quality.py: null
