@@ -1,0 +1,384 @@
+{
+  "flattened_layers": {
+    "01_agentic_core/L2_execution": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\check.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\check.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\enforce.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\validate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\validate.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\check_safety\\check_execution_compliance.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\check_execution_compliance.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\check_safety\\enforce_execution_contracts.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\enforce_execution_contracts.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\check_safety\\validate_execution_schema.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\validate_execution_schema.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\business_ops\\check_structure\\policy_check_safety\\check_execution_compliance.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\check_execution_compliance_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\business_ops\\check_structure\\policy_check_safety\\enforce_execution_contracts.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\enforce_execution_contracts_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\business_ops\\check_structure\\policy_check_safety\\validate_execution_schema.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\validate_execution_schema_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\execute_core_execution.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\execute_core_execution.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\invoke_core_tool.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\invoke_core_tool.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\perform_core_operation.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\perform_core_operation.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\format_execution_request.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\format_execution_request.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\prepare_execution_payload.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\build_tool_call_payload.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\serialize_execution_params.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\serialize_execution_params.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\use\\invoke.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\invoke.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\use\\perform.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\perform.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\utility\\format.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\format.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\utility\\prepare.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\prepare.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\utility\\serialize.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\serialize.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\utility\\prepare_information\\format_execution_request.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\format_execution_request_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\utility\\prepare_information\\prepare_execution_payload.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\build_tool_call_payload_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\utility\\prepare_information\\serialize_execution_params.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\serialize_execution_params_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\execute_core_execution.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\execute_core_execution_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\invoke_core_tool.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\invoke_core_tool_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\perform_core_operation.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\perform_core_operation_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy\\apply.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\apply.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy\\enforce.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\enforce_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy\\validate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\validate_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy_check_safety\\apply_execution_safety.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\apply_execution_safety.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy_check_safety\\enforce_execution_policy.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\enforce_execution_policy.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy_check_safety\\validate_execution_ethics.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\validate_execution_ethics.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy\\check_safety\\apply_execution_safety.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\apply_execution_safety_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy\\check_safety\\enforce_execution_policy.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\enforce_execution_policy_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\check_rules\\policy\\check_safety\\validate_execution_ethics.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\validate_execution_ethics_1.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P1_retrieve",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P3_aggregate",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety"
+      ],
+      "renamed": [
+        "check_execution_compliance.py -> check_execution_compliance_1.py",
+        "enforce_execution_contracts.py -> enforce_execution_contracts_1.py",
+        "validate_execution_schema.py -> validate_execution_schema_1.py",
+        "prepare_execution_payload.py -> build_tool_call_payload.py",
+        "format_execution_request.py -> format_execution_request_1.py",
+        "prepare_execution_payload.py -> build_tool_call_payload_1.py",
+        "serialize_execution_params.py -> serialize_execution_params_1.py",
+        "execute_core_execution.py -> execute_core_execution_1.py",
+        "invoke_core_tool.py -> invoke_core_tool_1.py",
+        "perform_core_operation.py -> perform_core_operation_1.py",
+        "enforce.py -> enforce_1.py",
+        "validate.py -> validate_1.py",
+        "apply_execution_safety.py -> apply_execution_safety_1.py",
+        "enforce_execution_policy.py -> enforce_execution_policy_1.py",
+        "validate_execution_ethics.py -> validate_execution_ethics_1.py"
+      ]
+    },
+    "01_agentic_core/L3_orchestration": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\get_info\\understand_request\\coordinate_core_queries.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\coordinate_core_queries.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\get_info\\understand_request\\manage_core_context.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\manage_core_context.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\get_info\\understand_request\\orchestrate_core_planning.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\orchestrate_core_planning.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\coordinate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\coordinate.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\manage.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\manage.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\orchestrate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\orchestrate.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\coordinate_core_queries.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\coordinate_core_queries_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\manage_core_context.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\manage_core_context_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\orchestrate_core_planning.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\orchestrate_core_planning_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\handle_orchestration_failures.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\handle_orchestration_failures.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\implement_orchestration_fallback.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\implement_orchestration_fallback.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\retry_orchestration_operations.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\retry_orchestration_operations.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\call_orchestration_api.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\call_orchestration_api.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\dispatch_orchestration_tools.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\dispatch_orchestration_tools.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\invoke_orchestration_service.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\invoke_orchestration_service.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\handle.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\handle.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\implement.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\implement.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\retry.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\retry.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\use\\call.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\call.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\use\\dispatch.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\dispatch.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\use\\invoke.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\invoke.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\retry_task\\handle_orchestration_failures.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\handle_orchestration_failures_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\retry_task\\implement_orchestration_fallback.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\implement_orchestration_fallback_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\routing\\retry_task\\retry_orchestration_operations.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\retry_orchestration_operations_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\call_orchestration_api.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\call_orchestration_api_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\dispatch_orchestration_tools.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\dispatch_orchestration_tools_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate\\execute_actions\\invoke_functions\\use_a_tool\\invoke_orchestration_service.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\invoke_orchestration_service_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety\\check_rules\\policy\\apply.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\apply.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety\\check_rules\\policy\\enforce.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\enforce.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety\\check_rules\\policy\\validate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\validate.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety\\check_rules\\policy_check_safety\\apply_orchestration_safety.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\apply_orchestration_safety.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety\\check_rules\\policy_check_safety\\enforce_orchestration_policy.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\enforce_orchestration_policy.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety\\check_rules\\policy_check_safety\\validate_orchestration_ethics.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\validate_orchestration_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P2_inspect",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P3_aggregate",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P4_safety"
+      ],
+      "renamed": [
+        "coordinate_core_queries.py -> coordinate_core_queries_1.py",
+        "manage_core_context.py -> manage_core_context_1.py",
+        "orchestrate_core_planning.py -> orchestrate_core_planning_1.py",
+        "handle_orchestration_failures.py -> handle_orchestration_failures_1.py",
+        "implement_orchestration_fallback.py -> implement_orchestration_fallback_1.py",
+        "retry_orchestration_operations.py -> retry_orchestration_operations_1.py",
+        "call_orchestration_api.py -> call_orchestration_api_1.py",
+        "dispatch_orchestration_tools.py -> dispatch_orchestration_tools_1.py",
+        "invoke_orchestration_service.py -> invoke_orchestration_service_1.py"
+      ]
+    },
+    "01_agentic_core/L5_safety": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\enforce_safety_budget.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\enforce_safety_budget.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\track_safety_cost.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\track_safety_cost.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\manage_costs\\state_update_ops\\update_safety_usage.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\update_safety_usage.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\control_resources\\update\\enforce.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\enforce.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\control_resources\\update\\track.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\enforce_remaining_budget.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\control_resources\\update\\update.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\update.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\enforce_safety_budget.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\enforce_safety_budget_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\track_safety_cost.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\track_safety_cost_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\control_resources\\track_usage\\update_memory\\update_safety_usage.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\update_safety_usage_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy\\apply.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\apply.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy\\enforce.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\enforce_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy\\validate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\validate.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\apply_safety_policy.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\apply_safety_policy.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\enforce_safety_filters.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\apply_input_safety_filter.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy_check_safety\\validate_safety_ethics.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\validate_safety_ethics.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\assess.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\assess.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\compute.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\compute.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\evaluate.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\evaluate.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\assess_safety_risk.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\assess_safety_risk.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\compute_safety_score.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\compute_safety_score.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic_adjust_scores\\evaluate_safety_compliance.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\evaluate_safety_compliance.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\assess_safety_risk.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\assess_safety_risk_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\compute_safety_score.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\compute_safety_score_1.py",
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\semantic\\semantic_adjust_scores\\evaluate_safety_compliance.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\evaluate_safety_compliance_1.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety"
+      ],
+      "renamed": [
+        "track.py -> enforce_remaining_budget.py",
+        "enforce_safety_budget.py -> enforce_safety_budget_1.py",
+        "track_safety_cost.py -> track_safety_cost_1.py",
+        "update_safety_usage.py -> update_safety_usage_1.py",
+        "enforce.py -> enforce_1.py",
+        "enforce_safety_filters.py -> apply_input_safety_filter.py",
+        "assess_safety_risk.py -> assess_safety_risk_1.py",
+        "compute_safety_score.py -> compute_safety_score_1.py",
+        "evaluate_safety_compliance.py -> evaluate_safety_compliance_1.py"
+      ]
+    },
+    "apps_lic/L2_execution": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect\\scoring_ops\\assess_message_relevance.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\assess_message_relevance.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect\\scoring_ops\\evaluate_engagement_potential.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\evaluate_engagement_potential.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect\\scoring_ops\\evaluate_personalization_quality.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\evaluate_personalization_quality.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect\\business_ops\\check_message_format\\check_message_quality.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\check_message_quality.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect\\business_ops\\check_message_format\\enforce_tone_guidelines.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\enforce_tone_guidelines.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect\\business_ops\\check_message_format\\validate_generated_message.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\validate_generated_message.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\create_message_body.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\create_message_body.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\execute_message_generation.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\execute_message_generation.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\generate_subject_line.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\generate_subject_line.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\format_personalization_prompt.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\format_personalization_prompt.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\prepare_message_payload.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\prepare_message_payload.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\serialize_data.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\serialize_data.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P4_safety\\check_outreach_rules\\policy_check_safety\\apply_execution_safety.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\apply_execution_safety.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P4_safety\\check_outreach_rules\\policy_check_safety\\enforce_execution_policy.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\enforce_execution_policy.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P4_safety\\check_outreach_rules\\policy_check_safety\\validate_execution_ethics.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\validate_execution_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P2_inspect",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P3_aggregate",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L2_execution\\P4_safety"
+      ],
+      "renamed": []
+    },
+    "apps_lic/L3_orchestration": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\handle_service_errors.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\handle_service_errors.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\implement_fallback_templates.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\implement_fallback_templates.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\retry_generation_failures.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\retry_generation_failures.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\call_personalization_api.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\call_personalization_api.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\dispatch_outreach_tools.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\dispatch_outreach_tools.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\invoke_message_service.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\invoke_message_service.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P4_safety\\check_outreach_rules\\policy_check_safety\\apply_orchestration_safety.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\apply_orchestration_safety.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P4_safety\\check_outreach_rules\\policy_check_safety\\enforce_orchestration_policy.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\enforce_orchestration_policy.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P4_safety\\check_outreach_rules\\policy_check_safety\\validate_orchestration_ethics.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\validate_orchestration_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P3_aggregate",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L3_orchestration\\P4_safety"
+      ],
+      "renamed": []
+    },
+    "apps_lic/L5_safety": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\scoring_ops\\assess_safety_risk.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\assess_safety_risk.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\scoring_ops\\compute_safety_score.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\compute_safety_score.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\scoring_ops\\evaluate_safety_compliance.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\evaluate_safety_compliance.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\manage_outreach_costs\\state_update_ops\\enforce_safety_budget.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\enforce_safety_budget.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\manage_outreach_costs\\state_update_ops\\track_safety_cost.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\track_safety_cost.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\manage_outreach_costs\\state_update_ops\\update_safety_usage.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\update_safety_usage.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\check_outreach_rules\\policy_check_safety\\apply_safety_policy.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\apply_safety_policy.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\check_outreach_rules\\policy_check_safety\\enforce_safety_filters.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\apply_input_safety_filter.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety\\check_outreach_rules\\policy_check_safety\\validate_safety_ethics.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\validate_safety_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L5_safety\\P4_safety"
+      ],
+      "renamed": [
+        "enforce_safety_filters.py -> apply_input_safety_filter.py"
+      ]
+    },
+    "apps_rg/L2_execution": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect\\scoring_ops\\assess_content_relevance.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\assess_content_relevance.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect\\scoring_ops\\evaluate_resume_effectiveness.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\evaluate_resume_effectiveness.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect\\scoring_ops\\evaluate_writing_quality.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\evaluate_writing_quality.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect\\business_ops\\check_resume_format\\check_output_quality.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\check_output_quality.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect\\business_ops\\check_resume_format\\enforce_length_limits.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\enforce_length_limits.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect\\business_ops\\check_resume_format\\validate_generated_content.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\validate_generated_content.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\create_experience_bullets.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\create_experience_bullets.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\execute_resume_generation.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\execute_resume_generation.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate\\use_tools\\use_a_tool\\generate_summary_section.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\generate_summary_section.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\format_llm_prompt.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\format_llm_prompt.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\prepare_generation_payload.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\prepare_generation_payload.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate\\use_tools\\utility_prepare_information\\serialize_data.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\serialize_data.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P4_safety\\check_resume_rules\\policy_check_safety\\apply_execution_safety.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\apply_execution_safety.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P4_safety\\check_resume_rules\\policy_check_safety\\enforce_execution_policy.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\enforce_execution_policy.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P4_safety\\check_resume_rules\\policy_check_safety\\validate_execution_ethics.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\validate_execution_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P2_inspect",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P3_aggregate",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L2_execution\\P4_safety"
+      ],
+      "renamed": []
+    },
+    "apps_rg/L3_orchestration": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\handle_service_errors.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\handle_service_errors.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\implement_fallback_templates.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\implement_fallback_templates.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate\\use_tools\\routing_retry_task\\retry_generation_failures.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\retry_generation_failures.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\call_formatting_api.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\call_formatting_api.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\dispatch_resume_tools.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\dispatch_resume_tools.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate\\use_tools\\use_a_tool\\invoke_generation_service.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\invoke_generation_service.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P4_safety\\check_resume_rules\\policy_check_safety\\apply_orchestration_safety.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\apply_orchestration_safety.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P4_safety\\check_resume_rules\\policy_check_safety\\enforce_orchestration_policy.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\enforce_orchestration_policy.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P4_safety\\check_resume_rules\\policy_check_safety\\validate_orchestration_ethics.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\validate_orchestration_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P3_aggregate",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L3_orchestration\\P4_safety"
+      ],
+      "renamed": []
+    },
+    "apps_rg/L5_safety": {
+      "moved": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\scoring_ops\\assess_safety_risk.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\assess_safety_risk.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\scoring_ops\\compute_safety_score.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\compute_safety_score.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\scoring_ops\\evaluate_safety_compliance.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\evaluate_safety_compliance.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\manage_resume_costs\\state_update_ops\\enforce_safety_budget.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\enforce_safety_budget.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\manage_resume_costs\\state_update_ops\\track_safety_cost.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\track_safety_cost.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\manage_resume_costs\\state_update_ops\\update_safety_usage.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\update_safety_usage.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\check_resume_rules\\policy_check_safety\\apply_safety_policy.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\apply_safety_policy.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\check_resume_rules\\policy_check_safety\\enforce_safety_filters.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\apply_input_safety_filter.py",
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety\\check_resume_rules\\policy_check_safety\\validate_safety_ethics.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\validate_safety_ethics.py"
+      ],
+      "deleted_dirs": [
+        "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L5_safety\\P4_safety"
+      ],
+      "renamed": [
+        "enforce_safety_filters.py -> apply_input_safety_filter.py"
+      ]
+    }
+  },
+  "quarantined_l4": {
+    "01_agentic_core/L4_memory": {
+      "quarantined": [
+        "P2_inspect -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P2_inspect",
+        "P3_aggregate -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P3_aggregate",
+        "P4_safety -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety"
+      ],
+      "kept": [
+        "P1_retrieve"
+      ]
+    },
+    "apps_lic/L4_memory": {
+      "quarantined": [
+        "P3_aggregate -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P3_aggregate",
+        "P4_safety -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety"
+      ],
+      "kept": [
+        "P1_retrieve"
+      ]
+    },
+    "apps_rg/L4_memory": {
+      "quarantined": [
+        "P3_aggregate -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P3_aggregate",
+        "P4_safety -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety"
+      ],
+      "kept": [
+        "P1_retrieve"
+      ]
+    }
+  },
+  "deleted_banned": [
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\business_ops\\find_problems\\diagnostics_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\business_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P3_aggregate\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P3_aggregate\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\manage_costs\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\P1_retrieve\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P3_aggregate\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\logic\\synthesis\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\logic\\validation\\find_problems\\diagnostics_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\logic\\validation\\find_prompt_problems\\diagnostics_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\pipeline_ops",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\runtime_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P1_retrieve\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\business_ops\\personalization_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\business_ops\\vectorization_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\business_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P3_aggregate\\business_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P3_aggregate\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P3_aggregate\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P4_safety\\manage_outreach_costs\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P4_safety\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L4_memory\\P1_retrieve\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P3_aggregate\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P1_retrieve\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\business_ops\\job_fit_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\business_ops\\vectorization_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\business_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P3_aggregate\\business_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P3_aggregate\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P3_aggregate\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P4_safety\\manage_resume_costs\\state_update_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P4_safety\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L4_memory\\P1_retrieve\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P3_aggregate\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety\\scoring_ops",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\scoring_ops"
+  ],
+  "renamed_files": [
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\control_resources\\update\\track.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\control_resources\\update\\enforce_remaining_budget.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\apply_safety.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\block_jailbreak_attempt.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\enforce_filters.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\enforce_content_filtering.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\validate_ethics.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy_check_safety\\check_ethical_constraints.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\apply_weights.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\apply_scoring_weights.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\compute_confidence.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\compute_confidence_score.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\normalize_scores.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\normalize_confidence_scores.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\detect_anomalies\\analyze_symptoms\\update_memory\\inspect_core_state.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P2_inspect\\detect_anomalies\\analyze_symptoms\\update_memory\\capture_current_agent_state.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\utility_prepare_information\\format_registry_context.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\utility_prepare_information\\format_candidate_payload.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\get_info\\understand_request\\parse_registry_intent.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\get_info\\understand_request\\extract_user_intent.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\retrieve_similarity.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\find_similar_past_queries.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\utility_prepare_information\\format_registry_context.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\utility_prepare_information\\format_candidate_payload.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\parse_registry_intent.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\extract_user_intent.py",
+    "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy_check_safety\\check_registry_policy.py -> C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy_check_safety\\validate_against_safety_policy.py",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\apply_weights.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\apply_scoring_weights.py",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\compute_confidence.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\compute_confidence_score.py",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\normalize_scores.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_lic\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\normalize_confidence_scores.py",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\apply_weights.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\apply_scoring_weights.py",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\compute_confidence.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\compute_confidence_score.py",
+    "C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\normalize_scores.py -> C:\\Git\\Agentic-Workflow\\09_apps\\apps_rg\\L1_cognition\\P2_inspect\\semantic_adjust_scores\\normalize_confidence_scores.py"
+  ],
+  "fixed_imports": 0
+}
