@@ -9,19 +9,12 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any, Dict, Optional
-from dataclasses import dataclass, field
+from shared.result_types import ExecutionResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class ExecutionResult:
-    """Execution result."""
-    success: bool
-    output: Any = None
-    error: Optional[str] = None
-    duration_ms: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 
 class DispatchResumeTools:

@@ -43,6 +43,14 @@ class GateDecision(Enum):
     ESCALATE = auto()
 
 
+class BulletProvenance(Enum):
+    """Source of a bullet point."""
+
+    Verbatim = "verbatim"
+    Enhanced = "enhanced"
+    Generated = "generated"
+
+
 @dataclass
 class HopCheckpoint:
     """Checkpoint data for a workflow hop."""
@@ -53,3 +61,14 @@ class HopCheckpoint:
     completed_at: Optional[str] = None
     error: Optional[str] = None
     output: Optional[Dict[str, Any]] = None
+
+
+@dataclass
+class RetrievalSource:
+    """Metadata about a data retrieval source."""
+
+    id: str
+    type: str
+    confidence: float = 0.0
+    status: str = "UNKNOWN"
+    specific_source: Optional[str] = None
