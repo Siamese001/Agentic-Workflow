@@ -531,6 +531,12 @@ def parse_args():
         action="store_true",
         help="Suppress all output (for pre-commit)"
     )
+    # Accept and ignore any extra positional arguments (e.g. commit message file)
+    parser.add_argument(
+        "extra",
+        nargs="*",
+        help="Extra positional arguments passed by hooks (ignored)",
+    )
     return parser.parse_args()
 
 # =====================================================================
