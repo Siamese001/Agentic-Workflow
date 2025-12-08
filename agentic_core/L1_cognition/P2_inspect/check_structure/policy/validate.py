@@ -124,7 +124,7 @@ def sha256_of(path: Path) -> str:
             for chunk in iter(lambda: f.read(65536), b""):
                 h.update(chunk)
     except:
-        pass
+        ...
     return h.hexdigest()
 
 

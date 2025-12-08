@@ -30,7 +30,7 @@ class BaseExporter(ABC):
     @abstractmethod
     def export(self, data: Any) -> ExportResult:
         """Export data."""
-        pass
+        ...
 
 
 class OtlpExporter(BaseExporter):

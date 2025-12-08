@@ -132,7 +132,7 @@ def main():
             try:
                 d.rmdir()
             except OSError:
-                pass
+                ...
     
     # Remove review_pending if empty
     try:

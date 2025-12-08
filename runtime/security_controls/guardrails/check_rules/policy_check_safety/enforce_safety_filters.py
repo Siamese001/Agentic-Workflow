@@ -69,12 +69,12 @@ class EnforceDataFiltersSafetySafety(ABC):
     @abstractmethod
     def apply_safety(self, data: Dict[str, Any]) -> EnforceDataFiltersSafetyResult:
         """Apply safety checks with L5 constraints"""
-        pass
+        ...
     
     @abstractmethod
     def validate_safety(self, data: Dict[str, Any]) -> bool:
         """L5 Safety validation - fail-closed by default"""
-        pass
+        ...
 
 
 class EnforceDataFiltersSafetyImpl(EnforceDataFiltersSafetySafety):
@@ -269,7 +269,7 @@ class EnforceDataFiltersSafetyImpl(EnforceDataFiltersSafetySafety):
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
-    pass
+    ...
 
 
 class EnforceDataFiltersSafetyInterface:

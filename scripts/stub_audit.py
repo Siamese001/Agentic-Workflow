@@ -21,10 +21,10 @@ STUB_PATTERNS = [
     r'^\s*pass\s*$',                   # Just pass
     r'^\s*#.*\n\s*pass\s*$',           # Comment + pass
     r'raise\s+NotImplementedError',    # NotImplementedError
-    r'TODO',                           # TODO markers
+    r'TODO',                           # Implementation pending
     r'PLACEHOLDER',                    # Placeholder markers
     r'STUB',                           # Stub markers
-    r'FIXME',                          # FIXME markers
+    r'FIXME',                          # Implementation pending
     r'XXX',                            # XXX markers
     r'\.\.\.(?:\s*#.*)?$',             # Ellipsis (...)
 ]

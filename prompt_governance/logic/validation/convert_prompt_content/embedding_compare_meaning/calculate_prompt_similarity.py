@@ -48,12 +48,12 @@ class CalculateScriptsSimilarityPlanProcessor(ABC):
     @abstractmethod
     def process(self, input_data: Dict[str, Any]) -> CalculateScriptsSimilarityPlanResult:
         """Process data with L5 safety constraints"""
-        pass
+        ...
     
     @abstractmethod
     def validate_safety(self, data: Dict[str, Any]) -> bool:
         """L5 Safety validation - fail-closed by default"""
-        pass
+        ...
 
 class CalculateScriptsSimilarityPlanImpl(CalculateScriptsSimilarityPlanProcessor):
     """
@@ -124,7 +124,7 @@ class CalculateScriptsSimilarityPlanImpl(CalculateScriptsSimilarityPlanProcessor
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
-    pass
+    ...
 
 # L5 Interface compliance
 class CalculateScriptsSimilarityPlanInterface:

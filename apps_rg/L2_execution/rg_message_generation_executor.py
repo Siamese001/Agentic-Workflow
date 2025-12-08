@@ -77,7 +77,7 @@ class MessageGenerationExecutor:
                 "stage": "message_generation"
             })
         except Exception:
-            pass
+            ...
         
         # Phase 9: Estimate tokens and check budget before generation
         estimated_tokens = self._estimate_generation_tokens(message_plan, generation_context, research_results)
@@ -229,7 +229,7 @@ class MessageGenerationExecutor:
                 "duration": time.time() - start_time
             })
         except Exception:
-            pass
+            ...
         
         return MessageResult(
             message=message,

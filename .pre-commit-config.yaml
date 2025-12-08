@@ -1,0 +1,28 @@
+repos:
+  - repo: local
+    hooks:
+      - id: canon-validator-full
+        name: "SUBATOMIC CANON 2025 - 40 KEYS - HARD FAIL"
+        entry: python canon_validator.py --check-40 --hard-fail
+        language: python
+        types: [python]
+        always_run: true
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: canon-mirror-yaml
+        name: "Auto-sync YAML to real code (mirror mode)"
+        entry: python canon_validator.py --mirror-yaml --silent
+        language: python
+        always_run: true
+        pass_filenames: false
+        stages: [pre-commit]
+
+      # Optional: also run on commit message
+      - id: commit-msg-canon
+        name: "Canon check on commit message too"
+        entry: python canon_validator.py --check-40 --hard-fail
+        language: python
+        stages: [commit-msg]
+        always_run: true
+        pass_filenames: false
