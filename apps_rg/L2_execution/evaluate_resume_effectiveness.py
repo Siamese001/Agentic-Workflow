@@ -1,8 +1,8 @@
 """
 evaluate_resume_effectiveness.py - Scoring Module
 
-Domain: resume
-Generated: 2025-12-07T13:29:00.511258
+Domain: scoring_ops
+Generated: 2025-12-07T12:07:59.897512
 """
 
 from __future__ import annotations
@@ -15,50 +15,55 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ScoreResult:
-    """Scoring result."""
+    """Result of scoring operation."""
     score: float
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class EvaluateResumeEffectiveness:
-    """Scorer for resume domain."""
+    """Scoring engine for scoring_ops domain."""
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.weights = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
     
-    def score(self, data: Dict[str, Any]) -> ScoreResult:
-        """Compute score for data."""
+    def compute_score(self, data: Dict[str, Any], context: Optional[Dict] = None) -> ScoreResult:
+        """Compute score for given data."""
         factors = self._extract_factors(data)
-        raw_score = self._compute_weighted(factors)
+        raw_score = self._compute_weighted_score(factors)
         confidence = self._compute_confidence(factors)
-        return ScoreResult(score=max(0, min(1, raw_score)), confidence=confidence, factors=factors)
+        
+        return ScoreResult(
+            score=max(0.0, min(1.0, raw_score)),
+            confidence=confidence,
+            factors=factors,
+            metadata={"context": context}
+        )
     
     def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
-        """Extract scoring factors."""
+        """Extract scoring factors from data."""
         factors = {}
-        for k, v in data.items():
-            if isinstance(v, (int, float)):
-                factors[k] = float(v)
-            elif isinstance(v, str):
-                factors[f"{k}_len"] = min(1.0, len(v) / 100)
+        for key, value in data.items():
+            if isinstance(value, (int, float)):
+                factors[key] = float(value)
         return factors
     
-    def _compute_weighted(self, factors: Dict[str, float]) -> float:
+    def _compute_weighted_score(self, factors: Dict[str, float]) -> float:
         """Compute weighted score."""
         if not factors:
             return 0.5
-        total_w = sum(self.weights.get(k, 1.0) for k in factors)
-        weighted = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
-        return weighted / total_w if total_w else 0.5
+        total_weight = sum(self.weights.get(k, 1.0) for k in factors)
+        weighted_sum = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
+        return weighted_sum / total_weight if total_weight > 0 else 0.5
     
     def _compute_confidence(self, factors: Dict[str, float]) -> float:
-        """Compute confidence."""
+        """Compute confidence level."""
         return min(1.0, len(factors) / 5)
 
 
-def compute_score(data: Dict[str, Any], config: Optional[Dict] = None) -> ScoreResult:
-    """Compute score."""
-    return EvaluateResumeEffectiveness(config).score(data)
+def score(data: Dict[str, Any], config: Optional[Dict] = None) -> ScoreResult:
+    """Convenience function for scoring."""
+    return EvaluateResumeEffectiveness(config).compute_score(data)
