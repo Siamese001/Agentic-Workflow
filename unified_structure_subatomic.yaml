@@ -12,6 +12,13 @@ description: "Agentic-Workflow SSoT with domain modes, structure types, and stat
 binds_to: "unified_structure_subatomic_meta.yaml"
 canonical_role: "primary architectural map defining allowable filesystem paths"
 
+# ---------------------------------------------------------------------
+# GHOST FILE POLICY — ETERNAL LAW (2025)
+# ---------------------------------------------------------------------
+# A path in this YAML MUST have real, executable code.
+# Empty stubs, scaffold artifacts, and "100% coverage" ghost files are BANNED.
+# See unified_structure_subatomic_meta.yaml Section 13 for full policy.
+
 global:
   # Structural invariants are consolidated in META YAML (Section 4)
   # This avoids duplication and ensures META is the single governing contract
