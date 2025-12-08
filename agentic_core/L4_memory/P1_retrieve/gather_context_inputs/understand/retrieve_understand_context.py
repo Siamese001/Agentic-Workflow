@@ -1,3 +1,4 @@
+# Ownership: agentic_core / L4_memory
 # ============================================================
 # Hydrated via Phase 3 — Filename Matching
 # Source: retrieval.py
@@ -379,3 +380,4 @@ def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, Any]]:
         }
         for it in result.items
     ]
+

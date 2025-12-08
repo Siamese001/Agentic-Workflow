@@ -1,3 +1,4 @@
+# Ownership: agentic_core / L1_cognition
 # ============================================================
 # Hydrated via Phase 3 — Filename Matching
 # Source: fetch_data_history.py
@@ -186,3 +187,5 @@ if __name__ == "__main__":
         logger.error(f"L5 Security error: {e}")
     except Exception as e:
         logger.error(f"L5 Unexpected error: {e}")
+
+
