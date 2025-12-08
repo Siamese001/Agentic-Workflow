@@ -488,14 +488,15 @@ def run_checks_31_40():
     if not (ROOT / "SSOT_validator.py").exists(): success("32")
     else: fail("32", "SSOT_validator.py still exists")
 
-    # 33: Required SSoT YAML files must exist (HARDENED - mandatory)
-    ssot_files = [
+    # 33: No obsolete YAML SSoT files (replaced by algorithmic canon)
+    # The validator IS the SSoT - no external YAML needed
+    obsolete_yaml = [
         ROOT / "unified_structure_subatomic.yaml",
         ROOT / "unified_structure_subatomic_meta.yaml",
     ]
-    missing = [p.name for p in ssot_files if not p.exists()]
-    if missing:
-        fail("33", f"Missing required SSoT YAML files: {missing}")
+    found = [p.name for p in obsolete_yaml if p.exists()]
+    if found:
+        fail("33", f"Obsolete YAML SSoT files must be deleted: {found}")
     else:
         success("33")
 
