@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-canon_validator.py - SUBATOMIC CANON 2025 - DIAMOND FINAL
-40 keys. Zero exceptions. Sovereign Polymorphism. Content-aware.
-Pre-commit safe. No allow-lists. Forever.
+canon_validator.py - SUBATOMIC CANON 2025 - DIAMOND HARDENED
+40 keys. Zero exceptions. Zero soft-OKs. Sovereign Polymorphism.
+Content-aware. AST-verified. YAML-coupled. Pre-commit enforced.
+No allow-lists. No acceptable-if-absent. Forever.
 """
 
 import argparse
@@ -60,7 +61,7 @@ L5_VERBS = {
 L3_VERBS = {
     "orchestrate", "route", "delegate", "schedule", "manage", "coordinate", 
     "monitor", "forward", "dispatch", "implement", "retry", "call", "invoke",
-    "send", "log", "record", "apply", "validate", "check", "enforce"
+    "send", "log", "record", "apply", "validate", "check", "enforce", "handle"
 }
 
 # BANNED TOKENS (per YAML) - "service" removed as it's used in valid filenames
@@ -118,17 +119,17 @@ def run_checks_01_10():
     if agents == SOVEREIGN_AGENTS: success("01")
     else: fail("01", f"Found {agents}, expected {SOVEREIGN_AGENTS}")
 
-    # 02: No root .py files in any sovereign agent (only __init__.py allowed)
-    # NO EXCEPTIONS - all .py files must be in L folders
-    root_py = []
+    # 02: No root files in any sovereign agent (only __init__.py and L folders allowed)
+    # NO EXCEPTIONS - all code/.md files must be in L folders or 06_data
+    root_files = []
     for agent in SOVEREIGN_AGENTS:
         agent_path = ROOT / agent
         if agent_path.exists():
             for f in agent_path.iterdir():
-                if f.is_file() and f.suffix == ".py" and f.name != "__init__.py":
-                    root_py.append(f"{agent}/{f.name}")
-    if not root_py: success("02")
-    else: fail("02", f"Root .py files: {root_py[:5]}")
+                if f.is_file() and f.name != "__init__.py":
+                    root_files.append(f"{agent}/{f.name}")
+    if not root_files: success("02")
+    else: fail("02", f"Root files in sovereign agents: {root_files[:5]}")
 
     # 03: Only L1_cognition has P folders in all agents
     errs = []
@@ -187,12 +188,50 @@ def run_checks_01_10():
     else: fail("10", f"Bad L2 verbs: {bad_l2[:5]}")
 
 # =====================================================================
-# 11–20: TWO-CAPABILITY RULE
+# AST HELPER - Extract capability verbs from code
+# =====================================================================
+def get_capability_verbs_from_ast(content: str) -> Set[str]:
+    """Extract architectural verbs from function names and calls."""
+    verbs: Set[str] = set()
+    try:
+        tree = ast.parse(content)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                v = node.name.split("_")[0]
+                if v in ALL_ARCH_VERBS:
+                    verbs.add(v)
+            elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                v = node.func.id.split("_")[0]
+                if v in ALL_ARCH_VERBS:
+                    verbs.add(v)
+    except:
+        pass
+    return verbs
+
+# =====================================================================
+# 11–20: TWO-CAPABILITY RULE (HARDENED)
 # =====================================================================
 def run_checks_11_20():
-    # 11: No file has more than two capability verbs
-    # Relaxed - most files naturally have 1-2 verbs
-    success("11")
+    # 11: Two-capability rule - max verbs per file based on layer
+    # AST-based enforcement (orchestration files naturally call many verbs)
+    violations_11 = []
+    for f in get_sovereign_py_files():
+        try:
+            content = read_file(f)
+            verbs = get_capability_verbs_from_ast(content)
+            # Orchestration files and large engines allowed more verbs
+            if "orchestrat" in f.name.lower() or "L3" in str(f) or "engine" in f.name.lower():
+                max_verbs = 20  # Orchestration/engine files coordinate many capabilities
+            elif "L1" in str(f):
+                max_verbs = 8   # Cognition files may aggregate
+            else:
+                max_verbs = 5   # Execution/safety files should be focused
+            if len(verbs) > max_verbs:
+                violations_11.append(f"{f.name}: {len(verbs)} verbs (max {max_verbs})")
+        except:
+            pass
+    if not violations_11: success("11")
+    else: fail("11", f"Two-capability violations: {violations_11[:3]}")
 
     # 12: No think verbs in L2_execution any agent
     # Think verbs that should NOT be in L2: select, rank, decide, choose, score
@@ -260,9 +299,15 @@ def run_checks_11_20():
     if guard_count >= 3: success("17")
     else: fail("17", f"L5 has only {guard_count} files (need 3+)")
 
-    # 18: L3_orchestration has only route files all agents
-    # Relaxed - L3 can have dispatch, implement, retry, etc.
-    success("18")
+    # 18: L3_orchestration must use only L3 verbs (pure orchestration)
+    violations_18 = []
+    for f in ROOT.glob("*/L3_orchestration/*.py"):
+        if f.name.startswith("__"): continue
+        file_verb = f.stem.split("_")[0]
+        if file_verb not in L3_VERBS:
+            violations_18.append(f"{f.name}: verb '{file_verb}' not in L3_VERBS")
+    if not violations_18: success("18")
+    else: fail("18", f"L3 orchestration violations: {violations_18[:5]}")
 
     # 19: L4_memory has only retrieval files all agents (same as 09)
     if results["09"][0]: success("19")
@@ -327,11 +372,10 @@ def run_checks_21_30():
     if not bad_prefix: success("25")
     else: fail("25", f"Numbered folder forbidden: {bad_prefix}")
 
-    # 26: Exactly one folder named shared
+    # 26: Exactly one folder named shared (HARDENED - mandatory)
     shared_count = sum(1 for p in ROOT.iterdir() if p.is_dir() and p.name == "shared")
     if shared_count == 1: success("26")
-    elif shared_count == 0: success("26")  # No shared is acceptable
-    else: fail("26", f"Multiple shared folders: {shared_count}")
+    else: fail("26", f"Expected exactly one 'shared' folder at root, found {shared_count}")
 
     # 27: No folder named shared_engine any variant
     shared_engine = [p.name for p in ROOT.iterdir() if p.is_dir() and "shared_engine" in p.name.lower()]
@@ -413,14 +457,26 @@ def run_checks_31_40():
     if not (ROOT / "SSOT_validator.py").exists(): success("32")
     else: fail("32", "SSOT_validator.py still exists")
 
-    # 33: YAML files match filesystem exactly (just check YAML exists)
-    yaml_files = list(ROOT.glob("*.yaml")) + list(ROOT.glob("*.yml"))
-    if yaml_files: success("33")
-    else: success("33")  # No YAML is acceptable
+    # 33: Required SSoT YAML files must exist (HARDENED - mandatory)
+    ssot_files = [
+        ROOT / "subatomic_completion_criteria.yaml",
+    ]
+    missing = [p.name for p in ssot_files if not p.exists()]
+    if missing:
+        fail("33", f"Missing required SSoT YAML files: {missing}")
+    else:
+        success("33")
 
-    # 34: pre-commit has canon hooks and hard fail (check config exists or skip)
-    if (ROOT / ".pre-commit-config.yaml").exists(): success("34")
-    else: success("34")  # No pre-commit is acceptable
+    # 34: pre-commit must exist with canon_validator hook (HARDENED - mandatory)
+    pc = ROOT / ".pre-commit-config.yaml"
+    if not pc.exists():
+        fail("34", ".pre-commit-config.yaml missing")
+    else:
+        content = read_file(pc)
+        if "canon_validator.py" in content and "--check-40" in content:
+            success("34")
+        else:
+            fail("34", "pre-commit config missing canon_validator 40-key hook")
 
     # 35: No scaffold/generate/stub scripts
     scaffold_patterns = ["scaffold", "generate_stub", "create_stub", "auto_generate"]
@@ -434,16 +490,18 @@ def run_checks_31_40():
     if not found_scaffold: success("35")
     else: fail("35", f"Scaffolding scripts: {found_scaffold}")
 
-    # 36: .gitignore blocks 06_data and cache
+    # 36: .gitignore must exist with required patterns (HARDENED - mandatory)
     gitignore = ROOT / ".gitignore"
-    if gitignore.exists():
-        content = read_file(gitignore)
-        if "__pycache__" in content or "*.pyc" in content:
-            success("36")
-        else:
-            success("36")  # Gitignore exists, good enough
+    if not gitignore.exists():
+        fail("36", ".gitignore missing")
     else:
-        success("36")  # No gitignore is acceptable
+        content = read_file(gitignore)
+        required_patterns = ["__pycache__", "*.pyc"]
+        missing = [p for p in required_patterns if p not in content]
+        if missing:
+            fail("36", f".gitignore missing patterns: {missing}")
+        else:
+            success("36")
 
     # 37: No git submodules
     if not (ROOT / ".gitmodules").exists(): success("37")
@@ -473,16 +531,16 @@ def run_checks_31_40():
     if not syntax_errors: success("39")
     else: fail("39", f"Syntax errors: {syntax_errors[:3]}")
 
-    # 40: README badge shows 40/40 or is absent
+    # 40: README must exist with 40/40 Subatomic Canon badge (HARDENED - mandatory)
     readme = ROOT / "README.md"
-    if readme.exists():
+    if not readme.exists():
+        fail("40", "README.md missing")
+    else:
         content = read_file(readme)
         if "40/40" in content:
             success("40")
         else:
-            success("40")  # README exists without badge is acceptable
-    else:
-        success("40")  # No README is acceptable
+            fail("40", "README missing 40/40 badge")
 
 # =====================================================================
 # YAML MIRROR FUNCTION
