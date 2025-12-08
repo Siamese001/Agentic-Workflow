@@ -1,8 +1,0 @@
-# -*- coding: utf-8 -*-
-"""
-09_apps.apps_rg.L2_execution.P2_inspect.semantic_adjust_scores — Package initialization
-
-Auto-generated to satisfy SSoT structure requirements.
-"""
-
-__all__: list = []

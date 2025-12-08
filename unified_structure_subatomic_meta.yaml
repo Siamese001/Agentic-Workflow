@@ -265,13 +265,13 @@ domain_invariants:
     L1_cognition:
       allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]
     L2_execution:
-      allowed_phases: [P2_inspect, P3_aggregate, P4_safety]
+      allowed_phases: []
     L3_orchestration:
-      allowed_phases: [P3_aggregate, P4_safety]
+      allowed_phases: []
     L4_memory:
-      allowed_phases: [P1_retrieve, P3_aggregate, P4_safety]
+      allowed_phases: [P1_retrieve]
     L5_safety:
-      allowed_phases: [P4_safety]
+      allowed_phases: []
 
 # ---------------------------------------------------------------------
 # 4. STRUCTURAL CONSISTENCY RULES (GLOBAL)
@@ -534,3 +534,18 @@ notes: >
   - Protected paths normalized.
 
 
+
+# ---------------------------------------------------------------------
+# 11. SUBATOMIC CANON 2025 — FINAL
+# ---------------------------------------------------------------------
+subatomic_canon_2025:
+  enforced: true
+  principles_applied:
+    - only_three_agents_have_L1_L5
+    - only_L1_has_phases
+    - L2_L3_L5_flat
+    - L4_retrieval_only
+    - imperative_verb_naming
+    - banned_low_signal_words
+    - natural_depth_no_padding
+    - self_teaching_names
