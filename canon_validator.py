@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-canon_validator.py - SUBATOMIC CANON 2025 - FINAL WITH FULL CLI
-Supports: --check-40 --hard-fail --mirror-yaml --silent
-Run: python canon_validator.py --check-40 --hard-fail
+canon_validator.py - SUBATOMIC CANON 2025 - DIAMOND FINAL
+40 keys. Zero exceptions. Sovereign Polymorphism. Content-aware.
+Pre-commit safe. No allow-lists. Forever.
 """
 
 import argparse
-import os
 import sys
 import re
 import ast
+import hashlib
 from pathlib import Path
 from typing import List, Set
 from collections import defaultdict
@@ -70,13 +70,24 @@ BANNED_TOKENS = {
 }
 
 # FAKE NESTING FOLDERS (per YAML) - only check in sovereign agents
-FAKE_NESTING = {"v2025", "final", "wrapper", "inner", "temp", "old", "legacy", "archive"}
+FAKE_NESTING = {"v2025", "final", "wrapper", "inner", "temp", "old", "legacy", "archive", "backup", "test"}
+
+# ALL ARCHITECTURAL VERBS - for duplicate verb validation
+ALL_ARCH_VERBS = L2_VERBS | L3_VERBS | L4_VERBS | L5_VERBS
+
+# CAPABILITY PHYSICS - strict verb placement
+THINK_VERBS = {"decide", "choose", "reason", "plan", "prioritize", "select", "rank", "score"}
+PURE_ACT = {"invoke", "call", "execute", "perform", "dispatch"}
+PURE_ROUTE = {"delegate", "route"}
+PURE_RETRIEVAL = {"retrieve", "lookup"}
+PURE_GUARD = {"block", "sanitize", "redact"}
 
 # NO ALLOWED_DUPLICATES - Strict semantic ownership enforced via rule logic
 # Key 28 uses pure algorithmic enforcement instead of allow-lists
 
 # LIMITS
 MAX_DEPTH = 7
+MIN_FILE_BYTES = 60
 
 # RESULTS TRACKER
 results = {}
@@ -298,15 +309,15 @@ def run_checks_21_30():
     if not dirty: success("23")
     else: fail("23", f"TODO/FIXME in comments: {dirty[:5]}")
 
-    # 24: No .py file shorter than 60 characters
+    # 24: No .py file shorter than MIN_FILE_BYTES (stub detection)
     short = []
     for f in get_sovereign_py_files():
         try:
-            if f.stat().st_size < 60:
+            if f.stat().st_size < MIN_FILE_BYTES:
                 short.append(f.name)
         except: pass
     if not short: success("24")
-    else: fail("24", f"Short files (<60 chars): {short[:5]}")
+    else: fail("24", f"Stub files (<{MIN_FILE_BYTES} bytes): {short[:5]}")
 
     # 25: No numbered prefixes except 06_data
     bad_prefix = []
@@ -327,12 +338,12 @@ def run_checks_21_30():
     if not shared_engine: success("27")
     else: fail("27", f"shared_engine found: {shared_engine}")
 
-    # 28: Strict semantic ownership - no allow-list, pure rule enforcement
+    # 28: DIAMOND DUPLICATE RULE - Sovereign Polymorphism + Content Awareness
     # Rules:
-    # 1. Same agent + same layer cannot have multiple files with same name
-    # 2. Same agent + different layers = allowed (L1 cognition vs L2 execution pattern)
-    # 3. Cross-agent duplicates allowed if content is different
-    # 4. Identical content across files = copy-paste violation
+    # 1. Same agent collision = blocked
+    # 2. Non-architectural verb = blocked
+    # 3. Identical content across agents = blocked (move to shared/)
+    # 4. Cross-agent with different content = allowed (true polymorphism)
     seen = defaultdict(list)
     for f in get_sovereign_py_files():
         seen[f.name].append(f)
@@ -344,41 +355,33 @@ def run_checks_21_30():
     else:
         violations = []
         for name, paths in duplicates.items():
-            # Extract (agent, layer) tuple for each path
-            agent_layer_counts = defaultdict(int)
-            for p in paths:
-                agent = None
-                layer = None
-                for a in SOVEREIGN_AGENTS:
-                    if a in p.parts:
-                        agent = a
-                        break
-                for part in p.parts:
-                    if part.startswith("L") and "_" in part:
-                        layer = part
-                        break
-                if agent and layer:
-                    agent_layer_counts[(agent, layer)] += 1
+            verb = name.split("_", 1)[0]
+            agents = {p.relative_to(ROOT).parts[0] for p in paths}
             
-            # Violation 1: Same agent + same layer has multiple copies
-            if any(count > 1 for count in agent_layer_counts.values()):
-                violations.append(f"{name} (same agent+layer)")
+            # Violation 1: Same agent has multiple copies
+            if len(agents) < len(paths):
+                violations.append(f"{name} -> same-agent collision")
                 continue
             
-            # Violation 2: Identical content across any files (copy-paste)
-            content_hashes = defaultdict(list)
+            # Violation 2: Non-architectural verb (not in any layer's verb set)
+            if verb not in ALL_ARCH_VERBS:
+                violations.append(f"{name} -> non-architectural verb '{verb}'")
+                continue
+            
+            # Violation 3: Identical content across agents (copy-paste)
+            content_hashes = {}
             for p in paths:
                 try:
-                    h = hash(p.read_bytes())
-                    content_hashes[h].append(str(p))
+                    h = hashlib.sha256(p.read_bytes()).hexdigest()
+                    content_hashes.setdefault(h, []).append(p.relative_to(ROOT).parent.name)
                 except: pass
-            if any(len(v) > 1 for v in content_hashes.values()):
-                violations.append(f"{name} (identical content)")
+            if len(content_hashes) < len(paths):
+                violations.append(f"{name} -> identical content (move to shared/)")
         
         if not violations:
-            success("28")  # Cross-agent or cross-layer duplicates with unique content are allowed
+            success("28")  # Cross-agent duplicates with unique content are allowed
         else:
-            fail("28", f"Illegal duplicates: {violations[:5]}")
+            fail("28", f"Duplicates: {violations[:6]}")
 
     # 29: Max path depth 7 or less repo wide (sovereign agents only)
     deep = []
