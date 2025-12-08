@@ -4,6 +4,8 @@
 
 fail_fast: true   # CANON FIRST. CANON LAST. CANON ALWAYS.
 
+exclude: ^06_data/
+
 repos:
   # ===================================================================
   # 1. THE CANON ITSELF — RUNS FIRST AND HARDEST
