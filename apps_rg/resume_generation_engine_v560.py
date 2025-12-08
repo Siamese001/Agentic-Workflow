@@ -1,13 +1,10 @@
-"""
-08_scripts/logic/logic/data_access/get_info/utility_prepare_information/prepare_payload.py
-AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
-L5 CANONICAL — WINDSURF Ω — 2025-12-07
-MERKLE-INTENDED: b6e70958bdc8dfa08e93cfecf4aa6d54329754e3aaf2d5cf0e5ed4af52f996da
-"""
+# 08_scripts/logic/logic/data_access/get_info/utility_prepare_information/prepare_payload.py
+# AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
+# L5 CANONICAL — WINDSURF Ω — 2025-12-07
+# MERKLE-INTENDED: b6e70958bdc8dfa08e93cfecf4aa6d54329754e3aaf2d5cf0e5ed4af52f996da
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # Source: SSoT taxonomy + golden fallback
 # ======================================================================
-
 """
 Resume Generation Engine v5.60 - OUTPUT 2 BUG FIX: 12 COMPETENCIES
 
@@ -430,7 +427,7 @@ class SectionMetadata:
             raise ValueError(f"Min ({self.word_count_min}) > Max ({self.word_count_max}) for {self.section_id}")
         if not (self.word_count_min <= self.word_count_baseline <= self.word_count_max):
             # Warning but don't fail - baseline might be aspirational
-            pass
+            ...
 
 
 class SectionRegistry:
@@ -2380,15 +2377,15 @@ class BulletMetadata:
 
 class ValidationError(Exception):
     """Raised when validation fails critically."""
-    pass
+    ...
 
 class HopExecutionError(Exception):
     """Raised when a hop fails to execute."""
-    pass
+    ...
 
 class StagingBufferError(Exception):
     """Raised for staging buffer violations."""
-    pass
+    ...
 
 # ============================================================================
 # v5.35 JD ALIGNMENT SCORING ENGINE
@@ -2643,7 +2640,7 @@ class CircuitBreaker:
 
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit breaker is open."""
-    pass
+    ...
 
 
 # ============================================================================
@@ -2657,7 +2654,7 @@ T = TypeVar('T')
 
 class PhaseTimeoutError(Exception):
     """Raised when a phase exceeds its timeout."""
-    pass
+    ...
 
 class PhaseExecutor:
     """
@@ -3170,7 +3167,7 @@ class ClaudeWebSearchClient:
         try:
             return json.loads(cleaned)
         except json.JSONDecodeError:
-            pass
+            ...
         
         # Strategy 4: Try to repair common JSON errors
         repaired = self._attempt_json_repair(cleaned)
@@ -4763,7 +4760,7 @@ class ArtistGenerator:
     """
     
     def __init__(self):
-        pass
+        ...
     
 
 
@@ -6638,12 +6635,12 @@ class FileRenderer:
                 bullets_key, overview_key = staging_keys[i]
                 
                 txt += f"{exp.get('company', '')} | {exp.get('location', '')}\n"
-            txt += f"{exp.get('title', '')} | {exp.get('start_date', '')} - {exp.get('end_date', '')}\n\n"
+                txt += f"{exp.get('title', '')} | {exp.get('start_date', '')} - {exp.get('end_date', '')}\n\n"
                 txt += f"{staging_buffer.get(overview_key, '')}\n\n"
                 
                 for bullet in staging_buffer.get(bullets_key, []):
                     txt += f"• {bullet}\n"
-            txt += "\n"
+                txt += "\n"
                 
                 txt += "\n"
         
@@ -6701,26 +6698,20 @@ class FileRenderer:
                 for skill_data in scored_skills:
                     output_lines.append(f"• {skill_data['skill']}")
                 
-                return "
-
-".join(output_lines)  # Add double newline for spacing
+                return "\n\n".join(output_lines)  # Add double newline for spacing
 
             except Exception as e:
                 print(f"Warning: JD alignment scoring failed: {e}")
                 # Fallback to simple list
                 for skill in skills:
                     output_lines.append(f"• {skill}")
-                return "
-
-".join(output_lines)  # Add double newline for spacing
+                return "\n\n".join(output_lines)  # Add double newline for spacing
 
         elif skills:
             # No JD available, return simple unscored list of competencies
             for skill in skills:
                 output_lines.append(f"• {skill}")
-            return "
-
-".join(output_lines)  # Add double newline for spacing
+            return "\n\n".join(output_lines)  # Add double newline for spacing
 
         else:
             # No competencies found

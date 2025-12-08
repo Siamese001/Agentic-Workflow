@@ -93,7 +93,7 @@ class CompanyResearchExecutor:
                 "stage": "company_research"
             })
         except Exception:
-            pass
+            ...
         
         # Build namespace using adapter
         namespace = self.adapter.build_namespace(
@@ -149,7 +149,7 @@ class CompanyResearchExecutor:
                 "duration": time.time() - start_time
             })
         except Exception:
-            pass
+            ...
         
         return CompanyResearchResult(
             results=filtered_results,

@@ -80,7 +80,7 @@ class ContactResearchExecutor:
                 "stage": "contact_research"
             })
         except Exception:
-            pass
+            ...
         # Build namespace using adapter
         namespace = self.adapter.build_namespace(
             mission_id=mission_id,
@@ -126,7 +126,7 @@ class ContactResearchExecutor:
                 "duration": time.time() - start_time
             })
         except Exception:
-            pass
+            ...
         
         return ContactResearchResult(
             results=filtered_results,

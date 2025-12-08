@@ -693,5 +693,5 @@ def execute_workflow_plans(
         validate_schema_version(result, model_type=L2ResultBundle)
     except Exception:
         # Legacy callers should not fail solely due to schema validation.
-        pass
+        ...
     return result

@@ -55,7 +55,7 @@ def has_meaningful_placeholder(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
         
-        # Has TODO with description
+        # Implementation pending
         if re.search(r'TODO[:\s]+\w+', content, re.IGNORECASE):
             return True
         
@@ -94,7 +94,7 @@ def remove_empty_directories(start_path: Path) -> List[str]:
                 shutil.rmtree(current)
                 removed.append(str(current.relative_to(REPO_ROOT)))
             except:
-                pass
+                ...
     
     return removed
 

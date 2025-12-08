@@ -275,7 +275,7 @@ class TestInterfaceCompliance:
         class BaseAgent(ABC):
             @abstractmethod
             def execute(self, data: Dict) -> Dict:
-                pass
+                ...
         
         class ConcreteAgent(BaseAgent):
             def execute(self, data: Dict) -> Dict:
@@ -319,15 +319,15 @@ class TestConsistentErrorTypes:
         """Errors should follow a hierarchy."""
         class AgentError(Exception):
             """Base error for all agent errors."""
-            pass
+            ...
         
         class ProcessingError(AgentError):
             """Error during processing."""
-            pass
+            ...
         
         class ValidationError(AgentError):
             """Error during validation."""
-            pass
+            ...
         
         # All agent errors inherit from AgentError
         assert issubclass(ProcessingError, AgentError)

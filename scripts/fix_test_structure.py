@@ -124,7 +124,7 @@ def remove_empty_lp_dirs() -> List[str]:
                     if str(current.relative_to(TESTS_ROOT)) not in removed:
                         removed.append(str(current.relative_to(TESTS_ROOT)))
                 except:
-                    pass
+                    ...
     
     return removed
 

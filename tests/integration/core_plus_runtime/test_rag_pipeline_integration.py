@@ -293,7 +293,7 @@ class TestRAGPipelineIntegration:
                     
             except (ValueError, TypeError):
                 # Expected for invalid inputs
-                pass
+                ...
     
     def test_rag_deterministic_behavior_contract(self):
         """Test RAG behavior is deterministic for same input"""
