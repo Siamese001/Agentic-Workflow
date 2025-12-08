@@ -464,13 +464,12 @@ def run_checks_11_20():
         lines = len(content.splitlines())
         verb = f.stem.split("_", 1)[0].lower()
 
-        # Size limits: Disabled during migration (target: L3=160, others=100)
-        # Current codebase has files up to 9000+ lines - needs major refactoring
-        # if "L3_orchestration" in f.parts:
-        #     if lines > 500:
-        #         violations.append(f"{f.name}: {lines} lines (L3 max 500)")
-        # elif lines > 400:
-        #     violations.append(f"{f.name}: {lines} lines (>400)")
+        # Size limits: ENABLED - Diamond Law enforced
+        if "L3_orchestration" in f.parts:
+            if lines > 160:
+                violations.append(f"{f.name}: {lines} lines (L3 max 160)")
+        elif lines > 100:
+            violations.append(f"{f.name}: {lines} lines (max 100)")
 
         # AST parsing
         try:
@@ -479,15 +478,13 @@ def run_checks_11_20():
             violations.append(f"{f.name}: syntax error")
             continue
 
-        # Structure: Disabled during migration (target: 1 class OR max 3 funcs)
-        # Current codebase has files with 48+ classes - needs major refactoring
-        # classes = sum(isinstance(n, ast.ClassDef) for n in ast.walk(tree))
-        # funcs = sum(isinstance(n, ast.FunctionDef) for n in ast.walk(tree))
-        # if classes > 10:
-        #     violations.append(f"{f.name}: {classes} classes (max 10)")
-        # elif classes == 0 and funcs > 25:
-        #     violations.append(f"{f.name}: {funcs} functions (max 25)")
-        pass  # All sub-atomic checks disabled during migration
+        # Structure: ENABLED - Diamond Law enforced
+        classes = sum(1 for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
+        funcs = sum(1 for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
+        if classes > 1:
+            violations.append(f"{f.name}: {classes} classes (max 1)")
+        elif classes == 0 and funcs > 3:
+            violations.append(f"{f.name}: {funcs} functions (max 3 when no class)")
 
         # Primary verb dominance: Disabled during migration (target: 80%)
         # This check requires significant refactoring to achieve

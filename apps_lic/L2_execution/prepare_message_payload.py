@@ -8,17 +8,12 @@ Generated: 2025-12-07T13:28:54.125303
 from __future__ import annotations
 import logging
 from typing import Any, Dict, Optional
-from dataclasses import dataclass, field
+from shared.result_types import FormatResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class FormatResult:
-    """Formatting result."""
-    data: Any
-    format_type: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 
 class PrepareMessagePayload:

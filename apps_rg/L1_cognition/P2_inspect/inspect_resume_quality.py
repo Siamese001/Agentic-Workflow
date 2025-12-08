@@ -8,19 +8,13 @@ Generated: 2025-12-07T13:28:54.215610
 from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
 from datetime import datetime
+from shared.result_types import DiagnosticReport
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class DiagnosticReport:
-    """Diagnostic report."""
-    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    healthy: bool = True
-    issues: List[str] = field(default_factory=list)
-    metrics: Dict[str, Any] = field(default_factory=dict)
+
 
 
 class InspectResumeQuality:

@@ -5,18 +5,11 @@
 from __future__ import annotations
 
 import re
-from enum import Enum
 from typing import Dict, List, Tuple
 
 from shared.models import ValidationResult
+from shared.workflow_types import BulletProvenance
 from apps_rg.L5_safety.check_hallucination import HallucinationDetector
-
-
-class BulletProvenance(Enum):
-    """Source of a bullet point."""
-    Verbatim = "verbatim"
-    Enhanced = "enhanced"
-    Generated = "generated"
 
 
 class ClerkExtractor:
