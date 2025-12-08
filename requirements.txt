@@ -1,0 +1,120 @@
+# =============================================================================
+# AGENTIC-WORKFLOW: COMPLETE AGENTIC SDK SET (21 SDKs)
+# ZERO-LOSS MERGE — FINAL CONSOLIDATED & HARDENED
+# Generated: 2025-12-07
+# =============================================================================
+#
+# Install command (Docker container):
+#   pip install --upgrade --no-cache-dir --force-reinstall -r requirements.txt
+#
+# Validation command:
+#   python -c "from agentic_workflow.runtime.shared.sdk_registry import validate_all_sdks; validate_all_sdks()"
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CORE LLM PROVIDERS (5)
+# Planning, generation, tool-calling, embeddings
+# -----------------------------------------------------------------------------
+openai>=1.50.0                  # GPT-4o, o1, embeddings, function calling
+anthropic>=0.34.0               # Claude 3.5 Sonnet, tool use, extended context
+google-generativeai>=0.8.0      # Gemini 2.0, multimodal, grounding
+mistralai>=1.2.0                # Mistral Large, code generation, EU compliance
+cohere>=5.11.0                  # Command R+, RAG, reranking, embeddings
+
+# -----------------------------------------------------------------------------
+# HIGH-PERFORMANCE INFERENCE (3)
+# Ultra-fast inference, cost optimization, tool-calling alternatives
+# -----------------------------------------------------------------------------
+groq>=0.11.0                    # Ultra-fast inference (Llama, Mixtral on LPU)
+together>=1.2.0                 # Cheap diversified access (Llama, Mixtral, Mythomax)
+fireworks-ai>=0.15.0            # Strong tool-calling alternative, function calling
+
+# -----------------------------------------------------------------------------
+# ROUTING & STRUCTURED OUTPUTS (2)
+# Unified routing, fallbacks, structured JSON across providers
+# -----------------------------------------------------------------------------
+litellm>=1.50.0                 # Unified router, fallbacks, 100+ provider support
+instructor>=1.3.0               # Structured outputs, Pydantic validation, all providers
+
+# -----------------------------------------------------------------------------
+# VECTOR STORES & EMBEDDINGS (3)
+# Semantic search, RAG, similarity matching
+# -----------------------------------------------------------------------------
+chromadb>=0.5.0                 # Local/embedded vector DB, fast prototyping
+qdrant-client>=1.12.0           # Production vector DB, filtering, hybrid search
+pinecone>=5.0.0                 # Managed vector DB, serverless scaling
+
+# -----------------------------------------------------------------------------
+# CACHING & STATE (2)
+# Session cache, rate limiting, pub/sub
+# -----------------------------------------------------------------------------
+redis>=5.0.0                    # Redis client, async support, clustering
+hiredis>=3.0.0                  # C parser for Redis (10x faster parsing)
+
+# -----------------------------------------------------------------------------
+# ORCHESTRATION & AGENTS (2)
+# Stateful graphs, agent loops, persistence
+# -----------------------------------------------------------------------------
+langgraph>=0.2.0                # Stateful agent graphs, cycles, checkpointing
+langchain-core>=0.3.0           # Minimal abstractions (LCEL, runnables only)
+
+# -----------------------------------------------------------------------------
+# OBSERVABILITY & TRACING (4)
+# Distributed tracing, structured logging, metrics
+# -----------------------------------------------------------------------------
+opentelemetry-api>=1.27.0       # Tracing API (vendor-neutral)
+opentelemetry-sdk>=1.27.0       # Tracing implementation
+structlog>=24.1.0               # Structured logging
+python-json-logger>=2.0.0       # JSON log formatting
+
+# -----------------------------------------------------------------------------
+# DOCUMENT PROCESSING (2)
+# PDF, DOCX, HTML, image extraction
+# -----------------------------------------------------------------------------
+unstructured>=0.15.0            # Universal document parser (PDF, DOCX, HTML)
+pypdf>=4.0.0                    # Lightweight PDF text extraction
+
+# -----------------------------------------------------------------------------
+# MCP (MODEL CONTEXT PROTOCOL) (2)
+# Tool servers, context providers (anthropic & google have built-in MCP)
+# -----------------------------------------------------------------------------
+mcp>=1.0.0                      # MCP SDK for building tool servers
+fastmcp>=0.1.0                  # FastAPI-style MCP server framework
+
+# -----------------------------------------------------------------------------
+# BUILD TOOLS & CORE DEPENDENCIES
+# -----------------------------------------------------------------------------
+# pip-tools>=7.4.0              # Deterministic lockfiles (install separately: pip install pip-tools)
+pydantic>=2.5.0                 # Data validation (required by instructor, litellm)
+httpx>=0.27.0                   # Async HTTP client (required by most SDKs)
+tenacity>=8.2.0                 # Retry logic for API calls
+tiktoken>=0.7.0                 # Token counting for OpenAI models
+numpy>=1.26.0                   # Numerical operations
+aiohttp>=3.9.0                  # Async HTTP for parallel requests
+uvicorn>=0.30.0                 # ASGI server for MCP/FastAPI
+
+# =============================================================================
+# COVERAGE MATRIX (21 SDKs)
+# =============================================================================
+#
+# | Capability              | Primary SDK          | Fallback             |
+# |-------------------------|----------------------|----------------------|
+# | Planning/Reasoning      | openai, anthropic    | mistralai, cohere    |
+# | Tool Calling            | openai, anthropic    | fireworks-ai, groq   |
+# | Structured Outputs      | instructor           | litellm              |
+# | Embeddings              | openai, cohere       | together, chromadb   |
+# | Reranking               | cohere               | -                    |
+# | Ultra-fast Inference    | groq                 | fireworks-ai         |
+# | Cost Optimization       | together             | groq                 |
+# | Unified Routing         | litellm              | -                    |
+# | Multimodal              | google-generativeai  | openai, anthropic    |
+# | EU Compliance           | mistralai            | -                    |
+# | Vector Search           | qdrant-client        | chromadb, pinecone   |
+# | Caching                 | redis                | -                    |
+# | Agent Orchestration     | langgraph            | langchain-core       |
+# | Tracing                 | opentelemetry        | structlog            |
+# | Document Parsing        | unstructured         | pypdf                |
+# | MCP Tools               | mcp, fastmcp         | anthropic, google    |
+#
+# =============================================================================

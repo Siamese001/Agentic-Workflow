@@ -116,6 +116,49 @@ from .cache import (
     CACHE_KEY_VERSION,
 )
 
+from .multi_provider_clients import (
+    Provider,
+    ProviderConfig,
+    get_client,
+    get_api_key,
+    reset_all_clients,
+    get_available_providers,
+    get_litellm_completion,
+    get_litellm_completion_sync,
+    get_structured_output,
+)
+
+from .sdk_registry import (
+    # Enums
+    SDKCategory,
+    # Registry
+    SDKEntry,
+    SDK_REGISTRY,
+    # Validation
+    validate_sdk,
+    validate_all_sdks,
+    get_available_sdks,
+    # Vector Stores
+    ChromaConfig,
+    QdrantConfig,
+    PineconeConfig,
+    get_vector_store,
+    # Redis
+    RedisConfig,
+    get_redis_client,
+    # Tracing
+    TracingConfig,
+    setup_tracing,
+    get_tracer,
+    # MCP
+    MCPServerConfig,
+    create_mcp_server,
+    create_mcp_tool_from_function,
+    # Document Processing
+    parse_document,
+    extract_pdf_text,
+)
+
 __all__ = [
     # Exceptions
     "AgenticWorkflowError",
@@ -209,4 +252,40 @@ __all__ = [
     "should_invalidate_cache",
     "CACHE_KEY_PREFIX",
     "CACHE_KEY_VERSION",
+    # Multi-Provider Clients
+    "Provider",
+    "ProviderConfig",
+    "get_client",
+    "get_api_key",
+    "reset_all_clients",
+    "get_available_providers",
+    "get_litellm_completion",
+    "get_litellm_completion_sync",
+    "get_structured_output",
+    # SDK Registry
+    "SDKCategory",
+    "SDKEntry",
+    "SDK_REGISTRY",
+    "validate_sdk",
+    "validate_all_sdks",
+    "get_available_sdks",
+    # Vector Stores
+    "ChromaConfig",
+    "QdrantConfig",
+    "PineconeConfig",
+    "get_vector_store",
+    # Redis
+    "RedisConfig",
+    "get_redis_client",
+    # Tracing
+    "TracingConfig",
+    "setup_tracing",
+    "get_tracer",
+    # MCP
+    "MCPServerConfig",
+    "create_mcp_server",
+    "create_mcp_tool_from_function",
+    # Document Processing
+    "parse_document",
+    "extract_pdf_text",
 ]
