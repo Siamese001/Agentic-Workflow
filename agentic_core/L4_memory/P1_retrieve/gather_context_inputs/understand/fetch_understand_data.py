@@ -1,3 +1,4 @@
+# Ownership: agentic_core / L4_memory
 # AUTO-HYDRATED FINAL (substring) score=0.950 from scripts\logic\data_access\get_info\understand_request\fetch_history.py
 
 # ============================================================

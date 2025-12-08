@@ -1,3 +1,4 @@
+# Ownership: agentic_core / L1_cognition
 """
 01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/search.py
 AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
@@ -412,3 +413,4 @@ __all__ = [
     "create_recent_filter",
     "create_date_range_filter",
 ]
+

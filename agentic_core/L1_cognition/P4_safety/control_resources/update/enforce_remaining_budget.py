@@ -1,3 +1,5 @@
+# Ownership: agentic_core / L1_cognition
+# Agent: a
 # AUTO-HYDRATED FINAL (substring) score=0.950 from scripts\security_controls\guardrails\check_rules\manage_scripts_costs_state_update_ops\track_safety_cost.py
 
 # ============================================================
@@ -313,3 +315,5 @@ if __name__ == "__main__":
         logger.error(f"L5 Security error: {e}")
     except Exception as e:
         logger.error(f"L5 Unexpected error: {e}")
+
+
