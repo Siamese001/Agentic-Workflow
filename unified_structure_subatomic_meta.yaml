@@ -557,3 +557,18 @@ numbered_folder_exception:
   "06_data":
     reason: "Pure curated knowledge plane — never imported as code"
     permanent: true
+
+# ---------------------------------------------------------------------
+# 13. NO GHOST FILES — ETERNAL LAW (2025)
+# ---------------------------------------------------------------------
+ghost_file_policy:
+  rule: "A path declared in the YAML SSoT MUST contain real, executable logic."
+  empty_stub_files: banned_forever
+  scaffold_artifacts: banned_forever
+  compliance_metric_100_percent_coverage: abolished
+  only_real_files: true
+  consequence: "Any empty or stub file will be deleted on sight."
+  enforcement:
+    - "CI fails if any .py file (excluding __init__.py) has <10 lines of real code"
+    - "No file may contain only: pass, ..., raise NotImplementedError, or docstring-only"
+    - "generate_scaffold.py and similar auto-generators are banned"
