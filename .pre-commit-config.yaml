@@ -1,28 +1,97 @@
+# .pre-commit-config.yaml
+# SUBATOMIC CANON 2025 — ETERNAL GATEKEEPER
+# If this fails → commit dies. No exceptions. Forever.
+
+fail_fast: true   # CANON FIRST. CANON LAST. CANON ALWAYS.
+
 repos:
+  # ===================================================================
+  # 1. THE CANON ITSELF — RUNS FIRST AND HARDEST
+  # ===================================================================
   - repo: local
     hooks:
-      - id: canon-validator-full
-        name: "SUBATOMIC CANON 2025 - 40 KEYS - HARD FAIL"
+      - id: canon-validator
+        name: "40/40 SUBATOMIC CANON — LAW OF REALITY"
         entry: python canon_validator.py --check-40 --hard-fail
-        language: python
-        types: [python]
-        always_run: true
+        language: system
+        files: \.py$
         pass_filenames: false
-        stages: [pre-commit]
+        stages: [commit]
 
-      - id: canon-mirror-yaml
-        name: "Auto-sync YAML to real code (mirror mode)"
-        entry: python canon_validator.py --mirror-yaml --silent
-        language: python
-        always_run: true
+      - id: prevent-sovereign-changes
+        name: "SOVEREIGN CODE IS IMMORTAL — NO DELETE / RENAME"
+        entry: python scripts/track_changes.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg)/
         pass_filenames: false
-        stages: [pre-commit]
+        stages: [commit]
 
-      # Optional: also run on commit message
-      - id: commit-msg-canon
-        name: "Canon check on commit message too"
-        entry: python canon_validator.py --check-40 --hard-fail
-        language: python
-        stages: [commit-msg]
-        always_run: true
-        pass_filenames: false
+  # ===================================================================
+  # 2. STRUCTURAL INTEGRITY
+  # ===================================================================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+  # ===================================================================
+  # 3. SECRETS & CREDENTIALS
+  # ===================================================================
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: poetry.lock|package-lock.json
+
+  # ===================================================================
+  # 4. PYTHON DIAMOND ENFORCEMENT
+  # ===================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.3
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+
+  # ===================================================================
+  # 5. LAYER PURITY & ANTI-ENTROPY
+  # ===================================================================
+  - repo: local
+    hooks:
+      - id: ban-debug-code
+        name: "NO DEBUG STATEMENTS IN PRODUCTION CODE"
+        entry: python -c "import sys; sys.exit(1 if any('pdb' in open(f).read() or 'set_trace' in open(f).read() for f in sys.argv[1:] if f.endswith('.py')) else 0)"
+        language: system
+        files: \.py$
+        exclude: ^tests/
+
+  # ===================================================================
+  # 6. TEST INTEGRITY
+  # ===================================================================
+  - repo: local
+    hooks:
+      - id: require-fresh-tests
+        name: "EVERY CHANGED .py MUST HAVE UP-TO-DATE TEST"
+        entry: python scripts/check_fresh_tests.py
+        language: system
+        files: \.py$
+        pass_filenames: true
