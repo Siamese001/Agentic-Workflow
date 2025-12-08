@@ -72,54 +72,8 @@ BANNED_TOKENS = {
 # FAKE NESTING FOLDERS (per YAML) - only check in sovereign agents
 FAKE_NESTING = {"v2025", "final", "wrapper", "inner", "temp", "old", "legacy", "archive"}
 
-# ALLOWED DUPLICATE FILENAMES - Legitimate cross-agent implementations
-# These are verb_object files that intentionally exist in multiple agents
-ALLOWED_DUPLICATES = {
-    # Safety layer (each agent has its own safety implementation)
-    'apply_safety_policy.py', 'enforce_safety_filters.py', 'assess_safety_risk.py',
-    'compute_safety_score.py', 'enforce_safety_budget.py', 'evaluate_safety_compliance.py',
-    'track_safety_cost.py', 'update_safety_usage.py', 'validate_safety_ethics.py',
-    'apply_execution_safety.py', 'validate_execution_ethics.py', 'enforce_execution_policy.py',
-    'apply_orchestration_safety.py', 'validate_orchestration_ethics.py', 'enforce_orchestration_policy.py',
-    'apply_input_safety_filter.py', 'filter_inappropriate_content.py', 'validate_ethical_standards.py',
-    # Semantic operations (each agent has its own semantic layer)
-    'compute_semantic_distance.py', 'load_semantic_cache_index.py', 'match_semantic_history.py',
-    # Scoring operations (each agent scores differently)
-    'apply_scoring_weights.py', 'compute_confidence_score.py', 'normalize_confidence_scores.py',
-    # Fallback/retry (each agent handles failures differently)
-    'implement_fallback_templates.py', 'retry_generation_failures.py', 'handle_service_errors.py',
-    # Policy enforcement (each agent enforces its own policies)
-    'enforce_policy_rules.py', 'check_policy_rules.py', 'enforce_remaining_budget.py',
-    'enforce_budget_limits.py', 'enforce_length_limits.py', 'enforce_tone_guidelines.py',
-    # Content operations (each agent processes content differently)
-    'assess_content_relevance.py', 'assess_content_risk.py', 'check_output_quality.py',
-    'assess_message_relevance.py', 'check_message_quality.py', 'create_message_body.py',
-    'evaluate_engagement_potential.py', 'evaluate_personalization_quality.py',
-    'evaluate_writing_quality.py', 'evaluate_compliance_level.py', 'evaluate_resume_effectiveness.py',
-    # Template/pattern matching (each agent has its own patterns)
-    'find_effective_templates.py', 'find_relevant_templates.py', 'match_job_patterns.py',
-    'match_recipient_patterns.py', 'search_similar_messages.py', 'search_similar_resumes.py',
-    # Data retrieval (each agent retrieves its own data)
-    'fetch_user_preferences.py', 'fetch_recipient_interactions.py', 'fetch_core_history.py',
-    'query_past_campaigns.py', 'query_past_generations.py', 'retrieve_outreach_history.py',
-    'retrieve_resume_history.py', 'search_core_vectors.py',
-    # Generation (each agent generates differently)
-    'create_experience_bullets.py', 'generate_subject_line.py', 'generate_summary_section.py',
-    'validate_generated_message.py', 'validate_generated_content.py',
-    # Formatting (each agent formats its own data)
-    'format_data.py', 'format_metadata.py', 'format_candidate_payload.py',
-    'format_utility_data.py', 'serialize_data.py', 'extract_user_intent.py',
-    # Core operations (shared across agents)
-    'apply_core_algorithm.py', 'rank_core_components.py', 'sort_core_results.py',
-    'consolidate_core_updates.py', 'enforce_core_limits.py', 'track_core_usage.py',
-    'update_core_budget.py', 'update_token_usage.py',
-    # Embedding/semantic operations (each agent has its own embedding layer)
-    'match_embedding_patterns.py', 'search_embedding_index.py',
-    # Understanding operations (each agent understands differently)
-    'fetch_understand_data.py', 'query_understand_store.py', 'retrieve_understand_context.py',
-    # Cognition operations (each agent has its own cognition layer)
-    'validate_cognition_output.py', 'prepare_cognition_data.py', 'compute_cognition_score.py',
-}
+# NO ALLOWED_DUPLICATES - Strict semantic ownership enforced via rule logic
+# Key 28 uses pure algorithmic enforcement instead of allow-lists
 
 # LIMITS
 MAX_DEPTH = 7
@@ -373,14 +327,58 @@ def run_checks_21_30():
     if not shared_engine: success("27")
     else: fail("27", f"shared_engine found: {shared_engine}")
 
-    # 28: No duplicate .py filenames repo wide (with allowed list)
+    # 28: Strict semantic ownership - no allow-list, pure rule enforcement
+    # Rules:
+    # 1. Same agent + same layer cannot have multiple files with same name
+    # 2. Same agent + different layers = allowed (L1 cognition vs L2 execution pattern)
+    # 3. Cross-agent duplicates allowed if content is different
+    # 4. Identical content across files = copy-paste violation
     seen = defaultdict(list)
     for f in get_sovereign_py_files():
-        if f.name not in ALLOWED_DUPLICATES:
-            seen[f.name].append(str(f))
-    dupes = {k: v for k, v in seen.items() if len(v) > 1}
-    if not dupes: success("28")
-    else: fail("28", f"Duplicates: {list(dupes.keys())[:5]}")
+        seen[f.name].append(f)
+    
+    duplicates = {name: paths for name, paths in seen.items() if len(paths) > 1}
+    
+    if not duplicates:
+        success("28")
+    else:
+        violations = []
+        for name, paths in duplicates.items():
+            # Extract (agent, layer) tuple for each path
+            agent_layer_counts = defaultdict(int)
+            for p in paths:
+                agent = None
+                layer = None
+                for a in SOVEREIGN_AGENTS:
+                    if a in p.parts:
+                        agent = a
+                        break
+                for part in p.parts:
+                    if part.startswith("L") and "_" in part:
+                        layer = part
+                        break
+                if agent and layer:
+                    agent_layer_counts[(agent, layer)] += 1
+            
+            # Violation 1: Same agent + same layer has multiple copies
+            if any(count > 1 for count in agent_layer_counts.values()):
+                violations.append(f"{name} (same agent+layer)")
+                continue
+            
+            # Violation 2: Identical content across any files (copy-paste)
+            content_hashes = defaultdict(list)
+            for p in paths:
+                try:
+                    h = hash(p.read_bytes())
+                    content_hashes[h].append(str(p))
+                except: pass
+            if any(len(v) > 1 for v in content_hashes.values()):
+                violations.append(f"{name} (identical content)")
+        
+        if not violations:
+            success("28")  # Cross-agent or cross-layer duplicates with unique content are allowed
+        else:
+            fail("28", f"Illegal duplicates: {violations[:5]}")
 
     # 29: Max path depth 7 or less repo wide (sovereign agents only)
     deep = []

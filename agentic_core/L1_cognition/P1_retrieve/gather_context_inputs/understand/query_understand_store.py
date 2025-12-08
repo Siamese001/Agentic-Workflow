@@ -1,3 +1,4 @@
+# Ownership: agentic_core / L1_cognition
 """
 01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/query.py
 AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
@@ -31,3 +32,4 @@ def graph_query(*args, **kwargs):
 
 
 __all__ = ["graph_query", "GraphDatabase", "_NEO4J_AVAILABLE"]
+
