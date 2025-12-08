@@ -20,9 +20,10 @@ Enforced invariants (partial list):
   - K9: No L*/P* in support domains
   - K10: Test taxonomy high-level structure
   - K11: shared_engine_ops immutability
-  - K12: No cognitive fillers in L5_safety (only P4_safety)
+  - K12: L5_safety is flat (subatomic canon 2025)
   - K13: DISABLED — semantic_cache migrated to durable knowledge plane
-  - K14: Protected paths respected (no spurious errors)
+  - K14: NO GHOST FILES — empty/stub files banned
+  - K15: Protected paths respected (no spurious errors)
   - Engine separation (LIC vs RG)
   - Low-signal names
   - YAML ↔ filesystem shape (warnings)
@@ -52,6 +53,7 @@ main: Dict[str, Any] = yaml.safe_load(MAIN.read_text(encoding="utf-8"))
 meta: Dict[str, Any] = yaml.safe_load(META.read_text(encoding="utf-8"))
 
 # Domain root mapping: logical name -> actual filesystem folder
+# Updated 2025-12-08: apps_lic and apps_rg are now top-level (prefix purge complete)
 DOMAIN_ROOT_MAP: Dict[str, str] = {
     "agentic_core": "agentic_core",
     "schemas": "schemas",
@@ -61,8 +63,8 @@ DOMAIN_ROOT_MAP: Dict[str, str] = {
     "data": "06_data",
     "observability": "observability",
     "scripts": "scripts",
-    "apps_lic": "09_apps/apps_lic",
-    "apps_rg": "09_apps/apps_rg",
+    "apps_lic": "apps_lic",
+    "apps_rg": "apps_rg",
     "tests": "tests",
     "shared": "shared",
     "shared_engine_ops": "shared_engine_ops",
@@ -163,6 +165,9 @@ for p in all_paths:
         continue
     if any(part in {".pytest_cache", ".mypy_cache", ".ruff_cache"} for part in p.parts):
         continue
+    # Skip 06_data entirely - it's a curated knowledge plane with its own depth rules
+    if "06_data" in p.parts:
+        continue
     # also skip paths that META marks protected, except we still
     # allow shared_engine_ops to be depth-checked
     if is_protected(p) and "shared_engine_ops" not in p.parts:
@@ -178,6 +183,10 @@ domain_invariants = meta["domain_invariants"]
 hierarchy = main.get("hierarchy", {})
 
 for domain, inv in domain_invariants.items():
+    # Skip 06_data - curated knowledge plane has its own rules
+    if domain == "data":
+        continue
+    
     root = get_domain_root(domain)
     if not root.exists():
         continue
@@ -204,6 +213,10 @@ support_domains = meta["domain_overrides"]["support_domains"]["domains"]
 L_or_P_re = re.compile(r"^[LP]\d+_")
 
 for domain in support_domains:
+    # Skip 06_data - curated knowledge plane has archived code with L/P structure
+    if domain == "data":
+        continue
+    
     root = get_domain_root(domain)
     if not root.exists():
         continue
@@ -257,7 +270,8 @@ if shared_root.exists():
             err(f"K11: Unauthorized folder in shared_engine_ops: {rel(child)}")
     ok_msg("K11: shared_engine_ops structure checked.")
 
-# ── K12 – No cognitive fillers in L5_safety (only P4_safety) ──────────
+# ── K12 – L5_safety must be flat (subatomic canon 2025) ──────────────
+# L5_safety no longer has P4_safety subfolder - files are directly in L5_safety/
 
 cognitive_domains = ["agentic_core", "apps_lic", "apps_rg"]
 for domain in cognitive_domains:
@@ -267,16 +281,98 @@ for domain in cognitive_domains:
     l5 = root / "L5_safety"
     if not l5.exists():
         continue
-    # Allowed: P4_safety phase + safety-specific folders (guardrails, pii)
-    allowed_l5_children = {"P4_safety", "guardrails", "pii", "__init__.py", "__pycache__"}
+    # L5_safety should be flat - no P* subfolders allowed (subatomic canon 2025)
     for child in l5.iterdir():
-        if child.is_dir() and child.name not in allowed_l5_children:
-            err(f"K12: Disallowed folder '{child.name}' under L5_safety in {domain}: {rel(child)}")
+        if child.is_dir() and child.name.startswith("P") and "_" in child.name:
+            err(f"K12: L5_safety must be flat - found phase folder '{child.name}' in {domain}: {rel(child)}")
+    ok_msg(f"K12: L5_safety is flat in {domain}")
 
 # ── K13 – DISABLED: semantic_cache migrated to durable knowledge plane ────────
 # K13: semantic_cache is now a durable curated asset under 06_data/semantic_cache/v*_curated/
 # Runtime checks removed as semantic_cache is no longer runtime-coupled.
 ok_msg("K13: semantic_cache migrated to durable knowledge plane — runtime checks removed")
+
+# ── K14 – NO GHOST FILES (eternal law 2025) ────────────────────────────
+# A .py file (excluding __init__.py) must have real executable logic.
+# Empty files and stub files with only 'pass' are banned.
+# Files with actual code (functions, classes, assignments) are allowed.
+
+def is_ghost_file(file_path: Path) -> tuple:
+    """Check if a file is a ghost/stub file. Returns (is_ghost, reason)."""
+    try:
+        content = file_path.read_text(encoding="utf-8", errors="ignore").strip()
+        
+        # Empty file
+        if not content:
+            return True, "empty"
+        
+        # Very short file check
+        if len(content) < 50:
+            if content in ["pass", "..."]:
+                return True, "minimal_stub"
+        
+        # Check for actual code patterns (not just imports/docstrings)
+        has_function = "def " in content
+        has_class = "class " in content
+        has_assignment = " = " in content and not content.strip().startswith("#")
+        has_return = "return " in content
+        has_dict_or_list = "{" in content or "[" in content
+        
+        # If file has any real code structure, it's not a ghost
+        if has_function or has_class or has_assignment or has_return or has_dict_or_list:
+            return False, "has_content"
+        
+        # Count non-empty, non-comment, non-import lines
+        lines = content.split("\n")
+        code_lines = []
+        in_docstring = False
+        
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("#"):
+                continue
+            if '"""' in stripped or "'''" in stripped:
+                in_docstring = not in_docstring
+                continue
+            if in_docstring:
+                continue
+            if stripped.startswith("from ") or stripped.startswith("import "):
+                continue
+            if stripped in ["pass", "..."]:
+                continue
+            code_lines.append(stripped)
+        
+        # If no real code lines after filtering, it's a ghost
+        if len(code_lines) == 0:
+            return True, "imports_only"
+        
+        return False, "has_content"
+    except Exception:
+        return False, "read_error"
+
+ghost_file_count = 0
+for p in all_paths:
+    if not p.is_file() or not p.suffix == ".py":
+        continue
+    if p.name == "__init__.py" or p.name == "conftest.py":
+        continue
+    if is_protected(p):
+        continue
+    # Skip 06_data (curated knowledge plane)
+    if "06_data" in p.parts:
+        continue
+    
+    is_ghost, reason = is_ghost_file(p)
+    if is_ghost:
+        ghost_file_count += 1
+        err(f"K14: Ghost file detected ({reason}): {rel(p)}")
+
+if ghost_file_count == 0:
+    ok_msg("K14: No ghost files detected — repo is honest")
+else:
+    err(f"K14: {ghost_file_count} ghost files detected — see errors above")
 
 # ── Engine separation rules (LIC ↔ RG) ────────────────────────────────
 
@@ -307,6 +403,9 @@ if rg_root.exists():
 low_signal = meta["validation_invariants"]["disallowed_low_signal_names"]
 for p in all_paths:
     if is_protected(p):
+        continue
+    # Skip 06_data - curated knowledge plane has its own naming conventions
+    if "06_data" in p.parts:
         continue
     if has_token(p.name, low_signal):
         err(f"Low-signal name detected: {rel(p)}")
@@ -351,7 +450,7 @@ if tests_root.exists():
     existing_groups = {p.name for p in tests_root.iterdir() if p.is_dir()}
 
     missing_groups = required_groups - existing_groups
-    extra_groups = existing_groups - required_groups - {"__pycache__", "logic"}  # allow 'logic' as an extra bucket
+    extra_groups = existing_groups - required_groups - {"__pycache__"}  # logic folder removed per YAML compliance
 
     for g in missing_groups:
         err(f"K10: Missing top-level tests group '{g}' under tests/")
