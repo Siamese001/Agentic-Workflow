@@ -1,188 +1,20 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: sort_scripts_results.py
-# Match Score: 0.8108
-# ============================================================
+# Ownership: agentic_core / L1_cognition
+# -*- coding: utf-8 -*-
+"""Sort Core Results - atomic wrapper."""
 
-"""
-L5 Agentic Core - Plan Layer - sort_scripts_results
-Implements L1 Cognitive Planning Layer for sort scripts results operations
-"""
+from __future__ import annotations
 
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, field
-from enum import Enum
-import logging
-from abc import ABC, abstractmethod
+from typing import Any, Dict, List
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from shared.models import ValidationResult, ValidationSeverity
+from shared.workflow_types import HopStatus, HopCheckpoint
 
-class SortScriptsResultsPlanType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
 
-@dataclass
-class SortScriptsResultsPlanConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+def sort_core_results(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Process sort core results data."""
+    return {"status": "processed", "input_keys": list(data.keys())}
 
-@dataclass
-class SortScriptsResultsPlanResult:
-    """L5 Result structure with full type safety"""
-    success: bool
-    data: Dict[str, Any] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
 
-class SortScriptsResultsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
-    
-    @abstractmethod
-    def process(self, input_data: Dict[str, Any]) -> SortScriptsResultsPlanResult:
-        """Process data with L5 safety constraints"""
-        ...
-    
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
-
-class SortScriptsResultsPlanImpl(SortScriptsResultsPlanProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
-    
-    def __init__(self, constraints: Optional[SortScriptsResultsPlanConstraints] = None):
-        self.constraints = constraints or SortScriptsResultsPlanConstraints()
-        self.logger = logging.getLogger(self.__class__.__name__)
-    
-    def process(self, input_data: Dict[str, Any]) -> SortScriptsResultsPlanResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
-        
-        # L5 Input validation
-        self._validate_input(input_data)
-        
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-        
-        # Create result with L5 structure
-        result = SortScriptsResultsPlanResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
-        )
-        
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
-    
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
-        try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "eval(", "exec(", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
-            
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
-            
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except Exception as e:
-            self.logger.error(f"Safety validation error: {e}")
-            return False  # Fail-closed
-    
-    def _validate_input(self, input_data: Dict[str, Any]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
-        
-        if not input_data:
-            raise ValueError("Input cannot be empty")
-    
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class SortScriptsResultsPlanInterface:
-    """L5 Interface - ensures contract compliance"""
-    
-    def __init__(self, processor: SortScriptsResultsPlanProcessor):
-        self._processor = processor
-    
-    def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """L5 Interface method - executes safely"""
-        try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except Exception as e:
-            raise SecurityError(f"Execution failed: {e}")
-
-# L5 Factory
-class SortScriptsResultsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
-    
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> SortScriptsResultsPlanInterface:
-        """Create configured processor"""
-        constraints = SortScriptsResultsPlanConstraints(safety_level=safety_level)
-        processor = SortScriptsResultsPlanImpl(constraints)
-        return SortScriptsResultsPlanInterface(processor)
-
-# L5 Main execution point
-def sort_scripts_results(input_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    L5 Main function - sort scripts results operations
-    
-    Args:
-        input_data: Input data to process
-        
-    Returns:
-        Dict: Processed result
-        
-    Raises:
-        SecurityError: If execution fails any safety check
-    """
-    factory = SortScriptsResultsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = sort_scripts_results(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except Exception as e:
-        logger.error(f"L5 Unexpected error: {e}")
+def get_sort_core_results_config() -> Dict[str, Any]:
+    """Get configuration for sort_core_results."""
+    return {"enabled": True, "version": "1.0"}
