@@ -1,0 +1,208 @@
+{
+  "summary": {
+    "total_test_files": 120,
+    "total_test_dirs": 36,
+    "yaml_compliant": 120,
+    "violations": 0
+  },
+  "violations": {
+    "forbidden_lp_patterns": [],
+    "banned_folders": [],
+    "unknown_categories": []
+  },
+  "coverage": {
+    "unit": {
+      "agentic_core": [
+        "test_apply_tests_safety.py",
+        "test_architectural_compliance.py",
+        "test_build_tests_orchestration.py",
+        "test_check_tests_compliance.py",
+        "test_check_tests_policy.py",
+        "test_compute_tests_score.py",
+        "test_constitutional_review.py",
+        "test_content_inspection.py",
+        "test_contract_enforcement.py",
+        "test_coordinate_tests_operations.py",
+        "test_data_transformation.py",
+        "test_design_validation.py",
+        "test_diagnose_tests_issues.py",
+        "test_enforce_tests_filters.py",
+        "test_execution_planning.py",
+        "test_fallback_paths.py",
+        "test_functional_behavior.py",
+        "test_inspect_tests_quality.py",
+        "test_intent_parsing.py",
+        "test_l2_aggregate.py",
+        "test_l2_inspect.py",
+        "test_l2_retrieve.py",
+        "test_l2_safety.py",
+        "test_l3_aggregate.py",
+        "test_l3_inspect.py",
+        "test_l3_retrieve.py",
+        "test_l3_safety.py",
+        "test_l4_aggregate.py",
+        "test_l4_inspect.py",
+        "test_l4_retrieve.py",
+        "test_l4_safety.py",
+        "test_l5_enforcement.py",
+        "test_load_tests_planning.py",
+        "test_log_tests_metrics.py",
+        "test_manage_tests_parameters.py",
+        "test_memory_operations.py",
+        "test_mock_detection.py",
+        "test_orchestrate_tests_planning.py",
+        "test_planner_scoring_properties.py",
+        "test_prepare_tests_orchestration.py",
+        "test_prepare_tests_payload.py",
+        "test_result_aggregation.py",
+        "test_safety_rules.py",
+        "test_semantic_cache_reconstruction.py",
+        "test_tool_calls.py",
+        "test_tool_request_builder.py",
+        "test_validate_tests_constraints.py",
+        "test_validate_tests_ethics.py",
+        "test_validate_tests_schema.py",
+        "test_workflow_orchestration.py"
+      ],
+      "apps_lic": [
+        "test_lic_memory_mappings.py",
+        "test_lic_message_generation_executor.py",
+        "test_lic_outreach_engine_dag.py",
+        "test_lic_research_planner.py",
+        "test_lic_safety_planner.py"
+      ],
+      "apps_rg": [
+        "test_rg_research_planner.py",
+        "test_rg_resume_builder.py",
+        "test_rg_safety_planner.py",
+        "test_rg_scoring.py"
+      ],
+      "config": [
+        "test_config.py"
+      ],
+      "data": [
+        "test_data_loading.py"
+      ],
+      "observability": [
+        "test_observability.py"
+      ],
+      "prompt_governance": [
+        "test_prompt_governance.py"
+      ],
+      "runtime": [
+        "test_cache.py",
+        "test_cache_regression.py",
+        "test_multi_provider_clients.py",
+        "test_sdk_registry.py"
+      ],
+      "schemas": [
+        "test_memory_schema_validation.py",
+        "test_models.py",
+        "test_planning_schema_validation.py"
+      ],
+      "scripts": [
+        "test_scripts.py"
+      ],
+      "shared": [
+        "test_cache_ops.py",
+        "test_logic_ops.py",
+        "test_pipeline_ops.py",
+        "test_runtime_ops.py",
+        "test_security_controls.py",
+        "test_utils.py"
+      ],
+      "shared_engine_ops": [
+        "test_aggregation_ops.py",
+        "test_cognition_ops.py",
+        "test_embedding_ops.py",
+        "test_inspection_ops.py",
+        "test_safety_ops.py",
+        "test_scoring_ops.py",
+        "test_tool_ops.py"
+      ]
+    },
+    "integration": {
+      "api": [
+        "test_api_integration.py",
+        "test_provider_routing.py"
+      ],
+      "core_plus_runtime": [
+        "test_core_runtime_integration.py",
+        "test_rag_pipeline_integration.py"
+      ],
+      "cross_domain": [
+        "test_cross_domain_integration.py",
+        "test_schema_compatibility.py"
+      ],
+      "full_pipeline": [
+        "test_e2e_multi_turn_state.py",
+        "test_e2e_safety_blocking_flows.py",
+        "test_full_pipeline_integration.py"
+      ],
+      "lic_plus_data": [
+        "test_lic_data_integration.py",
+        "test_lic_research_integration.py"
+      ],
+      "rg_plus_data": [
+        "test_l2_rg_execution_integration.py",
+        "test_rg_data_integration.py"
+      ],
+      "workflow": [
+        "test_full_agentic_loop.py",
+        "test_integration_flow.py",
+        "test_workflow_state_integration.py"
+      ]
+    },
+    "e2e": {
+      "admin_flows": [
+        "test_admin_flows.py",
+        "test_admin_system_management.py"
+      ],
+      "outreach_flows": [
+        "test_outreach_campaign_lifecycle.py",
+        "test_outreach_flows.py",
+        "test_outreach_research_e2e.py"
+      ],
+      "resume_flows": [
+        "test_resume_flows.py",
+        "test_resume_generation_lifecycle.py",
+        "test_resume_optimization_e2e.py"
+      ]
+    },
+    "golden": {
+      "prompts": [
+        "test_regression_lic_outreach_outputs.py",
+        "test_regression_rg_resume_outputs.py"
+      ],
+      "safety": [
+        "test_llm_guardrails.py",
+        "test_prompt_injection_protection.py",
+        "test_safety_properties.py"
+      ],
+      "semantics": [
+        "test_regression_temporal_memory.py"
+      ]
+    },
+    "perf": {
+      "cost": [
+        "test_cost_estimation.py"
+      ],
+      "latency": [
+        "test_performance_stability.py",
+        "test_sdk_latency.py"
+      ],
+      "throughput": [
+        "test_cache_throughput.py"
+      ]
+    },
+    "load": {
+      "soak": [
+        "test_soak.py"
+      ],
+      "spike": [
+        "test_spike.py"
+      ]
+    }
+  },
+  "recommendations": []
+}
