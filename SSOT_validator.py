@@ -53,17 +53,17 @@ meta: Dict[str, Any] = yaml.safe_load(META.read_text(encoding="utf-8"))
 
 # Domain root mapping: logical name -> actual filesystem folder
 DOMAIN_ROOT_MAP: Dict[str, str] = {
-    "agentic_core": "01_agentic_core",
-    "schemas": "02_schemas",
-    "runtime": "03_runtime",
-    "prompt_governance": "04_prompt_governance",
-    "config": "05_config",
+    "agentic_core": "agentic_core",
+    "schemas": "schemas",
+    "runtime": "runtime",
+    "prompt_governance": "prompt_governance",
+    "config": "config",
     "data": "06_data",
-    "observability": "07_observability",
-    "scripts": "08_scripts",
+    "observability": "observability",
+    "scripts": "scripts",
     "apps_lic": "09_apps/apps_lic",
     "apps_rg": "09_apps/apps_rg",
-    "tests": "10_tests",
+    "tests": "tests",
     "shared": "shared",
     "shared_engine_ops": "shared_engine_ops",
 }

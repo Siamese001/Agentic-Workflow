@@ -2392,9 +2392,9 @@ shared:
 
 # NOTE: apps_rg and apps_lic are top-level logical domains (defined in domain_modes)
 # The physical folder 09_apps is purely a filesystem aggregator, not a domain
-# Removed 'apps:' block to prevent tools from misclassifying 09_apps/apps_rg as domain 'apps'
+# Removed 'apps:' block to prevent tools from misclassifying apps_rg as domain 'apps'
 
-# Tests structure (physical 10_tests contains test taxonomy)
+# Tests structure (physical tests contains test taxonomy)
 tests:
   unit:
     __init__.py: null

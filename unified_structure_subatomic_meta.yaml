@@ -549,3 +549,11 @@ subatomic_canon_2025:
     - banned_low_signal_words
     - natural_depth_no_padding
     - self_teaching_names
+
+# ---------------------------------------------------------------------
+# 12. NUMBERED FOLDER EXCEPTION — ETERNAL LAW
+# ---------------------------------------------------------------------
+numbered_folder_exception:
+  "06_data":
+    reason: "Pure curated knowledge plane — never imported as code"
+    permanent: true
