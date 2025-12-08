@@ -1,0 +1,806 @@
+{
+  "summary": {
+    "total_py_files": 1155,
+    "stub_files": 101,
+    "real_files": 1054
+  },
+  "by_reason": {
+    "placeholder_marker": [
+      "apps_rg\\resume_generation_engine.py",
+      "apps_rg\\resume_generation_engine_v560.py",
+      "scripts\\populate_hardened_code.py",
+      "tests\\unit\\agentic_core\\test_fallback_paths.py",
+      "tests\\golden\\safety\\test_llm_guardrails.py",
+      "tests\\e2e\\outreach_flows\\test_outreach_campaign_lifecycle.py",
+      "scripts\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "scripts\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "scripts\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "scripts\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "scripts\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "schemas\\pipeline_ops\\data_access\\get_schema_info\\understand_request\\manage_schema_context.py",
+      "schemas\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "schemas\\logic\\data_access\\get_schema_info\\understand_request\\retrieve_schema_context.py",
+      "schemas\\logic\\data_access\\get_schema_info\\utility_prepare_information\\format_schema_context.py",
+      "schemas\\cache_ops\\data_access\\get_schema_info\\embedding_compare_meaning\\find_schema_context.py",
+      "runtime\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "runtime\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "runtime\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "runtime\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "runtime\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "prompt_governance\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\retrieve_prompt_context.py",
+      "prompt_governance\\cache_ops\\data_access\\get_prompt_info\\embedding_compare_meaning\\find_prompt_context.py",
+      "observability\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "observability\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "observability\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "observability\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "config\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "config\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "config\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "config\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "agentic_core\\L2_execution\\format.py",
+      "agentic_core\\L2_execution\\validate.py",
+      "agentic_core\\L2_execution\\validate_1.py",
+      "agentic_core\\L3_orchestration\\orchestrate.py",
+      "agentic_core\\L3_orchestration\\validate.py",
+      "agentic_core\\L5_safety\\validate.py",
+      "agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety\\check_rules\\policy\\validate.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\get_info\\embedding_compare_meaning\\find_context.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\find.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\match.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\find_core_context.py",
+      "agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+      "agentic_core\\L1_cognition\\P3_aggregate\\sync_status\\update\\merge.py",
+      "agentic_core\\L1_cognition\\P3_aggregate\\sync_status\\utility\\format.py",
+      "agentic_core\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+      "agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\match.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\format.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\retrieve_core_context.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\match_core_context.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py"
+    ],
+    "todo_marker": [
+      "scripts\\cleanup_stubs.py",
+      "scripts\\review_pending_merge.py",
+      "scripts\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "scripts\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "schemas\\pipeline_ops\\synthesis\\use_schema_tools\\use_a_tool\\invoke_service.py",
+      "schemas\\logic\\synthesis\\use_schema_tools\\use_a_tool\\invoke_service.py",
+      "runtime\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "runtime\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "prompt_governance\\pipeline_ops\\synthesis\\use_prompt_tools\\use_a_tool\\invoke_service.py",
+      "prompt_governance\\logic\\synthesis\\use_prompt_tools\\use_a_tool\\invoke_service.py",
+      "observability\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "observability\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "config\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "config\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "agentic_core\\L2_execution\\invoke.py",
+      "agentic_core\\L3_orchestration\\invoke.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
+      "agentic_core\\L1_cognition\\P3_aggregate\\execute_actions\\use\\invoke.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\search.py"
+    ],
+    "stub_marker": [
+      "scripts\\compliance_scan.py",
+      "scripts\\review_pending_process.py",
+      "scripts\\migration\\phase03A_stub_scan.py",
+      "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\understand\\query.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\get_info\\understand_request\\extract_user_intent.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\understand\\query.py",
+      "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\extract_user_intent.py"
+    ],
+    "not_implemented": [
+      "scripts\\comprehensive_dedup_analysis.py",
+      "scripts\\stub_audit.py",
+      "tests\\unit\\agentic_core\\test_mock_detection.py"
+    ]
+  },
+  "by_folder": {
+    "SSOT_validator.py": {
+      "stubs": 0,
+      "real": 1,
+      "files": []
+    },
+    "apps_rg": {
+      "stubs": 8,
+      "real": 109,
+      "files": [
+        "apps_rg\\resume_generation_engine.py",
+        "apps_rg\\resume_generation_engine_v560.py",
+        "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+        "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+        "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+        "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+        "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+        "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py"
+      ]
+    },
+    "scripts": {
+      "stubs": 15,
+      "real": 91,
+      "files": [
+        "scripts\\cleanup_stubs.py",
+        "scripts\\compliance_scan.py",
+        "scripts\\comprehensive_dedup_analysis.py",
+        "scripts\\populate_hardened_code.py",
+        "scripts\\review_pending_merge.py",
+        "scripts\\review_pending_process.py",
+        "scripts\\stub_audit.py",
+        "scripts\\migration\\phase03A_stub_scan.py",
+        "scripts\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "scripts\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+        "scripts\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "scripts\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+        "scripts\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+        "scripts\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+        "scripts\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py"
+      ]
+    },
+    "tests": {
+      "stubs": 4,
+      "real": 117,
+      "files": [
+        "tests\\unit\\agentic_core\\test_fallback_paths.py",
+        "tests\\unit\\agentic_core\\test_mock_detection.py",
+        "tests\\golden\\safety\\test_llm_guardrails.py",
+        "tests\\e2e\\outreach_flows\\test_outreach_campaign_lifecycle.py"
+      ]
+    },
+    "shared_engine_ops": {
+      "stubs": 0,
+      "real": 30,
+      "files": []
+    },
+    "shared": {
+      "stubs": 0,
+      "real": 93,
+      "files": []
+    },
+    "schemas": {
+      "stubs": 7,
+      "real": 57,
+      "files": [
+        "schemas\\pipeline_ops\\synthesis\\use_schema_tools\\use_a_tool\\invoke_service.py",
+        "schemas\\pipeline_ops\\data_access\\get_schema_info\\understand_request\\manage_schema_context.py",
+        "schemas\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+        "schemas\\logic\\synthesis\\use_schema_tools\\use_a_tool\\invoke_service.py",
+        "schemas\\logic\\data_access\\get_schema_info\\understand_request\\retrieve_schema_context.py",
+        "schemas\\logic\\data_access\\get_schema_info\\utility_prepare_information\\format_schema_context.py",
+        "schemas\\cache_ops\\data_access\\get_schema_info\\embedding_compare_meaning\\find_schema_context.py"
+      ]
+    },
+    "runtime": {
+      "stubs": 7,
+      "real": 77,
+      "files": [
+        "runtime\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "runtime\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+        "runtime\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "runtime\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+        "runtime\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+        "runtime\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+        "runtime\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py"
+      ]
+    },
+    "prompt_governance": {
+      "stubs": 5,
+      "real": 57,
+      "files": [
+        "prompt_governance\\pipeline_ops\\synthesis\\use_prompt_tools\\use_a_tool\\invoke_service.py",
+        "prompt_governance\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+        "prompt_governance\\logic\\synthesis\\use_prompt_tools\\use_a_tool\\invoke_service.py",
+        "prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\retrieve_prompt_context.py",
+        "prompt_governance\\cache_ops\\data_access\\get_prompt_info\\embedding_compare_meaning\\find_prompt_context.py"
+      ]
+    },
+    "observability": {
+      "stubs": 7,
+      "real": 83,
+      "files": [
+        "observability\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "observability\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+        "observability\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "observability\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+        "observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+        "observability\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+        "observability\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py"
+      ]
+    },
+    "config": {
+      "stubs": 6,
+      "real": 54,
+      "files": [
+        "config\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "config\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+        "config\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+        "config\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+        "config\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+        "config\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py"
+      ]
+    },
+    "apps_lic": {
+      "stubs": 6,
+      "real": 108,
+      "files": [
+        "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+        "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+        "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+        "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+        "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+        "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py"
+      ]
+    },
+    "agentic_core": {
+      "stubs": 36,
+      "real": 177,
+      "files": [
+        "agentic_core\\L2_execution\\format.py",
+        "agentic_core\\L2_execution\\invoke.py",
+        "agentic_core\\L2_execution\\validate.py",
+        "agentic_core\\L2_execution\\validate_1.py",
+        "agentic_core\\L3_orchestration\\invoke.py",
+        "agentic_core\\L3_orchestration\\orchestrate.py",
+        "agentic_core\\L3_orchestration\\validate.py",
+        "agentic_core\\L5_safety\\validate.py",
+        "agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety\\check_rules\\policy\\validate.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\get_info\\embedding_compare_meaning\\find_context.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\find.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\match.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\understand\\query.py",
+        "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\find_core_context.py",
+        "agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+        "agentic_core\\L1_cognition\\P3_aggregate\\sync_status\\update\\merge.py",
+        "agentic_core\\L1_cognition\\P3_aggregate\\sync_status\\utility\\format.py",
+        "agentic_core\\L1_cognition\\P3_aggregate\\execute_actions\\use\\invoke.py",
+        "agentic_core\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+        "agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\get_info\\understand_request\\extract_user_intent.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\match.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\understand\\query.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\format.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\extract_user_intent.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\retrieve_core_context.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\match_core_context.py",
+        "agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py"
+      ]
+    }
+  },
+  "stubs": [
+    {
+      "path": "apps_rg\\resume_generation_engine.py",
+      "reason": "placeholder_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_rg\\resume_generation_engine_v560.py",
+      "reason": "placeholder_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "scripts\\cleanup_stubs.py",
+      "reason": "todo_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\compliance_scan.py",
+      "reason": "stub_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\comprehensive_dedup_analysis.py",
+      "reason": "not_implemented",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\populate_hardened_code.py",
+      "reason": "placeholder_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\review_pending_merge.py",
+      "reason": "todo_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\review_pending_process.py",
+      "reason": "stub_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\stub_audit.py",
+      "reason": "not_implemented",
+      "folder": "scripts"
+    },
+    {
+      "path": "tests\\unit\\agentic_core\\test_fallback_paths.py",
+      "reason": "placeholder_marker",
+      "folder": "tests"
+    },
+    {
+      "path": "tests\\unit\\agentic_core\\test_mock_detection.py",
+      "reason": "not_implemented",
+      "folder": "tests"
+    },
+    {
+      "path": "tests\\golden\\safety\\test_llm_guardrails.py",
+      "reason": "placeholder_marker",
+      "folder": "tests"
+    },
+    {
+      "path": "tests\\e2e\\outreach_flows\\test_outreach_campaign_lifecycle.py",
+      "reason": "placeholder_marker",
+      "folder": "tests"
+    },
+    {
+      "path": "scripts\\migration\\phase03A_stub_scan.py",
+      "reason": "stub_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "reason": "placeholder_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "reason": "placeholder_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "reason": "placeholder_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "reason": "placeholder_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "scripts\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "reason": "placeholder_marker",
+      "folder": "scripts"
+    },
+    {
+      "path": "schemas\\pipeline_ops\\synthesis\\use_schema_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "schemas\\pipeline_ops\\data_access\\get_schema_info\\understand_request\\manage_schema_context.py",
+      "reason": "placeholder_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "schemas\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "reason": "placeholder_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "schemas\\logic\\synthesis\\use_schema_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "schemas\\logic\\data_access\\get_schema_info\\understand_request\\retrieve_schema_context.py",
+      "reason": "placeholder_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "schemas\\logic\\data_access\\get_schema_info\\utility_prepare_information\\format_schema_context.py",
+      "reason": "placeholder_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "schemas\\cache_ops\\data_access\\get_schema_info\\embedding_compare_meaning\\find_schema_context.py",
+      "reason": "placeholder_marker",
+      "folder": "schemas"
+    },
+    {
+      "path": "runtime\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "runtime\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "reason": "placeholder_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "runtime\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "runtime\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "reason": "placeholder_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "runtime\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "reason": "placeholder_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "runtime\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "reason": "placeholder_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "runtime\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "reason": "placeholder_marker",
+      "folder": "runtime"
+    },
+    {
+      "path": "prompt_governance\\pipeline_ops\\synthesis\\use_prompt_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "prompt_governance"
+    },
+    {
+      "path": "prompt_governance\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "reason": "placeholder_marker",
+      "folder": "prompt_governance"
+    },
+    {
+      "path": "prompt_governance\\logic\\synthesis\\use_prompt_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "prompt_governance"
+    },
+    {
+      "path": "prompt_governance\\logic\\data_access\\get_prompt_info\\understand_request\\retrieve_prompt_context.py",
+      "reason": "placeholder_marker",
+      "folder": "prompt_governance"
+    },
+    {
+      "path": "prompt_governance\\cache_ops\\data_access\\get_prompt_info\\embedding_compare_meaning\\find_prompt_context.py",
+      "reason": "placeholder_marker",
+      "folder": "prompt_governance"
+    },
+    {
+      "path": "observability\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "observability\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "reason": "placeholder_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "observability\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "observability\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "reason": "placeholder_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "observability\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "reason": "placeholder_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "observability\\logic\\data_access\\get_info\\utility_prepare_information\\format_context.py",
+      "reason": "placeholder_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "observability\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "reason": "placeholder_marker",
+      "folder": "observability"
+    },
+    {
+      "path": "config\\pipeline_ops\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "config"
+    },
+    {
+      "path": "config\\logic\\synthesis\\state_update_ops\\merge_contexts.py",
+      "reason": "placeholder_marker",
+      "folder": "config"
+    },
+    {
+      "path": "config\\logic\\synthesis\\use_tools\\use_a_tool\\invoke_service.py",
+      "reason": "todo_marker",
+      "folder": "config"
+    },
+    {
+      "path": "config\\logic\\data_access\\get_info\\embedding_compare_meaning\\match_context.py",
+      "reason": "placeholder_marker",
+      "folder": "config"
+    },
+    {
+      "path": "config\\logic\\data_access\\get_info\\understand_request\\retrieve_context.py",
+      "reason": "placeholder_marker",
+      "folder": "config"
+    },
+    {
+      "path": "config\\cache_ops\\data_access\\get_info\\embedding_compare_meaning\\find_context.py",
+      "reason": "placeholder_marker",
+      "folder": "config"
+    },
+    {
+      "path": "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "reason": "stub_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "reason": "stub_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_rg\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "reason": "stub_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "reason": "stub_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "reason": "stub_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_rg\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "reason": "stub_marker",
+      "folder": "apps_rg"
+    },
+    {
+      "path": "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "reason": "stub_marker",
+      "folder": "apps_lic"
+    },
+    {
+      "path": "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "reason": "stub_marker",
+      "folder": "apps_lic"
+    },
+    {
+      "path": "apps_lic\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "reason": "stub_marker",
+      "folder": "apps_lic"
+    },
+    {
+      "path": "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "reason": "stub_marker",
+      "folder": "apps_lic"
+    },
+    {
+      "path": "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "reason": "stub_marker",
+      "folder": "apps_lic"
+    },
+    {
+      "path": "apps_lic\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "reason": "stub_marker",
+      "folder": "apps_lic"
+    },
+    {
+      "path": "agentic_core\\L2_execution\\format.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L2_execution\\invoke.py",
+      "reason": "todo_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L2_execution\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L2_execution\\validate_1.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L3_orchestration\\invoke.py",
+      "reason": "todo_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L3_orchestration\\orchestrate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L3_orchestration\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L5_safety\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\__QUARANTINE_L4_NON_RETRIEVE__\\P4_safety\\check_rules\\policy\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\get_info\\embedding_compare_meaning\\find_context.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\find.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\match.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
+      "reason": "todo_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\understand\\query.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\find_core_context.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P4_safety\\check_rules\\policy\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P3_aggregate\\sync_status\\update\\merge.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P3_aggregate\\sync_status\\utility\\format.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P3_aggregate\\execute_actions\\use\\invoke.py",
+      "reason": "todo_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P2_inspect\\check_structure\\policy\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\compute_semantic_distance.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\load_semantic_cache_index.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\semantic_cache\\match_semantic_history.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\get_info\\understand_request\\extract_user_intent.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\match.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
+      "reason": "todo_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\understand\\query.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\format.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\extract_user_intent.py",
+      "reason": "stub_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\retrieve_core_context.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\embedding\\embedding_compare_meaning\\match_core_context.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    },
+    {
+      "path": "agentic_core\\L1_cognition\\P1_retrieve\\check_rules\\policy\\validate.py",
+      "reason": "placeholder_marker",
+      "folder": "agentic_core"
+    }
+  ],
+  "recommendations": [
+    "CRITICAL: 101 stub files (8.7%) need implementation or removal"
+  ]
+}
