@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L1_cognition\\P2_inspect\\check_structure\\semantic\\validate.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "3ec2be99173baafa",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L5_safety\\P4_safety\\check_rules\\policy\\validate.py",
-  "created": "2025-12-07T11:54:46.606413"
-}
