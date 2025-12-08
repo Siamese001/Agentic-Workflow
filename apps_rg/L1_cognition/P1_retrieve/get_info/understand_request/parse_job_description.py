@@ -8,18 +8,12 @@ Generated: 2025-12-07T13:28:54.189778
 from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
+from shared.result_types import RetrievalResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class RetrievalResult:
-    """Retrieval result."""
-    items: List[Any]
-    total: int
-    query: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 
 class ParseJobDescription:

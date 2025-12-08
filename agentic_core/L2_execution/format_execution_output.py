@@ -22,11 +22,10 @@ def format_validation_summary(results: List[ValidationResult]) -> str:
     return f"Validation: {passed}/{len(results)} passed"
 
 
-def format_hop_checkpoint(checkpoint: HopCheckpoint) -> str:
-    """Format a hop checkpoint for logging."""
-    return f"[{checkpoint.hop_id}] Status: {checkpoint.status.name}"
-
-
-def format_gate_decision(decision: GateDecision) -> str:
-    """Format a gate decision for logging."""
-    return f"Gate decision: {decision.name}"
+def format_workflow_item(item: Any) -> str:
+    """Format a workflow item (checkpoint or decision) for logging."""
+    if hasattr(item, 'hop_id'):
+        return f"[{item.hop_id}] Status: {item.status.name}"
+    if hasattr(item, 'name'):
+        return f"Decision: {item.name}"
+    return str(item)

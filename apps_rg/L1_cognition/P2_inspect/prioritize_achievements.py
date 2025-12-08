@@ -8,17 +8,12 @@ Generated: 2025-12-07T13:28:54.206349
 from __future__ import annotations
 import logging
 from typing import Any, Dict, Optional
-from dataclasses import dataclass, field
+from shared.result_types import OperationResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class OperationResult:
-    """Operation result."""
-    success: bool
-    data: Any = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 
 class PrioritizeAchievements:

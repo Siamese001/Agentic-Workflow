@@ -8,17 +8,12 @@ Generated: 2025-12-07T13:28:54.223993
 from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
+from shared.result_types import ScoreResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class ScoreResult:
-    """Scoring result."""
-    score: float
-    confidence: float
-    factors: Dict[str, float] = field(default_factory=dict)
+
 
 
 class EvaluateResumeEffectiveness:

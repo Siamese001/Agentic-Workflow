@@ -9,18 +9,12 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any, Callable, Dict, Optional
-from dataclasses import dataclass
+from shared.result_types import RetryResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class RetryResult:
-    """Retry result."""
-    success: bool
-    attempts: int
-    result: Any = None
-    error: Optional[str] = None
+
 
 
 class RetryGenerationFailures:

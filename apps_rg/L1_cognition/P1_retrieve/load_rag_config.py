@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict
 
 
 @dataclass
@@ -37,54 +37,3 @@ class RAGConfig:
         "SOURCE_GARTNER_MQ": 1.2, "SOURCE_PEER_JD": 0.8, "SOURCE_GENERIC_PROFILE": 0.5,
         "LOCAL_NLP": 0.2,
     })
-
-
-@dataclass
-class CompetitiveAnalysisConfig:
-    """Configuration for competitive analysis phase of RAG."""
-
-    enabled: bool = True
-    min_peer_jds: int = 3
-    search_pattern: str = '"{role_title}" at "{peer_company}"'
-    selection_criteria: List[str] = field(default_factory=lambda: [
-        "same_industry", "similar_company_size", "recent_posting_date"
-    ])
-    table_stakes_threshold: float = 0.8
-    differentiator_threshold: float = 0.2
-
-
-@dataclass
-class RAGMission:
-    """Defines the mission for the RAG process based on pre-analysis."""
-
-    target_company_name: str
-    precise_role_title: str
-    key_technologies: List[str]
-    core_responsibilities: List[str]
-    signal_gap_keywords: List[str]
-    signal_overlap_keywords: List[str]
-
-
-@dataclass
-class CompetitiveIntelligence:
-    """Stores competitive intelligence insights."""
-
-    peer_jds_analyzed_count: int = 0
-    differentiator_keywords: List[str] = field(default_factory=list)
-    differentiator_keywords_raw: List[str] = field(default_factory=list)
-    differentiator_keywords_weighted: List[Dict] = field(default_factory=list)
-
-    def get_top_differentiators(self, count: int) -> List[str]:
-        """Returns the top N differentiator keywords."""
-        return self.differentiator_keywords[:count]
-
-
-@dataclass
-class RetrievalSource:
-    """Metadata about a data retrieval source."""
-
-    id: str
-    type: str
-    confidence: float = 0.0
-    status: str = "UNKNOWN"
-    specific_source: Optional[str] = None
