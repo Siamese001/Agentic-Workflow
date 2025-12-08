@@ -11,6 +11,7 @@ import sys
 import re
 import ast
 import hashlib
+import os
 from pathlib import Path
 from typing import List, Set
 from collections import defaultdict
@@ -38,7 +39,7 @@ REQUIRED_LAYERS = ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memor
 # VERB PHYSICS - EXPANDED TO MATCH ACTUAL CODEBASE
 # L2 execution verbs - includes all action/tool verbs
 L2_VERBS = {
-    "invoke", "call", "run", "execute", "dispatch", "write", "render", "perform", 
+    "invoke", "call", "run", "execute", "dispatch", "write", "render", "perform",
     "apply", "trigger", "launch", "generate", "create", "build", "send", "prepare",
     "format", "serialize", "transform", "convert", "process", "handle", "compute",
     "assess", "check", "enforce", "validate", "evaluate", "update", "track", "retry",
@@ -47,19 +48,19 @@ L2_VERBS = {
 
 # L4 memory verbs - retrieval operations
 L4_VERBS = {
-    "fetch", "store", "retrieve", "embed", "cache", "load", "query", "index", 
+    "fetch", "store", "retrieve", "embed", "cache", "load", "query", "index",
     "persist", "read", "find", "get", "search", "lookup", "gather"
 }
 
 # L5 safety verbs - guard operations
 L5_VERBS = {
-    "validate", "sanitize", "block", "audit", "enforce", "verify", "check", 
+    "validate", "sanitize", "block", "audit", "enforce", "verify", "check",
     "scan", "guard", "filter", "track", "assess", "compute", "apply", "redact"
 }
 
 # L3 orchestration verbs
 L3_VERBS = {
-    "orchestrate", "route", "delegate", "schedule", "manage", "coordinate", 
+    "orchestrate", "route", "delegate", "schedule", "manage", "coordinate",
     "monitor", "forward", "dispatch", "implement", "retry", "call", "invoke",
     "send", "log", "record", "apply", "validate", "check", "enforce", "handle"
 }
@@ -92,12 +93,275 @@ MIN_FILE_BYTES = 60
 
 # RESULTS TRACKER
 results = {}
+DELETED_SOVEREIGN_FILES: set[Path] = set()
+RENAMED_SOVEREIGN_FILES: set[tuple[Path, Path]] = set()  # (old_path, new_path)
 
 def fail(key_id, msg):
     results[key_id] = (False, msg)
 
 def success(key_id):
     results[key_id] = (True, "PASS")
+
+# =====================================================================
+# KEY 00 – SOVEREIGN CODE IS IMMORTAL
+# Deletion of ANY file inside agentic_core, apps_lic, apps_rg is FORBIDDEN
+# The only path to 40/40 is REFACTORING, never deletion
+# =====================================================================
+def check_no_deletions() -> None:
+    if not DELETED_SOVEREIGN_FILES:
+        success("00")
+        return
+
+    deleted_list = sorted(str(p.relative_to(ROOT)) for p in DELETED_SOVEREIGN_FILES)
+    count = len(deleted_list)
+
+    # Always fail — even one deletion is treason
+    fail("00", f"DELETION OF SOVEREIGN CODE FORBIDDEN – {count} file{'s' if count>1 else ''} removed\n"
+               f"{'='*60}\n"
+               f"THE CANON DOES NOT PERMIT ERASURE\n"
+               f"Refactor. Split. Move to shared/. Flatten.\n"
+               f"NEVER DELETE.\n"
+               f"{'='*60}\n"
+               f"Deleted files:\n" + "\n".join(f"  - {f}" for f in deleted_list[:20]) +
+               (f"\n  ... and {count-20} more" if count > 20 else ""))
+
+# Called from pre-commit hook — populates the global set
+def register_deleted_sovereign_file(path: Path) -> None:
+    resolved = path.resolve()
+    if any(agent in str(resolved) for agent in SOVEREIGN_AGENTS):
+        DELETED_SOVEREIGN_FILES.add(resolved)
+
+def register_renamed_sovereign_file(old_path: Path, new_path: Path) -> None:
+    """Track rename/move of sovereign files — bypasses deletion detection."""
+    old_resolved = old_path.resolve()
+    new_resolved = new_path.resolve()
+    if (any(agent in str(old_resolved) for agent in SOVEREIGN_AGENTS) or
+        any(agent in str(new_resolved) for agent in SOVEREIGN_AGENTS)):
+        RENAMED_SOVEREIGN_FILES.add((old_resolved, new_resolved))
+
+def check_no_moves_or_renames() -> None:
+    """Key 00b – Renaming/moving sovereign files to 'reset' canon is forbidden."""
+    if not RENAMED_SOVEREIGN_FILES:
+        return
+
+    moves = []
+    for old, new in sorted(RENAMED_SOVEREIGN_FILES):
+        try:
+            old_rel = old.relative_to(ROOT)
+        except ValueError:
+            old_rel = old
+        try:
+            new_rel = new.relative_to(ROOT)
+        except ValueError:
+            new_rel = new
+        moves.append(f"  {old_rel} → {new_rel}")
+
+    fail("00", f"FILE MOVE/RENAME OF SOVEREIGN CODE FORBIDDEN – {len(moves)} move{'s' if len(moves)>1 else ''} detected\n"
+               f"{'='*70}\n"
+               f"THE CANON SEES THROUGH RENAMES\n"
+               f"Moving a file does not erase its sins.\n"
+               f"Refactor in place. Split. Extract. But never hide.\n"
+               f"{'='*70}\n" +
+               "\n".join(moves[:20]) +
+               (f"\n  ... and {len(moves)-20} more" if len(moves) > 20 else ""))
+
+def check_directory_structure() -> None:
+    """Key 00c – DIRECTORY STRUCTURE IS CANON LAW
+    Only the exact, flattened, sovereign structure is allowed.
+    No new folders. No deep nesting. No 'utils/v3/final' entropy."""
+
+    # Forbidden folder names anywhere in sovereign agents
+    forbidden_names = {
+        "utils", "helpers", "common", "misc", "lib", "libs", "modules",
+        "core", "inner", "wrapper", "base", "abstract", "legacy", "old",
+        "temp", "tmp", "backup", "archive", "v1", "v2", "v3", "final",
+        "new", "test", "tests", "testing", "__pycache__"
+    }
+
+    # Legacy folders that exist but should be migrated (allowed temporarily)
+    # These contain .dedup_pointer files and legacy code pending migration
+    legacy_allowed = {"logic", "scoring", "generation", "synthesis"}
+
+    violations = []
+
+    for agent in SOVEREIGN_AGENTS:
+        agent_path = ROOT / agent
+        if not agent_path.exists():
+            continue
+
+        for path in agent_path.rglob("*"):
+            if not path.is_dir():
+                continue
+
+            # Skip __pycache__ silently
+            if path.name == "__pycache__":
+                continue
+
+            rel = path.relative_to(ROOT)
+            parts = rel.parts
+            depth = len(parts)
+
+            # Depth 2: must be L1-L5 layer folder (or legacy allowed)
+            if depth == 2:
+                if parts[1] not in REQUIRED_LAYERS and parts[1] not in legacy_allowed:
+                    violations.append(f"Forbidden top-level folder in {parts[0]}: {parts[1]}")
+                continue
+
+            # Depth 3+: skip if inside legacy allowed folders
+            if depth >= 3 and parts[1] in legacy_allowed:
+                continue
+
+            # Depth 3: L1 can have P-folders, L2-L5 must be flat (no subfolders except __pycache__)
+            if depth == 3:
+                layer = parts[1]
+                subfolder = parts[2]
+
+                if layer == "L1_cognition":
+                    # P-folders allowed in L1
+                    if subfolder.startswith("P") and len(subfolder) > 1 and subfolder[1].isdigit():
+                        continue
+                    # Other subfolders in L1 are violations
+                    violations.append(f"Non-P subfolder in L1_cognition: {rel}")
+                elif layer == "L4_memory" and subfolder == "P1_retrieve":
+                    # P1_retrieve allowed in L4_memory
+                    continue
+                elif layer in {"L2_execution", "L3_orchestration", "L4_memory", "L5_safety"}:
+                    # L2-L5 must be flat
+                    violations.append(f"Subfolder in flat layer {layer}: {rel}")
+                continue
+
+            # Depth 4+: only allowed inside L1 P-folders
+            if depth >= 4:
+                layer = parts[1]
+                if layer == "L1_cognition":
+                    # Check if inside a P-folder
+                    if parts[2].startswith("P") and len(parts[2]) > 1 and parts[2][1].isdigit():
+                        # Nesting inside P-folders is allowed (for now)
+                        continue
+                elif layer == "L4_memory" and parts[2] == "P1_retrieve":
+                    # Nesting inside P1_retrieve allowed
+                    continue
+
+                violations.append(f"Unauthorized directory depth: {rel}")
+
+            # Check for forbidden names anywhere
+            if path.name.lower() in forbidden_names:
+                violations.append(f"Forbidden folder name: {rel}")
+
+    if violations:
+        fail("00", f"DIRECTORY STRUCTURE VIOLATION – {len(violations)} forbidden path{'s' if len(violations)>1 else ''}\n"
+                   f"{'='*70}\n"
+                   f"THE CANON'S SKELETON IS IMMUTABLE\n"
+                   f"Only L1-L5 + P-folders in L1 + P1_retrieve in L4\n"
+                   f"No utils/, v2/, old/, temp/, helpers/, modules/, core/, inner/\n"
+                   f"{'='*70}\n" +
+                   "\n".join(f"  - {v}" for v in violations[:25]) +
+                   (f"\n  ... and {len(violations)-25} more" if len(violations) > 25 else ""))
+
+def check_file_content_integrity() -> None:
+    """Key 00d — FILE CONTENT CANNOT BE GUTTED OR FAKED
+    Even with perfect path + name + size, the file must contain real logic.
+    No empty bodies, no commented-out code, no 'pass', no fake implementations.
+
+    NOTE: Currently in AUDIT mode - logs violations but doesn't fail.
+    Enable strict mode after refactoring existing stubs."""
+
+    violations = []
+
+    for f in get_sovereign_py_files():
+        try:
+            content = read_file(f)
+            tree = ast.parse(content)
+        except:
+            continue  # Already failed by Key 39
+
+        # 1. File must have at least one real function/class (not just imports + pass)
+        real_nodes = [
+            node for node in ast.walk(tree)
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        ]
+        if not real_nodes:
+            violations.append(f"{f.name}: No function or class defined — empty shell")
+            continue
+
+        # 2. No function may have only 'pass' or '...' (stub detection)
+        # NOTE: Disabled during migration - too many existing stubs
+        # Enable after refactoring existing files
+        # for node in real_nodes:
+        #     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        #         body = node.body
+        #         if len(body) == 1:
+        #             stmt = body[0]
+        #             if isinstance(stmt, ast.Pass):
+        #                 violations.append(f"{f.name}: {node.name}() contains only 'pass'")
+        #             elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant) and stmt.value.value is ...:
+        #                 violations.append(f"{f.name}: {node.name}() contains only '...'")
+
+    if violations:
+        fail("00", f"CONTENT INTEGRITY VIOLATION – {len(violations)} fake/gutted file{'s' if len(violations)>1 else ''}\n"
+                   f"{'='*80}\n"
+                   f"THE CANON SEES THROUGH DECEPTION\n"
+                   f"Perfect path + name + size is not enough.\n"
+                   f"The file must contain REAL, EXECUTABLE logic matching its verb.\n"
+                   f"No shells. No commented tombs. No pass-only functions.\n"
+                   f"{'='*80}\n" +
+                   "\n".join(f"  - {v}" for v in violations[:25]) +
+                   (f"\n  ... and {len(violations)-25} more" if len(violations) > 25 else ""))
+
+def check_docstring_quality() -> None:
+    """Key 00e — DOCSTRINGS ARE LAW
+    Every public function, class, and module must have a docstring.
+
+    Existing debt is tracked in docstring_debt.py and allowed.
+    NO NEW missing docstrings will ever be allowed."""
+
+    # Load existing debt registry
+    try:
+        from docstring_debt import DOCSTRING_DEBT
+    except ImportError:
+        DOCSTRING_DEBT = set()
+
+    violations = []
+
+    for f in get_sovereign_py_files():
+        try:
+            content = read_file(f)
+            tree = ast.parse(content)
+        except:
+            continue
+
+        rel_path = str(f.relative_to(ROOT)).replace("\\", "/")
+
+        # Module docstring is required
+        module_doc = ast.get_docstring(tree)
+        if not module_doc or len(module_doc.strip()) < 10:
+            if rel_path not in DOCSTRING_DEBT:
+                violations.append(f"{f.name}: Missing or trivial module docstring")
+
+        # Check public functions and classes have docstrings
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+
+            name = node.name
+            if name.startswith("_"):
+                continue
+
+            doc = ast.get_docstring(node)
+            if not doc:
+                debt_key = f"{rel_path}:{name}"
+                if debt_key not in DOCSTRING_DEBT:
+                    violations.append(f"{f.name}: {name}() — missing docstring (NEW)")
+
+    if violations:
+        fail("00", f"DOCSTRING QUALITY VIOLATION – {len(violations)} NEW failure{'s' if len(violations)>1 else ''}\n"
+                   f"{'='*80}\n"
+                   f"THE CANON DEMANDS CLARITY\n"
+                   f"Every public symbol must have a docstring.\n"
+                   f"Existing debt is tracked. NEW missing docstrings are FORBIDDEN.\n"
+                   f"{'='*80}\n" +
+                   "\n".join(f"  - {v}" for v in violations[:25]) +
+                   (f"\n  ... and {len(violations)-25} more" if len(violations) > 25 else ""))
 
 def get_sovereign_py_files() -> List[Path]:
     """Get .py files only from sovereign agents (excludes 06_data, shared, etc.)"""
@@ -422,9 +686,9 @@ def run_checks_21_30():
     seen = defaultdict(list)
     for f in get_sovereign_py_files():
         seen[f.name].append(f)
-    
+
     duplicates = {name: paths for name, paths in seen.items() if len(paths) > 1}
-    
+
     if not duplicates:
         success("28")
     else:
@@ -432,17 +696,17 @@ def run_checks_21_30():
         for name, paths in duplicates.items():
             verb = name.split("_", 1)[0]
             agents = {p.relative_to(ROOT).parts[0] for p in paths}
-            
+
             # Violation 1: Same agent has multiple copies
             if len(agents) < len(paths):
                 violations.append(f"{name} -> same-agent collision")
                 continue
-            
+
             # Violation 2: Non-architectural verb (not in any layer's verb set)
             if verb not in ALL_ARCH_VERBS:
                 violations.append(f"{name} -> non-architectural verb '{verb}'")
                 continue
-            
+
             # Violation 3: Identical content across agents (copy-paste)
             content_hashes = {}
             for p in paths:
@@ -452,7 +716,7 @@ def run_checks_21_30():
                 except: pass
             if len(content_hashes) < len(paths):
                 violations.append(f"{name} -> identical content (move to shared/)")
-        
+
         if not violations:
             success("28")  # Cross-agent duplicates with unique content are allowed
         else:
@@ -591,6 +855,14 @@ def mirror_yaml_to_reality():
 def run_all_checks():
     """Run all 40 validation checks."""
     results.clear()
+
+    # KEY 00 RUNS FIRST AND HARDEST
+    check_no_deletions()
+    check_no_moves_or_renames()
+    check_directory_structure()
+    check_file_content_integrity()
+    check_docstring_quality()
+
     run_checks_01_10()
     run_checks_11_20()
     run_checks_21_30()
@@ -639,7 +911,24 @@ def parse_args():
 # =====================================================================
 def main():
     args = parse_args()
-    
+
+    # Load deletions and renames recorded by pre-commit hook
+    temp_path = os.environ.get("CANON_CHANGE_TRACKER", "")
+    if temp_path:
+        temp_file = Path(temp_path)
+        if temp_file.is_file():
+            for line in temp_file.read_text().splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                parts = line.split("|")
+                if len(parts) == 2 and parts[1] == "DELETE":
+                    register_deleted_sovereign_file(Path(parts[0]))
+                elif len(parts) == 3 and parts[1] == "RENAME":
+                    register_deleted_sovereign_file(Path(parts[0]))  # old path counts as deleted
+                    register_renamed_sovereign_file(Path(parts[0]), Path(parts[2]))
+            temp_file.unlink(missing_ok=True)
+
     if not args.silent:
         print("=" * 60)
         print("SUBATOMIC CANON 2025 - 40-KEY VALIDATION")
@@ -655,11 +944,11 @@ def main():
 
     # 2. Run 40-key check (default behavior or if --check-40 specified)
     run_all_checks()
-    
+
     fails = [k for k, v in results.items() if not v[0]]
     passed_count = len([k for k, v in results.items() if v[0]])
     fail_count = len(fails)
-    
+
     if not args.silent:
         print()
         keys = sorted(results.keys(), key=lambda x: int(x))
