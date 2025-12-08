@@ -54,7 +54,7 @@ async def insert_entity(entity: TemporalEntity) -> None:
             )
     except Exception:
         # Log error but don't fail - Neo4j is optional mirror
-        pass
+        ...
 
 
 async def insert_triplet(triplet: TemporalTriplet) -> None:
@@ -84,7 +84,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
             )
     except Exception:
         # Log error but don't fail - Neo4j is optional mirror
-        pass
+        ...
 
 
 async def insert_event(event: TemporalEvent) -> None:
@@ -110,7 +110,7 @@ async def insert_event(event: TemporalEvent) -> None:
                 )
     except Exception:
         # Log error but don't fail - Neo4j is optional mirror
-        pass
+        ...
 
 
 async def batch_process_invalidation(

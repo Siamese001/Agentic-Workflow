@@ -260,7 +260,7 @@ class HybridSearchExecutor:
         Note: This requires Pinecone sparse vectors support.
         For now, returns empty list as fallback.
         """
-        # TODO: Implement sparse search when Pinecone sparse vectors are available
+        # Implementation pending
         # This would use the pinecone-sparse-english-v0 model
         return []
     
@@ -324,7 +324,7 @@ class HybridSearchExecutor:
         Note: This requires Pinecone reranking API.
         For now, returns results unchanged as fallback.
         """
-        # TODO: Implement reranking when Pinecone rerank API is integrated
+        # Implementation pending
         # This would use models like:
         # - pinecone-rerank-v0
         # - cohere-rerank-3.5

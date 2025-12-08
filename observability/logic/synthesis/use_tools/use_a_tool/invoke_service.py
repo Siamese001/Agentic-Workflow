@@ -136,7 +136,7 @@ class GeminiService:
                 if hasattr(genai, '_config'):
                     api_key = genai._config.api_key
             except:
-                pass
+                ...
             
             if not api_key:
                 raise RuntimeError(

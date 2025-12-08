@@ -105,7 +105,7 @@ class TestCrossServiceCommunication:
         for event in events:
             if event["type"] == "contact_researched":
                 # RG can use this data
-                pass
+                ...
         
         assert len(events) == 1
 

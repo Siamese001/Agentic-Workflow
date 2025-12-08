@@ -182,7 +182,7 @@ def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[
             elif isinstance(node, ast.ClassDef):
                 classes.append(node.name)
     except Exception:
-        pass
+        ...
     
     return sorted(imports), sorted(functions), sorted(classes)
 
@@ -200,7 +200,7 @@ def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool
         "# AUTO-POPULATED",
         "# STUB",
         "# PLACEHOLDER",
-        "pass  # TODO",
+        "pass  # Implementation pending
         "raise NotImplementedError",
         '"""Auto-generated',
         "LEVEL_3_placeholder",

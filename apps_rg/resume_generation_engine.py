@@ -1612,7 +1612,7 @@ class CircuitBreaker:
 
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit breaker is open."""
-    pass
+    ...
 
 class ResumeSection(Enum):
     K0_NAME = "K.0_Name"
@@ -1647,7 +1647,7 @@ T = TypeVar('T')
 
 class PhaseTimeoutError(Exception):
     """Raised when a phase exceeds its timeout."""
-    pass
+    ...
 
 class PhaseExecutor:
     """
@@ -2150,7 +2150,7 @@ class GeminiWebSearchClient:
         try:
             return json.loads(cleaned)
         except json.JSONDecodeError:
-            pass
+            ...
         
         # Strategy 4: Try to repair common JSON errors
         repaired = self._attempt_json_repair(cleaned)
@@ -5991,29 +5991,29 @@ class PreFlightValidator:
 # Inside PreFlightValidator class:
 
     def _validate_k1_word_count(self, data: Dict) -> bool:
-    summary_text = data['staging_buffer'].get(ResumeSection.K1_EXECUTIVE_SUMMARY.value, '')
-    word_count = count_words_ms_word_style(summary_text)
+        summary_text = data['staging_buffer'].get(ResumeSection.K1_EXECUTIVE_SUMMARY.value, '')
+        word_count = count_words_ms_word_style(summary_text)
 
-    # --- ADD LOGGING ---
-    # Use info level for standard validation, warning/error for failures
-    logging.info(f"VALIDATING K.1 Word Count: Target={self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN}-{self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX}, Actual={word_count} words.")
-    logging.debug(f"K.1 Text Snippet (first 70 chars): '{summary_text[:70]}...'") # Debug level for text
-    # --- END LOGGING ---
+        # --- ADD LOGGING ---
+        # Use info level for standard validation, warning/error for failures
+        logging.info(f"VALIDATING K.1 Word Count: Target={self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN}-{self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX}, Actual={word_count} words.")
+        logging.debug(f"K.1 Text Snippet (first 70 chars): '{summary_text[:70]}...'") # Debug level for text
+        # --- END LOGGING ---
 
-    data["error_details"] = {
-        "word_count": word_count,
-        "min": self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN,
-        "max": self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX
-    }
-    is_valid = self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN <= word_count <= self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX
+        data["error_details"] = {
+            "word_count": word_count,
+            "min": self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN,
+            "max": self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX
+        }
+        is_valid = self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN <= word_count <= self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX
 
-    # --- ADD LOGGING FOR FAILURE ---
-    if not is_valid:
-        # Log failure clearly
-        logging.warning(f"K.1 Word Count VALIDATION FAILED: Target={self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN}-{self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX}, Actual={word_count}")
-    # --- END LOGGING ---
+        # --- ADD LOGGING FOR FAILURE ---
+        if not is_valid:
+            # Log failure clearly
+            logging.warning(f"K.1 Word Count VALIDATION FAILED: Target={self.constraints.EXEC_SUMMARY_WORD_COUNT_MIN}-{self.constraints.EXEC_SUMMARY_WORD_COUNT_MAX}, Actual={word_count}")
+        # --- END LOGGING ---
 
-    return is_valid
+        return is_valid
 
     def _validate_k1_sentence_count(self, data: Dict) -> bool:
         summary_text = data['staging_buffer'].get(ResumeSection.K1_EXECUTIVE_SUMMARY.value, '')

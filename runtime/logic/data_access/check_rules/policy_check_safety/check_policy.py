@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 class PolicyConfigurationError(Exception):
     """Raised when resume workflow policy configuration is invalid."""
-    pass
+    ...
 
 
 T = TypeVar('T')

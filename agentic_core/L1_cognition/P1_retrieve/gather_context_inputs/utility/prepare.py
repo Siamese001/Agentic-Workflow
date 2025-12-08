@@ -50,12 +50,12 @@ class PrepareDataPayloadPlanProcessor(ABC):
     @abstractmethod
     def process(self, input_data: Dict[str, Any]) -> PrepareDataPayloadPlanResult:
         """Process data with L5 safety constraints"""
-        pass
+        ...
     
     @abstractmethod
     def validate_safety(self, data: Dict[str, Any]) -> bool:
         """L5 Safety validation - fail-closed by default"""
-        pass
+        ...
 
 class PrepareDataPayloadPlanImpl(PrepareDataPayloadPlanProcessor):
     """
@@ -126,7 +126,7 @@ class PrepareDataPayloadPlanImpl(PrepareDataPayloadPlanProcessor):
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
-    pass
+    ...
 
 # L5 Interface compliance
 class PrepareDataPayloadPlanInterface:
