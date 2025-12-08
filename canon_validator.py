@@ -72,45 +72,53 @@ BANNED_TOKENS = {
 # FAKE NESTING FOLDERS (per YAML) - only check in sovereign agents
 FAKE_NESTING = {"v2025", "final", "wrapper", "inner", "temp", "old", "legacy", "archive"}
 
-# ALLOWED DUPLICATE FILENAMES (agent-specific implementations)
+# ALLOWED DUPLICATE FILENAMES - Legitimate cross-agent implementations
+# These are verb_object files that intentionally exist in multiple agents
 ALLOWED_DUPLICATES = {
-    # Single-word verbs
-    'apply.py', 'assess.py', 'build.py', 'check.py', 'compute.py', 'enforce.py',
-    'fetch.py', 'format.py', 'handle.py', 'implement.py', 'invoke.py', 'match.py',
-    'normalize.py', 'prepare.py', 'query.py', 'retrieve.py', 'search.py', 'update.py',
-    'validate.py', 'call.py', 'process.py', 'manage.py', 'track.py', 'evaluate.py',
-    # Common cross-agent files
-    'apply_safety_policy.py', 'enforce_safety_filters.py', 'evaluate_resume_effectiveness.py',
-    'assess_content_relevance.py', 'check_output_quality.py', 'enforce_length_limits.py',
-    'validate_execution_ethics.py', 'enforce_execution_policy.py', 'apply_execution_safety.py',
-    'assess_safety_risk.py', 'compute_safety_score.py', 'enforce_safety_budget.py',
-    'evaluate_safety_compliance.py', 'track_safety_cost.py', 'update_safety_usage.py',
-    'validate_safety_ethics.py', 'apply_orchestration_safety.py', 'validate_orchestration_ethics.py',
-    'enforce_orchestration_policy.py', 'apply_input_safety_filter.py', 'enforce_remaining_budget.py',
-    'filter_inappropriate_content.py', 'validate_ethical_standards.py', 'apply_scoring_weights.py',
-    'compute_confidence_score.py', 'normalize_confidence_scores.py', 'compute_semantic_distance.py',
-    'load_semantic_cache_index.py', 'match_semantic_history.py', 'redact_pii_content.py',
-    'find_effective_templates.py', 'match_recipient_patterns.py', 'search_similar_messages.py',
-    'fetch_recipient_interactions.py', 'query_past_campaigns.py', 'retrieve_outreach_history.py',
-    'format_metadata.py', 'assess_message_relevance.py', 'check_message_quality.py',
-    'enforce_tone_guidelines.py', 'extract_user_intent.py', 'format_candidate_payload.py',
-    'find_relevant_templates.py', 'match_job_patterns.py', 'search_similar_resumes.py',
-    'fetch_user_preferences.py', 'query_past_generations.py', 'retrieve_resume_history.py',
-    'create_message_body.py', 'create_experience_bullets.py', 'generate_subject_line.py',
-    'generate_summary_section.py', 'validate_generated_message.py', 'validate_generated_content.py',
+    # Safety layer (each agent has its own safety implementation)
+    'apply_safety_policy.py', 'enforce_safety_filters.py', 'assess_safety_risk.py',
+    'compute_safety_score.py', 'enforce_safety_budget.py', 'evaluate_safety_compliance.py',
+    'track_safety_cost.py', 'update_safety_usage.py', 'validate_safety_ethics.py',
+    'apply_execution_safety.py', 'validate_execution_ethics.py', 'enforce_execution_policy.py',
+    'apply_orchestration_safety.py', 'validate_orchestration_ethics.py', 'enforce_orchestration_policy.py',
+    'apply_input_safety_filter.py', 'filter_inappropriate_content.py', 'validate_ethical_standards.py',
+    # Semantic operations (each agent has its own semantic layer)
+    'compute_semantic_distance.py', 'load_semantic_cache_index.py', 'match_semantic_history.py',
+    # Scoring operations (each agent scores differently)
+    'apply_scoring_weights.py', 'compute_confidence_score.py', 'normalize_confidence_scores.py',
+    # Fallback/retry (each agent handles failures differently)
+    'implement_fallback_templates.py', 'retry_generation_failures.py', 'handle_service_errors.py',
+    # Policy enforcement (each agent enforces its own policies)
+    'enforce_policy_rules.py', 'check_policy_rules.py', 'enforce_remaining_budget.py',
+    'enforce_budget_limits.py', 'enforce_length_limits.py', 'enforce_tone_guidelines.py',
+    # Content operations (each agent processes content differently)
+    'assess_content_relevance.py', 'assess_content_risk.py', 'check_output_quality.py',
+    'assess_message_relevance.py', 'check_message_quality.py', 'create_message_body.py',
     'evaluate_engagement_potential.py', 'evaluate_personalization_quality.py',
-    'evaluate_writing_quality.py', 'evaluate_compliance_level.py', 'assess_content_risk.py',
-    'implement_fallback_templates.py', 'format_data.py', 'serialize_data.py',
-    'enforce_budget_limits.py', 'handle_service_errors.py', 'retry_generation_failures.py',
-    'update_token_usage.py', 'apply_domain_algorithm.py', 'rank_domain_components.py',
-    'sort_domain_results.py', 'consolidate_domain_updates.py', 'enforce_domain_limits.py',
-    'track_domain_usage.py', 'update_domain_budget.py',
-    # Additional duplicates found
-    'enforce_1.py', 'fetch_core_history.py', 'search_core_vectors.py',
+    'evaluate_writing_quality.py', 'evaluate_compliance_level.py', 'evaluate_resume_effectiveness.py',
+    # Template/pattern matching (each agent has its own patterns)
+    'find_effective_templates.py', 'find_relevant_templates.py', 'match_job_patterns.py',
+    'match_recipient_patterns.py', 'search_similar_messages.py', 'search_similar_resumes.py',
+    # Data retrieval (each agent retrieves its own data)
+    'fetch_user_preferences.py', 'fetch_recipient_interactions.py', 'fetch_core_history.py',
+    'query_past_campaigns.py', 'query_past_generations.py', 'retrieve_outreach_history.py',
+    'retrieve_resume_history.py', 'search_core_vectors.py',
+    # Generation (each agent generates differently)
+    'create_experience_bullets.py', 'generate_subject_line.py', 'generate_summary_section.py',
+    'validate_generated_message.py', 'validate_generated_content.py',
+    # Formatting (each agent formats its own data)
+    'format_data.py', 'format_metadata.py', 'format_candidate_payload.py',
+    'format_utility_data.py', 'serialize_data.py', 'extract_user_intent.py',
+    # Core operations (shared across agents)
+    'apply_core_algorithm.py', 'rank_core_components.py', 'sort_core_results.py',
     'consolidate_core_updates.py', 'enforce_core_limits.py', 'track_core_usage.py',
-    'update_core_budget.py', 'handle_service_errors.py', 'invoke_generation_service.py',
-    'invoke_message_service.py', 'apply_core_algorithm.py', 'rank_core_components.py',
-    'sort_core_results.py',
+    'update_core_budget.py', 'update_token_usage.py',
+    # Embedding/semantic operations (each agent has its own embedding layer)
+    'match_embedding_patterns.py', 'search_embedding_index.py',
+    # Understanding operations (each agent understands differently)
+    'fetch_understand_data.py', 'query_understand_store.py', 'retrieve_understand_context.py',
+    # Cognition operations (each agent has its own cognition layer)
+    'validate_cognition_output.py', 'prepare_cognition_data.py', 'compute_cognition_score.py',
 }
 
 # LIMITS
@@ -146,21 +154,16 @@ def run_checks_01_10():
     else: fail("01", f"Found {agents}, expected {SOVEREIGN_AGENTS}")
 
     # 02: No root .py files in any sovereign agent (only __init__.py allowed)
-    # Exception: legacy engine files that are too large to refactor
-    ALLOWED_ROOT_PY = {
-        "resume_generation_engine.py", "resume_generation_engine_v560.py",
-        "evaluate_resume_effectiveness.py", "lic_generation_engine.py"
-    }
+    # NO EXCEPTIONS - all .py files must be in L folders
     root_py = []
     for agent in SOVEREIGN_AGENTS:
         agent_path = ROOT / agent
         if agent_path.exists():
             for f in agent_path.iterdir():
                 if f.is_file() and f.suffix == ".py" and f.name != "__init__.py":
-                    if f.name not in ALLOWED_ROOT_PY:
-                        root_py.append(f"{agent}/{f.name}")
+                    root_py.append(f"{agent}/{f.name}")
     if not root_py: success("02")
-    else: fail("02", f"Root .py files: {root_py[:3]}")
+    else: fail("02", f"Root .py files: {root_py[:5]}")
 
     # 03: Only L1_cognition has P folders in all agents
     errs = []
