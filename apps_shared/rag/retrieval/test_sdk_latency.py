@@ -10,7 +10,7 @@ from agentic_workflow.runtime.shared.cache import generate_llm_cache_key
 
 class TestSDKValidationLatency:
     """TestSDKValidationLatency implementation."""
-    def test_validate_sdk_under_100ms(self):
+    def test_validate_sdk_under_100ms(self) -> None:
         """SDK validation completes within 100ms."""
         start = time.perf_counter()
         for _ in range(10):
@@ -19,7 +19,7 @@ class TestSDKValidationLatency:
         avg_ms = (elapsed / 10) * 1000
         assert avg_ms < 100, f"Avg validation took {avg_ms:.2f}ms"
 
-    def test_registry_lookup_under_1ms(self):
+    def test_registry_lookup_under_1ms(self) -> None:
         """Registry lookup is sub-millisecond."""
         start = time.perf_counter()
         for _ in range(1000):
@@ -30,7 +30,7 @@ class TestSDKValidationLatency:
 
 class TestCacheKeyLatency:
     """TestCacheKeyLatency implementation."""
-    def test_cache_key_generation_under_1ms(self):
+    def test_cache_key_generation_under_1ms(self) -> None:
         """Cache key generation is sub-millisecond."""
         messages = [{"role": "user", "content": "Test message"}]
         start = time.perf_counter()
@@ -42,7 +42,7 @@ class TestCacheKeyLatency:
 
 class TestVectorStoreInitLatency:
     """TestVectorStoreInitLatency implementation."""
-    def test_vector_store_init_under_500ms(self):
+    def test_vector_store_init_under_500ms(self) -> None:
         """Vector store initialization within 500ms."""
         reset_all_clients()
         with patch("agentic_workflow.runtime.shared.sdk_registry.chromadb") as mock:

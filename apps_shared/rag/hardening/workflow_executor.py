@@ -527,7 +527,7 @@ class TransactionManager:
         self._state[key] = value
         self._trace("STATE_SET", {"key": key}, level=ExecutionTraceLevel.DEBUG)
         
-    def get_state(self, key: str, default: Any = None) -> object:
+    def get_state(self, key: str, default: object = None) -> object:
         """Get a value from the transaction state."""
         return copy.deepcopy(self._state.get(key, default))
     

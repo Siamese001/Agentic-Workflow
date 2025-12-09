@@ -69,6 +69,6 @@ class JsonExporter(BaseExporter):
             )
 
 
-def export_data(data: Any, config: Optional[Dict] = None) -> ExportResult:
+def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""
     return JsonExporter(config).export(data)
