@@ -1,0 +1,857 @@
+{
+  "metadata": {
+    "patch_id": "P-v1.6.8-CONSOLIDATED",
+    "patch_name": "Complete Enforcement-Validation Gap Coverage",
+    "base_version": "v1.6.7",
+    "target_version": "v1.6.8",
+    "severity": "CRITICAL",
+    "created_date": "2025-10-15",
+    "author": "Enforcement Gap Analysis",
+    "status": "READY_FOR_DEPLOYMENT"
+  },
+
+  "executive_summary": "Closes all 9 enforcement-validation gaps identified in user table: (1) Headline word count (4 words/segment), (2) Bullet counts (K.5A=7, K.6A=6), (3) Competency count (6), (4) Skills count (8-12), (5) Summary sentence count (6). Adds 3 new validation gates + enhances 2 existing gates. Achieves 100% validation coverage for structural integrity rules.",
+
+  "gap_coverage_matrix": {
+    "headline_character_count_90": {
+      "status": "✅ COVERED (v1.6.7)",
+      "gate": "VG_HEADLINE_CHARACTER_COMPLIANCE",
+      "patch": "P-v1.6.7"
+    },
+    "headline_word_count_4": {
+      "status": "❌ GAP → ✅ FIXED (v1.6.8)",
+      "gate": "VG_HEADLINE_WORD_COUNT_COMPLIANCE (NEW)",
+      "patch": "P-v1.6.8-C001"
+    },
+    "bullet_counts_k5a_7_k6a_6": {
+      "status": "❌ GAP → ✅ FIXED (v1.6.8)",
+      "gate": "VG_MANDATORY_WORD_COUNT_COMPLIANCE (ENHANCED)",
+      "patch": "P-v1.6.8-C002"
+    },
+    "competency_count_6": {
+      "status": "❌ GAP → ✅ FIXED (v1.6.8)",
+      "gate": "VG_INDUSTRY_FIRST_COMPLIANCE (ENHANCED)",
+      "patch": "P-v1.6.8-C003"
+    },
+    "skills_count_8_12": {
+      "status": "❌ GAP → ✅ FIXED (v1.6.8)",
+      "gate": "VG_SKILL_COUNT_COMPLIANCE (NEW)",
+      "patch": "P-v1.6.8-C004"
+    },
+    "summary_sentence_count_6": {
+      "status": "❌ GAP → ✅ FIXED (v1.6.8)",
+      "gate": "VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE (NEW)",
+      "patch": "P-v1.6.8-C005"
+    },
+    "competency_ranking": {
+      "status": "✅ COVERED (existing)",
+      "gate": "VG_INDUSTRY_FIRST_COMPLIANCE"
+    },
+    "similarity_deduplication": {
+      "status": "✅ COVERED (existing)",
+      "gate": "VG_PROSE_QUALITY_COMPLIANCE + VG_DEDUPLICATION_COMPLIANCE"
+    }
+  },
+
+  "changes": [
+    {
+      "change_id": "C-1.6.8-001",
+      "gap_reference": "GAP: Headline Word Count (4 words/segment)",
+      "description": "Add VG_HEADLINE_WORD_COUNT_COMPLIANCE gate to validate K.4 word count per segment",
+      "section": "5.output.validation_gates",
+      "action": "APPEND",
+      "content": {
+        "VG_HEADLINE_WORD_COUNT_COMPLIANCE": {
+          "description": "Validates K.4 headline word count: max 4 words per segment. Reads from staging_buffer, cannot access artist_output.",
+          "execution_point": "POST_K4_GENERATION",
+          "blocking": true,
+          "severity": "CRITICAL",
+          "reads_from": "staging_buffer['K.4'] ONLY",
+          "cannot_access": "artist_output (scope isolated)",
+          "validation_method": {
+            "source": "staging_buffer['K.4']['rendered_text']",
+            "parse_segments": "rendered_text.split('|')",
+            "validate_each_segment": {
+              "strip_whitespace": "segment.strip()",
+              "calculate_words": "len(segment.strip().split())",
+              "max_words": "GLOBAL_ENFORCEMENT_SPEC.word_counts.K.4_headline.max (4)",
+              "on_exceed": {
+                "action": "raise ValidationException",
+                "message": "K.4 segment {segment_index} exceeds 4-word limit. Actual: {actual_words} words. Text: '{segment_text}'",
+                "regenerate": true,
+                "max_attempts": 3
+              }
+            },
+            "empty_segment_check": {
+              "check": "len(segment.strip()) == 0",
+              "action": "HALT_WITH_MESSAGE: 'K.4 contains empty segment at position {segment_index}'"
+            }
+          },
+          "qa_report_integration": {
+            "section": "2.2",
+            "table": {
+              "columns": ["Segment", "Text", "Word Count", "Limit", "Status"],
+              "rows": [
+                {
+                  "segment": 1,
+                  "text": "{segment_1_text}",
+                  "word_count": "{segment_1_words}",
+                  "limit": 4,
+                  "status": "✅ if ≤4, ❌ if >4"
+                },
+                {
+                  "segment": 2,
+                  "text": "{segment_2_text}",
+                  "word_count": "{segment_2_words}",
+                  "limit": 4,
+                  "status": "✅ if ≤4, ❌ if >4"
+                },
+                {
+                  "segment": 3,
+                  "text": "{segment_3_text}",
+                  "word_count": "{segment_3_words}",
+                  "limit": 4,
+                  "status": "✅ if ≤4, ❌ if >4"
+                }
+              ]
+            }
+          },
+          "on_pass": "Log '✅ VG_HEADLINE_WORD_COUNT_COMPLIANCE: All segments ≤4 words'",
+          "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-002",
+      "gap_reference": "GAP: Bullet Counts (K.5A=7, K.6A=6)",
+      "description": "Enhance VG_MANDATORY_WORD_COUNT_COMPLIANCE to validate bullet counts explicitly",
+      "section": "5.output.validation_gates.VG_MANDATORY_WORD_COUNT_COMPLIANCE.validation_method",
+      "action": "APPEND",
+      "content": {
+        "K.5A_bullet_count_validation": {
+          "description": "Validates exactly 7 bullets generated for K.5A",
+          "source": "staging_buffer['K.5A']['bullets']",
+          "calculate": "len(bullets)",
+          "expected": "GLOBAL_ENFORCEMENT_SPEC.generation_logic.bullet_counts.K.5A (7)",
+          "on_mismatch": {
+            "action": "raise ValidationException",
+            "message": "K.5A bullet count violation. Expected: 7, Actual: {actual_count}",
+            "halt": true
+          }
+        },
+        "K.6A_bullet_count_validation": {
+          "description": "Validates exactly 6 bullets generated for K.6A",
+          "source": "staging_buffer['K.6A']['bullets']",
+          "calculate": "len(bullets)",
+          "expected": "GLOBAL_ENFORCEMENT_SPEC.generation_logic.bullet_counts.K.6A (6)",
+          "on_mismatch": {
+            "action": "raise ValidationException",
+            "message": "K.6A bullet count violation. Expected: 6, Actual: {actual_count}",
+            "halt": true
+          }
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-003",
+      "gap_reference": "GAP: Competency Count (6)",
+      "description": "Enhance VG_INDUSTRY_FIRST_COMPLIANCE to validate competency count explicitly",
+      "section": "5.output.validation_gates.VG_INDUSTRY_FIRST_COMPLIANCE.validation_checks",
+      "action": "APPEND",
+      "content": {
+        "check": "competency_count_validation",
+        "source": "staging_buffer['K.8']['competencies']",
+        "method": "len(competencies)",
+        "expected": "GLOBAL_ENFORCEMENT_SPEC.generation_logic.competency_count (6)",
+        "on_mismatch": {
+          "action": "raise ValidationException",
+          "message": "K.8 competency count violation. Expected: 6, Actual: {actual_count}",
+          "halt": true
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-004",
+      "gap_reference": "GAP: Skills Count (8-12)",
+      "description": "Add VG_SKILL_COUNT_COMPLIANCE gate to validate K.11 skill count range",
+      "section": "5.output.validation_gates",
+      "action": "APPEND",
+      "content": {
+        "VG_SKILL_COUNT_COMPLIANCE": {
+          "description": "Validates K.11 skill count within range 8-12. Reads from staging_buffer, cannot access artist_output.",
+          "execution_point": "POST_K11_GENERATION",
+          "blocking": true,
+          "severity": "HIGH",
+          "reads_from": "staging_buffer['K.11'] ONLY",
+          "cannot_access": "artist_output (scope isolated)",
+          "staging_buffer_processing_required": {
+            "note": "K.11 must be added to staging buffer creation",
+            "section": "5.output.staging_buffer_creation.implementation_algorithm.processing_steps",
+            "required_structure": {
+              "K.11": {
+                "extract": "artist_output.get('K.11', {}).get('skills', [])",
+                "process_each_skill": {
+                  "strip_tags": "Remove ALL <tags> and [MARKERS]",
+                  "calculate": {
+                    "skill_text": "cleaned_text",
+                    "skill_number": "Extract leading number if present"
+                  }
+                },
+                "store": {
+                  "skills": "array of skill texts",
+                  "total_skills": "len(skills)"
+                }
+              }
+            }
+          },
+          "validation_method": {
+            "source": "staging_buffer['K.11']['skills']",
+            "calculate": "len(skills)",
+            "min": "GLOBAL_ENFORCEMENT_SPEC.generation_logic.skill_count_range.min (8)",
+            "max": "GLOBAL_ENFORCEMENT_SPEC.generation_logic.skill_count_range.max (12)",
+            "on_below_min": {
+              "action": "raise ValidationException",
+              "message": "K.11 skill count below minimum. Expected: 8-12, Actual: {actual_count}",
+              "regenerate": true,
+              "max_attempts": 3
+            },
+            "on_above_max": {
+              "action": "raise ValidationException",
+              "message": "K.11 skill count above maximum. Expected: 8-12, Actual: {actual_count}",
+              "regenerate": true,
+              "max_attempts": 3
+            }
+          },
+          "qa_report_integration": {
+            "section": "7.1",
+            "content": [
+              "**K.11 Skill Count Validation**",
+              "- Expected Range: 8-12 skills",
+              "- Actual Count: {actual_count}",
+              "- Status: ✅ PASS / ❌ FAIL"
+            ]
+          },
+          "on_pass": "Log '✅ VG_SKILL_COUNT_COMPLIANCE: K.11 has {actual_count} skills (within 8-12 range)'",
+          "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-005",
+      "gap_reference": "GAP: Summary Sentence Count (6)",
+      "description": "Add VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE gate to validate K.1 sentence count and structure",
+      "section": "5.output.validation_gates",
+      "action": "APPEND",
+      "content": {
+        "VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE": {
+          "description": "Validates K.1 executive summary structure: exactly 6 sentences, narrative arc style, no bullet-like formatting. Reads from staging_buffer, cannot access artist_output.",
+          "execution_point": "POST_K1_GENERATION",
+          "blocking": true,
+          "severity": "CRITICAL",
+          "reads_from": "staging_buffer['K.1'] ONLY",
+          "cannot_access": "artist_output (scope isolated)",
+          "validation_method": {
+            "sentence_count_validation": {
+              "source": "staging_buffer['K.1']['rendered_text']",
+              "calculate": "staging_buffer['K.1']['sentence_count']",
+              "expected": "GLOBAL_ENFORCEMENT_SPEC.validation_rules.executive_summary_structure.sentence_count (6)",
+              "tolerance": 0,
+              "on_mismatch": {
+                "action": "raise ValidationException",
+                "message": "K.1 sentence count violation. Expected: exactly 6, Actual: {actual_count}",
+                "detail": "First 200 chars: '{text_preview}'",
+                "regenerate": true,
+                "max_attempts": 3
+              }
+            },
+            "bullet_like_detection": {
+              "description": "Detects bullet-like formatting forbidden in K.1",
+              "source": "staging_buffer['K.1']['rendered_text']",
+              "patterns_to_detect": [
+                "^\\s*[•\\-\\*\\+]",
+                "\\n\\s*[•\\-\\*\\+]",
+                "^\\s*\\d+\\.",
+                "\\n\\s*\\d+\\."
+              ],
+              "on_detected": {
+                "action": "raise ValidationException",
+                "message": "K.1 contains forbidden bullet-like formatting. Pattern detected: '{detected_pattern}'",
+                "halt": true
+              }
+            },
+            "narrative_arc_heuristic": {
+              "description": "Basic check for narrative flow (not exhaustive)",
+              "source": "staging_buffer['K.1']['rendered_text']",
+              "checks": [
+                {
+                  "check": "sentence_length_variation",
+                  "method": "Calculate length of each sentence",
+                  "heuristic": "Flag if all sentences <15 words or all >40 words",
+                  "on_monotonous": {
+                    "action": "WARNING",
+                    "message": "K.1 may lack narrative depth (monotonous sentence length)"
+                  }
+                },
+                {
+                  "check": "opening_sentence_structure",
+                  "method": "Verify first sentence contains industry + years pattern",
+                  "heuristic": "Industry keyword appears in first 10 words",
+                  "on_missing": {
+                    "action": "WARNING",
+                    "message": "K.1 opening may not follow industry-first pattern"
+                  }
+                }
+              ]
+            },
+            "forbidden_content_validation": {
+              "description": "Validates absence of bullet-like content per GLOBAL_ENFORCEMENT_SPEC",
+              "forbidden_content": "GLOBAL_ENFORCEMENT_SPEC.validation_rules.executive_summary_structure.forbidden_content",
+              "check": "bullet-like formatting not present (already covered by bullet_like_detection)"
+            }
+          },
+          "qa_report_integration": {
+            "section": "4.2",
+            "subsections": {
+              "4.2.1": {
+                "name": "Sentence Count Validation",
+                "format": "text",
+                "content": [
+                  "**Expected Sentence Count:** 6",
+                  "**Actual Sentence Count:** {actual_count}",
+                  "**Status:** ✅ PASS / ❌ FAIL"
+                ]
+              },
+              "4.2.2": {
+                "name": "Bullet-Like Pattern Detection",
+                "format": "text",
+                "content": [
+                  "**Patterns Checked:** Bullet markers (•, -, *, +), Numbered lists (1., 2., ...)",
+                  "**Patterns Detected:** {detected_patterns}",
+                  "**Status:** ✅ PASS (none detected) / ❌ FAIL (patterns found)"
+                ]
+              },
+              "4.2.3": {
+                "name": "Narrative Arc Heuristic",
+                "format": "markdown_table",
+                "columns": ["Sentence", "Word Count", "Status"],
+                "rows": [
+                  {"sentence": 1, "word_count": "{s1_words}", "status": "✅/⚠️"},
+                  {"sentence": 2, "word_count": "{s2_words}", "status": "✅/⚠️"},
+                  {"sentence": 3, "word_count": "{s3_words}", "status": "✅/⚠️"},
+                  {"sentence": 4, "word_count": "{s4_words}", "status": "✅/⚠️"},
+                  {"sentence": 5, "word_count": "{s5_words}", "status": "✅/⚠️"},
+                  {"sentence": 6, "word_count": "{s6_words}", "status": "✅/⚠️"}
+                ]
+              }
+            }
+          },
+          "on_pass": "Log '✅ VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE: K.1 has 6 sentences, no bullet-like content'",
+          "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-006",
+      "description": "Update staging buffer to include K.11 processing",
+      "section": "5.output.staging_buffer_creation.implementation_algorithm.processing_steps",
+      "action": "APPEND",
+      "content": {
+        "K.11": {
+          "extract": "artist_output.get('K.11', {}).get('skills', [])",
+          "process_each_skill": {
+            "strip_tags": "Remove ALL <tags> and [MARKERS]",
+            "extract_number": "Extract leading number if format is '1. Skill Name'",
+            "calculate": {
+              "skill_text": "cleaned_text",
+              "skill_number": "extracted_number or index"
+            }
+          },
+          "store": {
+            "skills": "array of skill objects with text + number",
+            "total_skills": "len(skills)",
+            "rendered_text": "'\\n'.join([f'{s['number']}. {s['text']}' for s in skills])"
+          }
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-007",
+      "description": "Update validation gate execution order to include new gates",
+      "section": "2.task.validation_gates.post_generation",
+      "action": "REPLACE",
+      "old_content": [
+        "VG_STAGING_BUFFER_CREATION",
+        "VG_SCOPE_ISOLATION_ENFORCEMENT",
+        "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+        "VG_HEADLINE_CHARACTER_COMPLIANCE",
+        "VG_INDUSTRY_FIRST_COMPLIANCE",
+        "VG_PROSE_QUALITY_COMPLIANCE",
+        "VG_COVER_LETTER_HEADER_COMPLIANCE",
+        "VG_COVER_LETTER_SIGNATURE_COMPLIANCE",
+        "VG_PROSE_COMPANY_PREFIX_REMOVAL",
+        "VG_DEDUPLICATION_COMPLIANCE",
+        "VG_AI_DETECTION_DEFENSE",
+        "VG_FILE_GENERATION_ENFORCEMENT",
+        "VG_FILE_GENERATION_VERIFICATION",
+        "VG_QA_REPORT_COMPLETENESS",
+        "VG_SECTION_13_COMPLETENESS",
+        "VG_QA_METRICS_VALIDATION",
+        "VG_PRODUCTION_READY_PROOF"
+      ],
+      "new_content": [
+        "VG_STAGING_BUFFER_CREATION",
+        "VG_SCOPE_ISOLATION_ENFORCEMENT",
+        "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+        "VG_HEADLINE_CHARACTER_COMPLIANCE",
+        "VG_HEADLINE_WORD_COUNT_COMPLIANCE",
+        "VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE",
+        "VG_SKILL_COUNT_COMPLIANCE",
+        "VG_INDUSTRY_FIRST_COMPLIANCE",
+        "VG_PROSE_QUALITY_COMPLIANCE",
+        "VG_COVER_LETTER_HEADER_COMPLIANCE",
+        "VG_COVER_LETTER_SIGNATURE_COMPLIANCE",
+        "VG_PROSE_COMPANY_PREFIX_REMOVAL",
+        "VG_DEDUPLICATION_COMPLIANCE",
+        "VG_AI_DETECTION_DEFENSE",
+        "VG_FILE_GENERATION_ENFORCEMENT",
+        "VG_FILE_GENERATION_VERIFICATION",
+        "VG_QA_REPORT_COMPLETENESS",
+        "VG_SECTION_13_COMPLETENESS",
+        "VG_QA_METRICS_VALIDATION",
+        "VG_PRODUCTION_READY_PROOF"
+      ]
+    },
+
+    {
+      "change_id": "C-1.6.8-008",
+      "description": "Add new QA Report sections for structural validation",
+      "section": "5.output.qa_report_generation.sections",
+      "action": "APPEND",
+      "content": {
+        "2_2_headline_validation": {
+          "section_id": "2.2",
+          "section_name": "Headline Validation",
+          "format": "markdown_table",
+          "columns": ["Segment", "Text", "Word Count", "Limit", "Status"],
+          "description": "Validates K.4 headline word count per segment (max 4 words)"
+        },
+        "4_2_executive_summary_structure": {
+          "section_id": "4.2",
+          "section_name": "Executive Summary Structure Validation",
+          "subsections": ["4.2.1 Sentence Count", "4.2.2 Bullet-Like Pattern Detection", "4.2.3 Narrative Arc Heuristic"],
+          "description": "Validates K.1 sentence count (6), absence of bullet-like content, narrative flow"
+        },
+        "7_1_count_compliance": {
+          "section_id": "7.1",
+          "section_name": "Count Compliance Validation",
+          "format": "markdown_table",
+          "columns": ["Section", "Required Count", "Actual Count", "Status"],
+          "rows": [
+            {"section": "K.5A Bullets", "required": 7, "actual": "{k5a_count}", "status": "✅/❌"},
+            {"section": "K.6A Bullets", "required": 6, "actual": "{k6a_count}", "status": "✅/❌"},
+            {"section": "K.8 Competencies", "required": 6, "actual": "{k8_count}", "status": "✅/❌"},
+            {"section": "K.11 Skills", "required": "8-12", "actual": "{k11_count}", "status": "✅/❌"}
+          ]
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-009",
+      "description": "Add critical rules for v1.6.8",
+      "section": "6.conditions.critical_rules",
+      "action": "APPEND",
+      "content": [
+        "K.4 REQUIREMENT (v1.6.8): Headline segments MUST be ≤4 words each",
+        "K.5A REQUIREMENT (v1.6.8): EXACTLY 7 bullets required (no more, no less)",
+        "K.6A REQUIREMENT (v1.6.8): EXACTLY 6 bullets required (no more, no less)",
+        "K.8 REQUIREMENT (v1.6.8): EXACTLY 6 competencies required (no more, no less)",
+        "K.11 REQUIREMENT (v1.6.8): Skills count MUST be in range 8-12",
+        "K.1 REQUIREMENT (v1.6.8): Executive summary MUST have EXACTLY 6 sentences",
+        "K.1 REQUIREMENT (v1.6.8): Executive summary MUST NOT contain bullet-like formatting (•, -, *, numbered lists)",
+        "VALIDATION (v1.6.8): VG_HEADLINE_WORD_COUNT_COMPLIANCE MUST validate K.4 word count per segment",
+        "VALIDATION (v1.6.8): VG_MANDATORY_WORD_COUNT_COMPLIANCE MUST validate bullet counts explicitly",
+        "VALIDATION (v1.6.8): VG_INDUSTRY_FIRST_COMPLIANCE MUST validate competency count explicitly",
+        "VALIDATION (v1.6.8): VG_SKILL_COUNT_COMPLIANCE MUST validate K.11 skill count range",
+        "VALIDATION (v1.6.8): VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE MUST validate K.1 sentence count and structure"
+      ]
+    },
+
+    {
+      "change_id": "C-1.6.8-010",
+      "description": "Add test suite for v1.6.8 validation gates",
+      "section": "test_suites",
+      "action": "APPEND",
+      "content": {
+        "STRUCTURAL_INTEGRITY_TESTS": {
+          "suite_id": "STRUCTURAL_INTEGRITY_TESTS",
+          "total_tests": 27,
+          "description": "Tests for structural integrity validation gates added in v1.6.8",
+          "categories": {
+            "headline_word_count_tests": {
+              "total": 6,
+              "tests": [
+                {
+                  "test_id": "HLWC-001",
+                  "name": "All segments ≤4 words",
+                  "check": "Generate headline with all segments having ≤4 words",
+                  "expected": "✅ PASS",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "HLWC-002",
+                  "name": "Segment 1 has 5 words",
+                  "check": "Generate headline with first segment having 5 words",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "HLWC-003",
+                  "name": "Empty segment detection",
+                  "check": "Generate headline with empty segment",
+                  "expected": "❌ FAIL - HALT",
+                  "severity": "HIGH"
+                },
+                {
+                  "test_id": "HLWC-004",
+                  "name": "Single-segment headline",
+                  "check": "Generate headline with no | separators",
+                  "expected": "✅ PASS if ≤4 words",
+                  "severity": "MEDIUM"
+                },
+                {
+                  "test_id": "HLWC-005",
+                  "name": "QA Report Section 2.2 display",
+                  "check": "Verify Section 2.2 shows per-segment word counts",
+                  "expected": "Table with 3 rows (segments 1-3)",
+                  "severity": "MEDIUM"
+                },
+                {
+                  "test_id": "HLWC-006",
+                  "name": "Regeneration on failure",
+                  "check": "Generate 5-word segment, verify regenerates up to 3 times",
+                  "expected": "Regeneration attempts logged",
+                  "severity": "HIGH"
+                }
+              ]
+            },
+            "bullet_count_tests": {
+              "total": 6,
+              "tests": [
+                {
+                  "test_id": "BC-001",
+                  "name": "K.5A exactly 7 bullets",
+                  "check": "Generate exactly 7 K.5A bullets",
+                  "expected": "✅ PASS",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "BC-002",
+                  "name": "K.5A with 6 bullets",
+                  "check": "Generate 6 K.5A bullets (each meeting word count)",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "BC-003",
+                  "name": "K.5A with 8 bullets",
+                  "check": "Generate 8 K.5A bullets",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "BC-004",
+                  "name": "K.6A exactly 6 bullets",
+                  "check": "Generate exactly 6 K.6A bullets",
+                  "expected": "✅ PASS",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "BC-005",
+                  "name": "K.6A with 5 bullets",
+                  "check": "Generate 5 K.6A bullets",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "BC-006",
+                  "name": "QA Report Section 7.1 display",
+                  "check": "Verify Section 7.1 shows bullet counts",
+                  "expected": "Table row showing K.5A=7, K.6A=6",
+                  "severity": "MEDIUM"
+                }
+              ]
+            },
+            "competency_count_tests": {
+              "total": 4,
+              "tests": [
+                {
+                  "test_id": "CC-001",
+                  "name": "K.8 exactly 6 competencies",
+                  "check": "Generate exactly 6 K.8 competencies",
+                  "expected": "✅ PASS",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "CC-002",
+                  "name": "K.8 with 5 competencies",
+                  "check": "Generate 5 K.8 competencies",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "CC-003",
+                  "name": "K.8 with 7 competencies",
+                  "check": "Generate 7 K.8 competencies",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "CC-004",
+                  "name": "QA Report Section 7.1 display",
+                  "check": "Verify Section 7.1 shows competency count",
+                  "expected": "Table row showing K.8=6",
+                  "severity": "MEDIUM"
+                }
+              ]
+            },
+            "skill_count_tests": {
+              "total": 6,
+              "tests": [
+                {
+                  "test_id": "SC-001",
+                  "name": "K.11 with 10 skills (within range)",
+                  "check": "Generate 10 K.11 skills",
+                  "expected": "✅ PASS",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SC-002",
+                  "name": "K.11 with 7 skills (below min)",
+                  "check": "Generate 7 K.11 skills",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SC-003",
+                  "name": "K.11 with 13 skills (above max)",
+                  "check": "Generate 13 K.11 skills",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SC-004",
+                  "name": "K.11 boundary test (8 skills)",
+                  "check": "Generate exactly 8 K.11 skills",
+                  "expected": "✅ PASS",
+                  "severity": "HIGH"
+                },
+                {
+                  "test_id": "SC-005",
+                  "name": "K.11 boundary test (12 skills)",
+                  "check": "Generate exactly 12 K.11 skills",
+                  "expected": "✅ PASS",
+                  "severity": "HIGH"
+                },
+                {
+                  "test_id": "SC-006",
+                  "name": "QA Report Section 7.1 display",
+                  "check": "Verify Section 7.1 shows skill count",
+                  "expected": "Table row showing K.11 count and range",
+                  "severity": "MEDIUM"
+                }
+              ]
+            },
+            "sentence_count_tests": {
+              "total": 5,
+              "tests": [
+                {
+                  "test_id": "SENT-001",
+                  "name": "K.1 exactly 6 sentences",
+                  "check": "Generate K.1 with exactly 6 sentences",
+                  "expected": "✅ PASS",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SENT-002",
+                  "name": "K.1 with 5 sentences",
+                  "check": "Generate K.1 with 5 sentences",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SENT-003",
+                  "name": "K.1 with 7 sentences",
+                  "check": "Generate K.1 with 7 sentences",
+                  "expected": "❌ FAIL - ValidationException",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SENT-004",
+                  "name": "K.1 bullet-like detection",
+                  "check": "Generate K.1 with bullet markers (•, -)",
+                  "expected": "❌ FAIL - HALT",
+                  "severity": "CRITICAL"
+                },
+                {
+                  "test_id": "SENT-005",
+                  "name": "QA Report Section 4.2 display",
+                  "check": "Verify Section 4.2 shows sentence analysis",
+                  "expected": "Table with 6 rows (sentences 1-6)",
+                  "severity": "MEDIUM"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-011",
+      "description": "Update test suite totals",
+      "section": "test_suites.overview",
+      "action": "REPLACE",
+      "old_content": {
+        "total_tests": 155,
+        "breakdown": {
+          "golden_path_tests": 82,
+          "clerk_validation_tests": 21,
+          "staging_buffer_tests": 32,
+          "qa_completeness_tests": 12,
+          "headline_char_limit_tests": 8
+        }
+      },
+      "new_content": {
+        "total_tests": 182,
+        "breakdown": {
+          "golden_path_tests": 82,
+          "clerk_validation_tests": 21,
+          "staging_buffer_tests": 32,
+          "qa_completeness_tests": 12,
+          "headline_char_limit_tests": 8,
+          "structural_integrity_tests": 27
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.8-012",
+      "description": "Update critical success criteria",
+      "section": "critical_success_criteria",
+      "action": "APPEND",
+      "content": {
+        "structural_integrity_validation_success": [
+          "✅ K.4 headline validated for ≤4 words per segment",
+          "✅ K.5A bullet count validated (exactly 7)",
+          "✅ K.6A bullet count validated (exactly 6)",
+          "✅ K.8 competency count validated (exactly 6)",
+          "✅ K.11 skill count validated (8-12 range)",
+          "✅ K.1 sentence count validated (exactly 6)",
+          "✅ K.1 bullet-like formatting detection active",
+          "✅ All structural validations read from staging_buffer",
+          "✅ File writes blocked when structural violations detected",
+          "✅ QA Report includes new sections 2.2, 4.2, 7.1",
+          "✅ All 27 structural integrity tests pass"
+        ]
+      }
+    }
+  ],
+
+  "validation_checkpoints": [
+    {
+      "checkpoint_id": "V-1.6.8-001",
+      "name": "Headline word count per segment validation",
+      "checks": [
+        "VG_HEADLINE_WORD_COUNT_COMPLIANCE gate added",
+        "Gate validates each segment ≤4 words",
+        "ValidationException raised if any segment >4 words",
+        "QA Report Section 2.2 displays per-segment word counts"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.8-002",
+      "name": "Bullet count explicit validation",
+      "checks": [
+        "VG_MANDATORY_WORD_COUNT_COMPLIANCE enhanced with count checks",
+        "K.5A validates exactly 7 bullets",
+        "K.6A validates exactly 6 bullets",
+        "ValidationException raised on count mismatch"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.8-003",
+      "name": "Competency count explicit validation",
+      "checks": [
+        "VG_INDUSTRY_FIRST_COMPLIANCE enhanced with count check",
+        "K.8 validates exactly 6 competencies",
+        "ValidationException raised on count mismatch"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.8-004",
+      "name": "Skill count range validation",
+      "checks": [
+        "VG_SKILL_COUNT_COMPLIANCE gate added",
+        "K.11 added to staging buffer processing",
+        "Validates skill count in 8-12 range",
+        "QA Report Section 7.1 displays skill count"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.8-005",
+      "name": "Executive summary structure validation",
+      "checks": [
+        "VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE gate added",
+        "Validates exactly 6 sentences in K.1",
+        "Detects bullet-like formatting patterns",
+        "QA Report Section 4.2 displays structure analysis"
+      ]
+    }
+  ],
+
+  "success_criteria": [
+    "All 9 enforcement gaps from user table COVERED",
+    "3 new validation gates added (VG_HEADLINE_WORD_COUNT_COMPLIANCE, VG_SKILL_COUNT_COMPLIANCE, VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE)",
+    "2 existing gates enhanced (VG_MANDATORY_WORD_COUNT_COMPLIANCE, VG_INDUSTRY_FIRST_COMPLIANCE)",
+    "K.11 added to staging buffer processing",
+    "3 new QA Report sections added (2.2, 4.2, 7.1)",
+    "27 new structural integrity tests defined",
+    "All 182 tests pass (155 existing + 27 new)",
+    "100% validation coverage for structural integrity rules",
+    "ZERO structural violations in production"
+  ],
+
+  "deployment_steps": [
+    "1. Apply all 12 changes (C-1.6.8-001 through C-1.6.8-012)",
+    "2. Verify 3 new gates added to validation_gates array",
+    "3. Verify 2 existing gates enhanced with count validations",
+    "4. Verify K.11 added to staging buffer processing",
+    "5. Generate test headline with 5-word segment → verify fails (ValidationException)",
+    "6. Generate test resume with 5 K.5A bullets → verify fails",
+    "7. Generate test resume with 7 K.11 skills → verify fails",
+    "8. Generate test K.1 with 5 sentences → verify fails",
+    "9. Verify QA Report includes new sections 2.2, 4.2, 7.1",
+    "10. Run all 182 tests (155 existing + 27 new structural integrity tests)",
+    "11. If all pass → Deploy to production"
+  ],
+
+  "failure_indicators": [
+    "❌ Headlines with 5+ words per segment do NOT trigger validation failure",
+    "❌ K.5A with 6 bullets passes validation (should fail)",
+    "❌ K.6A with 7 bullets passes validation (should fail)",
+    "❌ K.8 with 5 competencies passes validation (should fail)",
+    "❌ K.11 with 7 skills passes validation (should fail)",
+    "❌ K.11 with 13 skills passes validation (should fail)",
+    "❌ K.1 with 5 sentences passes validation (should fail)",
+    "❌ K.1 with bullet markers (•, -) passes validation (should fail)",
+    "❌ Files written despite structural violations",
+    "❌ QA Report missing sections 2.2, 4.2, or 7.1"
+  ]
+}

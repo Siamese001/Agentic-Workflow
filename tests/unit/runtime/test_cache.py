@@ -1,10 +1,9 @@
 """Unit tests for runtime/shared/cache.py"""
 from __future__ import annotations
-import pytest
 
 from agentic_workflow.runtime.shared.cache import (
     generate_llm_cache_key, generate_llm_cache_key_with_fingerprint,
-    should_invalidate_cache, CACHE_KEY_PREFIX, CACHE_KEY_VERSION,
+    should_invalidate_cache, CACHE_KEY_VERSION,
 )
 
 class TestGenerateCacheKey:

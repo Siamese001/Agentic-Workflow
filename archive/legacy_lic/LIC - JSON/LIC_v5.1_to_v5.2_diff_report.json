@@ -1,0 +1,56 @@
+{
+  "from_version": "LIC_10-02-2025_v5.1",
+  "to_version": "LIC_10-02-2025_v5.2",
+  "sha256_v5_2": "eb74b2f73b828e229bc47f490735f011fece9e8841a5bf46c1c9320a97c7cbe7",
+  "generated_at": "2025-10-02T15:24:42.131761Z",
+  "subsection_diffs": [
+    {
+      "path": "4.reasoning.K3",
+      "v5_1_lines": 0,
+      "v5_2_lines": 94,
+      "delta": 94
+    },
+    {
+      "path": "3.context.routing_decision_tree",
+      "v5_1_lines": 48,
+      "v5_2_lines": 90,
+      "delta": 42
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema",
+      "v5_1_lines": 152,
+      "v5_2_lines": 292,
+      "delta": 140
+    },
+    {
+      "path": "4.reasoning.K7",
+      "v5_1_lines": 0,
+      "v5_2_lines": 95,
+      "delta": 95
+    },
+    {
+      "path": "5.output.audit",
+      "v5_1_lines": 86,
+      "v5_2_lines": 120,
+      "delta": 34
+    },
+    {
+      "path": "4.reasoning.K5",
+      "v5_1_lines": 0,
+      "v5_2_lines": 19,
+      "delta": 19
+    },
+    {
+      "path": "4.reasoning.K3.3_achievement_generation",
+      "v5_1_lines": 0,
+      "v5_2_lines": 43,
+      "delta": 43
+    },
+    {
+      "path": "3.context.complete_parameter_tables_rules_overrides.message_type_determination",
+      "v5_1_lines": 0,
+      "v5_2_lines": 5,
+      "delta": 5
+    }
+  ]
+}

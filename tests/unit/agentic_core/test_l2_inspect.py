@@ -1,7 +1,6 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 class TestExecutionResultInspection:
     """Tests for inspecting execution results."""

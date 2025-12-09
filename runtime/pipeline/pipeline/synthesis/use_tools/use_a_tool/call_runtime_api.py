@@ -24,11 +24,11 @@ class OperationResult:
 
 class CallRuntimeApi:
     """Utility class for use_a_tool domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def execute(self, data: Any, **kwargs) -> OperationResult:
         """Execute operation."""
         try:
@@ -37,7 +37,7 @@ class CallRuntimeApi:
         except Exception as e:
             logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
-    
+
     def _process(self, data: Any, **kwargs) -> Any:
         """Process data."""
         return data

@@ -14,7 +14,6 @@ import logging
 import os
 import re
 import uuid
-from collections import defaultdict
 from dataclasses import asdict
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
@@ -45,7 +44,7 @@ except ImportError:
 def create_directory_if_missing(directory_path: str) -> None:
     """
     Creates a directory if it doesn't exist.
-    
+
     Args:
         directory_path: Path to the directory to create
     """
@@ -56,10 +55,10 @@ def create_directory_if_missing(directory_path: str) -> None:
 def sanitize_filename(filename: str) -> str:
     """
     Sanitizes a filename by removing or replacing invalid characters.
-    
+
     Args:
         filename: The filename to sanitize
-        
+
     Returns:
         Sanitized filename safe for filesystem use
     """
@@ -79,11 +78,11 @@ def sanitize_filename(filename: str) -> str:
 
 class WorkflowLogFilter(logging.Filter):
     """Log filter to add workflow_id to log records."""
-    
+
     def __init__(self, workflow_id: str) -> None:
         super().__init__()
         self.workflow_id = workflow_id
-    
+
     def filter(self, record: logging.LogRecord) -> bool:
         record.workflow_id = self.workflow_id
         return True
@@ -96,18 +95,18 @@ def setup_workflow_logging(
 ) -> Tuple[logging.Logger, str]:
     """
     Set up logging for the workflow with both console and file handlers.
-    
+
     Args:
         workflow_id: Optional workflow identifier
         log_file_path: Specific path for the log file
         test_mode: If True, disable file logging
-        
+
     Returns:
         Tuple of (logger, log_filename)
     """
     if workflow_id is None:
         workflow_id = str(uuid.uuid4())[:8]
-    
+
     log_filename = log_file_path
     if not log_filename:
         log_dir = CACHE_DIR / "logs"
@@ -116,26 +115,26 @@ def setup_workflow_logging(
         except (PermissionError, OSError):
             test_mode = True
         log_filename = str(log_dir / f"workflow_{workflow_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
-    
+
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - [%(workflow_id)s] - %(message)s'
     log_formatter = logging.Formatter(log_format)
-    
+
     root_logger = logging.getLogger()
     root_logger.handlers.clear()
     root_logger.setLevel(logging.DEBUG)
-    
+
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(log_formatter)
     console_handler.addFilter(WorkflowLogFilter(workflow_id))
     root_logger.addHandler(console_handler)
-    
+
     if not test_mode:
         try:
             log_dir = os.path.dirname(log_filename)
             if log_dir:
                 os.makedirs(log_dir, exist_ok=True)
-            
+
             file_handler = logging.FileHandler(log_filename, encoding='utf-8')
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(log_formatter)
@@ -144,13 +143,13 @@ def setup_workflow_logging(
         except Exception as e:
             logging.error(f"Failed to create file logger at {log_filename}: {e}")
             test_mode = True
-    
+
     logger = logging.getLogger(__name__)
     logger.info(
         f"H0_INFO - Workflow logging initialized. ID: {workflow_id}, "
         f"Log file: {log_filename if not test_mode else 'DISABLED'}"
     )
-    
+
     return logger, log_filename
 
 
@@ -160,7 +159,7 @@ def setup_workflow_logging(
 
 class TextUtils:
     """Utilities for text processing, counting, and manipulation."""
-    
+
     @staticmethod
     def count_sentences(text: str) -> int:
         """
@@ -171,7 +170,7 @@ class TextUtils:
             return 0
         sentence_endings = re.findall(r'[.!?]+', text)
         return len(sentence_endings) if sentence_endings else 1
-    
+
     @staticmethod
     def count_words(text: str) -> int:
         """
@@ -180,7 +179,7 @@ class TextUtils:
         if not text:
             return 0
         return len(text.split())
-    
+
     @staticmethod
     def count_words_ms_word_style(text: str) -> int:
         """
@@ -192,13 +191,13 @@ class TextUtils:
             return 0
         text = re.sub(r'\s+', ' ', text.strip())
         return len(text.split())
-    
+
     @staticmethod
     def extract_first_n_words(text: str, n: int) -> str:
         """Extracts the first N words from text."""
         words = text.split()
         return ' '.join(words[:n])
-    
+
     @staticmethod
     def truncate_to_word_count(text: str, max_words: int) -> str:
         """Truncates text to a maximum word count, preserving whole words."""
@@ -206,26 +205,26 @@ class TextUtils:
         if len(words) <= max_words:
             return text
         return ' '.join(words[:max_words])
-    
+
     @staticmethod
     def strip_markdown_fences(text: str) -> str:
         """Removes markdown code fences from text."""
         text = re.sub(r'^```\w*\n?', '', text, flags=re.MULTILINE)
         text = re.sub(r'\n?```$', '', text, flags=re.MULTILINE)
         return text.strip()
-    
+
     @staticmethod
     def normalize_whitespace(text: str) -> str:
         """Normalizes whitespace in text (collapses multiple spaces/newlines)."""
         text = re.sub(r'\s+', ' ', text)
         return text.strip()
-    
+
     @staticmethod
     def remove_extra_newlines(text: str, max_consecutive: int = 2) -> str:
         """Removes excess consecutive newlines."""
         pattern = r'\n{' + str(max_consecutive + 1) + r',}'
         return re.sub(pattern, '\n' * max_consecutive, text)
-    
+
     @staticmethod
     def is_valid_sentence_start(text: str) -> bool:
         """
@@ -234,7 +233,7 @@ class TextUtils:
         """
         forbidden_starts = ['At ', 'As ', 'In ', 'The ', 'This ', 'In my role', 'At the company']
         return not any(text.startswith(start) for start in forbidden_starts)
-    
+
     @staticmethod
     def remove_forbidden_sentence_starts(text: str) -> str:
         """Removes forbidden sentence starts and recapitalizes."""
@@ -244,16 +243,16 @@ class TextUtils:
             r'^In\s+my\s+role,?\s+',
             r'^In\s+this\s+role,?\s+',
         ]
-        
+
         for pattern in forbidden_patterns:
             if re.match(pattern, text, re.IGNORECASE):
                 text = re.sub(pattern, '', text, flags=re.IGNORECASE)
                 if text:
                     text = text[0].upper() + text[1:]
                 break
-        
+
         return text
-    
+
     @staticmethod
     def extract_keywords(text: str, min_length: int = 3) -> List[str]:
         """
@@ -264,19 +263,19 @@ class TextUtils:
             'the', 'and', 'for', 'with', 'from', 'this', 'that', 'have',
             'has', 'had', 'are', 'was', 'were', 'been', 'being', 'will'
         }
-        
+
         words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
         keywords = [w for w in words if len(w) >= min_length and w not in stop_words]
-        
+
         seen = set()
         unique_keywords = []
         for kw in keywords:
             if kw not in seen:
                 seen.add(kw)
                 unique_keywords.append(kw)
-        
+
         return unique_keywords
-    
+
     @staticmethod
     def calculate_similarity(text1: str, text2: str) -> float:
         """
@@ -286,10 +285,10 @@ class TextUtils:
         if not SKLEARN_AVAILABLE:
             logging.warning("sklearn not available, returning 0.0 similarity")
             return 0.0
-        
+
         if not text1 or not text2:
             return 0.0
-        
+
         try:
             vectorizer = TfidfVectorizer()
             tfidf_matrix = vectorizer.fit_transform([text1, text2])
@@ -298,7 +297,7 @@ class TextUtils:
         except Exception as e:
             logging.warning(f"Error calculating similarity: {e}")
             return 0.0
-    
+
     @staticmethod
     def remove_conversational_fillers(text: str) -> str:
         """Removes common conversational filler phrases from the start of text."""
@@ -320,14 +319,14 @@ class TextUtils:
                 text = text[len(filler):].lstrip()
                 break
         return text
-    
+
     @staticmethod
     def remove_trailing_explanations(text: str) -> str:
         """Removes trailing 'Note:' or 'I have ensured...' meta-commentary."""
         text = re.sub(r"\s*\n\s*\n\s*Note:.*$", "", text, flags=re.DOTALL | re.IGNORECASE)
         text = re.sub(r"\s*\n\s*\n\s*I have ensured.*$", "", text, flags=re.DOTALL | re.IGNORECASE)
         return text
-    
+
     @staticmethod
     def sanitize_text(text: str) -> str:
         """
@@ -335,13 +334,13 @@ class TextUtils:
         """
         if not isinstance(text, str):
             return text
-        
+
         text = TextUtils.strip_markdown_fences(text)
         text = TextUtils.remove_conversational_fillers(text)
         text = TextUtils.remove_trailing_explanations(text)
-        
+
         return text.strip()
-    
+
     @staticmethod
     def compute_hash(text: str) -> str:
         """Compute SHA-256 hash of text."""
@@ -358,45 +357,45 @@ text_utils = TextUtils()
 
 class DuplicateDetector:
     """Detects duplicate or near-duplicate text."""
-    
+
     def __init__(self, threshold: float = 0.9) -> None:
         self.threshold = threshold
         self.vectorizer = TfidfVectorizer() if SKLEARN_AVAILABLE else None
-    
+
     def find_duplicates_in_list(self, texts: List[str]) -> List[Tuple[str, str, float]]:
         """
         Finds duplicates within a list of strings.
-        
+
         Args:
             texts: List of text strings
-            
+
         Returns:
             List of tuples (text1, text2, similarity_score) for duplicates
         """
         if not SKLEARN_AVAILABLE or len(texts) < 2:
             return []
-        
+
         try:
             tfidf_matrix = self.vectorizer.fit_transform(texts)
             cosine_sim_matrix = cosine_similarity(tfidf_matrix)
-            
+
             duplicates = []
             checked_pairs = set()
-            
+
             for i in range(len(texts)):
                 for j in range(i + 1, len(texts)):
                     if (i, j) in checked_pairs:
                         continue
-                    
+
                     similarity = cosine_sim_matrix[i, j]
-                    
+
                     if similarity >= self.threshold:
                         duplicates.append((texts[i], texts[j], similarity))
-                    
+
                     checked_pairs.add((i, j))
-            
+
             return duplicates
-            
+
         except Exception as e:
             logging.warning(f"Duplicate detection failed: {e}")
             return []
@@ -413,51 +412,51 @@ def calculate_signal_score(
 ) -> float:
     """
     Calculates a 'signal score' based on theme and keyword presence.
-    
+
     Args:
         generated_content: The generated text to score
         thematic_analysis: ThematicAnalysis containing themes and keywords
         weights: Optional custom weights for scoring components
-        
+
     Returns:
         Score between 0.0 and 1.0
     """
     if not generated_content or not thematic_analysis:
         return 0.0
-    
+
     if weights is None:
         weights = {
             "primary_theme": 0.5,
             "primary_keywords": 0.3,
             "differentiators": 0.2,
         }
-    
+
     content_lower = generated_content.lower()
     score = 0.0
-    
+
     # 1. Primary Theme
     primary_theme = thematic_analysis.primary_theme.get('name', '').lower()
     if primary_theme and primary_theme in content_lower:
         score += weights.get("primary_theme", 0.5)
-    
+
     # 2. Primary Keywords
     primary_keywords = thematic_analysis.primary_theme.get('keywords', [])
     if primary_keywords:
         found_keywords = sum(1 for kw in primary_keywords if kw.lower() in content_lower)
         keyword_score = found_keywords / len(primary_keywords)
         score += keyword_score * weights.get("primary_keywords", 0.3)
-    
+
     # 3. Differentiator Keywords
     differentiators = []
     comp_intel = getattr(thematic_analysis, 'competitive_intelligence', None)
     if comp_intel:
         differentiators = getattr(comp_intel, 'differentiator_keywords', [])
-    
+
     if differentiators:
         found_diffs = sum(1 for kw in differentiators if kw.lower() in content_lower)
         diff_score = found_diffs / len(differentiators)
         score += diff_score * weights.get("differentiators", 0.2)
-    
+
     return min(1.0, score)
 
 
@@ -469,13 +468,13 @@ class TelemetryLogger:
     """
     Logs telemetry data to a structured JSONL file for analysis.
     """
-    
+
     def __init__(self, log_path: Optional[str] = None) -> None:
         if log_path is None:
             log_path = str(CACHE_DIR / "telemetry_log.jsonl")
         self.log_path = log_path
         self.logger = logging.getLogger(__name__)
-    
+
     def log(self, telemetry_data: Any) -> None:
         """Logs a telemetry event."""
         try:
@@ -485,16 +484,16 @@ class TelemetryLogger:
                 data = telemetry_data.to_dict()
             else:
                 data = str(telemetry_data)
-            
+
             log_entry = {
                 "timestamp": datetime.utcnow().isoformat(),
                 "event_type": type(telemetry_data).__name__,
                 "data": data,
             }
-            
+
             # Ensure directory exists
             os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
-            
+
             with open(self.log_path, 'a', encoding='utf-8') as f:
                 json.dump(log_entry, f)
                 f.write('\n')
@@ -512,22 +511,22 @@ def reasoning_config_to_api_params(
 ) -> Dict[str, Any]:
     """
     Converts a ReasoningConfig dataclass into API parameters.
-    
+
     Args:
         reasoning_config: The reasoning configuration
         section_id: Identifier for the section being generated
-        
+
     Returns:
         Dictionary of API parameters
     """
     params: Dict[str, Any] = {}
-    
+
     if reasoning_config.self_consistency > 1:
         params["temperature_adjustment"] = 0.2
-    
+
     if reasoning_config.tot_branches > 1:
         params["top_k"] = 50
-    
+
     return params
 
 
@@ -537,40 +536,40 @@ def enhance_system_prompt_with_reasoning(
 ) -> str:
     """
     Enhances a system prompt with reasoning directives based on the config.
-    
+
     Args:
         system_prompt: The base system prompt
         reasoning_config: Configuration for reasoning strategies
-        
+
     Returns:
         Enhanced system prompt with reasoning directives
     """
     if not reasoning_config:
         return system_prompt
-    
+
     addendums = [PROMPT_ADDENDUM_CONFIG.HEADER]
-    
+
     def get_directive(value: int, directives: List[tuple]) -> Optional[str]:
         for threshold, template in directives:
             if value >= threshold:
                 return template
         return None
-    
+
     # Chain-of-Thought
     cot_template = get_directive(reasoning_config.cot_min_paths, PROMPT_ADDENDUM_CONFIG.COT_DIRECTIVES)
     if cot_template:
         addendums.append(cot_template.format(cot=reasoning_config.cot_min_paths))
-    
+
     # Tree-of-Thought (Breadth)
     tot_b_template = get_directive(reasoning_config.tot_branches, PROMPT_ADDENDUM_CONFIG.TOT_B_DIRECTIVES)
     if tot_b_template:
         addendums.append(tot_b_template.format(tot_b=reasoning_config.tot_branches))
-    
+
     # Tree-of-Thought (Depth)
     tot_d_template = get_directive(reasoning_config.min_tot_depth, PROMPT_ADDENDUM_CONFIG.TOT_D_DIRECTIVES)
     if tot_d_template:
         addendums.append(tot_d_template.format(tot_d=reasoning_config.min_tot_depth))
-    
+
     # Reflexion
     if reasoning_config.reflexion:
         reflexion_template = get_directive(
@@ -579,11 +578,11 @@ def enhance_system_prompt_with_reasoning(
         )
         if reflexion_template:
             addendums.append(reflexion_template.format(max_loops=reasoning_config.max_reflexion_loops))
-    
+
     if len(addendums) > 1:
         addendums.append(PROMPT_ADDENDUM_CONFIG.FOOTER)
         return system_prompt + "\n" + "".join(addendums)
-    
+
     return system_prompt
 
 
@@ -594,36 +593,36 @@ def build_generation_prompt_with_reinforced_constraints(
 ) -> str:
     """
     Enhances a base prompt with reinforced constraints for retries.
-    
+
     Args:
         base_prompt: The original prompt
         constraints: Dictionary of constraints to reinforce
         attempt: Current attempt number (1-indexed)
-        
+
     Returns:
         Enhanced prompt with reinforced constraints
     """
     if attempt <= 1:
         return base_prompt
-    
+
     reinforcement_header = "\n\n--- CRITICAL: Previous attempt failed. Adhere to ALL constraints: ---\n"
     reinforcement_footer = "\n--- END CRITICAL CONSTRAINTS ---\n"
-    
+
     constraint_lines = []
-    
+
     if 'min_wc' in constraints and 'max_wc' in constraints:
         constraint_lines.append(
             f"**Word Count:** Must be *strictly* between {constraints['min_wc']} and {constraints['max_wc']} words."
         )
-    
+
     if 'min_sc' in constraints and 'max_sc' in constraints:
         constraint_lines.append(
             f"**Sentence Count:** Must be *exactly* {constraints['min_sc']} to {constraints['max_sc']} sentences."
         )
-    
+
     if not constraint_lines:
         return base_prompt
-    
+
     return (
         base_prompt +
         reinforcement_header +

@@ -1,7 +1,6 @@
 """E2E tests for complete outreach campaign lifecycle."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta
@@ -45,7 +44,7 @@ class TestCampaignLifecycleE2E:
             phase=CampaignPhase.PLANNING,
             metrics=CampaignMetrics(),
         )
-        
+
         phases = [
             CampaignPhase.PLANNING,
             CampaignPhase.RESEARCH,
@@ -57,11 +56,11 @@ class TestCampaignLifecycleE2E:
             CampaignPhase.ANALYSIS,
             CampaignPhase.COMPLETED,
         ]
-        
+
         for phase in phases:
             state.phase = phase
             state.audit_log.append({"phase": phase.value, "timestamp": datetime.now().isoformat()})
-        
+
         assert state.phase == CampaignPhase.COMPLETED
         assert len(state.audit_log) == len(phases)
 
@@ -73,11 +72,11 @@ class TestCampaignLifecycleE2E:
             phase=CampaignPhase.EXECUTION,
             metrics=CampaignMetrics(total_contacts=100),
         )
-        
+
         # Simulate sending
         for contact in contacts:
             state.metrics.messages_sent += 1
-        
+
         assert state.metrics.messages_sent == 100
 
     def test_campaign_error_recovery(self):
@@ -87,18 +86,18 @@ class TestCampaignLifecycleE2E:
             phase=CampaignPhase.EXECUTION,
             metrics=CampaignMetrics(total_contacts=10),
         )
-        
+
         # Simulate partial failure
         for i in range(10):
             if i == 5:
                 state.errors.append(f"Failed to send to contact_{i}")
             else:
                 state.metrics.messages_sent += 1
-        
+
         # Recovery: retry failed
         state.metrics.messages_sent += 1
         state.errors.clear()
-        
+
         assert state.metrics.messages_sent == 10
         assert len(state.errors) == 0
 
@@ -109,18 +108,18 @@ class TestCampaignLifecycleE2E:
             phase=CampaignPhase.EXECUTION,
             metrics=CampaignMetrics(total_contacts=50, messages_sent=25),
         )
-        
+
         # Pause
         paused_at = state.metrics.messages_sent
         state.audit_log.append({"action": "paused", "at_message": paused_at})
-        
+
         # Resume
         state.audit_log.append({"action": "resumed", "from_message": paused_at})
-        
+
         # Continue
         for _ in range(25):
             state.metrics.messages_sent += 1
-        
+
         assert state.metrics.messages_sent == 50
 
     def test_campaign_metrics_tracking(self):
@@ -137,11 +136,11 @@ class TestCampaignLifecycleE2E:
                 conversions=2,
             ),
         )
-        
+
         open_rate = state.metrics.messages_opened / state.metrics.messages_sent
         reply_rate = state.metrics.replies_received / state.metrics.messages_sent
         conversion_rate = state.metrics.conversions / state.metrics.total_contacts
-        
+
         assert open_rate == 0.6
         assert reply_rate == 0.15
         assert conversion_rate == 0.02
@@ -158,11 +157,11 @@ class TestMultiChannelOutreachE2E:
             {"channel": "email", "day": 7, "action": "email_outreach"},
             {"channel": "linkedin", "day": 14, "action": "final_follow_up"},
         ]
-        
+
         executed = []
         for step in sequence:
             executed.append(step["action"])
-        
+
         assert len(executed) == 4
         assert executed[0] == "connection_request"
 
@@ -170,15 +169,15 @@ class TestMultiChannelOutreachE2E:
         """E2E: Fallback to alternate channel on failure."""
         primary_channel = "linkedin"
         fallback_channel = "email"
-        
+
         # Simulate LinkedIn failure
         linkedin_success = False
-        
+
         if not linkedin_success:
             used_channel = fallback_channel
         else:
             used_channel = primary_channel
-        
+
         assert used_channel == "email"
 
     def test_cross_channel_deduplication(self):
@@ -188,12 +187,12 @@ class TestMultiChannelOutreachE2E:
             "linkedin": {"c_001", "c_002"},
             "email": {"c_001", "c_003"},
         }
-        
+
         # Find duplicates
         all_contacts = []
         for contacts in channel_contacts.values():
             all_contacts.extend(contacts)
-        
+
         duplicates = [c for c in set(all_contacts) if all_contacts.count(c) > 1]
         assert contact_id in duplicates
 
@@ -217,9 +216,9 @@ Would you be open to a brief conversation?
             "recent_news": "raised Series B funding",
             "value_prop": "scale their engineering teams 3x",
         }
-        
+
         personalized = template.format(**contact)
-        
+
         assert "Sarah" in personalized
         assert "TechCorp" in personalized
         assert "Series B" in personalized
@@ -228,22 +227,22 @@ Would you be open to a brief conversation?
         """E2E: Fallback values used when data missing."""
         template = "Hi {first_name}, I noticed your work at {company}."
         contact = {"first_name": "there", "company": "your company"}  # Fallbacks
-        
+
         personalized = template.format(**contact)
         assert "there" in personalized
 
     def test_personalization_validation(self):
         """E2E: Personalized messages are validated."""
         message = "Hi {first_name}, I noticed {company} recently {recent_news}."
-        
+
         # Check for unresolved placeholders
         import re
-        unresolved = re.findall(r'\{[^}]+\}', message)
-        
+        re.findall(r'\{[^}]+\}', message)
+
         # After personalization, should be empty
         personalized = message.format(first_name="John", company="Acme", recent_news="launched")
         unresolved_after = re.findall(r'\{[^}]+\}', personalized)
-        
+
         assert len(unresolved_after) == 0
 
 
@@ -254,21 +253,21 @@ class TestComplianceE2E:
         """E2E: Rate limits are enforced."""
         daily_limit = 100
         messages_today = 0
-        
+
         for _ in range(150):
             if messages_today >= daily_limit:
                 break
             messages_today += 1
-        
+
         assert messages_today == daily_limit
 
     def test_opt_out_respected(self):
         """E2E: Opt-out requests are respected."""
         opted_out = {"c_001", "c_003"}
         contacts = ["c_001", "c_002", "c_003", "c_004"]
-        
+
         eligible = [c for c in contacts if c not in opted_out]
-        
+
         assert "c_001" not in eligible
         assert "c_002" in eligible
 
@@ -276,7 +275,7 @@ class TestComplianceE2E:
         """E2E: Cooling period between contacts is enforced."""
         last_contact = datetime.now() - timedelta(days=5)
         cooling_period_days = 7
-        
+
         can_contact = (datetime.now() - last_contact).days >= cooling_period_days
         assert can_contact is False
 
@@ -288,6 +287,6 @@ class TestComplianceE2E:
             "consent_date": "2024-01-01",
             "data_retention_days": 365,
         }
-        
+
         has_consent = contact["consent_given"]
         assert has_consent is True

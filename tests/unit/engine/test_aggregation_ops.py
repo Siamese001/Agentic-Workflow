@@ -4,7 +4,7 @@ Tests aggregation operations including pick_best_result.
 """
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 @dataclass
@@ -25,7 +25,7 @@ class TestPickBestResult:
             ScoredResult(id="2", content="Result B", score=0.9, source="db"),
             ScoredResult(id="3", content="Result C", score=0.6, source="cache"),
         ]
-        
+
         best = max(results, key=lambda r: r.score)
         assert best.id == "2"
         assert best.score == 0.9
@@ -36,7 +36,7 @@ class TestPickBestResult:
             ScoredResult(id="1", content="Result A", score=0.9, source="web"),
             ScoredResult(id="2", content="Result B", score=0.9, source="db"),
         ]
-        
+
         # Tiebreaker: prefer db source
         source_priority = {"db": 1, "web": 2, "cache": 3}
         best = min(results, key=lambda r: (1 - r.score, source_priority.get(r.source, 99)))
@@ -61,11 +61,11 @@ class TestPickBestResult:
             ScoredResult(id="2", content="B", score=0.8, source="db"),
             ScoredResult(id="3", content="C", score=0.4, source="cache"),
         ]
-        
+
         threshold = 0.5
         qualified = [r for r in results if r.score >= threshold]
         best = max(qualified, key=lambda r: r.score) if qualified else None
-        
+
         assert best is not None
         assert best.id == "2"
 
@@ -80,7 +80,7 @@ class TestPickBestResult:
                 metadata={"timestamp": "2024-01-01", "author": "system"},
             ),
         ]
-        
+
         best = max(results, key=lambda r: r.score)
         assert best.metadata is not None
         assert best.metadata["author"] == "system"
@@ -96,7 +96,7 @@ class TestResultAggregation:
             "db": [{"id": "d1", "score": 0.9}],
             "cache": [{"id": "c1", "score": 0.6}],
         }
-        
+
         all_results = [r for results in source_results.values() for r in results]
         assert len(all_results) == 4
 
@@ -107,14 +107,14 @@ class TestResultAggregation:
             {"id": "2", "content": "Same content", "score": 0.7},
             {"id": "3", "content": "Different", "score": 0.9},
         ]
-        
+
         seen_content = set()
         unique = []
         for r in results:
             if r["content"] not in seen_content:
                 seen_content.add(r["content"])
                 unique.append(r)
-        
+
         assert len(unique) == 2
 
     def test_aggregate_preserves_source_info(self):
@@ -123,12 +123,12 @@ class TestResultAggregation:
             {"id": "1", "source": "web", "data": "A"},
             {"id": "2", "source": "db", "data": "B"},
         ]
-        
+
         aggregated = {
             "results": results,
             "sources": list(set(r["source"] for r in results)),
         }
-        
+
         assert "web" in aggregated["sources"]
         assert "db" in aggregated["sources"]
 
@@ -139,11 +139,11 @@ class TestResultAggregation:
             {"value": 90, "weight": 0.3},
             {"value": 70, "weight": 0.2},
         ]
-        
+
         weighted_sum = sum(r["value"] * r["weight"] for r in results)
         total_weight = sum(r["weight"] for r in results)
         weighted_avg = weighted_sum / total_weight
-        
+
         assert weighted_avg == pytest.approx(81.0)
 
 
@@ -157,9 +157,9 @@ class TestResultRanking:
             {"id": "2", "score": 0.9},
             {"id": "3", "score": 0.7},
         ]
-        
+
         ranked = sorted(results, key=lambda r: r["score"], reverse=True)
-        
+
         assert ranked[0]["id"] == "2"
         assert ranked[1]["id"] == "3"
         assert ranked[2]["id"] == "1"
@@ -171,10 +171,10 @@ class TestResultRanking:
             {"id": "2", "score": 0.9, "recency": 5},
             {"id": "3", "score": 0.8, "recency": 2},
         ]
-        
+
         # Primary: score (desc), Secondary: recency (asc)
         ranked = sorted(results, key=lambda r: (-r["score"], r["recency"]))
-        
+
         assert ranked[0]["id"] == "1"  # Same score, more recent
         assert ranked[1]["id"] == "2"
 
@@ -182,8 +182,8 @@ class TestResultRanking:
         """Top K results are returned."""
         results = [{"id": str(i), "score": i / 10} for i in range(10)]
         k = 3
-        
+
         ranked = sorted(results, key=lambda r: r["score"], reverse=True)[:k]
-        
+
         assert len(ranked) == 3
         assert ranked[0]["id"] == "9"

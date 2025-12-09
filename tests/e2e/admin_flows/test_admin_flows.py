@@ -1,6 +1,5 @@
 """E2E tests for admin flows - system configuration and management."""
 from __future__ import annotations
-import pytest
 from typing import Dict, List, Any
 from dataclasses import dataclass
 from enum import Enum

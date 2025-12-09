@@ -1,0 +1,823 @@
+# File: agent_orchestration_v10_5.py
+# Version: 10.5 (Refactored - CORRECTED)
+#
+# v10.5 REFACTOR (CORRECTION):
+# - RE-ADDED: Restored the `StrategyPlan.model_validate(...)` calls
+#   inside nodes. Removing them was an error and broke the agent
+#   contracts, which expect Pydantic objects, not dicts.
+#
+# v10.5 REFACTOR CHANGES:
+# - REMOVED: Redundant `context.complexity = ...` line from all nodes
+#   except the entrypoint and the classifier node.
+#
+# v10.5 MAJOR CHANGES:
+# - IMPLEMENTED (Fix #1, #15): ReAct/QA Conductors now use Tool Caching
+#   and feed back errors.
+# - IMPLEMENTED (Fix #2): Added 'run_classify_complexity' node.
+# - IMPLEMENTED (Fix #4): ReActConductor prompt updated for Debate Pattern.
+# - IMPLEMENTED (Fix #5): Added 'run_inject_hil_edit' node and
+#   'INJECT_EDIT' route for deeper HIL.
+# - IMPLEMENTED (Fix #6): Added 'get_timeout_decorator' and applied it
+#   to all graph nodes for timeout resilience.
+# - IMPLEMENTED (Fix #12): Added 'run_detect_prompt_injection' node
+#   and 'check_prompt_injection' conditional edge.
+# - IMPLEMENTED (Fix #13): QAConductor now includes and is prompted
+#   to use 'QAWordCountValidatorTool'.
+# - FIXED (TEST): Corrected graph compilation by removing 'END' as a
+#   node and using it only in conditional edges, passing
+#   test_graph_compiles_correctly_v10_5.
+# - FIXED (TEST): Removed 'await' from sync agent calls in
+#   'run_sanitize_pii' node to fix 5 test failures.
+
+import json
+import logging
+import asyncio
+from typing import Dict, Any, List, Callable, Awaitable
+from functools import wraps
+
+# v10.5: Import from new core
+from core_v10_5 import (
+    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
+    exponential_backoff_retry, CircuitBreakerOpenError,
+    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
+    ConfigV10_5, # Import config for context typing
+    track_metrics, # v10.5 (Fix #8)
+    _format_prompt_with_defaults # v10.5 TEST FIX
+)
+from langgraph.graph import StateGraph, END
+try:
+    from langgraph.checkpoint.redis import RedisSaver
+except ImportError:
+    from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
+from langgraph.errors import GraphRecursionError
+
+# Make HIL import conditional for environment compatibility
+try:
+    from langgraph.prebuilt import human_in_the_loop
+    HIL_AVAILABLE = True
+except ImportError:
+    HIL_AVAILABLE = False
+    human_in_the_loop = None # type: ignore
+    logging.getLogger(__name__).warning(
+        "human_in_the_loop not available - HIL features will be disabled"
+    )
+
+# v10.5: Import from new stacks
+from agent_stacks_v10_5 import (
+    PIISanitizerAgent,
+    BiasDetectorAgent,
+    PromptInjectionDetectorAgent, # v10.5 (Fix #12)
+    QueryComplexityClassifier,  # v10.5 (Fix #2)
+    ToTStrategistAgent,
+    PromptEngineerAgent,
+    RAG_SearchAgent,
+    AsyncBulletGeneratorAgent,
+    AsyncBulletCritiqueAgent,
+    HILAmbiguityDetectorAgent,
+    HILFeedbackRouterAgent
+)
+
+# v10.5: Import from new tools file
+# v10.5 REFACTOR: RAG tools are now imported from here
+from agent_tools_v10_5 import (
+    DraftingStrategistTool,
+    DraftingRedTeamTool,
+    DraftingRefinerTool,
+    DraftingMetricsTool,
+    QAClaimValidatorTool,
+    QAToneValidatorTool,
+    QAThematicAlignmentTool,
+    QASemanticEntailmentTool,
+    QANarrativeThreadTool,
+    QAAdversarialReviewerTool,
+    QAJDSkillsValidatorTool,
+    QASignalScoreValidatorTool,
+    QABiasDetectorTool,
+    QATenureValidatorTool,
+    QAMissedOpportunityTool,
+    QAWordCountValidatorTool, # v10.5 (Fix #13)
+    # v10.5 REFACTOR: Add RAG tool imports
+    HyDETool,
+    ChromaDBSearchTool,
+    BM25SearchTool
+)
+
+# v10.5: Logger name updated
+logger = logging.getLogger("agent_orchestration_v10_5")
+
+# v10.5: Define context for module-level functions
+context: WorkflowContext = None # type: ignore
+
+# ============================================================================
+# v10.5: RUNTIME DECORATORS (Fix #6)
+# ============================================================================
+
+def get_timeout_decorator():
+    """
+    v10.5 (Fix #6): Creates a decorator that, at runtime, fetches the
+    timeout value from the module-level 'context' variable.
+    """
+    def decorator(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
+        @wraps(func)
+        async def wrapper(*args, **kwargs) -> Any:
+            if context is None:
+                raise WorkflowError("Graph context not initialized before node execution")
+            
+            timeout_seconds = context.config.performance_config.workflow_node_timeout_seconds
+            try:
+                # Use asyncio.wait_for to enforce the timeout
+                return await asyncio.wait_for(func(*args, **kwargs), timeout=float(timeout_seconds))
+            except AsyncTimeoutError as e:
+                logger.error(f"!!! NODE TIMEOUT: {func.__name__} exceeded {timeout_seconds}s !!!")
+                raise WorkflowTimeoutError(f"Node {func.__name__} timed out after {timeout_seconds}s") from e
+        return wrapper
+    return decorator
+
+# ============================================================================
+# DRAFTING CONDUCTOR (v10.5: Fix #1, #4)
+# ============================================================================
+
+class ReActConductorAgent(BaseAgent):
+    """v10.5: ReAct conductor with tool caching and debate pattern."""
+    
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.tools = {
+            "review_draft_strategy": DraftingStrategistTool(context, debug_mode),
+            "red_team_critique": DraftingRedTeamTool(context, debug_mode),
+            "refine_section": DraftingRefinerTool(context, debug_mode),
+            "add_metrics": DraftingMetricsTool(context, debug_mode)
+        }
+        self.tool_schemas = [t.get_schema() for t in self.tools.values()]
+        
+        self.tool_breakers = {
+            name: CircuitBreaker(
+                failure_threshold=self.config.batch_config.circuit_breaker_failure_threshold
+            ) for name in self.tools
+        }
+        self.style_guide = "Style: Professional, high-impact, and metrics-driven."
+
+    @track_metrics('run_react_draft_conductor') # v10.5 (Fix #8)
+    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Running ReAct Drafting Conductor (v10.5)...")
+        
+        client = self.get_model_client("react_conductor_model") # Uses dynamic routing
+        
+        strategy_plan = task_context.get('strategy')
+        # v10.5 REFACTOR (CORRECTION): Agent expects Pydantic object
+        if isinstance(strategy_plan, dict):
+            strategy_plan = StrategyPlan.model_validate(strategy_plan)
+        
+        strategy_json = strategy_plan.model_dump_json()
+        
+        # v10.5 (Fix #4): Updated prompt to include Debate Pattern
+        messages = [{
+            "role": "user",
+            "content": f"""You are a ReAct drafting conductor.
+Task Context: {json.dumps({"strategy": strategy_json})}
+Tools: {json.dumps(self.tool_schemas)}
+
+Plan (v10.5 Debate Pattern):
+1.  Call `review_draft_strategy` to get strategic feedback.
+2.  Call `red_team_critique` to get adversarial feedback.
+3.  Call `refine_section` to resolve *both* critiques.
+4.  Call `add_metrics` to enhance the refined draft.
+5.  Assemble final draft.
+
+Output thoughts and tool calls in JSON:
+{{"thought": "Your reasoning", "tool_call": {{"name": "tool_name", "input": {{"arg": "value", "critique_2": "..."}}}}}}
+When finished, output:
+{{"thought": "Draft complete", "final_draft": {{...}}}}
+"""
+        }]
+        
+        final_draft = {}
+        max_steps = self.config.agent_stacks.conductor_max_steps
+        
+        for step in range(max_steps):
+            response = await client.chat_completion_async(
+                messages=messages,
+                temperature=self.config.agent_stacks.conductor_temperature,
+                response_format="json_object"
+            )
+            
+            step_data, error = self.validator.validate(response["content"], dict)
+            if error:
+                logger.warning(f"ReAct step {step} failed validation: {error}")
+                messages.append({"role": "user", "content": f"Error: Invalid JSON response from LLM. {error}"})
+                continue
+
+            messages.append({"role": "assistant", "content": json.dumps(step_data)})
+            
+            if "final_draft" in step_data:
+                final_draft = step_data["final_draft"]
+                self.log_feedback(workflow_id, "react_conductor_draft", "success", {"steps_executed": step})
+                return {"final_output": final_draft, "steps": step}
+            
+            if "tool_call" in step_data:
+                tool_name = step_data["tool_call"].get("name")
+                tool_input = step_data["tool_call"].get("input", {})
+                
+                if not tool_name or tool_name not in self.tools:
+                    messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
+                    continue
+                
+                tool_input["draft"] = task_context.get("bullets")
+                tool_input["strategy"] = strategy_plan.model_dump() 
+                tool_input["style_guide"] = self.style_guide
+                
+                try:
+                    # v10.5 (Fix #1): Tool Caching
+                    # v10.5 REFACTOR: Use BaseTool's public run_async wrapper
+                    # which contains the cache logic.
+                    
+                    breaker = self.tool_breakers[tool_name]
+                    breaker.check()
+                    
+                    tool = self.tools[tool_name]
+                    # This call now automatically checks cache (see BaseTool in agent_stacks)
+                    tool_result = await tool.run_async(tool_input, workflow_id) 
+                    
+                    breaker.record_success()
+                    messages.append({"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"})
+                
+                except (CircuitBreakerOpenError, PydanticSchemaError, Exception) as e:
+                    self.log_error(f"Tool {tool_name} failed: {e}")
+                    if not isinstance(e, CircuitBreakerOpenError):
+                        if tool_name in self.tool_breakers:
+                            self.tool_breakers[tool_name].record_failure()
+                    
+                    # v10.5 (Fix #15): Feed specific error back to LLM
+                    error_msg = f"Error: Tool '{tool_name}' failed. Do not call it again. Reason: {str(e)}"
+                    messages.append({"role": "user", "content": error_msg})
+
+        self.log_feedback(workflow_id, "react_conductor_draft", "failure", {"reason": "Max steps reached"})
+        return {"final_output": {"error": "Max steps reached"}, "steps": max_steps}
+
+# ============================================================================
+# QA CONDUCTOR (v10.5: Fix #1, #13, #15)
+# ============================================================================
+
+class QAConductorAgent(BaseAgent):
+    """v10.5: ReAct QA Conductor with tool caching and semantic validation."""
+    
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.tools = {
+            "validate_claims": QAClaimValidatorTool(context, debug_mode),
+            "validate_tone": QAToneValidatorTool(context, debug_mode),
+            "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
+            "validate_semantic_entailment": QASemanticEntailmentTool(context, debug_mode),
+            "validate_narrative_thread": QANarrativeThreadTool(context, debug_mode),
+            "adversarial_review": QAAdversarialReviewerTool(context, debug_mode),
+            "validate_jd_skills": QAJDSkillsValidatorTool(context, debug_mode),
+            "validate_signal_score": QASignalScoreValidatorTool(context, debug_mode),
+            "validate_bias": QABiasDetectorTool(context, debug_mode),
+            "validate_tenure": QATenureValidatorTool(context, debug_mode),
+            "find_missed_opportunities": QAMissedOpportunityTool(context, debug_mode),
+            "validate_word_count": QAWordCountValidatorTool(context, debug_mode) # v10.5 (Fix #13)
+        }
+        self.tool_schemas = [t.get_schema() for t in self.tools.values()]
+        
+        self.tool_breakers = {
+            name: CircuitBreaker(
+                failure_threshold=self.config.batch_config.circuit_breaker_failure_threshold
+            ) for name in self.tools
+        }
+        self.style_guide = "Style: Ensure professional, clear, and unbiased language."
+
+    @track_metrics('run_react_qa_conductor') # v10.5 (Fix #8)
+    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Running ReAct QA Conductor (v10.5)...")
+        
+        max_steps = 15
+        
+        client = self.get_model_client("react_conductor_model") # Uses dynamic routing
+        
+        pruned_draft = self.budget_manager.prune(
+            json.dumps(state['draft']['sections']), 4000
+        )
+        pruned_master_resume = self.budget_manager.prune(
+            json.dumps(state['resume']['master_resume']), 4000
+        )
+        pruned_jd = self.budget_manager.prune(state['job']['raw_jd'], 2000)
+        
+        strategy_plan = state['strategy']['strategy_plan']
+        # v10.5 REFACTOR (CORRECTION): Agent expects Pydantic object
+        if isinstance(strategy_plan, dict):
+            strategy_plan = StrategyPlan.model_validate(strategy_plan)
+            
+        strategy_json = strategy_plan.model_dump_json()
+        
+        # v10.5 (Fix #13): Updated prompt to include new tool
+        messages = [{
+            "role": "user",
+            "content": f"""You are a ReAct QA conductor. Your goal is to validate the draft.
+Draft (Pruned): {pruned_draft}
+Tools: {json.dumps(self.tool_schemas)}
+Plan (v10.5):
+1.  Run `validate_claims` and `validate_tenure`.
+2.  Run `validate_jd_skills` and `validate_thematic_alignment`.
+3.  Run `validate_tone`, `validate_narrative_thread`, and `validate_signal_score`.
+4.  Run `validate_bias`.
+5.  Run `validate_word_count` on the summary section (e.g., min: 50, max: 150).
+6.  Run `find_missed_opportunities`.
+7.  Run `adversarial_review` as a final check.
+8.  Compile all feedback into a final QA report.
+
+Output thoughts/tool calls in JSON:
+{{"thought": "Your reasoning", "tool_call": {{"name": "tool_name", "input": {{"arg": "value"}}}}}}
+When finished, output:
+{{"thought": "QA complete", "final_qa_report": {{"qa_passed": true/false, "issues": [...]}}}}
+"""
+        }]
+        
+        final_report = {}
+        all_tool_results = []
+        
+        tool_context = {
+            "draft_text": pruned_draft,
+            "master_resume": pruned_master_resume, 
+            "job_description": pruned_jd,           
+            "strategy": strategy_plan.model_dump(), 
+            "style_guide": self.style_guide
+        }
+        
+        for step in range(max_steps):
+            response = await client.chat_completion_async(
+                messages=messages,
+                temperature=0.4,
+                response_format="json_object"
+            )
+            
+            step_data, error = self.validator.validate(response["content"], dict)
+            if error:
+                logger.warning(f"QA step {step} failed validation: {error}")
+                messages.append({"role": "user", "content": f"Error: Invalid JSON response from LLM. {error}"})
+                continue
+            
+            messages.append({"role": "assistant", "content": json.dumps(step_data)})
+            
+            if "final_qa_report" in step_data:
+                final_report = step_data["final_qa_report"]
+                final_report["all_tool_results"] = all_tool_results
+                self.log_feedback(workflow_id, "react_conductor_qa", "success", {"steps_executed": step})
+                return final_report
+            
+            if "tool_call" in step_data:
+                tool_name = step_data["tool_call"].get("name")
+                tool_input = step_data["tool_call"].get("input", {})
+
+                if not tool_name or tool_name not in self.tools:
+                    messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
+                    continue
+                
+                tool_input.update(tool_context)
+                
+                try:
+                    # v10.5 (Fix #1): Tool Caching
+                    # v10.5 REFACTOR: Use BaseTool's public run_async wrapper
+                    
+                    breaker = self.tool_breakers[tool_name]
+                    breaker.check()
+                    
+                    tool = self.tools[tool_name]
+                    # This call now automatically checks cache (see BaseTool in agent_stacks)
+                    tool_result = await tool.run_async(tool_input, workflow_id)
+                    
+                    breaker.record_success()
+                    
+                    all_tool_results.append({tool_name: tool_result})
+                    messages.append({"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"})
+                
+                except (CircuitBreakerOpenError, PydanticSchemaError, Exception) as e:
+                    self.log_error(f"QA Tool {tool_name} failed: {e}")
+                    if not isinstance(e, CircuitBreakerOpenError):
+                        if tool_name in self.tool_breakers:
+                            self.tool_breakers[tool_name].record_failure()
+                    
+                    # v10.5 (Fix #15): Feed specific error back to LLM
+                    error_msg = f"Error: Tool '{tool_name}' failed. Do not call it again. Reason: {str(e)}"
+                    messages.append({"role": "user", "content": error_msg})
+        
+        self.log_feedback(workflow_id, "react_conductor_qa", "failure", {"reason": "Max steps reached"})
+        return {"error": "Max steps reached", "steps": max_steps, "all_tool_results": all_tool_results, "qa_passed": False}
+
+# ============================================================================
+# LANGGRAPH NODE & EDGE FUNCTIONS (v10.5: Fix #2, #5, #6, #12)
+# ============================================================================
+
+# --- NODE DEFINITIONS (v10.5) ---
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_sanitize_pii(state: dict) -> dict:
+    """Node 0: Sanitize PII"""
+    # v10.5 REFACTOR: Initialize complexity. This is the only node
+    # before classification that needs to do this.
+    context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
+    pii_agent = PIISanitizerAgent(context)
+    sanitized = pii_agent.run(state['resume']['master_resume']) # v10.5 TEST FIX: removed await
+    
+    bias_agent = BiasDetectorAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    bias_result = bias_agent.run(state['job']['raw_jd'], workflow_id) # v10.5 TEST FIX: removed await
+    
+    return {
+        "resume": {"sanitized_resume": sanitized},
+        "safety": {"bias_detected": bias_result['bias_detected']}
+    }
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_detect_prompt_injection(state: dict) -> dict:
+    """Node 0.5: Detect Prompt Injection (v10.5 Fix #12)"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    
+    if not context.config.agent_stacks.enable_prompt_injection_detection:
+        return {"safety": {"injection_detected": False}}
+        
+    pi_agent = PromptInjectionDetectorAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    # Check all major user inputs
+    jd_result = await pi_agent.run_async(state['job']['raw_jd'], workflow_id)
+    # (Could also check master_resume text here)
+    
+    return {"safety": {"injection_detected": jd_result['injection_detected']}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_classify_complexity(state: dict) -> dict:
+    """Node 1: Classify Complexity (v10.5 Fix #2)"""
+    classifier = QueryComplexityClassifier(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    complexity = await classifier.run_async(state['job']['raw_jd'], workflow_id)
+    
+    # Set complexity in the module-level context *and* state
+    context.complexity = complexity # v10.5 (Fix #2)
+    return {"metadata": {"complexity": complexity}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_tot_strategy(state: dict) -> dict:
+    """Node 2: ToT strategy"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    strategist = ToTStrategistAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    strategy_result = await strategist.run_async(
+        {
+            "job_title": state['job']['job_title'], 
+            "company": state['job']['company'],
+            "job_description": state['job']['raw_jd']
+        },
+        workflow_id
+    )
+    return {"strategy": strategy_result}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_detect_ambiguity(state: dict) -> dict:
+    """Node 3: Proactive HIL ambiguity check"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    if not context.config.agent_stacks.enable_hil_stack:
+        return {"hil": {"ambiguity_report": {"ambiguity_detected": False, "confidence": 1.0, "reason": "HIL disabled", "question_for_human": ""}}}
+        
+    detector = HILAmbiguityDetectorAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    strategy_plan = state['strategy']['strategy_plan']
+    # v10.5 REFACTOR (CORRECTION): Re-added validation
+    if isinstance(strategy_plan, dict):
+        strategy_plan = StrategyPlan.model_validate(strategy_plan)
+    
+    ambiguity_result = await detector.run_async(strategy_plan, workflow_id)
+    
+    report = ambiguity_result.get("ambiguity_report")
+    if report.confidence < context.config.agent_stacks.ambiguity_confidence_threshold:
+            report.ambiguity_detected = False
+    
+    return {"hil": {"ambiguity_report": report.model_dump()}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_prompt_engineering(state: dict) -> dict:
+    """Node 4: Generate dynamic prompts"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    prompt_agent = PromptEngineerAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    strategy_plan = state['strategy']['strategy_plan']
+    # v10.5 REFACTOR (CORRECTION): Re-added validation
+    if isinstance(strategy_plan, dict):
+        strategy_plan = StrategyPlan.model_validate(strategy_plan)
+    
+    # v10.5 (Fix #11): Pass complexity to the agent
+    complexity = state.get('metadata', {}).get('complexity', 'unknown')
+    prompts_result = await prompt_agent.run_async(strategy_plan, complexity, workflow_id)
+    
+    return {"prompts": {"prompts": prompts_result.get("prompts").model_dump()}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_rag_stack(state: dict) -> dict:
+    """Node 5: Agentic RAG with Hybrid Search (v10.5 Fix #3)"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    rag_agent = RAG_SearchAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    query = f"{state['job']['job_title']} at {state['job']['company']}"
+    experience = state['resume']['master_resume'].get('professional_experience', [])
+    
+    ranked_sections = await rag_agent.run_async(query, experience, workflow_id)
+    
+    return {"resume": {"experience_bullets": ranked_sections}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_generate_bullets(state: dict) -> dict:
+    """Node 6: Generate bullets (4-step)"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    bullet_gen = AsyncBulletGeneratorAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    prompt = state['prompts']['prompts'].get('bullet_generation_prompt', "Generate bullets")
+    
+    strategy = state['strategy']['strategy_plan']
+    if isinstance(strategy, dict):
+        strategy = StrategyPlan.model_validate(strategy)
+    
+    all_bullets = []
+    for exp in state['resume']['experience_bullets'][:3]: 
+        bullets = await bullet_gen.run_async(prompt, exp, strategy, workflow_id)
+        all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
+    
+    return {"bullets": {"generated_bullets": all_bullets}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_critique_bullets(state: dict) -> dict:
+    """Node 7: Critique bullets"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    critique_agent = AsyncBulletCritiqueAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
+    bullets = state['bullets']['generated_bullets']
+    
+    critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
+    
+    return {"bullets": {"critiqued_bullets": critiques}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_drafting(state: dict) -> dict:
+    """Node 8: Draft assembly with ReAct Conductor"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    conductor = ReActConductorAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    good_bullets = [
+        b for b in state['bullets']['critiqued_bullets']
+        if b.get('critique', {}).get('score', 0) >= 7
+    ]
+    
+    strategy_plan = state['strategy']['strategy_plan']
+    # v10.5 REFACTOR (CORRECTION): Re-added validation
+    if isinstance(strategy_plan, dict):
+        strategy_plan = StrategyPlan.model_validate(strategy_plan)
+    
+    task_context = {
+        "bullets": good_bullets,
+        "strategy": strategy_plan 
+    }
+    
+    draft = await conductor.run_async(task_context, workflow_id)
+    return {"draft": {"sections": draft.get("final_output", {})}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_qa_validation(state: dict) -> dict:
+    """Node 9: Final QA with ReAct Conductor"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    qa_conductor = QAConductorAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    # v10.5 REFACTOR (CORRECTION): Re-added validation
+    if isinstance(state['strategy']['strategy_plan'], dict):
+            state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
+    
+    validation = await qa_conductor.run_async(state, workflow_id)
+    
+    return {
+        "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
+        "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
+    }
+
+# HIL Nodes
+@get_timeout_decorator() # v10.5 (Fix #6)
+@exponential_backoff_retry()
+async def run_feedback_router(state: dict) -> dict:
+    """Node 11: HIL Feedback Router"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    router = HILFeedbackRouterAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    
+    last_human_message = "Default to drafting"
+    # Logic to read actual human feedback would go here
+
+    route = await router.run_async(last_human_message, workflow_id)
+    
+    # v10.5 (Fix #5): Store payload
+    return {"hil": {"next_step": route.get("next_step"), "payload": route.get("payload")}}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+def human_in_the_loop_node(state: dict) -> dict:
+    """Node 10: HIL Pause"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    if not HIL_AVAILABLE:
+        logger.warning("HIL not available. Skipping pause.")
+        return {}
+    try:
+        human_in_the_loop(timeout=3600) 
+    except GraphRecursionError:
+        logger.info("HIL pause interrupted by user feedback.")
+    except Exception as e:
+        logger.error(f"HIL node failed: {e}")
+    return {}
+
+@get_timeout_decorator() # v10.5 (Fix #6)
+async def run_inject_hil_edit(state: dict) -> dict:
+    """Node 12: Inject HIL Edits (v10.5 Fix #5)"""
+    # v10.5 REFACTOR: Removed redundant context.complexity update
+    logger.info("Injecting human-in-the-loop edits...")
+    
+    payload = state.get("hil", {}).get("payload")
+    if not payload:
+        logger.warning("HIL INJECT_EDIT route chosen, but no payload found.")
+        return {}
+    
+    # This is a simple implementation. A real one would
+    # use the payload to find and replace a specific draft section.
+    # For now, we assume it replaces the 'summary'.
+    if 'sections' not in state['draft']:
+        state['draft']['sections'] = {}
+    
+    state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
+    logger.info("HIL edit injected into draft summary.")
+    
+    return {"draft": state['draft']}
+
+# --- CONDITIONAL EDGES (v10.5: Fix #12, #5) ---
+
+def check_prompt_injection(state: dict) -> str:
+    """Node 0.5 conditional: (v10.5 Fix #12)"""
+    if state.get("safety", {}).get("injection_detected", False):
+        logger.error(f"!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
+        return "injection_detected"
+    return "injection_safe"
+
+def check_ambiguity(state: dict) -> str:
+    """Node 3 conditional: Route to HIL or continue"""
+    report = state.get("hil", {}).get("ambiguity_report", {})
+    if report.get("ambiguity_detected", False):
+        return "pause_for_human"
+    return "continue_workflow"
+
+def check_bullets_passed(state: dict) -> str:
+    """Node 7 conditional: Check bullet quality and retries"""
+    critiques = state.get('bullets', {}).get('critiqued_bullets', [])
+    if not critiques:
+        return "global_replanner"
+        
+    avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
+    
+    if avg_score >= 7.0:
+        return "bullets_passed"
+    
+    retries = state.get('metadata', {}).get('retries', {}).get('bullet_retries', 0)
+    if retries < context.config.agent_stacks.max_local_retries:
+        if 'metadata' not in state: state['metadata'] = {}
+        if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
+        state['metadata']['retries']['bullet_retries'] = retries + 1
+        return "retry_bullets"
+    
+    return "global_replanner"
+    
+def check_qa_passed(state: dict) -> str:
+    """Node 9 conditional: Check QA and retries"""
+    if state.get('qa', {}).get('qa_passed', False):
+        return "pause_for_human" if HIL_AVAILABLE and context.config.agent_stacks.enable_hil_stack else "qa_passed"
+    
+    retries = state.get('metadata', {}).get('retries', {}).get('qa_retries', 0)
+    if retries < 1: # Max 1 QA retry
+        if 'metadata' not in state: state['metadata'] = {}
+        if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
+        state['metadata']['retries']['qa_retries'] = retries + 1
+        return "retry_drafting"
+        
+    return "global_replanner"
+
+def route_feedback(state: dict) -> str:
+    """Node 11 conditional: Route based on human feedback (v10.5 Fix #5)"""
+    next_step = state.get("hil", {}).get("next_step", "DRAFTING")
+    if next_step == "STRATEGY": return "to_strategy"
+    if next_step == "BULLET_GENERATION": return "to_bullets"
+    if next_step == "INJECT_EDIT": return "to_inject_edit" # v10.5 (Fix #5)
+    return "to_drafting"
+
+# ============================================================================
+# LANGGRAPH WORKFLOW BUILDER (Design-Aligned v10.5)
+# ============================================================================
+
+def get_graph_app(checkpointer: RedisSaver, workflow_context: WorkflowContext, enable_hil: bool = True):
+    """Build complete LangGraph workflow with v10.5 resilience."""
+    
+    global context
+    context = workflow_context
+    
+    global HIL_AVAILABLE
+    HIL_AVAILABLE = HIL_AVAILABLE and enable_hil and context.config.agent_stacks.enable_hil_stack
+    
+    workflow = StateGraph(dict)
+    
+    # --- ADD NODES (v10.5: Added new nodes) ---
+    
+    workflow.add_node("run_sanitize_pii", run_sanitize_pii) # 0
+    workflow.add_node("run_detect_prompt_injection", run_detect_prompt_injection) # 0.5 (Fix #12)
+    workflow.add_node("run_classify_complexity", run_classify_complexity) # 1 (Fix #2)
+    workflow.add_node("run_tot_strategy", run_tot_strategy) # 2
+    workflow.add_node("run_detect_ambiguity", run_detect_ambiguity) # 3
+    workflow.add_node("run_prompt_engineering", run_prompt_engineering) # 4
+    workflow.add_node("run_rag_stack", run_rag_stack) # 5
+    workflow.add_node("run_generate_bullets", run_generate_bullets) # 6
+    workflow.add_node("run_critique_bullets", run_critique_bullets) # 7
+    workflow.add_node("run_drafting", run_drafting) # 8
+    workflow.add_node("run_qa_validation", run_qa_validation) # 9
+    workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
+    workflow.add_node("run_feedback_router", run_feedback_router) # 11
+    workflow.add_node("run_inject_hil_edit", run_inject_hil_edit) # 12 (Fix #5)
+    
+    # v10.5 TEST FIX: Removed END as a node
+    # workflow.add_node("GLOBAL_REPLANNER", END) # 🚨
+    # workflow.add_node("REJECT_JOB", END) # 🚫 (Fix #12)
+
+    # --- CONNECT NODES (v10.5: Rerouted for new nodes) ---
+    
+    workflow.set_entry_point("run_sanitize_pii")
+    workflow.add_edge("run_sanitize_pii", "run_detect_prompt_injection") # 0 -> 0.5
+    
+    # v10.5 (Fix #12): New safety check
+    # v10.5 TEST FIX: Point to END string instead of node
+    workflow.add_conditional_edges(
+        "run_detect_prompt_injection", check_prompt_injection,
+        {"injection_detected": END, "injection_safe": "run_classify_complexity"}
+    )
+    
+    workflow.add_edge("run_classify_complexity", "run_tot_strategy") # 1 -> 2
+    workflow.add_edge("run_tot_strategy", "run_detect_ambiguity") # 2 -> 3
+    
+    workflow.add_conditional_edges(
+        "run_detect_ambiguity", check_ambiguity,
+        {"pause_for_human": "HIL_PAUSE", "continue_workflow": "run_prompt_engineering"}
+    ) # 3 -> 10 or 4
+    
+    workflow.add_edge("run_prompt_engineering", "run_rag_stack") # 4 -> 5
+    workflow.add_edge("run_rag_stack", "run_generate_bullets") # 5 -> 6
+    workflow.add_edge("run_generate_bullets", "run_critique_bullets") # 6 -> 7
+    
+    # v10.5 TEST FIX: Point to END string instead of node
+    workflow.add_conditional_edges(
+        "run_critique_bullets", check_bullets_passed,
+        {"bullets_passed": "run_drafting", "retry_bullets": "run_generate_bullets", "global_replanner": END}
+    ) # 7 -> 8 or 6 or 🚨
+    
+    workflow.add_edge("run_drafting", "run_qa_validation") # 8 -> 9
+    
+    # v10.5 TEST FIX: Point to END string instead of node
+    workflow.add_conditional_edges(
+        "run_qa_validation", check_qa_passed,
+        {"pause_for_human": "HIL_PAUSE", "qa_passed": END, "retry_drafting": "run_drafting", "global_replanner": END}
+    ) # 9 -> 10 or END or 8 or 🚨
+    
+    workflow.add_edge("HIL_PAUSE", "run_feedback_router") # 10 -> 11
+    
+    # v10.5 (Fix #5): New HIL routing
+    workflow.add_conditional_edges(
+        "run_feedback_router", route_feedback,
+        {
+            "to_strategy": "run_tot_strategy",
+            "to_bullets": "run_generate_bullets",
+            "to_drafting": "run_drafting",
+            "to_inject_edit": "run_inject_hil_edit" # 11 -> 12
+        }
+    )
+    
+    workflow.add_edge("run_inject_hil_edit", "run_qa_validation") # 12 -> 9 (Re-run QA)
+    
+    return workflow.compile(checkpointer=checkpointer)
+
+# ============================================================================
+# END OF agent_orchestration_v10_5.py
+# ============================================================================

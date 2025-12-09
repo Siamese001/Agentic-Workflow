@@ -26,7 +26,7 @@ class ExportResult:
 
 class BaseExporter(ABC):
     """Base class for exporters."""
-    
+
     @abstractmethod
     def export(self, data: Any) -> ExportResult:
         """Export data."""
@@ -35,17 +35,17 @@ class BaseExporter(ABC):
 
 class JsonExporter(BaseExporter):
     """Exporter for tracing domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def export(self, data: Any) -> ExportResult:
         """Export data to destination."""
         try:
             items = data if isinstance(data, list) else [data]
-            
+
             if self.destination == "stdout":
                 for item in items:
                     print(json.dumps(item, default=str, indent=2))
@@ -53,7 +53,7 @@ class JsonExporter(BaseExporter):
                 filepath = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
                     json.dump(items, f, default=str, indent=2)
-            
+
             return ExportResult(
                 success=True,
                 items_exported=len(items),

@@ -1,10 +1,9 @@
 """Unit tests for runtime/shared/utils.py"""
 from __future__ import annotations
-import pytest
 
 from agentic_workflow.runtime.shared.utils import (
     TextUtils, text_utils, DuplicateDetector,
-    calculate_signal_score, sanitize_filename,
+    sanitize_filename,
 )
 
 class TestTextUtils:

@@ -2,8 +2,6 @@
 from __future__ import annotations
 import pytest
 import os
-import sys
-from typing import Dict, List, Any
 from pathlib import Path
 
 class TestScriptUtilities:
@@ -28,7 +26,6 @@ class TestScriptUtilities:
 
     def test_parse_empty_args(self):
         """Edge case: Empty arguments."""
-        args: List[str] = []
         parsed = {}
         assert parsed == {}
 

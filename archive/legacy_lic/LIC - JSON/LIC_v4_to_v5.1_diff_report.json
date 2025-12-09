@@ -1,0 +1,74 @@
+{
+  "generated_at": "2025-10-02T15:12:46.328765Z",
+  "v4_file": "LIC_10-01-2025_v4.json",
+  "v5_file": "LIC_10-02-2025_v5.json",
+  "sha256_v5": "70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09",
+  "subsection_line_counts": [
+    [
+      "3.context.routing_decision_tree",
+      148,
+      48,
+      -100
+    ],
+    [
+      "3.context.complete_parameter_tables",
+      480,
+      1,
+      -479
+    ],
+    [
+      "4.reasoning.reasoning_configuration_validation.validation_rules",
+      185,
+      0,
+      -185
+    ],
+    [
+      "4.reasoning.curated_qa_checks_by_k",
+      244,
+      40,
+      -204
+    ],
+    [
+      "5.output",
+      828,
+      870,
+      42
+    ],
+    [
+      "metadata",
+      19,
+      16,
+      -3
+    ],
+    [
+      "4.reasoning.validation_rule_schema",
+      0,
+      152,
+      152
+    ],
+    [
+      "3.canonical_message_types",
+      0,
+      113,
+      113
+    ],
+    [
+      "3.global_enforcement_rules",
+      0,
+      348,
+      348
+    ],
+    [
+      "3.global_patterns",
+      0,
+      98,
+      98
+    ],
+    [
+      "5.output.audit.event_schema",
+      0,
+      37,
+      37
+    ]
+  ]
+}

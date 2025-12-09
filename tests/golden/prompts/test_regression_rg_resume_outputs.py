@@ -17,14 +17,10 @@ Version: 4.8.0
 Date: October 2025
 """
 
-import json
 import re
-from typing import Dict, List, Tuple, Optional, Any, Set
+from typing import Dict, List
 from enum import Enum
-import random
 from datetime import datetime
-from dataclasses import dataclass
-import hashlib
 
 __version__ = "4.8.0"
 
@@ -47,7 +43,7 @@ class BaselineResumeMetrics:
     Structured validation class for resume word counts.
     Combines v2.1 validation methods with v4.5.2 word count targets.
     """
-    
+
     # Baseline word counts from v4.5.2 (NOT v2.1)
     BASELINE_WORDCOUNT = {
         "name": 2,
@@ -79,14 +75,14 @@ class BaselineResumeMetrics:
         "competencies": 118,
         "total_resume": 1032  # v4.5.2 baseline
     }
-    
+
     # Frozen sections (cannot be modified)
     FROZEN_SECTIONS = [
         "name", "education", "certifications",
         "unify_company", "ibm_company", "tradersense_company",
         "ey_company", "early_company"
     ]
-    
+
     # QA Gates for validation
     QA_GATES = {
         "VG_BASELINE_001": {
@@ -130,18 +126,18 @@ class BaselineResumeMetrics:
             "severity": "INFO"
         }
     }
-    
+
     @classmethod
-    def validate_wordcount(cls, section: str, actual_words: int, 
+    def validate_wordcount(cls, section: str, actual_words: int,
                           temperature: TemperatureMode = TemperatureMode.BALANCED) -> Dict:
         """
         Validate word count for a specific section.
-        
+
         Args:
             section: Section name
             actual_words: Actual word count
             temperature: Temperature mode for flexibility
-            
+
         Returns:
             Dict with validation results
         """
@@ -151,19 +147,19 @@ class BaselineResumeMetrics:
                 "status": "ERROR",
                 "message": f"Unknown section: {section}"
             }
-        
+
         baseline = cls.BASELINE_WORDCOUNT[section]
-        
+
         # Apply temperature-based flexibility
         flexibility = {
             TemperatureMode.CONSERVATIVE: 0.15,
             TemperatureMode.BALANCED: 0.25,
             TemperatureMode.CREATIVE: 0.35
         }[temperature]
-        
+
         min_allowed = int(baseline * (1 - flexibility))
         max_allowed = int(baseline * (1 + flexibility))
-        
+
         # Check if frozen section
         if section in cls.FROZEN_SECTIONS:
             if actual_words != baseline:
@@ -175,7 +171,7 @@ class BaselineResumeMetrics:
                     "actual": actual_words,
                     "delta": actual_words - baseline
                 }
-        
+
         # Validate range
         if actual_words < min_allowed:
             status = "UNDER"
@@ -186,10 +182,10 @@ class BaselineResumeMetrics:
         else:
             status = "PASS"
             valid = True
-        
+
         delta = actual_words - baseline
         delta_pct = (delta / baseline * 100) if baseline > 0 else 0
-        
+
         return {
             "valid": valid,
             "status": status,
@@ -202,17 +198,17 @@ class BaselineResumeMetrics:
             "temperature": temperature.value,
             "message": f"{section}: {actual_words} words (baseline: {baseline}, δ: {delta:+d})"
         }
-    
+
     @classmethod
     def validate_total(cls, section_word_counts: Dict[str, int],
                       temperature: TemperatureMode = TemperatureMode.BALANCED) -> Dict:
         """
         Validate total resume word count.
-        
+
         Args:
             section_word_counts: Dict of section names to word counts
             temperature: Temperature mode
-            
+
         Returns:
             Dict with total validation results
         """
@@ -221,23 +217,23 @@ class BaselineResumeMetrics:
             count for section, count in section_word_counts.items()
             if section != "skills"  # K.11 skills not counted in total
         )
-        
+
         total_baseline = cls.BASELINE_WORDCOUNT["total_resume"]
-        
+
         # Apply temperature flexibility
         flexibility = {
             TemperatureMode.CONSERVATIVE: 0.10,
             TemperatureMode.BALANCED: 0.15,
             TemperatureMode.CREATIVE: 0.20
         }[temperature]
-        
+
         min_allowed = int(total_baseline * (1 - flexibility))
         max_allowed = int(total_baseline * (1 + flexibility))
-        
+
         valid = min_allowed <= total_actual <= max_allowed
         delta = total_actual - total_baseline
         delta_pct = (delta / total_baseline * 100) if total_baseline > 0 else 0
-        
+
         return {
             "valid": valid,
             "status": "PASS" if valid else ("OVER" if total_actual > max_allowed else "UNDER"),
@@ -249,26 +245,26 @@ class BaselineResumeMetrics:
             "temperature": temperature.value,
             "message": f"Total: {total_actual} words (target: {total_baseline}, δ: {delta:+d}, {delta_pct:+.1f}%)"
         }
-    
+
     @classmethod
     def calculate_deltas(cls, section_word_counts: Dict[str, int]) -> Dict[str, Dict]:
         """
         Calculate deltas for all sections.
-        
+
         Args:
             section_word_counts: Dict of section names to word counts
-            
+
         Returns:
             Dict with delta analysis for each section
         """
         deltas = {}
-        
+
         for section, actual in section_word_counts.items():
             if section in cls.BASELINE_WORDCOUNT:
                 baseline = cls.BASELINE_WORDCOUNT[section]
                 delta = actual - baseline
                 delta_pct = (delta / baseline * 100) if baseline > 0 else 0
-                
+
                 deltas[section] = {
                     "baseline": baseline,
                     "actual": actual,
@@ -276,31 +272,31 @@ class BaselineResumeMetrics:
                     "delta_pct": delta_pct,
                     "status": "EXACT" if delta == 0 else ("OVER" if delta > 0 else "UNDER")
                 }
-        
+
         return deltas
-    
+
     @classmethod
     def run_qa_gates(cls, section_word_counts: Dict[str, int]) -> Dict:
         """
         Run all QA validation gates.
-        
+
         Args:
             section_word_counts: Dict of section names to word counts
-            
+
         Returns:
             Dict with QA gate results
         """
         results = {}
         failures = []
         warnings = []
-        
+
         for gate_id, gate_config in cls.QA_GATES.items():
             if gate_id == "VG_BASELINE_005":  # Ratio check
                 unify_words = section_word_counts.get("unify_bullets", 0) + \
                              section_word_counts.get("unify_intro", 0)
                 ibm_words = section_word_counts.get("ibm_bullets", 0) + \
                            section_word_counts.get("ibm_intro", 0)
-                
+
                 if ibm_words > 0:
                     ratio = unify_words / ibm_words
                     passed = gate_config["min"] <= ratio <= gate_config["max"]
@@ -309,7 +305,7 @@ class BaselineResumeMetrics:
                     passed = False
                     message = "Cannot calculate ratio (IBM words = 0)"
                     ratio = 0
-                
+
                 results[gate_id] = {
                     "name": gate_config["name"],
                     "passed": passed,
@@ -317,7 +313,7 @@ class BaselineResumeMetrics:
                     "message": message,
                     "severity": gate_config["severity"]
                 }
-                
+
             elif gate_id == "VG_BASELINE_006":  # Frozen sections
                 violations = []
                 for section in gate_config["sections"]:
@@ -326,10 +322,10 @@ class BaselineResumeMetrics:
                         expected = cls.BASELINE_WORDCOUNT.get(section, 0)
                         if actual != expected:
                             violations.append(f"{section}: {actual} != {expected}")
-                
+
                 passed = len(violations) == 0
                 message = "All frozen sections unchanged" if passed else f"Violations: {', '.join(violations)}"
-                
+
                 results[gate_id] = {
                     "name": gate_config["name"],
                     "passed": passed,
@@ -337,17 +333,17 @@ class BaselineResumeMetrics:
                     "message": message,
                     "severity": gate_config["severity"]
                 }
-                
+
             else:  # Word count gates
                 section = gate_config["section"]
                 if section == "total_resume":
                     actual = sum(v for k, v in section_word_counts.items() if k != "skills")
                 else:
                     actual = section_word_counts.get(section, 0)
-                
+
                 passed = gate_config["min"] <= actual <= gate_config["max"]
                 message = f"{gate_config['name']}: {actual} words (range: {gate_config['min']}-{gate_config['max']})"
-                
+
                 results[gate_id] = {
                     "name": gate_config["name"],
                     "passed": passed,
@@ -357,14 +353,14 @@ class BaselineResumeMetrics:
                     "message": message,
                     "severity": gate_config["severity"]
                 }
-            
+
             # Track failures and warnings
             if not results[gate_id]["passed"]:
                 if gate_config["severity"] == "CRITICAL":
                     failures.append(gate_id)
                 elif gate_config["severity"] == "WARNING":
                     warnings.append(gate_id)
-        
+
         return {
             "gates": results,
             "all_passed": len(failures) == 0,
@@ -372,17 +368,17 @@ class BaselineResumeMetrics:
             "warnings": warnings,
             "summary": f"{'✓ PASSED' if len(failures) == 0 else f'✗ FAILED ({len(failures)} critical)'}"
         }
-    
+
     @classmethod
     def generate_report(cls, section_word_counts: Dict[str, int],
                        temperature: TemperatureMode = TemperatureMode.BALANCED) -> str:
         """
         Generate comprehensive validation report.
-        
+
         Args:
             section_word_counts: Dict of section names to word counts
             temperature: Temperature mode
-            
+
         Returns:
             Formatted report string
         """
@@ -391,20 +387,20 @@ class BaselineResumeMetrics:
         lines.append("BASELINE VALIDATION REPORT")
         lines.append("=" * 80)
         lines.append("")
-        
+
         # Section validation
         lines.append("SECTION VALIDATION:")
         lines.append("-" * 80)
-        
-        for section in ["executive_summary", "unify_bullets", "ibm_bullets", 
+
+        for section in ["executive_summary", "unify_bullets", "ibm_bullets",
                        "tradersense_bullets", "ey_bullets", "early_bullets"]:
             if section in section_word_counts:
                 result = cls.validate_wordcount(section, section_word_counts[section], temperature)
                 status_icon = "✓" if result["valid"] else "✗"
                 lines.append(f"{status_icon} {result['message']}")
-        
+
         lines.append("")
-        
+
         # Total validation
         lines.append("TOTAL VALIDATION:")
         lines.append("-" * 80)
@@ -412,22 +408,22 @@ class BaselineResumeMetrics:
         status_icon = "✓" if total_result["valid"] else "✗"
         lines.append(f"{status_icon} {total_result['message']}")
         lines.append("")
-        
+
         # QA Gates
         lines.append("QA GATES:")
         lines.append("-" * 80)
         qa_results = cls.run_qa_gates(section_word_counts)
-        
+
         for gate_id, result in qa_results["gates"].items():
             status_icon = "✓" if result["passed"] else "✗"
             severity = f"[{result['severity']}]"
             lines.append(f"{status_icon} {severity:10} {result['message']}")
-        
+
         lines.append("")
         lines.append("=" * 80)
         lines.append(f"OVERALL STATUS: {qa_results['summary']}")
         lines.append("=" * 80)
-        
+
         return "\n".join(lines)
 
 # ============================================================================
@@ -439,7 +435,7 @@ class MasterResume:
     Amit Ayer's complete master resume embedded in code.
     NO NEED TO UPLOAD RESUME - Just provide JD!
     """
-    
+
     CONTACT = {
         "name": "Amit Ayer",
         "headline": "Chief AI Officer | LLM Product Launches | Strategic AI Partnerships",
@@ -448,7 +444,7 @@ class MasterResume:
         "linkedin": "https://www.linkedin.com/in/amitayer1",
         "location": "Boca Raton, FL"
     }
-    
+
     EXPERIENCE = {
         "unify": {
             "company": "Unify Consulting",
@@ -529,7 +525,7 @@ class MasterResume:
             ]
         }
     }
-    
+
     EDUCATION = [
         {
             "degree": "Master of Science in Biostatistics",
@@ -542,14 +538,14 @@ class MasterResume:
             "notes": "Graduated Cum Laude"
         }
     ]
-    
+
     CERTIFICATIONS = [
         "Certified Machine Learning Engineer - Associate, AWS (2025)",
         "Databricks Lakehouse Fundamentals Accreditation (2023)",
         "Certified Solutions Architect - Professional, AWS (2022)",
         "Fellow of the Society of Actuaries (2010)"
     ]
-    
+
     COMPETENCIES = [
         "Enterprise AI Platform Architecture: Designed multi-cloud AI platforms on leading cloud and analytics infrastructures for financial services driving regulatory compliance, operational efficiency, and 42% performance improvements across global enterprise organizations.",
         "AI Governance & Risk Management: Established enterprise governance and bias audit frameworks enabling audit-ready AI model launches while reducing compliance risk by 36% and accelerating regulatory approval cycles for global clients.",
@@ -565,7 +561,7 @@ class MasterResume:
 
 class SkillsPool:
     """K.11 Technical Skills Pool for JD-aligned selection."""
-    
+
     SKILLS_POOL = {
         "ai_ml": [
             "Large Language Models (LLMs)", "Generative AI (GenAI)",
@@ -589,27 +585,27 @@ class SkillsPool:
             "dbt", "Pandas", "NumPy"
         ]
     }
-    
+
     @classmethod
     def select_skills_for_jd(cls, jd_text: str, target_role: str, count: int = 12) -> List[str]:
         """Select top 12 skills based on JD keyword matching."""
         jd_lower = jd_text.lower()
         skill_scores = {}
-        
+
         for category, skills in cls.SKILLS_POOL.items():
             for skill in skills:
                 if skill.lower() in jd_lower:
                     skill_scores[skill] = skill_scores.get(skill, 0) + 1
-        
+
         sorted_skills = sorted(skill_scores.items(), key=lambda x: x[1], reverse=True)
         selected = [skill for skill, _ in sorted_skills[:count]]
-        
+
         # Pad with essentials if needed
         essentials = ["Python", "AWS", "SQL", "Docker", "Git/GitHub", "Agile/Scrum"]
         for essential in essentials:
             if len(selected) < count and essential not in selected:
                 selected.append(essential)
-        
+
         return [f"{i+1}. {skill}" for i, skill in enumerate(selected[:count])]
 
 # ============================================================================
@@ -620,38 +616,38 @@ class NineHopPipeline:
     """
     Complete 9-HOP Resume Generation Pipeline with BaselineResumeMetrics validation.
     """
-    
+
     def __init__(self):
         """Initialize pipeline with all components."""
         self.master_resume = MasterResume()
         self.skills_pool = SkillsPool()
         self.baseline_metrics = BaselineResumeMetrics()
         self.hop_results = {}
-        
+
     # ========================================================================
     # HOP-0: INPUT VALIDATION
     # ========================================================================
-    
-    def hop0_validate_inputs(self, jd_text: str, target_role: str, 
+
+    def hop0_validate_inputs(self, jd_text: str, target_role: str,
                             temperature: TemperatureMode) -> Dict:
         """HOP-0: Validate all inputs before processing."""
         errors = []
         warnings = []
-        
+
         if not jd_text or len(jd_text.strip()) < 100:
             errors.append("JD too short (need at least 100 characters)")
         if len(jd_text) > 10000:
             warnings.append("JD very long, will focus on key requirements")
-        
-        valid_roles = ["vp_presales", "vp_product", "vp_ai", "cao", "cto", 
+
+        valid_roles = ["vp_presales", "vp_product", "vp_ai", "cao", "cto",
                       "vp_engineering", "chief_ai_officer", "general"]
         if target_role not in valid_roles:
             warnings.append(f"Unknown role '{target_role}', using general profile")
             target_role = "general"
-        
+
         if not isinstance(temperature, TemperatureMode):
             errors.append("Invalid temperature mode")
-        
+
         return {
             "hop": "HOP-0",
             "valid": len(errors) == 0,
@@ -661,28 +657,28 @@ class NineHopPipeline:
             "role": target_role,
             "temperature": temperature.value
         }
-    
+
     # ========================================================================
     # HOP-1: JD PARSING & KEYWORD EXTRACTION
     # ========================================================================
-    
+
     def hop1_parse_jd(self, jd_text: str) -> Dict:
         """HOP-1: Parse JD and extract keywords, requirements, and signals."""
         jd_lower = jd_text.lower()
-        
+
         technical_keywords = set()
         for category, skills in SkillsPool.SKILLS_POOL.items():
             for skill in skills:
                 if skill.lower() in jd_lower:
                     technical_keywords.add(skill)
-        
-        action_verbs = ["lead", "manage", "build", "scale", "deliver", 
+
+        action_verbs = ["lead", "manage", "build", "scale", "deliver",
                        "architect", "design", "drive", "implement", "develop"]
         found_verbs = [v for v in action_verbs if v in jd_lower]
-        
+
         years_pattern = r'(\d+)\+?\s*years?'
         years_matches = re.findall(years_pattern, jd_lower)
-        
+
         themes = {
             "leadership": len(re.findall(r'\b(lead|manage|direct|oversee)\b', jd_lower)),
             "technical": len(re.findall(r'\b(architect|engineer|develop|code)\b', jd_lower)),
@@ -690,9 +686,9 @@ class NineHopPipeline:
             "customer": len(re.findall(r'\b(customer|client|user|stakeholder)\b', jd_lower)),
             "sales": len(re.findall(r'\b(sales|revenue|pipeline|deal)\b', jd_lower))
         }
-        
+
         primary_focus = max(themes, key=themes.get)
-        
+
         return {
             "hop": "HOP-1",
             "technical_keywords": list(technical_keywords),
@@ -702,11 +698,11 @@ class NineHopPipeline:
             "primary_focus": primary_focus,
             "total_keywords": len(technical_keywords)
         }
-    
+
     # ========================================================================
     # HOP-2: MAP TO MASTER RESUME
     # ========================================================================
-    
+
     def hop2_map_to_master(self, jd_parsed: Dict, target_role: str) -> Dict:
         """HOP-2: Map JD requirements to master resume content."""
         mappings = {
@@ -714,10 +710,10 @@ class NineHopPipeline:
             "selected_competencies": [],
             "matched_bullets": {}
         }
-        
+
         for company in ["unify", "ibm", "tradersense", "ey", "early"]:
             exp = self.master_resume.EXPERIENCE.get(company, {})
-            
+
             relevance = 0.0
             if company == "unify":
                 relevance = 0.8
@@ -729,45 +725,45 @@ class NineHopPipeline:
                 relevance = 0.6
             else:
                 relevance = 0.3
-            
+
             mappings["experience_relevance"][company] = relevance
-            
+
             bullets = exp.get("bullets", [])
             scored_bullets = []
             for bullet in bullets:
                 bullet_lower = bullet.lower()
-                score = sum(1 for kw in jd_parsed["technical_keywords"] 
+                score = sum(1 for kw in jd_parsed["technical_keywords"]
                           if kw.lower() in bullet_lower)
                 scored_bullets.append((bullet, score))
-            
+
             scored_bullets.sort(key=lambda x: x[1], reverse=True)
             mappings["matched_bullets"][company] = scored_bullets
-        
+
         for comp in self.master_resume.COMPETENCIES:
             comp_lower = comp.lower()
-            score = sum(1 for kw in jd_parsed["technical_keywords"] 
+            score = sum(1 for kw in jd_parsed["technical_keywords"]
                        if kw.lower() in comp_lower)
             if score > 0:
                 mappings["selected_competencies"].append((comp, score))
-        
+
         mappings["selected_competencies"].sort(key=lambda x: x[1], reverse=True)
-        
+
         return {
             "hop": "HOP-2",
             "mappings": mappings,
             "highest_relevance": max(mappings["experience_relevance"].values()),
             "competencies_matched": len(mappings["selected_competencies"])
         }
-    
+
     # ========================================================================
     # HOP-3: RECONTEXTUALIZE BULLETS WITH VALIDATION
     # ========================================================================
-    
+
     def hop3_recontextualize_bullets(self, mappings: Dict, jd_parsed: Dict,
                                     temperature: TemperatureMode) -> Dict:
         """HOP-3: Recontextualize bullets with BaselineResumeMetrics validation."""
         recontextualized = {}
-        
+
         word_targets = {
             "unify": self.baseline_metrics.BASELINE_WORDCOUNT["unify_bullets"],
             "ibm": self.baseline_metrics.BASELINE_WORDCOUNT["ibm_bullets"],
@@ -775,21 +771,21 @@ class NineHopPipeline:
             "ey": self.baseline_metrics.BASELINE_WORDCOUNT["ey_bullets"],
             "early": self.baseline_metrics.BASELINE_WORDCOUNT["early_bullets"]
         }
-        
+
         for company, target_words in word_targets.items():
             bullets = mappings["mappings"]["matched_bullets"].get(company, [])
-            
+
             # Use BaselineResumeMetrics validation
-            validation = self.baseline_metrics.validate_wordcount(
+            self.baseline_metrics.validate_wordcount(
                 f"{company}_bullets", target_words, temperature
             )
-            
+
             min_words = int(target_words * 0.75)
             max_words = int(target_words * 1.25)
-            
+
             selected = []
             current_words = 0
-            
+
             for bullet, score in bullets:
                 bullet_words = len(bullet.split())
                 if current_words + bullet_words <= max_words:
@@ -801,12 +797,12 @@ class NineHopPipeline:
                     selected.append(truncated)
                     current_words = max_words
                     break
-            
+
             # Validate final word count
             final_validation = self.baseline_metrics.validate_wordcount(
                 f"{company}_bullets", current_words, temperature
             )
-            
+
             recontextualized[company] = {
                 "bullets": selected,
                 "word_count": current_words,
@@ -814,22 +810,22 @@ class NineHopPipeline:
                 "validation": final_validation,
                 "within_range": final_validation["valid"]
             }
-        
+
         return {
             "hop": "HOP-3",
             "recontextualized": recontextualized,
             "temperature": temperature.value,
             "total_bullet_words": sum(r["word_count"] for r in recontextualized.values())
         }
-    
+
     # ========================================================================
     # HOP-4: GENERATE K.1 EXECUTIVE SUMMARY WITH VALIDATION
     # ========================================================================
-    
+
     def hop4_generate_k1(self, jd_parsed: Dict, target_role: str,
                         temperature: TemperatureMode) -> Dict:
         """HOP-4: Generate K.1 with BaselineResumeMetrics validation."""
-        
+
         if jd_parsed["primary_focus"] == "sales":
             s1 = "Technology executive with 23+ years driving enterprise AI transformation and revenue growth for Fortune 500 organizations."
             s2 = "As Chief AI Officer at Unify Consulting, I lead pre-sales engineering and solution architecture teams, accelerating deal cycles by 40% through technical expertise."
@@ -844,17 +840,17 @@ class NineHopPipeline:
             s4 = "Deep expertise in architecting scalable AI/ML systems, building high-performance technical teams, and forging strategic partnerships with AWS, Azure, and Snowflake that generated $50M+ in value."
             s5 = "Proven track record translating complex technical capabilities into measurable business outcomes while ensuring governance, compliance, and operational excellence."
             s6 = "Unique combination of technical depth, strategic leadership, and customer-facing experience positions me to drive enterprise technology transformation and platform innovation."
-        
+
         k1_text = f"{s1} {s2} {s3} {s4} {s5} {s6}"
         word_count = len(k1_text.split())
-        
+
         # Validate with BaselineResumeMetrics
         validation = self.baseline_metrics.validate_wordcount(
             "executive_summary", word_count, temperature
         )
-        
+
         target = self.baseline_metrics.BASELINE_WORDCOUNT["executive_summary"]
-        
+
         # Adjust if needed
         if not validation["valid"]:
             if word_count < target - 10:
@@ -862,12 +858,12 @@ class NineHopPipeline:
             elif word_count > target + 10:
                 words = k1_text.split()
                 k1_text = " ".join(words[:target])
-            
+
             word_count = len(k1_text.split())
             validation = self.baseline_metrics.validate_wordcount(
                 "executive_summary", word_count, temperature
             )
-        
+
         return {
             "hop": "HOP-4",
             "k1_text": k1_text,
@@ -877,22 +873,22 @@ class NineHopPipeline:
             "validation": validation,
             "valid": validation["valid"]
         }
-    
+
     # ========================================================================
     # HOP-5: CALCULATE SIGNALS
     # ========================================================================
-    
-    def hop5_calculate_signals(self, jd_parsed: Dict, k1: Dict, 
+
+    def hop5_calculate_signals(self, jd_parsed: Dict, k1: Dict,
                               recontextualized: Dict) -> Dict:
         """HOP-5: Calculate signal percentages for each section."""
         signals = {}
         total_keywords = len(jd_parsed["technical_keywords"])
-        
+
         k1_text = k1["k1_text"].lower()
-        k1_matches = sum(1 for kw in jd_parsed["technical_keywords"] 
+        k1_matches = sum(1 for kw in jd_parsed["technical_keywords"]
                         if kw.lower() in k1_text)
         signals["executive_summary"] = min(k1_matches / max(total_keywords, 1) * 1.5, 0.80)
-        
+
         signals["unify"] = 0.74
         signals["ibm"] = 0.72
         signals["tradersense"] = 0.65
@@ -901,7 +897,7 @@ class NineHopPipeline:
         signals["headline"] = 0.83
         signals["competencies"] = 0.84
         signals["skills"] = 0.92
-        
+
         weights = {
             "executive_summary": 0.20,
             "headline": 0.05,
@@ -912,9 +908,9 @@ class NineHopPipeline:
             "competencies": 0.10,
             "skills": 0.05
         }
-        
+
         weighted_sum = sum(signals.get(k, 0) * w for k, w in weights.items())
-        
+
         return {
             "hop": "HOP-5",
             "section_signals": signals,
@@ -922,14 +918,14 @@ class NineHopPipeline:
             "target_range": "0.72-0.78",
             "within_target": 0.72 <= weighted_sum <= 0.78
         }
-    
+
     # ========================================================================
     # HOP-6: VALIDATION GATES WITH BASELINERESUMEMETRICS
     # ========================================================================
-    
+
     def hop6_validation_gates(self, all_hops: Dict, temperature: TemperatureMode) -> Dict:
         """HOP-6: Run comprehensive validation using BaselineResumeMetrics."""
-        
+
         # Collect all word counts
         section_word_counts = {
             "name": len(self.master_resume.CONTACT["name"].split()),
@@ -950,18 +946,18 @@ class NineHopPipeline:
             "certifications": 25,
             "competencies": 118
         }
-        
+
         # Run BaselineResumeMetrics QA Gates
         qa_results = self.baseline_metrics.run_qa_gates(section_word_counts)
-        
+
         # Generate validation report
         validation_report = self.baseline_metrics.generate_report(
             section_word_counts, temperature
         )
-        
+
         # Additional custom gates
         custom_gates = []
-        
+
         # Signal check
         signal = all_hops["hop5"]["weighted_average"]
         custom_gates.append({
@@ -969,7 +965,7 @@ class NineHopPipeline:
             "passed": 0.72 <= signal <= 0.78,
             "message": f"Signal: {signal:.3f} (target: 0.72-0.78)"
         })
-        
+
         # No section over 95% signal
         max_signal = max(all_hops["hop5"]["section_signals"].values())
         custom_gates.append({
@@ -977,7 +973,7 @@ class NineHopPipeline:
             "passed": max_signal < 0.95,
             "message": f"Max signal: {max_signal:.3f} (must be <0.95)"
         })
-        
+
         return {
             "hop": "HOP-6",
             "baseline_qa": qa_results,
@@ -986,14 +982,14 @@ class NineHopPipeline:
             "all_passed": qa_results["all_passed"] and all(g["passed"] for g in custom_gates),
             "critical_failures": qa_results["critical_failures"]
         }
-    
+
     # ========================================================================
     # HOP-7/8/9: FORMAT OUTPUTS WITH VALIDATION REPORT
     # ========================================================================
-    
+
     def hop789_format_outputs(self, all_hops: Dict) -> Dict:
         """HOP-7/8/9: Format final outputs with validation report."""
-        
+
         sections = {
             "name": self.master_resume.CONTACT["name"],
             "headline": self._customize_headline(all_hops["hop1"]),
@@ -1009,12 +1005,12 @@ class NineHopPipeline:
             "competencies": self._format_competencies(all_hops["hop2"]),
             "skills": self._generate_skills(all_hops["hop1"])
         }
-        
+
         output1 = self._format_resume_output(sections, all_hops)
         output2 = self._format_wordcount_output(sections, all_hops)
         output3 = self._format_signal_output(all_hops)
         output4 = all_hops["hop6"]["validation_report"]  # Use BaselineResumeMetrics report
-        
+
         return {
             "hop": "HOP-7/8/9",
             "output1_resume": output1,
@@ -1022,11 +1018,11 @@ class NineHopPipeline:
             "output3_signal": output3,
             "output4_validation": output4
         }
-    
+
     # ========================================================================
     # HELPER METHODS (unchanged)
     # ========================================================================
-    
+
     def _customize_headline(self, jd_parsed: Dict) -> str:
         """Generate customized headline."""
         if jd_parsed["primary_focus"] == "sales":
@@ -1035,32 +1031,32 @@ class NineHopPipeline:
             return "Chief AI Officer | LLM Platform Architecture | ML Engineering Leadership"
         else:
             return "Chief AI Officer | LLM Product Launches | Strategic AI Partnerships"
-    
+
     def _format_education(self) -> str:
         """Format education section."""
         ed_items = []
         for ed in self.master_resume.EDUCATION:
             ed_items.append(f"{ed['degree']}, {ed['institution']}")
         return " | ".join(ed_items)
-    
+
     def _format_certifications(self) -> str:
         """Format certifications."""
         return " | ".join(self.master_resume.CERTIFICATIONS[:4])
-    
+
     def _format_competencies(self, hop2: Dict) -> str:
         """Select and format competencies."""
         selected = hop2["mappings"]["selected_competencies"][:6]
         if not selected:
             selected = [(c, 0) for c in self.master_resume.COMPETENCIES[:6]]
         return " • ".join([comp.split(":")[0] for comp, _ in selected])
-    
+
     def _generate_skills(self, jd_parsed: Dict) -> List[str]:
         """Generate K.11 skills list."""
         return self.skills_pool.select_skills_for_jd(
-            " ".join(jd_parsed["technical_keywords"]), 
+            " ".join(jd_parsed["technical_keywords"]),
             "general"
         )
-    
+
     def _format_resume_output(self, sections: Dict, all_hops: Dict) -> str:
         """Format complete resume output."""
         lines = []
@@ -1068,20 +1064,20 @@ class NineHopPipeline:
         lines.append("OUTPUT 1: CUSTOMIZED RESUME (9-HOP WITH VALIDATION)")
         lines.append("=" * 100)
         lines.append("")
-        
+
         lines.append(sections["name"])
         lines.append(sections["headline"])
         lines.append(sections["contact"])
         lines.append("")
-        
+
         lines.append("EXECUTIVE SUMMARY")
         lines.append("-" * 80)
         lines.append(sections["executive_summary"])
         lines.append("")
-        
+
         lines.append("PROFESSIONAL EXPERIENCE")
         lines.append("-" * 80)
-        
+
         # Format each company section
         for company_key, company_name in [
             ("unify", "UNIFY CONSULTING | BOCA RATON, FL"),
@@ -1097,39 +1093,39 @@ class NineHopPipeline:
             for bullet in sections[f"{company_key}_bullets"]:
                 lines.append(f"• {bullet}")
             lines.append("")
-        
+
         lines.append("EDUCATION")
         lines.append("-" * 80)
         lines.append(sections["education"])
         lines.append("")
-        
+
         lines.append("CERTIFICATIONS")
         lines.append("-" * 80)
         lines.append(sections["certifications"])
         lines.append("")
-        
+
         lines.append("COMPETENCIES")
         lines.append("-" * 80)
         lines.append(sections["competencies"])
         lines.append("")
-        
+
         lines.append("TECHNICAL SKILLS")
         lines.append("-" * 80)
         for skill in sections["skills"]:
             lines.append(skill)
-        
+
         return "\n".join(lines)
-    
+
     def _format_wordcount_output(self, sections: Dict, all_hops: Dict) -> str:
         """Format word count table with deltas."""
         lines = []
         lines.append("┌" + "─" * 30 + "┬" + "─" * 12 + "┬" + "─" * 12 + "┬" + "─" * 12 + "┐")
         lines.append("│ Section                      │ Baseline   │ Actual     │ Delta      │")
         lines.append("├" + "─" * 30 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┤")
-        
+
         total_baseline = 0
         total_actual = 0
-        
+
         word_counts = {
             "Executive Summary": (150, all_hops["hop4"]["word_count"]),
             "Unify Bullets": (265, all_hops["hop3"]["recontextualized"]["unify"]["word_count"]),
@@ -1138,105 +1134,105 @@ class NineHopPipeline:
             "EY Bullets": (50, all_hops["hop3"]["recontextualized"]["ey"]["word_count"]),
             "Early Bullets": (45, all_hops["hop3"]["recontextualized"]["early"]["word_count"])
         }
-        
+
         for section, (baseline, actual) in word_counts.items():
             delta = actual - baseline
             delta_str = f"+{delta}" if delta > 0 else str(delta)
             lines.append(f"│ {section:28} │ {baseline:10} │ {actual:10} │ {delta_str:10} │")
             total_baseline += baseline
             total_actual += actual
-        
+
         lines.append("├" + "─" * 30 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┤")
         total_delta = total_actual - total_baseline
         total_delta_str = f"+{total_delta}" if total_delta > 0 else str(total_delta)
         lines.append(f"│ {'TOTAL':28} │ {total_baseline:10} │ {total_actual:10} │ {total_delta_str:10} │")
         lines.append("└" + "─" * 30 + "┴" + "─" * 12 + "┴" + "─" * 12 + "┴" + "─" * 12 + "┘")
-        
+
         return "\n".join(lines)
-    
+
     def _format_signal_output(self, all_hops: Dict) -> str:
         """Format signal calibration output."""
         lines = []
         lines.append("SIGNAL CALIBRATION REPORT")
         lines.append("=" * 80)
-        
+
         signals = all_hops["hop5"]["section_signals"]
         weighted = all_hops["hop5"]["weighted_average"]
-        
+
         for section, signal in signals.items():
             status = "✓" if 0.60 <= signal <= 0.95 else "⚠"
             lines.append(f"{status} {section:20} {signal:.3f}")
-        
+
         lines.append("-" * 80)
         lines.append(f"WEIGHTED AVERAGE: {weighted:.3f}")
-        lines.append(f"TARGET RANGE: 0.720 - 0.780")
+        lines.append("TARGET RANGE: 0.720 - 0.780")
         lines.append(f"STATUS: {'✓ PASS' if 0.72 <= weighted <= 0.78 else '✗ FAIL'}")
-        
+
         return "\n".join(lines)
-    
+
     # ========================================================================
     # MAIN EXECUTION METHOD
     # ========================================================================
-    
+
     def execute_pipeline(self, jd_text: str, target_role: str,
                         temperature: TemperatureMode = TemperatureMode.BALANCED) -> Dict:
         """Execute complete 9-HOP pipeline with validation."""
-        
+
         print("\n" + "=" * 80)
         print("EXECUTING 9-HOP PIPELINE WITH VALIDATION")
         print("=" * 80)
-        
+
         # HOP-0: Validate inputs
         print("\n🔍 HOP-0: Validating inputs...")
         hop0 = self.hop0_validate_inputs(jd_text, target_role, temperature)
         self.hop_results["hop0"] = hop0
         if not hop0["valid"]:
             return {"error": "Validation failed", "details": hop0}
-        
+
         # HOP-1: Parse JD
         print("📋 HOP-1: Parsing JD and extracting keywords...")
         hop1 = self.hop1_parse_jd(jd_text)
         self.hop_results["hop1"] = hop1
         print(f"   Found {hop1['total_keywords']} technical keywords")
-        
+
         # HOP-2: Map to master resume
         print("🗺️  HOP-2: Mapping to master resume...")
         hop2 = self.hop2_map_to_master(hop1, target_role)
         self.hop_results["hop2"] = hop2
         print(f"   Mapped {hop2['competencies_matched']} competencies")
-        
+
         # HOP-3: Recontextualize bullets
         print("✏️  HOP-3: Recontextualizing bullets with validation...")
         hop3 = self.hop3_recontextualize_bullets(hop2, hop1, temperature)
         self.hop_results["hop3"] = hop3
         print(f"   Total bullet words: {hop3['total_bullet_words']}")
-        
+
         # HOP-4: Generate K.1
         print("📝 HOP-4: Generating executive summary with validation...")
         hop4 = self.hop4_generate_k1(hop1, target_role, temperature)
         self.hop_results["hop4"] = hop4
         print(f"   K.1 word count: {hop4['word_count']} (valid: {hop4['valid']})")
-        
+
         # HOP-5: Calculate signals
         print("📊 HOP-5: Calculating signals...")
         hop5 = self.hop5_calculate_signals(hop1, hop4, hop3)
         self.hop_results["hop5"] = hop5
         print(f"   Weighted signal: {hop5['weighted_average']:.3f}")
-        
+
         # HOP-6: Validation gates
         print("✅ HOP-6: Running BaselineResumeMetrics validation...")
         hop6 = self.hop6_validation_gates(self.hop_results, temperature)
         self.hop_results["hop6"] = hop6
         print(f"   Validation: {hop6['baseline_qa']['summary']}")
-        
+
         # HOP-7/8/9: Format outputs
         print("📄 HOP-7/8/9: Formatting outputs with validation report...")
         hop789 = self.hop789_format_outputs(self.hop_results)
         self.hop_results["hop789"] = hop789
-        
+
         print("\n✅ Pipeline complete with validation!")
         print("=" * 80)
-        
+
         return {
             "outputs": hop789,
             "pipeline_metadata": {
@@ -1256,13 +1252,13 @@ if __name__ == "__main__":
     # Example JD
     jd = """
     Vice President of Pre-Sales Solutions, Americas - DataRobot
-    
-    The VP, Pre-Sales Solutions – Americas is a strategic and customer-facing leadership role 
-    responsible for leading and scaling the Pre-Sales Solutions organization across North and 
-    South America. This leader will partner closely with Sales, Product, Marketing, and Customer 
-    Success to ensure the delivery of best-in-class technical expertise, solution design, and 
+
+    The VP, Pre-Sales Solutions – Americas is a strategic and customer-facing leadership role
+    responsible for leading and scaling the Pre-Sales Solutions organization across North and
+    South America. This leader will partner closely with Sales, Product, Marketing, and Customer
+    Success to ensure the delivery of best-in-class technical expertise, solution design, and
     customer value throughout the sales cycle.
-    
+
     Key Responsibilities:
     - Lead and grow the Pre-Sales Solutions team across the Americas
     - Define and execute the pre-sales strategy to support regional sales targets
@@ -1271,7 +1267,7 @@ if __name__ == "__main__":
     - Develop frameworks, tools, and best practices to improve team productivity
     - Serve as a strategic advisor to prospects and customers on solution architecture
     - Track and report on key pre-sales metrics
-    
+
     Qualifications:
     - 10+ years of experience in pre-sales, solution engineering, or technical consulting
     - 5+ years in a senior leadership role
@@ -1279,7 +1275,7 @@ if __name__ == "__main__":
     - Deep understanding of complex B2B sales cycles
     - Strong technical acumen in AI/ML, cloud platforms, and enterprise software
     """
-    
+
     # Initialize and run pipeline
     print("=" * 100)
     print("RESUME GENERATION ENGINE v4.8.0 - WITH VALIDATION METHODS")
@@ -1292,10 +1288,10 @@ if __name__ == "__main__":
     print("• run_qa_gates() for comprehensive validation")
     print("• generate_report() for detailed output")
     print("• Temperature-aware flexibility")
-    
+
     pipeline = NineHopPipeline()
     result = pipeline.execute_pipeline(jd, "vp_presales", TemperatureMode.BALANCED)
-    
+
     # Print outputs
     print("\n" + result["outputs"]["output1_resume"])
     print("\n" + "=" * 100)
@@ -1310,7 +1306,7 @@ if __name__ == "__main__":
     print("OUTPUT 4: VALIDATION REPORT")
     print("=" * 100)
     print(result["outputs"]["output4_validation"])
-    
+
     print("\n" + "=" * 100)
     print("✅ COMPLETE WITH VALIDATION METHODS")
     print("=" * 100)

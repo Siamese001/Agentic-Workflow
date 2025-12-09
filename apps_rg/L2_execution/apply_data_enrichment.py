@@ -10,7 +10,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from shared.models import ValidationResult, ValidationSeverity
 
@@ -29,8 +29,8 @@ class DataEnricher:
     def enrich(
         self,
         extracted_data: Dict,
-        thematic_analysis: Any,
-        orchestrator: Any = None,
+        thematic_analysis: Optional[Dict] = None,
+        orchestrator: Optional[object] = None,
     ) -> Tuple[Dict, List[ValidationResult]]:
         """Enrich extracted data with additional metadata."""
         validation_results: List[ValidationResult] = []

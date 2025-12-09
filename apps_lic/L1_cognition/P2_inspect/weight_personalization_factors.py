@@ -7,7 +7,7 @@ Generated: 2025-12-07T13:28:54.068944
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 from shared.result_types import ScoreResult
 
 logger = logging.getLogger(__name__)
@@ -18,19 +18,19 @@ logger = logging.getLogger(__name__)
 
 class WeightPersonalizationFactors:
     """Scorer for outreach domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.weights = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def score(self, data: Dict[str, Any]) -> ScoreResult:
         """Compute score for data."""
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted(factors)
         confidence = self._compute_confidence(factors)
         return ScoreResult(score=max(0, min(1, raw_score)), confidence=confidence, factors=factors)
-    
+
     def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
         """Extract scoring factors."""
         factors = {}
@@ -40,7 +40,7 @@ class WeightPersonalizationFactors:
             elif isinstance(v, str):
                 factors[f"{k}_len"] = min(1.0, len(v) / 100)
         return factors
-    
+
     def _compute_weighted(self, factors: Dict[str, float]) -> float:
         """Compute weighted score."""
         if not factors:
@@ -48,12 +48,12 @@ class WeightPersonalizationFactors:
         total_w = sum(self.weights.get(k, 1.0) for k in factors)
         weighted = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
         return weighted / total_w if total_w else 0.5
-    
+
     def _compute_confidence(self, factors: Dict[str, float]) -> float:
         """Compute confidence."""
         return min(1.0, len(factors) / 5)
 
 
 def compute_score(data: Dict[str, Any], config: Optional[Dict] = None) -> ScoreResult:
-    """Compute score."""
+    """Compute relevance score based on input parameters."""
     return WeightPersonalizationFactors(config).score(data)

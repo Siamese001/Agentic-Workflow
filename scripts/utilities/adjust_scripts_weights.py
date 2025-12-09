@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.869367
 from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -23,19 +23,19 @@ class AdjustmentResult:
 
 class AdjustScriptsWeights:
     """Adjuster for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.method = self.config.get("method", "minmax")
         self.target_range = self.config.get("range", (0.0, 1.0))
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def adjust(self, values: Sequence[float], method: Optional[str] = None) -> List[AdjustmentResult]:
         """Adjust values."""
         adj_method = method or self.method
         adjusted = self._apply_adjustment(list(values), adj_method)
         return [AdjustmentResult(original=o, adjusted=a, method=adj_method) for o, a in zip(values, adjusted)]
-    
+
     def _apply_adjustment(self, values: List[float], method: str) -> List[float]:
         """Apply adjustment method."""
         if not values:
@@ -45,7 +45,7 @@ class AdjustScriptsWeights:
         elif method == "zscore":
             return self._zscore(values)
         return values
-    
+
     def _minmax(self, values: List[float]) -> List[float]:
         """Min-max normalization."""
         min_v, max_v = min(values), max(values)
@@ -53,7 +53,7 @@ class AdjustScriptsWeights:
             return [0.5] * len(values)
         t_min, t_max = self.target_range
         return [t_min + (v - min_v) / (max_v - min_v) * (t_max - t_min) for v in values]
-    
+
     def _zscore(self, values: List[float]) -> List[float]:
         """Z-score normalization."""
         import math
