@@ -34,6 +34,7 @@ ROOT = Path(__file__).parent.resolve()
 DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 
 # SOVEREIGN DIRECTORIES — THE ONLY CODE THAT MATTERS
+# Currently validated directories - will expand after cleanup
 LAYERED_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}  # Have L1-L5 structure
 FLAT_SOVEREIGN = {"apps_shared"}  # Flat structure, still sovereign
 SOVEREIGN_DIRS = LAYERED_AGENTS.union(FLAT_SOVEREIGN)
@@ -47,6 +48,15 @@ def is_sovereign_file(f: Path) -> bool:
 def is_layered_agent(f: Path) -> bool:
     """Check if file is in a layered agent directory."""
     return any(part in LAYERED_AGENTS for part in f.parts)
+
+# FUTURE SOVEREIGN DIRECTORIES (to be added after cleanup)
+# These will become sovereign once legacy violations are fixed:
+FUTURE_SOVEREIGN = {
+    "schemas",           # Pydantic/JSON schemas for structured output
+    "prompt_governance", # Safety rails, refusal patterns, jailbreak filters  
+    "observability",     # Tracing, metrics, audit logs
+    "config",            # Runtime config + feature flags
+}
 
 # VERB PHYSICS - EXPANDED TO MATCH ACTUAL CODEBASE
 # L2 execution verbs - includes all action/tool verbs
@@ -232,6 +242,7 @@ def check_directory_structure() -> None:
     violations = []
 
     # Only apply strict directory structure to layered agents, not flat sovereign code
+    # Skip all flat sovereign dirs: schemas, prompt_governance, observability, config
     for agent in LAYERED_AGENTS:
         agent_path = ROOT / agent
         if not agent_path.exists():
