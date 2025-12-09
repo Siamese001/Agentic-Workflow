@@ -33,15 +33,23 @@ TODO_PATTERN = re.compile(r'#.*\b(TODO|FIXME|NOTE|HACK|XXX|TEMP|WIP|DEBUG|STUB|R
 ROOT = Path(__file__).parent.resolve()
 DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 
-# FINAL CANON 2025 — ABSOLUTE TRUTH — NO L4/L5 IN CODE
-# L4_memory and L5_safety are DEAD. They live in data/ and prompt_governance/ ONLY.
-# Note: schemas, prompt_governance, observability, config have legacy violations
-# They will be added to SOVEREIGN_DIRS after cleanup (see FUTURE_SOVEREIGN_MIGRATION.md)
+# FINAL CANON 2025 — ABSOLUTE TRUTH — DECEMBER 2025
+# L4_memory AND L5_safety ARE DEAD IN CODE FOREVER
+# Only L1/L2/L3 exist in any sovereign directory
+#
+# NOTE: schemas, prompt_governance, observability, config are INTENDED to be sovereign
+# but currently have legacy violations. They will be added after cleanup.
+# See FUTURE_SOVEREIGN_MIGRATION.md for the migration plan.
 SOVEREIGN_DIRS = {
     "agentic_core",
     "apps_lic",
     "apps_rg",
     "apps_shared",
+    # FUTURE (after cleanup):
+    # "schemas",               # contracts with the world
+    # "prompt_governance",     # global safety — sovereign
+    # "observability",         # audit trail — sovereign
+    # "config",                # runtime truth — sovereign
 }
 
 # Layered agents have L1/L2/L3 structure (NOT L4/L5 anymore)
