@@ -14,7 +14,7 @@ class TestCacheKeyCollisionRegression:
         """Different models never produce same cache key."""
         models = ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
         messages = [{"role": "user", "content": "Hello"}]
-        
+
         keys = [generate_llm_cache_key(model=m, messages=messages) for m in models]
         assert len(keys) == len(set(keys)), "Cache key collision detected"
 
@@ -28,7 +28,7 @@ class TestCacheKeyCollisionRegression:
             [{"role": "user", "content": "hello"}],   # Lowercase
             [{"role": "user", "content": "HELLO"}],   # Uppercase
         ]
-        
+
         keys = [generate_llm_cache_key(model=model, messages=m) for m in message_variants]
         assert len(keys) == len(set(keys)), "Cache key collision detected"
 
@@ -37,20 +37,20 @@ class TestCacheKeyCollisionRegression:
         model = "gpt-4o"
         msg1 = {"role": "user", "content": "First"}
         msg2 = {"role": "assistant", "content": "Second"}
-        
+
         key1 = generate_llm_cache_key(model=model, messages=[msg1, msg2])
         key2 = generate_llm_cache_key(model=model, messages=[msg2, msg1])
-        
+
         assert key1 != key2, "Message order should affect cache key"
 
     def test_no_collision_role_change(self):
         """Role changes affect cache key."""
         model = "gpt-4o"
         content = "Same content"
-        
+
         key1 = generate_llm_cache_key(model=model, messages=[{"role": "user", "content": content}])
         key2 = generate_llm_cache_key(model=model, messages=[{"role": "assistant", "content": content}])
-        
+
         assert key1 != key2, "Role should affect cache key"
 
 class TestCacheKeyEdgeCases:
@@ -92,7 +92,7 @@ class TestFingerprintRegression:
         """Different fingerprints always produce different keys."""
         messages = [{"role": "user", "content": "Test"}]
         fingerprints = ["fp1", "fp2", "fp3", "FP1", "fp1 ", " fp1"]
-        
+
         keys = [
             generate_llm_cache_key_with_fingerprint(
                 model="gpt-4o", messages=messages, fingerprint=fp

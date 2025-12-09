@@ -54,7 +54,7 @@ def get_actual_files(folder_path):
     for f in folder_path.rglob('*.py'):
         rel = str(f.relative_to(folder_path)).replace('\\', '/')
         # Skip noise folders
-        if any(x in rel for x in ['__pycache__', 'review_pending', 'stub_archive', 
+        if any(x in rel for x in ['__pycache__', 'review_pending', 'stub_archive',
                                    '_unassigned', 'YAML', 'phase1_legacy', 'phase3_snapshots']):
             continue
         actual.add(rel)
@@ -78,25 +78,25 @@ def main():
     for domain, folder in DOMAIN_TO_FOLDER.items():
         if domain not in spec:
             continue
-        
+
         yaml_files = extract_yaml_files(spec[domain])
         folder_path = REPO / folder
         actual_files = get_actual_files(folder_path)
-        
+
         missing = yaml_files - actual_files
         extra = actual_files - yaml_files
-        
+
         total_yaml += len(yaml_files)
         total_actual += len(actual_files)
         total_missing += len(missing)
         total_extra += len(extra)
-        
+
         coverage = (1 - len(missing) / len(yaml_files)) * 100 if yaml_files else 100
         status = 'OK' if len(missing) == 0 else 'GAP'
-        
+
         print(f'\n[{domain.upper()}] {folder}')
         print(f'  YAML: {len(yaml_files):>4}  Actual: {len(actual_files):>4}  Missing: {len(missing):>4}  Extra: {len(extra):>4}  [{status}] {coverage:.0f}%')
-        
+
         if missing and domain not in SKIP_DOMAINS:
             all_missing.extend([(domain, folder, f) for f in sorted(missing)])
             for f in sorted(missing)[:3]:

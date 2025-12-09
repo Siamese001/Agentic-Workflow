@@ -31,7 +31,7 @@ MANIFEST_PATH = REPO_ROOT / "06_data" / "unassigned_all_merge_manifest.json"
 # Root folders to scan
 ROOT_FOLDERS = [
     "agentic_core",
-    "schemas", 
+    "schemas",
     "runtime",
     "prompt_governance",
     "config",
@@ -68,29 +68,29 @@ def analyze_content(filepath: Path) -> Dict:
             content = f.read(5000)
     except Exception:
         return {"type": "binary", "hints": []}
-    
+
     hints = []
-    
+
     # Resume engine
     if any(x in content for x in ["Resume", "JD", "bullet", "skill", "competenc"]):
         hints.append("resume_engine")
-    
+
     # Personalization/outreach
     if any(x in content for x in ["personalization", "recipient", "engagement", "outreach"]):
         hints.append("outreach_engine")
-    
+
     # Observability
     if any(x in content for x in ["telemetry", "metrics", "logging", "tracing", "span"]):
         hints.append("observability")
-    
+
     # Safety
     if any(x in content for x in ["safety", "compliance", "ethics", "pii"]):
         hints.append("safety")
-    
+
     # Schema/validation
     if any(x in content for x in ["schema", "validation", "model", "dataclass"]):
         hints.append("schema")
-    
+
     return {"type": filepath.suffix, "hints": hints}
 
 
@@ -103,7 +103,7 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
     name_lower = filename.lower()
     analysis = analyze_content(filepath)
     hints = analysis.get("hints", [])
-    
+
     # === 02_schemas ===
     if root_name == "schemas":
         if filepath.suffix == ".json":
@@ -115,7 +115,7 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
                 return f"status/{filename}", "schema_status"
             return filename, "schema_root_json"
         return f"logic/validation/{filename}", "schema_validation"
-    
+
     # === 03_runtime ===
     if root_name == "runtime":
         if "pipeline" in name_lower or "orchestrat" in name_lower:
@@ -123,26 +123,26 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
         if "execution" in name_lower or "runtime" in name_lower:
             return f"runtime_ops/{filename}", "runtime_execution"
         return f"logic/{filename}", "runtime_logic"
-    
+
     # === 04_prompt_governance ===
     if root_name == "prompt_governance":
         if "template" in name_lower or "prompt" in name_lower:
             return f"templates/{filename}", "prompt_template"
         return f"logic/{filename}", "prompt_logic"
-    
+
     # === 05_config ===
     if root_name == "config":
         if "setting" in name_lower or "config" in name_lower:
             return f"logic/settings/{filename}", "config_settings"
         return f"logic/{filename}", "config_logic"
-    
+
     # === 07_observability ===
     if root_name == "observability":
         if filepath.suffix == ".json":
             if "freeze" in name_lower or "report" in name_lower:
                 return filename, "observability_report"
             return f"data/{filename}", "observability_data"
-        
+
         # Python files
         if any(x in name_lower for x in ["logger", "log_", "logging"]):
             return f"logic/logging/{filename}", "observability_logging"
@@ -157,25 +157,25 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
         if any(x in name_lower for x in ["inspector", "profiler", "verifier", "checker"]):
             return f"logic/inspection/{filename}", "observability_inspection"
         return f"logic/general/{filename}", "observability_general"
-    
+
     # === 08_scripts ===
     if root_name == "scripts":
         if filepath.suffix == ".json":
             if "freeze" in name_lower or "report" in name_lower:
                 return filename, "scripts_report"
             return f"data/{filename}", "scripts_data"
-        
+
         if any(x in name_lower for x in ["phase", "migration", "pipeline"]):
             return f"migration/{filename}", "scripts_migration"
         return f"utilities/{filename}", "scripts_utility"
-    
+
     # === 09_apps ===
     if root_name == "09_apps":
         if filepath.suffix == ".json":
             if "freeze" in name_lower or "report" in name_lower:
                 return filename, "apps_report"
             return f"data/{filename}", "apps_data"
-        
+
         # Route based on parent folder hint
         if parent_folder == "apps_unknown":
             # Resume engine patterns
@@ -198,9 +198,9 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
                 return f"shared/safety/{filename}", "apps_shared_safety"
             # Default
             return f"shared/utils/{filename}", "apps_shared_utils"
-        
+
         return f"shared/{filename}", "apps_shared"
-    
+
     # === Default fallback ===
     return f"logic/{filename}", "default_logic"
 
@@ -208,60 +208,60 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
 def find_unassigned_folders() -> List[Tuple[Path, str]]:
     """Find all _unassigned folders under root folders (excluding archives)."""
     results = []
-    
+
     # Exclusion patterns
     exclude_patterns = [
         "phase3_snapshots",
-        "dedup_archive", 
+        "dedup_archive",
         "unassigned_archive",
         "merged_",
         "sweep",
         "rollback",
         "backup",
     ]
-    
+
     for root_name in ROOT_FOLDERS:
         root_path = REPO_ROOT / root_name
         if not root_path.exists():
             continue
-        
+
         for unassigned in root_path.rglob("_unassigned"):
             path_str = str(unassigned)
             if unassigned.is_dir() and not any(excl in path_str for excl in exclude_patterns):
                 results.append((unassigned, root_name))
-    
+
     return results
 
 
 def execute_merge(dry_run: bool = False) -> MergeManifest:
     """Execute the merge operation."""
     manifest = MergeManifest()
-    
+
     unassigned_folders = find_unassigned_folders()
     print(f"Found {len(unassigned_folders)} _unassigned folders to process")
-    
+
     for unassigned_path, root_name in unassigned_folders:
         print(f"\n=== Processing {unassigned_path.relative_to(REPO_ROOT)} ===")
-        
+
         root_path = REPO_ROOT / root_name
-        
+
         for filepath in unassigned_path.rglob("*"):
             if not filepath.is_file():
                 continue
-            
+
             manifest.total_files += 1
             filename = filepath.name
             parent_folder = filepath.parent.name if filepath.parent != unassigned_path else ""
-            
+
             try:
                 # Get routing decision
                 target_subpath, reason = route_file_in_root(filepath, root_name, parent_folder)
                 target_path = root_path / target_subpath
-                
+
                 # Compute hash
                 content_hash = compute_hash(filepath)
                 file_size = filepath.stat().st_size
-                
+
                 manifest.routings.append({
                     "source": str(filepath.relative_to(REPO_ROOT)),
                     "target": str(target_path.relative_to(REPO_ROOT)),
@@ -269,25 +269,25 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                     "hash": content_hash,
                     "size": file_size,
                 })
-                
+
                 if not dry_run:
                     # Create target directory
                     target_path.parent.mkdir(parents=True, exist_ok=True)
-                    
+
                     # Move file
                     shutil.move(str(filepath), str(target_path))
-                    
+
                     manifest.routed_files += 1
                 else:
                     manifest.routed_files += 1
                     print(f"  [DRY-RUN] {filename} -> {target_subpath}")
-                    
+
             except Exception as e:
                 manifest.errors.append({
                     "source": str(filepath),
                     "error": str(e),
                 })
-    
+
     # Clean up empty _unassigned folders
     if not dry_run:
         for unassigned_path, _ in unassigned_folders:
@@ -296,7 +296,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                 for dirpath in sorted(unassigned_path.rglob("*"), key=lambda p: len(str(p)), reverse=True):
                     if dirpath.is_dir() and not any(dirpath.iterdir()):
                         dirpath.rmdir()
-                
+
                 # Remove the _unassigned folder itself if empty
                 if unassigned_path.exists() and not any(unassigned_path.iterdir()):
                     unassigned_path.rmdir()
@@ -306,7 +306,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                     "source": str(unassigned_path),
                     "error": f"Cleanup failed: {e}",
                 })
-    
+
     # Save manifest
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(MANIFEST_PATH, "w") as f:
@@ -318,7 +318,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
             "routings": manifest.routings,
             "errors": manifest.errors,
         }, f, indent=2)
-    
+
     return manifest
 
 
@@ -331,37 +331,37 @@ def print_summary(manifest: MergeManifest):
     print(f"Total files: {manifest.total_files}")
     print(f"Routed files: {manifest.routed_files}")
     print(f"Errors: {len(manifest.errors)}")
-    
+
     # Group by target root
     by_root = defaultdict(int)
     for r in manifest.routings:
         root = r["target"].split("/")[0] if "/" in r["target"] else r["target"].split("\\")[0]
         by_root[root] += 1
-    
+
     print("\nFiles per root folder:")
     for root, count in sorted(by_root.items()):
         print(f"  {root}: {count}")
-    
+
     if manifest.errors:
         print("\nErrors:")
         for err in manifest.errors[:5]:
             print(f"  {err['source']}: {err['error']}")
-    
+
     print(f"\nManifest saved to: {MANIFEST_PATH}")
 
 
 if __name__ == "__main__":
     import sys
-    
+
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
-    
+
     if dry_run:
         print("=" * 60)
         print("DRY RUN MODE - No files will be moved")
         print("=" * 60)
-    
+
     manifest = execute_merge(dry_run=dry_run)
     print_summary(manifest)
-    
+
     if not dry_run and manifest.routed_files == manifest.total_files and not manifest.errors:
         print("\n[OK] All files routed successfully!")

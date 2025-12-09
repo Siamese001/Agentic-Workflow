@@ -37,7 +37,7 @@ async def insert_entity(entity: TemporalEntity) -> None:
     """
     if not _NEO4J_AVAILABLE:
         return
-        
+
     try:
         if _neo4j_graph is not None:
             _neo4j_graph.upsert_entity(
@@ -65,7 +65,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
     """
     if not _NEO4J_AVAILABLE:
         return
-        
+
     try:
         if _neo4j_graph is not None:
             _neo4j_graph.upsert_relation(
@@ -95,14 +95,14 @@ async def insert_event(event: TemporalEvent) -> None:
     """
     if not _NEO4J_AVAILABLE:
         return
-        
+
     try:
         if _neo4j_graph is not None:
             if event.triplet_id and event.event_type in ["invalidation", "expiration"]:
                 # Update relation invalidity
                 invalid_at = event.metadata.get("invalid_at")
                 invalidated_by = event.metadata.get("invalidated_by")
-                
+
                 _neo4j_graph.update_relation_invalidity(
                     rel_id=event.triplet_id,
                     invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at,
@@ -123,7 +123,7 @@ async def batch_process_invalidation(
     """
     if not _NEO4J_AVAILABLE:
         return
-        
+
     for event in events_to_update:
         await insert_event(event)
 
@@ -141,15 +141,15 @@ async def ingest_transcript(
     """
     if not _NEO4J_AVAILABLE:
         return
-        
+
     # Insert entities first
     for entity in entities:
         await insert_entity(entity)
-    
+
     # Insert triplets as relations
     for triplet in triplets:
         await insert_triplet(triplet)
-    
+
     # Insert events (including invalidations)
     for event in events:
         await insert_event(event)

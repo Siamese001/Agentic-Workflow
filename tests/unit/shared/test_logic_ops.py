@@ -48,11 +48,11 @@ class TestLogicDataAccess:
         all_items = list(range(100))
         page_size = 10
         page_number = 3
-        
+
         start = (page_number - 1) * page_size
         end = start + page_size
         page_items = all_items[start:end]
-        
+
         assert len(page_items) == 10
         assert page_items[0] == 20
 
@@ -127,7 +127,7 @@ class TestLogicSynthesis:
         """Conflicts are resolved correctly."""
         source_a = {"value": 100, "confidence": 0.9}
         source_b = {"value": 110, "confidence": 0.7}
-        
+
         # Use higher confidence source
         resolved = source_a if source_a["confidence"] > source_b["confidence"] else source_b
         assert resolved["value"] == 100
@@ -167,7 +167,7 @@ class TestLogicValidation:
         """Valid data passes schema validation."""
         schema = {"name": str, "age": int, "active": bool}
         data = {"name": "John", "age": 30, "active": True}
-        
+
         is_valid = all(isinstance(data.get(k), t) for k, t in schema.items())
         assert is_valid is True
 
@@ -175,19 +175,19 @@ class TestLogicValidation:
         """Invalid data fails schema validation."""
         schema = {"name": str, "age": int}
         data = {"name": "John", "age": "thirty"}  # Wrong type
-        
+
         errors = []
         for field, expected_type in schema.items():
             if not isinstance(data.get(field), expected_type):
                 errors.append(f"{field}: expected {expected_type.__name__}")
-        
+
         assert len(errors) == 1
 
     def test_required_field_validation(self):
         """Required fields are validated."""
         required = ["id", "name", "email"]
         data = {"id": "123", "name": "John"}  # Missing email
-        
+
         missing = [f for f in required if f not in data]
         assert "email" in missing
 
@@ -198,24 +198,24 @@ class TestLogicValidation:
             "score": {"min": 0.0, "max": 1.0},
         }
         data = {"age": 200, "score": 0.5}
-        
+
         violations = []
         for field, bounds in constraints.items():
             value = data.get(field)
             if value is not None:
                 if value < bounds["min"] or value > bounds["max"]:
                     violations.append(field)
-        
+
         assert "age" in violations
 
     def test_validation_levels(self):
         """Different validation levels work correctly."""
         data = {"name": "J", "description": ""}  # Short name, empty description
-        
+
         def validate(data: Dict, level: ValidationLevel) -> ValidationResult:
             errors = []
             warnings = []
-            
+
             if level == ValidationLevel.STRICT:
                 if len(data.get("name", "")) < 2:
                     errors.append("Name too short")
@@ -227,17 +227,17 @@ class TestLogicValidation:
                 if not data.get("description"):
                     warnings.append("Description recommended")
             # LENIENT: no checks
-            
+
             return ValidationResult(
                 is_valid=len(errors) == 0,
                 errors=errors,
                 warnings=warnings,
             )
-        
+
         strict_result = validate(data, ValidationLevel.STRICT)
         normal_result = validate(data, ValidationLevel.NORMAL)
         lenient_result = validate(data, ValidationLevel.LENIENT)
-        
+
         assert strict_result.is_valid is False
         assert normal_result.is_valid is True
         assert lenient_result.is_valid is True

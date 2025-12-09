@@ -16,11 +16,11 @@ Usage:
     from agentic_workflow.runtime.shared.sdk_registry import (
         SDKRegistry, get_vector_store, get_redis_client, get_mcp_server
     )
-    
+
     # Get configured clients
     chroma = get_vector_store("chromadb")
     redis = get_redis_client()
-    
+
     # Validate all SDKs
     validate_all_sdks()
 """
@@ -30,9 +30,9 @@ from __future__ import annotations
 import logging
 import os
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -272,14 +272,14 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
 def validate_sdk(name: str) -> tuple[bool, Optional[str]]:
     """
     Validate that an SDK is installed and importable.
-    
+
     Returns:
         Tuple of (success, error_message)
     """
     entry = SDK_REGISTRY.get(name)
     if not entry:
         return False, f"Unknown SDK: {name}"
-    
+
     try:
         __import__(entry.import_path)
         return True, None
@@ -290,13 +290,13 @@ def validate_sdk(name: str) -> tuple[bool, Optional[str]]:
 def validate_all_sdks() -> Dict[str, tuple[bool, Optional[str]]]:
     """
     Validate all registered SDKs.
-    
+
     Returns:
         Dict mapping SDK name to (success, error_message)
     """
     results = {}
     success_count = 0
-    
+
     for name in SDK_REGISTRY:
         success, error = validate_sdk(name)
         results[name] = (success, error)
@@ -305,7 +305,7 @@ def validate_all_sdks() -> Dict[str, tuple[bool, Optional[str]]]:
             print(f"✓ {name}")
         else:
             print(f"✗ {name}: {error}")
-    
+
     print(f"\nValidated: {success_count}/{len(SDK_REGISTRY)} SDKs")
     return results
 
@@ -362,21 +362,21 @@ def get_vector_store(
 ) -> Any:
     """
     Get a configured vector store client.
-    
+
     Args:
         provider: One of "chromadb", "qdrant", "pinecone"
         config: Provider-specific configuration
-        
+
     Returns:
         Configured vector store client
     """
     if provider in _vector_clients:
         return _vector_clients[provider]
-    
+
     with _lock:
         if provider in _vector_clients:
             return _vector_clients[provider]
-        
+
         if provider == "chromadb":
             import chromadb
             cfg = config or ChromaConfig()
@@ -387,35 +387,35 @@ def get_vector_store(
             logger.info(f"Initialized ChromaDB client (persist={cfg.persist_directory})")
             _vector_clients[provider] = client
             return client
-        
+
         elif provider == "qdrant":
             from qdrant_client import QdrantClient
             cfg = config or QdrantConfig()
             api_key = cfg.api_key or os.environ.get("QDRANT_API_KEY")
             url = cfg.url or os.environ.get("QDRANT_URL")
-            
+
             if url:
                 client = QdrantClient(url=url, api_key=api_key, prefer_grpc=cfg.prefer_grpc)
             else:
                 client = QdrantClient(host=cfg.host, port=cfg.port, prefer_grpc=cfg.prefer_grpc)
-            
+
             logger.info(f"Initialized Qdrant client (url={url or f'{cfg.host}:{cfg.port}'})")
             _vector_clients[provider] = client
             return client
-        
+
         elif provider == "pinecone":
             from pinecone import Pinecone
             cfg = config or PineconeConfig()
             api_key = cfg.api_key or os.environ.get("PINECONE_API_KEY")
-            
+
             if not api_key:
                 raise ValueError("PINECONE_API_KEY environment variable is not set")
-            
+
             client = Pinecone(api_key=api_key)
             logger.info("Initialized Pinecone client")
             _vector_clients[provider] = client
             return client
-        
+
         else:
             raise ValueError(f"Unknown vector store provider: {provider}")
 
@@ -444,33 +444,33 @@ class RedisConfig:
 def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = False) -> Any:
     """
     Get a configured Redis client.
-    
+
     Args:
         config: Redis configuration
         async_client: If True, return async Redis client
-        
+
     Returns:
         Configured Redis client
     """
     global _redis_client, _redis_async_client
-    
+
     if async_client:
         if _redis_async_client is not None:
             return _redis_async_client
     else:
         if _redis_client is not None:
             return _redis_client
-    
+
     with _lock:
         import redis
-        
+
         cfg = config or RedisConfig()
         url = cfg.url or os.environ.get("REDIS_URL")
-        
+
         if async_client:
             if _redis_async_client is not None:
                 return _redis_async_client
-            
+
             if url:
                 client = redis.asyncio.from_url(
                     url,
@@ -494,7 +494,7 @@ def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = 
         else:
             if _redis_client is not None:
                 return _redis_client
-            
+
             if url:
                 client = redis.from_url(
                     url,
@@ -537,28 +537,28 @@ _tracer_provider: Optional[Any] = None
 def setup_tracing(config: Optional[TracingConfig] = None) -> Any:
     """
     Set up OpenTelemetry tracing.
-    
+
     Args:
         config: Tracing configuration
-        
+
     Returns:
         Configured TracerProvider
     """
     global _tracer_provider
-    
+
     if _tracer_provider is not None:
         return _tracer_provider
-    
+
     from opentelemetry import trace
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.sdk.resources import Resource
-    
+
     cfg = config or TracingConfig()
-    
+
     resource = Resource.create({"service.name": cfg.service_name})
     provider = TracerProvider(resource=resource)
-    
+
     if cfg.exporter == "console":
         exporter = ConsoleSpanExporter()
     elif cfg.exporter == "otlp":
@@ -567,10 +567,10 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> Any:
         exporter = OTLPSpanExporter(endpoint=endpoint)
     else:
         exporter = ConsoleSpanExporter()
-    
+
     provider.add_span_processor(BatchSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
-    
+
     _tracer_provider = provider
     logger.info(f"Initialized OpenTelemetry tracing (service={cfg.service_name}, exporter={cfg.exporter})")
     return provider
@@ -599,32 +599,32 @@ class MCPServerConfig:
 def create_mcp_server(config: Optional[MCPServerConfig] = None) -> Any:
     """
     Create a FastMCP server instance.
-    
+
     Args:
         config: MCP server configuration
-        
+
     Returns:
         Configured FastMCP server
-        
+
     Example:
         from agentic_workflow.runtime.shared.sdk_registry import create_mcp_server
-        
+
         mcp = create_mcp_server()
-        
+
         @mcp.tool()
         def search_documents(query: str) -> list[str]:
             '''Search documents by query.'''
             return ["doc1", "doc2"]
-        
+
         @mcp.resource("config://settings")
         def get_settings() -> dict:
             return {"theme": "dark"}
     """
     from fastmcp import FastMCP
-    
+
     cfg = config or MCPServerConfig()
     server = FastMCP(name=cfg.name, version=cfg.version)
-    
+
     logger.info(f"Created MCP server (name={cfg.name}, version={cfg.version})")
     return server
 
@@ -636,49 +636,49 @@ def create_mcp_tool_from_function(
 ) -> Dict[str, Any]:
     """
     Create an MCP tool definition from a Python function.
-    
+
     Args:
         func: The function to wrap as an MCP tool
         name: Optional tool name (defaults to function name)
         description: Optional description (defaults to docstring)
-        
+
     Returns:
         MCP tool definition dict
     """
     import inspect
     from typing import get_type_hints
-    
+
     tool_name = name or func.__name__
     tool_desc = description or (func.__doc__ or "").strip().split("\n")[0]
-    
+
     hints = get_type_hints(func)
     sig = inspect.signature(func)
-    
+
     properties = {}
     required = []
-    
+
     for param_name, param in sig.parameters.items():
         if param_name == "self":
             continue
-        
+
         param_type = hints.get(param_name, str)
         json_type = "string"
-        if param_type == int:
+        if param_type is int:
             json_type = "integer"
-        elif param_type == float:
+        elif param_type is float:
             json_type = "number"
-        elif param_type == bool:
+        elif param_type is bool:
             json_type = "boolean"
-        elif param_type == list:
+        elif param_type is list:
             json_type = "array"
-        elif param_type == dict:
+        elif param_type is dict:
             json_type = "object"
-        
+
         properties[param_name] = {"type": json_type}
-        
+
         if param.default == inspect.Parameter.empty:
             required.append(param_name)
-    
+
     return {
         "name": tool_name,
         "description": tool_desc,
@@ -698,18 +698,18 @@ def create_mcp_tool_from_function(
 def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, Any]]:
     """
     Parse a document using unstructured.
-    
+
     Args:
         file_path: Path to the document
         strategy: Parsing strategy ("auto", "fast", "hi_res", "ocr_only")
-        
+
     Returns:
         List of parsed elements with text and metadata
     """
     from unstructured.partition.auto import partition
-    
+
     elements = partition(filename=file_path, strategy=strategy)
-    
+
     return [
         {
             "text": str(el),
@@ -723,23 +723,23 @@ def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, Any
 def extract_pdf_text(file_path: str) -> str:
     """
     Extract text from a PDF using pypdf.
-    
+
     Args:
         file_path: Path to the PDF file
-        
+
     Returns:
         Extracted text content
     """
     from pypdf import PdfReader
-    
+
     reader = PdfReader(file_path)
     text_parts = []
-    
+
     for page in reader.pages:
         text = page.extract_text()
         if text:
             text_parts.append(text)
-    
+
     return "\n\n".join(text_parts)
 
 
@@ -751,7 +751,7 @@ def extract_pdf_text(file_path: str) -> str:
 def reset_all_clients() -> None:
     """Reset all singleton clients. Useful for testing."""
     global _vector_clients, _redis_client, _redis_async_client, _tracer_provider
-    
+
     with _lock:
         _vector_clients.clear()
         _redis_client = None

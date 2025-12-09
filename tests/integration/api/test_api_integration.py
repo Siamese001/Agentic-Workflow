@@ -36,14 +36,14 @@ class TestAPIEndpointIntegration:
             headers={"Content-Type": "application/json"},
             body={"query": "test query", "options": {}},
         )
-        
+
         # Simulated response
         response = APIResponse(
             status_code=200,
             headers={"Content-Type": "application/json"},
             body={"id": "req_001", "status": "processing"},
         )
-        
+
         assert response.status_code == 200
         assert "id" in response.body
 
@@ -54,13 +54,13 @@ class TestAPIEndpointIntegration:
             path="/api/v1/status/req_001",
             headers={},
         )
-        
+
         response = APIResponse(
             status_code=200,
             headers={},
             body={"id": "req_001", "status": "completed", "progress": 100},
         )
-        
+
         assert response.body["status"] == "completed"
 
     def test_results_endpoint(self):
@@ -74,7 +74,7 @@ class TestAPIEndpointIntegration:
                 "metadata": {"total": 1},
             },
         )
-        
+
         assert len(response.body["results"]) >= 1
 
     def test_cancel_endpoint(self):
@@ -84,7 +84,7 @@ class TestAPIEndpointIntegration:
             headers={},
             body={"id": "req_001", "status": "cancelled"},
         )
-        
+
         assert response.body["status"] == "cancelled"
 
 
@@ -99,7 +99,7 @@ class TestAPIAuthenticationIntegration:
             headers={"Authorization": "Bearer valid_key_123"},
             body={},
         )
-        
+
         # Validate key
         is_valid = request.headers.get("Authorization", "").startswith("Bearer ")
         assert is_valid
@@ -112,7 +112,7 @@ class TestAPIAuthenticationIntegration:
             headers={},
             body={},
         )
-        
+
         has_auth = "Authorization" in request.headers
         assert has_auth is False
 
@@ -120,7 +120,7 @@ class TestAPIAuthenticationIntegration:
         """Integration: Invalid API key is rejected."""
         valid_keys = {"valid_key_123", "valid_key_456"}
         provided_key = "invalid_key"
-        
+
         is_valid = provided_key in valid_keys
         assert is_valid is False
 
@@ -139,7 +139,7 @@ class TestAPIRateLimitingIntegration:
             },
             body={},
         )
-        
+
         assert "X-RateLimit-Limit" in response.headers
         assert int(response.headers["X-RateLimit-Remaining"]) > 0
 
@@ -147,21 +147,21 @@ class TestAPIRateLimitingIntegration:
         """Integration: Rate limit exceeded returns 429."""
         requests_made = 105
         rate_limit = 100
-        
+
         if requests_made > rate_limit:
             status_code = 429
         else:
             status_code = 200
-        
+
         assert status_code == 429
 
     def test_rate_limit_reset(self):
         """Integration: Rate limit resets after window."""
         from datetime import datetime, timedelta
-        
+
         window_start = datetime.now() - timedelta(minutes=2)
         window_duration = timedelta(minutes=1)
-        
+
         is_reset = datetime.now() > window_start + window_duration
         assert is_reset
 
@@ -182,7 +182,7 @@ class TestAPIErrorHandlingIntegration:
                 }
             },
         )
-        
+
         assert response.status_code == 400
         assert response.body["error"]["code"] == "VALIDATION_ERROR"
 
@@ -193,7 +193,7 @@ class TestAPIErrorHandlingIntegration:
             headers={},
             body={"error": {"code": "NOT_FOUND", "message": "Resource not found"}},
         )
-        
+
         assert response.status_code == 404
 
     def test_internal_error_response(self):
@@ -209,7 +209,7 @@ class TestAPIErrorHandlingIntegration:
                 }
             },
         )
-        
+
         assert response.status_code == 500
         assert "request_id" in response.body["error"]
 
@@ -220,7 +220,7 @@ class TestAPIErrorHandlingIntegration:
             headers={"X-Request-ID": "req_abc123"},
             body={"error": {"request_id": "req_abc123"}},
         )
-        
+
         assert response.headers["X-Request-ID"] == response.body["error"]["request_id"]
 
 
@@ -234,7 +234,7 @@ class TestAPIVersioningIntegration:
             path="/api/v1/health",
             headers={},
         )
-        
+
         assert "/v1/" in request.path
 
     def test_version_header(self):
@@ -244,7 +244,7 @@ class TestAPIVersioningIntegration:
             headers={"X-API-Version": "1.0.0"},
             body={},
         )
-        
+
         assert "X-API-Version" in response.headers
 
     def test_deprecated_version_warning(self):
@@ -257,5 +257,5 @@ class TestAPIVersioningIntegration:
             },
             body={},
         )
-        
+
         assert "Warning" in response.headers

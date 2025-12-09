@@ -25,12 +25,12 @@ class OptimizationResult:
 
 class SortScriptsResults:
     """Optimizer for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.method = self.config.get("method", "score")
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def optimize(self, items: List[T], key: Optional[Callable[[T], Any]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:

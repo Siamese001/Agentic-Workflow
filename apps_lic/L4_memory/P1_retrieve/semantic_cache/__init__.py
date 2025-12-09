@@ -14,6 +14,6 @@ from .compute_semantic_distance import *
 
 __all__ = [
     "load_semantic_cache_index",
-    "match_semantic_history", 
+    "match_semantic_history",
     "compute_semantic_distance",
 ]

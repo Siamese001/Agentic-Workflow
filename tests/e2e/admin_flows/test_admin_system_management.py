@@ -42,14 +42,14 @@ class TestSystemMonitoringE2E:
         """E2E: Health check covers all system components."""
         components = ["api", "database", "cache", "queue", "storage"]
         health_results = {}
-        
+
         for component in components:
             health_results[component] = {
                 "status": "healthy",
                 "latency_ms": 50,
                 "last_check": datetime.now().isoformat(),
             }
-        
+
         all_healthy = all(h["status"] == "healthy" for h in health_results.values())
         assert all_healthy
 
@@ -63,7 +63,7 @@ class TestSystemMonitoringE2E:
             active_connections=150,
             error_rate=0.01,
         )
-        
+
         assert health.cpu_percent < 80
         assert health.memory_percent < 90
         assert health.error_rate < 0.05
@@ -75,18 +75,18 @@ class TestSystemMonitoringE2E:
             "memory_percent": 90,
             "error_rate": 0.05,
         }
-        
+
         current = {
             "cpu_percent": 85,  # Over threshold
             "memory_percent": 70,
             "error_rate": 0.02,
         }
-        
+
         alerts = []
         for metric, threshold in thresholds.items():
             if current[metric] > threshold:
                 alerts.append({"metric": metric, "value": current[metric], "threshold": threshold})
-        
+
         assert len(alerts) == 1
         assert alerts[0]["metric"] == "cpu_percent"
 
@@ -97,10 +97,10 @@ class TestSystemMonitoringE2E:
             {"timestamp": "2024-01-01T01:00", "requests": 150},
             {"timestamp": "2024-01-01T02:00", "requests": 120},
         ]
-        
+
         total_requests = sum(t["requests"] for t in time_series)
         avg_requests = total_requests / len(time_series)
-        
+
         assert total_requests == 370
         assert avg_requests == pytest.approx(123.33, rel=0.01)
 
@@ -116,7 +116,7 @@ class TestUserManagementE2E:
             "role": UserRole.ADMIN,
             "created_at": datetime.now().isoformat(),
         }
-        
+
         assert user["role"] == UserRole.ADMIN
 
     def test_role_permission_enforcement(self):
@@ -126,10 +126,10 @@ class TestUserManagementE2E:
             UserRole.OPERATOR: {"read", "write"},
             UserRole.VIEWER: {"read"},
         }
-        
+
         user_role = UserRole.OPERATOR
         required_permission = "delete"
-        
+
         has_permission = required_permission in role_permissions[user_role]
         assert has_permission is False
 
@@ -142,7 +142,7 @@ class TestUserManagementE2E:
                 "expires_at": datetime.now() + timedelta(hours=6),
             }
         }
-        
+
         session = sessions["user_001"]
         is_valid = datetime.now() < session["expires_at"]
         assert is_valid
@@ -150,7 +150,7 @@ class TestUserManagementE2E:
     def test_audit_logging(self):
         """E2E: User actions are audit logged."""
         audit_log: List[AuditEntry] = []
-        
+
         entry = AuditEntry(
             timestamp=datetime.now(),
             user_id="user_001",
@@ -159,7 +159,7 @@ class TestUserManagementE2E:
             details={"setting": "max_connections", "old_value": 100, "new_value": 200},
         )
         audit_log.append(entry)
-        
+
         assert len(audit_log) == 1
         assert audit_log[0].action == "update_config"
 
@@ -174,13 +174,13 @@ class TestConfigurationManagementE2E:
             "timeout_seconds": 30,
             "log_level": "INFO",
         }
-        
+
         update = {"max_connections": 200, "timeout_seconds": -5}  # Invalid timeout
-        
+
         errors = []
         if update.get("timeout_seconds", 1) <= 0:
             errors.append("timeout_seconds must be positive")
-        
+
         assert len(errors) == 1
 
     def test_config_rollback(self):
@@ -190,24 +190,24 @@ class TestConfigurationManagementE2E:
             {"version": 2, "max_connections": 200},
             {"version": 3, "max_connections": 50},  # Bad config
         ]
-        
+
         # Rollback to version 2
         rollback_version = 2
         current_config = next(c for c in config_history if c["version"] == rollback_version)
-        
+
         assert current_config["max_connections"] == 200
 
     def test_config_diff_generation(self):
         """E2E: Config diff is generated."""
         old_config = {"a": 1, "b": 2, "c": 3}
         new_config = {"a": 1, "b": 5, "d": 4}
-        
+
         diff = {
             "added": set(new_config.keys()) - set(old_config.keys()),
             "removed": set(old_config.keys()) - set(new_config.keys()),
             "changed": {k for k in old_config if k in new_config and old_config[k] != new_config[k]},
         }
-        
+
         assert "d" in diff["added"]
         assert "c" in diff["removed"]
         assert "b" in diff["changed"]
@@ -219,32 +219,32 @@ class TestMaintenanceModeE2E:
     def test_enter_maintenance_mode(self):
         """E2E: System enters maintenance mode."""
         system = {"status": SystemStatus.HEALTHY}
-        
+
         # Enter maintenance
         system["status"] = SystemStatus.MAINTENANCE
         system["maintenance_message"] = "Scheduled maintenance in progress"
-        
+
         assert system["status"] == SystemStatus.MAINTENANCE
 
     def test_maintenance_mode_blocks_requests(self):
         """E2E: Maintenance mode blocks non-admin requests."""
         system_status = SystemStatus.MAINTENANCE
         user_role = UserRole.VIEWER
-        
+
         can_access = system_status != SystemStatus.MAINTENANCE or user_role == UserRole.ADMIN
         assert can_access is False
 
     def test_exit_maintenance_mode(self):
         """E2E: System exits maintenance mode."""
         system = {"status": SystemStatus.MAINTENANCE}
-        
+
         # Run health checks
         health_ok = True
-        
+
         if health_ok:
             system["status"] = SystemStatus.HEALTHY
             system.pop("maintenance_message", None)
-        
+
         assert system["status"] == SystemStatus.HEALTHY
 
     def test_scheduled_maintenance_window(self):
@@ -254,6 +254,6 @@ class TestMaintenanceModeE2E:
             "scheduled_end": datetime.now() + timedelta(hours=4),
             "description": "Database upgrade",
         }
-        
+
         duration = maintenance["scheduled_end"] - maintenance["scheduled_start"]
         assert duration == timedelta(hours=2)

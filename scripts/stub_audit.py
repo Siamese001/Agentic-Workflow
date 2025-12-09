@@ -37,16 +37,16 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
     """Check if a file is a stub/placeholder. Returns (is_stub, reason)."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore').strip()
-        
+
         # Empty file
         if not content:
             return True, "empty"
-        
+
         # Very short file (likely just pass or similar)
         if len(content) < 20:
             if content in ['pass', '...']:
                 return True, "minimal_stub"
-        
+
         # Check for stub patterns
         for pattern in STUB_PATTERNS:
             if re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
@@ -62,19 +62,19 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
                     return True, "pass_only"
                 if content.strip() == '...':
                     return True, "ellipsis_only"
-        
+
         # Check for minimal docstring + pass pattern
         if re.match(r'^"""[^"]*"""\s*\n\s*pass\s*$', content, re.DOTALL):
             return True, "docstring_pass"
-        
+
         # Check for function/class with only pass
         if re.search(r'def\s+\w+\([^)]*\):\s*\n\s*pass\s*$', content, re.MULTILINE):
             return True, "empty_function"
         if re.search(r'class\s+\w+[^:]*:\s*\n\s*pass\s*$', content, re.MULTILINE):
             return True, "empty_class"
-        
+
         return False, "has_content"
-        
+
     except Exception as e:
         return False, f"error: {e}"
 
@@ -92,25 +92,25 @@ def audit_stubs() -> Dict:
         "stubs": [],
         "recommendations": [],
     }
-    
+
     for py_file in REPO_ROOT.rglob("*.py"):
         # Skip certain folders
         if any(skip in py_file.parts for skip in SKIP_FOLDERS):
             continue
-        
+
         # Skip __init__.py files
         if py_file.name == "__init__.py":
             continue
-        
+
         report["summary"]["total_py_files"] += 1
         rel_path = str(py_file.relative_to(REPO_ROOT))
-        
+
         # Get top-level folder
         parts = py_file.relative_to(REPO_ROOT).parts
         top_folder = parts[0] if parts else "root"
-        
+
         is_stub, reason = is_stub_file(py_file)
-        
+
         if is_stub:
             report["summary"]["stub_files"] += 1
             report["by_reason"][reason].append(rel_path)
@@ -124,14 +124,14 @@ def audit_stubs() -> Dict:
         else:
             report["summary"]["real_files"] += 1
             report["by_folder"][top_folder]["real"] += 1
-    
+
     # Generate recommendations
     stub_pct = (report["summary"]["stub_files"] / report["summary"]["total_py_files"] * 100) if report["summary"]["total_py_files"] > 0 else 0
-    
+
     report["recommendations"].append(
         f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct:.1f}%) need implementation or removal"
     )
-    
+
     # Find folders with high stub ratios
     for folder, stats in report["by_folder"].items():
         total = stats["stubs"] + stats["real"]
@@ -139,7 +139,7 @@ def audit_stubs() -> Dict:
             report["recommendations"].append(
                 f"Folder '{folder}' has {stats['stubs']}/{total} stub files ({stats['stubs']/total*100:.0f}%)"
             )
-    
+
     return report
 
 
@@ -148,56 +148,56 @@ def print_report(report: Dict) -> None:
     print("=" * 70)
     print("STUB/PLACEHOLDER AUDIT REPORT")
     print("=" * 70)
-    
+
     print("\n## SUMMARY")
     print(f"  Total Python files: {report['summary']['total_py_files']}")
     print(f"  Stub/placeholder:   {report['summary']['stub_files']}")
     print(f"  Real files:         {report['summary']['real_files']}")
-    
+
     stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if report['summary']['total_py_files'] > 0 else 0
     print(f"  Stub percentage:    {stub_pct:.1f}%")
-    
+
     print("\n## BY REASON")
     for reason, files in sorted(report["by_reason"].items(), key=lambda x: -len(x[1])):
         print(f"  {reason}: {len(files)} files")
-    
+
     print("\n## BY TOP-LEVEL FOLDER")
     for folder, stats in sorted(report["by_folder"].items(), key=lambda x: -x[1]["stubs"]):
         total = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
             pct = stats["stubs"] / total * 100 if total > 0 else 0
             print(f"  {folder}/: {stats['stubs']} stubs / {total} total ({pct:.0f}%)")
-    
+
     print("\n## SAMPLE STUB FILES (first 20)")
     for stub in report["stubs"][:20]:
         print(f"  [{stub['reason']}] {stub['path']}")
-    
+
     if len(report["stubs"]) > 20:
         print(f"  ... and {len(report['stubs']) - 20} more")
-    
+
     if report["recommendations"]:
         print("\n## RECOMMENDATIONS")
         for i, rec in enumerate(report["recommendations"][:10], 1):
             print(f"  {i}. {rec}")
-    
+
     print("\n" + "=" * 70)
 
 
 def main():
     report = audit_stubs()
     print_report(report)
-    
+
     # Convert defaultdicts for JSON
     report["by_reason"] = dict(report["by_reason"])
     report["by_folder"] = dict(report["by_folder"])
-    
+
     # Save report
     report_path = REPO_ROOT / "stub_audit_report.json"
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, default=str)
-    
+
     print(f"\nReport saved to: {report_path}")
-    
+
     return report
 
 

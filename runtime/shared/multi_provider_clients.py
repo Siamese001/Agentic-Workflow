@@ -19,10 +19,10 @@ Usage:
     from agentic_workflow.runtime.shared.multi_provider_clients import (
         get_client, Provider, get_litellm_completion
     )
-    
+
     # Direct provider access
     client = get_client(Provider.ANTHROPIC)
-    
+
     # Unified routing via LiteLLM
     response = await get_litellm_completion(
         model="gpt-4o",
@@ -111,7 +111,7 @@ def get_api_key(provider: Provider) -> str:
     env_key = ENV_KEYS.get(provider)
     if not env_key:
         raise ValueError(f"No environment variable mapping for provider: {provider}")
-    
+
     api_key = os.environ.get(env_key)
     if not api_key:
         raise ValueError(
@@ -128,37 +128,37 @@ def get_client(
 ) -> Any:
     """
     Get a singleton client for the specified provider.
-    
+
     Args:
         provider: The LLM provider to get a client for
         config: Optional configuration overrides
         async_client: If True, return async client (where supported)
-        
+
     Returns:
         Configured client instance for the provider
-        
+
     Raises:
         ValueError: If API key is not set or provider is unsupported
         ImportError: If the provider SDK is not installed
     """
     cache_key = (provider, async_client)
-    
+
     if cache_key in _clients:
         return _clients[cache_key]
-    
+
     with _lock:
         if cache_key in _clients:
             return _clients[cache_key]
-        
+
         cfg = config or ProviderConfig()
         client = _create_client(provider, cfg, async_client)
         _clients[cache_key] = client
-        
+
         logger.info(
             f"Initialized {provider.value} client "
             f"(async={async_client}, max_retries={cfg.max_retries}, timeout={cfg.timeout}s)"
         )
-        
+
         return client
 
 
@@ -168,7 +168,7 @@ def _create_client(
     async_client: bool,
 ) -> Any:
     """Create a new client instance for the provider."""
-    
+
     if provider == Provider.OPENAI:
         from openai import AsyncOpenAI, OpenAI
         api_key = get_api_key(provider)
@@ -178,7 +178,7 @@ def _create_client(
             max_retries=config.max_retries,
             timeout=config.timeout,
         )
-    
+
     elif provider == Provider.ANTHROPIC:
         from anthropic import Anthropic, AsyncAnthropic
         api_key = get_api_key(provider)
@@ -188,47 +188,47 @@ def _create_client(
             max_retries=config.max_retries,
             timeout=config.timeout,
         )
-    
+
     elif provider == Provider.GOOGLE:
         import google.generativeai as genai
         api_key = get_api_key(provider)
         genai.configure(api_key=api_key)
         return genai  # Google SDK uses module-level configuration
-    
+
     elif provider == Provider.MISTRAL:
         from mistralai import Mistral
         api_key = get_api_key(provider)
         return Mistral(api_key=api_key)
-    
+
     elif provider == Provider.COHERE:
         import cohere
         api_key = get_api_key(provider)
         if async_client:
             return cohere.AsyncClientV2(api_key=api_key)
         return cohere.ClientV2(api_key=api_key)
-    
+
     elif provider == Provider.GROQ:
         from groq import AsyncGroq, Groq
         api_key = get_api_key(provider)
         ClientClass = AsyncGroq if async_client else Groq
         return ClientClass(api_key=api_key)
-    
+
     elif provider == Provider.TOGETHER:
         from together import Together, AsyncTogether
         api_key = get_api_key(provider)
         ClientClass = AsyncTogether if async_client else Together
         return ClientClass(api_key=api_key)
-    
+
     elif provider == Provider.FIREWORKS:
         from fireworks.client import Fireworks, AsyncFireworks
         api_key = get_api_key(provider)
         ClientClass = AsyncFireworks if async_client else Fireworks
         return ClientClass(api_key=api_key)
-    
+
     elif provider == Provider.LITELLM:
         import litellm
         return litellm  # LiteLLM uses module-level functions
-    
+
     else:
         raise ValueError(f"Unsupported provider: {provider}")
 
@@ -246,16 +246,16 @@ async def get_litellm_completion(
 ) -> Any:
     """
     Get a completion using LiteLLM with optional fallback routing.
-    
+
     Args:
         model: Primary model to use (e.g., "gpt-4o", "claude-3-5-sonnet-20241022")
         messages: List of message dicts with role and content
         fallbacks: Optional list of fallback models if primary fails
         **kwargs: Additional arguments passed to litellm.acompletion
-        
+
     Returns:
         LiteLLM completion response
-        
+
     Example:
         response = await get_litellm_completion(
             model="gpt-4o",
@@ -265,18 +265,18 @@ async def get_litellm_completion(
         )
     """
     import litellm
-    
+
     if fallbacks:
         # Use LiteLLM's router for fallback support
         from litellm import Router
-        
+
         model_list = [{"model_name": model, "litellm_params": {"model": model}}]
         for fb in fallbacks:
             model_list.append({"model_name": fb, "litellm_params": {"model": fb}})
-        
+
         router = Router(model_list=model_list, fallbacks=[{model: fallbacks}])
         return await router.acompletion(model=model, messages=messages, **kwargs)
-    
+
     return await litellm.acompletion(model=model, messages=messages, **kwargs)
 
 
@@ -288,17 +288,17 @@ def get_litellm_completion_sync(
 ) -> Any:
     """Synchronous version of get_litellm_completion."""
     import litellm
-    
+
     if fallbacks:
         from litellm import Router
-        
+
         model_list = [{"model_name": model, "litellm_params": {"model": model}}]
         for fb in fallbacks:
             model_list.append({"model_name": fb, "litellm_params": {"model": fb}})
-        
+
         router = Router(model_list=model_list, fallbacks=[{model: fallbacks}])
         return router.completion(model=model, messages=messages, **kwargs)
-    
+
     return litellm.completion(model=model, messages=messages, **kwargs)
 
 
@@ -318,24 +318,24 @@ def get_structured_output(
 ) -> T:
     """
     Get a structured output using Instructor with any provider.
-    
+
     Args:
         provider: The LLM provider to use
         model: Model name for the provider
         response_model: Pydantic model class for structured output
         messages: List of message dicts
         **kwargs: Additional arguments for the completion
-        
+
     Returns:
         Instance of response_model with validated data
-        
+
     Example:
         from pydantic import BaseModel
-        
+
         class UserInfo(BaseModel):
             name: str
             age: int
-        
+
         user = get_structured_output(
             provider=Provider.OPENAI,
             model="gpt-4o",
@@ -344,9 +344,9 @@ def get_structured_output(
         )
     """
     import instructor
-    
+
     client = get_client(provider, async_client=False)
-    
+
     if provider == Provider.OPENAI:
         patched = instructor.from_openai(client)
     elif provider == Provider.ANTHROPIC:
@@ -367,7 +367,7 @@ def get_structured_output(
         patched = instructor.from_litellm(client)
     else:
         raise ValueError(f"Instructor not supported for provider: {provider}")
-    
+
     return patched.chat.completions.create(
         model=model,
         response_model=response_model,
@@ -384,7 +384,7 @@ def get_structured_output(
 def reset_all_clients() -> None:
     """Reset all client singletons. Useful for testing or reconfiguration."""
     global _clients
-    
+
     with _lock:
         _clients.clear()
         logger.debug("Reset all provider clients")
