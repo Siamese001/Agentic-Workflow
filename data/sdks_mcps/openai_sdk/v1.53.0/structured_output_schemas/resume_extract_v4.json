@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ResumeExtractV4",
+  "description": "Structured resume extraction schema with confidence scoring and section classification",
+  "type": "object",
+  "properties": {
+    "candidate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full legal name of the candidate"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Primary email address"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number in international format"
+        },
+        "location": {
+          "type": "string",
+          "description": "City, State/Country"
+        },
+        "linkedin": {
+          "type": "string",
+          "description": "LinkedIn profile URL"
+        },
+        "github": {
+          "type": "string",
+          "description": "GitHub profile URL"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "professional_title": {
+          "type": "string",
+          "description": "Current or target professional title"
+        },
+        "years_experience": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total years of professional experience"
+        },
+        "objective": {
+          "type": "string",
+          "description": "Professional objective or summary statement"
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["experience", "education", "skills", "projects", "certifications", "awards", "publications", "other"],
+            "description": "Section type classification"
+          },
+          "title": {
+            "type": "string",
+            "description": "Original section title from resume"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Job title or degree name"
+                },
+                "organization": {
+                  "type": "string",
+                  "description": "Company name or institution"
+                },
+                "location": {
+                  "type": "string",
+                  "description": "Location of the position or institution"
+                },
+                "start_date": {
+                  "type": "string",
+                  "description": "Start date in YYYY-MM or YYYY format"
+                },
+                "end_date": {
+                  "type": "string",
+                  "description": "End date in YYYY-MM, YYYY, or 'Present'"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Detailed description of responsibilities or achievements"
+                },
+                "highlights": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Key achievements or bullet points"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "properties": {
+        "technical": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Skill name"
+              },
+              "category": {
+                "type": "string",
+                "description": "Skill category (e.g., programming languages, frameworks)"
+              },
+              "proficiency": {
+                "type": "string",
+                "enum": ["beginner", "intermediate", "advanced", "expert"],
+                "description": "Proficiency level"
+              }
+            }
+          }
+        },
+        "soft": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Soft skills list"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "extraction_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall confidence score for the extraction"
+        },
+        "processing_time": {
+          "type": "string",
+          "description": "Timestamp of extraction"
+        },
+        "model_used": {
+          "type": "string",
+          "description": "Model used for extraction"
+        }
+      }
+    }
+  },
+  "required": ["candidate", "sections"],
+  "additionalProperties": false
+}

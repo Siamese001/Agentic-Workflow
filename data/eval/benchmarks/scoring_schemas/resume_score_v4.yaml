@@ -1,0 +1,198 @@
+# Resume Scoring Schema v4.0
+# Production-ready evaluation framework for candidate assessment
+
+schema_version: "4.0"
+created_date: "2025-12-09"
+last_updated: "2025-12-09"
+author: "lic_evaluation_team"
+
+# Scoring Categories
+categories:
+  technical_skills:
+    weight: 0.30
+    description: "Assessment of technical competencies and programming skills"
+    subcategories:
+      programming_languages:
+        weight: 0.40
+        scoring:
+          expert: {score: 9.0-10.0, description: "Mastery with multiple production projects"}
+          advanced: {score: 7.0-8.9, description: "Strong proficiency with complex implementations"}
+          intermediate: {score: 5.0-6.9, description: "Competent with standard applications"}
+          beginner: {score: 3.0-4.9, description: "Basic knowledge, limited experience"}
+          none: {score: 0.0-2.9, description: "No demonstrable skills"}
+      
+      frameworks_tools:
+        weight: 0.35
+        scoring:
+          expert: {score: 9.0-10.0, description: "Deep expertise across multiple frameworks"}
+          advanced: {score: 7.0-8.9, description: "Strong practical experience"}
+          intermediate: {score: 5.0-6.9, description: "Working knowledge"}
+          beginner: {score: 3.0-4.9, description: "Basic familiarity"}
+          none: {score: 0.0-2.9, description: "No experience"}
+      
+      system_design:
+        weight: 0.25
+        scoring:
+          expert: {score: 9.0-10.0, description: "Lead architect on large-scale systems"}
+          advanced: {score: 7.0-8.9, description: "Designed complex distributed systems"}
+          intermediate: {score: 5.0-6.9, description: "Contributed to system design"}
+          beginner: {score: 3.0-4.9, description: "Basic understanding of concepts"}
+          none: {score: 0.0-2.9, description: "No system design experience"}
+
+  experience:
+    weight: 0.25
+    description: "Evaluation of professional experience and career progression"
+    subcategories:
+      relevance:
+        weight: 0.40
+        scoring:
+          highly_relevant: {score: 9.0-10.0, description: "Direct experience in target domain"}
+          relevant: {score: 7.0-8.9, description: "Strong related experience"}
+          somewhat_relevant: {score: 5.0-6.9, description: "Transferable skills"}
+          limited_relevance: {score: 3.0-4.9, description: "Minimal overlap"}
+          not_relevant: {score: 0.0-2.9, description: "No relevant experience"}
+      
+      seniority:
+        weight: 0.35
+        scoring:
+          executive: {score: 9.0-10.0, description: "C-level or VP level"}
+          senior: {score: 7.0-8.9, description: "Senior/Lead level with 8+ years"}
+          mid_level: {score: 5.0-6.9, description: "3-8 years experience"}
+          junior: {score: 3.0-4.9, description: "0-3 years experience"}
+          none: {score: 0.0-2.9, description: "No professional experience"}
+      
+      impact:
+        weight: 0.25
+        scoring:
+          exceptional: {score: 9.0-10.0, description: "Major business impact, quantifiable results"}
+          strong: {score: 7.0-8.9, description: "Significant contributions, measurable outcomes"}
+          moderate: {score: 5.0-6.9, description: "Solid performance, some quantification"}
+          limited: {score: 3.0-4.9, description: "Basic contributions, limited impact"}
+          minimal: {score: 0.0-2.9, description: "Little to no demonstrable impact"}
+
+  education:
+    weight: 0.15
+    description: "Academic qualifications and continuous learning"
+    subcategories:
+      degree_level:
+        weight: 0.50
+        scoring:
+          phd: {score: 9.0-10.0, description: "Doctorate from accredited institution"}
+          masters: {score: 7.0-8.9, description: "Master's degree from accredited institution"}
+          bachelors: {score: 5.0-6.9, description: "Bachelor's degree from accredited institution"}
+          associate: {score: 3.0-4.9, description: "Associate degree or certificate"}
+          none: {score: 0.0-2.9, description: "No degree or certificate"}
+      
+      institution_quality:
+        weight: 0.30
+        scoring:
+          tier_1: {score: 9.0-10.0, description: "Top-tier institutions (Ivy League, MIT, Stanford, etc.)"}
+          tier_2: {score: 7.0-8.9, description: "Strong universities with good reputation"}
+          tier_3: {score: 5.0-6.9, description: "Standard accredited institutions"}
+          tier_4: {score: 3.0-4.9, description: "Less known or online institutions"}
+          unknown: {score: 0.0-2.9, description: "Unaccredited or unknown institutions"}
+      
+      relevance:
+        weight: 0.20
+        scoring:
+          highly_relevant: {score: 9.0-10.0, description: "Degree directly related to field"}
+          relevant: {score: 7.0-8.9, description: "Strong connection to field"}
+          somewhat_relevant: {score: 5.0-6.9, description: "Related field with transferable knowledge"}
+          limited_relevance: {score: 3.0-4.9, description: "Minimal connection"}
+          not_relevant: {score: 0.0-2.9, description: "No connection to field"}
+
+  soft_skills:
+    weight: 0.20
+    description: "Communication, leadership, and interpersonal abilities"
+    subcategories:
+      communication:
+        weight: 0.30
+        scoring:
+          exceptional: {score: 9.0-10.0, description: "Outstanding written and verbal communication"}
+          strong: {score: 7.0-8.9, description: "Clear, effective communication"}
+          good: {score: 5.0-6.9, description: "Adequate communication skills"}
+          basic: {score: 3.0-4.9, description: "Limited communication abilities"}
+          poor: {score: 0.0-2.9, description: "Communication difficulties"}
+      
+      leadership:
+        weight: 0.35
+        scoring:
+          executive: {score: 9.0-10.0, description: "Executive leadership experience"}
+          senior_leadership: {score: 7.0-8.9, description: "Team lead or management experience"}
+          potential: {score: 5.0-6.9, description: "Leadership potential, some experience"}
+          limited: {score: 3.0-4.9, description: "Minimal leadership experience"}
+          none: {score: 0.0-2.9, description: "No leadership experience"}
+      
+      collaboration:
+        weight: 0.35
+        scoring:
+          exceptional: {score: 9.0-10.0, description: "Outstanding teamwork and collaboration"}
+          strong: {score: 7.0-8.9, description: "Excellent team player"}
+          good: {score: 5.0-6.9, description: "Works well with others"}
+          basic: {score: 3.0-4.9, description: "Limited collaboration skills"}
+      poor: {score: 0.0-2.9, description: "Collaboration challenges"}
+
+  cultural_fit:
+    weight: 0.10
+    description: "Alignment with company values and team dynamics"
+    subcategories:
+      values_alignment:
+        weight: 0.40
+        scoring:
+          excellent: {score: 9.0-10.0, description: "Strong alignment with core values"}
+          good: {score: 7.0-8.9, description: "Good values alignment"}
+          moderate: {score: 5.0-6.9, description: "Some alignment"}
+          limited: {score: 3.0-4.9, description: "Minimal alignment"}
+          poor: {score: 0.0-2.9, description: "Poor values fit"}
+      
+      adaptability:
+        weight: 0.30
+        scoring:
+          highly_adaptable: {score: 9.0-10.0, description: "Thrives in changing environments"}
+          adaptable: {score: 7.0-8.9, description: "Handles change well"}
+          moderately_adaptable: {score: 5.0-6.9, description: "Adapts with some difficulty"}
+          rigid: {score: 3.0-4.9, description: "Struggles with change"}
+          inflexible: {score: 0.0-2.9, description: "Resistant to change"}
+      
+      innovation:
+        weight: 0.30
+        scoring:
+          innovative: {score: 9.0-10.0, description: "Consistently brings new ideas"}
+          creative: {score: 7.0-8.9, description: "Often suggests improvements"}
+          thoughtful: {score: 5.0-6.9, description: "Occasionally contributes ideas"}
+          traditional: {score: 3.0-4.9, description: "Prefers established methods"}
+          resistant: {score: 0.0-2.9, description: "Resists new approaches"}
+
+# Overall Score Calculation
+overall_scoring:
+  excellent: {range: 9.0-10.0, recommendation: "Strong hire - immediate consideration"}
+  strong: {range: 8.0-8.9, recommendation: "High priority candidate"}
+  good: {range: 7.0-7.9, recommendation: "Solid candidate, worth interviewing"}
+  adequate: {range: 6.0-6.9, recommendation: "Consider if other options limited"}
+  marginal: {range: 5.0-5.9, recommendation: "Only consider for junior roles"}
+  poor: {range: 0.0-4.9, recommendation: "Do not recommend"}
+
+# Validation Rules
+validation:
+  required_fields: ["personal_info", "experience"]
+  minimum_score_threshold: 3.0
+  auto_disqualify:
+    - "fraudulent_claims"
+    - "criminal_record"
+    - "violates_nda"
+  
+# Quality Controls
+quality_controls:
+  confidence_threshold: 0.8
+  human_review_required:
+    - score_above: 8.5
+    - score_below: 4.0
+    - missing_critical_info: true
+    - inconsistencies_detected: true
+
+# Export Formats
+export_formats:
+  - json
+  - csv
+  - pdf_report
+  - api_response

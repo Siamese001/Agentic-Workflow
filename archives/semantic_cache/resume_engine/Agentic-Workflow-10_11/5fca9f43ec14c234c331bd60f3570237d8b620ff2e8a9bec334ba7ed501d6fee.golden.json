@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import List\nfrom meta.metacognition.models import Hypothesis\ndef evaluate_hypotheses(hypotheses: List[Hypothesis]) -> List[Hypothesis]:\n\"\"\"Return a new list of hypotheses with adjusted confidence.\nHeuristics (purely deterministic):\n- penalize very long or very short content slightly.\n- if a hypothesis has no evidence_ids, reduce confidence.\n- clamp confidence to [0, 1].\n\"\"\"\nevaluated: List[Hypothesis] = []\nfor h in hypotheses:\nconf = float(h.confidence)\nlength = len(h.content or \"\")\nif length < 20 or length > 400:\nconf *= 0.9\nif not h.evidence_ids:\nconf *= 0.7\nconf = max(0.0, min(1.0, conf))\nevaluated.append(h.model_copy(update={\"confidence\": conf}))\nreturn evaluated",
+  "normalized_signature": "func:evaluate_hypotheses",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:evaluate_hypotheses",
+  "test_coverage": []
+}

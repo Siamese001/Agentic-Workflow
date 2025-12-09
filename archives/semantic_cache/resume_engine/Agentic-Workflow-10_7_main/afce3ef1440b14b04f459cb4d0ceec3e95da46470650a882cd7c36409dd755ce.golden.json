@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Compatibility shim that re-exports the v10.8 Draft execution stack.\"\"\"\nfrom stacks_v10_8.drafting_execution import DraftingExecutionStack\n__all__ = [\"DraftingExecutionStack\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LICMessageV3",
+  "description": "Lead Intelligence Collection message schema for outreach campaigns",
+  "type": "object",
+  "properties": {
+    "campaign": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique campaign identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["cold_outreach", "follow_up", "referral", "event_based"],
+          "description": "Campaign type classification"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Campaign priority level"
+        }
+      },
+      "required": ["id", "type"]
+    },
+    "lead": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Lead's full name"
+        },
+        "title": {
+          "type": "string",
+          "description": "Current job title"
+        },
+        "company": {
+          "type": "string",
+          "description": "Current company"
+        },
+        "industry": {
+          "type": "string",
+          "description": "Industry sector"
+        },
+        "seniority": {
+          "type": "string",
+          "enum": ["C_level", "Director", "Manager", "Senior", "Junior", "Entry"],
+          "description": "Seniority level"
+        },
+        "department": {
+          "type": "string",
+          "description": "Department or functional area"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Email address"
+            },
+            "phone": {
+              "type": "string",
+              "description": "Phone number"
+            },
+            "linkedin": {
+              "type": "string",
+              "description": "LinkedIn profile URL"
+            }
+          }
+        }
+      },
+      "required": ["name", "title", "company"]
+    },
+    "message": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "Email subject line"
+        },
+        "body": {
+          "type": "string",
+          "description": "Message body content"
+        },
+        "tone": {
+          "type": "string",
+          "enum": ["formal", "casual", "professional", "friendly", "urgent"],
+          "description": "Message tone"
+        },
+        "personalization_points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["company_news", "recent_activity", "shared_connection", "industry_trend", "technology_stack"],
+                "description": "Type of personalization"
+              },
+              "reference": {
+                "type": "string",
+                "description": "Specific reference point"
+              },
+              "integration": {
+                "type": "string",
+                "description": "How it's integrated into message"
+              }
+            }
+          },
+          "description": "Personalization elements used"
+        },
+        "call_to_action": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["meeting_request", "demo_request", "information_request", "connection_request"],
+              "description": "Type of call to action"
+            },
+            "urgency": {
+              "type": "string",
+              "enum": ["immediate", "this_week", "next_week", "flexible"],
+              "description": "Urgency level"
+            },
+            "text": {
+              "type": "string",
+              "description": "Call to action text"
+            }
+          }
+        }
+      },
+      "required": ["subject", "body", "tone"]
+    },
+    "analysis": {
+      "type": "object",
+      "properties": {
+        "engagement_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Predicted engagement score (0-100)"
+        },
+        "personalization_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Personalization quality score (0-100)"
+        },
+        "relevance_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Content relevance score (0-100)"
+        },
+        "risk_factors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["generic_content", "spam_indicators", "inappropriate_tone", "mismatched_audience"],
+                "description": "Risk factor type"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"],
+                "description": "Risk severity level"
+              },
+              "description": {
+                "type": "string",
+                "description": "Risk description"
+              }
+            }
+          },
+          "description": "Identified risk factors"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Generation timestamp"
+        },
+        "model_version": {
+          "type": "string",
+          "description": "Model version used"
+        },
+        "template_used": {
+          "type": "string",
+          "description": "Base template identifier"
+        },
+        "iteration": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Message iteration number"
+        }
+      }
+    }
+  },
+  "required": ["campaign", "lead", "message"],
+  "additionalProperties": false
+}

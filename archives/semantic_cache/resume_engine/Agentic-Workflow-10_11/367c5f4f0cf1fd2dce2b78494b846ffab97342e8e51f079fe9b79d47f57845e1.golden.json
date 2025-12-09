@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Pinecone vector database client wrapper.\"\"\"\nfrom .pinecone_client import PineconeClient, Vector # noqa: F401\n__all__ = [\"PineconeClient\", \"Vector\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

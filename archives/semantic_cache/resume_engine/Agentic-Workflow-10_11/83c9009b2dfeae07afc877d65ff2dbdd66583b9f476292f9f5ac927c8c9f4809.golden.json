@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nL3 orchestration layer for r\u00e9sum\u00e9 drafting workflow.\nCoordinates planning and execution to create comprehensive r\u00e9sum\u00e9 improvements.\n\"\"\"\nfrom typing import Any\nfrom l1.draft_planning import plan_drafting\nfrom l2.draft_executor import DraftExecutor\nfrom runtime.observability import record_event\nclass DraftOrchestrator:\n\"\"\"\nCoordinates r\u00e9sum\u00e9 drafting workflow across all layers.\nEnsures systematic integration of planning and execution for optimal r\u00e9sum\u00e9 enhancement.\n\"\"\"\ndef __init__(self, draft_executor: DraftExecutor):\nself.draft_executor = draft_executor\ndef orchestrate_draft(self, strategy_result: Any, job: Any, resume: Any) -> str:\n\"\"\"\nOrchestrates complete r\u00e9sum\u00e9 drafting workflow.\nIntegrates planning and execution to generate tailored r\u00e9sum\u00e9 content aligned with job requirements.\n\"\"\"\nrecord_event(\"draft_orchestration_start\", {})\ndraft_plan = plan_drafting(strategy_result, job, resume)\nresult = self.draft_executor.execute_draft(\nf\"Execute draft for sections: {draft_plan.sections}\"\n)\nrecord_event(\"draft_orchestration_complete\", {})\nreturn result",
+  "normalized_signature": "func:__init__;func:orchestrate_draft;class:DraftOrchestrator",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:orchestrate_draft",
+  "test_coverage": []
+}
