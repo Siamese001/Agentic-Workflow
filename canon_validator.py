@@ -215,6 +215,12 @@ def check_directory_structure() -> None:
     Only the exact, flattened, sovereign structure is allowed.
     No new folders. No deep nesting. No 'utils/v3/final' entropy."""
 
+    # ZOMBIE EXTERMINATION: archive/ (singular) is FORBIDDEN FOREVER
+    zombie_archive = ROOT / "archive"
+    if zombie_archive.exists():
+        fail("00", f"ZOMBIE DETECTED: archive/ (singular) folder exists. Only archives/ (plural) is allowed per Canon 2025")
+        return
+
     # Forbidden folder names anywhere in sovereign agents
     forbidden_names = {
         "utils", "helpers", "common", "misc", "lib", "libs", "modules",
