@@ -97,7 +97,10 @@ repos:
     hooks:
       - id: no-zombie-archive
         name: BAN zombie 'archive/' folder
-        entry: bash -c 'test ! -d archive && ! git ls-files --others --exclude-standard | grep -q "^archive/" && exit 0 || (echo "ZOMBIE DETECTED: archive/ (singular) is FORBIDDEN. Only archives/ (plural) allowed." && exit 1)'
+        entry: bash
+        args: 
+          - -c
+          - 'test ! -d archive && ! git ls-files --others --exclude-standard | grep -q "^archive/" && exit 0 || (echo "ZOMBIE DETECTED: archive/ (singular) is FORBIDDEN. Only archives/ (plural) allowed." && exit 1)'
         language: system
         files: ^$
         pass_filenames: false

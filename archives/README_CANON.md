@@ -1,9 +1,11 @@
 # CANON 2025 — FOLDER NAMING LAW
 
 ## ✅ ALLOWED
+
 - `archives/` (plural) - CORRECT, Canon-approved
 
 ## ❌ FORBIDDEN FOREVER
+
 - `archive/` (singular) - ZOMBIE, will be executed on sight
 
 ## ZOMBIE EXTERMINATION PROTOCOL
@@ -40,7 +42,6 @@ mkdir("archives")            # ✅ CANON
 - CI/CD validates folder naming
 - Canon validator checks structure
 
-**THE ZOMBIE DIES TODAY.**
-**ONLY `archives/` LIVES FOREVER.**
+### THE ZOMBIE DIES TODAY. ONLY `archives/` LIVES FOREVER.
 
 *Canon 2025 - Final Extermination Order*
