@@ -10,6 +10,7 @@ These are the minimal, brutal hygiene rules that keep the codebase clean without
 ## Coverage Areas
 
 **Light Canon applies to:**
+
 - `tests/` - Test code and utilities
 - `scripts/` - One-off tools and automation
 - `shared/` - Cross-cutting utilities (caching, vector clients, etc.)
@@ -17,6 +18,7 @@ These are the minimal, brutal hygiene rules that keep the codebase clean without
 - `apps_shared/` - Shared application code
 
 **Exempt from Light Canon:**
+
 - `data/` - Immutable truth - immune
 - `archives/` - Historical data - immune
 
@@ -29,6 +31,7 @@ These are the minimal, brutal hygiene rules that keep the codebase clean without
 **What it blocks:** Development debt markers in production code
 
 **Examples that FAIL:**
+
 ```python
 # TODO: implement this later
 # FIXME: this is broken
@@ -44,6 +47,7 @@ These are the minimal, brutal hygiene rules that keep the codebase clean without
 **What it blocks:** Debug statements in committed code
 
 **Examples that FAIL:**
+
 ```python
 print("debugging this")
 pdb.set_trace()
@@ -58,6 +62,7 @@ breakpoint()
 **What it blocks:** Micro-files and stub implementations
 
 **Exceptions:**
+
 - `__init__.py` files can be < 100 bytes (just imports)
 - All other Python files must be ≥ 150 bytes
 
@@ -68,16 +73,18 @@ breakpoint()
 **What it blocks:** The forbidden singular archive folder
 
 **Canon Law:**
+
 - ✅ ALLOWED: `archives/` (plural) - Canon-approved
 - ❌ FORBIDDEN: `archive/` (singular) - Zombie
 
 **Why:** Consistent naming prevents confusion and maintains Canon compliance.
 
-### 🔥 Rule 5: No Bare except: or except Exception:
+### 🔥 Rule 5: No Bare except or except Exception
 
 **What it blocks:** Lazy exception handling
 
 **Examples that FAIL:**
+
 ```python
 try:
     risky_operation()
@@ -91,6 +98,7 @@ except Exception:  # ❌ Too broad
 ```
 
 **What to do instead:**
+
 ```python
 try:
     risky_operation()
@@ -105,6 +113,7 @@ except ValueError:  # ✅ Specific exception
 **What it blocks:** Empty implementations
 
 **Examples that FAIL:**
+
 ```python
 def helper_function():
     pass  # ❌ No implementation
@@ -122,6 +131,7 @@ class UtilityClass:
 **What it blocks:** Accidentally committed credentials
 
 **What it detects:**
+
 - API keys
 - Database passwords
 - Secret tokens
@@ -134,12 +144,15 @@ class UtilityClass:
 ## Enforcement
 
 ### Pre-commit Hooks
+
 All 7 rules run automatically on every commit via pre-commit hooks.
 
 ### CI/CD Pipeline
+
 Light Canon rules are enforced in continuous integration.
 
 ### Manual Testing
+
 ```bash
 # Test Light Canon rules manually
 pre-commit run --all-files
@@ -150,11 +163,13 @@ pre-commit run --all-files
 ## Balance with Full Canon
 
 **Sovereign Code** (`agentic_core/`, `apps_lic/`, `apps_rg/`, `apps_shared/`):
+
 - Full 40/40 Subatomic Canon validation
 - Ruthless architectural enforcement
 - Zero tolerance for violations
 
 **Non-Sovereign Code** (`tests/`, `scripts/`, `shared/`, `runtime/`):
+
 - Light Canon 7 hygiene rules
 - Maintains development velocity
 - Prevents worst sins without blocking progress
@@ -166,6 +181,7 @@ This balance ensures **production-critical code is perfect** while **utility and
 ## Violation Examples
 
 ### ❌ Light Canon Violations
+
 ```python
 # tests/test_example.py
 def test_something():
@@ -183,6 +199,7 @@ except:  # Rule 5: Bare except
 ```
 
 ### ✅ Light Canon Compliant
+
 ```python
 # tests/test_example.py
 import logging
@@ -216,8 +233,8 @@ The Light Canon ensures:
 6. **Consistency** - Proper folder naming
 7. **Quality** - Minimum file size prevents placeholder code
 
-**Light Canon + Full 40/40 = ETERNAL REPO**
+## Light Canon + Full 40/40 = ETERNAL REPO
 
 Production code is ruthlessly perfect. Utility code is clean and functional. Development velocity is maintained. Quality is never compromised.
 
-*Canon 2025 - Light Edition*
+### Canon 2025 - Light Edition
