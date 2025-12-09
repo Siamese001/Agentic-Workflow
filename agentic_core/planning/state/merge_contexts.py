@@ -452,7 +452,7 @@ def get_checkpointer(
     *,
     db: Optional[int] = None,
     allow_memory_fallback: bool = False,
-):
+) -> None:
     """
     DESTRUCTIVE OVERWRITE — v10.7 Colab / Local Runtime Patch
 
