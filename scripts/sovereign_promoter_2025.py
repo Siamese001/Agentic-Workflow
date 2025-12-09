@@ -15,6 +15,10 @@ SOVEREIGN_ROOTS = {
     "apps_lic",
     "apps_rg",
     "apps_shared",
+    "schemas",
+    "prompt_governance",
+    "observability",
+    "config",
 }
 
 # Files that ALWAYS promote regardless of score (legacy resume-gen port)
@@ -36,19 +40,16 @@ DESTINATION_RULES = [
         r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|reranker|guardrail|citation|provenance",
         "apps_shared/rag/hardening",
     ),
-    (r"retriev|embed|vector|index|search|lookup", "apps_shared/rag/retrieval"),
+    (r"retriev|embed|vector|index|search|lookup|chunk|passage", "apps_shared/rag/retrieval"),
     (
-        r"planner|orchestrator|route|delegate|schedule|coordinate",
+        r"planner|orchestrator|route|delegate|schedule|coordinate|workflow|loop|agent.*loop|synthesis",
         "agentic_core/planning",
     ),
-    # schemas and frozen/enum/dataclass-heavy modules
-    (
-        r"protocol|schema|enum|dataclass|frozen|literal",
-        "schemas",
-    ),
-    (r"prompt.*govern|system.*prompt|safety", "prompt_governance"),
-    (r"metric|trace|span|observ|log", "observability"),
-    (r"config|setting|env", "config"),
+    (r"tool.*call|invoke.*tool|execute.*action|dispatch|perform|use.*tool", "agentic_core/execution/tools"),
+    (r"schema|contract|pydantic.*model|request|response|dto", "schemas"),
+    (r"prompt.*govern|system.*prompt|safety.*rail|jailbreak|redteam|red.?team", "prompt_governance"),
+    (r"metric|trace|span|observ|log.*structured|otel|opentelemetry|monitoring", "observability"),
+    (r"config|setting|feature.*flag|env|toggle|runtime.*config|secrets", "config"),
 ]
 
 
@@ -105,6 +106,12 @@ def main() -> None:
     for arg in sys.argv[1:]:
         src = Path(arg)
         if not src.is_file() or src.suffix != ".py":
+            continue
+
+        # ETERNAL SCRIPT PROTECTION — NEVER TOUCH scripts/ or runtime glue
+        if "scripts" in src.parts or src.parent.name == "scripts":
+            continue
+        if src.parts[0] in {"runtime", "shared"} and src.parent.name != "apps_shared":
             continue
 
         # Skip files already under sovereign roots
