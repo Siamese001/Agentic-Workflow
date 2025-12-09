@@ -122,6 +122,13 @@ repos:
   # Custom project validation
   - repo: local
     hooks:
+      - id: canon-validator-40-keys
+        name: Canon Validator 40 Keys (Sovereign Code Only)
+        entry: python canon_validator.py --check-40
+        language: system
+        always_run: true
+        pass_filenames: false
+
       - id: validate-data-immortality
         name: Validate data immortality
         entry: python scripts/validate_data_immortality.py
