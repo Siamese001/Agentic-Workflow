@@ -17,10 +17,23 @@ SOVEREIGN_ROOTS = {
     "apps_shared",
 }
 
+# Files that ALWAYS promote regardless of score (legacy resume-gen port)
+FORCE_PROMOTE_PATTERN = re.compile(
+    r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_transform",
+    re.I,
+)
+
 # Destination map — highest priority first
 DESTINATION_RULES = [
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    # LEGACY RESUME-GEN PORT — THESE BELONG TO THE CANON FOREVER
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
     (
-        r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|reranker|guardrail",
+        r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_transform",
+        "apps_shared/rag/hardening",
+    ),
+    (
+        r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|reranker|guardrail|citation|provenance",
         "apps_shared/rag/hardening",
     ),
     (r"retriev|embed|vector|index|search|lookup", "apps_shared/rag/retrieval"),
@@ -99,7 +112,13 @@ def main() -> None:
             continue
 
         content = src.read_text(errors="ignore")
-        sovereign, reason = is_sovereign_grade(content)
+        
+        # Force-promote legacy resume-gen files regardless of score
+        if FORCE_PROMOTE_PATTERN.search(src.name):
+            sovereign, reason = True, "force-promote:legacy-resume-gen"
+        else:
+            sovereign, reason = is_sovereign_grade(content)
+        
         if not sovereign:
             continue
 
