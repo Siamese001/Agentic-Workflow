@@ -31,7 +31,7 @@ TODO_PATTERN = re.compile(r'#.*\b(TODO|FIXME|NOTE|HACK|XXX|TEMP|WIP|DEBUG|STUB|R
 # 0. CONFIGURATION & CONSTANTS
 # =====================================================================
 ROOT = Path(__file__).parent.resolve()
-DATA_FOLDER = "06_data"
+DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 
 # SOVEREIGNTY
 SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
@@ -538,7 +538,7 @@ def require_docstrings() -> None:
 
 
 def get_sovereign_py_files() -> List[Path]:
-    """Get .py files only from sovereign agents (excludes 06_data, shared, etc.)"""
+    """Get .py files only from sovereign agents (excludes data, shared, etc.)"""
     files = []
     for agent in SOVEREIGN_AGENTS:
         agent_path = ROOT / agent
@@ -547,6 +547,26 @@ def get_sovereign_py_files() -> List[Path]:
                 if not p.name.startswith("__"):
                     files.append(p)
     return files
+
+
+def check_data_immortality() -> None:
+    """Key 25 — DATA IMMORTALITY CHECK
+    
+    06_data/ is DEAD. data/ is the single source of truth.
+    Numbered data folders are FORBIDDEN forever.
+    """
+    # 06_data must be dead
+    if (ROOT / "06_data").exists():
+        fail("25", "06_data/ IS DEAD. Use data/ only. Delete the corpse.")
+    
+    # data/ must exist
+    if not (ROOT / "data").exists():
+        fail("25", "data/ folder missing — data must be immortal")
+    
+    # Ban any numbered data folders
+    for p in ROOT.iterdir():
+        if p.is_dir() and p.name[0].isdigit() and "data" in p.name.lower():
+            fail("25", f"NUMBERED DATA FOLDERS FORBIDDEN: {p.name}")
 
 # =====================================================================
 # 1–10: SOVEREIGNTY & LAYER PURITY
@@ -1253,6 +1273,7 @@ def run_all_checks():
     check_docstring_quality()
     check_absolute_purity()   # v2: ANY STUB = INSTANT DEATH
     require_docstrings()      # v2: ALL PUBLIC CODE MUST BE DOCUMENTED
+    check_data_immortality()  # v3: DATA FOLDER IMMORTALITY
 
     run_checks_01_10()
     run_checks_11_20()
