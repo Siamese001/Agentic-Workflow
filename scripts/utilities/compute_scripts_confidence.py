@@ -24,24 +24,24 @@ class ComputationResult:
 
 class ComputeScriptsConfidence:
     """Computation engine for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.precision = self.config.get("precision", 4)
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def compute(self, values: Sequence[float], operation: str = "mean") -> ComputationResult:
         """Perform computation on values."""
         if not values:
             return ComputationResult(value=0.0, method=operation)
-        
+
         result = self._perform_operation(list(values), operation)
         return ComputationResult(
             value=round(result, self.precision),
             method=operation,
             metadata={"count": len(values)}
         )
-    
+
     def _perform_operation(self, values: List[float], operation: str) -> float:
         """Perform the operation."""
         if operation == "sum":

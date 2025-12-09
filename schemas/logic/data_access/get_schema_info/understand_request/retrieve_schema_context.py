@@ -14,9 +14,7 @@
 
 from __future__ import annotations
 
-import json
 import logging
-import os
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -35,7 +33,6 @@ except ImportError:  # pragma: no cover - fallback types
 from .clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 
 # SDK Hardening: Import centralized OpenAI client for direct SDK access
-from agentic_workflow.runtime.shared.clients import get_openai_client, get_default_seed
 from .config import ConfigV10_7
 from .constants import canonical_model_name
 from .exceptions import MCPClientInitializationError

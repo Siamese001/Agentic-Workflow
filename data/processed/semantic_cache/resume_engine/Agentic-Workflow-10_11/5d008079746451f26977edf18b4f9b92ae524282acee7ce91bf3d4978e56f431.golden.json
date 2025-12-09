@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from l1.cms.schemas import PromptSchema\nfrom l1.cms.compiler import compile_prompt\ndef test_compile_prompt_produces_string():\nschema = PromptSchema(\nid=\"test.prompt\",\nrole=\"system\",\nobjective=\"Test objective\",\ninstructions=\"Do the thing.\",\nexamples=[{\"input\": \"x\", \"output\": \"y\"}],\nsafety_tags=[\"safety\"],\nallowed_tools=[\"tool1\"],\nversion=\"1.0.0\",\n)\nrendered = compile_prompt(schema, {\"layer\": \"L2\"})\nassert isinstance(rendered, str)\nassert \"OBJECTIVE\" in rendered\nassert \"INSTRUCTIONS\" in rendered",
+  "normalized_signature": "func:test_compile_prompt_produces_string",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_compile_prompt_produces_string",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

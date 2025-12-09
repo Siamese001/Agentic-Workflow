@@ -14,7 +14,7 @@ import os
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -126,12 +126,12 @@ def _load_json_config(
 ) -> Dict[str, Any]:
     """
     Load JSON configuration file with error handling.
-    
+
     Args:
         file_path: Path to JSON file
         config_name: Name for logging
         required: Whether file is required
-        
+
     Returns:
         Loaded JSON data or empty dict
     """
@@ -213,25 +213,25 @@ class PromptAddendumConfig:
     """Configuration for reasoning prompt addendums."""
     HEADER: str = "\n\n--- REASONING DIRECTIVES ---\n"
     FOOTER: str = "\n--- END REASONING DIRECTIVES ---\n"
-    
+
     COT_DIRECTIVES: List[tuple] = field(default_factory=lambda: [
         (5, "Generate at least {cot} distinct chains of reasoning. Show each step explicitly.\n"),
         (3, "Use multi-step reasoning with at least {cot} distinct chains of thought.\n"),
         (1, "Apply step-by-step reasoning through {cot} chain(s) of thought.\n"),
     ])
-    
+
     TOT_B_DIRECTIVES: List[tuple] = field(default_factory=lambda: [
         (5, "Explore {tot_b} diverse solution branches. Evaluate each independently.\n"),
         (3, "Consider {tot_b} different approaches before selecting the best.\n"),
         (2, "Generate {tot_b} alternative solutions and compare them.\n"),
     ])
-    
+
     TOT_D_DIRECTIVES: List[tuple] = field(default_factory=lambda: [
         (3, "Explore each branch to depth {tot_d} with recursive reasoning.\n"),
         (2, "Reason through {tot_d} levels of depth for each approach.\n"),
         (1, "Apply {tot_d}-level deep reasoning.\n"),
     ])
-    
+
     REFLEXION_DIRECTIVES: List[tuple] = field(default_factory=lambda: [
         (3, "Apply self-critique with up to {max_loops} refinement iterations.\n"),
         (2, "Review and refine your response through {max_loops} reflection loops.\n"),
@@ -292,29 +292,29 @@ class ContentConstraintsConfig:
     HEADLINE_WORD_COUNT_MAX: int = 12
     HEADLINE_COMPONENT_WORDS_MIN: int = 2
     HEADLINE_COMPONENT_WORDS_MAX: int = 4
-    
+
     # Executive Summary constraints
     EXECUTIVE_SUMMARY_WORD_COUNT_MIN: int = 120
     EXECUTIVE_SUMMARY_WORD_COUNT_MAX: int = 150
     EXECUTIVE_SUMMARY_SENTENCE_COUNT_MIN: int = 7
     EXECUTIVE_SUMMARY_SENTENCE_COUNT_MAX: int = 9
-    
+
     # Bullets constraints
     BULLETS_WORD_COUNT_MIN: int = 25
     BULLETS_WORD_COUNT_MAX: int = 40
     BULLETS_WORD_COUNT_ACCEPTABLE_MIN: int = 21
     BULLETS_WORD_COUNT_ACCEPTABLE_MAX: int = 44
-    
+
     # Competencies constraints
     COMPETENCIES_BULLET_COUNT_MIN: int = 5
     COMPETENCIES_BULLET_COUNT_MAX: int = 7
-    
+
     # Skills constraints
     SKILLS_COUNT_MIN: int = 8
     SKILLS_COUNT_MAX: int = 12
     SKILLS_WORD_COUNT_MIN: int = 1
     SKILLS_WORD_COUNT_MAX: int = 3
-    
+
     # Cover Letter constraints
     COVER_LETTER_P1_WORD_COUNT_MIN: int = 80
     COVER_LETTER_P1_WORD_COUNT_MAX: int = 120
@@ -323,11 +323,11 @@ class ContentConstraintsConfig:
     COVER_LETTER_P3_WORD_COUNT_MIN: int = 80
     COVER_LETTER_P3_WORD_COUNT_MAX: int = 120
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.7
-    
+
     # Total Resume constraints
     TOTAL_RESUME_WORD_COUNT_MIN: int = 900
     TOTAL_RESUME_WORD_COUNT_MAX: int = 1200
-    
+
     # Section-specific constraints
     UNIFY_OVERVIEW_WORD_COUNT_MIN: int = 25
     UNIFY_OVERVIEW_WORD_COUNT_MAX: int = 40
@@ -339,11 +339,11 @@ class ContentConstraintsConfig:
     EY_NARRATIVE_WORD_COUNT_MAX: int = 80
     EARLY_CAREER_NARRATIVE_WORD_COUNT_MIN: int = 50
     EARLY_CAREER_NARRATIVE_WORD_COUNT_MAX: int = 70
-    
+
     # Generation requirements
     K1_MIN_DIFFERENTIATORS: int = 4
     MIN_JD_KEYWORDS: int = 6
-    
+
     # Provenance split targets
     provenance_split_targets: Dict[str, Dict[str, int]] = field(default_factory=lambda: {
         "K2_UNIFY_BULLETS": {"Verbatim": 2, "Customized": 3, "Synthetic": 2},
@@ -371,7 +371,7 @@ class SignalConstraintsConfig:
 @dataclass
 class Config:
     """Main configuration class aggregating all configurations."""
-    
+
     # Sub-configurations
     model: ModelConfig = field(default_factory=ModelConfig)
     rag: RAGConfig = field(default_factory=RAGConfig)
@@ -379,63 +379,63 @@ class Config:
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
     constraints: ContentConstraintsConfig = field(default_factory=ContentConstraintsConfig)
     signal_constraints: SignalConstraintsConfig = field(default_factory=SignalConstraintsConfig)
-    
+
     # System parameters
     max_retries: int = DEFAULT_MAX_RETRIES
     retry_delay: float = DEFAULT_RETRY_DELAY
     api_timeout: int = DEFAULT_API_TIMEOUT
     rate_limit_delay: float = DEFAULT_RATE_LIMIT_DELAY
-    
+
     # Quality thresholds
     min_quality_score: float = MIN_QUALITY_SCORE
     min_confidence_score: float = MIN_CONFIDENCE_SCORE
     min_relevance_score: float = MIN_RELEVANCE_SCORE
-    
+
     # File limits
     max_job_description_length: int = MAX_JOB_DESCRIPTION_LENGTH
     max_resume_file_size: int = MAX_RESUME_FILE_SIZE
     max_log_file_size: int = MAX_LOG_FILE_SIZE
-    
+
     def validate(self) -> bool:
         """
         Validate the configuration for consistency.
-        
+
         Returns:
             True if valid
-            
+
         Raises:
             ValueError: If configuration is invalid
         """
         # Validate word count constraints
         if self.constraints.HEADLINE_WORD_COUNT_MIN > self.constraints.HEADLINE_WORD_COUNT_MAX:
             raise ValueError("Headline min word count > max word count")
-        
+
         if self.constraints.EXECUTIVE_SUMMARY_WORD_COUNT_MIN > self.constraints.EXECUTIVE_SUMMARY_WORD_COUNT_MAX:
             raise ValueError("Executive summary min word count > max word count")
-        
+
         if self.constraints.BULLETS_WORD_COUNT_MIN > self.constraints.BULLETS_WORD_COUNT_MAX:
             raise ValueError("Bullet min word count > max word count")
-        
+
         # Validate thresholds
         if not 0 <= self.min_quality_score <= 1:
             raise ValueError("min_quality_score must be between 0 and 1")
-        
+
         if not 0 <= self.min_confidence_score <= 1:
             raise ValueError("min_confidence_score must be between 0 and 1")
-        
+
         if not 0 <= self.min_relevance_score <= 1:
             raise ValueError("min_relevance_score must be between 0 and 1")
-        
+
         # Validate retries and timeouts
         if self.max_retries < 1:
             raise ValueError("max_retries must be at least 1")
-        
+
         if self.api_timeout < 1:
             raise ValueError("api_timeout must be at least 1 second")
-        
+
         logger.debug("✓ Configuration validation passed")
         return True
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert configuration to dictionary."""
         return {

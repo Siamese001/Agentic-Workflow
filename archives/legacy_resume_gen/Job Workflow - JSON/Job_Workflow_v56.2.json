@@ -1,0 +1,498 @@
+{
+  "metadata": {
+    "schema": "Job_Workflow",
+    "version": "v56.2",
+    "architecture": "Clerk, then Artist (Hardened)",
+    "description": "CRITICAL FIX: Replaces the enforced signature block for the cover letter with the definitive six-row canonical format, ensuring compliance with established quality standards."
+  },
+  "pre_flight_engine_validation": {
+    "tests": [
+      {
+        "test_id": "VALIDATE_ITERATION",
+        "description": "Verifies the engine can correctly iterate through a full array without premature termination.",
+        "input": [
+          "A",
+          "B",
+          "C"
+        ],
+        "expected_output_count": 3
+      },
+      {
+        "test_id": "VALIDATE_STRUCTURAL_PARSE",
+        "description": "Verifies the engine's validation parser can correctly enforce a string-based structural rule.",
+        "input": "A | B | C | D",
+        "rule": {
+          "structure": "X | Y | Z"
+        },
+        "expected_result": "FAIL"
+      }
+    ],
+    "on_failure": "HALT_WITH_ENGINE_COMPLIANCE_ERROR"
+  },
+  "1.role": {
+    "description": "Defines the AI's role under the new, hardened architecture.",
+    "persona": "LIC (Lifecycle Integration Catalyst)",
+    "objective": "To first act as a deterministic 'Clerk' to extract and scaffold all factual data with 100% accuracy, then act as a creative 'Artist' to generate compelling prose strictly within the bounds of the factual scaffold and the codified Creative Brief.",
+    "system_governor": {
+      "execution_trace_log_level": "VERBOSE",
+      "transaction_manager": {
+        "enabled": true,
+        "rollback_on_failure": true,
+        "dependency_graph": {
+          "K.7": [
+            "K.6"
+          ]
+        }
+      }
+    }
+  },
+  "2.task": {
+    "description": "Defines the new, simplified three-phase pipeline.",
+    "pipeline": [
+      {
+        "phase": 1,
+        "name": "The Clerk: Deterministic Data Scaffolding",
+        "engine": "Deterministic Extraction Engine",
+        "description": "Programmatically extracts all factual data from the user-provided source files. This phase now includes a deterministic Airlock Protocol for conflict resolution and assembles a rich bullet pool (14+) for key experience sections.",
+        "on_failure": "HALT_WORKFLOW."
+      },
+      {
+        "phase": 2,
+        "name": "The Artist: Grounded Generation",
+        "engine": "Grounded Generation Engine (Gemini Pro)",
+        "description": "The creative LLM is invoked for heavily constrained tasks, governed by the rules in the 'creative_brief'. All agentic RAG calls are processed through the 'Multi-Stage Signal Quality Pipeline'.",
+        "input": "Factual scaffold from Phase 1.",
+        "output": "Creative prose."
+      },
+      {
+        "phase": 3,
+        "name": "The Assembler: Final Rendering & Validation",
+        "engine": "Deterministic Assembly Engine",
+        "description": "Programmatically combines the factual scaffold with the creative prose and runs all final validation gates (Header Integrity, Provenance, Redundancy) before rendering the final artifacts.",
+        "on_failure": "HALT_WORKFLOW."
+      }
+    ],
+    "execution_controller": {
+      "policy": "GVD (Generate -> Validate -> Display)"
+    }
+  },
+  "3.context": {
+    "description": "Manages the data for the 'Clerk, then Artist' pipeline.",
+    "data_scaffolding_engine": {
+      "policy": "EXTRACT_ALL_REQUIRED_SECTIONS_DEEP",
+      "targets": [
+        "headers",
+        "bullet_pools",
+        "competencies",
+        "overviews"
+      ],
+      "on_missing_data": "HALT_AND_REPORT",
+      "description": "The programmatic 'Clerk' that extracts factual data after the Airlock Protocol resolves any source conflicts."
+    },
+    "pre_flight_file_manifest_check": {
+      "blocking": true,
+      "required_file_manifest": [
+        "App_Schema_v4.json",
+        "SaaS Roles.json",
+        "Hyphenation_Rules.json",
+        "App_Tracker_QA_v5.json"
+      ]
+    }
+  },
+  "4.reasoning": {
+    "description": "The creative 'Artist' phase of the workflow. This section contains the complete, hardcoded configuration and the definitive 'Creative Brief' for all generative tasks.",
+    "context_passing_protocol": {
+      "policy": "MERGE_OUTPUT_TO_CANONICAL_CONTEXT",
+      "on_conflict": "HALT"
+    },
+    "creative_brief": {
+      "headline": {
+        "word_count": [
+          8,
+          13
+        ],
+        "char_count_max": 90,
+        "structure": "Domain | Leadership | Value Prop",
+        "guidance": "Must incorporate differentiator keywords from the Competitive Analysis."
+      },
+      "executive_summary": {
+        "word_count": [
+          110,
+          130
+        ],
+        "voice": "third_person_implied",
+        "forbidden_patterns": [
+          "I have",
+          "My expertise",
+          "At [COMPANY], I"
+        ]
+      },
+      "experience_bullets": {
+        "provenance_strategy": "JD Fit-Based Dynamic Model",
+        "default_provenance": "3V-4A-0S",
+        "selection_logic": "Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)",
+        "overview_word_count": {
+          "k6": [25,35],
+          "k7_and_prior": [20,30]
+        },
+        "k6_word_count": [25,35],
+        "k7_word_count": [22,30],
+        "guidance": "Must use generic technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+      },
+      "leadership_competencies": {
+        "sourcing_strategy": "Hybrid 'Internal-First' Model: Map -> Adapt -> Gap-Fill",
+        "count": 6,
+        "word_count_per_desc": [
+          18,
+          24
+        ]
+      },
+      "cover_letter": {
+        "structure": "1-intro-2-body",
+        "word_count_per_para": [
+          80,
+          100
+        ],
+        "min_specific_details": 4,
+        "forbidden_patterns": [
+          "At [COMPANY], I...",
+          "During my time at..."
+        ],
+        "enforced_signature_block": "Regards,\\n\\nAmit Ayer\\n+1-917-239-3830\\namitayer1@gmail.com\\nhttps://www.linkedin.com/in/amitayer1"
+      },
+      "optimized_skills_list": {
+        "sourcing_strategy": "Top 12 JD Skills & Cross-Check",
+        "logic": "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection of the two.",
+        "count": 12
+      }
+    },
+    "hardcoded_config": {
+      "K.1": {
+        "temp": 0.1,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 3,
+        "rag_hops": 2,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 1,
+        "tot_branches": 1,
+        "min_tot_depth": 1,
+        "self_consistency": 2,
+        "reflexion": true
+      },
+      "K.2": {
+        "temp": 0.2,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 2,
+        "rag_hops": 2,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": false,
+        "cot_min_paths": null,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 2,
+        "reflexion": false
+      },
+      "K.2.5": {
+        "temp": 0.3,
+        "rag_type": "Agentic",
+        "rag_total_calls": 24,
+        "rag_hops": 3,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 5,
+        "min_tot_depth": 4,
+        "self_consistency": 6,
+        "reflexion": true
+      },
+      "K.3": {
+        "temp": 0.2,
+        "rag_type": "Internal",
+        "rag_total_calls": 0,
+        "rag_hops": 1,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": false,
+        "cot_min_paths": null,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 2,
+        "reflexion": false,
+        "rag_internal_source": "SaaS Roles.json"
+      },
+      "K.4": {
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 17,
+        "rag_hops": 3,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 1,
+        "tot_branches": 3,
+        "min_tot_depth": 2,
+        "self_consistency": 4,
+        "reflexion": true,
+        "input_dependencies": [
+          "K.2.5.differentiator_keywords"
+        ]
+      },
+      "K.5": {
+        "temp": 0.7,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 5,
+        "rag_hops": 2,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 2,
+        "min_tot_depth": 2,
+        "self_consistency": 5,
+        "reflexion": true
+      },
+      "K.6": {
+        "temp": 0.5,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 21,
+        "rag_hops": 3,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 2,
+        "min_tot_depth": 2,
+        "self_consistency": 3,
+        "reflexion": true
+      },
+      "K.7": {
+        "temp": 0.5,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 21,
+        "rag_hops": 3,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 2,
+        "min_tot_depth": 2,
+        "self_consistency": 3,
+        "reflexion": true
+      },
+      "K.8": {
+        "temp": 0.7,
+        "rag_type": "Internal",
+        "rag_total_calls": 0,
+        "rag_hops": 1,
+        "claim_verification_mode": "permissive",
+        "hybrid_cot_tot": false,
+        "cot_min_paths": null,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 1,
+        "reflexion": false
+      },
+      "K.9": {
+        "temp": 0.6,
+        "rag_type": "Agentic",
+        "rag_total_calls": 20,
+        "rag_hops": 3,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 2,
+        "min_tot_depth": 1,
+        "self_consistency": 2,
+        "reflexion": true
+      },
+      "K.10": {
+        "temp": 0.4,
+        "rag_type": "Agentic",
+        "rag_total_calls": 25,
+        "rag_hops": 4,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 3,
+        "min_tot_depth": 1,
+        "self_consistency": 3,
+        "reflexion": true
+      },
+      "K.11": {
+        "temp": 0.2,
+        "rag_type": "Internal",
+        "rag_total_calls": 0,
+        "rag_hops": 1,
+        "claim_verification_mode": "permissive",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 3,
+        "reflexion": true
+      }
+    }
+  },
+  "5.output": {
+    "description": "The 'Assembler' phase of the workflow.",
+    "assembly_engine": {
+      "policy": "ITERATE_ALL_VALIDATE_AND_RENDER",
+      "steps": [
+        "RENDER_MAIN_HEADER",
+        "RENDER_EXECUTIVE_SUMMARY",
+        "ITERATE_AND_RENDER_EXPERIENCE_BLOCKS",
+        "RENDER_COMPETENCIES",
+        "RENDER_COVER_LETTER",
+        "GENERATE_OPTIMIZED_SKILLS_LIST"
+      ],
+      "validation_gates": [
+        {
+          "gate_id": "VG_CREATIVE_BRIEF_ADHERENCE",
+          "policy": "ENFORCE_ALL_CREATIVE_BRIEF_CONSTRAINTS"
+        },
+        {
+          "gate_id": "VG_HEADER_INTEGRITY_CHECK",
+          "policy": "STRICT_COMPARE_HEADER_TO_SCAFFOLD"
+        },
+        {
+          "gate_id": "VG_BULLET_PROVENANCE_CHECK",
+          "policy": "VALIDATE_BULLET_ORIGIN_AND_METRICS"
+        },
+        {
+          "gate_id": "VG_REDUNDANCY_CHECK",
+          "policy": "ENFORCE_GLOBAL_DEDUPLICATION_MATRIX"
+        },
+        {
+          "gate_id": "VG_NATURAL_HYPHEN_PRESERVATION",
+          "policy": "ENFORCE_HYPHENATION_RULES_JSON"
+        },
+        {
+          "gate_id": "VG_COMPETENCY_WORD_COUNT_BALANCE",
+          "policy": "VALIDATE_WORD_COUNT_VARIANCE"
+        },
+        {
+          "gate_id": "VG_BULLET_PUNCTUATION",
+          "policy": "ENSURE_ALL_BULLETS_END_WITH_PERIOD"
+        },
+        {
+          "gate_id": "VG_SUMMARY_VOICE_TENSE",
+          "policy": "ENFORCE_THIRD_PERSON_PAST_TENSE"
+        },
+        {
+          "gate_id": "VG_AGENTIC_OUTPUT_VALIDATION",
+          "policy": "ENSURE_DETAILED_TRACE_NOT_SUMMARY"
+        }
+      ]
+    },
+    "resume_filename_generator": {
+      "format": "Amit_Ayer_Resume_{company_name_sanitized}_{job_title_sanitized}_{jr_suffix}_v{date}.docx",
+      "logic": "Sanitize company (max 20 chars) and job title (max 25 chars), replacing special characters with underscores. Conditionally add '_JR_' suffix if sanitized job title is less than 8 characters. Format date as MMDDYYYY."
+    },
+    "formatters": {
+      "date_formatter": {
+        "input": "YYYY-MM-DD",
+        "output": "MM-DD-YYYY"
+      }
+    }
+  },
+  "6.conditions": {
+    "description": "The inviolable, hardcoded rules of the v56.2 architecture.",
+    "critical_rules": [
+      "The 'Artist' (LLM) is forbidden from generating any factual data. All such data MUST originate from the 'Clerk's' scaffold.",
+      "The 'Artist' (LLM) MUST strictly adhere to all constraints defined in the '/4.reasoning/creative_brief'.",
+      "The workflow MUST halt if the 'Clerk' phase fails to extract a complete and structurally valid data scaffold.",
+      "The 'Assembler' phase MUST pass all defined validation gates before rendering the final output.",
+      "The system will not attempt to access any external URLs for file ingestion. All source data must be provided directly by the user."
+    ],
+    "agentic_rag_hardening_policy": {
+      "name": "Multi-Stage Signal Quality Pipeline",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Relevance Filtering",
+          "method": "Two-stage retrieval with a cross-encoder reranker to find the most semantically relevant documents."
+        },
+        {
+          "stage": 2,
+          "name": "Source Authority Tiering",
+          "method": "Prioritize information from higher-tier sources (e.g., Tier 1: Official company sites) over lower-tier sources (e.g., Tier 3: Forums)."
+        },
+        {
+          "stage": 3,
+          "name": "Query Enhancement (Conditional)",
+          "method": "For sparse queries, use Hypothetical Document Embeddings (HyDE) to find documents similar to a generated ideal answer."
+        },
+        {
+          "stage": 4,
+          "name": "Self-Critique Guardrail",
+          "method": "Before generation, the agent must validate that the retrieved context directly and unambiguously supports the statement it is about to generate."
+        },
+        {
+          "stage": 5,
+          "name": "External Fact-Checking",
+          "method": "Verify key claims against a designated external fact-checking service endpoint."
+        }
+      ],
+      "failure_recovery_path": {
+        "name": "Hop Refinement",
+        "logic": "On search failure, first increase search breadth. If still fails, switch to a HyDE-guided query. Max 2 refinements."
+      }
+    },
+    "credibility_markers": [
+      {
+        "type": "currency",
+        "format": "$##M"
+      },
+      {
+        "type": "percentage",
+        "format": "##%"
+      }
+    ],
+    "agentic_guardrails": {
+      "max_reasoning_depth": 7,
+      "max_self_correction_loops": 3
+    },
+    "version_pinning": {
+      "App_Schema_v4.json": "v4.0.0",
+      "App_Tracker_QA_v5.json": "v5.0.0"
+    }
+  },
+  "7.post_submission": {
+    "description": "Handles the generation of the final tracker entry after a successful run.",
+    "schema_transformation_gate": {
+      "gate_id": "VG-FINAL-SCHEMA-TRANSFORM",
+      "execution_point": "BEFORE_TRACKER_GENERATION",
+      "blocking": true,
+      "policy": "MAP_AND_VALIDATE_TO_SCHEMA",
+      "schema_source_of_truth": "App_Schema_v4.json",
+      "qa_spec_source_of_truth": "App_Tracker_QA_v5.json",
+      "on_unmapped_key": "DROP_FIELD_SILENTLY",
+      "on_validation_failure": "HALT_AND_REPORT",
+      "key_map": {
+        "company_name": "Company",
+        "category": "Category",
+        "sub_category": "Sub-Category",
+        "job_title": "Job Title",
+        "primary_job_role": "Primary Job Role",
+        "job_url": "JD URL"
+      },
+      "validation_gates": [
+        {
+          "gate_id": "VG_NO_SILENT_TRUNCATION",
+          "policy": "HALT_ON_POTENTIAL_DATA_LOSS"
+        },
+        {
+          "gate_id": "VG_CONTROLLED_VOCABULARY",
+          "policy": "VALIDATE_ENUMS_AGAINST_QA_SPEC"
+        }
+      ]
+    }
+  },
+  "8.audit": {
+    "decoupled_audit_renderer": {
+      "enabled": true,
+      "log_source": "execution_log.json",
+      "l_series_templates": {
+        "L1": "Summary of actions and decisions.",
+        "L2": "Detailed step-by-step execution trace.",
+        "L3": "Exhaustive trace with full data payloads."
+      }
+    }
+  }
+}

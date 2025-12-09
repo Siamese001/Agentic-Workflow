@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nL3 QA orchestrator for resume job alignment workflows.\nCoordinates QA planning and execution for resume enhancement.\n\"\"\"\nfrom typing import Any\nfrom l1.qa_planning import plan_qa\nfrom l2.qa_executor import QAExecutor\nfrom runtime.observability import record_event\nclass QAOrchestrator:\n\"\"\"Pure orchestration for resume QA job alignment workflows.\"\"\"\ndef __init__(self, qa_executor: QAExecutor):\nself.qa_executor = qa_executor\ndef orchestrate_qa(self, draft: Any, job: Any, resume: Any) -> str:\n\"\"\"Orchestrates resume QA workflow for job alignment processing.\"\"\"\nrecord_event(\"qa_orchestration_start\", {})\nqa_plan = plan_qa(draft, job, resume)\nresult = self.qa_executor.execute_qa(\nf\"Execute QA for areas: {qa_plan.focus_areas}\"\n)\nrecord_event(\"qa_orchestration_complete\", {})\nreturn result",
+  "normalized_signature": "func:__init__;func:orchestrate_qa;class:QAOrchestrator",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:orchestrate_qa",
+  "test_coverage": []
+}

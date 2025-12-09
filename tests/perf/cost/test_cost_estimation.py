@@ -1,6 +1,5 @@
 """Performance tests for cost estimation consistency."""
 from __future__ import annotations
-import pytest
 
 from agentic_workflow.runtime.shared.multi_provider_clients import Provider
 
@@ -15,7 +14,7 @@ class TestCostEstimationConsistency:
         mid_cost = [Provider.MISTRAL, Provider.COHERE, Provider.FIREWORKS]
         # Low-cost providers
         low_cost = [Provider.GROQ, Provider.TOGETHER]
-        
+
         all_providers = high_cost + mid_cost + low_cost
         assert len(all_providers) >= 7
 
@@ -32,11 +31,11 @@ class TestCostEstimationConsistency:
             "mid": ["mistral", "cohere", "fireworks", "google"],
             "low": ["groq", "together"],
         }
-        
+
         all_categorized = set()
         for tier_providers in cost_tiers.values():
             all_categorized.update(tier_providers)
-        
+
         # Verify no duplicates across tiers
         total_count = sum(len(v) for v in cost_tiers.values())
         assert len(all_categorized) == total_count
@@ -61,10 +60,10 @@ class TestTokenEstimation:
         """Token estimate scales linearly with message length."""
         short = "Hello"
         long = "Hello " * 100
-        
+
         short_est = len(short) // 4
         long_est = len(long) // 4
-        
+
         # Long should be roughly 100x short
         ratio = long_est / max(short_est, 1)
         assert 50 < ratio < 150  # Allow some variance

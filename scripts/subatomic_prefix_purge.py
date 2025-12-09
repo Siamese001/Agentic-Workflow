@@ -7,11 +7,10 @@ Promotes apps_lic and apps_rg to top-level.
 Updates all imports repo-wide.
 """
 
-import os
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 import json
 
 # =============================================================================
@@ -56,11 +55,11 @@ IMPORT_RENAMES: Dict[str, str] = {
 def rename_top_level_folders() -> List[str]:
     """Rename all numbered folders to their clean names."""
     renamed = []
-    
+
     for old_name, new_name in FOLDER_RENAMES.items():
         old_path = REPO_ROOT / old_name
         new_path = REPO_ROOT / new_name
-        
+
         if old_path.exists() and not new_path.exists():
             shutil.move(str(old_path), str(new_path))
             renamed.append(f"{old_name} -> {new_name}")
@@ -74,7 +73,7 @@ def rename_top_level_folders() -> List[str]:
             shutil.rmtree(old_path)
             renamed.append(f"{old_name} -> {new_name} (merged)")
             print(f"  ✓ Merged: {old_name} -> {new_name}")
-    
+
     return renamed
 
 
@@ -82,10 +81,10 @@ def promote_apps_to_top_level() -> List[str]:
     """Promote apps_lic and apps_rg from 09_apps/ to top-level."""
     promoted = []
     apps_dir = REPO_ROOT / "09_apps"
-    
+
     if not apps_dir.exists():
         return promoted
-    
+
     # Promote apps_lic
     apps_lic_src = apps_dir / "apps_lic"
     apps_lic_dst = REPO_ROOT / "apps_lic"
@@ -93,7 +92,7 @@ def promote_apps_to_top_level() -> List[str]:
         shutil.move(str(apps_lic_src), str(apps_lic_dst))
         promoted.append("09_apps/apps_lic -> apps_lic")
         print("  ✓ Promoted: 09_apps/apps_lic -> apps_lic")
-    
+
     # Promote apps_rg
     apps_rg_src = apps_dir / "apps_rg"
     apps_rg_dst = REPO_ROOT / "apps_rg"
@@ -101,7 +100,7 @@ def promote_apps_to_top_level() -> List[str]:
         shutil.move(str(apps_rg_src), str(apps_rg_dst))
         promoted.append("09_apps/apps_rg -> apps_rg")
         print("  ✓ Promoted: 09_apps/apps_rg -> apps_rg")
-    
+
     # Remove 09_apps if empty or only has shared/
     if apps_dir.exists():
         remaining = list(apps_dir.iterdir())
@@ -116,21 +115,21 @@ def promote_apps_to_top_level() -> List[str]:
                     dest = REPO_ROOT / "apps_shared"
                     if not dest.exists():
                         shutil.move(str(item), str(dest))
-                        print(f"  ✓ Moved: 09_apps/shared -> apps_shared")
+                        print("  ✓ Moved: 09_apps/shared -> apps_shared")
                 else:
                     # Move other items to top level
                     dest = REPO_ROOT / item.name
                     if not dest.exists():
                         shutil.move(str(item), str(dest))
                         print(f"  ✓ Moved: 09_apps/{item.name} -> {item.name}")
-            
+
             # Try to remove 09_apps again
             try:
                 shutil.rmtree(apps_dir)
                 print("  ✓ Removed: 09_apps/")
             except Exception as e:
                 print(f"  ⚠ Could not remove 09_apps: {e}")
-    
+
     return promoted
 
 
@@ -143,12 +142,12 @@ def fix_imports_in_file(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         original = content
-        
+
         # Fix import statements
         for old_path, new_path in IMPORT_RENAMES.items():
             if not old_path:
                 continue
-            
+
             # Handle "from X import Y" patterns
             if new_path:
                 content = re.sub(
@@ -183,7 +182,7 @@ def fix_imports_in_file(file_path: Path) -> bool:
                     r"import \1",
                     content
                 )
-        
+
         # Also fix string references in paths
         for old_path, new_path in IMPORT_RENAMES.items():
             if old_path and new_path:
@@ -192,7 +191,7 @@ def fix_imports_in_file(file_path: Path) -> bool:
                 content = content.replace(f"'{old_path}/", f"'{new_path}/")
                 content = content.replace(f'"{old_path}"', f'"{new_path}"')
                 content = content.replace(f"'{old_path}'", f"'{new_path}'")
-        
+
         if content != original:
             file_path.write_text(content, encoding="utf-8")
             return True
@@ -205,14 +204,14 @@ def fix_imports_in_file(file_path: Path) -> bool:
 def fix_all_imports() -> int:
     """Fix imports across the entire repository."""
     fixed_count = 0
-    
+
     for py_file in REPO_ROOT.rglob("*.py"):
         # Skip files in .git, __pycache__, etc.
         if any(part.startswith('.') or part == '__pycache__' for part in py_file.parts):
             continue
         if fix_imports_in_file(py_file):
             fixed_count += 1
-    
+
     return fixed_count
 
 
@@ -222,39 +221,39 @@ def fix_all_imports() -> int:
 
 def update_yaml_files() -> None:
     """Update both YAML SSoT files with new folder names."""
-    
+
     # Update main YAML
     main_yaml = REPO_ROOT / "unified_structure_subatomic.yaml"
     if main_yaml.exists():
         content = main_yaml.read_text(encoding="utf-8")
-        
+
         # Replace all numbered prefixes
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
-        
+
         # Remove 09_apps references
         content = content.replace("09_apps/apps_lic", "apps_lic")
         content = content.replace("09_apps/apps_rg", "apps_rg")
         content = content.replace("09_apps.", "")
         content = content.replace("09_apps:", "# 09_apps removed - apps_lic and apps_rg are now top-level")
-        
+
         main_yaml.write_text(content, encoding="utf-8")
         print("  ✓ Updated: unified_structure_subatomic.yaml")
-    
+
     # Update meta YAML
     meta_yaml = REPO_ROOT / "unified_structure_subatomic_meta.yaml"
     if meta_yaml.exists():
         content = meta_yaml.read_text(encoding="utf-8")
-        
+
         # Replace all numbered prefixes
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
-        
+
         # Remove 09_apps references
         content = content.replace("09_apps/apps_lic", "apps_lic")
         content = content.replace("09_apps/apps_rg", "apps_rg")
         content = content.replace("09_apps.", "")
-        
+
         # Add numbered folder exception section if not present
         if "numbered_folder_exception:" not in content:
             exception_section = """
@@ -267,7 +266,7 @@ numbered_folder_exception:
     permanent: true
 """
             content += exception_section
-        
+
         meta_yaml.write_text(content, encoding="utf-8")
         print("  ✓ Updated: unified_structure_subatomic_meta.yaml")
 
@@ -277,12 +276,12 @@ def update_workspace_file() -> None:
     workspace_file = REPO_ROOT / "Agentic.code-workspace"
     if workspace_file.exists():
         content = workspace_file.read_text(encoding="utf-8")
-        
+
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
-        
+
         content = content.replace("09_apps", "apps_lic")  # Point to one of the promoted folders
-        
+
         workspace_file.write_text(content, encoding="utf-8")
         print("  ✓ Updated: Agentic.code-workspace")
 
@@ -292,15 +291,15 @@ def update_ssot_validator() -> None:
     validator = REPO_ROOT / "SSOT_validator.py"
     if validator.exists():
         content = validator.read_text(encoding="utf-8")
-        
+
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(f'"{old_name}"', f'"{new_name}"')
             content = content.replace(f"'{old_name}'", f"'{new_name}'")
             content = content.replace(f'"{old_name}/', f'"{new_name}/')
             content = content.replace(f"'{old_name}/", f"'{new_name}/")
-        
+
         content = content.replace('"09_apps"', '"apps_lic", "apps_rg"')
-        
+
         validator.write_text(content, encoding="utf-8")
         print("  ✓ Updated: SSOT_validator.py")
 
@@ -313,42 +312,42 @@ def main():
     print("=" * 70)
     print("SUBATOMIC CANON 2025 — TOTAL PREFIX PURGE")
     print("=" * 70)
-    
+
     log = {
         "renamed_folders": [],
         "promoted_apps": [],
         "fixed_imports": 0,
         "yaml_updated": True,
     }
-    
+
     # Step 1: Rename top-level folders
     print("\n[STEP 1] Renaming numbered folders...")
     log["renamed_folders"] = rename_top_level_folders()
-    
+
     # Step 2: Promote apps to top-level
     print("\n[STEP 2] Promoting apps_lic and apps_rg to top-level...")
     log["promoted_apps"] = promote_apps_to_top_level()
-    
+
     # Step 3: Fix all imports
     print("\n[STEP 3] Fixing imports repo-wide...")
     log["fixed_imports"] = fix_all_imports()
     print(f"  ✓ Fixed imports in {log['fixed_imports']} files")
-    
+
     # Step 4: Update YAML files
     print("\n[STEP 4] Updating YAML SSoT files...")
     update_yaml_files()
-    
+
     # Step 5: Update other config files
     print("\n[STEP 5] Updating config files...")
     update_workspace_file()
     update_ssot_validator()
-    
+
     # Write log
     log_path = REPO_ROOT / "subatomic_prefix_purge_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(log, f, indent=2, default=str)
     print(f"\n[LOG] Transformation log written to: {log_path}")
-    
+
     print("\n" + "=" * 70)
     print("PREFIX PURGE COMPLETE")
     print("=" * 70)

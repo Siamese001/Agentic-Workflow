@@ -6,7 +6,6 @@ Compare file contents to detect duplicates vs unique code.
 
 import hashlib
 from pathlib import Path
-from collections import defaultdict
 
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = REPO / 'config/review_pending'
@@ -14,7 +13,7 @@ REVIEW_PENDING = REPO / 'config/review_pending'
 # Approved YAML folders
 APPROVED_FOLDERS = [
     'agentic_core',
-    'schemas', 
+    'schemas',
     'runtime',
     'prompt_governance',
     'config',
@@ -55,7 +54,7 @@ def main():
     print("Building index of approved files...")
     approved_hashes = {}  # hash -> list of paths
     approved_names = {}   # filename -> list of paths
-    
+
     for folder in APPROVED_FOLDERS:
         folder_path = REPO / folder
         if not folder_path.exists():
@@ -67,44 +66,44 @@ def main():
             if h:
                 approved_hashes.setdefault(h, []).append(f)
             approved_names.setdefault(f.name, []).append(f)
-    
+
     print(f"  Indexed {len(approved_hashes)} unique file hashes")
     print(f"  Indexed {len(approved_names)} unique filenames")
-    
+
     # Scan review_pending
     print(f"\nScanning {REVIEW_PENDING}...")
-    
+
     pending_files = list(REVIEW_PENDING.rglob('*.py'))
     print(f"  Found {len(pending_files)} Python files")
-    
+
     duplicates = []
     unique_files = []
     name_matches = []
-    
+
     for f in pending_files:
         if '__pycache__' in str(f):
             continue
-        
+
         h = get_file_hash(f)
-        
+
         if h in approved_hashes:
             duplicates.append((f, approved_hashes[h][0]))
         elif f.name in approved_names:
             name_matches.append((f, approved_names[f.name]))
         else:
             unique_files.append(f)
-    
+
     # Report
     print("\n" + "=" * 80)
     print("AUDIT RESULTS")
     print("=" * 80)
-    
+
     print(f"\nEXACT DUPLICATES (can be deleted): {len(duplicates)}")
     for pending, approved in duplicates[:10]:
         print(f"  {pending.name} == {approved.relative_to(REPO)}")
     if len(duplicates) > 10:
         print(f"  ... and {len(duplicates) - 10} more")
-    
+
     print(f"\nNAME MATCHES (need content review): {len(name_matches)}")
     for pending, approved_list in name_matches[:10]:
         size_pending = pending.stat().st_size
@@ -113,7 +112,7 @@ def main():
         print(f"  {pending.name}: {status}")
     if len(name_matches) > 10:
         print(f"  ... and {len(name_matches) - 10} more")
-    
+
     print(f"\nUNIQUE FILES (not in approved folders): {len(unique_files)}")
     for f in unique_files[:20]:
         rel = f.relative_to(REVIEW_PENDING)
@@ -121,7 +120,7 @@ def main():
         print(f"  {rel} ({size} bytes)")
     if len(unique_files) > 20:
         print(f"  ... and {len(unique_files) - 20} more")
-    
+
     # Detailed unique file analysis
     if unique_files:
         print("\n" + "-" * 80)
@@ -142,14 +141,14 @@ def main():
                             break
             except Exception as e:
                 print(f"    ERROR: {e}")
-    
+
     print("\n" + "=" * 80)
     print("RECOMMENDATION:")
     print("=" * 80)
     print(f"  - DELETE {len(duplicates)} exact duplicates")
     print(f"  - REVIEW {len(name_matches)} name matches for content merge")
     print(f"  - EVALUATE {len(unique_files)} unique files for inclusion or archival")
-    print(f"  - MOVE entire folder to 06_data/deprecated/review_pending_archive")
+    print("  - MOVE entire folder to 06_data/deprecated/review_pending_archive")
 
 
 if __name__ == '__main__':

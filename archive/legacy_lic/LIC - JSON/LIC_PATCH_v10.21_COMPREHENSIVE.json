@@ -1,0 +1,1134 @@
+{
+  "metadata": {
+    "patch_series": "v10.21",
+    "base_version": "v10.20",
+    "target_version": "v10.21",
+    "release_date": "2025-10-15",
+    "patch_count": 3,
+    "severity": "ARCHITECTURAL_REFACTORING",
+    "breaking_changes": false,
+    "rollback_compatible": true,
+    "description": "Architectural refactoring to centralize message length constraints, consolidate routes, and migrate archetype configurations to reference global constraints. Zero functional changes to output.",
+    "total_changes": {
+      "new_sections": 1,
+      "modified_sections": 4,
+      "removed_routes": 2,
+      "centralized_constraints": 18,
+      "api_functions_added": 3
+    }
+  },
+
+  "patches": [
+    {
+      "patch_id": "PATCH-v10.21-001",
+      "title": "Centralized Global Message Constraints",
+      "severity": "CRITICAL_REFACTORING",
+      "category": "ARCHITECTURAL",
+      "description": "Create single source of truth for all message length constraints in new section 2.5.global_message_constraints. All other sections reference this global config via API.",
+      "rationale": {
+        "problem": "Message length constraints scattered across routes, QA rules, validation gates, and archetype configs. Changes require updating 4+ locations with risk of inconsistency.",
+        "solution": "Centralize all constraints in one section. All other sections reference via API helpers.",
+        "benefits": [
+          "Single-point updates for constraint changes",
+          "Eliminates duplicated constraint definitions",
+          "Reduces risk of inconsistent constraints",
+          "Easier maintenance and testing",
+          "Clear constraint documentation"
+        ]
+      },
+      "implementation": {
+        "phase_1_create_global_section": {
+          "location": "NEW SECTION: /2.5.global_message_constraints",
+          "structure": {
+            "description": "Single source of truth for all message length constraints. All other sections reference these values.",
+            "routes": {
+              "CONNECTION_REQ": {
+                "char_limit": 330,
+                "word_range": null,
+                "word_min": null,
+                "word_max": null,
+                "enforcement": "character",
+                "includes_signature": true,
+                "signature_overhead_chars": 20,
+                "notes": "LinkedIn connection request platform limit"
+              },
+              "INMAIL": {
+                "char_limit": null,
+                "word_range": [180, 250],
+                "word_min": 180,
+                "word_max": 250,
+                "enforcement": "word_count",
+                "target_by_archetype": {
+                  "RECRUITER": 200,
+                  "SENIOR_TA": 210,
+                  "EXECUTIVE": 225,
+                  "C_LEVEL": 240
+                },
+                "notes": "Premium InMail with expanded format"
+              },
+              "FOLLOW_UP": {
+                "char_limit": null,
+                "word_range": [120, 170],
+                "word_min": 120,
+                "word_max": 170,
+                "enforcement": "word_count",
+                "target_by_archetype": {
+                  "RECRUITER": 140,
+                  "SENIOR_TA": 145,
+                  "EXECUTIVE": 150,
+                  "C_LEVEL": 160
+                },
+                "notes": "Shorter format for existing connections"
+              }
+            },
+            "component_constraints": {
+              "K.2_subject_line": {
+                "char_limit": 60,
+                "word_range": [4, 7],
+                "word_min": 4,
+                "word_max": 7,
+                "applies_to_routes": ["INMAIL"],
+                "notes": "Subject line for InMail messages only"
+              },
+              "K.5_cta": {
+                "CONNECTION_REQ": {
+                  "word_max": 5,
+                  "word_min": null,
+                  "format": "micro",
+                  "notes": "Ultra-compressed CTA for connection requests"
+                },
+                "INMAIL": {
+                  "word_range": [15, 25],
+                  "word_min": 15,
+                  "word_max": 25,
+                  "format": "expanded_with_dates",
+                  "notes": "Full CTA with date window proposals"
+                },
+                "FOLLOW_UP": {
+                  "word_range": [15, 25],
+                  "word_min": 15,
+                  "word_max": 25,
+                  "format": "standard_with_dates",
+                  "notes": "Standard CTA with continuity reference"
+                }
+              },
+              "K.6_signature": {
+                "simplified": {
+                  "lines": 2,
+                  "estimated_chars": 20,
+                  "format": "Regards,\\n{first_name}",
+                  "use_cases": ["CONNECTION_REQ"]
+                },
+                "warm": {
+                  "lines": 2,
+                  "estimated_chars": 18,
+                  "format": "Thanks,\\n{first_name}",
+                  "use_cases": ["FOLLOW_UP"]
+                },
+                "professional": {
+                  "lines": 4,
+                  "estimated_chars": 80,
+                  "format": "Best regards,\\n{first_name} {last_name}\\n{title}\\n{linkedin_url}",
+                  "use_cases": ["INMAIL"]
+                },
+                "standard": {
+                  "lines": 4,
+                  "estimated_chars": 80,
+                  "format": "Best regards,\\n{first_name} {last_name}\\n{title}\\n{linkedin_url}",
+                  "use_cases": ["INMAIL"]
+                }
+              }
+            },
+            "validation_thresholds": {
+              "word_count_tolerance": 0,
+              "char_count_tolerance": 0,
+              "enforcement_mode": "strict",
+              "truncation_allowed": false,
+              "notes": "Zero tolerance policy for constraint violations"
+            }
+          }
+        },
+        "phase_2_create_api_helpers": {
+          "location": "NEW SECTION: /2.5.global_message_constraints.api",
+          "functions": [
+            {
+              "function_name": "get_global_constraint",
+              "description": "Retrieve constraint from global config",
+              "signature": "get_global_constraint(category: string, key: string, attribute?: string) -> any",
+              "examples": [
+                {
+                  "call": "get_global_constraint('routes', 'INMAIL')",
+                  "returns": "{char_limit: null, word_range: [180, 250], ...}"
+                },
+                {
+                  "call": "get_global_constraint('routes', 'INMAIL', 'word_max')",
+                  "returns": "250"
+                },
+                {
+                  "call": "get_global_constraint('component_constraints', 'K.2_subject_line')",
+                  "returns": "{char_limit: 60, word_range: [4, 7]}"
+                }
+              ],
+              "implementation": {
+                "step_1": "Load global_message_constraints config",
+                "step_2": "Navigate to category[key]",
+                "step_3": "If attribute specified, return category[key][attribute]",
+                "step_4": "Else return entire category[key] object",
+                "error_handling": "Return null if path not found, log error"
+              }
+            },
+            {
+              "function_name": "validate_against_global_constraint",
+              "description": "Validate content against global constraints",
+              "signature": "validate_against_global_constraint(route: string, content_type: string, content: string) -> ValidationResult",
+              "examples": [
+                {
+                  "call": "validate_against_global_constraint('INMAIL', 'full_message', message_text)",
+                  "returns": "{valid: true, count: 215, min: 180, max: 250}"
+                },
+                {
+                  "call": "validate_against_global_constraint('CONNECTION_REQ', 'full_message', message_text)",
+                  "returns": "{valid: false, count: 345, limit: 330}"
+                }
+              ],
+              "implementation": {
+                "step_1": "Load constraints for route",
+                "step_2": "Determine enforcement type (word_count vs character)",
+                "step_3": "Count content (words or chars)",
+                "step_4": "Compare against min/max or limit",
+                "step_5": "Return validation result object"
+              },
+              "return_schema": {
+                "valid": "boolean",
+                "count": "number",
+                "limit": "number (for char enforcement)",
+                "min": "number (for word enforcement)",
+                "max": "number (for word enforcement)",
+                "enforcement_type": "string"
+              }
+            },
+            {
+              "function_name": "get_target_word_count",
+              "description": "Get target word count for route + archetype combination",
+              "signature": "get_target_word_count(route: string, archetype: string) -> number",
+              "examples": [
+                {
+                  "call": "get_target_word_count('INMAIL', 'C_LEVEL')",
+                  "returns": "240"
+                },
+                {
+                  "call": "get_target_word_count('FOLLOW_UP', 'RECRUITER')",
+                  "returns": "140"
+                },
+                {
+                  "call": "get_target_word_count('CONNECTION_REQ', 'EXECUTIVE')",
+                  "returns": "null (no word count targets for char-limited routes)"
+                }
+              ],
+              "implementation": {
+                "step_1": "Load constraints for route",
+                "step_2": "Check if target_by_archetype exists",
+                "step_3": "If yes, return target_by_archetype[archetype]",
+                "step_4": "If no archetype-specific target, return midpoint of word_range",
+                "step_5": "If char-limited route, return null",
+                "fallback_calculation": "(word_min + word_max) / 2"
+              }
+            }
+          ]
+        },
+        "phase_3_update_routes": {
+          "location": "/3.context.central_config.routes",
+          "changes": [
+            {
+              "route": "CONNECTION_REQ",
+              "before": {
+                "char_limit": 330,
+                "word_range": null
+              },
+              "after": {
+                "length_constraints": {
+                  "source": "REFERENCE → 2.5.global_message_constraints.routes.CONNECTION_REQ",
+                  "char_limit": "→ get_global_constraint('routes', 'CONNECTION_REQ', 'char_limit')",
+                  "word_range": "→ get_global_constraint('routes', 'CONNECTION_REQ', 'word_range')"
+                }
+              }
+            },
+            {
+              "route": "INMAIL",
+              "before": {
+                "char_limit": null,
+                "word_range": [180, 240]
+              },
+              "after": {
+                "length_constraints": {
+                  "source": "REFERENCE → 2.5.global_message_constraints.routes.INMAIL",
+                  "word_range": "→ get_global_constraint('routes', 'INMAIL', 'word_range')",
+                  "target_by_archetype": "→ get_global_constraint('routes', 'INMAIL', 'target_by_archetype')"
+                }
+              }
+            },
+            {
+              "route": "FOLLOW_UP",
+              "before": {
+                "char_limit": null,
+                "word_range": [120, 170]
+              },
+              "after": {
+                "length_constraints": {
+                  "source": "REFERENCE → 2.5.global_message_constraints.routes.FOLLOW_UP",
+                  "word_range": "→ get_global_constraint('routes', 'FOLLOW_UP', 'word_range')",
+                  "target_by_archetype": "→ get_global_constraint('routes', 'FOLLOW_UP', 'target_by_archetype')"
+                }
+              }
+            }
+          ],
+          "notes": "Remove hardcoded constraints, replace with references to global config"
+        },
+        "phase_4_update_qa_rules": {
+          "location": "/6.validation.qa_rules",
+          "changes": [
+            {
+              "rule_id": "LIC-QA-001",
+              "name": "Word count within route range",
+              "before": {
+                "check": "Word count within route range",
+                "implementation": "Hardcoded range check"
+              },
+              "after": {
+                "check": "Word count within route range",
+                "constraint_source": "REFERENCE → 2.5.global_message_constraints.routes[route].word_range",
+                "implementation": "get_global_constraint('routes', route, 'word_range')",
+                "validation": "word_count >= word_min AND word_count <= word_max"
+              }
+            },
+            {
+              "rule_id": "LIC-QA-002",
+              "name": "Character limit respected",
+              "before": {
+                "check": "Character limit respected",
+                "implementation": "Hardcoded limit check"
+              },
+              "after": {
+                "check": "Character limit respected",
+                "constraint_source": "REFERENCE → 2.5.global_message_constraints.routes[route].char_limit",
+                "implementation": "get_global_constraint('routes', route, 'char_limit')",
+                "validation": "char_count <= char_limit (if char_limit != null)"
+              }
+            },
+            {
+              "rule_id": "LIC-QA-012",
+              "name": "Subject line appropriateness",
+              "before": {
+                "check": "Subject line appropriateness",
+                "implementation": "Hardcoded 60 char / 4-7 word limits"
+              },
+              "after": {
+                "check": "Subject line appropriateness",
+                "constraint_source": "REFERENCE → 2.5.global_message_constraints.component_constraints.K.2_subject_line",
+                "implementation": "get_global_constraint('component_constraints', 'K.2_subject_line')",
+                "validation": "char_count <= 60 AND word_count in [4, 7]"
+              }
+            }
+          ]
+        },
+        "phase_5_update_validation_gates": {
+          "location": "/6.validation.master_validation_gate",
+          "changes": [
+            {
+              "phase": "structural_compliance",
+              "check_id": "word_count",
+              "before": {
+                "constraint_source": "Hardcoded in validation logic"
+              },
+              "after": {
+                "constraint_source": "2.5.global_message_constraints.routes[route].word_range",
+                "method": "get_global_constraint('routes', route_name, 'word_range')",
+                "pass_criteria": "word_min <= count <= word_max"
+              }
+            },
+            {
+              "phase": "structural_compliance",
+              "check_id": "char_limit",
+              "before": {
+                "constraint_source": "Hardcoded in validation logic"
+              },
+              "after": {
+                "constraint_source": "2.5.global_message_constraints.routes[route].char_limit",
+                "method": "get_global_constraint('routes', route_name, 'char_limit')",
+                "pass_criteria": "count <= char_limit (if not null)"
+              }
+            }
+          ]
+        }
+      },
+      "testing_requirements": {
+        "test_cases": [
+          {
+            "test_id": "TC-v10.21-001-01",
+            "description": "Verify global constraints load correctly",
+            "expected_result": "All routes have valid constraint objects"
+          },
+          {
+            "test_id": "TC-v10.21-001-02",
+            "description": "API function get_global_constraint returns correct values",
+            "expected_result": "INMAIL word_max returns 250"
+          },
+          {
+            "test_id": "TC-v10.21-001-03",
+            "description": "Validation uses global constraints",
+            "expected_result": "251-word INMAIL rejected by global constraint"
+          },
+          {
+            "test_id": "TC-v10.21-001-04",
+            "description": "Archetype targets resolved correctly",
+            "expected_result": "get_target_word_count('INMAIL', 'C_LEVEL') returns 240"
+          },
+          {
+            "test_id": "TC-v10.21-001-05",
+            "description": "Constraint update propagates to all sections",
+            "expected_result": "Changing global constraint updates validation behavior"
+          }
+        ],
+        "regression_tests": [
+          "Verify all v10.20 test cases still pass",
+          "Verify word count validation identical to v10.20",
+          "Verify char limit validation identical to v10.20",
+          "Verify archetype targeting unchanged"
+        ]
+      },
+      "migration_steps": {
+        "step_1": "Create section 2.5.global_message_constraints with all constraints",
+        "step_2": "Add API helper functions to section 2.5",
+        "step_3": "Update routes in section 3 to reference global constraints",
+        "step_4": "Update QA rules in section 6 to reference global constraints",
+        "step_5": "Update validation gates in section 6 to use API functions",
+        "step_6": "Run full test suite to verify parity with v10.20",
+        "step_7": "Document constraint change procedure in deployment section"
+      },
+      "rollback_procedure": {
+        "trigger": "If constraint resolution fails or validation breaks",
+        "steps": [
+          "Remove section 2.5.global_message_constraints",
+          "Restore hardcoded constraints in section 3 routes",
+          "Restore hardcoded constraints in section 6 QA rules",
+          "Restore hardcoded constraints in section 6 validation gates",
+          "Verify system returns to v10.20 behavior"
+        ]
+      },
+      "benefits": {
+        "maintenance": "Single location to update constraints instead of 4+ locations",
+        "consistency": "Impossible to have mismatched constraints across sections",
+        "documentation": "Clear central reference for all constraint values",
+        "testing": "Easier to test constraint changes in isolation",
+        "scalability": "Easy to add new routes or components with constraints"
+      }
+    },
+
+    {
+      "patch_id": "PATCH-v10.21-002",
+      "title": "Route Consolidation - Remove SHORT_NEW and LONG_NEW",
+      "severity": "MEDIUM_REFACTORING",
+      "category": "ARCHITECTURAL",
+      "description": "Remove ambiguous SHORT_NEW and LONG_NEW routes. Consolidate to clear use cases: CONNECTION_REQ (connection requests), INMAIL (premium messages), FOLLOW_UP (existing connections).",
+      "rationale": {
+        "problem": "SHORT_NEW and LONG_NEW are ambiguous route names that overlap with INMAIL and create confusion in route selection. Rarely used in practice.",
+        "solution": "Remove both routes. Users choose from CONNECTION_REQ, INMAIL, or FOLLOW_UP based on clear use cases.",
+        "benefits": [
+          "Simplified decision tree (3 routes instead of 5)",
+          "Eliminated route confusion and overlap",
+          "Clearer user intent mapping",
+          "Reduced maintenance burden",
+          "Better alignment with LinkedIn platform types"
+        ]
+      },
+      "implementation": {
+        "phase_1_remove_route_definitions": {
+          "location": "/3.context.central_config.routes",
+          "routes_to_remove": [
+            "SHORT_NEW",
+            "LONG_NEW"
+          ],
+          "routes_to_keep": [
+            "CONNECTION_REQ",
+            "INMAIL",
+            "FOLLOW_UP"
+          ],
+          "mapping_logic": {
+            "SHORT_NEW_users_should_use": "FOLLOW_UP (if existing connection) OR CONNECTION_REQ (if new connection)",
+            "LONG_NEW_users_should_use": "INMAIL"
+          }
+        },
+        "phase_2_update_routing_decision_tree": {
+          "location": "/4.reasoning.routing_decision_tree",
+          "before": {
+            "abbreviation_mapping": {
+              "CR": "CONNECTION_REQ",
+              "SN": "SHORT_NEW",
+              "FU": "FOLLOW_UP",
+              "LN": "LONG_NEW"
+            }
+          },
+          "after": {
+            "abbreviation_mapping": {
+              "CR": "CONNECTION_REQ",
+              "IM": "INMAIL",
+              "FU": "FOLLOW_UP"
+            }
+          },
+          "decision_logic_before": {
+            "if_route_override": "Use override value directly",
+            "else": "Default to SHORT_NEW"
+          },
+          "decision_logic_after": {
+            "if_route_override": "Use override value directly (must be CONNECTION_REQ, INMAIL, or FOLLOW_UP)",
+            "if_job_specific": "Default to INMAIL",
+            "if_follow_up_context": "Default to FOLLOW_UP",
+            "else": "Prompt user to select route"
+          }
+        },
+        "phase_3_update_input_validation": {
+          "location": "/2.input.linkedin_input_collection_v75",
+          "before": {
+            "message_context.type.options": [
+              "CONNECTION_REQ",
+              "INMAIL",
+              "SHORT_NEW",
+              "LONG_NEW",
+              "FOLLOW_UP"
+            ]
+          },
+          "after": {
+            "message_context.type.options": [
+              "CONNECTION_REQ",
+              "INMAIL",
+              "FOLLOW_UP"
+            ]
+          }
+        },
+        "phase_4_update_tool_usage_guidance": {
+          "location": "/4.reasoning.tool_usage_specifics.tool_call_budget.guidance",
+          "before": {
+            "CONNECTION_REQ_non_job": 0,
+            "CONNECTION_REQ_job": "6-8",
+            "SHORT_NEW": "3-6",
+            "LONG_NEW": "8-12",
+            "FOLLOW_UP": "2-4",
+            "INMAIL": "8-12"
+          },
+          "after": {
+            "CONNECTION_REQ_non_job": 0,
+            "CONNECTION_REQ_job": "6-8",
+            "FOLLOW_UP": "2-4",
+            "INMAIL": "8-12"
+          }
+        },
+        "phase_5_update_templates": {
+          "locations": [
+            "/5.output.greeting_templates",
+            "/5.output.cta_templates",
+            "/5.output.signature_formats"
+          ],
+          "changes": "Remove all SHORT_NEW and LONG_NEW specific templates",
+          "keep": "Only CONNECTION_REQ, INMAIL, FOLLOW_UP templates"
+        },
+        "phase_6_update_qa_rules": {
+          "location": "/6.validation.qa_rules",
+          "affected_rules": [
+            "LIC-QA-013",
+            "LIC-QA-026"
+          ],
+          "changes": "Remove references to SHORT_NEW and LONG_NEW from validation logic"
+        },
+        "phase_7_update_override_policies": {
+          "location": "/3.context.system.override_policies.route_override",
+          "before": {
+            "validation": "Must be valid route name from [CONNECTION_REQ, SHORT_NEW, LONG_NEW, FOLLOW_UP, INMAIL]"
+          },
+          "after": {
+            "validation": "Must be valid route name from [CONNECTION_REQ, INMAIL, FOLLOW_UP]"
+          }
+        }
+      },
+      "user_migration_guide": {
+        "for_short_new_users": {
+          "old_use_case": "Short new connection message",
+          "new_route": "CONNECTION_REQ or FOLLOW_UP",
+          "decision_criteria": "If not yet connected → CONNECTION_REQ. If already connected → FOLLOW_UP",
+          "constraint_changes": "CONNECTION_REQ: 330 chars. FOLLOW_UP: 120-170 words"
+        },
+        "for_long_new_users": {
+          "old_use_case": "Long new connection message with subject line",
+          "new_route": "INMAIL",
+          "decision_criteria": "Always use INMAIL for messages requiring subject line and expanded format",
+          "constraint_changes": "INMAIL: 180-250 words (consistent with LONG_NEW range)"
+        }
+      },
+      "testing_requirements": {
+        "test_cases": [
+          {
+            "test_id": "TC-v10.21-002-01",
+            "description": "Verify SHORT_NEW route no longer available",
+            "expected_result": "Route selection only shows CONNECTION_REQ, INMAIL, FOLLOW_UP"
+          },
+          {
+            "test_id": "TC-v10.21-002-02",
+            "description": "Verify LONG_NEW route no longer available",
+            "expected_result": "Route selection only shows CONNECTION_REQ, INMAIL, FOLLOW_UP"
+          },
+          {
+            "test_id": "TC-v10.21-002-03",
+            "description": "Test route override validation",
+            "expected_result": "Attempting to use SHORT_NEW or LONG_NEW throws validation error"
+          },
+          {
+            "test_id": "TC-v10.21-002-04",
+            "description": "Test default routing logic",
+            "expected_result": "System prompts user for route selection instead of defaulting to SHORT_NEW"
+          },
+          {
+            "test_id": "TC-v10.21-002-05",
+            "description": "Verify tool call budgets updated",
+            "expected_result": "No SHORT_NEW or LONG_NEW entries in guidance"
+          }
+        ],
+        "migration_verification": [
+          "All former SHORT_NEW use cases work with CONNECTION_REQ or FOLLOW_UP",
+          "All former LONG_NEW use cases work with INMAIL",
+          "No functional regressions in message generation"
+        ]
+      },
+      "rollback_procedure": {
+        "trigger": "If users report confusion or workflow breaks",
+        "steps": [
+          "Restore SHORT_NEW and LONG_NEW route definitions in section 3",
+          "Restore abbreviation mappings in section 4",
+          "Restore route options in section 2 input validation",
+          "Restore templates in section 5",
+          "Restore guidance in section 4 tool usage",
+          "Update decision tree default back to SHORT_NEW"
+        ]
+      },
+      "benefits": {
+        "clarity": "3 clear routes aligned with LinkedIn platform types",
+        "simplicity": "40% reduction in route complexity",
+        "maintenance": "Fewer templates and validation paths to maintain",
+        "user_experience": "Less confusion about which route to choose"
+      }
+    },
+
+    {
+      "patch_id": "PATCH-v10.21-003",
+      "title": "Archetype Config Migration to Global Constraints",
+      "severity": "LOW_REFACTORING",
+      "category": "ARCHITECTURAL",
+      "description": "Update archetype-specific configurations in section 4.reasoning.archetype_explicit_configs to reference global message constraints instead of hardcoded values.",
+      "rationale": {
+        "problem": "Archetype configs contain hardcoded word count targets that duplicate global constraints. Changes require updating both locations.",
+        "solution": "Replace hardcoded values with references to global constraints via API.",
+        "benefits": [
+          "Complete centralization of all constraint values",
+          "Archetype targets automatically sync with global constraints",
+          "Eliminates last remaining constraint duplication",
+          "Completes v10.21 refactoring architecture"
+        ]
+      },
+      "implementation": {
+        "phase_1_update_creative_brief": {
+          "location": "/4.reasoning.creative_brief",
+          "archetypes": ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"],
+          "changes": [
+            {
+              "archetype": "C_LEVEL",
+              "section": "message_body",
+              "before": {
+                "word_count": [190, 230]
+              },
+              "after": {
+                "word_count": {
+                  "source": "REFERENCE → get_target_word_count('INMAIL', 'C_LEVEL')",
+                  "value": "→ 240 (from global constraints)",
+                  "range": "→ [180, 250] (INMAIL range from global constraints)"
+                }
+              }
+            },
+            {
+              "archetype": "EXECUTIVE",
+              "section": "message_body",
+              "before": {
+                "word_count": [160, 220]
+              },
+              "after": {
+                "word_count": {
+                  "source": "REFERENCE → get_target_word_count('INMAIL', 'EXECUTIVE')",
+                  "value": "→ 225 (from global constraints)",
+                  "range": "→ [180, 250] (INMAIL range from global constraints)"
+                }
+              }
+            },
+            {
+              "archetype": "SENIOR_TA",
+              "section": "message_body",
+              "before": {
+                "word_count": [150, 190]
+              },
+              "after": {
+                "word_count": {
+                  "source": "REFERENCE → get_target_word_count('INMAIL', 'SENIOR_TA')",
+                  "value": "→ 210 (from global constraints)",
+                  "range": "→ [180, 250] (INMAIL range from global constraints)"
+                }
+              }
+            },
+            {
+              "archetype": "RECRUITER",
+              "section": "message_body",
+              "before": {
+                "word_count": [140, 170]
+              },
+              "after": {
+                "word_count": {
+                  "source": "REFERENCE → get_target_word_count('INMAIL', 'RECRUITER')",
+                  "value": "→ 200 (from global constraints)",
+                  "range": "→ [180, 250] (INMAIL range from global constraints)"
+                }
+              }
+            }
+          ],
+          "notes": "Creative brief word counts now reference global constraints and adjust based on route"
+        },
+        "phase_2_add_route_awareness": {
+          "location": "/4.reasoning.creative_brief",
+          "enhancement": "Make creative brief route-aware",
+          "implementation": {
+            "add_route_parameter": {
+              "description": "Creative brief selection now takes route parameter",
+              "signature": "get_creative_brief(archetype: string, route: string) -> CreativeBrief",
+              "logic": [
+                "Step 1: Load base creative brief for archetype",
+                "Step 2: Get word count constraints for route from global config",
+                "Step 3: Get archetype-specific target if available",
+                "Step 4: Apply constraints to creative brief",
+                "Step 5: Return route-adjusted creative brief"
+              ]
+            },
+            "word_count_resolution": {
+              "CONNECTION_REQ": {
+                "enforcement": "character",
+                "creative_brief_adjustment": "Use compressed format, ignore word count guidance"
+              },
+              "INMAIL": {
+                "enforcement": "word_count",
+                "creative_brief_adjustment": "Use archetype-specific target from global constraints"
+              },
+              "FOLLOW_UP": {
+                "enforcement": "word_count",
+                "creative_brief_adjustment": "Use archetype-specific target from global constraints"
+              }
+            }
+          }
+        },
+        "phase_3_update_archetype_explicit_configs": {
+          "location": "/4.reasoning.archetype_explicit_configs",
+          "changes_per_archetype": {
+            "C_LEVEL": {
+              "global_strategy": {
+                "message_format_template": "ANALYST_LEVEL_PITCH (no change)",
+                "word_count_strategy": {
+                  "source": "REFERENCE → 2.5.global_message_constraints",
+                  "INMAIL": "→ get_target_word_count('INMAIL', 'C_LEVEL') = 240",
+                  "FOLLOW_UP": "→ get_target_word_count('FOLLOW_UP', 'C_LEVEL') = 160",
+                  "CONNECTION_REQ": "→ char_limit = 330 (word count not applicable)"
+                }
+              },
+              "reasoning_params": "No changes (reasoning params independent of constraints)"
+            },
+            "EXECUTIVE": {
+              "global_strategy": {
+                "message_format_template": "OPERATIONAL_PITCH (no change)",
+                "word_count_strategy": {
+                  "source": "REFERENCE → 2.5.global_message_constraints",
+                  "INMAIL": "→ get_target_word_count('INMAIL', 'EXECUTIVE') = 225",
+                  "FOLLOW_UP": "→ get_target_word_count('FOLLOW_UP', 'EXECUTIVE') = 150",
+                  "CONNECTION_REQ": "→ char_limit = 330 (word count not applicable)"
+                }
+              }
+            },
+            "SENIOR_TA": {
+              "global_strategy": {
+                "message_format_template": "EXECUTIVE_CANDIDATE_PITCH (no change)",
+                "word_count_strategy": {
+                  "source": "REFERENCE → 2.5.global_message_constraints",
+                  "INMAIL": "→ get_target_word_count('INMAIL', 'SENIOR_TA') = 210",
+                  "FOLLOW_UP": "→ get_target_word_count('FOLLOW_UP', 'SENIOR_TA') = 145",
+                  "CONNECTION_REQ": "→ char_limit = 330 (word count not applicable)"
+                }
+              }
+            },
+            "RECRUITER": {
+              "global_strategy": {
+                "message_format_template": "SKILL_TO_ROLE_MAPPING (no change)",
+                "word_count_strategy": {
+                  "source": "REFERENCE → 2.5.global_message_constraints",
+                  "INMAIL": "→ get_target_word_count('INMAIL', 'RECRUITER') = 200",
+                  "FOLLOW_UP": "→ get_target_word_count('FOLLOW_UP', 'RECRUITER') = 140",
+                  "CONNECTION_REQ": "→ char_limit = 330 (word count not applicable)"
+                }
+              }
+            }
+          }
+        },
+        "phase_4_update_generation_logic": {
+          "location": "/5.output.assembly_engine",
+          "enhancement": "Make word count targets route and archetype aware",
+          "implementation": {
+            "step_1": "Determine route (CONNECTION_REQ, INMAIL, or FOLLOW_UP)",
+            "step_2": "Determine archetype (C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER)",
+            "step_3": "Call get_target_word_count(route, archetype)",
+            "step_4": "If route is CONNECTION_REQ, use char_limit instead",
+            "step_5": "Pass target to generation engine",
+            "step_6": "Validate output against same constraints"
+          }
+        }
+      },
+      "testing_requirements": {
+        "test_cases": [
+          {
+            "test_id": "TC-v10.21-003-01",
+            "description": "Verify C_LEVEL INMAIL targets 240 words from global constraints",
+            "expected_result": "Generated message ~240 words"
+          },
+          {
+            "test_id": "TC-v10.21-003-02",
+            "description": "Verify RECRUITER FOLLOW_UP targets 140 words from global constraints",
+            "expected_result": "Generated message ~140 words"
+          },
+          {
+            "test_id": "TC-v10.21-003-03",
+            "description": "Verify CONNECTION_REQ ignores word count, uses char limit",
+            "expected_result": "Generated message ≤330 chars regardless of archetype"
+          },
+          {
+            "test_id": "TC-v10.21-003-04",
+            "description": "Test constraint update propagation to archetypes",
+            "expected_result": "Changing global INMAIL C_LEVEL target changes generation behavior"
+          },
+          {
+            "test_id": "TC-v10.21-003-05",
+            "description": "Verify creative brief loads route-aware constraints",
+            "expected_result": "get_creative_brief('C_LEVEL', 'INMAIL') returns 240 word target"
+          }
+        ],
+        "regression_tests": [
+          "All archetype-specific generation tests from v10.20 still pass",
+          "Word count distributions by archetype unchanged",
+          "Creative brief tone and structure unchanged",
+          "Only source of word count values changed (now global constraints)"
+        ]
+      },
+      "migration_steps": {
+        "step_1": "Update creative_brief section to add route-awareness",
+        "step_2": "Replace hardcoded word counts with get_target_word_count() calls",
+        "step_3": "Update archetype_explicit_configs to reference global constraints",
+        "step_4": "Update assembly_engine to use route + archetype for word count resolution",
+        "step_5": "Run full test suite to verify parity",
+        "step_6": "Document new constraint resolution flow"
+      },
+      "rollback_procedure": {
+        "trigger": "If word count targeting breaks or archetypes generate incorrect lengths",
+        "steps": [
+          "Restore hardcoded word counts in creative_brief",
+          "Restore hardcoded values in archetype_explicit_configs",
+          "Remove route-awareness from creative brief loading",
+          "Restore direct word count access in assembly_engine",
+          "Verify system returns to v10.20 behavior"
+        ]
+      },
+      "benefits": {
+        "centralization": "100% of constraint values now in single location",
+        "flexibility": "Easy to add new routes or archetypes with automatic constraint inheritance",
+        "consistency": "Impossible for archetype targets to drift from global constraints",
+        "maintainability": "Single location to update for constraint changes"
+      }
+    }
+  ],
+
+  "integration_order": {
+    "sequence": [
+      {
+        "order": 1,
+        "patch": "PATCH-v10.21-001",
+        "reason": "Must create global constraints before other patches can reference them",
+        "estimated_time": "2-3 hours",
+        "blocking": true
+      },
+      {
+        "order": 2,
+        "patch": "PATCH-v10.21-002",
+        "reason": "Route consolidation simplifies constraint mapping",
+        "estimated_time": "1-2 hours",
+        "blocking": false
+      },
+      {
+        "order": 3,
+        "patch": "PATCH-v10.21-003",
+        "reason": "Archetype migration completes centralization",
+        "estimated_time": "1-2 hours",
+        "blocking": false
+      }
+    ],
+    "total_estimated_time": "4-7 hours",
+    "dependencies": {
+      "PATCH-v10.21-002": ["PATCH-v10.21-001"],
+      "PATCH-v10.21-003": ["PATCH-v10.21-001"]
+    }
+  },
+
+  "testing_strategy": {
+    "unit_tests": {
+      "patch_001": [
+        "Test get_global_constraint() returns correct values",
+        "Test validate_against_global_constraint() validates correctly",
+        "Test get_target_word_count() resolves archetype targets",
+        "Test constraint updates propagate to all consumers"
+      ],
+      "patch_002": [
+        "Test SHORT_NEW route removed from all sections",
+        "Test LONG_NEW route removed from all sections",
+        "Test route override validation rejects removed routes",
+        "Test default routing logic updated"
+      ],
+      "patch_003": [
+        "Test creative_brief loads route-aware constraints",
+        "Test archetype configs reference global constraints",
+        "Test word count targeting uses global values",
+        "Test generation engine applies correct targets"
+      ]
+    },
+    "integration_tests": {
+      "end_to_end_flows": [
+        "Test CONNECTION_REQ generation with global constraints",
+        "Test INMAIL generation with archetype-specific targets",
+        "Test FOLLOW_UP generation with global constraints",
+        "Test constraint violation detection across all routes"
+      ],
+      "cross_patch_validation": [
+        "Test constraint changes affect all consuming sections",
+        "Test route consolidation doesn't break generation",
+        "Test archetype targeting works with consolidated routes"
+      ]
+    },
+    "regression_tests": {
+      "v10_20_parity": [
+        "All v10.20 test cases must still pass",
+        "Generated messages must have identical characteristics",
+        "Constraint enforcement must be identical",
+        "Only internal architecture changed, not behavior"
+      ]
+    },
+    "acceptance_criteria": {
+      "functional": [
+        "All 30 v10.20 test cases pass with v10.21",
+        "Zero change to generated message quality or structure",
+        "Constraint violations detected identically to v10.20"
+      ],
+      "architectural": [
+        "All constraint values in single location (2.5.global_message_constraints)",
+        "All consumers reference global constraints via API",
+        "Zero hardcoded constraint values outside global config",
+        "Only 3 routes remain (CONNECTION_REQ, INMAIL, FOLLOW_UP)"
+      ],
+      "performance": [
+        "No degradation in generation speed",
+        "Constraint resolution adds <10ms overhead",
+        "Memory footprint unchanged or reduced"
+      ]
+    }
+  },
+
+  "deployment": {
+    "pre_deployment_checklist": [
+      "Verify section 2.5.global_message_constraints created",
+      "Verify API helper functions implemented",
+      "Verify all route references updated to use API",
+      "Verify all QA rule references updated",
+      "Verify all validation gate references updated",
+      "Verify SHORT_NEW and LONG_NEW removed from all sections",
+      "Verify archetype configs reference global constraints",
+      "Run full v10.20 regression test suite",
+      "Run v10.21 specific test suite",
+      "Verify constraint change procedure documented"
+    ],
+    "deployment_procedure": {
+      "step_1": "Deploy to staging environment",
+      "step_2": "Run full test suite in staging",
+      "step_3": "Verify constraint resolution working",
+      "step_4": "Generate 10 sample messages per route",
+      "step_5": "Compare samples to v10.20 outputs",
+      "step_6": "If identical, proceed to production",
+      "step_7": "Deploy to production during low-traffic window",
+      "step_8": "Monitor for 24 hours",
+      "step_9": "If stable, mark v10.21 as production-ready"
+    },
+    "monitoring": {
+      "metrics_to_track": [
+        "Constraint resolution success rate (target: 100%)",
+        "API call latency (target: <5ms)",
+        "Validation pass rate (target: same as v10.20)",
+        "User-reported route confusion (target: 0)",
+        "Generation failures (target: 0 increase from v10.20)"
+      ],
+      "alerting_thresholds": {
+        "constraint_resolution_failure": ">0%",
+        "api_call_latency": ">10ms",
+        "validation_pass_rate_drop": ">1%",
+        "generation_failures": ">5% increase"
+      }
+    },
+    "rollback_triggers": [
+      "Constraint resolution fails for any route",
+      "API functions return incorrect values",
+      "Validation behavior differs from v10.20",
+      "Generation quality degrades",
+      "User confusion with 3-route system increases"
+    ]
+  },
+
+  "documentation": {
+    "constraint_change_procedure": {
+      "title": "How to Update Message Length Constraints",
+      "steps": [
+        "Step 1: Open /2.5.global_message_constraints",
+        "Step 2: Locate route or component to modify",
+        "Step 3: Update constraint values",
+        "Step 4: Save changes",
+        "Step 5: Restart system (schema changes require restart)",
+        "Step 6: Verify changes propagated to all consumers",
+        "Step 7: Run test suite to validate",
+        "Step 8: Monitor for 24 hours"
+      ],
+      "examples": [
+        {
+          "change": "Increase INMAIL C_LEVEL target from 240 to 250 words",
+          "location": "2.5.global_message_constraints.routes.INMAIL.target_by_archetype.C_LEVEL",
+          "before": "\"C_LEVEL\": 240",
+          "after": "\"C_LEVEL\": 250",
+          "impact": "All C_LEVEL INMAIL messages will target 250 words"
+        },
+        {
+          "change": "Add new route constraint",
+          "location": "2.5.global_message_constraints.routes",
+          "before": "{ CONNECTION_REQ: {...}, INMAIL: {...}, FOLLOW_UP: {...} }",
+          "after": "{ CONNECTION_REQ: {...}, INMAIL: {...}, FOLLOW_UP: {...}, NEW_ROUTE: {...} }",
+          "impact": "New route automatically available to all consumers"
+        }
+      ]
+    },
+    "route_selection_guide": {
+      "title": "Which Route Should I Use?",
+      "CONNECTION_REQ": {
+        "use_when": "Sending a LinkedIn connection request",
+        "platform": "LinkedIn connection request button",
+        "cost": "Free",
+        "constraints": "330 characters including signature",
+        "features": "Micro CTA, simplified signature, no subject line"
+      },
+      "INMAIL": {
+        "use_when": "Sending a premium InMail message",
+        "platform": "LinkedIn InMail",
+        "cost": "1 InMail credit",
+        "constraints": "180-250 words (archetype-specific targets)",
+        "features": "Subject line, expanded CTA with dates, professional signature"
+      },
+      "FOLLOW_UP": {
+        "use_when": "Following up with existing connection",
+        "platform": "LinkedIn messaging",
+        "cost": "Free",
+        "constraints": "120-170 words (archetype-specific targets)",
+        "features": "Warm signature, continuity reference, standard CTA"
+      }
+    },
+    "migration_guide_for_users": {
+      "title": "Migrating from v10.20 to v10.21",
+      "breaking_changes": "None - v10.21 is 100% backwards compatible in behavior",
+      "removed_routes": {
+        "SHORT_NEW": {
+          "replacement": "Use FOLLOW_UP for existing connections, CONNECTION_REQ for new",
+          "constraint_mapping": "SHORT_NEW 140-190 words → FOLLOW_UP 120-170 words"
+        },
+        "LONG_NEW": {
+          "replacement": "Use INMAIL",
+          "constraint_mapping": "LONG_NEW 190-250 words → INMAIL 180-250 words"
+        }
+      },
+      "what_changed": [
+        "Internal architecture refactored for maintainability",
+        "All constraints centralized in single location",
+        "Route count reduced from 5 to 3 for clarity",
+        "No changes to message generation quality or characteristics"
+      ],
+      "what_stayed_same": [
+        "All archetype targeting logic unchanged",
+        "All validation rules unchanged",
+        "All QA enforcement unchanged",
+        "Generated messages identical in quality and structure"
+      ]
+    }
+  },
+
+  "success_criteria": {
+    "functional": {
+      "constraint_centralization": "100% of constraint values in 2.5.global_message_constraints",
+      "constraint_references": "0 hardcoded constraints outside global config",
+      "route_consolidation": "Exactly 3 routes remain (CONNECTION_REQ, INMAIL, FOLLOW_UP)",
+      "archetype_migration": "All archetypes reference global constraints"
+    },
+    "quality": {
+      "regression_test_pass_rate": "100% (all v10.20 tests pass)",
+      "message_generation_parity": "Generated messages identical to v10.20",
+      "validation_behavior_parity": "Constraint violations detected identically to v10.20"
+    },
+    "performance": {
+      "generation_latency": "No increase from v10.20 baseline",
+      "constraint_resolution_latency": "<10ms per call",
+      "memory_footprint": "No increase or slight reduction"
+    },
+    "usability": {
+      "route_confusion_reports": "0 (3-route system clearer than 5-route)",
+      "constraint_update_time": "<5 minutes (single location)",
+      "documentation_completeness": "All changes documented with examples"
+    }
+  },
+
+  "risk_assessment": {
+    "technical_risks": {
+      "constraint_resolution_failure": {
+        "probability": "Low",
+        "impact": "High",
+        "mitigation": "Comprehensive testing, fallback to v10.20 if API fails"
+      },
+      "performance_degradation": {
+        "probability": "Very Low",
+        "impact": "Medium",
+        "mitigation": "Cache global constraints, optimize API calls"
+      },
+      "regression_in_generation": {
+        "probability": "Very Low",
+        "impact": "High",
+        "mitigation": "No logic changes, only reference changes. 100% regression testing"
+      }
+    },
+    "user_experience_risks": {
+      "route_confusion_from_consolidation": {
+        "probability": "Low",
+        "impact": "Low",
+        "mitigation": "Clear route selection guide, fewer options reduces confusion"
+      },
+      "constraint_change_propagation_delay": {
+        "probability": "Low",
+        "impact": "Low",
+        "mitigation": "System restart required for schema changes (documented)"
+      }
+    },
+    "overall_risk_level": "LOW - Pure refactoring with no behavioral changes"
+  }
+}

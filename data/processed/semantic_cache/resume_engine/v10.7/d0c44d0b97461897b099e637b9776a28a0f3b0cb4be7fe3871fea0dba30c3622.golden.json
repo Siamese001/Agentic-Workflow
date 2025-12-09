@@ -1,0 +1,11 @@
+{
+  "canonical_form": "import pytest\nfrom workflow.runner import run_workflow\n@pytest.mark.parametrize(\"resume,jd,expect_keys\", [\n(\"Jane Doe\",\"Chief AI Officer\", [\"summary\"]),\n(\"John Smith\",\"Director, AI\", [\"summary\"]),\n(\"LowConf\",\"Analyst\", [\"events\"]),\n(\"Ambiguous\",\"Unknown\", [\"events\"]),\n])\ndef test_full_run_variants(resume,jd,expect_keys):\nout = run_workflow({\"resume\": resume, \"jd\": jd})\nfor k in expect_keys: assert k in out\n@pytest.mark.parametrize(\"scenario\", [\"batch-small\",\"batch-large\",\"parallel-merge\",\"hil-trigger\"])\ndef test_scenarios_collectively(scenario):\nout = run_workflow({\"resume\": scenario, \"jd\":\"scenario\"})\nassert isinstance(out, dict)",
+  "normalized_signature": "func:test_full_run_variants;func:test_scenarios_collectively",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_full_run_variants,test_scenarios_collectively",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions",
+    "uses_testing_framework"
+  ]
+}

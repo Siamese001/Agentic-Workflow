@@ -1,13 +1,12 @@
 """Integration tests for cross-domain schema compatibility."""
 from __future__ import annotations
-import pytest
 
-from agentic_workflow.runtime.shared.config import CONFIG, SAFETY_THRESHOLD
+from agentic_workflow.runtime.shared.config import SAFETY_THRESHOLD
 from agentic_workflow.runtime.shared.models import (
     GateDecision, ValidationSeverity, ValidationResult,
 )
 from agentic_workflow.runtime.shared.sdk_registry import (
-    SDKCategory, SDKEntry, SDK_REGISTRY,
+    SDKCategory, SDK_REGISTRY,
 )
 
 class TestConfigSchemaCompatibility:
@@ -33,7 +32,7 @@ class TestValidationModelIntegration:
         """GateDecision can be used alongside ValidationResult."""
         decisions = list(GateDecision)
         severities = list(ValidationSeverity)
-        
+
         # Both enums should be usable together
         assert len(decisions) >= 1
         assert len(severities) >= 1

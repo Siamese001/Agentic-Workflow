@@ -1,0 +1,9 @@
+{
+  "canonical_form": "class Client: # pragma: no cover - stub for tests\n\"\"\"Minimal ChromaDB client stub.\"\"\"\ndef __init__(self, *args, **kwargs):\npass\ndef get_or_create_collection(self, *args, **kwargs):\nraise NotImplementedError\ndef get_collection(self, *args, **kwargs):\nraise NotImplementedError",
+  "normalized_signature": "func:__init__;func:get_or_create_collection;func:get_collection;class:Client",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:get_or_create_collection,get_collection",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

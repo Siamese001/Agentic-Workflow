@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 
 class FetchRecipientInteractions:
     """Retrieval engine for outreach domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.cache: Dict[str, Any] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def retrieve(self, query: str, filters: Optional[Dict] = None, limit: int = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"
@@ -33,7 +33,7 @@ class FetchRecipientInteractions:
         result = RetrievalResult(items=items, total=len(items), query=query)
         self.cache[cache_key] = result
         return result
-    
+
     def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[Any]:
         """Execute query."""
         return []

@@ -1,0 +1,9 @@
+{
+  "canonical_form": "class ValidationError(Exception):\npass\ndef Field(default=..., *, default_factory=None, **_kwargs): # pragma: no cover - stub\nif default is ... and default_factory is not None:\nreturn default_factory()\nreturn default\nclass BaseModel:\n\"\"\"Minimal stand-in for pydantic.BaseModel used in tests.\"\"\"\ndef __init__(self, **data):\nannotations = getattr(self, \"__annotations__\", {})\nfor name, annotation in annotations.items():\nif name in data:\nvalue = data[name]\nelif hasattr(self, name):\nvalue = getattr(self, name)\nif value is ...:\nraise ValidationError(f\"Field '{name}' is required\")\nelse:\nraise ValidationError(f\"Field '{name}' is required\")\nsetattr(self, name, value)\nfor extra_key, extra_value in data.items():\nif extra_key not in annotations:\nsetattr(self, extra_key, extra_value)\ndef dict(self):\nannotations = getattr(self, \"__annotations__\", {})\nreturn {name: getattr(self, name) for name in annotations}\ndef model_dump(self):\nreturn self.dict()\n@classmethod\ndef model_validate(cls, data):\nif isinstance(data, cls):\nreturn data\nif isinstance(data, dict):\nreturn cls(**data)\nraise ValidationError(f\"Cannot validate data for {cls.__name__}: {data!r}\")",
+  "normalized_signature": "func:Field;func:__init__;func:dict;func:model_dump;func:model_validate;class:ValidationError;class:BaseModel",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:Field,dict,model_dump,model_validate",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

@@ -1,0 +1,1374 @@
+{
+  "metadata": {
+    "schema": "Job_Workflow",
+    "version": "v61.27.6",
+    "architecture": "Clerk, then Artist (Hardened & Production-Ready) - Complete URL Fetching, 3-File Output, Tag Sanitization, Error Recovery",
+    "description": "Production-hardened version with URL acquisition, LinkedIn authenticity extraction, competitive positioning, two-stage retrieval, quantified validation metrics, mandatory QA reporting, corrected provenance, overview customization, synthetic bullet guardrails, and comprehensive error handling. Validated against 20 critical test cases.",
+    "last_updated": "2025-10-13",
+    "patches_applied": [
+      "P061.27.1",
+      "P061.27.2",
+      "P061.27.3",
+      "P061.27.4",
+      "P061.27.5",
+      "P061.27.6-REVISED"
+    ],
+    "test_validation": {
+      "test_suite": "20-CASE-CRITICAL-PATH",
+      "pass_rate": "20/20 (100%)",
+      "test_date": "2025-10-13",
+      "validation_status": "PRODUCTION_READY"
+    },
+    "breaking_changes": "P061.27.4 introduces mandatory reporting and halt-on-failure behavior; P061.27.5 changes provenance strategy; P061.27.6 adds URL fetching and 3-file output"
+  },
+
+  "pre_flight_engine_validation": {
+    "tests": [
+      {
+        "test_id": "VALIDATE_ITERATION",
+        "description": "Verifies the engine can correctly iterate through a full array without premature termination.",
+        "input": ["A", "B", "C"],
+        "expected_output_count": 3
+      },
+      {
+        "test_id": "VALIDATE_STRUCTURAL_PARSE",
+        "description": "Verifies the engine's validation parser can correctly enforce a string-based structural rule.",
+        "input": "A | B | C | D",
+        "rule": {
+          "structure": "X | Y | Z"
+        },
+        "expected_result": "FAIL"
+      }
+    ],
+    "on_failure": "HALT_WITH_ENGINE_COMPLIANCE_ERROR"
+  },
+
+  "1.role": {
+    "description": "Defines the AI's role under the enhanced architecture.",
+    "persona": "LIC (Lifecycle Integration Catalyst)",
+    "objective": "To first act as a deterministic 'Clerk' to extract and scaffold all factual data with 100% accuracy, then act as a creative 'Artist' to generate compelling prose strictly within the bounds of the factual scaffold and the codified Creative Brief, enhanced with authentic language patterns and competitive intelligence.",
+    "system_governor": {
+      "execution_trace_log_level": "VERBOSE",
+      "transaction_manager": {
+        "enabled": true,
+        "rollback_on_failure": true,
+        "dependency_graph": {
+          "K.1": ["K.0"],
+          "K.4": ["K.0", "K.2"],
+          "K.5": ["K.0", "K.2"],
+          "K.6": ["K.0", "K.2"],
+          "K.7": ["K.6"],
+          "K.9": ["K.0", "K.2"]
+        }
+      }
+    }
+  },
+
+  "2.task": {
+    "description": "Defines the enhanced three-phase pipeline.",
+    "pipeline": [
+      {
+        "phase": 1,
+        "name": "The Clerk: Deterministic Data Scaffolding",
+        "engine": "Deterministic Extraction Engine",
+        "description": "Programmatically extracts all factual data from the user-provided source files. Includes job description acquisition from URLs with timeout handling, redirect limits, and authentication detection. Assembles a rich bullet pool (14+) for key experience sections.",
+        "on_failure": "HALT_WORKFLOW."
+      },
+      {
+        "phase": 2,
+        "name": "The Artist: Grounded Generation",
+        "engine": "Grounded Generation Engine (Gemini Pro)",
+        "description": "The creative LLM is invoked for heavily constrained tasks, governed by the rules in the 'creative_brief'. All agentic RAG calls are processed through the enhanced 'Multi-Stage Signal Quality Pipeline' with two-stage retrieval.",
+        "input": "Factual scaffold from Phase 1 + Authenticity patterns from K.0.",
+        "output": "Creative prose with authentic language."
+      },
+      {
+        "phase": 3,
+        "name": "The Assembler: Final Rendering & Validation",
+        "engine": "Deterministic Assembly Engine",
+        "description": "Programmatically combines the factual scaffold with the creative prose. Performs multi-pass tag sanitization, emoji removal, unicode normalization. Runs all final validation gates including quantified QA metrics before rendering three output files: Resume, Cover Letter, QA Report.",
+        "on_failure": "HALT_WORKFLOW_AND_GENERATE_FAILURE_REPORT."
+      }
+    ],
+    "execution_controller": {
+      "policy": "GVD (Generate -> Validate -> Display)"
+    }
+  },
+
+  "3.context": {
+    "description": "Manages the data for the enhanced 'Clerk, then Artist' pipeline.",
+    "job_description_acquisition": {
+      "enabled": true,
+      "description": "Handles job description retrieval from URLs or direct input with hardened timeout and redirect handling",
+      "source_priority": ["user_provided_url", "pasted_text", "file_upload"],
+      "url_fetcher": {
+        "enabled": true,
+        "timeout_seconds": 30,
+        "timeout_enforcement": "HARD_KILL",
+        "retry_attempts": 3,
+        "redirect_limit": 5,
+        "redirect_policy": "FAIL_AFTER_LIMIT",
+        "user_agent": "Mozilla/5.0 (compatible; Job_Workflow_v61.27.6)",
+        "auth_handling": {
+          "detect_patterns": ["401", "403", "login", "sign in", "access denied", "authenticate"],
+          "on_auth_required": "FALLBACK_TO_MANUAL"
+        },
+        "encoding": "UTF-8",
+        "fallback_cascade": [
+          {
+            "level": 1,
+            "action": "RETRY_WITH_SHORTER_TIMEOUT",
+            "timeout": 15,
+            "trigger": "TIMEOUT_EXCEEDED"
+          },
+          {
+            "level": 2,
+            "action": "TRY_CACHED_VERSION",
+            "trigger": "RETRY_FAILED"
+          },
+          {
+            "level": 3,
+            "action": "PROMPT_MANUAL_INPUT",
+            "trigger": "CACHE_MISS",
+            "message": "Unable to fetch job description. Please paste the text directly."
+          }
+        ]
+      }
+    },
+    "data_scaffolding_engine": {
+      "policy": "EXTRACT_ALL_REQUIRED_SECTIONS_DEEP",
+      "targets": [
+        "owner",
+        "executive_summary",
+        "professional_experience",
+        "education",
+        "certifications_and_credentials",
+        "strategic_and_technical_competencies"
+      ],
+      "on_missing_data": "HALT_AND_REPORT",
+      "description": "The programmatic 'Clerk' that extracts factual data after the Airlock Protocol resolves any source conflicts."
+    },
+    "pre_flight_file_manifest_check": {
+      "blocking": true,
+      "required_file_manifest": [
+        "App_Schema_v4.json",
+        "SaaS Roles.json",
+        "Hyphenation_Rules.json",
+        "App_Tracker_QA_v5.json"
+      ]
+    },
+    "industry_classification": {
+      "taxonomy": "GICS_SIC",
+      "classification_logic": {
+        "primary": "Extract from company website",
+        "secondary": "Search '[company] GICS sector'",
+        "tertiary": "Infer from job description"
+      },
+      "output": {
+        "gics_sector": "string",
+        "gics_industry": "string",
+        "sic_code": "string"
+      }
+    }
+  },
+
+  "4.reasoning": {
+    "description": "The creative 'Artist' phase of the workflow with enhanced authenticity and competitive intelligence.",
+    "context_passing_protocol": {
+      "policy": "MERGE_OUTPUT_TO_CANONICAL_CONTEXT",
+      "on_conflict": "HALT"
+    },
+    "creative_brief": {
+      "headline": {
+        "word_count": [8, 12],
+        "char_count_max": 90,
+        "structure": "Domain | Leadership | Value Prop",
+        "guidance": "Must incorporate differentiator keywords from the Competitive Analysis.",
+        "segment_word_limit": {
+          "max": 3,
+          "exclusions": ["and", "a", "an", "the", "in", "on", "at", "for", "to", "of"]
+        }
+      },
+      "executive_summary": {
+        "word_count": [120, 140],
+        "voice": "third_person_implied",
+        "forbidden_patterns": ["I have", "My expertise", "At [COMPANY], I"],
+        "guidance": "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Use authenticity patterns from LinkedIn analysis."
+      },
+      "experience_bullets": {
+        "provenance_strategy": "JD Fit-Based Dynamic Model",
+        "provenance_map": {
+          "Unify Consulting": "3V-3T-1S",
+          "IBM": "2V-3T-1S"
+        },
+        "default_provenance_fallback": "10V-0A-0S",
+        "selection_logic": "Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)",
+        "overview_word_count": {
+          "unify": [25, 33],
+          "ibm": [22, 28]
+        },
+        "unify_bullet_word_count": [28, 33],
+        "ibm_bullet_word_count": [24, 30],
+        "guidance": "Must use generic technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+      },
+      "experience_overview": {
+        "unify_word_count": [25, 33],
+        "ibm_word_count": [22, 28],
+        "purpose": "Company context + thematic framing incorporating K.0 themes and K.2 competitive differentiators",
+        "structure": "As [TITLE] at [COMPANY], [SCOPE/CONTEXT with K.2 differentiators]",
+        "k0_k2_weighting": {
+          "k0_themes": 0.70,
+          "k2_differentiators": 0.30,
+          "rationale": "Authenticity first, strategic positioning second"
+        },
+        "forbidden_patterns": ["Responsible for", "Managed a team", "Worked on", "Duties included"],
+        "guidance": "Must blend K.0 thematic keywords with K.2 competitive positioning. Should frame the role scope WITHOUT repeating specific achievements from bullets. Use authenticity patterns from K.0 LinkedIn analysis."
+      },
+      "synthetic_bullet_guardrails": {
+        "grounding_requirement": {
+          "policy": "STRICT",
+          "description": "Synthetic bullets must be plausible within documented role scope, level, and time period",
+          "validation": "Cross-check against Clerk scaffold for role responsibilities and seniority"
+        },
+        "generation_rules": {
+          "subtlety_level": "HIGH",
+          "naturalness_score_target": ">0.85",
+          "verb_management": {
+            "forbidden_verbs": [
+              "Pioneered", "Spearheaded", "Orchestrated", "Architected",
+              "Championed", "Revolutionized", "Transformed", "Catalyzed",
+              "Synergized", "Evangelized", "Envisioned"
+            ],
+            "preferred_verb_pools": {
+              "technical": ["Developed", "Built", "Implemented", "Designed", "Deployed", "Configured"],
+              "leadership": ["Led", "Managed", "Directed", "Guided", "Coordinated", "Oversaw"],
+              "improvement": ["Improved", "Optimized", "Enhanced", "Streamlined", "Reduced", "Increased"],
+              "delivery": ["Delivered", "Launched", "Released", "Completed", "Shipped", "Executed"]
+            },
+            "rotation_policy": {
+              "max_uses_per_verb": 2,
+              "min_unique_verbs": 12,
+              "enforce_variety": true,
+              "tracking_scope": "ALL_GENERATED_BULLETS",
+              "tracking_mechanism": {
+                "enabled": true,
+                "data_structure": "verb_usage_map",
+                "reset_policy": "PER_WORKFLOW_EXECUTION"
+              }
+            }
+          },
+          "authenticity_injection": {
+            "metrics": {
+              "use_specific_numbers": true,
+              "avoid_round_numbers": true,
+              "round_number_detection": {
+                "enabled": true,
+                "patterns": ["\\b(10|20|25|30|40|50|60|70|75|80|90|100)%?\\b", "\\b\\$[1-9](\\.0+)?M\\b"],
+                "on_detection": "REGENERATE_WITH_VARIATION",
+                "variation_range": [-3, 3]
+              },
+              "examples": ["37%", "$4.2M", "18-month", "127 team members"]
+            },
+            "phrasing": {
+              "avoid_buzzwords": true,
+              "use_plain_language": true,
+              "industry_specific_only": true
+            }
+          }
+        },
+        "ai_detection_defense": {
+          "enabled": true,
+          "integration": {
+            "service": "INTERNAL_HEURISTIC_SCORER",
+            "fallback": "PERPLEXITY_BURSTINESS_CHECK"
+          },
+          "validation": {
+            "ai_detection_threshold": 0.25,
+            "perplexity_range": [35, 55],
+            "burstiness_range": [0.35, 0.55]
+          },
+          "on_threshold_exceeded": "REGENERATE_WITH_HIGHER_VARIETY"
+        },
+        "metric_requirement": {
+          "policy": "PREFERRED",
+          "description": "Synthetic bullets should include quantified impact when contextually appropriate",
+          "examples": ["$##M revenue", "##% improvement", "## team members"]
+        },
+        "k2_integration_requirement": {
+          "policy": "MANDATORY",
+          "description": "Synthetic bullets must incorporate at least one competitive differentiator keyword from K.2",
+          "validation": "Ensure K.2.differentiator_keywords present in synthetic content"
+        },
+        "source_traceability": {
+          "policy": "MANDATORY",
+          "description": "Tag all synthetic bullets in QA report for user transparency",
+          "output_format": "Bullet #N [SYNTHETIC] - word_count - status"
+        }
+      },
+      "leadership_competencies": {
+        "title": "Strategic & Technical Competencies",
+        "sourcing_strategy": "Hybrid 'Internal-First' Model: Map -> Adapt -> Gap-Fill",
+        "count": 6,
+        "word_count_per_desc": [24, 30]
+      },
+      "cover_letter": {
+        "structure": "1-intro-2-body",
+        "word_count_per_para": [85, 100],
+        "min_specific_details": 4,
+        "forbidden_patterns": ["At [COMPANY], I...", "During my time at..."],
+        "signature_generation_policy": "DYNAMIC_FROM_OWNER_CONTACT",
+        "dependency_validation": {
+          "enabled": true,
+          "required_inputs": {
+            "k2_differentiators": {
+              "min_count": 1,
+              "on_missing": "EXTRACT_FROM_JD"
+            },
+            "k0_themes": {
+              "min_count": 1,
+              "on_missing": "USE_GENERIC_THEMES"
+            }
+          }
+        },
+        "no_gaps_template": {
+          "enabled": true,
+          "trigger": "NO_SPECIFIC_GAPS_IDENTIFIED",
+          "min_words": 200,
+          "word_count_validation": {
+            "enabled": true,
+            "tolerance": 10,
+            "on_underflow": "REGENERATE",
+            "on_overflow": "SMART_TRUNCATE"
+          },
+          "template": {
+            "paragraph_1": {
+              "focus": "Interest and alignment",
+              "words": 60,
+              "word_range": [55, 65]
+            },
+            "paragraph_2": {
+              "focus": "Relevant experience highlights",
+              "words": 100,
+              "word_range": [95, 110]
+            },
+            "paragraph_3": {
+              "focus": "Value proposition and closing",
+              "words": 60,
+              "word_range": [55, 65]
+            }
+          }
+        }
+      },
+      "optimized_skills_list": {
+        "sourcing_strategy": "Top 12 JD Skills & Cross-Check",
+        "logic": "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection of the two.",
+        "count": 12
+      },
+      "deduplication_matrix": {
+        "thresholds": {
+          "K.4_vs_K.5": {"cosine": 0.50, "token_overlap": 0.25},
+          "K.4_vs_K.6": {"cosine": 0.50, "token_overlap": 0.30},
+          "K.4_vs_K.7": {"cosine": 0.50, "token_overlap": 0.30},
+          "K.4_vs_K.9": {"cosine": 0.40, "token_overlap": 0.20},
+          "K.5_vs_K.6": {"cosine": 0.40, "token_overlap": 0.25},
+          "K.5_vs_K.7": {"cosine": 0.40, "token_overlap": 0.25},
+          "K.5_vs_K.9": {"cosine": 0.50, "token_overlap": 0.30},
+          "K.6_vs_K.7": {"cosine": 0.75, "token_overlap": 0.40},
+          "K.6_vs_K.9": {"cosine": 0.60, "token_overlap": 0.35},
+          "K.7_vs_K.9": {"cosine": 0.60, "token_overlap": 0.35},
+          "within_K.6": {"cosine": 0.75, "note": "Internal bullet dedup"},
+          "within_K.7": {"cosine": 0.75, "note": "Internal bullet dedup"},
+          "K.5_overview_vs_K.5_bullets": {
+            "cosine": 0.60,
+            "token_overlap": 0.20,
+            "note": "Unify overview must be thematically distinct from all 7 bullets",
+            "check_count": 7
+          },
+          "K.6_overview_vs_K.6_bullets": {
+            "cosine": 0.60,
+            "token_overlap": 0.20,
+            "note": "IBM overview must be thematically distinct from all 6 bullets",
+            "check_count": 6
+          }
+        },
+        "enforcement": "BLOCKING"
+      },
+      "ats_position_weighting": {
+        "K.6_bullets": {
+          "bullet_1": 1.20,
+          "bullet_2": 1.15,
+          "bullets_3_7": 1.00
+        },
+        "rationale": "ATS prioritizes top bullets for keyword matching"
+      },
+      "ai_detection_defense": {
+        "max_verb_repetition": 2,
+        "required_verb_variety": 0.7,
+        "lexical_diversity_target": 0.65,
+        "enforcement": "Regenerate if thresholds violated"
+      }
+    },
+    "hardcoded_config": {
+      "K.0": {
+        "description": "Agentic Thematic Resonance Analysis + LinkedIn Authenticity + Competitive Intel",
+        "output_schema": {
+          "primary_theme": "string",
+          "secondary_themes": ["string"],
+          "related_concepts": ["string"],
+          "authenticity_patterns": {
+            "executive_summary_patterns": ["string"],
+            "achievement_verb_patterns": ["string"],
+            "metric_presentation_patterns": ["string"],
+            "competency_phrasing_patterns": ["string"]
+          },
+          "competitive_intelligence": {
+            "peer_jds_analyzed": ["string"],
+            "table_stakes_keywords": ["string"],
+            "differentiator_keywords": ["string"]
+          }
+        },
+        "temp": 0.3,
+        "rag_type": "Agentic",
+        "rag_total_calls": 50,
+        "rag_distribution": {
+          "thematic_analysis": 20,
+          "linkedin_authenticity": 15,
+          "competitive_peer_analysis": 15
+        },
+        "linkedin_search_strategy": {
+          "target_profiles": "Senior executives in similar roles",
+          "extraction_focus": ["opening_statements", "achievement_phrasing", "metric_presentation"],
+          "minimum_profiles": 10,
+          "authenticity_transformation": {
+            "avoid": "Expert in machine learning and AI",
+            "prefer": "Built production ML systems at scale with measurable business impact"
+          }
+        },
+        "competitive_analysis": {
+          "peer_jd_discovery": {
+            "minimum_peer_jds": 3,
+            "search_pattern": "[job_title] at [peer_company] OR [competitor]",
+            "selection_criteria": ["same_industry", "similar_size", "recent_posting"]
+          },
+          "table_stakes_threshold": 0.8,
+          "differentiator_threshold": 0.2
+        },
+        "rag_hops": 3,
+        "claim_verification_mode": "strict",
+        "verification_method": ["self_critique_guardrail", "external_fact_checking"],
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 6,
+        "tot_branches": 4,
+        "min_tot_depth": 4,
+        "self_consistency": 10,
+        "reflexion": true,
+        "max_reflexion_loops": 3
+      },
+      "K.1": {
+        "description": "Generates the executive summary.",
+        "input_dependencies": ["K.0.ThematicKeywords", "K.0.authenticity_patterns"],
+        "temp": 0.9,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 4,
+        "rag_hops": 2,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 3,
+        "min_tot_depth": 2,
+        "self_consistency": 8,
+        "reflexion": true
+      },
+      "K.2": {
+        "description": "Runs competitive analysis.",
+        "temp": 0.3,
+        "rag_type": "Agentic",
+        "rag_total_calls": 24,
+        "rag_hops": 3,
+        "claim_verification_mode": "strict",
+        "verification_method": ["self_critique_guardrail"],
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 5,
+        "min_tot_depth": 4,
+        "self_consistency": 8,
+        "reflexion": true,
+        "max_reflexion_loops": 3,
+        "fallback_on_no_differentiators": {
+          "enabled": true,
+          "strategy": "EXTRACT_FROM_JD",
+          "extraction_logic": {
+            "method": "TF_IDF_KEYWORD_EXTRACTION",
+            "min_keywords": 5,
+            "fallback": "USE_COMMON_INDUSTRY_TERMS"
+          }
+        }
+      },
+      "K.3": {
+        "description": "Looks up internal role data.",
+        "temp": 0.2,
+        "rag_type": "Internal",
+        "rag_total_calls": 0,
+        "rag_hops": 1,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": false,
+        "cot_min_paths": null,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 2,
+        "reflexion": false,
+        "rag_internal_source": "SaaS Roles.json"
+      },
+      "K.4": {
+        "description": "Generates the resume headline.",
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 17,
+        "rag_hops": 3,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 4,
+        "tot_branches": 3,
+        "min_tot_depth": 2,
+        "self_consistency": 6,
+        "reflexion": true,
+        "input_dependencies": ["K.0.competitive_intelligence.differentiator_keywords"]
+      },
+      "K.5": {
+        "description": "Generates Unify Consulting section (overview + 7 bullets with 3V-3T-1S provenance)",
+        "input_dependencies": [
+          "K.0.secondary_themes",
+          "K.0.authenticity_patterns.achievement_verb_patterns",
+          "K.2.differentiator_keywords"
+        ],
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 5,
+        "rag_hops": 2,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 3,
+        "tot_branches": 2,
+        "min_tot_depth": 2,
+        "self_consistency": 6,
+        "reflexion": true
+      },
+      "K.6": {
+        "description": "Generates IBM section (overview + 6 bullets with 2V-3T-1S provenance)",
+        "input_dependencies": [
+          "K.0.related_concepts",
+          "K.0.authenticity_patterns.metric_presentation_patterns",
+          "K.2.differentiator_keywords"
+        ],
+        "temp": 0.5,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 21,
+        "rag_hops": 3,
+        "claim_verification_mode": "balanced",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 2,
+        "tot_branches": 2,
+        "min_tot_depth": 2,
+        "self_consistency": 4,
+        "reflexion": true
+      },
+      "K.7": {
+        "description": "Reserved for future section customization (Tradersense/EY/Early Career)",
+        "status": "DORMANT",
+        "enabled": false,
+        "note": "Sections 3-5 currently copy/paste from master resume. Activate this K-node when customization is needed by setting enabled: true and restoring RAG configuration.",
+        "input_dependencies": [],
+        "temp": 0.5,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 0,
+        "rag_hops": 0,
+        "claim_verification_mode": "permissive",
+        "hybrid_cot_tot": false,
+        "cot_min_paths": null,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 1,
+        "reflexion": false
+      },
+      "K.8": {
+        "description": "Generates Strategic & Technical Competencies.",
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 10,
+        "rag_hops": 2,
+        "claim_verification_mode": "strict",
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 3,
+        "tot_branches": 2,
+        "min_tot_depth": 2,
+        "self_consistency": 6,
+        "reflexion": true,
+        "input_dependencies": ["K.0.authenticity_patterns.competency_phrasing_patterns"]
+      },
+      "K.9": {
+        "description": "Generates standard agentic cover letter.",
+        "temp": 0.9,
+        "rag_type": "Agentic",
+        "rag_total_calls": 30,
+        "rag_hops": 4,
+        "claim_verification_mode": "strict",
+        "verification_method": ["self_critique_guardrail", "external_fact_checking"],
+        "hybrid_cot_tot": true,
+        "cot_min_paths": 4,
+        "tot_branches": 4,
+        "min_tot_depth": 3,
+        "self_consistency": 10,
+        "reflexion": true,
+        "max_reflexion_loops": 3
+      },
+      "K.10": {
+        "description": "Internal reasoning validation step.",
+        "temp": 0.2,
+        "rag_type": "Internal",
+        "rag_total_calls": 0,
+        "rag_hops": 1,
+        "claim_verification_mode": "permissive",
+        "hybrid_cot_tot": false,
+        "cot_min_paths": null,
+        "tot_branches": null,
+        "min_tot_depth": null,
+        "self_consistency": 2,
+        "reflexion": false
+      },
+      "K.11": {
+        "description": "Generates the optimized skills list.",
+        "temp": 0.1,
+        "rag_type": "Internal",
+        "rag_total_calls": 0,
+        "rag_hops": 1,
+        "claim_verification_mode": "permissive",
+        "hybrid_cot_tot": false,
+        "self_consistency": 1,
+        "reflexion": false
+      }
+    }
+  },
+
+  "5.output": {
+    "description": "The 'Assembler' phase of the workflow with enhanced validation and mandatory QA reporting.",
+    "file_generation": {
+      "three_file_output": {
+        "enabled": true,
+        "mandatory": true,
+        "encoding": "UTF-8",
+        "files": [
+          {
+            "id": "resume",
+            "filename": "Resume_{company_sanitized}_{date}.txt",
+            "format": "plain_text",
+            "sections": [
+              "contact_header",
+              "headline",
+              "executive_summary",
+              "professional_experience",
+              "strategic_competencies",
+              "education_certifications",
+              "skills"
+            ],
+            "tag_removal": true
+          },
+          {
+            "id": "cover_letter",
+            "filename": "CoverLetter_{company_sanitized}_{date}.txt",
+            "format": "plain_text",
+            "source": "K.9_output",
+            "min_words": 200,
+            "include_signature": true,
+            "tag_removal": true
+          },
+          {
+            "id": "qa_report",
+            "filename": "QA_Report_{company_sanitized}_{date}.md",
+            "format": "markdown",
+            "include_debug_tags": true,
+            "include_provenance": true,
+            "include_metrics": true
+          }
+        ]
+      },
+      "null_safety_enhanced": {
+        "contact_fields": {
+          "name": {"required": true, "on_null": "ERROR"},
+          "email": {"required": true, "on_null": "ERROR"},
+          "phone": {"required": false, "on_null": "OMIT"},
+          "location": {"required": false, "on_null": "OMIT"}
+        },
+        "company_identification": {
+          "required": true,
+          "on_null": "USE_FALLBACK",
+          "fallback_value": "Target_Company",
+          "fallback_source": "JD_TITLE_EXTRACTION"
+        }
+      }
+    },
+    "enhanced_rendering_pipeline": {
+      "pipeline_stages": [
+        "content_generation",
+        "tag_sanitization_multipass",
+        "unicode_normalization",
+        "special_char_sanitization",
+        "format_application",
+        "section_assembly",
+        "file_writing"
+      ],
+      "encoding_handler": {
+        "default": "UTF-8",
+        "unicode_normalization": "NFKC",
+        "filename_encoding": "ASCII_TRANSLITERATE",
+        "special_chars": {
+          "preserve_in_content": ["é", "ñ", "ü", "ç"],
+          "transliterate_in_filenames": {
+            "é": "e", "è": "e", "ê": "e",
+            "ñ": "n",
+            "ü": "u", "ù": "u",
+            "ç": "c",
+            "ö": "o", "ô": "o",
+            "à": "a", "â": "a"
+          },
+          "sanitize": ["emoji", "symbols"]
+        }
+      },
+      "tag_sanitization": {
+        "stage": "PRE_FILE_WRITE",
+        "multi_pass": true,
+        "max_passes": 3,
+        "patterns": [
+          "\\[SYNTHETIC\\]",
+          "\\[VERBATIM\\]",
+          "\\[TRANSFORMED\\]",
+          "\\[DEBUG:.*?\\]",
+          "<<.*?>>",
+          "{{.*?}}",
+          "\\[\\[.*?\\]\\]"
+        ],
+        "nested_pattern_handling": {
+          "enabled": true,
+          "recursive_depth": 3
+        },
+        "apply_to": ["resume.txt", "cover_letter.txt"],
+        "preserve_in": ["qa_report.md"]
+      },
+      "emoji_sanitization": {
+        "enabled": true,
+        "stage": "POST_GENERATION",
+        "detection_pattern": "[\\u{1F300}-\\u{1F9FF}]",
+        "action": "REMOVE",
+        "apply_to": ["resume", "cover_letter"],
+        "preserve_in": []
+      }
+    },
+    "assembly_engine": {
+      "policy": "ITERATE_ALL_VALIDATE_AND_RENDER",
+      "partial_output_policy": "NO_ARTIFACTS_ON_VALIDATION_FAILURE",
+      "render_settings": {
+        "show_provenance_markers": false
+      },
+      "steps": [
+        "VALIDATE_CLERK_SCAFFOLD",
+        "RENDER_NAME",
+        "RENDER_HEADLINE",
+        "RENDER_CONTACT",
+        "EXECUTE_K0_THEMATIC_ANALYSIS",
+        "EXECUTE_K1_SUMMARY",
+        "EXECUTE_K2_COMPETITIVE",
+        "EXECUTE_K4_HEADLINE",
+        "EXECUTE_K5_UNIFY_WITH_OVERVIEW",
+        "EXECUTE_K6_IBM_WITH_OVERVIEW",
+        "COPY_SECTIONS_3_5_FROM_MASTER",
+        "EXECUTE_K8_AND_RENDER_COMPETENCIES",
+        "RENDER_EDUCATION",
+        "RENDER_CERTIFICATIONS",
+        "EXECUTE_K11_AND_RENDER_SKILLS",
+        "EXECUTE_K9_COVER_LETTER",
+        "RUN_ALL_VALIDATION_GATES",
+        "GENERATE_MANDATORY_QA_REPORT",
+        "WRITE_THREE_OUTPUT_FILES"
+      ],
+      "explicit_dependencies": {
+        "K1": ["K0"],
+        "K4": ["K0", "K2"],
+        "K5": ["K0", "K2"],
+        "K6": ["K0", "K2"],
+        "K9": ["K0", "K2"]
+      },
+      "validation_gates": [
+        {
+          "gate_id": "VG_SUMMARY_GROUNDING_CHECK",
+          "policy": "VERIFY_ALL_CLAIMS_AGAINST_BULLET_POOL",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Executive Summary (K.1) contains ungrounded claims not traceable to source bullet pool"
+        },
+        {
+          "gate_id": "VG_BULLET_HALLUCINATION_CHECK",
+          "policy": "VALIDATE_GENERATED_BULLETS_AGAINST_SOURCE_POOL",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Generated bullets in K.{node} do not trace back to validated source pool"
+        },
+        {
+          "gate_id": "VG_THEMATIC_UNIQUENESS",
+          "policy": "ENSURE_PRIMARY_THEME_APPEARS_ONCE",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Primary theme from K.0 appears multiple times - must appear only once in K.1"
+        },
+        {
+          "gate_id": "VG_CREATIVE_BRIEF_ADHERENCE",
+          "policy": "ENFORCE_ALL_CREATIVE_BRIEF_CONSTRAINTS",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "K.{node} violates creative_brief constraints: {constraint_violated}"
+        },
+        {
+          "gate_id": "VG_HEADER_INTEGRITY_CHECK",
+          "policy": "STRICT_COMPARE_HEADER_TO_SCAFFOLD",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Header information does not match factual scaffold from Clerk phase"
+        },
+        {
+          "gate_id": "VG_BULLET_PROVENANCE_CHECK",
+          "policy": "VALIDATE_BULLET_ORIGIN_AND_METRICS",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "K.{node} bullets do not meet provenance requirements: {provenance_expected}"
+        },
+        {
+          "gate_id": "VG_REDUNDANCY_CHECK",
+          "policy": "ENFORCE_GLOBAL_DEDUPLICATION_MATRIX",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Cosine similarity between {section_a} and {section_b} exceeds threshold: {actual} > {threshold}"
+        },
+        {
+          "gate_id": "VG_NATURAL_HYPHEN_PRESERVATION",
+          "policy": "ENFORCE_HYPHENATION_RULES_JSON",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Hyphenation rules violated - natural hyphens not preserved per Hyphenation_Rules.json"
+        },
+        {
+          "gate_id": "VG_COMPETENCY_WORD_COUNT_BALANCE",
+          "policy": "VALIDATE_WORD_COUNT_VARIANCE",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "K.8 competency word counts show excessive variance - must be balanced across all 6"
+        },
+        {
+          "gate_id": "VG_BULLET_PUNCTUATION",
+          "policy": "ENSURE_ALL_BULLETS_END_WITH_PERIOD",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Bullets in K.{node} do not all end with periods"
+        },
+        {
+          "gate_id": "VG_SUMMARY_VOICE_TENSE",
+          "policy": "ENFORCE_THIRD_PERSON_PAST_TENSE",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Executive summary violates third-person voice requirement or uses forbidden patterns"
+        },
+        {
+          "gate_id": "VG_AGENTIC_OUTPUT_VALIDATION",
+          "policy": "ENSURE_DETAILED_TRACE_NOT_SUMMARY",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Agentic output appears to be summarized rather than detailed - requires full trace"
+        },
+        {
+          "gate_id": "VG_COMPANY_PRODUCT_COMPREHENSIVE",
+          "policy": "NO_TARGET_PRODUCTS_IN_PAST_ROLES",
+          "apply_to": ["K.6", "K.7", "K.8", "K.9"],
+          "validation": "Ensure no target company products in non-target experience",
+          "generic_mapping": {
+            "Snowflake": "cloud data platform",
+            "Databricks": "unified analytics platform",
+            "Tableau": "business intelligence tool"
+          },
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "Target company product '{product}' found in K.{node} - must use generic term '{generic_term}'",
+          "severity": "CRITICAL"
+        },
+        {
+          "gate_id": "VG_OVERVIEW_DEDUPLICATION",
+          "policy": "ENFORCE_OVERVIEW_VS_BULLETS_SEPARATION",
+          "description": "Validates that section overviews are thematically distinct from their bullets",
+          "checks": [
+            {
+              "section": "K.5_Unify",
+              "comparisons": 7,
+              "threshold": 0.60,
+              "description": "Unify overview vs each of 7 bullets"
+            },
+            {
+              "section": "K.6_IBM",
+              "comparisons": 6,
+              "threshold": 0.60,
+              "description": "IBM overview vs each of 6 bullets"
+            }
+          ],
+          "validation_strategy": "FAIL_FAST",
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "K.{node} overview shows {cosine_score} similarity with bullet #{bullet_num} (threshold: 0.60). Overview must be thematically distinct from bullet-level achievements."
+        },
+        {
+          "gate_id": "VG_SYNTHETIC_BULLET_GROUNDING",
+          "policy": "VALIDATE_SYNTHETIC_BULLETS_AGAINST_ROLE_SCOPE",
+          "description": "Ensures synthetic bullets are plausible within documented role scope and level",
+          "apply_to": ["K.5", "K.6"],
+          "validation_checks": [
+            {
+              "check": "role_scope_plausibility",
+              "method": "Cross-reference synthetic bullet claims against Clerk scaffold role responsibilities"
+            },
+            {
+              "check": "metric_presence",
+              "method": "Verify quantified impact in synthetic bullets when contextually appropriate"
+            },
+            {
+              "check": "k2_keyword_integration",
+              "method": "Confirm at least one K.2 differentiator keyword present in each synthetic bullet"
+            }
+          ],
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "K.{node} synthetic bullet #{bullet_num} failed grounding check: {failure_reason}"
+        },
+        {
+          "gate_id": "VG_OUTPUT_COMPLETENESS",
+          "policy": "ENSURE_ALL_SECTIONS_PRESENT",
+          "checks": [
+            "contact_header_exists",
+            "all_5_experience_sections_present",
+            "k8_competencies_rendered",
+            "k11_skills_rendered",
+            "k9_cover_letter_generated",
+            "qa_report_complete",
+            "all_tags_sanitized",
+            "verb_rotation_compliant",
+            "ai_detection_score_valid"
+          ],
+          "on_missing": "HALT_AND_IDENTIFY_MISSING"
+        },
+        {
+          "gate_id": "VG_QA_METRICS",
+          "thresholds": {
+            "K.1": {"company_present": "REQUIRED", "confidence": "≥0.95"},
+            "K.2": {"peer_jds": "≥3", "differentiators": "≥3"},
+            "K.4": {"words": "8-12", "chars": "≤90"},
+            "K.5": {
+              "overview_words": "25-33",
+              "bullet_words": "28-33",
+              "bullet_count": 7,
+              "provenance": "3V-3T-1S",
+              "synthetic_count": 1
+            },
+            "K.6": {
+              "overview_words": "22-28",
+              "bullet_words": "24-30",
+              "bullet_count": 6,
+              "provenance": "2V-3T-1S",
+              "synthetic_count": 1
+            },
+            "K.7": {
+              "enabled": false,
+              "note": "Dormant - sections 3-5 copy/paste from master"
+            },
+            "K.8": {"count": "6", "words": "24-30"},
+            "K.9": {"specifics": "≥4", "words": "85-100"}
+          },
+          "on_fail": "HALT_AND_GENERATE_FAILURE_REPORT",
+          "halt_message_template": "K.{node} failed QA metric: {metric_name} - Expected: {expected}, Actual: {actual}",
+          "enforcement": "BLOCKING",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    "error_handling": {
+      "recovery_strategies": [
+        {
+          "error": "URL_FETCH_FAILED",
+          "strategy": "PROMPT_FOR_TEXT_INPUT",
+          "message": "Unable to fetch job description from URL. Please paste the content."
+        },
+        {
+          "error": "URL_TIMEOUT_EXCEEDED",
+          "strategy": "CASCADE_FALLBACK",
+          "cascade": ["RETRY_15S", "TRY_CACHE", "PROMPT_MANUAL"]
+        },
+        {
+          "error": "URL_REDIRECT_LIMIT_EXCEEDED",
+          "strategy": "PROMPT_FOR_FINAL_URL",
+          "message": "Too many redirects detected. Please provide the final job description URL."
+        },
+        {
+          "error": "LINKEDIN_INSUFFICIENT_PROFILES",
+          "strategy": "USE_TEMPLATE_PATTERNS"
+        },
+        {
+          "error": "K2_NO_DIFFERENTIATORS",
+          "strategy": "EXTRACT_FROM_JD",
+          "extraction_logic": {
+            "method": "TF_IDF_KEYWORD_EXTRACTION",
+            "min_keywords": 5,
+            "fallback": "USE_COMMON_INDUSTRY_TERMS"
+          }
+        },
+        {
+          "error": "K2_EXTRACTION_FAILED",
+          "strategy": "USE_GENERIC_POSITIONING",
+          "generic_terms": ["innovation", "excellence", "leadership", "results-driven", "strategic"]
+        },
+        {
+          "error": "SYNTHETIC_AI_SCORE_HIGH",
+          "strategy": "REGENERATE_WITH_VARIATION",
+          "max_attempts": 3
+        },
+        {
+          "error": "WORD_COUNT_OVERFLOW",
+          "strategy": "SMART_TRUNCATE"
+        },
+        {
+          "error": "VERB_ROTATION_VIOLATION",
+          "strategy": "REGENERATE_BULLET",
+          "inject_variety": true
+        },
+        {
+          "error": "ROUND_NUMBER_DETECTED",
+          "strategy": "ADD_VARIATION",
+          "variation_range": [-3, 3]
+        },
+        {
+          "error": "COMPANY_NAME_NULL",
+          "strategy": "EXTRACT_FROM_JD_OR_USE_FALLBACK",
+          "fallback": "Target_Company"
+        }
+      ]
+    },
+    "qa_validation_report": {
+      "enabled": true,
+      "mandatory": true,
+      "generation_policy": "ALWAYS_GENERATE_EVEN_ON_FAILURE",
+      "filename_format": "QA_Validation_Report_{company_sanitized}_{date}.md",
+      "output_location": "/mnt/user-data/outputs/",
+      "format": "markdown_tables",
+      "structure": {
+        "execution_summary": {
+          "fields": [
+            "workflow_version",
+            "execution_timestamp_utc",
+            "company_name",
+            "overall_status",
+            "gates_passed_count",
+            "gates_total_count",
+            "k_nodes_compliant_count",
+            "k_nodes_total_count"
+          ]
+        },
+        "k_node_scorecard": {
+          "table_columns": [
+            "k_node",
+            "output_generated",
+            "overview_word_count",
+            "bullet_count",
+            "bullet_word_count_range",
+            "provenance_met",
+            "synthetic_count",
+            "status"
+          ],
+          "k_nodes_tracked": ["K.1", "K.4", "K.5", "K.6", "K.8", "K.9", "K.11"]
+        },
+        "k5_bullet_detail": {
+          "enabled": true,
+          "section_name": "Unify Consulting",
+          "table_columns": [
+            "bullet_number",
+            "word_count_actual",
+            "word_count_target",
+            "type",
+            "status"
+          ],
+          "bullet_count": 7,
+          "note": "Type field indicates: V=Verbatim, T=Transformed, S=Synthetic"
+        },
+        "k6_bullet_detail": {
+          "enabled": true,
+          "section_name": "IBM",
+          "table_columns": [
+            "bullet_number",
+            "word_count_actual",
+            "word_count_target",
+            "type",
+            "status"
+          ],
+          "bullet_count": 6,
+          "note": "Type field indicates: V=Verbatim, T=Transformed, S=Synthetic"
+        },
+        "k8_competency_detail": {
+          "enabled": true,
+          "table_columns": [
+            "competency_number",
+            "word_count_actual",
+            "word_count_target",
+            "status"
+          ],
+          "competency_count": 6
+        },
+        "critical_validation_gates": {
+          "table_columns": ["gate_id", "check_description", "status", "details"],
+          "gates_to_report": [
+            "VG_REDUNDANCY_CHECK",
+            "VG_BULLET_HALLUCINATION_CHECK",
+            "VG_COMPANY_PRODUCT_COMPREHENSIVE",
+            "VG_AI_DETECTION_DEFENSE",
+            "VG_THEMATIC_UNIQUENESS",
+            "VG_QA_METRICS",
+            "VG_OVERVIEW_DEDUPLICATION",
+            "VG_SYNTHETIC_BULLET_GROUNDING"
+          ]
+        },
+        "deduplication_detail": {
+          "reporting_policy": "VIOLATIONS_ONLY",
+          "note": "Only show pairwise checks that exceed thresholds"
+        },
+        "overview_deduplication_detail": {
+          "reporting_policy": "VIOLATIONS_ONLY",
+          "description": "Shows overview-vs-bullets similarity scores only if they exceed 0.60 threshold",
+          "table_columns": [
+            "section",
+            "overview_vs_bullet",
+            "cosine_score",
+            "threshold",
+            "status"
+          ]
+        }
+      },
+      "failure_report_template": {
+        "title": "✗ WORKFLOW HALTED - VALIDATION FAILURE",
+        "sections": [
+          {
+            "section": "failed_gate_detail",
+            "fields": [
+              "gate_id",
+              "k_node_affected",
+              "specific_item_failed",
+              "expected_value",
+              "actual_value",
+              "threshold_violated_by"
+            ]
+          },
+          {
+            "section": "why_this_matters",
+            "content": "Contextual explanation of business/technical impact"
+          },
+          {
+            "section": "action_required",
+            "options": [
+              "REGENERATE - Re-run affected K-node with stricter enforcement",
+              "ADJUST_TARGET - Update creative_brief thresholds if acceptable",
+              "MANUAL_EDIT - Edit output manually (bypasses validation)"
+            ]
+          },
+          {
+            "section": "partial_results",
+            "content": "Show what was successfully generated before failure"
+          }
+        ]
+      }
+    },
+    "resume_filename_generator": {
+      "format": "Amit_Ayer_Resume_{company_name_sanitized}_{job_title_sanitized}_{jr_suffix}_v{date}.docx",
+      "logic": "Sanitize company (max 20 chars) and job title (max 25 chars), replacing special characters with underscores. Conditionally add '_JR_' suffix if sanitized job title is less than 8 characters. Format date as MMDDYYYY.",
+      "sanitization_rules": {
+        "company_name_rules": {
+          "max_length": 20,
+          "truncation_policy": "TRUNCATE_AT_WORD_BOUNDARY",
+          "replacements": {
+            " ": "_",
+            "&": "and",
+            "/": "_",
+            "\\": "_",
+            ".": "",
+            ",": "",
+            "'": "",
+            "\"": "",
+            "(": "_",
+            ")": "_",
+            "[": "_",
+            "]": "_",
+            "{": "_",
+            "}": "_",
+            ":": "_",
+            ";": "_",
+            "!": "",
+            "?": "",
+            "@": "_at_",
+            "#": "_num_",
+            "$": "_",
+            "%": "_pct_",
+            "^": "_",
+            "*": "_",
+            "+": "_plus_",
+            "=": "_eq_",
+            "<": "_",
+            ">": "_",
+            "|": "_"
+          }
+        },
+        "job_title_rules": {
+          "max_length": 25,
+          "replacements": "SAME_AS_COMPANY"
+        }
+      }
+    },
+    "formatters": {
+      "date_formatter": {
+        "input": "YYYY-MM-DD",
+        "output": "MM-DD-YYYY"
+      }
+    },
+    "artifact_render_settings": {
+      "application_tracker": {
+        "format": "fenced_json_block"
+      }
+    }
+  },
+
+  "6.conditions": {
+    "description": "The inviolable, hardcoded rules of the v61.27.6 architecture.",
+    "critical_rules": [
+      "The 'Artist' (LLM) is forbidden from generating any factual data. All such data MUST originate from the 'Clerk's' scaffold.",
+      "The 'Artist' (LLM) MUST strictly adhere to all constraints defined in the '/4.reasoning/creative_brief'.",
+      "The workflow MUST halt if the 'Clerk' phase fails to extract a complete and structurally valid data scaffold.",
+      "The 'Assembler' phase MUST pass all defined validation gates before rendering the final output.",
+      "K.0 MUST extract authenticity patterns from ≥10 LinkedIn profiles",
+      "K.0 MUST analyze ≥3 peer JDs for competitive positioning",
+      "Two-stage retrieval MUST be used for ALL external RAG calls",
+      "Deduplication matrix thresholds MUST be enforced between all sections",
+      "Company product validation MUST apply to K.6, K.7, K.8, and K.9",
+      "Position-weighted scoring MUST apply to K.6 bullets 1-2",
+      "AI detection defense thresholds MUST be checked before output",
+      "QA metrics MUST pass for each K-node before proceeding",
+      "QA Validation Report MUST be generated for every workflow execution, regardless of success or failure",
+      "Workflow MUST halt immediately upon any validation gate failure and generate detailed failure report",
+      "On validation failure, NO resume or cover letter artifacts shall be generated - only the failure report",
+      "K.5 and K.6 MUST generate customized overview sentences (25-33 and 22-28 words respectively) incorporating K.0 themes (70%) and K.2 differentiators (30%)",
+      "Overview-vs-bullets deduplication MUST be enforced at 0.60 cosine threshold (13 total checks: 7 for Unify, 6 for IBM)",
+      "Synthetic bullets MUST pass grounding validation (plausibility, metrics, K.2 integration) before output",
+      "Total synthetic content MUST not exceed 15% (2 bullets out of 13 total) to maintain AI detection safety",
+      "URL fetching MUST enforce 30s hard timeout with KILL signal",
+      "URL fetching MUST fail after 5 redirect hops",
+      "Verb rotation tracking MUST be maintained across ALL generated bullets",
+      "Round number detection MUST be enabled and enforced",
+      "Multi-pass tag sanitization MUST remove all debug markers from production files",
+      "Emoji sanitization MUST remove all emoji characters from resume and cover letter",
+      "Unicode transliteration MUST be applied to filenames",
+      "Three output files MUST be generated: Resume.txt, CoverLetter.txt, QA_Report.md",
+      "K9 MUST validate K2 differentiators availability before generation",
+      "K2 MUST fall back to JD extraction if no differentiators found"
+    ],
+    "agentic_rag_hardening_policy": {
+      "name": "Multi-Stage Signal Quality Pipeline - Enhanced",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Two-Stage Retrieval",
+          "method": "BM25 coarse retrieval → Cross-encoder reranking → Final selection",
+          "params": {
+            "bm25_top_n": 200,
+            "bm25_k1": 1.5,
+            "bm25_b": 0.75,
+            "rerank_top_k": 20,
+            "final_k": 5,
+            "crossencoder_model": "ms-marco-MiniLM-L-6-v2",
+            "min_relevance_score": 0.75
+          }
+        },
+        {
+          "stage": 2,
+          "name": "HyDE Enrichment",
+          "method": "For JDs <200 words, generate hypothetical 400-word expansion",
+          "trigger": "jd_word_count < 200 OR keyword_density < 0.05",
+          "prompt": "Generate comprehensive job description with 8-10 skills, responsibilities, metrics"
+        },
+        {
+          "stage": 3,
+          "name": "Source Authority Tiering",
+          "method": "Tier 1 (company) > Tier 2 (news) > Tier 3 (forums)"
+        },
+        {
+          "stage": 4,
+          "name": "Self-Critique Guardrail",
+          "method": "Validate retrieved context supports claims"
+        },
+        {
+          "stage": 5,
+          "name": "External Fact-Checking",
+          "method": "Verify against fact-check endpoint"
+        }
+      ],
+      "failure_recovery_path": {
+        "name": "Hop Refinement",
+        "logic": "On search failure, first increase search breadth. If still fails, switch to a HyDE-guided query. Max 2 refinements."
+      }
+    },
+    "credibility_markers": [
+      {"type": "currency", "format": "$##M"},
+      {"type": "percentage", "format": "##%"}
+    ],
+    "agentic_guardrails": {
+      "max_reasoning_depth": 7,
+      "max_self_correction_loops": 3
+    },
+    "version_pinning": {
+      "App_Schema_v4.json": "v4.0.0",
+      "App_Tracker_QA_v5.json": "v5.0.0"
+    }
+  },
+
+  "7.post_submission": {
+    "description": "Handles the generation of the final tracker entry after a successful run.",
+    "schema_transformation_gate": {
+      "gate_id": "VG-FINAL-SCHEMA-TRANSFORM",
+      "execution_point": "BEFORE_TRACKER_GENERATION",
+      "blocking": true,
+      "policy": "MAP_AND_VALIDATE_TO_SCHEMA",
+      "schema_source_of_truth": "App_Schema_v4.json",
+      "qa_spec_source_of_truth": "App_Tracker_QA_v5.json",
+      "on_unmapped_key": "HALT_AND_REPORT",
+      "on_validation_failure": "HALT_AND_REPORT",
+      "key_map": {
+        "versioned_resume_filename": "Versioned Resume",
+        "company_name": "Company",
+        "category": "Category",
+        "sub_category": "Sub-Category",
+        "job_title": "Job Title",
+        "primary_job_role": "Primary Job Role",
+        "job_url": "JD URL"
+      },
+      "validation_gates": [
+        {
+          "gate_id": "VG_NO_SILENT_TRUNCATION",
+          "policy": "HALT_ON_POTENTIAL_DATA_LOSS"
+        },
+        {
+          "gate_id": "VG_CONTROLLED_VOCABULARY",
+          "policy": "VALIDATE_ENUMS_AGAINST_QA_SPEC"
+        }
+      ]
+    }
+  },
+
+  "8.audit": {
+    "decoupled_audit_renderer": {
+      "enabled": true,
+      "log_source": "execution_log.json"
+    },
+    "enhancement_tracking": {
+      "linkedin_authenticity_score": 0.0,
+      "competitive_differentiation_score": 0.0,
+      "retrieval_relevance_score": 0.0,
+      "deduplication_compliance": false,
+      "qa_metrics_passed": false,
+      "synthetic_content_percentage": 0.0,
+      "overview_customization_applied": false,
+      "url_fetch_success_rate": 0.0,
+      "tag_sanitization_passes": 0,
+      "verb_rotation_compliance": false,
+      "ai_detection_score": 0.0
+    }
+  }
+}

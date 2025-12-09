@@ -3,8 +3,7 @@ Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 
@@ -27,7 +26,7 @@ class TestUnderstandRequest:
     def test_parse_query_intent(self):
         """Query intent is parsed correctly."""
         text = "What is the revenue for Q4 2024?"
-        
+
         # Simulated parsing
         intent = ParsedIntent(
             intent_type=IntentType.QUERY,
@@ -35,61 +34,60 @@ class TestUnderstandRequest:
             entities={"metric": "revenue", "period": "Q4 2024"},
             original_text=text,
         )
-        
+
         assert intent.intent_type == IntentType.QUERY
         assert intent.confidence > 0.9
 
     def test_parse_command_intent(self):
         """Command intent is parsed correctly."""
         text = "Generate a report for the sales team"
-        
+
         intent = ParsedIntent(
             intent_type=IntentType.COMMAND,
             confidence=0.92,
             entities={"action": "generate", "target": "report", "audience": "sales team"},
             original_text=text,
         )
-        
+
         assert intent.intent_type == IntentType.COMMAND
         assert intent.entities["action"] == "generate"
 
     def test_extract_entities(self):
         """Named entities are extracted correctly."""
-        text = "Find information about John Smith at Acme Corp"
-        
+
         entities = {
             "person": "John Smith",
             "organization": "Acme Corp",
         }
-        
+
         assert entities["person"] == "John Smith"
         assert entities["organization"] == "Acme Corp"
 
     def test_handle_ambiguous_request(self):
         """Ambiguous requests are flagged."""
         text = "Get the data"  # Ambiguous - which data?
-        
+
         intent = ParsedIntent(
             intent_type=IntentType.CLARIFICATION,
             confidence=0.4,  # Low confidence indicates ambiguity
             entities={},
             original_text=text,
         )
-        
+
         is_ambiguous = intent.confidence < 0.6
         assert is_ambiguous is True
 
     def test_preserve_original_text(self):
         """Original text is preserved in parsed result."""
         text = "What is the weather today?"
-        
+
         intent = ParsedIntent(
             intent_type=IntentType.QUERY,
             confidence=0.95,
             entities={},
             original_text=text,
         )
-        
+
         assert intent.original_text == text
 
 
@@ -104,7 +102,7 @@ class TestQueryFormulation:
             entities={"topic": "revenue", "period": "2024"},
             original_text="What is the revenue for 2024?",
         )
-        
+
         query = f"{intent.entities['topic']} {intent.entities['period']}"
         assert "revenue" in query
         assert "2024" in query
@@ -116,22 +114,21 @@ class TestQueryFormulation:
             "region": "North America",
             "year": 2024,
         }
-        
+
         filters = {k: v for k, v in entities.items() if k != "metric"}
         query = {"search": entities["metric"], "filters": filters}
-        
+
         assert query["search"] == "sales"
         assert query["filters"]["region"] == "North America"
 
     def test_formulate_compound_query(self):
         """Compound query is formulated correctly."""
-        text = "Find revenue and profit for Q4"
-        
+
         queries = [
             {"metric": "revenue", "period": "Q4"},
             {"metric": "profit", "period": "Q4"},
         ]
-        
+
         assert len(queries) == 2
 
 
@@ -140,31 +137,25 @@ class TestContextUnderstanding:
 
     def test_incorporate_conversation_history(self):
         """Conversation history is incorporated."""
-        history = [
-            {"role": "user", "content": "Tell me about Acme Corp"},
-            {"role": "assistant", "content": "Acme Corp is a technology company..."},
-        ]
-        current_query = "What is their revenue?"
-        
+
         # "their" refers to Acme Corp from history
         context = {"referenced_entity": "Acme Corp"}
         resolved_query = f"What is {context['referenced_entity']}'s revenue?"
-        
+
         assert "Acme Corp" in resolved_query
 
     def test_resolve_pronouns(self):
         """Pronouns are resolved from context."""
         context = {"last_mentioned_company": "TechCorp"}
         query = "What is their stock price?"
-        
+
         resolved = query.replace("their", context["last_mentioned_company"] + "'s")
         assert "TechCorp" in resolved
 
     def test_maintain_topic_continuity(self):
         """Topic continuity is maintained."""
         conversation_topic = "quarterly_earnings"
-        query = "How does it compare to last year?"
-        
+
         # "it" refers to current topic
         context = {"topic": conversation_topic, "comparison": "year_over_year"}
         assert context["topic"] == "quarterly_earnings"

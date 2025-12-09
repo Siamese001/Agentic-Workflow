@@ -17,7 +17,7 @@ from typing import Dict
 def build_reasoning_prompt_addendum(params: Dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""
     p = params
-    addendum = f"\n\n**REASONING IMPLEMENTATION DIRECTIVES (v5.71):**\n"
+    addendum = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v5.71):**\n"
     addendum += f"(Configuration Level: {p['reasoning_level']}, Intensity: {p['intensity_score']:.1f}/40)\n\n"
 
     if p["cot"] >= 5:

@@ -1,0 +1,422 @@
+# Resume Feedback Prompts v1.0
+# Feedback generation and improvement recommendation prompts
+
+resume_feedback:
+  version: "1.0"
+  last_updated: "2024-01-01T00:00:00Z"
+  
+  # Feedback generation frameworks
+  feedback_frameworks:
+    # Comprehensive feedback system
+    comprehensive_feedback:
+      structured_feedback:
+        prompt: |
+          Generate comprehensive, actionable feedback for resume improvement:
+          
+          Feedback Structure:
+          1. Executive Summary:
+             - Overall quality assessment (0-100)
+             - Key strengths and competitive advantages
+             - Critical improvement areas
+             - Priority action items
+             
+          2. Detailed Analysis:
+             - Content quality assessment
+             - Format and presentation review
+             - Strategic positioning evaluation
+             - Technical optimization analysis
+             
+          3. Specific Recommendations:
+             - Immediate actions (high impact, low effort)
+             - Short-term improvements (1-2 weeks)
+             - Long-term enhancements (1-3 months)
+             - Strategic positioning adjustments
+             
+          4. Implementation Guidance:
+             - Step-by-step action plan
+             - Resource requirements
+             - Timeline recommendations
+             - Success metrics
+          
+          Provide specific examples and before/after comparisons where applicable.
+          Ensure all feedback is constructive, actionable, and prioritized.
+          
+        feedback_principles:
+          - "Constructive_and_actionable"
+          - "Prioritized_by_impact"
+          - "Specific_with_examples"
+          - "Implementation_focused"
+          
+    # Targeted feedback systems
+    targeted_feedback:
+      section_specific:
+        prompt: |
+          Generate targeted feedback for specific resume sections:
+          
+          Section Feedback Framework:
+          1. Professional Summary:
+             - Value proposition clarity
+             - Achievement integration
+             - Strategic positioning
+             - Professional impact
+             
+          2. Work Experience:
+             - Achievement quantification
+             - Action verb effectiveness
+             - Skill integration
+             - Business impact demonstration
+             
+          3. Skills Section:
+             - Categorization logic
+             - Evidence support
+             - Market relevance
+             - Presentation quality
+             
+          4. Education:
+             - Relevance highlighting
+             - Achievement emphasis
+             - Continuous learning evidence
+             
+          5. Additional Sections:
+             - Projects, certifications, volunteer work
+             - Strategic value addition
+             - Complementary evidence
+             
+          Provide specific improvement suggestions with implementation examples.
+          
+        section_focus:
+          - "Detailed_section_analysis"
+          - "Specific_improvement_suggestions"
+          - "Implementation_examples"
+          - "Quality_enhancement_strategies"
+          
+  # Improvement recommendation systems
+  improvement_recommendations:
+    # Priority-based recommendations
+    priority_recommendations:
+      impact_effort_matrix:
+        prompt: |
+          Generate prioritized recommendations using impact-effort analysis:
+          
+          Priority Categories:
+          1. Quick Wins (High Impact, Low Effort):
+             - Action verb replacements
+             - Formatting adjustments
+             - Keyword optimization
+             - Contact information updates
+             
+          2. Strategic Investments (High Impact, High Effort):
+             - Experience rewriting for impact
+             - Skill integration projects
+             - Achievement quantification
+             - Professional summary overhaul
+             
+          3. Incremental Improvements (Low Impact, Low Effort):
+             - Minor wording adjustments
+             - Section reordering
+             - Additional certifications
+             - Volunteer work inclusion
+             
+          4. Consider Later (Low Impact, High Effort):
+             - Complete redesign
+             - Industry transition focus
+             - Executive positioning
+             - Major restructuring
+          
+          For each recommendation, provide:
+          - Specific action required
+          - Estimated time investment
+          - Expected impact on job search
+          - Implementation difficulty
+          
+        prioritization_criteria:
+          - "Impact_on_interview_rates"
+          - "Implementation_complexity"
+          - "Time_investment_required"
+          - "Success_probability"
+          
+    # Industry-specific recommendations
+    industry_recommendations:
+      technology_focus:
+        prompt: |
+          Generate technology industry-specific improvement recommendations:
+          
+          Technology Optimization Areas:
+          1. Technical Skill Presentation:
+             - Technology stack organization
+             - Proficiency level indication
+             - Project-based skill evidence
+             - Emerging technology inclusion
+             
+          2. Project Experience Enhancement:
+             - Technical challenge articulation
+             - Solution architecture description
+             - Team collaboration emphasis
+             - Delivery and deployment metrics
+             
+          3. Innovation and Problem-Solving:
+             - Technical innovation examples
+             - Complex problem resolution
+             - Process improvement initiatives
+             - Tool and methodology adoption
+             
+          4. Continuous Learning Evidence:
+             - Certification and training
+             - Open source contributions
+             - Technical community involvement
+             - Self-directed learning projects
+          
+          Provide specific examples tailored to target technology roles and companies.
+          
+        tech_enhancement_areas:
+          - "Technical_skill_optimization"
+          - "Project_experience_enhancement"
+          - "Innovation_demonstration"
+          - "Learning_evidence"
+          
+      healthcare_focus:
+        prompt: |
+          Generate healthcare industry-specific improvement recommendations:
+          
+          Healthcare Optimization Areas:
+          1. Clinical Excellence Demonstration:
+             - Patient outcome metrics
+             - Quality improvement initiatives
+             - Clinical skill advancement
+             - Evidence-based practice examples
+             
+          2. Regulatory Compliance Evidence:
+             - Healthcare regulation knowledge
+             - Accreditation participation
+             - Quality assurance contributions
+             - Risk management experience
+             
+          3. Interdisciplinary Collaboration:
+             - Cross-functional team leadership
+             - Department coordination examples
+             - Communication effectiveness
+             - Mentoring and training contributions
+             
+          4. Professional Development:
+             - Continuing education
+             - Specialty certifications
+             - Research and publications
+             - Professional association involvement
+          
+          Ensure all recommendations maintain patient privacy and compliance standards.
+          
+        healthcare_enhancement_areas:
+          - "Clinical_excellence_demonstration"
+          - "Regulatory_compliance_evidence"
+          - "Collaboration_effectiveness"
+          - "Professional_growth"
+          
+  # Feedback delivery methods
+  delivery_methods:
+    # Written feedback formats
+    written_feedback:
+      detailed_report:
+        prompt: |
+          Generate comprehensive written feedback report:
+          
+          Report Structure:
+          1. Assessment Overview:
+             - Overall score and rating
+             - Competitive positioning analysis
+             - Market readiness evaluation
+             - Key differentiators identification
+             
+          2. Strengths Analysis:
+             - Top 5 competitive advantages
+             - Unique value propositions
+             - Market-aligned qualifications
+             - Professional brand elements
+             
+          3. Improvement Opportunities:
+             - Critical gaps and weaknesses
+             - Market misalignment areas
+             - Competitive disadvantages
+             - Professional development needs
+             
+          4. Action Plan:
+             - Prioritized improvement steps
+             - Timeline and milestones
+             - Resource requirements
+             - Success measurement criteria
+             
+          5. Implementation Examples:
+             - Before/after comparisons
+             - Specific wording suggestions
+             - Format improvements
+             - Content enhancement examples
+          
+          Use clear, professional language with specific, actionable recommendations.
+          
+        report_elements:
+          - "Comprehensive_assessment"
+          - "Strengths_highlighting"
+          - "Improvement_prioritization"
+          - "Actionable_implementation_plan"
+          
+    # Verbal feedback guides
+    verbal_feedback:
+      consultation_guide:
+        prompt: |
+          Generate structured verbal feedback consultation guide:
+          
+          Consultation Flow:
+          1. Opening Assessment:
+             - Resume overview and first impressions
+             - Initial strengths identification
+             - Immediate opportunity areas
+             - User goal alignment check
+             
+          2. Deep Dive Analysis:
+             - Section-by-section review
+             - Specific improvement examples
+             - Industry-specific considerations
+             - Career level appropriateness
+             
+          3. Interactive Discussion:
+             - User questions and concerns
+             - Clarification of recommendations
+             - Priority setting exercises
+             - Implementation planning
+             
+          4. Action Planning:
+             - Short-term action items
+             - Long-term development goals
+             - Resource identification
+             - Follow-up scheduling
+             
+          5. Closing Summary:
+             - Key takeaways reinforcement
+             - Motivation and confidence building
+             - Success metrics definition
+             - Next steps confirmation
+          
+          Include specific talking points and example responses for common questions.
+          
+        consultation_elements:
+          - "Structured_assessment_flow"
+          - "Interactive_discussion_guides"
+          - "Action_planning_framework"
+          - "Motivational_support"
+          
+  # Feedback quality assurance
+  quality_assurance:
+    # Feedback validation
+    validation:
+      prompt: |
+          Validate feedback quality and effectiveness:
+          
+          Validation Criteria:
+          1. Actionability:
+             - Specific, implementable suggestions
+             - Clear step-by-step guidance
+             - Resource requirement identification
+             - Timeline feasibility assessment
+             
+          2. Constructiveness:
+             - Positive framing of improvements
+             - Strength-based approach
+             - Encouraging language tone
+             - Growth mindset orientation
+             
+          3. Relevance:
+             - Target role alignment
+             - Industry appropriateness
+             - Career level suitability
+             - Market condition awareness
+             
+          4. Completeness:
+             - Comprehensive coverage
+             - Balanced perspective
+             - Long-term vision inclusion
+             - Strategic thinking demonstration
+             
+          Review feedback against these criteria and refine as needed.
+          
+        validation_metrics:
+          - "Actionability_score"
+          - "Constructiveness_rating"
+          - "Relevance_assessment"
+          - "Completeness_evaluation"
+          
+    # Continuous improvement
+      improvement:
+        prompt: |
+          Implement continuous improvement for feedback quality:
+          
+          Improvement Mechanisms:
+          1. User Feedback Collection:
+             - Satisfaction surveys
+             - Implementation success tracking
+             - Recommendation adoption rates
+             - Outcome measurement
+             
+          2. Quality Monitoring:
+             - Feedback consistency checks
+             - Recommendation effectiveness tracking
+             - User outcome correlation
+             - Benchmark comparison
+             
+          3. System Optimization:
+             - Feedback template refinement
+             - Recommendation algorithm improvement
+             - Personalization enhancement
+             - Delivery method optimization
+             
+          4. Expert Review:
+             - Industry expert validation
+             - Recruiter feedback integration
+             - Career coach consultation
+             - Best practice incorporation
+          
+          Use data-driven insights to continuously enhance feedback quality.
+          
+        improvement_strategies:
+          - "User_feedback_integration"
+          - "Performance_monitoring"
+          - "System_optimization"
+          - "Expert_validation"
+          
+  # Personalization systems
+  personalization:
+    # User-specific adaptation
+    user_adaptation:
+      prompt: |
+          Personalize feedback based on user characteristics and goals:
+          
+          Personalization Factors:
+          1. Career Level:
+             - Entry-level: Potential and readiness focus
+             - Mid-career: Advancement and specialization
+             - Senior-level: Leadership and strategic impact
+             - Executive: Vision and organizational influence
+             
+          2. Industry Context:
+             - Technology: Technical depth and innovation
+             - Healthcare: Patient care and regulatory compliance
+             - Finance: Risk management and analytical rigor
+             - Education: Student outcomes and curriculum development
+             
+          3. Transition Status:
+             - Career changers: Transferable skills emphasis
+             - Industry switchers: Adaptability evidence
+             - Role transitioners: Relevant experience highlighting
+             - Geographic movers: Market adaptation
+             
+          4. Personal Goals:
+             - Immediate job search: Quick wins prioritization
+             - Career growth: Long-term development focus
+             - Industry leadership: Thought leadership emphasis
+             - Work-life balance: Role-specific optimization
+          
+          Tailor feedback tone, examples, and recommendations accordingly.
+          
+        personalization_elements:
+          - "Career_level_adaptation"
+          - "Industry_specific_customization"
+          - "Transition_status_consideration"
+          - "Personal_goal_alignment"

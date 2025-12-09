@@ -38,7 +38,7 @@ class ValidationRule:
                 message=error_msg,
                 details=data.get("error_details", {}),
             )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ValidationResult(
                 rule_id=self.rule_id,
                 passed=False,
