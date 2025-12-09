@@ -27,7 +27,7 @@ class PerformGenericOperation:
         """Process data."""
         try:
             return Result(success=True, data=self._execute(data, context))
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Processing failed: {e}")
             return Result(success=False, metadata={"error": str(e)})
 

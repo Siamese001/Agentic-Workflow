@@ -136,7 +136,7 @@ class PromptInjectionDetectorAgent(BaseAgent):
                     "reason": "Detector parse failed: no parsed output",
                     "confidence": 1.0,
                 }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             self.log_error(f"PromptInjectionDetector failed: {e}")
             return {
                 "injection_detected": True,
@@ -232,7 +232,7 @@ class ConstitutionalReviewerAgent(BaseAgent):
                     violations_found=["PARSE_ERROR"],
                     feedback="parse() returned None",
                 )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             self.log_error(
                 f"ConstitutionalReviewer failed: {e}. Failing open (passing draft)."
             )

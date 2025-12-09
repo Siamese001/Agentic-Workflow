@@ -381,7 +381,7 @@ class RGWorkflowOrchestrator:
             if isinstance(result, dict) and "output_artifacts" in result:
                 checkpoint.output_artifacts = result["output_artifacts"]
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             checkpoint.status = HopStatus.FAILED
             checkpoint.end_time = datetime.now()
             checkpoint.error_message = str(e)

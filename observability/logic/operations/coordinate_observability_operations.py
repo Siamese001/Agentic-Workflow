@@ -73,7 +73,7 @@ class CoordinateObservabilityOperations:
                     output=output,
                     duration_ms=(time.time() - start) * 1000
                 ))
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 success = False
                 results.append(StepResult(
                     step_name=step["name"],

@@ -80,7 +80,7 @@ def _resolve_path(path_like: str) -> Path:
     path_obj = Path(str(path_like)).expanduser()
     try:
         return path_obj.resolve()
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         return path_obj
 
 
@@ -95,7 +95,7 @@ def _path_is_durable(path_like: str, storage_config: Any) -> bool:
     try:
         target_path = _resolve_path(path_like)
         durable_path = _resolve_path(durable_root)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         return False
 
     try:
@@ -139,7 +139,7 @@ def _describe_redis_mode(redis_client: Any) -> str:
         try:
             ping_fn()
             return "REAL"
-        except Exception as exc:  # pragma: no cover - network dependency
+        except (ValueError, TypeError, RuntimeError, OSError) as exc:  # pragma: no cover - network dependency
             logger.warning("Redis ping failed; continuing with degraded cache: %s", exc)
             return "UNREACHABLE"
     return "UNKNOWN"
@@ -237,7 +237,7 @@ class WorkflowContext:
         if redis_required:
             try:
                 redis_client.ping()
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 raise RuntimeError(
                     f"Redis is required but not running: {e}"
                 ) from e
@@ -364,7 +364,7 @@ class WorkflowContext:
         raw_clients = _mcp_get(mcp_config, "clients", [])
         try:
             self._mcp_client_specs = parse_mcp_client_specs(raw_clients)
-        except Exception as exc:
+        except (ValueError, TypeError, RuntimeError, OSError) as exc:
             raise MCPClientInitializationError(f"Invalid MCP configuration: {exc}") from exc
 
     def is_mcp_enabled(self) -> bool:
@@ -388,7 +388,7 @@ class WorkflowContext:
         for spec in self._mcp_client_specs:
             try:
                 clients[spec.name] = instantiate_mcp_client(spec)
-            except Exception as exc:
+            except (ValueError, TypeError, RuntimeError, OSError) as exc:
                 errors[spec.name] = str(exc)
                 if spec.optional:
                     logger.warning(
@@ -644,7 +644,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         )
         collection.delete(where={"workflow_id": workflow_id})
         logger.info("ChromaDB cleanup complete.")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 
