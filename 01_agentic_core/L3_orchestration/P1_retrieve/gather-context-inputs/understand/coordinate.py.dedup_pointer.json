@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\understand\\coordinate.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "bdc18431de353917",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\gather-context-inputs\\understand\\coordinate.py",
-  "created": "2025-12-07T11:54:50.465659"
-}

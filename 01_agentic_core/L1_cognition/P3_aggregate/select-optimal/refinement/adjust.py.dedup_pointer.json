@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\logic\\synthesis\\pick_best_result\\refinement_adjust_scores\\adjust_weights.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "fd780b1d25e5a5a1",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P3_aggregate\\select-optimal\\refinement\\adjust.py",
-  "created": "2025-12-07T11:54:50.665728"
-}
