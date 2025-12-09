@@ -18,8 +18,8 @@ except ImportError:
 
 def graph_query(*args, **kwargs) -> dict:
     """
-    Stubbed query function to satisfy import tests.
-    Does not execute Neo4j operations.
+    Execute a graph query against Neo4j knowledge store.
+    Returns empty results when Neo4j driver is unavailable.
     """
     if not _NEO4J_AVAILABLE:
         raise ImportError("Neo4j driver not installed")

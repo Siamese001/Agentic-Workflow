@@ -1,4 +1,4 @@
-# .pre-commit-config.yaml — NUCLEAR HARDENING COMMITTED — CLEAN PASS
+# .pre-commit-config.yaml — SADISTIC ZERO-MERCY EDITION — DEC 2025
 fail_fast: true
 exclude: ^06_data/
 
@@ -7,7 +7,7 @@ repos:
   - repo: local
     hooks:
       - id: canon-validator
-        name: 40/40 SUBATOMIC CANON
+        name: SADISTIC ZERO-MERCY CANON — 40/40 OR DEATH
         entry: python canon_validator.py --check-40 --hard-fail
         language: system
         files: \.py$
