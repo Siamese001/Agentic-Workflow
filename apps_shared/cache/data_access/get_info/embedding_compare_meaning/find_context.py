@@ -110,7 +110,7 @@ def _resolve_path(path_like: str) -> Path:
     path_obj = Path(str(path_like)).expanduser()
     try:
         return path_obj.resolve()
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         return path_obj
 
 
@@ -125,7 +125,7 @@ def _path_is_durable(path_like: str, storage_config: Any) -> bool:
     try:
         target_path = _resolve_path(path_like)
         durable_path = _resolve_path(durable_root)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         return False
 
     try:
@@ -267,7 +267,7 @@ class WorkflowContext:
         if redis_required:
             try:
                 redis_client.ping()
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 raise RuntimeError(
                     f"Redis is required but not running: {e}"
                 ) from e
@@ -670,7 +670,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         )
         collection.delete(where={"workflow_id": workflow_id})
         logger.info("ChromaDB cleanup complete.")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 

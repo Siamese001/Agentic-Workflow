@@ -492,7 +492,7 @@ class TransactionManager:
             
             return result
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             duration = (time.time() - start_time) * 1000
             error_msg = str(e)
             

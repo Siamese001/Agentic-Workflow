@@ -125,7 +125,7 @@ class UpdateScriptsBudgetSafetyImpl(UpdateScriptsBudgetSafetySafety):
 
             self.logger.info("Data passed L5 safety validation")
             return True
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
@@ -209,7 +209,7 @@ class UpdateScriptsBudgetSafetyImpl(UpdateScriptsBudgetSafetySafety):
                 return "medium"
             else:
                 return "low"
-        except:
+        except (ValueError, TypeError, RuntimeError) as e:
             return "high"
 
     def _check_pattern_risk(self, data: Dict[str, Any]) -> str:
@@ -223,7 +223,7 @@ class UpdateScriptsBudgetSafetyImpl(UpdateScriptsBudgetSafetySafety):
 
         return "low"
 
-    def _calculate_depth(self, obj: Any, current_depth: int = 0) -> int:
+    def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
         """Calculate nesting depth"""
         if isinstance(obj, dict):
             return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
@@ -269,7 +269,7 @@ class UpdateScriptsBudgetSafetyInterface:
                 "safety_validated": result.safety_validated,
                 "timestamp": result.timestamp
             }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Safety application failed: {e}")
 
 # L5 Factory
@@ -309,5 +309,5 @@ if __name__ == "__main__":
         logger.info(f"L5 Safety check successful: {result}")
     except SecurityError as e:
         logger.error(f"L5 Security error: {e}")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

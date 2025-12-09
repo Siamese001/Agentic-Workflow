@@ -91,7 +91,7 @@ def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
     """
     try:
         return getattr(obj, name, default)
-    except Exception:  # pragma: no cover - extreme defensive
+    except (ValueError, TypeError, RuntimeError, KeyError):  # pragma: no cover - extreme defensive
         return default
 
 
@@ -178,7 +178,7 @@ def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
                 "trace_length": 0,
             },
         )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         return
 
 
@@ -685,7 +685,7 @@ def execute_workflow_plans(
     result = asyncio.run(run_l2(plans, ctx))
     try:
         validate_schema_version(result, model_type=L2ResultBundle)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         # Legacy callers should not fail solely due to schema validation.
         ...
     return result

@@ -263,7 +263,7 @@ class GeminiService:
                         time.sleep(wait_time)
                         continue
 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 self.metrics.error_count += 1
 
                 if attempt < self.max_retries - 1:
@@ -346,7 +346,7 @@ class GeminiService:
                 responses.append(response)
                 total_calls += calls
 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 logger.error(f"{section_id}: Self-consistency run {i+1} failed: {e}")
                 # Continue with other runs
                 continue
@@ -424,7 +424,7 @@ class GeminiService:
 
             return response, APICallStatus.SUCCESS
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             error_str = str(e).lower()
 
             if "quota" in error_str or "rate" in error_str:
@@ -647,7 +647,7 @@ SYNTHESIZED RESPONSE:"""
 
             except json.JSONDecodeError as e:
                 logger.error(f"JSON decode failed: {e}. Response: {raw_response}")
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 logger.error(f"API call failed: {e}")
 
         raise ValueError(f"Failed to get valid JSON response after {retry_count} attempts.")

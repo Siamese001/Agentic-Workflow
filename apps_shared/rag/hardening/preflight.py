@@ -275,7 +275,7 @@ class PreflightValidator:
             try:
                 result = test_fn()
                 results.append(result)
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 results.append(PreflightTestResult(
                     test_id="CUSTOM_TEST",
                     test_type=PreflightTestType.CAPABILITY,
@@ -492,7 +492,7 @@ class PreflightValidator:
                         "expected": expected_version,
                         "actual": "FILE_NOT_FOUND",
                     })
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 mismatches.append({
                     "file": file_name,
                     "expected": expected_version,
@@ -583,7 +583,7 @@ class PreflightValidator:
                 return actual < constraint[1:]
             else:
                 return actual == constraint
-        except Exception:
+        except (ValueError, TypeError, RuntimeError, KeyError):
             return False
     
     def _create_report(
@@ -637,7 +637,7 @@ class CapabilityTest:
                     description="Test JSON parsing capability",
                     duration_ms=(time.time() - start_time) * 1000,
                 )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return PreflightTestResult(
                 test_id="CAPABILITY_JSON_PARSING",
                 test_type=PreflightTestType.CAPABILITY,
@@ -677,7 +677,7 @@ class CapabilityTest:
                     duration_ms=(time.time() - start_time) * 1000,
                     details={"matches": matches},
                 )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return PreflightTestResult(
                 test_id="CAPABILITY_REGEX",
                 test_type=PreflightTestType.CAPABILITY,
@@ -720,7 +720,7 @@ class CapabilityTest:
                     description="Test dataclass capability",
                     duration_ms=(time.time() - start_time) * 1000,
                 )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return PreflightTestResult(
                 test_id="CAPABILITY_DATACLASS",
                 test_type=PreflightTestType.CAPABILITY,

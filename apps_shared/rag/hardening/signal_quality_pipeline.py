@@ -531,7 +531,7 @@ Focus on specific details, metrics, and concrete information."""
                 reasoning="Query enhanced with HyDE",
                 metadata={"hypothetical_doc_preview": hypothetical_doc[:200]},
             )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.warning(f"HyDE enhancement failed: {e}")
             return StageResult(
                 stage=SignalQualityStage.QUERY_ENHANCEMENT,
@@ -626,7 +626,7 @@ Focus on specific details, metrics, and concrete information."""
                 if is_verified:
                     verified_count += 1
                 total_confidence += confidence
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 logger.warning(f"Fact-checking failed for claim: {e}")
                 
         avg_confidence = total_confidence / len(claims[:5]) if claims else 0

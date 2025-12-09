@@ -64,7 +64,7 @@ def fix_file(filepath: Path) -> bool:
                 f.write(content)
             return True
         return False
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logging.debug(f"Error processing {filepath}: {e}")
         return False
 
