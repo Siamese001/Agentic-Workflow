@@ -71,7 +71,7 @@ class LICStateManager:
     def write_state(
         self,
         hop_id: str,
-        data: Dict[str, Any],
+        data: Dict[str, object],
         atomic: bool = True,
     ) -> str:
         """
@@ -130,7 +130,7 @@ class LICStateManager:
         self,
         hop_id: str,
         validate_checksum: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Read state file for a HOP.
 

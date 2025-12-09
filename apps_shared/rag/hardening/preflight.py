@@ -69,11 +69,11 @@ class PreflightTestResult:
     result: PreflightResult
     description: str
     duration_ms: float = 0.0
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "test_id": self.test_id,
@@ -100,7 +100,7 @@ class PreflightReport:
     halt_reason: Optional[str] = None
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "success": self.success,
@@ -122,7 +122,7 @@ class IterationTest:
     """Configuration for iteration validation test."""
     test_id: str = "VALIDATE_ITERATION"
     description: str = "Verifies the engine can correctly iterate through a full array without premature termination"
-    input_data: List[Any] = field(default_factory=lambda: ["A", "B", "C"])
+    input_data: List[object] = field(default_factory=lambda: ["A", "B", "C"])
     expected_output_count: int = 3
 
 

@@ -135,7 +135,7 @@ class RetrieveDataSimilarityMemoryInterface:
         """  Init   implementation."""
         self._processor = processor
 
-    def execute(self, input_data: Dict[str, object][str, Any]) -> Dict[str, Any]:
+    def execute(self, input_data: Dict[str, object][str, Any]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -161,7 +161,7 @@ class RetrieveDataSimilarityMemoryFactory:
         return RetrieveDataSimilarityMemoryInterface(processor)
 
 # L5 Main execution point
-def retrieve_data_similarity(input_data: Dict[str, object][str, Any]) -> Dict[str, Any]:
+def retrieve_data_similarity(input_data: Dict[str, object][str, Any]) -> Dict[str, object]:
     """
     L5 Main function - retrieve data similarity operations
 

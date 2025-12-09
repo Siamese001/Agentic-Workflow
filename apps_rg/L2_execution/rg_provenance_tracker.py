@@ -203,7 +203,7 @@ class ProvenanceTracker:
     def validate_provenance_requirements(
         self,
         company: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Validate that bullets meet provenance requirements.
 
@@ -252,7 +252,7 @@ class ProvenanceTracker:
         """Get bullets without any provenance sources."""
         return [b for b in self._bullets.values() if not b.sources]
 
-    def export_provenance_report(self) -> Dict[str, Any]:
+    def export_provenance_report(self) -> Dict[str, object]:
         """Export a complete provenance report."""
         return {
             "total_bullets": len(self._bullets),

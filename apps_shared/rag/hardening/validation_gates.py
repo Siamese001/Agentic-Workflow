@@ -87,7 +87,7 @@ class GateViolation:
     actual: Optional[str] = None
     suggestion: Optional[str] = None
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "violation_id": self.violation_id,
@@ -107,7 +107,7 @@ class GateResult:
     policy: GatePolicy
     decision: GateDecision
     violations: List[GateViolation] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     duration_ms: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
@@ -121,7 +121,7 @@ class GateResult:
         """Check for critical violations."""
         return any(v.severity == GateSeverity.CRITICAL for v in self.violations)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "gate_id": self.gate_id,
@@ -140,12 +140,12 @@ class GateResult:
 class GateContext:
     """Context passed to validation gates."""
     # Source data
-    source_pool: List[Dict[str, Any]] = field(default_factory=list)
+    source_pool: List[Dict[str, object]] = field(default_factory=list)
     bullet_pool: List[str] = field(default_factory=list)
-    scaffold_data: Dict[str, Any] = field(default_factory=dict)
+    scaffold_data: Dict[str, object] = field(default_factory=dict)
     
     # Generated content
-    generated_content: Dict[str, Any] = field(default_factory=dict)
+    generated_content: Dict[str, object] = field(default_factory=dict)
     generated_bullets: List[str] = field(default_factory=list)
     
     # Thematic data
@@ -153,16 +153,16 @@ class GateContext:
     secondary_themes: List[str] = field(default_factory=list)
     
     # Creative brief constraints
-    creative_brief: Optional[Dict[str, Any]] = None
+    creative_brief: Optional[Dict[str, object]] = None
     
     # Hyphenation rules
     hyphenation_rules: Dict[str, str] = field(default_factory=dict)
     
     # QA spec for enum validation
-    qa_spec: Optional[Dict[str, Any]] = None
+    qa_spec: Optional[Dict[str, object]] = None
     
     # Additional context
-    extra: Dict[str, Any] = field(default_factory=dict)
+    extra: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -204,7 +204,7 @@ class ValidationGate(ABC):
         self,
         decision: GateDecision,
         violations: Optional[List[GateViolation]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, object]] = None,
     ) -> GateResult:
         """Helper to create a gate result."""
         return GateResult(
@@ -911,7 +911,7 @@ class ValidationReport:
         executed = self.total_gates - self.skipped_gates
         return self.passed_gates / executed if executed > 0 else 0.0
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "success": self.success,

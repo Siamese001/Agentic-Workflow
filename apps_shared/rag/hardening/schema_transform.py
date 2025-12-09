@@ -62,7 +62,7 @@ class KeyMapping:
     source_key: str
     target_key: str
     required: bool = True
-    default_value: Optional[Any] = None
+    default_value: Optional[object] = None
     transformer: Optional[Callable[[Any], Any]] = None
     validator: Optional[Callable[[Any], bool]] = None
     
@@ -108,11 +108,11 @@ class TransformViolation:
     violation_type: str
     field: str
     message: str
-    source_value: Optional[Any] = None
+    source_value: Optional[object] = None
     expected: Optional[str] = None
     severity: str = "ERROR"
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "type": self.violation_type,
@@ -128,7 +128,7 @@ class TransformViolation:
 class TransformReport:
     """Report from schema transformation."""
     result: TransformResult
-    transformed_data: Dict[str, Any]
+    transformed_data: Dict[str, object]
     violations: List[TransformViolation]
     mapped_keys: List[str]
     unmapped_keys: List[str]
@@ -146,7 +146,7 @@ class TransformReport:
         """Check if there was potential data loss."""
         return len(self.unmapped_keys) > 0 or len(self.missing_required) > 0
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "result": self.result.value,
@@ -183,7 +183,7 @@ class QASpec:
     custom_validators: Dict[str, Callable[[Any], bool]] = field(default_factory=dict)
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> QASpec:
+    def from_dict(cls, data: Dict[str, object]) -> QASpec:
         """Create QASpec from dictionary."""
         enum_specs = {}
         for field_name, spec in data.get("enums", {}).items():
@@ -246,7 +246,7 @@ class SchemaTransformer:
         """Set the QA specification."""
         self._qa_spec = qa_spec
         
-    def transform(self, source_data: Dict[str, Any]) -> TransformReport:
+    def transform(self, source_data: Dict[str, object]) -> TransformReport:
         """
         Transform source data to target schema.
         
@@ -260,7 +260,7 @@ class SchemaTransformer:
         start_time = time.time()
         
         violations: List[TransformViolation] = []
-        transformed: Dict[str, Any] = {}
+        transformed: Dict[str, object] = {}
         mapped_keys: List[str] = []
         unmapped_keys: List[str] = []
         missing_required: List[str] = []
@@ -348,7 +348,7 @@ class SchemaTransformer:
             duration_ms=(time.time() - start_time) * 1000,
         )
     
-    def _validate_enums(self, data: Dict[str, Any]) -> List[TransformViolation]:
+    def _validate_enums(self, data: Dict[str, object]) -> List[TransformViolation]:
         """Validate enum fields against QA spec."""
         violations = []
         
@@ -369,7 +369,7 @@ class SchemaTransformer:
                     
         return violations
     
-    def reverse_transform(self, target_data: Dict[str, Any]) -> Dict[str, Any]:
+    def reverse_transform(self, target_data: Dict[str, object]) -> Dict[str, object]:
         """
         Reverse transform from target schema to source schema.
         
@@ -457,8 +457,8 @@ class DataLossPreventionGate:
     
     def validate_batch(
         self,
-        original_data: Dict[str, Any],
-        transformed_data: Dict[str, Any],
+        original_data: Dict[str, object],
+        transformed_data: Dict[str, object],
     ) -> List[TransformViolation]:
         """Validate entire data batch for data loss."""
         violations = []
@@ -523,7 +523,7 @@ class ControlledVocabularyValidator:
             return (True, f"Valid vocabulary value: {value}")
         return (False, f"Invalid value '{value}' for {field_name}")
     
-    def validate_data(self, data: Dict[str, Any]) -> List[TransformViolation]:
+    def validate_data(self, data: Dict[str, object]) -> List[TransformViolation]:
         """Validate all fields in data against vocabularies."""
         violations = []
         
@@ -594,7 +594,7 @@ class SchemaTransformationGate:
         """Register controlled vocabulary."""
         self.vocab_validator.register_vocabulary(field_name, allowed_values, case_sensitive)
         
-    def execute(self, source_data: Dict[str, Any]) -> TransformReport:
+    def execute(self, source_data: Dict[str, object]) -> TransformReport:
         """
         Execute the complete transformation gate.
         

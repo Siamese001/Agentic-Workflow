@@ -19,19 +19,19 @@ logger = logging.getLogger(__name__)
 class CalibrateFitScore:
     """Scorer for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.weights = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def score(self, data: Dict[str, Any]) -> ScoreResult:
+    def score(self, data: Dict[str, object]) -> ScoreResult:
         """Compute score for data."""
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted(factors)
         confidence = self._compute_confidence(factors)
         return ScoreResult(score=max(0, min(1, raw_score)), confidence=confidence, factors=factors)
 
-    def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_factors(self, data: Dict[str, object]) -> Dict[str, float]:
         """Extract scoring factors."""
         factors = {}
         for k, v in data.items():
@@ -54,6 +54,6 @@ class CalibrateFitScore:
         return min(1.0, len(factors) / 5)
 
 
-def compute_score(data: Dict[str, Any], config: Optional[Dict] = None) -> ScoreResult:
+def compute_score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Compute relevance score based on input parameters."""
     return CalibrateFitScore(config).score(data)

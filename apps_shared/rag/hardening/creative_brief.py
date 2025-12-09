@@ -225,7 +225,7 @@ class HeadlineBrief:
     ))
     guidance: str = "Must incorporate differentiator keywords from the Competitive Analysis."
     
-    def validate(self, text: str) -> Dict[str, Any]:
+    def validate(self, text: str) -> Dict[str, object]:
         """Validate headline against all constraints."""
         results = {}
         
@@ -254,7 +254,7 @@ class ExecutiveSummaryBrief:
     ]))
     guidance: str = "Subtly incorporate the primary theme while maintaining professional executive biography voice."
     
-    def validate(self, text: str) -> Dict[str, Any]:
+    def validate(self, text: str) -> Dict[str, object]:
         """Validate executive summary against all constraints."""
         results = {}
         
@@ -283,7 +283,7 @@ class ExperienceBulletsBrief:
     selection_logic: str = "Multi-factor scoring: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)"
     guidance: str = "Must use generic technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
     
-    def validate(self, text: str, is_overview: bool = False) -> Dict[str, Any]:
+    def validate(self, text: str, is_overview: bool = False) -> Dict[str, object]:
         """Validate bullet against constraints."""
         results = {}
         
@@ -327,7 +327,7 @@ class CompetenciesBrief:
     word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
     sourcing_strategy: SourcingStrategy = SourcingStrategy.INTERNAL_FIRST
     
-    def validate(self, competencies: List[str]) -> Dict[str, Any]:
+    def validate(self, competencies: List[str]) -> Dict[str, object]:
         """Validate competencies list."""
         results = {
             "count": {"valid": len(competencies) == self.count, "actual": len(competencies), "expected": self.count},
@@ -364,7 +364,7 @@ class CoverLetterBrief:
     ]))
     signature_generation_policy: str = "DYNAMIC_FROM_OWNER_CONTACT"
     
-    def validate(self, paragraphs: List[str]) -> Dict[str, Any]:
+    def validate(self, paragraphs: List[str]) -> Dict[str, object]:
         """Validate cover letter paragraphs."""
         results = {
             "paragraphs": [],
@@ -403,7 +403,7 @@ class SkillsListBrief:
     sourcing_strategy: str = "Top 12 JD Skills & Cross-Check"
     logic: str = "1. Extract top 12 skills from JD. 2. Cross-reference against master resume. 3. Prioritize intersection."
     
-    def validate(self, skills: List[str]) -> Dict[str, Any]:
+    def validate(self, skills: List[str]) -> Dict[str, object]:
         """Validate skills list."""
         return {
             "count": {"valid": len(skills) == self.count, "actual": len(skills), "expected": self.count},
@@ -431,7 +431,7 @@ class CreativeBrief:
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     skills_list: SkillsListBrief = field(default_factory=SkillsListBrief)
     
-    def validate_all(self, content: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_all(self, content: Dict[str, object]) -> Dict[str, object]:
         """
         Validate all content against the creative brief.
         
@@ -479,7 +479,7 @@ class CreativeBrief:
         results["overall_valid"] = all_valid
         return results
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert creative brief to dictionary for serialization."""
         return {
             "headline": {
@@ -526,7 +526,7 @@ class CreativeBrief:
         }
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> CreativeBrief:
+    def from_dict(cls, data: Dict[str, object]) -> CreativeBrief:
         """Create CreativeBrief from dictionary."""
         brief = cls()
         

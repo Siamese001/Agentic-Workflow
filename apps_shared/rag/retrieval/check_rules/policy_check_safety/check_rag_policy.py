@@ -56,7 +56,7 @@ T = TypeVar('T')
 class PolicyResult:
     """Result of evaluating resume workflow policies for enhancement."""
     decisions: List[PolicyDecision] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
     @property
     def final_verdict(self) -> Verdict:
@@ -85,7 +85,7 @@ class PolicyResult:
         """Gets all findings that would block resume workflow operations."""
         return [f for f in self.all_findings if f.severity >= Severity.HIGH]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Converts resume workflow policy result to dictionary format."""
         return {
             'verdict': self.final_verdict.value,

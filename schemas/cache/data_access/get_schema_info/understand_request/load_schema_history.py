@@ -135,7 +135,7 @@ class FetchDataHistoryMemoryInterface:
         """  Init   implementation."""
         self._processor = processor
 
-    def execute(self, input_data: Dict[str, object][str, Any]) -> Dict[str, Any]:
+    def execute(self, input_data: Dict[str, object][str, Any]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -161,7 +161,7 @@ class FetchDataHistoryMemoryFactory:
         return FetchDataHistoryMemoryInterface(processor)
 
 # L5 Main execution point
-def fetch_data_history(input_data: Dict[str, object][str, Any]) -> Dict[str, Any]:
+def fetch_data_history(input_data: Dict[str, object][str, Any]) -> Dict[str, object]:
     """
     L5 Main function - fetch data history operations
 

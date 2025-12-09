@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def check_ethical_constraints(data: Dict[str, Any]) -> Dict[str, Any]:
+def check_ethical_constraints(data: Dict[str, object]) -> Dict[str, object]:
     """Process check ethical constraints data."""
     return {"status": "processed", "input_keys": list(data.keys())}

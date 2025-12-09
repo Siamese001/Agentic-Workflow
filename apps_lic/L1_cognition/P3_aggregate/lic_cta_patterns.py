@@ -309,7 +309,7 @@ class CTAGenerator:
         archetype: RecipientArchetype,
         topic: Optional[str] = None,
         include_date_window: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Generate a CTA based on route and archetype.
 
@@ -325,7 +325,7 @@ class CTAGenerator:
         template = self.get_template(route)
         pattern = self.get_pattern(archetype)
 
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "template": template.template,
             "pattern": pattern,
             "verbs": pattern.verbs,
@@ -351,7 +351,7 @@ class CTAGenerator:
         self,
         cta_text: str,
         route: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Validate a CTA against route requirements.
 
@@ -363,7 +363,7 @@ class CTAGenerator:
             Validation result dictionary
         """
         template = self.get_template(route)
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "word_count": len(cta_text.split()),

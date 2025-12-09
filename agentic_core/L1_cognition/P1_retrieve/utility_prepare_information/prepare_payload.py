@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def prepare_payload(data: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_payload(data: Dict[str, object]) -> Dict[str, object]:
     """Process prepare payload data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_prepare_payload_config() -> Dict[str, Any]:
+def get_prepare_payload_config() -> Dict[str, object]:
     """Get configuration for prepare_payload."""
     return {"enabled": True, "version": "1.0"}

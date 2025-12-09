@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def build_understand_output(data: Dict[str, Any]) -> Dict[str, Any]:
+def build_understand_output(data: Dict[str, object]) -> Dict[str, object]:
     """Process build understand output data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_build_understand_output_config() -> Dict[str, Any]:
+def get_build_understand_output_config() -> Dict[str, object]:
     """Get configuration for build_understand_output."""
     return {"enabled": True, "version": "1.0"}

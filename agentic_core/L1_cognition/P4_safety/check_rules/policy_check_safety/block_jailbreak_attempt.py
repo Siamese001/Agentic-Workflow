@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def block_jailbreak_attempt(data: Dict[str, Any]) -> Dict[str, Any]:
+def block_jailbreak_attempt(data: Dict[str, object]) -> Dict[str, object]:
     """Process block jailbreak attempt data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_block_jailbreak_attempt_config() -> Dict[str, Any]:
+def get_block_jailbreak_attempt_config() -> Dict[str, object]:
     """Get configuration for block_jailbreak_attempt."""
     return {"enabled": True, "version": "1.0"}

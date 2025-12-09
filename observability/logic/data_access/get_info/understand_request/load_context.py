@@ -448,7 +448,7 @@ class WorkflowContext:
         self._mcp_initialized = True
         return self.mcp_clients
 
-    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> object:
+    def get_mcp_client(self, name: str, default: Optional[object] = None) -> object:
         """Execute get_mcp_client operation."""
         clients = self.ensure_mcp_clients()
         if name in clients:

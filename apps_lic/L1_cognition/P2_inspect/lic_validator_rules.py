@@ -288,7 +288,7 @@ class LICValidator:
 
     def calculate_signal_score(
         self,
-        sources: List[Dict[str, Any]],
+        sources: List[Dict[str, object]],
         recency_days: Optional[int] = None,
     ) -> float:
         """Calculate signal quality score from sources."""
@@ -319,9 +319,9 @@ class LICValidator:
         # Normalize by number of sources
         return min(1.0, total_weight / len(sources))
 
-    def validate_message(self, text: str) -> Dict[str, Any]:
+    def validate_message(self, text: str) -> Dict[str, object]:
         """Perform full validation on a message."""
-        results: Dict[str, Any] = {
+        results: Dict[str, object] = {
             "is_valid": True,
             "errors": [],
             "warnings": [],

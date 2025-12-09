@@ -158,7 +158,7 @@ class GeminiService:
         max_tokens: Optional[int] = None,
         return_full_response: bool = False,
         validate_response: bool = True
-    ) -> Tuple[str, int, Optional[Any]]: # <-- FIX: (Flawed API) Return 3 values
+    ) -> Tuple[str, int, Optional[object]]: # <-- FIX: (Flawed API) Return 3 values
         """
         Execute a production-ready Gemini API call with comprehensive error handling.
 
@@ -377,7 +377,7 @@ class GeminiService:
         temperature: float,
         max_tokens: int,
         section_id: str,
-        api_params: Dict[str, Any]
+        api_params: Dict[str, object]
     ) -> Tuple[Any, APICallStatus]:
         """
         Execute a single API call with proper configuration.
@@ -568,7 +568,7 @@ SYNTHESIZED RESPONSE:"""
             if pattern in text:
                 logger.warning(f"{context}: Response contains potential error: '{pattern}'")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> Dict[str, object]:
         """
         Get current metrics for the service.
 

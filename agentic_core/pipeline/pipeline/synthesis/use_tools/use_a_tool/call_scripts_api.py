@@ -19,13 +19,13 @@ class OperationResult:
     success: bool
     data: Any = None
     message: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class CallScriptsApi:
     """Utility class for use_a_tool domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 

@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def assess_cognition_quality(data: Dict[str, Any]) -> Dict[str, Any]:
+def assess_cognition_quality(data: Dict[str, object]) -> Dict[str, object]:
     """Process assess cognition quality data."""
     return {"status": "processed", "input_keys": list(data.keys())}
