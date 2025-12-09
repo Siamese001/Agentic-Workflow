@@ -28,7 +28,7 @@ class BaseExporter(ABC):
     """Base class for exporters."""
 
     @abstractmethod
-    def export(self, data: Any) -> ExportResult:
+    def export(self, data: object) -> ExportResult:
         """Export data."""
         ...
 
@@ -41,7 +41,7 @@ class JsonExporter(BaseExporter):
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def export(self, data: Any) -> ExportResult:
+    def export(self, data: object) -> ExportResult:
         """Export data to destination."""
         try:
             items = data if isinstance(data, list) else [data]

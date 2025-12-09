@@ -30,7 +30,7 @@ class FormatLlmPrompt:
         transformed = self._transform(data)
         return FormatResult(data=transformed, format_type=fmt)
 
-    def _transform(self, data: Union[str, Dict]) -> Any:
+    def _transform(self, data: Union[str, Dict]) -> object:
         """Transform data."""
         if isinstance(data, str):
             return data.strip()

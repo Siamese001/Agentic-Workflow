@@ -45,7 +45,7 @@ class PIISanitizerAgent(BaseAgent):
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
 
-        def sanitize_node(node: Any) -> Any:
+        def sanitize_node(node: Any) -> object:
             """Execute sanitize_node operation."""
             if isinstance(node, dict):
                 return {k: sanitize_node(v) for k, v in node.items()}

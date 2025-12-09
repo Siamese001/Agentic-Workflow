@@ -522,12 +522,12 @@ class TransactionManager:
             self._transaction_state = TransactionState.FAILED
             return result
     
-    def set_state(self, key: str, value: Any) -> None:
+    def set_state(self, key: str, value: object) -> None:
         """Set a value in the transaction state."""
         self._state[key] = value
         self._trace("STATE_SET", {"key": key}, level=ExecutionTraceLevel.DEBUG)
         
-    def get_state(self, key: str, default: Any = None) -> Any:
+    def get_state(self, key: str, default: Any = None) -> object:
         """Get a value from the transaction state."""
         return copy.deepcopy(self._state.get(key, default))
     

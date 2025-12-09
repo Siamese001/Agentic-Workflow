@@ -39,7 +39,7 @@ class HandleApiTimeouts:
                 time.sleep(self.backoff * (attempt + 1))
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
-    def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs) -> Any:
+    def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs) -> object:
         """Execute with fallback."""
         result = self.execute(primary, *args, **kwargs)
         if result.success:

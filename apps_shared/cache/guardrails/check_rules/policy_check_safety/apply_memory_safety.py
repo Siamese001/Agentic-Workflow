@@ -23,7 +23,7 @@ class ApplyMemorySafety:
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
 
-    def process(self, data: Any, context: Optional[Dict] = None) -> Result:
+    def process(self, data: object, context: Optional[Dict] = None) -> Result:
         """Process data."""
         try:
             return Result(success=True, data=self._execute(data, context))
@@ -31,7 +31,7 @@ class ApplyMemorySafety:
             logger.error(f"Processing failed: {e}")
             return Result(success=False, metadata={"error": str(e)})
 
-    def _execute(self, data: Any, context: Optional[Dict]) -> Any:
+    def _execute(self, data: object, context: Optional[Dict]) -> object:
         """Execute processing."""
         return data
 

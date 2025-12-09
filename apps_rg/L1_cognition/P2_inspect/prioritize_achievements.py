@@ -32,7 +32,7 @@ class PrioritizeAchievements:
             logger.error(f"Processing failed: {e}")
             return OperationResult(success=False, metadata={"error": str(e)})
 
-    def _execute(self, data: Union[str, Dict], context: Optional[Dict]) -> Any:
+    def _execute(self, data: Union[str, Dict], context: Optional[Dict]) -> object:
         """Execute processing."""
         return data
 

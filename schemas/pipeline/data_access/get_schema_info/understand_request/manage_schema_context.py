@@ -84,7 +84,7 @@ def _resolve_path(path_like: str) -> Path:
         return path_obj
 
 
-def _path_is_durable(path_like: str, storage_config: Any) -> bool:
+def _path_is_durable(path_like: str, storage_config: object) -> bool:
     if not storage_config or not path_like:
         return False
 
@@ -139,13 +139,13 @@ def _describe_redis_mode(redis_client: Any) -> str:
         try:
             ping_fn()
             return "REAL"
-        except Exception as exc:  # pragma: no cover - network dependency
+        except (ValueError, TypeError, RuntimeError, OSError) as exc:  # pragma: no cover - network dependency
             logger.warning("Redis ping failed; continuing with degraded cache: %s", exc)
             return "UNREACHABLE"
     return "UNKNOWN"
 
 
-def _describe_chroma_mode(config: ConfigV10_7, storage_config: Any) -> str:
+def _describe_chroma_mode(config: ConfigV10_7, storage_config: object) -> str:
     try:
         chroma_cfg = config.chromadb_config
     except AttributeError:
@@ -187,7 +187,7 @@ def _log_runtime_capabilities(
     )
 
 
-def _mcp_get(config_obj: Any, key: str, default: Any) -> Any:
+def _mcp_get(config_obj: Any, key: str, default: object) -> object:
     """
     Helper to read MCP config fields from either a dict-like structure
     or an attribute-based config object. This makes context robust to
@@ -364,7 +364,7 @@ class WorkflowContext:
         raw_clients = _mcp_get(mcp_config, "clients", [])
         try:
             self._mcp_client_specs = parse_mcp_client_specs(raw_clients)
-        except Exception as exc:
+        except (ValueError, TypeError, RuntimeError, OSError) as exc:
             raise MCPClientInitializationError(f"Invalid MCP configuration: {exc}") from exc
 
     def is_mcp_enabled(self) -> bool:
@@ -388,7 +388,7 @@ class WorkflowContext:
         for spec in self._mcp_client_specs:
             try:
                 clients[spec.name] = instantiate_mcp_client(spec)
-            except Exception as exc:
+            except (ValueError, TypeError, RuntimeError, OSError) as exc:
                 errors[spec.name] = str(exc)
                 if spec.optional:
                     logger.warning(
@@ -418,7 +418,7 @@ class WorkflowContext:
         self._mcp_initialized = True
         return self.mcp_clients
 
-    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> Any:
+    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> object:
         """Execute get_mcp_client operation."""
         clients = self.ensure_mcp_clients()
         if name in clients:
