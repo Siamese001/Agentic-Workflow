@@ -33,13 +33,20 @@ TODO_PATTERN = re.compile(r'#.*\b(TODO|FIXME|NOTE|HACK|XXX|TEMP|WIP|DEBUG|STUB|R
 ROOT = Path(__file__).parent.resolve()
 DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 
-# SOVEREIGNTY - CANON 2025: 40 KEYS APPLY ONLY TO SOVEREIGN CODE
-SOVEREIGN_AGENTS = {"agentic_core", "apps_lic"}  # apps_rg excluded (generated)
+# SOVEREIGN DIRECTORIES — THE ONLY CODE THAT MATTERS
+LAYERED_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}  # Have L1-L5 structure
+FLAT_SOVEREIGN = {"apps_shared"}  # Flat structure, still sovereign
+SOVEREIGN_DIRS = LAYERED_AGENTS.union(FLAT_SOVEREIGN)
+SOVEREIGN_AGENTS = SOVEREIGN_DIRS  # All app directories are now sovereign
 REQUIRED_LAYERS = ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memory", "L5_safety"]
 
 def is_sovereign_file(f: Path) -> bool:
     """Check if file is in sovereign code directories (40 keys apply only here)."""
-    return any(parent.name in {"agentic_core", "apps_lic"} for parent in f.parents)
+    return any(part in SOVEREIGN_DIRS for part in f.parts)
+
+def is_layered_agent(f: Path) -> bool:
+    """Check if file is in a layered agent directory."""
+    return any(part in LAYERED_AGENTS for part in f.parts)
 
 # VERB PHYSICS - EXPANDED TO MATCH ACTUAL CODEBASE
 # L2 execution verbs - includes all action/tool verbs
@@ -218,7 +225,8 @@ def check_directory_structure() -> None:
 
     violations = []
 
-    for agent in SOVEREIGN_AGENTS:
+    # Only apply strict directory structure to layered agents, not flat sovereign code
+    for agent in LAYERED_AGENTS:
         agent_path = ROOT / agent
         if not agent_path.exists():
             continue
@@ -576,12 +584,13 @@ def check_data_immortality() -> None:
 # 1–10: SOVEREIGNTY & LAYER PURITY
 # =====================================================================
 def run_checks_01_10():
-    # 01: Only sovereign agents have L folders (exclude generated apps_rg)
+    # 01: All layered agents have L folders (agentic_core, apps_lic, apps_rg)
+    # apps_shared is flat sovereign code - no L1_cognition required
     agents = {p.name for p in ROOT.iterdir() if p.is_dir() and (p / "L1_cognition").exists()}
-    # Filter out generated code from validation
-    agents = agents.intersection(SOVEREIGN_AGENTS)
-    if agents == SOVEREIGN_AGENTS: success("01")
-    else: fail("01", f"Found {agents}, expected {SOVEREIGN_AGENTS}")
+    # Only validate layered agents
+    agents = agents.intersection(LAYERED_AGENTS)
+    if agents == LAYERED_AGENTS: success("01")
+    else: fail("01", f"Found {agents}, expected {LAYERED_AGENTS}")
 
     # 02: No root files in any sovereign agent (only __init__.py and L folders allowed)
     # NO EXCEPTIONS - all code/.md files must be in L folders or 06_data
