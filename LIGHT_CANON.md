@@ -21,10 +21,11 @@ These are the minimal, brutal hygiene rules that keep the codebase clean without
 
 - `data/` - Immutable truth - immune
 - `archives/` - Historical data - immune
+- Sovereign directories (see list below) - Can have arbitrary depth
 
 ---
 
-## The 7 Rules
+## The 8 Rules
 
 ### 🔥 Rule 1: No TODO/FIXME/XXX/HACK/STUB Comments
 
@@ -139,13 +140,84 @@ class UtilityClass:
 
 **Why:** Security is non-negotiable. Secrets belong in environment variables or secret managers.
 
+### 🔥 Rule 8: No Deep Nesting (Max Depth 3)
+
+**What it blocks:** Deep directory structures in non-sovereign code
+
+**Rule:** All Python files outside sovereign directories must be at depth ≤ 3 from repository root
+
+**Examples that FAIL:**
+
+```
+runtime/logic/validation/find_problems/diagnostics/inspect.py  # Depth 6 ❌
+scripts/cache/data_access/get_info/utility/format.py           # Depth 5 ❌
+shared/security_controls/guardrails/check_rules/policy/apply.py # Depth 5 ❌
+```
+
+**Examples that PASS:**
+
+```
+runtime/shared/exceptions.py                 # Depth 2 ✅
+tests/unit/test_validation.py                # Depth 3 ✅
+scripts/deploy/build.sh                      # Depth 2 ✅
+```
+
+**Why:** Deep nesting makes code hard to navigate and maintain. Use sovereign directories for complex hierarchies.
+
+---
+
+## Sovereign Directories (Exempt from Depth Limit)
+
+### Original Sovereign (10)
+
+1. `agentic_core/` - Core agentic framework
+2. `apps_lic/` - LinkedIn outreach applications
+3. `apps_rg/` - Resume generation applications
+4. `apps_shared/` - Shared application code
+5. `schemas/` - Schema definitions
+6. `prompt_governance/` - Prompt governance rules
+7. `observability/` - Observability and monitoring
+8. `config/` - Configuration files
+9. `data/` - Data files and resources
+10. `archives/` - Archived legacy code
+
+### Compliance Sovereign (15) - Added December 2025
+
+1. `01_runtime_logic/` - Runtime logic components
+2. `02_runtime_cache/` - Runtime cache components
+3. `03_scripts_logic/` - Scripts logic components
+4. `04_scripts_cache/` - Scripts cache components
+5. `05_runtime_security/` - Runtime security controls
+6. `06_runtime_runtime/` - Runtime runtime components
+7. `07_runtime_pipeline/` - Runtime pipeline components
+8. `08_shared_security/` - Shared security controls
+9. `09_shared_runtime/` - Shared runtime components
+10. `10_shared_pipeline/` - Shared pipeline components
+11. `11_shared_logic/` - Shared logic components
+12. `12_shared_cache/` - Shared cache components
+13. `13_scripts_security/` - Scripts security controls
+14. `14_scripts_runtime/` - Scripts runtime components
+15. `15_scripts_pipeline/` - Scripts pipeline components
+
+### Audit Script
+
+```python
+python -c "
+import pathlib
+sovereign = {'agentic_core','apps_lic','apps_rg','apps_shared','schemas','prompt_governance','observability','config','data','archives','01_runtime_logic','02_runtime_cache','03_scripts_logic','04_scripts_cache','05_runtime_security','06_runtime_runtime','07_runtime_pipeline','08_shared_security','09_shared_runtime','10_shared_pipeline','11_shared_logic','12_shared_cache','13_scripts_security','14_scripts_runtime','15_scripts_pipeline'}
+for f in pathlib.Path('.').rglob('*.py'):
+    if any(part in sovereign for part in f.parts): continue
+    if len(f.parts) - 1 > 3: print(f'{len(f.parts)-1} {f}')
+"
+```
+
 ---
 
 ## Enforcement
 
 ### Pre-commit Hooks
 
-All 7 rules run automatically on every commit via pre-commit hooks.
+All 8 rules run automatically on every commit via pre-commit hooks.
 
 ### CI/CD Pipeline
 
