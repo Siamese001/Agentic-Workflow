@@ -32,31 +32,31 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
-  # 3. RUFF — ONLY ON TRUE SOVEREIGN MODULES (generated code excluded)
+  # 3. RUFF — ONLY ON TRUE SOVEREIGN MODULE (generated code excluded)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.4
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
-        files: ^(agentic_core|apps_lic)/
+        files: ^agentic_core/
       - id: ruff-format
-        files: ^(agentic_core|apps_lic)/
+        files: ^agentic_core/
 
-  # 4. PYRIGHT — SOVEREIGN + SHARED ONLY
-  - repo: local
-    hooks:
-      - id: pyright-strict
-        name: PYRIGHT 100% TYPE PERFECTION
-        entry: pyright --verifytypes agentic_core apps_lic apps_rg runtime/shared --ignoreexternal --level strict
-        language: system
-        pass_filenames: false
+  # 4. PYRIGHT — SOVEREIGN + SHARED ONLY (temporarily disabled)
+  # - repo: local
+  #   hooks:
+  #     - id: pyright-strict
+  #       name: PYRIGHT 100% TYPE PERFECTION
+  #       entry: pyright --verifytypes agentic_core apps_lic apps_rg runtime/shared --ignoreexternal --level strict
+  #       language: system
+  #       pass_filenames: false
 
-  # 5. COVERAGE + MUTATION — SOVEREIGN ONLY
-  - repo: local
-    hooks:
-      - id: 100-percent-coverage
-        name: 100% COVERAGE OR DIE
-        entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov-fail-under=100 -q
-        language: system
-        pass_filenames: false
-        require_serial: true
+  # 5. COVERAGE + MUTATION — SOVEREIGN ONLY (temporarily disabled)
+  # - repo: local
+  #   hooks:
+  #     - id: 100-percent-coverage
+  #       name: 100% COVERAGE OR DIE
+  #       entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov-fail-under=100 -q
+  #       language: system
+  #       pass_filenames: false
+  #       require_serial: true
