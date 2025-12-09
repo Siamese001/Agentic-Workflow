@@ -193,3 +193,17 @@ repos:
         entry: python scripts/validate_sdk_files.py
         language: system
         files: '^data/sdks_mcps/.*\.py$'
+
+  # ===================================================================
+  # AUTO-UPDATE GITHUB README — SOVEREIGN COMMITS ONLY
+  # Updates README.md and stages it (NO git commit inside hook - avoids recursion)
+  # ===================================================================
+  - repo: local
+    hooks:
+      - id: update-main-readme
+        name: AUTO-UPDATE README ON SOVEREIGN CHANGES
+        entry: python scripts/update_readme.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+        pass_filenames: false
+        stages: [pre-commit]
