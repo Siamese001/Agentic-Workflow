@@ -66,10 +66,12 @@ L3_VERBS = {
     "send", "log", "record", "apply", "validate", "check", "enforce", "handle"
 }
 
-# BANNED TOKENS (per YAML) - "service" removed as it's used in valid filenames
+# BANNED TOKENS — TOTAL NAMING PURGE (v2 Absolute)
+# Note: "service", "handler", "core", "component" removed — legitimate domain terms
 BANNED_TOKENS = {
     "ops", "utils", "manager", "helper", "common", "misc",
-    "general", "base", "abstract", "legacy", "shared_engine"
+    "general", "base", "abstract", "legacy", "shared_engine",
+    "wrapper", "processor", "factory", "module", "unit", "engine"
 }
 
 # FAKE NESTING FOLDERS (per YAML) - only check in sovereign agents
@@ -88,9 +90,9 @@ PURE_GUARD = {"block", "sanitize", "redact"}
 # NO ALLOWED_DUPLICATES - Strict semantic ownership enforced via rule logic
 # Key 28 uses pure algorithmic enforcement instead of allow-lists
 
-# LIMITS — SADISTIC EDITION
+# LIMITS — v2 ABSOLUTE EDITION
 MAX_DEPTH = 7
-MIN_FILE_BYTES = 300  # RAISED FROM 60 → ANYTHING SMALLER IS TREASON
+MIN_FILE_BYTES = 350  # RAISED FROM 300 → WEAKNESS HAS NO PLACE
 
 # POISON MARKERS — ANY OF THESE IN CONTENT = INSTANT DEATH
 # Note: These are checked in file CONTENT, not filenames
@@ -498,6 +500,41 @@ def check_absolute_purity() -> None:
                    f"{'='*60}\n" +
                    "\n".join(f"  - {v}" for v in violations[:50]) +
                    (f"\n  ... and {len(violations)-50} more" if len(violations) > 50 else ""))
+
+
+def require_docstrings() -> None:
+    """Key 00g — DOCSTRING REQUIREMENT (v2 Absolute)
+    
+    Every public function and class in sovereign code MUST have a docstring.
+    No exceptions. No lazy code.
+    """
+    violations = []
+    
+    for f in get_sovereign_py_files():
+        try:
+            tree = ast.parse(read_file(f))
+        except SyntaxError:
+            continue
+        
+        rel_path = f.relative_to(ROOT)
+        
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                name = node.name
+                # Skip private (_prefix) and dunder methods
+                if name.startswith("_"):
+                    continue
+                if ast.get_docstring(node) is None:
+                    kind = "class" if isinstance(node, ast.ClassDef) else "function"
+                    violations.append(f"{rel_path}:{node.lineno} — missing docstring on {kind} '{name}'")
+    
+    if violations:
+        fail("00", f"DOCSTRING REQUIRED — {len(violations)} violations\n"
+                   f"{'='*60}\n"
+                   f"Every public function and class must have a docstring.\n"
+                   f"{'='*60}\n" +
+                   "\n".join(f"  • {v}" for v in violations[:40]) +
+                   (f"\n  ... and {len(violations)-40} more" if len(violations) > 40 else ""))
 
 
 def get_sovereign_py_files() -> List[Path]:
@@ -1205,16 +1242,17 @@ def mirror_yaml_to_reality():
 # RUN ALL CHECKS
 # =====================================================================
 def run_all_checks():
-    """Run all 40 validation checks. SADISTIC ZERO-MERCY EDITION."""
+    """Run all 40 validation checks. v2 ABSOLUTE EDITION."""
     results.clear()
 
-    # KEY 00 RUNS FIRST AND HARDEST — SADISTIC PURITY CHECK
+    # KEY 00 RUNS FIRST AND HARDEST — v2 ABSOLUTE PURITY
     check_no_deletions()
     check_no_moves_or_renames()
     check_directory_structure()
     check_file_content_integrity()
     check_docstring_quality()
-    check_absolute_purity()  # SADISTIC: ANY STUB = INSTANT DEATH
+    check_absolute_purity()   # v2: ANY STUB = INSTANT DEATH
+    require_docstrings()      # v2: ALL PUBLIC CODE MUST BE DOCUMENTED
 
     run_checks_01_10()
     run_checks_11_20()

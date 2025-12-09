@@ -15,5 +15,6 @@ from workflow.runner import run_workflow
 
 
 def test_latency_smoke(benchmark: any, case: any) -> None:
+    """Smoke test for workflow execution latency using benchmark fixture."""
     out = benchmark(lambda: run_workflow({"resume": case, "jd":"perf"}))
     assert out is not None
