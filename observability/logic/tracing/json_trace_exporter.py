@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Generator, Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from contextlib import contextmanager
 
@@ -46,7 +46,7 @@ class JsonTraceExporter:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
-    def start_span(self, name: str, attributes: Optional[Dict] = None):
+    def start_span(self, name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
@@ -88,7 +88,7 @@ _tracer = JsonTraceExporter()
 
 
 @contextmanager
-def trace(name: str, attributes: Optional[Dict] = None):
+def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span
