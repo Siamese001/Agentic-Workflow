@@ -147,7 +147,7 @@ def main() -> None:
         subprocess.run(["git", "add", str(dest_path)], capture_output=True)
         subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True)
 
-        print(f"Auto-promoted → {dest_path}  ({reason})")
+        print(f"Auto-promoted -> {dest_path}  ({reason})")
         moved = True
 
     # Always exit 0 so pre-commit continues; Light Canon will now skip moved files

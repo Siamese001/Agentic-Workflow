@@ -6,4 +6,20 @@ Generated: 2025-12-07T13:28:38.512765
 
 from __future__ import annotations
 
-__all__: list[str] = []
+from .lic_vector_memory import (
+    LICVectorMemory,
+    MockVectorMemory,
+    VectorDocument,
+    QueryResult,
+    MemoryStats,
+    create_vector_memory,
+)
+
+__all__: list[str] = [
+    "LICVectorMemory",
+    "MockVectorMemory",
+    "VectorDocument",
+    "QueryResult",
+    "MemoryStats",
+    "create_vector_memory",
+]
