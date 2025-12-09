@@ -12,7 +12,7 @@ class TestLICResearchIntegration:
             "c_001": {"name": "John Doe", "company": "TechCorp", "title": "CTO"},
             "c_002": {"name": "Jane Smith", "company": "Acme", "title": "VP Eng"},
         }
-        
+
         contact = contacts_db.get("c_001")
         assert contact["name"] == "John Doe"
 
@@ -20,24 +20,24 @@ class TestLICResearchIntegration:
         """Integration: Company data enriches contact."""
         contact = {"name": "John", "company_id": "comp_001"}
         companies = {"comp_001": {"name": "TechCorp", "industry": "Technology"}}
-        
+
         enriched = {
             **contact,
             "company_name": companies[contact["company_id"]]["name"],
             "industry": companies[contact["company_id"]]["industry"],
         }
-        
+
         assert enriched["company_name"] == "TechCorp"
 
     def test_research_results_storage(self):
         """Integration: Research results are stored."""
         storage = {}
-        
+
         results = {
             "contact_id": "c_001",
             "research_data": {"insights": ["insight1", "insight2"]},
         }
-        
+
         storage[results["contact_id"]] = results
         assert "c_001" in storage
 
@@ -46,7 +46,7 @@ class TestLICResearchIntegration:
         campaigns = {
             "camp_001": {"contacts": ["c_001", "c_002", "c_003"]},
         }
-        
+
         campaign = campaigns["camp_001"]
         assert len(campaign["contacts"]) == 3
 
@@ -60,7 +60,7 @@ class TestLICMessageIntegration:
             "intro": "Hi {name}, I noticed...",
             "follow_up": "Hi {name}, following up on...",
         }
-        
+
         template = templates.get("intro")
         assert "{name}" in template
 
@@ -68,7 +68,7 @@ class TestLICMessageIntegration:
         """Integration: Personalization data merges with template."""
         template = "Hi {name}, I saw {company}'s {achievement}."
         data = {"name": "John", "company": "TechCorp", "achievement": "product launch"}
-        
+
         message = template.format(**data)
         assert "John" in message
         assert "TechCorp" in message
@@ -76,10 +76,10 @@ class TestLICMessageIntegration:
     def test_message_history_tracking(self):
         """Integration: Message history is tracked."""
         history = []
-        
+
         message = {"contact_id": "c_001", "content": "Hi John...", "sent_at": "2024-01-01"}
         history.append(message)
-        
+
         assert len(history) == 1
 
 
@@ -95,13 +95,13 @@ class TestLICAnalyticsIntegration:
             {"status": "sent"},
             {"status": "opened"},
         ]
-        
+
         metrics = {
             "sent": sum(1 for m in messages if m["status"] in ["sent", "opened", "replied"]),
             "opened": sum(1 for m in messages if m["status"] in ["opened", "replied"]),
             "replied": sum(1 for m in messages if m["status"] == "replied"),
         }
-        
+
         assert metrics["sent"] == 5
         assert metrics["opened"] == 3
 
@@ -112,8 +112,8 @@ class TestLICAnalyticsIntegration:
             {"id": "c_002", "status": "contacted"},
             {"id": "c_003", "status": "converted"},
         ]
-        
+
         conversions = [c for c in contacts if c["status"] == "converted"]
         conversion_rate = len(conversions) / len(contacts)
-        
+
         assert conversion_rate == pytest.approx(0.667, rel=0.01)

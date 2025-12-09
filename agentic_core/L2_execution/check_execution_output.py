@@ -46,7 +46,7 @@ def check_imports(
                 __import__(name)
                 successful.append(name)
                 logger.debug("OK: %s", name)
-            except Exception as e:
+            except (ImportError, ModuleNotFoundError, AttributeError) as e:
                 error_msg = f"{type(e).__name__}: {e}"
                 failed[name] = error_msg
                 logger.warning("FAILED: %s -> %s", name, error_msg)
@@ -64,5 +64,7 @@ __all__ = ["check_imports"]
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    # Configure logger for standalone execution
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
     check_imports()

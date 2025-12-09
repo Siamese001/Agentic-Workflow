@@ -37,7 +37,7 @@ from utils_RES_v2 import text_utils, reasoning_config_to_api_params, enhance_sys
 
 # --- FIX: Import ALL constants from config_RES_v2 ---
 from config_RES_v2 import (
-    DEFAULT_GENERATION_TEMPERATURE, 
+    DEFAULT_GENERATION_TEMPERATURE,
     DEFAULT_SYNTHESIS_TEMPERATURE,
     DEFAULT_MAX_RETRIES,  # <-- IMPORTED
     DEFAULT_RETRY_DELAY   # <-- IMPORTED
@@ -81,7 +81,7 @@ class APICallMetrics:
 class GeminiService:
     """
     Production-ready Gemini API service with comprehensive error handling.
-    
+
     Features:
     - Automatic retry with exponential backoff
     - Rate limiting protection
@@ -90,14 +90,14 @@ class GeminiService:
     - Comprehensive metrics tracking
     - Fallback mechanisms for failures
     """
-    
-    def __init__(self, 
+
+    def __init__(self,
                  default_model: str = "gemini-2.0-flash-exp",
                  max_retries: Optional[int] = None,
                  retry_delay: Optional[float] = None):
         """
         Initialize the Gemini service with production configurations.
-        
+
         Args:
             default_model: Default model to use if not specified in call
             max_retries: Maximum number of retry attempts
@@ -108,17 +108,17 @@ class GeminiService:
         self.max_retries = max_retries if max_retries is not None else DEFAULT_MAX_RETRIES
         self.retry_delay = retry_delay if retry_delay is not None else DEFAULT_RETRY_DELAY
         self.metrics = APICallMetrics()
-        
+
         # Validate environment
         self._validate_environment()
-        
+
         logger.info(f"✓ GeminiService initialized with model: {default_model}")
         logger.info(f"  Max retries: {max_retries}, Base retry delay: {retry_delay}s")
-    
+
     def _validate_environment(self) -> None:
         """
         Validate that the environment is properly configured.
-        
+
         Raises:
             RuntimeError: If environment is not properly configured
         """
@@ -127,7 +127,7 @@ class GeminiService:
                 "google-generativeai package not available. "
                 "Install with: pip install google-generativeai"
             )
-        
+
         # Validate API key
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
@@ -137,17 +137,17 @@ class GeminiService:
                     api_key = genai._config.api_key
             except:
                 ...
-            
+
             if not api_key:
                 raise RuntimeError(
                     "GEMINI_API_KEY environment variable not set. "
                     "Set it with: export GEMINI_API_KEY='your-api-key'"
                 )
-        
+
         # Configure genai if needed
         if not hasattr(genai, '_config') or not genai._config.api_key:
             genai.configure(api_key=api_key)
-    
+
     def call_api(
         self,
         prompt: str,
@@ -162,7 +162,7 @@ class GeminiService:
     ) -> Tuple[str, int, Optional[Any]]: # <-- FIX: (Flawed API) Return 3 values
         """
         Execute a production-ready Gemini API call with comprehensive error handling.
-        
+
         Args:
             prompt: The user prompt (required, cannot be empty)
             section_id: Identifier for logging and tracking
@@ -173,10 +173,10 @@ class GeminiService:
             max_tokens: Max output tokens
             return_full_response: Return full API response object
             validate_response: Validate response for mock/placeholder data
-            
+
         Returns:
             Tuple of (generated_text, api_calls_made, full_response)
-            
+
         Raises:
             HopExecutionError: If API call fails after all retries
             ValueError: If input validation fails
@@ -184,25 +184,25 @@ class GeminiService:
         # Input validation
         if not prompt or not prompt.strip():
             raise ValueError(f"{section_id}: Prompt cannot be empty")
-        
+
         if not section_id:
             raise ValueError("section_id is required for tracking")
-        
+
         # Validate no mock data in prompt
         self._validate_no_mock_data(prompt, section_id)
-        
+
         # Configure parameters
         model_name = model or self.default_model
         # --- FIX: Use imported DEFAULT_GENERATION_TEMPERATURE ---
         temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
         max_tok = max_tokens or DEFAULT_MAX_TOKENS
-        
+
         # Validate temperature range
         if not 0.0 <= temp <= 1.0:
             logger.warning(f"{section_id}: Temperature {temp} out of range, using default")
             # --- FIX: Use imported DEFAULT_GENERATION_TEMPERATURE ---
             temp = DEFAULT_GENERATION_TEMPERATURE
-        
+
         # Apply reasoning configuration
         if reasoning_config:
             # --- FIX: Pass section_id to reasoning_config_to_api_params ---
@@ -213,7 +213,7 @@ class GeminiService:
                 )
         else:
             api_params = {}
-        
+
         # Execute with retry logic
         for attempt in range(self.max_retries):
             try:
@@ -226,36 +226,36 @@ class GeminiService:
                     section_id=section_id,
                     api_params=api_params
                 )
-                
+
                 if status == APICallStatus.SUCCESS:
                     # Extract and validate text
                     text = self._extract_text(response)
-                    
+
                     if validate_response:
                         self._validate_response_integrity(text, section_id)
-                    
+
                     # Update metrics
                     self.metrics.call_count += 1
                     self.metrics.success_count += 1
-                    
+
                     # Return results
                     full_resp = response if return_full_response else None
                     return text, 1, full_resp
-                
+
                 elif status == APICallStatus.RATE_LIMITED:
                     self.metrics.rate_limits += 1
                     wait_time = self.retry_delay * (2 ** attempt)
                     logger.warning(f"{section_id}: Rate limited, waiting {wait_time}s")
                     time.sleep(wait_time)
                     continue
-                
+
                 elif status == APICallStatus.SAFETY_BLOCKED:
                     self.metrics.safety_blocks += 1
                     raise HopExecutionError(
                         f"{section_id}: Response blocked by safety filters. "
                         f"Please review prompt content."
                     )
-                
+
                 else:
                     # Other errors - retry with backoff
                     if attempt < self.max_retries - 1:
@@ -263,10 +263,10 @@ class GeminiService:
                         logger.warning(f"{section_id}: Attempt {attempt + 1} failed, retrying in {wait_time}s")
                         time.sleep(wait_time)
                         continue
-                    
+
             except Exception as e:
                 self.metrics.error_count += 1
-                
+
                 if attempt < self.max_retries - 1:
                     wait_time = self.retry_delay * (2 ** attempt)
                     logger.warning(f"{section_id}: Exception on attempt {attempt + 1}: {e}")
@@ -278,12 +278,12 @@ class GeminiService:
                     raise HopExecutionError(
                         f"{section_id}: API call failed after {self.max_retries} attempts: {str(e)}"
                     )
-        
+
         # Should not reach here
         raise HopExecutionError(
             f"{section_id}: API call failed after all retries"
         )
-    
+
     def call_with_self_consistency(
         self,
         prompt: str,
@@ -298,7 +298,7 @@ class GeminiService:
     ) -> Tuple[str, int, List[str]]:
         """
         Execute multiple API calls for self-consistency with synthesis.
-        
+
         Args:
             prompt: The user prompt
             section_id: Identifier for logging
@@ -309,13 +309,13 @@ class GeminiService:
             temperature: Temperature for generation
             max_tokens: Max output tokens
             synthesis_prompt: Custom prompt for synthesis
-            
+
         Returns:
             Tuple of (synthesized_result, total_api_calls, individual_responses)
         """
         if num_runs < 1:
             raise ValueError(f"{section_id}: num_runs must be at least 1")
-        
+
         if num_runs == 1:
             # Single run - no synthesis needed
             result, calls, _ = self.call_api( # <-- FIX: Unpack 3 values
@@ -328,11 +328,11 @@ class GeminiService:
                 max_tokens=max_tokens
             )
             return result, calls, [result]
-        
+
         # Multiple runs for self-consistency
         responses = []
         total_calls = 0
-        
+
         for i in range(num_runs):
             try:
                 response, calls, _ = self.call_api( # <-- FIX: Unpack 3 values
@@ -346,30 +346,30 @@ class GeminiService:
                 )
                 responses.append(response)
                 total_calls += calls
-                
+
             except Exception as e:
                 logger.error(f"{section_id}: Self-consistency run {i+1} failed: {e}")
                 # Continue with other runs
                 continue
-        
+
         if not responses:
             raise HopExecutionError(
                 f"{section_id}: All self-consistency runs failed"
             )
-        
+
         # Synthesize results
         if len(responses) == 1:
             return responses[0], total_calls, responses
-        
+
         synthesized = self._synthesize_responses(
             responses=responses,
             section_id=f"{section_id}_synthesis",
             synthesis_prompt=synthesis_prompt,
             model=model
         )
-        
+
         return synthesized, total_calls + 1, responses
-    
+
     def _execute_api_call(
         self,
         prompt: str,
@@ -382,12 +382,12 @@ class GeminiService:
     ) -> Tuple[Any, APICallStatus]:
         """
         Execute a single API call with proper configuration.
-        
+
         Returns:
             Tuple of (response_object, status)
         """
         start_time = time.time()
-        
+
         try:
             # Configure model
             model = genai.GenerativeModel(
@@ -405,29 +405,29 @@ class GeminiService:
                     "HARM_CATEGORY_DANGEROUS_CONTENT": SAFETY_THRESHOLD,
                 }
             )
-            
+
             # Prepare prompt
             if system_prompt:
                 full_prompt = f"{system_prompt}\n\n{prompt}"
             else:
                 full_prompt = prompt
-            
+
             # Generate
             response = model.generate_content(full_prompt)
-            
+
             # Check for safety blocking
             if not response.parts:
                 return None, APICallStatus.SAFETY_BLOCKED
-            
+
             # Track latency
             latency = (time.time() - start_time) * 1000
             self.metrics.total_latency_ms += latency
-            
+
             return response, APICallStatus.SUCCESS
-            
+
         except Exception as e:
             error_str = str(e).lower()
-            
+
             if "quota" in error_str or "rate" in error_str:
                 return None, APICallStatus.RATE_LIMITED
             elif "safety" in error_str or "blocked" in error_str:
@@ -435,35 +435,35 @@ class GeminiService:
             else:
                 logger.error(f"{section_id}: API error: {e}")
                 return None, APICallStatus.ERROR
-    
+
     def _extract_text(self, response: Any) -> str:
         """
         Extract clean text from API response.
-        
+
         Args:
             response: API response object
-            
+
         Returns:
             Cleaned text string
         """
         if not response or not response.parts:
             return ""
-        
+
         # Extract text from all parts
         text_parts = []
         for part in response.parts:
             if hasattr(part, 'text'):
                 text_parts.append(part.text)
-        
+
         text = " ".join(text_parts)
-        
+
         # Clean up text
         # --- FIX: Call text_utils.strip_markdown_fences ---
         text = text_utils.strip_markdown_fences(text)
 
         # --- FIX: (Conflicting Logic) Removed redundant stripping ---
         return text.strip()
-    
+
     def _synthesize_responses(
         self,
         responses: List[str],
@@ -473,13 +473,13 @@ class GeminiService:
     ) -> str:
         """
         Synthesize multiple responses into a single coherent response.
-        
+
         Args:
             responses: List of response texts
             section_id: Identifier for logging
             synthesis_prompt: Custom synthesis prompt
             model: Model to use for synthesis
-            
+
         Returns:
             Synthesized response text
         """
@@ -498,7 +498,7 @@ Create a synthesized response that:
 4. Does not mention that this is a synthesis
 
 SYNTHESIZED RESPONSE:"""
-        
+
         synthesized, _, _ = self.call_api( # <-- FIX: Unpack 3 values
             prompt=synthesis_prompt,
             section_id=section_id,
@@ -507,17 +507,17 @@ SYNTHESIZED RESPONSE:"""
             temperature=DEFAULT_SYNTHESIS_TEMPERATURE,
             validate_response=True
         )
-        
+
         return synthesized
-    
+
     def _validate_no_mock_data(self, text: str, context: str) -> None:
         """
         Validate that text contains no mock/placeholder data.
-        
+
         Args:
             text: Text to validate
             context: Context for error messages
-            
+
         Raises:
             ValueError: If mock data is detected
         """
@@ -530,7 +530,7 @@ SYNTHESIZED RESPONSE:"""
             "test_data", "TEST_DATA",
             "mock_response", "MOCK_RESPONSE"
         ]
-        
+
         text_lower = text.lower()
         for indicator in mock_indicators:
             if indicator.lower() in text_lower:
@@ -538,25 +538,25 @@ SYNTHESIZED RESPONSE:"""
                     f"{context}: Mock/placeholder data detected: '{indicator}'. "
                     f"Production system cannot process test data."
                 )
-    
+
     def _validate_response_integrity(self, text: str, context: str) -> None:
         """
         Validate response doesn't contain problematic content.
-        
+
         Args:
             text: Response text to validate
             context: Context for error messages
-            
+
         Raises:
             ValueError: If response fails validation
         """
         # Check for empty response
         if not text or not text.strip():
             raise ValueError(f"{context}: Empty response received")
-        
+
         # Check for mock data
         self._validate_no_mock_data(text, context)
-        
+
         # Check for obvious errors
         error_patterns = [
             "error:", "ERROR:",
@@ -564,28 +564,28 @@ SYNTHESIZED RESPONSE:"""
             "could not generate", "Could not generate",
             "I cannot", "I can't"
         ]
-        
+
         for pattern in error_patterns:
             if pattern in text:
                 logger.warning(f"{context}: Response contains potential error: '{pattern}'")
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """
         Get current metrics for the service.
-        
+
         Returns:
             Dictionary of metrics
         """
         success_rate = (
-            self.metrics.success_count / self.metrics.call_count 
+            self.metrics.success_count / self.metrics.call_count
             if self.metrics.call_count > 0 else 0
         )
-        
+
         avg_latency = (
             self.metrics.total_latency_ms / self.metrics.success_count
             if self.metrics.success_count > 0 else 0
         )
-        
+
         return {
             "total_calls": self.metrics.call_count,
             "successful_calls": self.metrics.success_count,
@@ -596,12 +596,12 @@ SYNTHESIZED RESPONSE:"""
             "rate_limits": self.metrics.rate_limits,
             "total_tokens_used": self.metrics.total_tokens_used
         }
-    
+
     def reset_metrics(self) -> None:
         """Reset all metrics to zero."""
         self.metrics = APICallMetrics()
         logger.info("GeminiService metrics reset")
-    
+
     def call_api_with_json_response(
         self,
         prompt: str,
@@ -622,7 +622,7 @@ SYNTHESIZED RESPONSE:"""
             try:
                 # --- FIX: Use imported default temp ---
                 temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
-                
+
                 # Make the API call
                 raw_response, calls, full_resp = self.call_api( # <-- FIX: Unpack 3 values
                     prompt=prompt,
@@ -633,19 +633,19 @@ SYNTHESIZED RESPONSE:"""
                 )
                 total_calls += calls
                 # --- END FIX ---
-                
+
                 # Basic cleanup to find JSON block
                 json_match = re.search(r"```json\n(.*?)\n```", raw_response, re.DOTALL)
                 if not json_match:
                     json_match = re.search(r"({.*})", raw_response, re.DOTALL)
-                
+
                 if json_match:
                     json_str = json_match.group(1)
                     # --- FIX: Return tuple ---
                     return json.loads(json_str), total_calls, full_resp
                 else:
                     logger.warning(f"No JSON found in response, attempt {attempt + 1}")
-                    
+
             except json.JSONDecodeError as e:
                 logger.error(f"JSON decode failed: {e}. Response: {raw_response}")
             except Exception as e:
@@ -664,17 +664,17 @@ def get_gemini_service(
 ) -> GeminiService:
     """
     Get or create the global GeminiService instance.
-    
+
     Args:
         default_model: Default model to use
         force_new: Force creation of new instance
-        
+
     Returns:
         GeminiService instance
     """
     global _gemini_service_instance
-    
+
     if force_new or _gemini_service_instance is None:
         _gemini_service_instance = GeminiService(default_model=default_model)
-    
+
     return _gemini_service_instance

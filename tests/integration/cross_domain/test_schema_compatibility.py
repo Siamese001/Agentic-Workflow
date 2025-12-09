@@ -33,7 +33,7 @@ class TestValidationModelIntegration:
         """GateDecision can be used alongside ValidationResult."""
         decisions = list(GateDecision)
         severities = list(ValidationSeverity)
-        
+
         # Both enums should be usable together
         assert len(decisions) >= 1
         assert len(severities) >= 1

@@ -43,7 +43,7 @@ class TextSimilarityCalculator:
         try:
             tfidf_matrix = self.vectorizer.fit_transform([text1, text2])
             return cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-        except Exception:
+        except (ValueError, TypeError, RuntimeError):
             return 0.0
 
     def _calculate_fallback(self, text1: str, text2: str) -> float:

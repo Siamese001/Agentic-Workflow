@@ -83,22 +83,22 @@ def compute_hash(filepath: Path) -> str:
 def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
     """Find all duplicate files by hash."""
     hash_to_files: Dict[str, List[Path]] = defaultdict(list)
-    
+
     for folder in folders:
         folder_path = REPO_ROOT / folder
         if not folder_path.exists():
             continue
-        
+
         for filepath in folder_path.rglob("*.py"):
             # Skip excluded paths
             path_str = str(filepath)
             if any(excl in path_str for excl in EXCLUDE_PATTERNS):
                 continue
-            
+
             if filepath.is_file():
                 file_hash = compute_hash(filepath)
                 hash_to_files[file_hash].append(filepath)
-    
+
     # Return only groups with duplicates
     return {h: files for h, files in hash_to_files.items() if len(files) > 1}
 
@@ -106,7 +106,7 @@ def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
 def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
     """
     Select the canonical file to keep from a group of duplicates.
-    
+
     Priority:
     1. Prefer files in 07_observability (infrastructure)
     2. Prefer files with more descriptive names
@@ -123,21 +123,21 @@ def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
             "06_data": 5,
             "config": 6,
         }
-        
+
         folder_score = 10
         for folder, priority in folder_priority.items():
             if folder in str(f):
                 folder_score = priority
                 break
-        
+
         # Prefer more specific names (longer = more specific)
         name_score = -len(f.stem)
-        
+
         # Prefer shorter paths
         path_score = len(str(f))
-        
+
         return (folder_score, name_score, path_score)
-    
+
     sorted_files = sorted(files, key=score_file)
     return sorted_files[0], sorted_files[1:]
 
@@ -145,46 +145,46 @@ def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
 def execute_dedup(dry_run: bool = False) -> DedupManifest:
     """Execute deduplication."""
     manifest = DedupManifest()
-    
+
     print("Scanning for duplicates...")
     duplicates = find_duplicates(SCAN_FOLDERS)
-    
+
     manifest.duplicate_groups = len(duplicates)
     manifest.total_scanned = sum(len(files) for files in duplicates.values())
-    
+
     print(f"Found {manifest.duplicate_groups} duplicate groups ({manifest.total_scanned} files)")
-    
+
     if not dry_run:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     for file_hash, files in duplicates.items():
         canonical, to_remove = select_canonical(files)
-        
+
         manifest.kept_files.append({
             "path": str(canonical.relative_to(REPO_ROOT)),
             "hash": file_hash[:16],
             "size": canonical.stat().st_size,
             "duplicates_removed": len(to_remove),
         })
-        
+
         print(f"\n[KEEP] {canonical.relative_to(REPO_ROOT)}")
-        
+
         for dup_file in to_remove:
             rel_path = dup_file.relative_to(REPO_ROOT)
             file_size = dup_file.stat().st_size
-            
+
             manifest.removed_files.append({
                 "path": str(rel_path),
                 "hash": file_hash[:16],
                 "size": file_size,
                 "canonical": str(canonical.relative_to(REPO_ROOT)),
             })
-            
+
             manifest.bytes_saved += file_size
             manifest.files_removed += 1
-            
+
             print(f"  [REMOVE] {rel_path}")
-            
+
             if not dry_run:
                 try:
                     # Archive the file
@@ -196,7 +196,7 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
                         "path": str(rel_path),
                         "error": str(e),
                     })
-    
+
     # Save manifest
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(MANIFEST_PATH, "w") as f:
@@ -210,7 +210,7 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
             "removed_files": manifest.removed_files,
             "errors": manifest.errors,
         }, f, indent=2)
-    
+
     return manifest
 
 
@@ -223,14 +223,14 @@ def print_summary(manifest: DedupManifest, dry_run: bool):
     print(f"Duplicate groups: {manifest.duplicate_groups}")
     print(f"Files removed: {manifest.files_removed}")
     print(f"Bytes saved: {manifest.bytes_saved:,} ({manifest.bytes_saved / 1024 / 1024:.2f} MB)")
-    
+
     if manifest.errors:
         print(f"\nErrors: {len(manifest.errors)}")
         for err in manifest.errors[:5]:
             print(f"  {err['path']}: {err['error']}")
-    
+
     print(f"\nManifest saved to: {MANIFEST_PATH}")
-    
+
     if dry_run:
         print("\n[DRY RUN] No files were actually removed.")
     else:
@@ -239,13 +239,13 @@ def print_summary(manifest: DedupManifest, dry_run: bool):
 
 if __name__ == "__main__":
     import sys
-    
+
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
-    
+
     if dry_run:
         print("=" * 60)
         print("DRY RUN MODE - No files will be removed")
         print("=" * 60)
-    
+
     manifest = execute_dedup(dry_run=dry_run)
     print_summary(manifest, dry_run)

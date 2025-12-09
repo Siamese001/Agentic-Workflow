@@ -24,12 +24,12 @@ class SafetyExecutor:
     Protects user data and ensures compliance for reliable resume
     processing workflows and job alignment.
     """
-    
+
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.routing_policy = routing_policy
         self.sandbox = sandbox
         self.meta_profile = meta_profile
-    
+
     def execute_safety(self, prompt: str) -> str:
         """
         Executes resume safety validation using LLM models.
@@ -43,18 +43,18 @@ class SafetyExecutor:
                 complexity=ComplexityLevel.MEDIUM,
                 meta_profile=self.meta_profile,
             )
-            
+
             record_event("safety_execution_start", {"task": "safety_execution"})
-            
+
             result = invoke_model(
                 model=model,
                 prompt=prompt,
                 sandbox=self.sandbox,
             )
-            
+
             record_event("safety_execution_success", {"result_length": len(result)})
             return result
-            
-        except Exception as exc:
+
+        except (ValueError, TypeError, RuntimeError, KeyError) as exc:
             record_exception("safety_execution_failure", exc)
             raise

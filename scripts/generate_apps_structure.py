@@ -31,7 +31,7 @@ def classify_module(path: str) -> str:
     """Classify module type from path."""
     path_lower = path.lower()
     name = Path(path).stem.lower()
-    
+
     if "policy_check_safety" in path_lower or "check_rules" in path_lower:
         return "policy"
     elif "embedding" in path_lower or "similarity" in name or "vectors" in name:
@@ -120,26 +120,26 @@ class PolicyResult:
 
 class {class_name}:
     """Policy enforcer for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.rules = self.config.get("rules", [])
         self.strict = self.config.get("strict", True)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def evaluate(self, data: Any, context: Optional[Dict] = None) -> PolicyResult:
         """Evaluate data against policy rules."""
         violations = []
-        
+
         # Check required fields
         violations.extend(self._check_required(data))
-        
+
         # Check constraints
         violations.extend(self._check_constraints(data))
-        
+
         # Check safety rules
         violations.extend(self._check_safety(data))
-        
+
         # Determine decision
         if any(v.severity == "error" for v in violations):
             decision = PolicyDecision.DENY
@@ -147,9 +147,9 @@ class {class_name}:
             decision = PolicyDecision.WARN if not self.strict else PolicyDecision.DENY
         else:
             decision = PolicyDecision.ALLOW
-        
+
         return PolicyResult(decision=decision, violations=violations)
-    
+
     def _check_required(self, data: Any) -> List[PolicyViolation]:
         """Check required fields."""
         violations = []
@@ -162,7 +162,7 @@ class {class_name}:
                         severity="error"
                     ))
         return violations
-    
+
     def _check_constraints(self, data: Any) -> List[PolicyViolation]:
         """Check value constraints."""
         violations = []
@@ -175,7 +175,7 @@ class {class_name}:
                         severity="warning"
                     ))
         return violations
-    
+
     def _check_safety(self, data: Any) -> List[PolicyViolation]:
         """Check safety rules."""
         violations = []
@@ -236,17 +236,17 @@ class SimilarityMatch:
 
 class {class_name}:
     """Embedding operations for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.dimension = self.config.get("dimension", 128)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def embed(self, text: str) -> EmbeddingResult:
         """Generate embedding vector."""
         vector = self._compute_vector(text)
         return EmbeddingResult(vector=vector, dimension=self.dimension)
-    
+
     def similarity(self, vec_a: List[float], vec_b: List[float]) -> float:
         """Compute cosine similarity."""
         if len(vec_a) != len(vec_b):
@@ -255,7 +255,7 @@ class {class_name}:
         norm_a = math.sqrt(sum(a * a for a in vec_a))
         norm_b = math.sqrt(sum(b * b for b in vec_b))
         return dot / (norm_a * norm_b) if norm_a and norm_b else 0.0
-    
+
     def find_similar(self, query: str, candidates: List[str], top_k: int = 5) -> List[SimilarityMatch]:
         """Find similar items."""
         query_vec = self._compute_vector(query)
@@ -266,7 +266,7 @@ class {class_name}:
             matches.append((cand, score))
         matches.sort(key=lambda x: x[1], reverse=True)
         return [SimilarityMatch(item=c, score=s, rank=i+1) for i, (c, s) in enumerate(matches[:top_k])]
-    
+
     def _compute_vector(self, text: str) -> List[float]:
         """Compute hash-based vector."""
         h = hashlib.sha256(text.encode()).digest()
@@ -309,19 +309,19 @@ class ScoreResult:
 
 class {class_name}:
     """Scorer for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.weights = self.config.get("weights", {{}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def score(self, data: Dict[str, Any]) -> ScoreResult:
         """Compute score for data."""
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted(factors)
         confidence = self._compute_confidence(factors)
         return ScoreResult(score=max(0, min(1, raw_score)), confidence=confidence, factors=factors)
-    
+
     def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
         """Extract scoring factors."""
         factors = {{}}
@@ -331,7 +331,7 @@ class {class_name}:
             elif isinstance(v, str):
                 factors[f"{{k}}_len"] = min(1.0, len(v) / 100)
         return factors
-    
+
     def _compute_weighted(self, factors: Dict[str, float]) -> float:
         """Compute weighted score."""
         if not factors:
@@ -339,7 +339,7 @@ class {class_name}:
         total_w = sum(self.weights.get(k, 1.0) for k in factors)
         weighted = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
         return weighted / total_w if total_w else 0.5
-    
+
     def _compute_confidence(self, factors: Dict[str, float]) -> float:
         """Compute confidence."""
         return min(1.0, len(factors) / 5)
@@ -389,12 +389,12 @@ class StateResult:
 
 class {class_name}:
     """State manager for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.state: Dict[str, Any] = {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def update(self, updates: Dict[str, Any]) -> StateResult:
         """Apply state updates."""
         applied = []
@@ -403,14 +403,14 @@ class {class_name}:
             self.state[key] = new_val
             applied.append(StateUpdate(key=key, old_value=old_val, new_value=new_val))
         return StateResult(success=True, updates=applied, state=self.state.copy())
-    
+
     def merge(self, other: Dict[str, Any]) -> StateResult:
         """Merge state with another."""
         merged = {{**self.state, **other}}
         updates = [StateUpdate(k, self.state.get(k), v) for k, v in other.items()]
         self.state = merged
         return StateResult(success=True, updates=updates, state=self.state.copy())
-    
+
     def get(self, key: str, default: Any = None) -> Any:
         """Get state value."""
         return self.state.get(key, default)
@@ -451,12 +451,12 @@ class RetrievalResult:
 
 class {class_name}:
     """Retrieval engine for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.cache: Dict[str, Any] = {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def retrieve(self, query: str, filters: Optional[Dict] = None, limit: int = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{{query}}:{{filters}}:{{limit}}"
@@ -466,7 +466,7 @@ class {class_name}:
         result = RetrievalResult(items=items, total=len(items), query=query)
         self.cache[cache_key] = result
         return result
-    
+
     def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[Any]:
         """Execute query."""
         return []
@@ -506,18 +506,18 @@ class FormatResult:
 
 class {class_name}:
     """Formatter for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.format_type = self.config.get("format", "default")
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def format(self, data: Any, target: Optional[str] = None) -> FormatResult:
         """Format data."""
         fmt = target or self.format_type
         transformed = self._transform(data)
         return FormatResult(data=transformed, format_type=fmt)
-    
+
     def _transform(self, data: Any) -> Any:
         """Transform data."""
         if isinstance(data, str):
@@ -561,13 +561,13 @@ class RetryResult:
 
 class {class_name}:
     """Retry handler for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.max_retries = self.config.get("max_retries", 3)
         self.backoff = self.config.get("backoff", 1.0)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def execute(self, func: Callable, *args, **kwargs) -> RetryResult:
         """Execute with retry."""
         last_error = None
@@ -580,7 +580,7 @@ class {class_name}:
                 logger.warning(f"Attempt {{attempt + 1}} failed: {{e}}")
                 time.sleep(self.backoff * (attempt + 1))
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
-    
+
     def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs) -> Any:
         """Execute with fallback."""
         result = self.execute(primary, *args, **kwargs)
@@ -626,12 +626,12 @@ class ExecutionResult:
 
 class {class_name}:
     """Executor for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.timeout = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def execute(self, action: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute action."""
         start = time.time()
@@ -648,7 +648,7 @@ class {class_name}:
                 error=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
-    
+
     def _perform_action(self, action: str, params: Dict[str, Any]) -> Any:
         """Perform the action."""
         logger.info(f"Executing {{action}} with {{params}}")
@@ -691,23 +691,23 @@ class DiagnosticReport:
 
 class {class_name}:
     """Diagnostics for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def diagnose(self, target: Any) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {{}}
-        
+
         if target is None:
             issues.append("Target is null")
         elif isinstance(target, dict):
             metrics["field_count"] = len(target)
         elif isinstance(target, list):
             metrics["item_count"] = len(target)
-        
+
         metrics["type"] = type(target).__name__
         return DiagnosticReport(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
@@ -746,17 +746,17 @@ class RefinementResult:
 
 class {class_name}:
     """Refiner for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.weights = self.config.get("weights", {{}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def refine(self, data: Any, adjustments: Optional[Dict] = None) -> RefinementResult:
         """Refine data."""
         changes = []
         refined = data
-        
+
         if adjustments and isinstance(data, dict):
             refined = {{**data}}
             for key, adj in adjustments.items():
@@ -764,7 +764,7 @@ class {class_name}:
                     old = refined[key]
                     refined[key] = old * adj
                     changes.append(f"{{key}}: {{old}} -> {{refined[key]}}")
-        
+
         return RefinementResult(original=data, refined=refined, changes=changes)
 
 
@@ -802,11 +802,11 @@ class OperationResult:
 
 class {class_name}:
     """Operations handler for {ctx['domain']} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def process(self, data: Any, context: Optional[Dict] = None) -> OperationResult:
         """Process data."""
         try:
@@ -815,7 +815,7 @@ class {class_name}:
         except Exception as e:
             logger.error(f"Processing failed: {{e}}")
             return OperationResult(success=False, metadata={{"error": str(e)}})
-    
+
     def _execute(self, data: Any, context: Optional[Dict]) -> Any:
         """Execute processing."""
         return data
@@ -860,34 +860,34 @@ def main():
     """Generate apps structure from YAML."""
     with open(REPO / "unified_structure_subatomic.yaml", "r", encoding="utf-8") as f:
         spec = yaml.safe_load(f)
-    
+
     apps_to_generate = {
         "apps_lic": ("09_apps/apps_lic", "lic"),
         "apps_rg": ("09_apps/apps_rg", "rg"),
     }
-    
+
     total_created = 0
     total_skipped = 0
-    
+
     for app_key, (dest_folder, app_type) in apps_to_generate.items():
         if app_key not in spec:
             print(f"SKIP: {app_key} not in YAML")
             continue
-        
+
         paths = extract_yaml_paths(spec[app_key])
         dest_base = REPO / dest_folder
         ctx = get_domain_context("", app_type)
-        
+
         print(f"\n{'='*60}")
         print(f"Generating {app_key} -> {dest_folder}")
         print(f"{'='*60}")
-        
+
         # Create __init__.py files for all directories
         dirs_created = set()
-        
+
         for path in paths:
             full_path = dest_base / path
-            
+
             # Create parent directories and __init__.py
             for parent in list(full_path.parents):
                 if parent not in dirs_created and str(parent).startswith(str(REPO)) and parent != REPO:
@@ -900,23 +900,23 @@ def main():
                             continue
                         init_file.write_text(generate_init_file(rel_parent), encoding="utf-8")
                     dirs_created.add(parent)
-            
+
             # Generate module file
             if full_path.exists():
                 total_skipped += 1
                 continue
-            
+
             full_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             module_type = classify_module(path)
             generator = GENERATORS.get(module_type, generate_generic_module)
             name = full_path.stem
-            
+
             content = generator(name, ctx)
             full_path.write_text(content, encoding="utf-8")
             total_created += 1
             print(f"  [{module_type.upper()}] {path}")
-    
+
     print(f"\n{'='*60}")
     print(f"SUMMARY")
     print(f"{'='*60}")
