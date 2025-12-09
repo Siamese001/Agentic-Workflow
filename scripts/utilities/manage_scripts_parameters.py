@@ -35,12 +35,12 @@ class ManagementResult:
 
 class ManageScriptsParameters:
     """Manager for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.resources: Dict[str, ManagedResource] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def create(self, resource_id: str, resource_type: str, data: Any = None) -> ManagementResult:
         """Create resource."""
         if resource_id in self.resources:
@@ -48,7 +48,7 @@ class ManageScriptsParameters:
         resource = ManagedResource(id=resource_id, type=resource_type, state="created", data=data)
         self.resources[resource_id] = resource
         return ManagementResult(success=True, operation="create", resource=resource)
-    
+
     def update(self, resource_id: str, data: Any) -> ManagementResult:
         """Update resource."""
         if resource_id not in self.resources:
@@ -56,14 +56,14 @@ class ManageScriptsParameters:
         self.resources[resource_id].data = data
         self.resources[resource_id].state = "updated"
         return ManagementResult(success=True, operation="update", resource=self.resources[resource_id])
-    
+
     def delete(self, resource_id: str) -> ManagementResult:
         """Delete resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation="delete", message="Not found")
         resource = self.resources.pop(resource_id)
         return ManagementResult(success=True, operation="delete", resource=resource)
-    
+
     def get(self, resource_id: str) -> Optional[ManagedResource]:
         """Get resource."""
         return self.resources.get(resource_id)

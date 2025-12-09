@@ -15,25 +15,25 @@ from agentic_core.l5_safety.policies.policy_engine import PolicyEngine, PolicyRu
 
 class TestSafetySchemaValidation:
     """Test suite for safety policy schema validation"""
-    
+
     def setup_method(self):
         """Setup test fixtures"""
         self.config = PolicyEngineConfig()
         self.engine = PolicyEngine(self.config)
-    
+
     @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
     def test_safety_schema_validation(self):
         """Test safety policy schema validation"""
         # Placeholder implementation
         assert self.engine is not None
-    
+
     @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
     def test_policy_rule_schema_compliance(self):
         """Test policy rule schema compliance"""
         # Placeholder implementation
         rule = PolicyRule("test_rule", PolicyType.CONTENT_FILTER, "test", PolicyAction.ALLOW, PolicySeverity.LOW)
         assert rule.rule_id == "test_rule"
-    
+
     @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
     def test_safety_config_validation(self):
         """Test safety configuration validation"""

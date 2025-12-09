@@ -6,17 +6,15 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from shared.models import ValidationResult, ValidationSeverity
-from shared.workflow_types import HopStatus
 
 
 class PromptStore:
     """PromptStore implementation."""
 
     def __init__(self) -> None:
-        """Initialize."""
+        """Initialize the prompt store with empty data storage."""
         self.data: Dict[str, Any] = {}
 
     def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Process data."""
+        """Process data through the core store for prompt retrieval."""
         return {"status": "processed", "input_keys": list(data.keys())}

@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 class HandleApiTimeouts:
     """Retry handler for resume domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.max_retries = self.config.get("max_retries", 3)
         self.backoff = self.config.get("backoff", 1.0)
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def execute(self, func: Callable, *args, **kwargs) -> RetryResult:
         """Execute with retry."""
         last_error = None
@@ -33,12 +33,12 @@ class HandleApiTimeouts:
             try:
                 result = func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error = str(e)
                 logger.warning(f"Attempt {attempt + 1} failed: {e}")
                 time.sleep(self.backoff * (attempt + 1))
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
-    
+
     def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs) -> Any:
         """Execute with fallback."""
         result = self.execute(primary, *args, **kwargs)

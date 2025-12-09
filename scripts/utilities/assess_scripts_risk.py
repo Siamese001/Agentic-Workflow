@@ -31,19 +31,19 @@ class AssessmentResult:
 
 class AssessScriptsRisk:
     """Assessor for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.thresholds = self.config.get("thresholds", {"low": 0.8, "medium": 0.6, "high": 0.4})
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def assess(self, data: Any, context: Optional[Dict] = None) -> AssessmentResult:
         """Perform assessment."""
         score = self._compute_score(data)
         level = self._score_to_level(score)
         findings = self._generate_findings(data, score)
         return AssessmentResult(level=level, score=score, findings=findings)
-    
+
     def _compute_score(self, data: Any) -> float:
         """Compute assessment score."""
         if data is None:
@@ -53,7 +53,7 @@ class AssessScriptsRisk:
         if isinstance(data, (list, str)):
             return min(1.0, len(data) / 100)
         return 0.5
-    
+
     def _score_to_level(self, score: float) -> AssessmentLevel:
         """Convert score to level."""
         if score >= self.thresholds["low"]:
@@ -63,7 +63,7 @@ class AssessScriptsRisk:
         elif score >= self.thresholds["high"]:
             return AssessmentLevel.HIGH
         return AssessmentLevel.CRITICAL
-    
+
     def _generate_findings(self, data: Any, score: float) -> List[str]:
         """Generate findings."""
         findings = []

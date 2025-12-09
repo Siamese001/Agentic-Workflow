@@ -46,12 +46,12 @@ class ValidateDataEthicsSafetyResult:
 
 class ValidateDataEthicsSafetySafety(ABC):
     """L5 Abstract base - ensures L5 pure safety behavior"""
-    
+
     @abstractmethod
     def apply_safety(self, data: Dict[str, Any]) -> ValidateDataEthicsSafetyResult:
         """Apply safety checks with L5 constraints"""
         pass
-    
+
     @abstractmethod
     def validate_safety(self, data: Dict[str, Any]) -> bool:
         """L5 Safety validation - fail-closed by default"""
@@ -62,29 +62,29 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
     L5 Implementation - L5 Safety/Policy Layer
     Fail-closed safety enforcement with comprehensive policy checks
     """
-    
+
     def __init__(self, constraints: Optional[ValidateDataEthicsSafetyConstraints] = None):
         self.constraints = constraints or ValidateDataEthicsSafetyConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._safety_rules = self._initialize_safety_rules()
-    
+
     def apply_safety(self, data: Dict[str, Any]) -> ValidateDataEthicsSafetyResult:
         """Apply safety checks following L5 architecture principles"""
         self.logger.info(f"Applying safety checks to data")
-        
+
         # L5 Input validation
         self._validate_input(data)
-        
+
         # L5 Safety validation - fail-closed
         if not self.validate_safety(data):
             raise SecurityError("Data failed L5 safety validation")
-        
+
         # Calculate safety score
         safety_score = self._calculate_safety_score(data)
-        
+
         # Perform risk assessment
         risk_assessment = self._assess_risks(data)
-        
+
         # Create result with L5 structure
         result = ValidateDataEthicsSafetyResult(
             success=safety_score <= self.constraints.max_risk_score,
@@ -93,10 +93,10 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             safety_validated=True,
             timestamp=self._get_timestamp()
         )
-        
+
         self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
         return result
-    
+
     def validate_safety(self, data: Dict[str, Any]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
@@ -111,37 +111,37 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
                 r"os\.system",
                 r"\.\./.*\.\.",
             ]
-            
+
             data_str = str(data).lower()
             for pattern in critical_patterns:
                 if re.search(pattern, data_str, re.IGNORECASE):
                     self.logger.error(f"Critical dangerous pattern detected: {pattern}")
                     return False
-            
+
             # Check data size limits
             if len(data_str) > 1000000:  # 1MB limit
                 self.logger.error("Data exceeds safety size limit")
                 return False
-            
+
             self.logger.info("Data passed L5 safety validation")
             return True
         except Exception as e:
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
-    
+
     def _validate_input(self, data: Dict[str, Any]) -> None:
         """L5 Input validation"""
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary")
-        
+
         if not data:
             raise ValueError("Input cannot be empty")
-    
+
     def _calculate_safety_score(self, data: Dict[str, Any]) -> float:
         """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
         score = 0.0
         data_str = str(data).lower()
-        
+
         # Check for suspicious patterns
         suspicious_patterns = [
             ("password", 0.3),
@@ -151,17 +151,17 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             ("admin", 0.2),
             ("root", 0.3),
         ]
-        
+
         for pattern, weight in suspicious_patterns:
             if pattern in data_str:
                 score += weight
-        
+
         # Check complexity
         if len(data_str) > 10000:
             score += 0.2
-        
+
         return min(score, 1.0)
-    
+
     def _assess_risks(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Perform comprehensive risk assessment"""
         risks = {
@@ -170,34 +170,34 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             "complexity_risk": self._check_complexity_risk(data),
             "pattern_risk": self._check_pattern_risk(data)
         }
-        
+
         return {
             "risks": risks,
             "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
         }
-    
+
     def _check_injection_risk(self, data: Dict[str, Any]) -> str:
         """Check for injection risks"""
         injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
         data_str = str(data)
-        
+
         for pattern in injection_patterns:
             if pattern in data_str:
                 return "high"
-        
+
         return "low"
-    
+
     def _check_size_risk(self, data: Dict[str, Any]) -> str:
         """Check size-related risks"""
         size = len(str(data))
-        
+
         if size > 100000:
             return "high"
         elif size > 10000:
             return "medium"
         else:
             return "low"
-    
+
     def _check_complexity_risk(self, data: Dict[str, Any]) -> str:
         """Check complexity risks"""
         try:
@@ -211,18 +211,18 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
                 return "low"
         except:
             return "high"
-    
+
     def _check_pattern_risk(self, data: Dict[str, Any]) -> str:
         """Check for risky patterns"""
         risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
         data_str = str(data).lower()
-        
+
         for pattern in risky_patterns:
             if pattern in data_str:
                 return "high"
-        
+
         return "low"
-    
+
     def _calculate_depth(self, obj: Any, current_depth: int = 0) -> int:
         """Calculate nesting depth"""
         if isinstance(obj, dict):
@@ -231,7 +231,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             return max([self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth)
         else:
             return current_depth
-    
+
     def _initialize_safety_rules(self) -> List[Dict[str, Any]]:
         """Initialize L5 safety rules"""
         return [
@@ -240,7 +240,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             {"name": "no_eval", "pattern": r"eval\s*\(", "severity": "high"},
             {"name": "size_limit", "max_size": 1000000, "severity": "medium"}
         ]
-    
+
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
@@ -253,10 +253,10 @@ class SecurityError(Exception):
 # L5 Interface compliance
 class ValidateDataEthicsSafetyInterface:
     """L5 Interface - ensures contract compliance"""
-    
+
     def __init__(self, safety: ValidateDataEthicsSafetySafety):
         self._safety = safety
-    
+
     def apply_safety(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """L5 Interface method - applies safety safely"""
         try:
@@ -275,7 +275,7 @@ class ValidateDataEthicsSafetyInterface:
 # L5 Factory
 class ValidateDataEthicsSafetyFactory:
     """L5 Factory for creating safety handlers with proper configuration"""
-    
+
     @staticmethod
     def create_safety(safety_level: str = "strict") -> ValidateDataEthicsSafetyInterface:
         """Create configured safety handler"""
@@ -287,13 +287,13 @@ class ValidateDataEthicsSafetyFactory:
 def validate_data_ethics(data: Dict[str, Any]) -> Dict[str, Any]:
     """
     L5 Main function - validate data ethics operations
-    
+
     Args:
         data: Data to apply safety checks to
-        
+
     Returns:
         Dict: Safety result
-        
+
     Raises:
         SecurityError: If safety check fails any validation
     """

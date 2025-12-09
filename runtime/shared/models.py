@@ -122,7 +122,7 @@ class APICallStatus(Enum):
 class ReasoningConfig:
     """
     Configuration for reasoning strategies (CoT, ToT, Reflexion, Self-Consistency).
-    
+
     Attributes:
         cot_min_paths: Minimum Chain-of-Thought reasoning paths
         tot_branches: Tree-of-Thought branching factor
@@ -137,7 +137,7 @@ class ReasoningConfig:
     reflexion: bool = False
     max_reflexion_loops: int = 0
     self_consistency: int = 1
-    
+
     # Class-level defaults for different reasoning strategies
     DEFAULT: ClassVar[ReasoningConfig]
     EXECUTIVE_SUMMARY: ClassVar[ReasoningConfig]
@@ -159,7 +159,7 @@ class ValidationResult:
     message: str
     details: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -201,11 +201,11 @@ class ThematicAnalysis:
     retrieval_sources: List[Any] = field(default_factory=list)
     weighting_formula: Optional[Dict[str, Any]] = None
     evidence_log: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     def get_primary_keywords(self) -> List[str]:
         """Extract primary keywords from the theme."""
         return self.primary_theme.get("keywords", [])
-    
+
     def get_all_keywords(self) -> List[str]:
         """Extract all keywords from primary and secondary themes."""
         keywords = list(self.get_primary_keywords())
@@ -234,7 +234,7 @@ class CompetitiveIntelligence:
     differentiator_keywords: List[str] = field(default_factory=list)
     differentiator_keywords_raw: List[str] = field(default_factory=list)
     differentiator_keywords_weighted: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     def get_top_differentiators(self, count: int) -> List[str]:
         """Get top N differentiator keywords."""
         return self.differentiator_keywords[:count]
@@ -314,15 +314,15 @@ class RAGState:
     cumulative_result: Optional[Dict[str, Any]] = None
     total_api_calls: int = 0
     critiques: List[RAGCritique] = field(default_factory=list)
-    
+
     def add_evidence(self, evidence: RAGEvidence) -> None:
         """Add evidence to the log."""
         self.evidence_log.append(evidence)
-    
+
     def add_critique(self, critique: RAGCritique) -> None:
         """Add a critique."""
         self.critiques.append(critique)
-    
+
     def get_latest_critique(self) -> Optional[RAGCritique]:
         """Get the most recent critique."""
         return self.critiques[-1] if self.critiques else None
@@ -350,7 +350,7 @@ class PartialRAGResult:
     phase3_success: bool = False
     phase4_success: bool = False
     failure_reasons: List[str] = field(default_factory=list)
-    
+
     @property
     def any_success(self) -> bool:
         """Check if any phase succeeded."""
@@ -360,7 +360,7 @@ class PartialRAGResult:
             self.phase3_success,
             self.phase4_success,
         ])
-    
+
     @property
     def full_success(self) -> bool:
         """Check if all phases succeeded."""
@@ -370,7 +370,7 @@ class PartialRAGResult:
             self.phase3_success,
             self.phase4_success,
         ])
-    
+
     @property
     def success_rate(self) -> float:
         """Calculate success rate across all phases."""
@@ -408,7 +408,7 @@ class RAGTelemetry:
     errors: List[str] = field(default_factory=list)
     circuit_breaker_triggered: bool = False
     total_duration_seconds: float = 0.0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert telemetry to dictionary format."""
         return {
@@ -453,7 +453,7 @@ class HopCheckpoint:
     validation_results: List[ValidationResult] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     error_message: Optional[str] = None
-    
+
     def compute_output_hash(self, output: Any) -> str:
         """Compute a hash of the output for integrity verification."""
         content = str(output).encode("utf-8")
@@ -470,7 +470,7 @@ class APICallMetrics:
     total_latency_ms: float = 0.0
     safety_blocks: int = 0
     rate_limits: int = 0
-    
+
     def record_call(
         self,
         success: bool,
@@ -483,24 +483,24 @@ class APICallMetrics:
         self.call_count += 1
         self.total_latency_ms += latency_ms
         self.total_tokens_used += tokens
-        
+
         if success:
             self.success_count += 1
         else:
             self.error_count += 1
-        
+
         if safety_blocked:
             self.safety_blocks += 1
         if rate_limited:
             self.rate_limits += 1
-    
+
     @property
     def success_rate(self) -> float:
         """Calculate success rate."""
         if self.call_count == 0:
             return 0.0
         return self.success_count / self.call_count
-    
+
     @property
     def average_latency_ms(self) -> float:
         """Calculate average latency."""
@@ -516,25 +516,25 @@ class APICallMetrics:
 class ImmutableStagingBuffer:
     """
     A write-once, read-many buffer that can be locked.
-    
+
     This class provides immutability guarantees for data passed between
     workflow phases, preventing accidental mutations.
     """
-    
+
     def __init__(self) -> None:
         self._data: Dict[str, Any] = {}
         self._locked: bool = False
         self._lock_timestamp: Optional[str] = None
         self._write_log: List[Dict[str, Any]] = []
-    
+
     def set(self, key: str, value: Any) -> None:
         """
         Sets a key-value pair, raising an error if locked.
-        
+
         Args:
             key: The key to set
             value: The value to store
-            
+
         Raises:
             StagingBufferError: If the buffer is locked
         """
@@ -551,15 +551,15 @@ class ImmutableStagingBuffer:
             "key": key,
             "timestamp": datetime.now().isoformat(),
         })
-    
+
     def get(self, key: str, default: Any = None) -> Any:
         """
         Gets a value by key, returning a deep copy to maintain immutability.
-        
+
         Args:
             key: The key to retrieve
             default: Default value if key not found
-            
+
         Returns:
             Deep copy of the stored value, or default
         """
@@ -567,37 +567,37 @@ class ImmutableStagingBuffer:
         if value is not None and value is not default:
             return copy.deepcopy(value)
         return value
-    
+
     def lock(self) -> None:
         """Locks the buffer, preventing further writes."""
         if not self._locked:
             self._locked = True
             self._lock_timestamp = datetime.now().isoformat()
-    
+
     def unlock(self) -> None:
         """Unlocks the buffer to allow modifications in the next phase."""
         if self._locked:
             self._locked = False
             self._lock_timestamp = None
-    
+
     def is_locked(self) -> bool:
         """Checks if the buffer is locked."""
         return self._locked
-    
+
     @property
     def data(self) -> Dict[str, Any]:
         """Returns a deep copy of the buffer's data."""
         return copy.deepcopy(self._data)
-    
+
     @property
     def keys(self) -> List[str]:
         """Returns list of keys in the buffer."""
         return list(self._data.keys())
-    
+
     def __contains__(self, key: str) -> bool:
         """Check if key exists in buffer."""
         return key in self._data
-    
+
     def __len__(self) -> int:
         """Return number of items in buffer."""
         return len(self._data)

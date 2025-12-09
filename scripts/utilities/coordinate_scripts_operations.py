@@ -42,23 +42,23 @@ class OrchestrationResult:
 
 class CoordinateScriptsOperations:
     """Orchestrator for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.steps: List[Dict] = []
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def add_step(self, name: str, handler: Callable, dependencies: Optional[List[str]] = None) -> "CoordinateScriptsOperations":
         """Add a step to orchestration."""
         self.steps.append({"name": name, "handler": handler, "dependencies": dependencies or []})
         return self
-    
+
     def execute(self, initial_input: Any = None) -> OrchestrationResult:
         """Execute the workflow."""
         results = []
         context = {"input": initial_input, "outputs": {}}
         success = True
-        
+
         for step in self.steps:
             start = time.time()
             try:
@@ -81,7 +81,7 @@ class CoordinateScriptsOperations:
                     duration_ms=(time.time() - start) * 1000
                 ))
                 break
-        
+
         return OrchestrationResult(
             success=success,
             steps=results,

@@ -34,7 +34,7 @@ class ValidationResult:
     """Result of validation."""
     is_valid: bool
     findings: List[ValidationFinding] = field(default_factory=list)
-    
+
     @property
     def errors(self) -> List[ValidationFinding]:
         return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
@@ -42,21 +42,21 @@ class ValidationResult:
 
 class ValidateScriptsConstraints:
     """Validator for utilities domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.strict = self.config.get("strict", False)
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def validate(self, data: Any, schema: Optional[Dict] = None) -> ValidationResult:
         """Validate data against schema."""
         findings = []
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
-        
+
         is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
-    
+
     def _validate_types(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate data types."""
         findings = []
@@ -70,7 +70,7 @@ class ValidateScriptsConstraints:
                     severity=ValidationSeverity.ERROR
                 ))
         return findings
-    
+
     def _validate_required(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate required fields."""
         findings = []

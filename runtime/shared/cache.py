@@ -12,13 +12,13 @@ Usage:
         generate_llm_cache_key,
         generate_llm_cache_key_with_fingerprint,
     )
-    
+
     # Basic cache key
     key = generate_llm_cache_key(provider, model, prompt, temperature)
-    
+
     # With system_fingerprint for invalidation
     key = generate_llm_cache_key_with_fingerprint(
-        provider, model, prompt, temperature, 
+        provider, model, prompt, temperature,
         system_fingerprint=response.system_fingerprint
     )
 """
@@ -51,14 +51,14 @@ def generate_llm_cache_key(
 ) -> str:
     """
     Generate a deterministic cache key for LLM responses.
-    
+
     Args:
         provider: Model provider (openai, anthropic, google)
         model: Model name
         prompt: Full prompt text
         temperature: Temperature setting
         seed: Optional seed for deterministic outputs (default: OPENAI_DEFAULT_SEED)
-        
+
     Returns:
         Cache key string
     """
@@ -78,10 +78,10 @@ def generate_llm_cache_key_with_fingerprint(
 ) -> str:
     """
     Generate a cache key that includes system_fingerprint for invalidation.
-    
+
     When the model is updated (indicated by a new system_fingerprint),
     the cache key changes, ensuring stale responses are not used.
-    
+
     Args:
         provider: Model provider
         model: Model name
@@ -89,7 +89,7 @@ def generate_llm_cache_key_with_fingerprint(
         temperature: Temperature setting
         system_fingerprint: OpenAI system_fingerprint from response
         seed: Optional seed for deterministic outputs
-        
+
     Returns:
         Cache key string with fingerprint component
     """
@@ -103,10 +103,10 @@ def generate_llm_cache_key_with_fingerprint(
 def extract_cache_metadata(response: Any) -> Dict[str, Any]:
     """
     Extract cache-relevant metadata from an OpenAI response.
-    
+
     Args:
         response: OpenAI ChatCompletion response
-        
+
     Returns:
         Dict with system_fingerprint, usage, and model info
     """
@@ -115,7 +115,7 @@ def extract_cache_metadata(response: Any) -> Dict[str, Any]:
         "model": None,
         "usage": None,
     }
-    
+
     try:
         if hasattr(response, "system_fingerprint"):
             metadata["system_fingerprint"] = response.system_fingerprint
@@ -130,7 +130,7 @@ def extract_cache_metadata(response: Any) -> Dict[str, Any]:
             }
     except Exception as e:
         logger.warning(f"Failed to extract cache metadata: {e}")
-    
+
     return metadata
 
 
@@ -140,18 +140,18 @@ def should_invalidate_cache(
 ) -> bool:
     """
     Determine if cache should be invalidated based on fingerprint change.
-    
+
     Args:
         cached_fingerprint: Fingerprint stored with cached response
         current_fingerprint: Fingerprint from current response
-        
+
     Returns:
         True if cache should be invalidated
     """
     # If either is None, don't invalidate (fingerprint not available)
     if cached_fingerprint is None or current_fingerprint is None:
         return False
-    
+
     # Invalidate if fingerprints differ
     return cached_fingerprint != current_fingerprint
 
