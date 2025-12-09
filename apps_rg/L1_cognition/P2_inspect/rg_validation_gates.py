@@ -6,7 +6,7 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Union
 import re
 
 
@@ -37,7 +37,7 @@ class GateResult:
     decision: GateDecision
     severity: GateSeverity
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
     violations: List[str] = field(default_factory=list)
 
 
@@ -49,7 +49,7 @@ class ValidationGate:
     name: str
     description: str
     severity: GateSeverity
-    validator: Callable[[Any, Dict[str, Any]], GateResult]
+    validator: Callable[[object, Dict[str, object]], GateResult]
 
 
 class RGValidationGates:
@@ -244,8 +244,8 @@ class RGValidationGates:
     def run_gate(
         self,
         gate_id: str,
-        content: Any,
-        context: Optional[Dict[str, Any]] = None,
+        content: object,
+        context: Optional[Dict[str, object]] = None,
     ) -> GateResult:
         """
         Run a specific validation gate.
@@ -272,8 +272,8 @@ class RGValidationGates:
 
     def run_all_gates(
         self,
-        content: Any,
-        context: Optional[Dict[str, Any]] = None,
+        content: object,
+        context: Optional[Dict[str, object]] = None,
     ) -> List[GateResult]:
         """
         Run all validation gates.
@@ -293,8 +293,8 @@ class RGValidationGates:
 
     def _validate_summary_grounding(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate summary grounding."""
         violations = []
@@ -306,12 +306,12 @@ class RGValidationGates:
         else:
             text = str(content)
 
-        # Check for placeholder patterns
-        placeholder_patterns = [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"TODO", r"XXX"]
-        for pattern in placeholder_patterns:
+        # Check for template marker patterns
+        template_patterns = [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"TODO", r"XXX"]
+        for pattern in template_patterns:
             matches = re.findall(pattern, text)
             if matches:
-                violations.append(f"Placeholder found: {matches}")
+                violations.append(f"Template marker found: {matches}")
 
         # Check for unsupported claims (heuristic)
         unsupported_markers = [
@@ -338,8 +338,8 @@ class RGValidationGates:
 
     def _validate_bullet_hallucination(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate bullet hallucination."""
         violations = []
@@ -376,8 +376,8 @@ class RGValidationGates:
 
     def _validate_thematic_uniqueness(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate thematic uniqueness."""
         violations = []
@@ -413,8 +413,8 @@ class RGValidationGates:
 
     def _validate_creative_brief_adherence(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate creative brief adherence."""
         violations = []
@@ -456,8 +456,8 @@ class RGValidationGates:
 
     def _validate_header_integrity(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate header integrity."""
         violations = []
@@ -484,8 +484,8 @@ class RGValidationGates:
 
     def _validate_bullet_provenance(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate bullet provenance."""
         violations = []
@@ -513,8 +513,8 @@ class RGValidationGates:
 
     def _validate_redundancy(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate for redundancy."""
         # Simplified implementation
@@ -527,8 +527,8 @@ class RGValidationGates:
 
     def _validate_hyphen_preservation(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate hyphen preservation."""
         # Simplified implementation
@@ -541,8 +541,8 @@ class RGValidationGates:
 
     def _validate_competency_balance(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate competency word count balance."""
         violations = []
@@ -575,8 +575,8 @@ class RGValidationGates:
 
     def _validate_bullet_punctuation(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate bullet punctuation."""
         violations = []
@@ -603,8 +603,8 @@ class RGValidationGates:
 
     def _validate_summary_voice_tense(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate summary voice and tense."""
         violations = []
@@ -633,8 +633,8 @@ class RGValidationGates:
 
     def _validate_agentic_output(
         self,
-        content: Any,
-        context: Dict[str, Any],
+        content: object,
+        context: Dict[str, object],
     ) -> GateResult:
         """Validate agentic output."""
         violations = []
@@ -667,8 +667,8 @@ def create_validation_gates() -> RGValidationGates:
 
 def run_gate(
     gate_id: str,
-    content: Any,
-    context: Optional[Dict[str, Any]] = None,
+    content: object,
+    context: Optional[Dict[str, object]] = None,
 ) -> GateResult:
     """Run a specific validation gate."""
     gates = RGValidationGates()

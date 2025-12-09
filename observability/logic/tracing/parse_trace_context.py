@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from contextlib import contextmanager
 
@@ -24,7 +24,7 @@ class Span:
     name: str
     start_time: float = field(default_factory=time.time)
     end_time: Optional[float] = None
-    attributes: Dict[str, object][str, object] = field(default_factory=dict)
+    attributes: Dict[str, Any] = field(default_factory=dict)
     events: List[Dict] = field(default_factory=list)
     parent_id: Optional[str] = None
 
@@ -39,15 +39,14 @@ class Span:
 class W3cTraceContext:
     """Tracer for tracing domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
-        """  Init   implementation."""
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
         logger.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
-    def start_span(self, name: str, attributes: Optional[Dict] = None) -> object:
+    def start_span(self, name: str, attributes: Optional[Dict] = None):
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
@@ -89,7 +88,7 @@ _tracer = W3cTraceContext()
 
 
 @contextmanager
-def trace(name: str, attributes: Optional[Dict] = None) -> object:
+def trace(name: str, attributes: Optional[Dict] = None):
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span

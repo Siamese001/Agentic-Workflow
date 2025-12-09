@@ -251,7 +251,7 @@ class LICStateManager:
         except json.JSONDecodeError as e:
             result.is_valid = False
             result.errors.append(f"Invalid JSON: {e}")
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, OSError) as e:
             result.is_valid = False
             result.errors.append(f"Validation error: {e}")
 

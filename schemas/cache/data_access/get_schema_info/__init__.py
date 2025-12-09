@@ -2,7 +2,6 @@
 """
 02_schemas.cache_ops.data_access.get_schema_info — Package initialization
 
-Auto-generated to satisfy SSoT structure requirements.
 """
 
 __all__: list = []

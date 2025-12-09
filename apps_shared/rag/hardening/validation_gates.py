@@ -229,6 +229,7 @@ class SummaryGroundingCheckGate(ValidationGate):
     severity = GateSeverity.HIGH
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         summary = context.generated_content.get("executive_summary", "")
         
@@ -301,6 +302,7 @@ class BulletHallucinationCheckGate(ValidationGate):
     severity = GateSeverity.CRITICAL
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         if not context.generated_bullets:
@@ -355,6 +357,7 @@ class ThematicUniquenessGate(ValidationGate):
     severity = GateSeverity.MEDIUM
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         if not context.primary_theme:
@@ -397,6 +400,7 @@ class CreativeBriefAdherenceGate(ValidationGate):
     severity = GateSeverity.HIGH
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         if not context.creative_brief:
@@ -477,6 +481,7 @@ class HeaderIntegrityCheckGate(ValidationGate):
     severity = GateSeverity.CRITICAL
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         scaffold = context.scaffold_data
@@ -518,6 +523,7 @@ class BulletProvenanceCheckGate(ValidationGate):
     severity = GateSeverity.HIGH
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         # Check for metrics in bullets
@@ -555,6 +561,7 @@ class RedundancyCheckGate(ValidationGate):
         self.similarity_threshold = similarity_threshold
         
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         all_bullets = context.generated_bullets
@@ -598,6 +605,7 @@ class HyphenPreservationGate(ValidationGate):
     severity = GateSeverity.LOW
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         if not context.hyphenation_rules:
@@ -631,6 +639,7 @@ class WordCountBalanceGate(ValidationGate):
         self.max_variance = max_variance
         
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         # Check competency descriptions
@@ -665,6 +674,7 @@ class BulletPunctuationGate(ValidationGate):
     severity = GateSeverity.LOW
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         for i, bullet in enumerate(context.generated_bullets):
@@ -694,6 +704,7 @@ class SummaryVoiceTenseGate(ValidationGate):
     FIRST_PERSON = {'i', 'me', 'my', 'mine', 'myself', 'we', 'us', 'our', 'ours'}
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         summary = context.generated_content.get("executive_summary", "")
@@ -726,6 +737,7 @@ class AgenticOutputValidationGate(ValidationGate):
     severity = GateSeverity.HIGH
     
     def validate(self, context: GateContext) -> GateResult:
+        """Execute validate operation."""
         violations = []
         
         # Check for reasoning trace in extra context

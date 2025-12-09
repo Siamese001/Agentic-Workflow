@@ -296,6 +296,7 @@ class WorkflowContext:
         logger.info("WorkflowContext initialized with v10.7 injected dependencies")
 
     def get_model_client(self, provider: str, model_name: str):
+        """Execute get_model_client operation."""
         canonical_name = canonical_model_name(model_name)
         key = f"{provider}:{canonical_name}"
         if key not in self._model_clients:
@@ -369,6 +370,7 @@ class WorkflowContext:
             raise MCPClientInitializationError(f"Invalid MCP configuration: {exc}") from exc
 
     def is_mcp_enabled(self) -> bool:
+        """Execute is_mcp_enabled operation."""
         return self._mcp_enabled
 
     def ensure_mcp_clients(self) -> Dict[str, Any]:
@@ -419,6 +421,7 @@ class WorkflowContext:
         return self.mcp_clients
 
     def get_mcp_client(self, name: str, default: Optional[Any] = None) -> Any:
+        """Execute get_mcp_client operation."""
         clients = self.ensure_mcp_clients()
         if name in clients:
             return clients[name]
@@ -682,6 +685,7 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
 
 @dataclass
 class ResumeContext:
+    """ResumeContext implementation."""
     master_resume: Dict[str, Any] = field(default_factory=dict)
     sanitized_resume: Dict[str, Any] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
@@ -689,6 +693,7 @@ class ResumeContext:
 
 @dataclass
 class JobContext:
+    """JobContext implementation."""
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
@@ -697,28 +702,33 @@ class JobContext:
 
 @dataclass
 class StrategyContext:
+    """StrategyContext implementation."""
     strategy_plan: Optional[StrategyPlan] = None
     tot_branches: List[Dict] = field(default_factory=list)
 
 
 @dataclass
 class PromptContext:
+    """PromptContext implementation."""
     prompts: Optional[GeneratedPrompts] = None
 
 
 @dataclass
 class BulletContext:
+    """BulletContext implementation."""
     generated_bullets: List[Dict] = field(default_factory=list)
     critiqued_bullets: List[Dict] = field(default_factory=list)
 
 
 @dataclass
 class DraftContext:
+    """DraftContext implementation."""
     sections: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class QAContext:
+    """QAContext implementation."""
     validation_results: Dict[str, Any] = field(default_factory=dict)
     qa_passed: bool = False
     constitutional_review: Optional[ConstitutionalReviewResult] = None  # v10.7 (Fix #30)
@@ -726,11 +736,13 @@ class QAContext:
 
 @dataclass
 class ArtifactContext:
+    """ArtifactContext implementation."""
     artifacts: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class MetadataContext:
+    """MetadataContext implementation."""
     workflow_id: str = ""
     timestamp: str = ""
     cost: float = 0.0
@@ -742,6 +754,7 @@ class MetadataContext:
 
 @dataclass
 class SafetyContext:
+    """SafetyContext implementation."""
     pii_detected: bool = False
     bias_detected: bool = False
     safety_notes: List[str] = field(default_factory=list)
@@ -750,6 +763,7 @@ class SafetyContext:
 
 @dataclass
 class FeedbackContext:
+    """FeedbackContext implementation."""
     recent_feedback: List[FeedbackEntry] = field(default_factory=list)
     applied_rules: List[str] = field(default_factory=list)
     selected_agents: Dict[str, str] = field(default_factory=dict)
@@ -757,6 +771,7 @@ class FeedbackContext:
 
 @dataclass
 class HILContext:
+    """HILContext implementation."""
     ambiguity_detected: bool = False
     ambiguity_report: Optional[HILAmbiguityReport] = None
     next_step: str = ""
@@ -766,6 +781,7 @@ class HILContext:
 # v10.7 (Fix #10): Agent-to-Agent Communication State
 @dataclass
 class A2AMessage:
+    """A2AMessage implementation."""
     sender: str
     recipient: str  # Can be "ALL"
     message_type: str  # e.g., "ERROR", "METRIC", "UI_EVENT"
@@ -773,6 +789,7 @@ class A2AMessage:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
+        """Execute to_dict operation."""
         return {
             "sender": self.sender,
             "recipient": self.recipient,
@@ -782,11 +799,13 @@ class A2AMessage:
         }
 
     def model_dump(self) -> Dict[str, Any]:
+        """Execute model_dump operation."""
         return self.to_dict()
 
 
 @dataclass
 class A2AContext:
+    """A2AContext implementation."""
     messages: List[A2AMessage] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -810,6 +829,7 @@ class A2AContext:
         recipient: str = "ALL",
         timestamp: Optional[str] = None,
     ) -> None:
+        """Execute append operation."""
         message = A2AMessage(
             sender=sender,
             recipient=recipient,
