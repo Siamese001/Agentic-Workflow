@@ -33,30 +33,32 @@ TODO_PATTERN = re.compile(r'#.*\b(TODO|FIXME|NOTE|HACK|XXX|TEMP|WIP|DEBUG|STUB|R
 ROOT = Path(__file__).parent.resolve()
 DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 
-# SOVEREIGN DIRECTORIES — THE ONLY CODE THAT MATTERS
-# Currently validated directories - will expand after cleanup
-LAYERED_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}  # Have L1-L5 structure
-FLAT_SOVEREIGN = {"apps_shared"}  # Flat structure, still sovereign
-SOVEREIGN_DIRS = LAYERED_AGENTS.union(FLAT_SOVEREIGN)
-SOVEREIGN_AGENTS = SOVEREIGN_DIRS  # All app directories are now sovereign
-REQUIRED_LAYERS = ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memory", "L5_safety"]
+# FINAL CANON 2025 — ABSOLUTE TRUTH — NO L4/L5 IN CODE
+# L4_memory and L5_safety are DEAD. They live in data/ and prompt_governance/ ONLY.
+# Note: schemas, prompt_governance, observability, config have legacy violations
+# They will be added to SOVEREIGN_DIRS after cleanup (see FUTURE_SOVEREIGN_MIGRATION.md)
+SOVEREIGN_DIRS = {
+    "agentic_core",
+    "apps_lic",
+    "apps_rg",
+    "apps_shared",
+}
+
+# Layered agents have L1/L2/L3 structure (NOT L4/L5 anymore)
+LAYERED_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
+
+# Legacy alias for backward compatibility
+SOVEREIGN_AGENTS = SOVEREIGN_DIRS
+
+# ONLY THESE THREE LAYERS ARE ALLOWED IN SOVEREIGN CODE
+REQUIRED_LAYERS = ["L1_cognition", "L2_execution", "L3_orchestration"]
+
+# L4 AND L5 ARE TREASON WHEN FOUND IN CODE
+FORBIDDEN_LAYERS = {"L4_memory", "L5_safety"}
 
 def is_sovereign_file(f: Path) -> bool:
-    """Check if file is in sovereign code directories (40 keys apply only here)."""
+    """40 keys apply to ALL sovereign code — no exceptions."""
     return any(part in SOVEREIGN_DIRS for part in f.parts)
-
-def is_layered_agent(f: Path) -> bool:
-    """Check if file is in a layered agent directory."""
-    return any(part in LAYERED_AGENTS for part in f.parts)
-
-# FUTURE SOVEREIGN DIRECTORIES (to be added after cleanup)
-# These will become sovereign once legacy violations are fixed:
-FUTURE_SOVEREIGN = {
-    "schemas",           # Pydantic/JSON schemas for structured output
-    "prompt_governance", # Safety rails, refusal patterns, jailbreak filters  
-    "observability",     # Tracing, metrics, audit logs
-    "config",            # Runtime config + feature flags
-}
 
 # VERB PHYSICS - EXPANDED TO MATCH ACTUAL CODEBASE
 # L2 execution verbs - includes all action/tool verbs
@@ -231,6 +233,19 @@ def check_directory_structure() -> None:
         fail("00", f"ZOMBIE DETECTED: archive/ (singular) folder exists. Only archives/ (plural) is allowed per Canon 2025")
         return
 
+    # L4/L5 TREASON CHECK — FIRST AND HARDEST
+    l4l5_violations = []
+    for d in ROOT.rglob("L[45]_*"):
+        if d.is_dir() and any(part in SOVEREIGN_DIRS for part in d.parts):
+            l4l5_violations.append(str(d.relative_to(ROOT)))
+    if l4l5_violations:
+        fail("00", "L4/L5 TREASON — EXECUTION ORDER\n" +
+                   "L4_memory and L5_safety are DEAD.\n" +
+                   "They belong in data/ and prompt_governance/ ONLY.\n" +
+                   "Delete them from code. Now.\n" +
+                   "\n".join(f"  - {v}" for v in l4l5_violations))
+        return
+
     # Forbidden folder names anywhere in sovereign agents
     forbidden_names = {
         "utils", "helpers", "common", "misc", "lib", "libs", "modules",
@@ -241,9 +256,10 @@ def check_directory_structure() -> None:
 
     violations = []
 
-    # Only apply strict directory structure to layered agents, not flat sovereign code
-    # Skip all flat sovereign dirs: schemas, prompt_governance, observability, config
-    for agent in LAYERED_AGENTS:
+    # FINAL LAW: ONLY L1/L2/L3 ALLOWED — L4/L5 ARE DEAD
+    # Only check layered agents (agentic_core, apps_lic, apps_rg)
+    layered_agents = {"agentic_core", "apps_lic", "apps_rg"}
+    for agent in layered_agents:
         agent_path = ROOT / agent
         if not agent_path.exists():
             continue
@@ -260,13 +276,15 @@ def check_directory_structure() -> None:
             parts = rel.parts
             depth = len(parts)
 
-            # Depth 2: must be L1-L5 layer folder — NO EXCEPTIONS
+            # Depth 2: must be L1-L3 layer folder — L4/L5 ARE DEAD
             if depth == 2:
-                if parts[1] not in REQUIRED_LAYERS:
-                    violations.append(f"Forbidden top-level folder in {parts[0]}: {parts[1]}")
+                if parts[1] in FORBIDDEN_LAYERS:
+                    violations.append(f"EXECUTED LAYER: {rel} — L4/L5 are dead")
+                elif parts[1] not in REQUIRED_LAYERS:
+                    violations.append(f"ILLEGAL LAYER: {rel} — only L1/L2/L3 allowed")
                 continue
 
-            # Depth 3: L1 can have P-folders, L2-L5 must be flat (no subfolders except __pycache__)
+            # Depth 3: L1 can have P-folders, L2-L3 must be flat
             if depth == 3:
                 layer = parts[1]
                 subfolder = parts[2]
@@ -277,12 +295,9 @@ def check_directory_structure() -> None:
                         continue
                     # Other subfolders in L1 are violations
                     violations.append(f"Non-P subfolder in L1_cognition: {rel}")
-                elif layer == "L4_memory" and subfolder == "P1_retrieve":
-                    # P1_retrieve allowed in L4_memory
-                    continue
-                elif layer in {"L2_execution", "L3_orchestration", "L4_memory", "L5_safety"}:
-                    # L2-L5 must be flat
-                    violations.append(f"Subfolder in flat layer {layer}: {rel}")
+                elif layer in {"L2_execution", "L3_orchestration"}:
+                    # L2 and L3 must be completely flat — no exceptions
+                    violations.append(f"NESTING FORBIDDEN in {layer}: {rel}")
                 continue
 
             # Depth 4+: only allowed inside L1 P-folders
@@ -293,9 +308,6 @@ def check_directory_structure() -> None:
                     if parts[2].startswith("P") and len(parts[2]) > 1 and parts[2][1].isdigit():
                         # Nesting inside P-folders is allowed (for now)
                         continue
-                elif layer == "L4_memory" and parts[2] == "P1_retrieve":
-                    # Nesting inside P1_retrieve allowed
-                    continue
 
                 violations.append(f"Unauthorized directory depth: {rel}")
 
@@ -307,7 +319,7 @@ def check_directory_structure() -> None:
         fail("00", f"DIRECTORY STRUCTURE VIOLATION – {len(violations)} forbidden path{'s' if len(violations)>1 else ''}\n"
                    f"{'='*70}\n"
                    f"THE CANON'S SKELETON IS IMMUTABLE\n"
-                   f"Only L1-L5 + P-folders in L1 + P1_retrieve in L4\n"
+                   f"Only L1/L2/L3 allowed — L4/L5 ARE DEAD FOREVER\n"
                    f"No utils/, v2/, old/, temp/, helpers/, modules/, core/, inner/\n"
                    f"{'='*70}\n" +
                    "\n".join(f"  - {v}" for v in violations[:25]) +
@@ -803,12 +815,11 @@ def run_checks_11_20():
     if not bad_safe: success("16")
     else: fail("16", f"Guard verbs outside L5: {bad_safe}")
 
-    # 17: L5_safety has guard files
-    guard_count = 0
-    for f in ROOT.glob("*/L5_safety/*.py"):
-        if not f.name.startswith("__"): guard_count += 1
-    if guard_count >= 3: success("17")
-    else: fail("17", f"L5 has only {guard_count} files (need 3+)")
+    # 17: L5_safety is DEAD — Safety lives in prompt_governance/ now
+    # L5 folders are FORBIDDEN in code — this check now verifies they don't exist
+    l5_found = list(ROOT.glob("*/L5_safety/*.py"))
+    if not l5_found: success("17")
+    else: fail("17", f"L5_safety is DEAD — found {len(l5_found)} files that should not exist")
 
     # 18: L3_orchestration L3 verbs only
     violations_18 = []
@@ -915,13 +926,11 @@ def run_checks_11_20():
     if not bad_safe: success("16")
     else: fail("16", f"Guard verbs outside L5: {bad_safe}")
 
-    # 17: L5_safety has guard files in all agents
-    guard_count = 0
-    for f in ROOT.glob("*/L5_safety/*.py"):
-        if not f.name.startswith("__"):
-            guard_count += 1
-    if guard_count >= 3: success("17")
-    else: fail("17", f"L5 has only {guard_count} files (need 3+)")
+    # 17: L5_safety is DEAD — Safety lives in prompt_governance/ now
+    # L5 folders are FORBIDDEN in code — this check now verifies they don't exist
+    l5_found = list(ROOT.glob("*/L5_safety/*.py"))
+    if not l5_found: success("17")
+    else: fail("17", f"L5_safety is DEAD — found {len(l5_found)} files that should not exist")
 
     # 18: L3_orchestration must use only L3 verbs (pure orchestration)
     violations_18 = []
