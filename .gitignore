@@ -1,24 +1,22 @@
-# archives / snapshots
-*.zip
+# .gitignore — FINAL 2025
+# NEVER commit large or ephemeral data
+data/cache/
+data/tmp/
+data/**/*.bin
+data/**/*.npy
+data/**/*.npz
+data/**/*.parquet
+*.lfs
+*.DS_Store
 
-# python noise - ALL Python artifacts must be in runtime/cache/ per Section 1.1
+# Python artifacts
 __pycache__/
 *.pyc
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
 
-# Section 3 compliance: Prevent root-level cache directories
-# All Python caches centralized to runtime/cache/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
-
-# temp extraction folders
-temp_*/
-
-# virtual environments
+# Virtual environments
 .venv/
 venv/
 env/
@@ -26,21 +24,12 @@ env/
 # IDE and OS noise
 .vscode/
 .idea/
-.DS_Store
 Thumbs.db
 
-# logs and outputs
+# Logs and outputs
 *.log
-!observability/**/*.log
 outputs/
 logs/
-!observability/logs/
 
-# semantic cache - curated knowledge plane (SSoT v4.2)
-# v1_curated/ and v2_curated/ are tracked as durable knowledge assets
-# Only ignore runtime-generated artifacts at the root level
-!06_data/semantic_cache/
-!06_data/semantic_cache/v1_curated/
-!06_data/semantic_cache/v2_curated/
-!06_data/semantic_cache/curated_chunks/
-!06_data/semantic_cache/lineage.json
+# Temp extraction folders
+temp_*/
