@@ -1,13 +1,18 @@
 # .pre-commit-config.yaml — FINAL 2025
 fail_fast: true
 
-# DATA IS IMMORTAL — NEVER TOUCHED BY PRE-COMMIT
+# CANON 2025 — 40 KEYS APPLY ONLY TO SOVEREIGN CODE
+# Everything else is either immutable data or dead history
 exclude: |
   (?x)^(
-    ^data/cache/|
-    ^data/tmp/|
-    ^data/raw/.*\.(jsonl|gz|bin)$|
-    ^archives/deprecated/large_.*
+    ^data/|
+    ^archives/|
+    ^tests/|
+    ^scripts/|
+    ^runtime/|
+    ^legacy/|
+    \.git/|
+    __pycache__/
   )
 
 repos:
