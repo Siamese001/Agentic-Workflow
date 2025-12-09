@@ -159,6 +159,165 @@ from .sdk_registry import (
     extract_pdf_text,
 )
 
+# =============================================================================
+# NEW MODULES FROM LEGACY RESUME GEN PORT
+# =============================================================================
+
+from .signal_quality_pipeline import (
+    # Enums
+    SourceTier,
+    SignalQualityStage,
+    PipelineDecision,
+    ClaimVerificationMode,
+    # Dataclasses
+    RetrievedDocument,
+    StageResult,
+    PipelineResult,
+    HyDEConfig,
+    SignalQualityConfig,
+    SelfCritiqueResult,
+    HopRefinementConfig,
+    # Classes
+    SignalQualityPipeline,
+    HopRefinementStrategy,
+    # Factory functions
+    create_default_pipeline,
+    create_strict_pipeline,
+    create_permissive_pipeline,
+)
+
+from .validation_gates import (
+    # Enums
+    GatePolicy,
+    GateDecision as VGateDecision,
+    GateSeverity,
+    # Dataclasses
+    GateViolation,
+    GateResult,
+    GateContext,
+    ValidationGateConfig,
+    ValidationReport,
+    # Base class
+    ValidationGate,
+    # Concrete gates
+    SummaryGroundingCheckGate,
+    BulletHallucinationCheckGate,
+    ThematicUniquenessGate,
+    CreativeBriefAdherenceGate,
+    HeaderIntegrityCheckGate,
+    BulletProvenanceCheckGate,
+    RedundancyCheckGate,
+    HyphenPreservationGate,
+    WordCountBalanceGate,
+    BulletPunctuationGate,
+    SummaryVoiceTenseGate,
+    AgenticOutputValidationGate,
+    # Registry
+    ValidationGateRegistry,
+    generate_validation_report,
+    # Factory functions
+    create_default_registry,
+    create_strict_registry,
+    create_minimal_registry,
+)
+
+from .preflight import (
+    # Enums
+    PreflightTestType,
+    PreflightResult,
+    PreflightAction,
+    # Dataclasses
+    PreflightTestResult,
+    PreflightReport,
+    IterationTest,
+    StructuralParseTest,
+    FileManifestTest,
+    DependencyTest,
+    SchemaVersionTest,
+    PreflightConfig,
+    # Classes
+    PreflightValidator,
+    CapabilityTest,
+    # Factory functions
+    create_default_validator,
+    create_strict_validator,
+    create_minimal_validator,
+    run_preflight_checks,
+)
+
+from .creative_brief import (
+    # Enums
+    VoiceType,
+    TenseType,
+    ProvenanceType,
+    SourcingStrategy,
+    # Constraint classes
+    WordCountConstraint,
+    CharCountConstraint,
+    StructureConstraint,
+    ForbiddenPatternConstraint,
+    VoiceConstraint,
+    # Section briefs
+    HeadlineBrief,
+    ExecutiveSummaryBrief,
+    ExperienceBulletsBrief,
+    CompetenciesBrief,
+    CoverLetterBrief,
+    SkillsListBrief,
+    # Master brief
+    CreativeBrief,
+    # Factory functions
+    create_default_brief,
+    create_strict_brief,
+    create_flexible_brief,
+)
+
+from .transaction_manager import (
+    # Enums
+    TransactionState,
+    StepState,
+    ExecutionTraceLevel,
+    # Dataclasses
+    Checkpoint,
+    StepResult,
+    ExecutionTrace,
+    DependencyNode,
+    TransactionConfig,
+    # Classes
+    DependencyGraph,
+    TransactionManager,
+    WorkflowExecutor,
+    # Factory functions
+    create_default_transaction_manager,
+    create_strict_transaction_manager,
+    create_workflow_executor,
+)
+
+from .schema_transform import (
+    # Enums
+    TransformAction,
+    ValidationPolicy,
+    TransformResult,
+    # Dataclasses
+    KeyMapping,
+    EnumSpec,
+    TransformViolation,
+    TransformReport,
+    SchemaTransformConfig,
+    QASpec,
+    # Classes
+    SchemaTransformer,
+    DataLossPreventionGate,
+    ControlledVocabularyValidator,
+    SchemaTransformationGate,
+    # Factory functions
+    create_default_transformer,
+    create_strict_transformer,
+    create_transformation_gate,
+    # Constants
+    RESUME_TRACKER_KEY_MAP,
+)
+
 __all__ = [
     # Exceptions
     "AgenticWorkflowError",
@@ -288,4 +447,122 @@ __all__ = [
     # Document Processing
     "parse_document",
     "extract_pdf_text",
+    # ==========================================================================
+    # NEW MODULES FROM LEGACY RESUME GEN PORT
+    # ==========================================================================
+    # Signal Quality Pipeline
+    "SourceTier",
+    "SignalQualityStage",
+    "PipelineDecision",
+    "ClaimVerificationMode",
+    "RetrievedDocument",
+    "StageResult",
+    "PipelineResult",
+    "HyDEConfig",
+    "SignalQualityConfig",
+    "SelfCritiqueResult",
+    "HopRefinementConfig",
+    "SignalQualityPipeline",
+    "HopRefinementStrategy",
+    "create_default_pipeline",
+    "create_strict_pipeline",
+    "create_permissive_pipeline",
+    # Validation Gates
+    "GatePolicy",
+    "VGateDecision",
+    "GateSeverity",
+    "GateViolation",
+    "GateResult",
+    "GateContext",
+    "ValidationGateConfig",
+    "ValidationReport",
+    "ValidationGate",
+    "SummaryGroundingCheckGate",
+    "BulletHallucinationCheckGate",
+    "ThematicUniquenessGate",
+    "CreativeBriefAdherenceGate",
+    "HeaderIntegrityCheckGate",
+    "BulletProvenanceCheckGate",
+    "RedundancyCheckGate",
+    "HyphenPreservationGate",
+    "WordCountBalanceGate",
+    "BulletPunctuationGate",
+    "SummaryVoiceTenseGate",
+    "AgenticOutputValidationGate",
+    "ValidationGateRegistry",
+    "generate_validation_report",
+    "create_default_registry",
+    "create_strict_registry",
+    "create_minimal_registry",
+    # Pre-Flight Validation
+    "PreflightTestType",
+    "PreflightResult",
+    "PreflightAction",
+    "PreflightTestResult",
+    "PreflightReport",
+    "IterationTest",
+    "StructuralParseTest",
+    "FileManifestTest",
+    "DependencyTest",
+    "SchemaVersionTest",
+    "PreflightConfig",
+    "PreflightValidator",
+    "CapabilityTest",
+    "create_default_validator",
+    "create_strict_validator",
+    "create_minimal_validator",
+    "run_preflight_checks",
+    # Creative Brief
+    "VoiceType",
+    "TenseType",
+    "ProvenanceType",
+    "SourcingStrategy",
+    "WordCountConstraint",
+    "CharCountConstraint",
+    "StructureConstraint",
+    "ForbiddenPatternConstraint",
+    "VoiceConstraint",
+    "HeadlineBrief",
+    "ExecutiveSummaryBrief",
+    "ExperienceBulletsBrief",
+    "CompetenciesBrief",
+    "CoverLetterBrief",
+    "SkillsListBrief",
+    "CreativeBrief",
+    "create_default_brief",
+    "create_strict_brief",
+    "create_flexible_brief",
+    # Transaction Manager
+    "TransactionState",
+    "StepState",
+    "ExecutionTraceLevel",
+    "Checkpoint",
+    "StepResult",
+    "ExecutionTrace",
+    "DependencyNode",
+    "TransactionConfig",
+    "DependencyGraph",
+    "TransactionManager",
+    "WorkflowExecutor",
+    "create_default_transaction_manager",
+    "create_strict_transaction_manager",
+    "create_workflow_executor",
+    # Schema Transform
+    "TransformAction",
+    "ValidationPolicy",
+    "TransformResult",
+    "KeyMapping",
+    "EnumSpec",
+    "TransformViolation",
+    "TransformReport",
+    "SchemaTransformConfig",
+    "QASpec",
+    "SchemaTransformer",
+    "DataLossPreventionGate",
+    "ControlledVocabularyValidator",
+    "SchemaTransformationGate",
+    "create_default_transformer",
+    "create_strict_transformer",
+    "create_transformation_gate",
+    "RESUME_TRACKER_KEY_MAP",
 ]
