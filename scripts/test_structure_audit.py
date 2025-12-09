@@ -6,10 +6,9 @@ Audits tests/ folder against unified_structure_subatomic_meta.yaml taxonomy.
 Identifies violations and generates compliance report.
 """
 
-import os
 import json
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Tuple
 from collections import defaultdict
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()

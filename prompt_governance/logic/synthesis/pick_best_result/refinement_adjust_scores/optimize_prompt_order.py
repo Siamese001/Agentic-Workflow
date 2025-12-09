@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - optimize_scripts_order
 Implements L1 Cognitive Planning Layer for optimize scripts order operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

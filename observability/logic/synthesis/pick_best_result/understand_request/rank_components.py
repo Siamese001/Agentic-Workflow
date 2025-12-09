@@ -13,24 +13,17 @@ This module tests the new KG components:
 - L3 KG-First Retrieval Orchestration
 """
 
-import pytest
-from datetime import datetime, UTC
 
 # L4 Components
 from l4.triplet_store import (
     TripletStore,
-    Triplet,
     TripletQuery,
-    TemporalType,
     TripletStatus,
     create_triplet,
-    PREDICATES,
 )
 from l4.entity_resolution import (
     EntityRegistry,
     EntityType,
-    CanonicalEntity,
-    EntityMention,
     create_entity,
     create_mention,
 )
@@ -52,20 +45,16 @@ from l2.kg_retrieval_executor import (
 )
 from l2.triplet_extraction_executor import (
     TripletExtractionExecutor,
-    ExtractionPlan,
     create_extraction_plan,
 )
 from l2.invalidation_executor import (
     InvalidationExecutor,
-    InvalidationPlan,
-    InvalidationReason,
     create_invalidation_plan,
 )
 
 # L3 Components
 from orchestration.kg_retrieval_orchestration import (
     KGFirstRetrievalOrchestrator,
-    HybridRetrievalContext,
     create_hybrid_context,
 )
 
@@ -302,7 +291,7 @@ class TestTripletExtraction:
         result = executor.execute(plan)
 
         # Should extract company
-        companies = [t.object for t in result.triplets if t.predicate == "worked_at"]
+        [t.object for t in result.triplets if t.predicate == "worked_at"]
         # Note: extraction depends on pattern matching
         assert result.total_extracted >= 0
 

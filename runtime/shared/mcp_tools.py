@@ -20,7 +20,6 @@ Usage:
 from __future__ import annotations
 
 import logging
-import os
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -99,7 +98,6 @@ def _register_vector_tools(mcp):
             return documents
 
         elif provider == "qdrant":
-            from qdrant_client.models import Distance, VectorParams
 
             # For Qdrant, we need embeddings - use a simple approach
             # In production, you'd use a proper embedding model

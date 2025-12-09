@@ -1,7 +1,6 @@
 """Integration tests for LIC research + data layer."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any
 
 class TestLICResearchIntegration:
     """Integration tests for LIC research."""

@@ -1,14 +1,11 @@
 """E2E tests for outreach research flows."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
 
 class TestContactResearchE2E:
     """E2E tests for contact research."""
 
     def test_full_contact_research_flow(self):
         """E2E: Full contact research flow completes."""
-        contact = {"name": "John Doe", "company": "TechCorp"}
 
         # Research steps
         steps = ["linkedin_lookup", "company_research", "news_search", "enrichment"]
@@ -21,7 +18,6 @@ class TestContactResearchE2E:
 
     def test_company_research_flow(self):
         """E2E: Company research flow completes."""
-        company = "TechCorp"
 
         research = {
             "company_info": {"industry": "Technology", "size": "1000+"},
@@ -70,7 +66,6 @@ class TestMessageGenerationE2E:
 
     def test_message_quality_scoring(self):
         """E2E: Message quality is scored."""
-        message = "Hi John, I noticed TechCorp's recent product launch. Would love to discuss how we can help scale your engineering team."
 
         scores = {
             "personalization": 0.8,

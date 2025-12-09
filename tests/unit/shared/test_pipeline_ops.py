@@ -3,8 +3,7 @@ Unit tests for shared/pipeline_ops/
 Tests pipeline operations including data access, guardrails, and synthesis.
 """
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional, Callable
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -221,7 +220,7 @@ class TestPipelineErrorHandling:
 
     def test_pipeline_continues_on_non_critical_failure(self):
         """Pipeline continues on non-critical step failure."""
-        pipeline = Pipeline(id="pipe_001")
+        Pipeline(id="pipe_001")
         critical_steps = {"step1", "step3"}
 
         # step2 fails but is not critical

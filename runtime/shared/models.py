@@ -13,10 +13,10 @@ import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, ClassVar, Dict, List, Optional, Set, TYPE_CHECKING
+from typing import Any, ClassVar, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .exceptions import StagingBufferError
+    pass
 
 
 # =============================================================================

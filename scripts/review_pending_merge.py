@@ -4,7 +4,6 @@ Deep comparison of review_pending files vs approved files.
 Determine if any review_pending files have MORE content than approved versions.
 """
 
-import hashlib
 from pathlib import Path
 
 REPO = Path('c:/Git/Agentic-Workflow')

@@ -4,10 +4,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from shared.models import ValidationResult, ValidationSeverity
-from shared.workflow_types import HopStatus, HopCheckpoint
 
 
 def test_enforce_tests_filters(data: Dict[str, Any]) -> Dict[str, Any]:

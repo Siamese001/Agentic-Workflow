@@ -1,6 +1,5 @@
 """Unit tests for observability - logging, tracing, and metrics."""
 from __future__ import annotations
-import pytest
 import time
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field

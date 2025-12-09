@@ -1,6 +1,5 @@
 """Logic/property tests for safety escalation and thresholds."""
 from __future__ import annotations
-import pytest
 
 from agentic_workflow.runtime.shared.config import SAFETY_THRESHOLD
 from agentic_workflow.runtime.shared.models import GateDecision, ValidationSeverity

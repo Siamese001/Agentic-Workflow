@@ -19,7 +19,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List
 import json
 
 # =============================================================================
@@ -275,17 +275,6 @@ def update_meta_yaml(yaml_path: Path) -> None:
     content = yaml_path.read_text(encoding="utf-8")
 
     # Replace cognitive_layer_phase_rules section
-    old_rules = r"""cognitive_layer_phase_rules:
-    L1_cognition:
-      allowed_phases: \[P1_retrieve, P2_inspect, P3_aggregate, P4_safety\]
-    L2_execution:
-      allowed_phases: \[P2_inspect, P3_aggregate, P4_safety\]
-    L3_orchestration:
-      allowed_phases: \[P3_aggregate, P4_safety\]
-    L4_memory:
-      allowed_phases: \[P1_retrieve, P3_aggregate, P4_safety\]
-    L5_safety:
-      allowed_phases: \[P4_safety\]"""
 
     new_rules = """cognitive_layer_phase_rules:
     L1_cognition:

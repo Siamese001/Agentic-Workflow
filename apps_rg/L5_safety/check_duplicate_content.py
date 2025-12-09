@@ -10,7 +10,7 @@ Detects duplicate or near-duplicate bullets across sections.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from apps_rg.L2_execution.compute_text_similarity import TextSimilarityCalculator
 

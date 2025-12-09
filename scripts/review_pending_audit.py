@@ -6,7 +6,6 @@ Compare file contents to detect duplicates vs unique code.
 
 import hashlib
 from pathlib import Path
-from collections import defaultdict
 
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = REPO / 'config/review_pending'
@@ -149,7 +148,7 @@ def main():
     print(f"  - DELETE {len(duplicates)} exact duplicates")
     print(f"  - REVIEW {len(name_matches)} name matches for content merge")
     print(f"  - EVALUATE {len(unique_files)} unique files for inclusion or archival")
-    print(f"  - MOVE entire folder to 06_data/deprecated/review_pending_archive")
+    print("  - MOVE entire folder to 06_data/deprecated/review_pending_archive")
 
 
 if __name__ == '__main__':

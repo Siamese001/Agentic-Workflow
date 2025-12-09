@@ -25,7 +25,6 @@ from typing import Optional
 
 from openai import AsyncOpenAI, OpenAI
 
-from .config import DEFAULT_MAX_RETRIES, DEFAULT_API_TIMEOUT
 
 logger = logging.getLogger(__name__)
 

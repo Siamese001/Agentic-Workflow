@@ -9,7 +9,7 @@ LEVEL 5 - Unit tests for LLM guardrails and safety enforcement functionality
 """
 
 import pytest
-from agentic_core.l5_safety.policies.policy_engine import PolicyEngine, PolicyRule, PolicyEngineConfig
+from agentic_core.l5_safety.policies.policy_engine import PolicyEngine, PolicyEngineConfig
 
 
 class TestLLMGuardrails:

@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, TypeVar
 
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 
 import logging

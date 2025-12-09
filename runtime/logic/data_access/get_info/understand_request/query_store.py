@@ -19,7 +19,6 @@ to ensure consistent resume improvement and job alignment.
 from typing import Any, Dict, List, Optional
 
 
-from dataclasses import dataclass
 
 
 class StoredPrompt:

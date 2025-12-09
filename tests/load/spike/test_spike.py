@@ -1,8 +1,7 @@
 """Spike tests for sudden load increase handling."""
 from __future__ import annotations
-import pytest
 import time
-from typing import Dict, List, Any, Callable
+from typing import List
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading

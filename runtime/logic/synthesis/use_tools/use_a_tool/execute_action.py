@@ -61,13 +61,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from .agents import (
-        StrategyLLMAgent,
-        DraftingGuild,
-        SemanticQAAgent,
-        ConstitutionalSafetyAgent,
-        HYDEQueryAgent,
-    )
+    pass
 
 
 from eval.health.adapter import collect_error_events

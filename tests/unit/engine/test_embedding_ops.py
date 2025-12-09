@@ -5,7 +5,6 @@ Tests embedding operations including similarity calculation, vector search, etc.
 from __future__ import annotations
 import pytest
 import math
-from typing import Dict, List, Any, Tuple
 
 class TestComputeEmbeddings:
     """Tests for embedding computation."""
@@ -143,8 +142,6 @@ class TestSearchVectors:
 
     def test_search_empty_index(self):
         """Search on empty index returns empty results."""
-        vectors: List[Dict] = []
-        query = [1.0, 0.0]
 
         results = []  # No vectors to search
         assert results == []

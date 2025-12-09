@@ -1,7 +1,6 @@
 """Unit tests for L2_execution/P1_retrieve - execution context retrieval."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 class TestExecutionContextRetrieval:
     """Tests for retrieving execution context."""

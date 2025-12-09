@@ -4,7 +4,7 @@ Tests scoring operations for ranking and evaluation.
 """
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any
+from typing import Dict
 from dataclasses import dataclass
 
 @dataclass

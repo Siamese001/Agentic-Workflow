@@ -14,10 +14,10 @@ Implements L5 Safety/Policy Layer for update data usage operations
 """
 
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 
 from enum import Enum
@@ -90,7 +90,7 @@ class UpdateDataUsageSafetyImpl(UpdateDataUsageSafetySafety):
 
     def apply_safety(self, data: Dict[str, Any]) -> UpdateDataUsageSafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info(f"Applying safety checks to data")
+        self.logger.info("Applying safety checks to data")
 
         # L5 Input validation
         self._validate_input(data)

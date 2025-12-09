@@ -9,7 +9,7 @@ LEVEL 5 - Unit tests for DAG fallback path and error recovery functionality
 """
 
 import pytest
-from agentic_core.l3_orchestration.framework.dag_executor import DAGExecutor, ExecutionNode, NodeStatus
+from agentic_core.l3_orchestration.framework.dag_executor import DAGExecutor
 
 
 class TestFallbackPaths:

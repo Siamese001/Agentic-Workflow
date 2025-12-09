@@ -1,7 +1,6 @@
 """Unit tests for L4_memory/P3_aggregate - memory aggregation operations."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
+from typing import Dict, List
 
 class TestMemoryAggregation:
     """Tests for memory aggregation operations."""

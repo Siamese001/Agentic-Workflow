@@ -9,7 +9,7 @@ Preserves files with meaningful TODO/PLACEHOLDER content for tracking.
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List
 import json
 import re
 

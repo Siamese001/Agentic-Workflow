@@ -1,7 +1,6 @@
 """Unit tests for L4_memory/P1_retrieve - memory retrieval operations."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from datetime import datetime
 
 class TestMemoryRetrieval:

@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from agentic_workflow.runtime.shared.multi_provider_clients import (
-    Provider, ProviderConfig, ENV_KEYS, get_api_key, get_client,
-    reset_all_clients, get_available_providers, DEFAULT_MAX_RETRIES,
+    Provider, ProviderConfig, get_api_key, get_client,
+    reset_all_clients, DEFAULT_MAX_RETRIES,
 )
 
 class TestProviderEnum:

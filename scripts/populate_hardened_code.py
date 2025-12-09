@@ -6,10 +6,9 @@ Reads the stub scan report and generates hardened implementations for each file.
 """
 
 import json
-import re
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 STUB_REPORT_DIR = REPO_ROOT / "06_data" / "stub_elimination"

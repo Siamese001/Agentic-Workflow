@@ -1,7 +1,6 @@
 """Performance tests for cache throughput."""
 from __future__ import annotations
 import time
-import pytest
 
 from agentic_workflow.runtime.shared.cache import (
     generate_llm_cache_key, generate_llm_cache_key_with_fingerprint,

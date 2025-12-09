@@ -4,10 +4,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from shared.workflow_types import HopStatus, HopCheckpoint
-from shared.models import ValidationResult, ValidationSeverity
 
 
 def format_utility_data(data: Dict[str, Any]) -> str:

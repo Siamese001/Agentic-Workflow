@@ -18,12 +18,9 @@ Tests that verify:
 - Early exit (stops when appropriate)
 """
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 from dataclasses import dataclass, field
 from enum import Enum
-import time
-from concurrent.futures import ThreadPoolExecutor
 
 class WorkflowStatus(Enum):
     PENDING = "pending"
@@ -387,10 +384,8 @@ class TestEarlyExit:
 
         if not results:
             status = "early_exit"
-            reason = "No results to process"
         else:
             status = "continue"
-            reason = None
 
         assert status == "early_exit"
 
@@ -401,9 +396,7 @@ class TestEarlyExit:
 
         if safety_score > threshold:
             status = "blocked"
-            reason = "Safety threshold exceeded"
         else:
             status = "continue"
-            reason = None
 
         assert status == "blocked"

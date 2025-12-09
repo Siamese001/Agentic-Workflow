@@ -5,7 +5,6 @@ Generate missing scaffold files for shared_engine_ops and shared folders.
 
 import yaml
 from pathlib import Path
-from datetime import datetime
 from textwrap import dedent
 
 REPO = Path('c:/Git/Agentic-Workflow')
