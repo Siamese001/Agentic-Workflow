@@ -16,7 +16,7 @@ class VectorDocument:
 
     id: str
     text: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     embedding: Optional[List[float]] = None
     distance: Optional[float] = None
 
@@ -112,7 +112,7 @@ class LICVectorMemory:
     def add_document(
         self,
         text: str,
-        metadata: Dict[str, Any],
+        metadata: Dict[str, object],
         embedding: Optional[List[float]] = None,
         document_id: Optional[str] = None,
     ) -> str:
@@ -156,7 +156,7 @@ class LICVectorMemory:
         self,
         query_text: str,
         n_results: int = 20,
-        filter_metadata: Optional[Dict[str, Any]] = None,
+        filter_metadata: Optional[Dict[str, object]] = None,
     ) -> QueryResult:
         """
         Query the vector store for relevant documents.
@@ -305,7 +305,7 @@ class MockVectorMemory(LICVectorMemory):
     def add_document(
         self,
         text: str,
-        metadata: Dict[str, Any],
+        metadata: Dict[str, object],
         embedding: Optional[List[float]] = None,
         document_id: Optional[str] = None,
     ) -> str:
@@ -329,7 +329,7 @@ class MockVectorMemory(LICVectorMemory):
         self,
         query_text: str,
         n_results: int = 20,
-        filter_metadata: Optional[Dict[str, Any]] = None,
+        filter_metadata: Optional[Dict[str, object]] = None,
     ) -> QueryResult:
         """Query mock store with simple text matching."""
         import time

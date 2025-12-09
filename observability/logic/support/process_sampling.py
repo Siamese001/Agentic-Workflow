@@ -24,7 +24,7 @@ class SamplingDecision:
 class SamplingProcessor:
     """Sampler for support domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.rate = self.config.get("rate", 1.0)
         self.always_sample = self.config.get("always_sample", [])

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class ImplementFallbackTemplates:
     """Retry handler for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.max_retries = self.config.get("max_retries", 3)
         self.backoff = self.config.get("backoff", 1.0)

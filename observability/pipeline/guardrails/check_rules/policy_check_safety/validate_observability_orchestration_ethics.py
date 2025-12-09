@@ -39,7 +39,7 @@ class ValidateDataEthicsSafetyResult:
     """L5 Safety result with full type safety"""
     success: bool
     safety_score: float = 0.0
-    risk_assessment: Dict[str, Any] = field(default_factory=dict)
+    risk_assessment: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
@@ -48,12 +48,12 @@ class ValidateDataEthicsSafetySafety(ABC):
     """L5 Abstract base - ensures L5 pure safety behavior"""
 
     @abstractmethod
-    def apply_safety(self, data: Dict[str, Any]) -> ValidateDataEthicsSafetyResult:
+    def apply_safety(self, data: Dict[str, object]) -> ValidateDataEthicsSafetyResult:
         """Apply safety checks with L5 constraints"""
         ...
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
 
@@ -68,7 +68,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
         self.logger = logging.getLogger(self.__class__.__name__)
         self._safety_rules = self._initialize_safety_rules()
 
-    def apply_safety(self, data: Dict[str, Any]) -> ValidateDataEthicsSafetyResult:
+    def apply_safety(self, data: Dict[str, object]) -> ValidateDataEthicsSafetyResult:
         """Apply safety checks following L5 architecture principles"""
         self.logger.info("Applying safety checks to data")
 
@@ -97,7 +97,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
         self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for critical dangerous patterns
@@ -129,7 +129,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, data: Dict[str, Any]) -> None:
+    def _validate_input(self, data: Dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary")
@@ -137,7 +137,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
         if not data:
             raise ValueError("Input cannot be empty")
 
-    def _calculate_safety_score(self, data: Dict[str, Any]) -> float:
+    def _calculate_safety_score(self, data: Dict[str, object]) -> float:
         """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
         score = 0.0
         data_str = str(data).lower()
@@ -162,7 +162,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
 
         return min(score, 1.0)
 
-    def _assess_risks(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_risks(self, data: Dict[str, object]) -> Dict[str, object]:
         """Perform comprehensive risk assessment"""
         risks = {
             "injection_risk": self._check_injection_risk(data),
@@ -176,7 +176,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
             "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
         }
 
-    def _check_injection_risk(self, data: Dict[str, Any]) -> str:
+    def _check_injection_risk(self, data: Dict[str, object]) -> str:
         """Check for injection risks"""
         injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
         data_str = str(data)
@@ -187,7 +187,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
 
         return "low"
 
-    def _check_size_risk(self, data: Dict[str, Any]) -> str:
+    def _check_size_risk(self, data: Dict[str, object]) -> str:
         """Check size-related risks"""
         size = len(str(data))
 
@@ -198,7 +198,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
         else:
             return "low"
 
-    def _check_complexity_risk(self, data: Dict[str, Any]) -> str:
+    def _check_complexity_risk(self, data: Dict[str, object]) -> str:
         """Check complexity risks"""
         try:
             # Check nesting depth
@@ -212,7 +212,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
         except (ValueError, TypeError, RuntimeError) as e:
             return "high"
 
-    def _check_pattern_risk(self, data: Dict[str, Any]) -> str:
+    def _check_pattern_risk(self, data: Dict[str, object]) -> str:
         """Check for risky patterns"""
         risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
         data_str = str(data).lower()
@@ -232,7 +232,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
         else:
             return current_depth
 
-    def _initialize_safety_rules(self) -> List[Dict[str, Any]]:
+    def _initialize_safety_rules(self) -> List[Dict[str, object]]:
         """Initialize L5 safety rules"""
         return [
             {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
@@ -257,7 +257,7 @@ class ValidateDataEthicsSafetyInterface:
     def __init__(self, safety: ValidateDataEthicsSafetySafety):
         self._safety = safety
 
-    def apply_safety(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def apply_safety(self, data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - applies safety safely"""
         try:
             result = self._safety.apply_safety(data)
@@ -284,7 +284,7 @@ class ValidateDataEthicsSafetyFactory:
         return ValidateDataEthicsSafetyInterface(safety)
 
 # L5 Main execution point
-def validate_data_ethics(data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_data_ethics(data: Dict[str, object]) -> Dict[str, object]:
     """
     L5 Main function - validate data ethics operations
 

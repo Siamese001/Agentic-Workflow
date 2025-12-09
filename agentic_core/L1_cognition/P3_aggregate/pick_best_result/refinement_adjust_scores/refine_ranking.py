@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def refine_ranking(data: Dict[str, Any]) -> Dict[str, Any]:
+def refine_ranking(data: Dict[str, object]) -> Dict[str, object]:
     """Process refine ranking data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_refine_ranking_config() -> Dict[str, Any]:
+def get_refine_ranking_config() -> Dict[str, object]:
     """Get configuration for refine_ranking."""
     return {"enabled": True, "version": "1.0"}

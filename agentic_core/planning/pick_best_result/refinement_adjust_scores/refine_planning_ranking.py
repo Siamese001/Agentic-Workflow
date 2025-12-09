@@ -42,7 +42,7 @@ from typing import Any, Dict, List
 from runtime_utils import Ranking as _Ranking
 
 
-def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Deterministic BM25-like ranking.
 
@@ -51,14 +51,14 @@ def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return _Ranking.bm25_rank(items)
 
 
-def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Deterministic dense-score ranking (SHA-based pseudo-embedding).
     """
     return _Ranking.dense_rank(items)
 
 
-def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Combined ranking (BM25 + dense).
     """
@@ -66,9 +66,9 @@ def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def apply_strategy(
-    items: List[Dict[str, Any]],
+    items: List[Dict[str, object]],
     strategy: str = "hybrid",
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Apply a ranking strategy:
 
@@ -91,7 +91,7 @@ def apply_strategy(
         ranked = hybrid(items)
 
     # Assign integer rank (1-based)
-    out: List[Dict[str, Any]] = []
+    out: List[Dict[str, object]] = []
     for idx, item in enumerate(ranked):
         new_item = dict(item)
         new_item["rank"] = idx + 1
@@ -100,7 +100,7 @@ def apply_strategy(
     return out
 
 
-def fuse_ranked_groups(groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, object]]:
     """
     Fuse multiple pre-ranked lists into a single deterministic list.
 
@@ -113,7 +113,7 @@ def fuse_ranked_groups(groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any
 
     All behavior purely deterministic.
     """
-    flattened: List[Dict[str, Any]] = []
+    flattened: List[Dict[str, object]] = []
     seen: set[tuple[str, str]] = set()
 
     for group in groups or []:
@@ -138,9 +138,9 @@ def fuse_ranked_groups(groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any
 
 
 def rank_documents(
-    items: List[Dict[str, Any]],
+    items: List[Dict[str, object]],
     strategy: str = "hybrid",
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Top-level ranking helper used by RAGExecutor:
 

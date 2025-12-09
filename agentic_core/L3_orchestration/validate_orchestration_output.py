@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def validate_orchestration_output(data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_orchestration_output(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate orchestration output data."""
     return {"status": "processed", "input_keys": list(data.keys())}

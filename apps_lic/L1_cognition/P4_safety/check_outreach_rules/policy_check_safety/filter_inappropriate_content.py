@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def filter_inappropriate_content(data: Dict[str, Any]) -> Dict[str, Any]:
+def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:
     """Process filter inappropriate content data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_filter_inappropriate_content_config() -> Dict[str, Any]:
+def get_filter_inappropriate_content_config() -> Dict[str, object]:
     """Get configuration for filter_inappropriate_content."""
     return {"enabled": True, "version": "1.0"}

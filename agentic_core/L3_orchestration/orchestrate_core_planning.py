@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def orchestrate_core_planning(data: Dict[str, Any]) -> Dict[str, Any]:
+def orchestrate_core_planning(data: Dict[str, object]) -> Dict[str, object]:
     """Process orchestrate core planning data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_orchestrate_core_planning_config() -> Dict[str, Any]:
+def get_orchestrate_core_planning_config() -> Dict[str, object]:
     """Get configuration for orchestrate_core_planning."""
     return {"enabled": True, "version": "1.0"}

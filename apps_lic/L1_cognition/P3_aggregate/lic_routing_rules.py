@@ -323,7 +323,7 @@ class LICRouter:
         self,
         text: str,
         route: MessageRoute,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Validate message length against route constraints.
 
@@ -335,7 +335,7 @@ class LICRouter:
             Validation result dictionary
         """
         constraints = self.get_constraints(route)
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "word_count": len(text.split()),

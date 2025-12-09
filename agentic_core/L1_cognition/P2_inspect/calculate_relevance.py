@@ -27,7 +27,7 @@ class ContextItem:
     """
     id: str
     text: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 def score_relevance(query: str, items: List[ContextItem]) -> List[Tuple[ContextItem, float]]:

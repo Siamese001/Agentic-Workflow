@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def prepare_cognition_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_cognition_data(data: Dict[str, object]) -> Dict[str, object]:
     """Process prepare cognition data data."""
     return {"status": "processed", "input_keys": list(data.keys())}

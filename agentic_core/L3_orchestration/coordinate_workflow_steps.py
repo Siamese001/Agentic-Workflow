@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def coordinate_workflow_steps(data: Dict[str, Any]) -> Dict[str, Any]:
+def coordinate_workflow_steps(data: Dict[str, object]) -> Dict[str, object]:
     """Process coordinate workflow steps data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_coordinate_workflow_steps_config() -> Dict[str, Any]:
+def get_coordinate_workflow_steps_config() -> Dict[str, object]:
     """Get configuration for coordinate_workflow_steps."""
     return {"enabled": True, "version": "1.0"}

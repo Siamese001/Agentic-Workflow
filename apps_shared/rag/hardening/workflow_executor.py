@@ -67,10 +67,10 @@ class Checkpoint:
     """A checkpoint capturing state at a point in time."""
     checkpoint_id: str
     step_id: str
-    state: Dict[str, Any]
+    state: Dict[str, object]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     hash: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def __post_init__(self):
         if self.hash is None:
@@ -81,7 +81,7 @@ class Checkpoint:
         content = json.dumps(self.state, sort_keys=True, default=str)
         return hashlib.sha256(content.encode()).hexdigest()[:16]
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "checkpoint_id": self.checkpoint_id,
@@ -98,13 +98,13 @@ class StepResult:
     """Result from executing a workflow step."""
     step_id: str
     state: StepState
-    output: Optional[Any] = None
+    output: Optional[object] = None
     error: Optional[str] = None
     duration_ms: float = 0.0
     checkpoint: Optional[Checkpoint] = None
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "step_id": self.step_id,
@@ -123,11 +123,11 @@ class ExecutionTrace:
     trace_id: str
     step_id: str
     action: str
-    details: Dict[str, Any]
+    details: Dict[str, object]
     level: ExecutionTraceLevel
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "trace_id": self.trace_id,
@@ -303,7 +303,7 @@ class TransactionManager:
     
     def __init__(self, config: Optional[TransactionConfig] = None) -> None:
         self.config = config or TransactionConfig()
-        self._state: Dict[str, Any] = {}
+        self._state: Dict[str, object] = {}
         self._checkpoints: List[Checkpoint] = []
         self._traces: List[ExecutionTrace] = []
         self._step_results: Dict[str, StepResult] = {}
@@ -312,7 +312,7 @@ class TransactionManager:
         self._trace_counter = 0
         
     @property
-    def state(self) -> Dict[str, Any]:
+    def state(self) -> Dict[str, object]:
         """Get current state (deep copy for safety)."""
         return copy.deepcopy(self._state)
     
@@ -412,7 +412,7 @@ class TransactionManager:
     def execute_step(
         self,
         step_id: str,
-        executor: Callable[[Dict[str, Any]], Any],
+        executor: Callable[[Dict[str, object]], Any],
         input_keys: Optional[List[str]] = None,
         output_key: Optional[str] = None,
     ) -> StepResult:
@@ -531,7 +531,7 @@ class TransactionManager:
         """Get a value from the transaction state."""
         return copy.deepcopy(self._state.get(key, default))
     
-    def _create_checkpoint(self, step_id: str, state: Dict[str, Any]) -> Checkpoint:
+    def _create_checkpoint(self, step_id: str, state: Dict[str, object]) -> Checkpoint:
         """Create a checkpoint of current state."""
         checkpoint_id = f"CP_{step_id}_{len(self._checkpoints):04d}"
         
@@ -558,7 +558,7 @@ class TransactionManager:
     def _trace(
         self,
         action: str,
-        details: Dict[str, Any],
+        details: Dict[str, object],
         level: ExecutionTraceLevel = ExecutionTraceLevel.STANDARD,
     ) -> None:
         """Add an execution trace entry."""
@@ -579,7 +579,7 @@ class TransactionManager:
         if self.config.trace_level == ExecutionTraceLevel.DEBUG:
             logger.debug(f"[{trace.trace_id}] {action}: {details}")
             
-    def get_execution_report(self) -> Dict[str, Any]:
+    def get_execution_report(self) -> Dict[str, object]:
         """Generate execution report."""
         return {
             "transaction_state": self._transaction_state.name,
@@ -625,7 +625,7 @@ class WorkflowExecutor:
     ) -> None:
         self.transaction = TransactionManager(config)
         self._steps: Dict[str, Callable] = {}
-        self._step_configs: Dict[str, Dict[str, Any]] = {}
+        self._step_configs: Dict[str, Dict[str, object]] = {}
         
         if dependency_map:
             self.transaction.set_dependencies(dependency_map)
@@ -633,7 +633,7 @@ class WorkflowExecutor:
     def register_step(
         self,
         step_id: str,
-        executor: Callable[[Dict[str, Any]], Any],
+        executor: Callable[[Dict[str, object]], Any],
         dependencies: Optional[List[str]] = None,
         input_keys: Optional[List[str]] = None,
         output_key: Optional[str] = None,
@@ -650,7 +650,7 @@ class WorkflowExecutor:
         elif dependencies:
             self.transaction.set_dependencies({step_id: dependencies})
             
-    def execute(self, initial_state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def execute(self, initial_state: Optional[Dict[str, object]] = None) -> Dict[str, object]:
         """
         Execute all registered steps in dependency order.
         

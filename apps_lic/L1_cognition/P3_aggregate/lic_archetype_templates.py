@@ -352,9 +352,9 @@ class ArchetypeTemplateManager:
         template = self.get_greeting_template(route)
         return template.template.format(first_name=first_name)
 
-    def validate_greeting(self, greeting: str) -> Dict[str, Any]:
+    def validate_greeting(self, greeting: str) -> Dict[str, object]:
         """Validate a greeting against forbidden patterns."""
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
         }

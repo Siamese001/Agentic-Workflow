@@ -112,7 +112,7 @@ class ValidationResult:
     gate_id: str
     decision: GateDecision
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 class WorkflowSpecError(Exception):
@@ -348,7 +348,7 @@ class RGWorkflowOrchestrator:
     def execute_hop(
         self,
         hop_id: str,
-        context: Dict[str, Any],
+        context: Dict[str, object],
     ) -> HopCheckpoint:
         """
         Execute a single hop.
@@ -392,8 +392,8 @@ class RGWorkflowOrchestrator:
 
     def execute_workflow(
         self,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Execute the complete workflow.
 
@@ -408,7 +408,7 @@ class RGWorkflowOrchestrator:
         execution_order = self.get_execution_order()
         self.logger.info(f"Execution order: {execution_order}")
 
-        results: Dict[str, Any] = {
+        results: Dict[str, object] = {
             "workflow_id": self.workflow_id,
             "status": "RUNNING",
             "hops_completed": [],

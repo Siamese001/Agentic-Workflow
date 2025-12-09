@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def validate_candidate_structure(data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_candidate_structure(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate candidate structure data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_validate_candidate_structure_config() -> Dict[str, Any]:
+def get_validate_candidate_structure_config() -> Dict[str, object]:
     """Get configuration for validate_candidate_structure."""
     return {"enabled": True, "version": "1.0"}

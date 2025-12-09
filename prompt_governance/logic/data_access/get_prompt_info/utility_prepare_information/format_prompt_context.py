@@ -37,7 +37,7 @@ class FormatScriptsContextOrchestratorConstraints:
 class FormatScriptsContextOrchestratorResult:
     """L5 Result structure with full type safety"""
     success: bool
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
@@ -46,12 +46,12 @@ class FormatScriptsContextOrchestratorProcessor(ABC):
     """L5 Abstract base - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: Dict[str, Any]) -> FormatScriptsContextOrchestratorResult:
+    def process(self, input_data: Dict[str, object]) -> FormatScriptsContextOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
 
@@ -65,7 +65,7 @@ class FormatScriptsContextOrchestratorImpl(FormatScriptsContextOrchestratorProce
         self.constraints = constraints or FormatScriptsContextOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, Any]) -> FormatScriptsContextOrchestratorResult:
+    def process(self, input_data: Dict[str, object]) -> FormatScriptsContextOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -87,7 +87,7 @@ class FormatScriptsContextOrchestratorImpl(FormatScriptsContextOrchestratorProce
         self.logger.info(f"Successfully processed: {result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
@@ -109,7 +109,7 @@ class FormatScriptsContextOrchestratorImpl(FormatScriptsContextOrchestratorProce
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, Any]) -> None:
+    def _validate_input(self, input_data: Dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
             raise ValueError("Input must be a dictionary")
@@ -133,7 +133,7 @@ class FormatScriptsContextOrchestratorInterface:
     def __init__(self, processor: FormatScriptsContextOrchestratorProcessor):
         self._processor = processor
 
-    def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -159,7 +159,7 @@ class FormatScriptsContextOrchestratorFactory:
         return FormatScriptsContextOrchestratorInterface(processor)
 
 # L5 Main execution point
-def format_scripts_context(input_data: Dict[str, Any]) -> Dict[str, Any]:
+def format_scripts_context(input_data: Dict[str, object]) -> Dict[str, object]:
     """
     L5 Main function - format scripts context operations
 

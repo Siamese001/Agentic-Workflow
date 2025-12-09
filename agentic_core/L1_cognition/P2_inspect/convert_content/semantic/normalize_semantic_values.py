@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def normalize_semantic_values(data: Dict[str, Any]) -> Dict[str, Any]:
+def normalize_semantic_values(data: Dict[str, object]) -> Dict[str, object]:
     """Process normalize semantic values data."""
     return {"status": "processed", "input_keys": list(data.keys())}

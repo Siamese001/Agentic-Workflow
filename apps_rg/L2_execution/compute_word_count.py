@@ -16,7 +16,7 @@ def count_words_ms_word_style(text: str) -> int:
     return len([w for w in words if w and w != "-"])
 
 
-def count_words_in_list_ms_word_style(content_list: List[Any]) -> int:
+def count_words_in_list_ms_word_style(content_list: List[object]) -> int:
     """Count words in a list using MS Word style counter."""
     return sum(count_words_ms_word_style(str(item)) for item in content_list)
 

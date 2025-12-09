@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def optimize(data: Dict[str, Any]) -> Dict[str, Any]:
+def optimize(data: Dict[str, object]) -> Dict[str, object]:
     """Process optimize data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_optimize_config() -> Dict[str, Any]:
+def get_optimize_config() -> Dict[str, object]:
     """Get configuration for optimize."""
     return {"enabled": True, "version": "1.0"}

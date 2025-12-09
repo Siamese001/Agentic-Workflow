@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def update_core_budget(data: Dict[str, Any]) -> Dict[str, Any]:
+def update_core_budget(data: Dict[str, object]) -> Dict[str, object]:
     """Process update core budget data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_update_core_budget_config() -> Dict[str, Any]:
+def get_update_core_budget_config() -> Dict[str, object]:
     """Get configuration for update_core_budget."""
     return {"enabled": True, "version": "1.0"}

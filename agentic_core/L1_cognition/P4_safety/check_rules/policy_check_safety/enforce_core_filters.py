@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def enforce_core_filters(data: Dict[str, Any]) -> Dict[str, Any]:
+def enforce_core_filters(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce core filters data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_enforce_core_filters_config() -> Dict[str, Any]:
+def get_enforce_core_filters_config() -> Dict[str, object]:
     """Get configuration for enforce_core_filters."""
     return {"enabled": True, "version": "1.0"}

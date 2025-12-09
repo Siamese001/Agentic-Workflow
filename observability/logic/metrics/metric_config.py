@@ -27,7 +27,7 @@ class Metric:
 class MetricConfig:
     """Metrics collector for metrics domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.metrics: Dict[str, List[Metric]] = defaultdict(list)
         logger.info(f"Initialized {self.__class__.__name__}")

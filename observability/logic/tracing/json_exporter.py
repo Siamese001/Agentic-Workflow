@@ -36,7 +36,7 @@ class BaseExporter(ABC):
 class JsonExporter(BaseExporter):
     """Exporter for tracing domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {self.__class__.__name__}")

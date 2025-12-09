@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def apply_semantic_action(data: Dict[str, Any]) -> Dict[str, Any]:
+def apply_semantic_action(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply semantic action data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_apply_semantic_action_config() -> Dict[str, Any]:
+def get_apply_semantic_action_config() -> Dict[str, object]:
     """Get configuration for apply_semantic_action."""
     return {"enabled": True, "version": "1.0"}

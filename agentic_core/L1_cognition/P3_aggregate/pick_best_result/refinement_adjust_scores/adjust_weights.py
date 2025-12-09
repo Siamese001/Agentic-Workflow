@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def adjust_weights(data: Dict[str, Any]) -> Dict[str, Any]:
+def adjust_weights(data: Dict[str, object]) -> Dict[str, object]:
     """Process adjust weights data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_adjust_weights_config() -> Dict[str, Any]:
+def get_adjust_weights_config() -> Dict[str, object]:
     """Get configuration for adjust_weights."""
     return {"enabled": True, "version": "1.0"}

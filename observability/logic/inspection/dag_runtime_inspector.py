@@ -20,13 +20,13 @@ class DiagnosticReport:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     healthy: bool = True
     issues: List[str] = field(default_factory=list)
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, object] = field(default_factory=dict)
 
 
 class DagRuntimeInspector:
     """Diagnostics engine for inspection domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
