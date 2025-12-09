@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any\nfrom eval.golden_state.models import GoldenCase, GoldenOutput\ndef evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> GoldenOutput:\n\"\"\"Compares expected keypoints to what the system produced so tests can see whether resumes captured the most important ideas or missed critical content.\"\"\"\nproduced_set = {k.strip().lower() for k in output.produced_keypoints}\ncorrectness_map: dict[str, bool] = {}\nfor key in case.expected_keypoints:\nnorm = key.strip().lower()\ncorrectness_map[key] = norm in produced_set\ntotal = max(len(case.expected_keypoints), 1)\nsatisfied = sum(1 for ok in correctness_map.values() if ok)\nratio = satisfied / float(total)\nif ratio >= 0.9:\nverdict: Any = \"pass\"\nelif ratio >= 0.5:\nverdict = \"borderline\"\nelse:\nverdict = \"fail\"\noutput.correctness_map = correctness_map\noutput.final_verdict = verdict # type: ignore[assignment]\nreturn output",
+  "normalized_signature": "func:evaluate_case_output",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:evaluate_case_output",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

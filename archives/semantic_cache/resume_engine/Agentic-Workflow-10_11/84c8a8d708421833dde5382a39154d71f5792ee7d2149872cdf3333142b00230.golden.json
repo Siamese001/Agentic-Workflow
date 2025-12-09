@@ -1,0 +1,9 @@
+{
+  "canonical_form": "try:\nfrom neo4j import GraphDatabase\n_NEO4J_AVAILABLE = True\nexcept Exception:\nGraphDatabase = None\n_NEO4J_AVAILABLE = False\ndef graph_query(*args, **kwargs):\n\"\"\"\nStubbed query function to satisfy import tests.\nDoes not execute Neo4j operations.\n\"\"\"\nif not _NEO4J_AVAILABLE:\nraise ImportError(\"Neo4j driver not installed\")\nreturn {\n\"status\": \"neo4j_unavailable\",\n\"results\": [],\n\"error\": \"Neo4j driver not installed\"\n}\n__all__ = [\"graph_query\", \"GraphDatabase\", \"_NEO4J_AVAILABLE\"]",
+  "normalized_signature": "func:graph_query",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:graph_query",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

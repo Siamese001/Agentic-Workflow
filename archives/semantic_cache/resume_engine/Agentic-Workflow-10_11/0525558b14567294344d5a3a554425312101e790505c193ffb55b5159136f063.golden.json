@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nContext slot management for r\u00e9sum\u00e9 processing workflows.\nDefines logical sections for organizing information in r\u00e9sum\u00e9 improvement prompts.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n@dataclass\nclass ContextSlot:\n\"\"\"\nRepresents context slot for r\u00e9sum\u00e9 processing prompt organization.\nEnables structured information placement for comprehensive r\u00e9sum\u00e9 enhancement workflows.\n\"\"\"\nid: str\nmax_items: int\nmetadata: Dict[str, Any]\ndef assign_to_slot(slot: ContextSlot, texts: List[str]) -> List[str]:\n\"\"\"\nAssigns context texts to r\u00e9sum\u00e9 processing slots.\nEnsures optimal information organization for r\u00e9sum\u00e9 improvement prompt generation.\n\"\"\"\nif slot.max_items <= 0:\nreturn []\nreturn texts[: slot.max_items]",
+  "normalized_signature": "func:assign_to_slot;class:ContextSlot",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:assign_to_slot",
+  "test_coverage": []
+}

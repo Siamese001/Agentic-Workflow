@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from __future__ import annotations\nimport asyncio\nfrom typing import Any, Dict\nfrom orchestration.dag_engine import Graph, Node, Edge, DAGExecutor\nasync def _noop_node(ctx: Dict[str, Any]) -> Dict[str, Any]:\nctx = dict(ctx)\nctx.setdefault(\"steps\", []).append(\"noop\")\nreturn ctx\nasync def _set_value(ctx: Dict[str, Any]) -> Dict[str, Any]:\nctx = dict(ctx)\nctx[\"value\"] = 42\nreturn ctx\ndef test_graph_successors_and_predecessors():\nnodes = {\n\"a\": Node(id=\"a\", fn=_noop_node, metadata={}),\n\"b\": Node(id=\"b\", fn=_set_value, metadata={}),\n}\nedges = [Edge(source=\"a\", target=\"b\")]\ngraph = Graph(nodes=nodes, edges=edges)\nsucc = [n.id for n in graph.successors(\"a\")]\npreds = [n.id for n in graph.predecessors(\"b\")]\nassert succ == [\"b\"]\nassert preds == [\"a\"]\ndef test_dag_executor_linear_graph():\nnodes = {\n\"a\": Node(id=\"a\", fn=_noop_node, metadata={}),\n\"b\": Node(id=\"b\", fn=_set_value, metadata={}),\n}\nedges = [Edge(source=\"a\", target=\"b\")]\ngraph = Graph(nodes=nodes, edges=edges)\nexecutor = DAGExecutor(graph)\nresult = asyncio.run(executor.run())\nassert result.get(\"value\") == 42\nassert result.get(\"steps\") == [\"noop\"]",
+  "normalized_signature": "func:test_graph_successors_and_predecessors;func:test_dag_executor_linear_graph",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_graph_successors_and_predecessors,test_dag_executor_linear_graph",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

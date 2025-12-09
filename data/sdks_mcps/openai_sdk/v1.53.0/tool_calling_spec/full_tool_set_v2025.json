@@ -1,0 +1,339 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenAI Tool Set 2025",
+  "description": "Complete tool specification for agentic workflow operations",
+  "type": "object",
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_resume_database",
+            "description": "Search through indexed resume database with filters",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "Search query for skills, experience, or keywords"
+                },
+                "filters": {
+                  "type": "object",
+                  "properties": {
+                    "experience_level": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": ["entry", "junior", "mid", "senior", "lead", "principal"]
+                      }
+                    },
+                    "skills": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "location": {
+                      "type": "string"
+                    },
+                    "company": {
+                      "type": "string"
+                    },
+                    "education": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "default": 10
+                }
+              },
+              "required": ["query"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "extract_resume_sections",
+            "description": "Extract and classify sections from resume text",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resume_text": {
+                  "type": "string",
+                  "description": "Raw resume text content"
+                },
+                "sections_to_extract": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["experience", "education", "skills", "projects", "certifications", "summary"]
+                  },
+                  "description": "Specific sections to extract"
+                },
+                "include_confidence": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Include confidence scores for extractions"
+                }
+              },
+              "required": ["resume_text"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "generate_outreach_message",
+            "description": "Generate personalized outreach message for lead",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "lead_info": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Lead's full name"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Current job title"
+                    },
+                    "company": {
+                      "type": "string",
+                      "description": "Current company"
+                    },
+                    "industry": {
+                      "type": "string",
+                      "description": "Industry sector"
+                    }
+                  },
+                  "required": ["name", "title", "company"]
+                },
+                "campaign_type": {
+                  "type": "string",
+                  "enum": ["cold_outreach", "follow_up", "referral", "event_based"],
+                  "description": "Type of outreach campaign"
+                },
+                "tone": {
+                  "type": "string",
+                  "enum": ["formal", "casual", "professional", "friendly"],
+                  "default": "professional"
+                },
+                "personalization_points": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["company_news", "recent_activity", "shared_connection", "industry_trend"]
+                      },
+                      "reference": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": ["lead_info", "campaign_type"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "analyze_candidate_fit",
+            "description": "Analyze candidate fit for specific role requirements",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resume_data": {
+                  "type": "object",
+                  "description": "Structured resume data"
+                },
+                "role_requirements": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Target role title"
+                    },
+                    "required_skills": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Required technical skills"
+                    },
+                    "experience_years": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Minimum years of experience required"
+                    },
+                    "education_level": {
+                      "type": "string",
+                      "enum": ["high_school", "bachelor", "master", "phd", "any"],
+                      "description": "Minimum education level"
+                    },
+                    "responsibilities": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Key role responsibilities"
+                    }
+                  },
+                  "required": ["title", "required_skills"]
+                }
+              },
+              "required": ["resume_data", "role_requirements"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "schedule_follow_up",
+            "description": "Schedule follow-up action with reminder",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "lead_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the lead"
+                },
+                "follow_up_type": {
+                  "type": "string",
+                  "enum": ["email", "phone_call", "linkedin_message", "meeting"],
+                  "description": "Type of follow-up action"
+                },
+                "scheduled_time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "ISO 8601 datetime for follow-up"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Follow-up message content"
+                },
+                "priority": {
+                  "type": "string",
+                  "enum": ["high", "medium", "low"],
+                  "default": "medium"
+                }
+              },
+              "required": ["lead_id", "follow_up_type", "scheduled_time", "message"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "update_candidate_status",
+            "description": "Update candidate status in tracking system",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "candidate_id": {
+                  "type": "string",
+                  "description": "Unique candidate identifier"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["new", "contacted", "responded", "interview_scheduled", "interviewed", "offer_extended", "rejected", "hired"],
+                  "description": "New status for candidate"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Optional notes about status change"
+                },
+                "next_action": {
+                  "type": "string",
+                  "description": "Next planned action"
+                }
+              },
+              "required": ["candidate_id", "status"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "generate_interview_questions",
+            "description": "Generate role-specific interview questions",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "role_title": {
+                  "type": "string",
+                  "description": "Position title"
+                },
+                "candidate_resume": {
+                  "type": "object",
+                  "description": "Candidate's resume data"
+                },
+                "question_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["technical", "behavioral", "situational", "problem_solving", "culture_fit"]
+                  },
+                  "description": "Types of questions to generate"
+                },
+                "difficulty_level": {
+                  "type": "string",
+                  "enum": ["junior", "mid", "senior", "lead"],
+                  "default": "mid"
+                },
+                "question_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20,
+                  "default": 10
+                }
+              },
+              "required": ["role_title", "candidate_resume"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web_for_company_info",
+            "description": "Search web for current company information and news",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "company_name": {
+                  "type": "string",
+                  "description": "Company name to search for"
+                },
+                "search_type": {
+                  "type": "string",
+                  "enum": ["recent_news", "company_overview", "funding", "hiring", "products"],
+                  "description": "Type of information to search for"
+                },
+                "max_results": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10,
+                  "default": 5
+                }
+              },
+              "required": ["company_name", "search_type"]
+            }
+          }
+        }
+      ],
+      "tool_choice": "auto"
+    }
+  }
+}

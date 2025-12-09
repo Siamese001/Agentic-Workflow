@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Draft simulation models.\"\"\"\nfrom typing import Any, Dict\nfrom pydantic import BaseModel\nfrom .simulation_base import SimulationInput, SimulationResult\nclass DraftSimRequest(SimulationInput):\n\"\"\"Input payload for draft simulation.\"\"\"\ndraft_sections: Dict[str, Any]\nclass DraftSimMetrics(BaseModel):\n\"\"\"Metrics produced by draft simulations.\"\"\"\nentropy: float\ncohesion: float\nrhythm_score: float\nclass DraftSimResult(SimulationResult):\n\"\"\"Result model for draft simulations.\"\"\"\npass",
+  "normalized_signature": "class:DraftSimRequest;class:DraftSimMetrics;class:DraftSimResult",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

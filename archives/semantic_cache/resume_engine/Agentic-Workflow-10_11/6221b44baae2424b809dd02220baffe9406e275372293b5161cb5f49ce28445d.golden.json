@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from orchestration.agent_bus import AgentBus\nfrom core.models.models import AgentMessage # normalized import\ndef test_agent_bus_send_and_get():\nbus = AgentBus()\nmsg = AgentMessage(\nmessage_id=\"m1\",\nsource_agent_id=\"planner-1\",\ntarget_agent_id=\"qa-1\",\nchannel=\"test\",\npayload_type=\"request\",\ncontent={\"x\": 1},\n)\nbus.send(msg)\ninbox = bus.get_for(\"qa-1\")\nassert msg in inbox\nbus.clear()\nassert bus.get_for(\"qa-1\") == []",
+  "normalized_signature": "func:test_agent_bus_send_and_get",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_agent_bus_send_and_get",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

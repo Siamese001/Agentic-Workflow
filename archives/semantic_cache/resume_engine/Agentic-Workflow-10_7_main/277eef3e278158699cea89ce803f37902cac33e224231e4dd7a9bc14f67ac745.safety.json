@@ -1,0 +1,13 @@
+{
+  "safety_checks": [
+    "sanitization"
+  ],
+  "policy_compliance": [
+    "regulatory_compliance"
+  ],
+  "security_patterns": [],
+  "data_handling": [
+    "sensitive_data"
+  ],
+  "access_controls": []
+}

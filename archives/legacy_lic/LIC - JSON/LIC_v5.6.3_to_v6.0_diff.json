@@ -1,0 +1,200 @@
+{
+  "from": "LIC_10-02-2025_v5.6.3.json",
+  "to": "LIC_10-02-2025_v6.0.json",
+  "base_sha": "e9c87dab0a5901ee4a0683c3382498296f7044f0a9a4f15eabe68670ba758860",
+  "new_sha": "744b13e7845b4ad157f921a5ba1e5a9f308ec5fd98deb69250f7330c460ecc3f",
+  "change_count": 46,
+  "changes": [
+    {
+      "path": "3.canonical_message_types.parameter_matrix.RECRUITER_overrides",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.context.execution_flow_v2.sequence",
+      "change": "LIST_CHANGED",
+      "from_len": 7,
+      "to_len": 8
+    },
+    {
+      "path": "3.context.prior_message_context.inference_rules",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.context.prior_message_context.prompt_template",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.message_type_confirmation",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.parameter_by_message_type.RECRUITER.SelfConsistencyRuns",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.parameter_by_message_type.RECRUITER.structure",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.parameter_by_message_type.RECRUITER.temperature",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.parameter_by_message_type.RECRUITER.word_count",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.resume_fact_verification",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.synthesis_phase",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.temporal_accuracy_rules",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.date_specific_cta_rules",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.requires_sender_profile",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.final_checks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_compact",
+      "change": "LIST_CHANGED",
+      "from_len": 45,
+      "to_len": 58
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-047",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-048",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-049",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-050",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-051",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-052",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-053",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-054",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-055",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-056",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-057",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-058",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-059",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.constraints.must_mention_ats",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.constraints.paragraph_count",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.constraints.rag_requirement",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.constraints.total_word_count",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.structure.attachment_note",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.structure.body_structure",
+      "change": "LIST_CHANGED",
+      "from_len": 5,
+      "to_len": 2
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.structure.closing",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.structure.cta",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.structure.opening",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.post_send_confirmation.app_schema_v4_mapping.field_4.source",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.post_send_confirmation.date_format_function",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.post_send_confirmation.detection_logic",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.base_sha_for_v6_0",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patch_package",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v6_0",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v6_0",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ],
+  "size_deltas": []
+}

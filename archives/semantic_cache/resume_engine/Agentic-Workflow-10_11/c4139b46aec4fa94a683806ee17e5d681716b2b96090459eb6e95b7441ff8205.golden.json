@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Iterable, Type\nfrom pydantic import BaseModel\ndef _get_schema_version(obj: Any) -> str | None:\n\"\"\"Best-effort helper to read a schema_version attribute from a model.\nThe validator is intentionally defensive and never raises on simple\nattribute access issues; it only raises when the value is present but\nincompatible with expectations.\n\"\"\"\ntry:\nreturn getattr(obj, \"schema_version\", None)\nexcept Exception: # pragma: no cover - extreme defensive\nreturn None\ndef validate_schema_version(\nobj: Any,\nexpected_versions: Iterable[str] = (\"v1\",),\nmodel_type: Type[BaseModel] | None = None,\n) -> None:\n\"\"\"Validate that a Pydantic model has an expected schema_version.\nThis is a light-weight guard used on critical cross-layer contracts\n(e.g., WorkflowPlanBundle, L2ResultBundle) so that incompatible data\nshapes surface early during development and testing.\nThe function is intentionally conservative:\n\u2022 If obj is not a BaseModel (and model_type is not given), it is a no-op.\n\u2022 If schema_version is missing or None, it is a no-op for now.\n\u2022 If schema_version is present but not in expected_versions, it raises\na ValueError to signal an incompatible contract.\n\"\"\"\nif model_type is not None and not isinstance(obj, model_type):\nreturn\nif model_type is None and not isinstance(obj, BaseModel):\nreturn\nversion = _get_schema_version(obj)\nif version is None:\nreturn\nif str(version) not in set(expected_versions):\nraise ValueError(\nf\"Unexpected schema_version={version!r}; expected one of {tuple(expected_versions)!r}\"\n)",
+  "normalized_signature": "func:_get_schema_version;func:validate_schema_version",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:validate_schema_version",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

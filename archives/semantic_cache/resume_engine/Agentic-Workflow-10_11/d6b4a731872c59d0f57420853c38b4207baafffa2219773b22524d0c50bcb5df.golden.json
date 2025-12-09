@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from infra.sandbox.networking import default_network_policy, is_destination_allowed\ndef test_default_network_policy_denies_all():\npolicy = default_network_policy()\nassert is_destination_allowed(policy, \"example.com\") is False\ndef test_allowlist_allows_specific_host():\npolicy = default_network_policy()\npolicy[\"allow_network\"] = True\npolicy[\"allowlist\"] = [\"example.com\"]\nassert is_destination_allowed(policy, \"example.com\") is True\nassert is_destination_allowed(policy, \"other.com\") is False",
+  "normalized_signature": "func:test_default_network_policy_denies_all;func:test_allowlist_allows_specific_host",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_default_network_policy_denies_all,test_allowlist_allows_specific_host",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

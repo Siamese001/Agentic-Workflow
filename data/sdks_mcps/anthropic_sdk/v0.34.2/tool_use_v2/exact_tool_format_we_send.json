@@ -1,0 +1,366 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Anthropic Tool Use V2 Specification",
+  "description": "Exact tool format used for Claude 3.5 Sonnet with computer use capabilities",
+  "type": "object",
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": [
+        {
+          "name": "computer_use",
+          "description": "Control computer desktop interface, take screenshots, click elements, type text",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["screenshot", "click", "type", "move_cursor", "drag", "key_press", "scroll"],
+                "description": "Computer action to perform"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "Screen coordinates [x, y] for click/move actions"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text to type when action is 'type'"
+              },
+              "key": {
+                "type": "string",
+                "description": "Key to press when action is 'key_press' (e.g., 'enter', 'escape', 'ctrl+c')"
+              },
+              "direction": {
+                "type": "string",
+                "enum": ["up", "down", "left", "right"],
+                "description": "Scroll direction when action is 'scroll'"
+              },
+              "click_type": {
+                "type": "string",
+                "enum": ["left", "right", "double"],
+                "default": "left",
+                "description": "Type of mouse click"
+              }
+            },
+            "required": ["action"]
+          }
+        },
+        {
+          "name": "bash_command",
+          "description": "Execute bash commands in terminal environment",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "command": {
+                "type": "string",
+                "description": "Bash command to execute"
+              },
+              "working_directory": {
+                "type": "string",
+                "description": "Directory to execute command in (default: current directory)"
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 300,
+                "default": 30,
+                "description": "Command timeout in seconds"
+              },
+              "capture_output": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to capture and return stdout/stderr"
+              }
+            },
+            "required": ["command"]
+          }
+        },
+        {
+          "name": "web_browse",
+          "description": "Browse web pages, extract content, and follow links",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to browse"
+              },
+              "action": {
+                "type": "string",
+                "enum": ["visit", "extract_text", "find_links", "search", "screenshot"],
+                "default": "visit",
+                "description": "Browsing action to perform"
+              },
+              "selector": {
+                "type": "string",
+                "description": "CSS selector for extracting specific elements"
+              },
+              "search_query": {
+                "type": "string",
+                "description": "Search query when action is 'search'"
+              },
+              "max_results": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50,
+                "default": 10,
+                "description": "Maximum results to return"
+              },
+              "wait_time": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10,
+                "default": 3,
+                "description": "Seconds to wait for page load"
+              }
+            },
+            "required": ["url"]
+          }
+        },
+        {
+          "name": "file_operations",
+          "description": "Read, write, and manipulate files in the filesystem",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": ["read", "write", "append", "delete", "copy", "move", "list", "search"],
+                "description": "File operation to perform"
+              },
+              "path": {
+                "type": "string",
+                "description": "File or directory path"
+              },
+              "content": {
+                "type": "string",
+                "description": "Content to write or append"
+              },
+              "destination": {
+                "type": "string",
+                "description": "Destination path for copy/move operations"
+              },
+              "pattern": {
+                "type": "string",
+                "description": "Search pattern for file search operations"
+              },
+              "encoding": {
+                "type": "string",
+                "default": "utf-8",
+                "description": "File encoding"
+              }
+            },
+            "required": ["operation", "path"]
+          }
+        },
+        {
+          "name": "database_query",
+          "description": "Execute SQL queries on connected databases",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "connection": {
+                "type": "string",
+                "enum": ["postgres", "mysql", "sqlite", "mongodb"],
+                "description": "Database connection type"
+              },
+              "query": {
+                "type": "string",
+                "description": "SQL or NoSQL query to execute"
+              },
+              "parameters": {
+                "type": "object",
+                "description": "Query parameters for prepared statements"
+              },
+              "database": {
+                "type": "string",
+                "description": "Database name (if required)"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000,
+                "default": 100,
+                "description": "Maximum rows to return"
+              }
+            },
+            "required": ["connection", "query"]
+          }
+        },
+        {
+          "name": "api_request",
+          "description": "Make HTTP requests to external APIs",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "API endpoint URL"
+              },
+              "method": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+                "default": "GET",
+                "description": "HTTP method"
+              },
+              "headers": {
+                "type": "object",
+                "description": "HTTP headers"
+              },
+              "body": {
+                "type": "object",
+                "description": "Request body for POST/PUT/PATCH"
+              },
+              "auth_type": {
+                "type": "string",
+                "enum": ["bearer", "basic", "api_key", "none"],
+                "default": "none",
+                "description": "Authentication type"
+              },
+              "auth_token": {
+                "type": "string",
+                "description": "Authentication token"
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 120,
+                "default": 30,
+                "description": "Request timeout in seconds"
+              }
+            },
+            "required": ["url"]
+          }
+        },
+        {
+          "name": "email_operations",
+          "description": "Send emails and manage email communications",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["send", "draft", "schedule", "track", "list"],
+                "description": "Email action to perform"
+              },
+              "to": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "description": "Recipient email addresses"
+              },
+              "cc": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "description": "CC recipients"
+              },
+              "subject": {
+                "type": "string",
+                "description": "Email subject"
+              },
+              "body": {
+                "type": "string",
+                "description": "Email body content"
+              },
+              "body_type": {
+                "type": "string",
+                "enum": ["text", "html"],
+                "default": "text",
+                "description": "Email body format"
+              },
+              "attachments": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "File paths to attach"
+              },
+              "scheduled_time": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 datetime for scheduled sending"
+              }
+            },
+            "required": ["action", "to", "subject", "body"]
+          }
+        },
+        {
+          "name": "calendar_operations",
+          "description": "Manage calendar events and scheduling",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["create", "update", "delete", "list", "find_availability"],
+                "description": "Calendar action to perform"
+              },
+              "title": {
+                "type": "string",
+                "description": "Event title"
+              },
+              "start_time": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Event start time (ISO 8601)"
+              },
+              "end_time": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Event end time (ISO 8601)"
+              },
+              "attendees": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "description": "Attendee email addresses"
+              },
+              "description": {
+                "type": "string",
+                "description": "Event description"
+              },
+              "location": {
+                "type": "string",
+                "description": "Event location"
+              },
+              "recurrence": {
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "string",
+                    "enum": ["daily", "weekly", "monthly", "yearly"]
+                  },
+                  "interval": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                  },
+                  "end_date": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            },
+            "required": ["action", "title", "start_time", "end_time"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
