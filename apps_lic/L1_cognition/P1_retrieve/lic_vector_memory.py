@@ -101,7 +101,7 @@ class LICVectorMemory:
             # ChromaDB not installed - use mock mode
             self._initialized = False
             return False
-        except Exception:
+        except (ValueError, TypeError, RuntimeError, OSError) as e:
             self._initialized = False
             return False
 
@@ -263,7 +263,7 @@ class LICVectorMemory:
             try:
                 self._collection.delete(ids=[document_id])
                 return True
-            except Exception:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 return False
         return False
 
@@ -279,7 +279,7 @@ class LICVectorMemory:
                     },
                 )
                 return True
-            except Exception:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 return False
         return False
 
