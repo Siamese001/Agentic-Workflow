@@ -42,7 +42,7 @@ class CreateExperienceBullets:
                 duration_ms=(time.time() - start) * 1000
             )
 
-    def _perform_action(self, action: str, params: Dict[str, Any]) -> Any:
+    def _perform_action(self, action: str, params: Dict[str, Any]) -> object:
         """Perform the action."""
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}

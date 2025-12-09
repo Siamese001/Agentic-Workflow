@@ -31,7 +31,7 @@ class BaseCollector:
         self.max_items = self.config.get("max_items", 1000)
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def collect(self, source: str, data: Any) -> None:
+    def collect(self, source: str, data: object) -> None:
         """Collect data from source."""
         item = CollectedItem(source=source, data=data)
         self.items[source].append(item)
@@ -62,7 +62,7 @@ class BaseCollector:
 _collector = BaseCollector()
 
 
-def collect(source: str, data: Any) -> None:
+def collect(source: str, data: object) -> None:
     """Collect data to global collector."""
     _collector.collect(source, data)
 
