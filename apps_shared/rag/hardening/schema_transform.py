@@ -288,7 +288,7 @@ class SchemaTransformer:
                     transformed[mapping.target_key] = transformed_value
                     mapped_keys.append(source_key)
                     
-                except Exception as e:
+                except (ValueError, TypeError, RuntimeError, KeyError) as e:
                     violations.append(TransformViolation(
                         violation_type="TRANSFORM_ERROR",
                         field=source_key,

@@ -59,7 +59,7 @@ class OtlpExporter(BaseExporter):
                 items_exported=len(items),
                 destination=self.destination
             )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
                 success=False,

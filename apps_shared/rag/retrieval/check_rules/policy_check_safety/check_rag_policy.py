@@ -179,7 +179,7 @@ class SafetyEngine:
                     f"with {len(decision.findings)} findings"
                 )
 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
                 logger.error(error_msg, exc_info=True)
 

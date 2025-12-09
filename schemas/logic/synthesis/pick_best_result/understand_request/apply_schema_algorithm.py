@@ -105,7 +105,7 @@ class ApplyDataAlgorithmPlanImpl(ApplyDataAlgorithmPlanProcessor):
 
             self.logger.info("Data passed L5 safety validation")
             return True
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             self.logger.error(f"Safety validation error: {e}")
             return False  # Fail-closed
 
@@ -144,7 +144,7 @@ class ApplyDataAlgorithmPlanInterface:
                 "safety_validated": result.safety_validated,
                 "timestamp": result.timestamp
             }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
 # L5 Factory
@@ -184,5 +184,5 @@ if __name__ == "__main__":
         logger.info(f"L5 Execution successful: {result}")
     except SecurityError as e:
         logger.error(f"L5 Security error: {e}")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

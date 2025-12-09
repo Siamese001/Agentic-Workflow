@@ -850,7 +850,7 @@ class ValidationGateRegistry:
             try:
                 result = gate.validate(context)
                 result.duration_ms = (time.time() - start_time) * 1000
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 logger.error(f"Gate {gate_id} failed with exception: {e}")
                 result = GateResult(
                     gate_id=gate_id,
