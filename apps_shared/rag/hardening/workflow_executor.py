@@ -207,6 +207,7 @@ class DependencyGraph:
         order: List[str] = []
         
         def visit(node_id: str) -> None:
+            """Execute visit operation."""
             if node_id in temp_visited:
                 raise ValueError(f"Circular dependency detected involving {node_id}")
             if node_id in visited:

@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class StepStatus(Enum):
+    """StepStatus implementation."""
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"

@@ -2,7 +2,6 @@
 """
 02_schemas.logic.validation.find_schema_problems.diagnostics_ops — Package initialization
 
-Auto-generated to satisfy SSoT structure requirements.
 """
 
 __all__: list = []

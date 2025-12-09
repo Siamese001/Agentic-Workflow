@@ -236,7 +236,6 @@ class WorkflowContext:
     """
 
     def __init__(
-        """  Init   implementation."""
         self,
         config: ConfigV10_7,
         redis_client: RedisType,

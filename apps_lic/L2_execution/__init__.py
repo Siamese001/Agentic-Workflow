@@ -6,7 +6,7 @@ Generated: 2025-12-07T13:28:54.109707
 
 from __future__ import annotations
 
-from .lic_state_manager import (
+from .track_lic_state import (
     LICStateManager,
     StateValidator,
     StateCheckpoint,
