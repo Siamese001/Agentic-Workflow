@@ -106,7 +106,106 @@ repos:
         pass_filenames: false
 
   # ===================================================================
-  # 8. CUSTOM PROJECT VALIDATION
+  # LIGHT CANON 2025 — 7 RULES FOR ALL NON-SOVEREIGN CODE
+  # Applies to: tests/, scripts/, shared/, runtime/, apps_shared/
+  # ===================================================================
+  - repo: local
+    hooks:
+      # 1. No TODO/FIXME/XXX/HACK/STUB comments anywhere
+      - id: light-canon-no-todo
+        name: LIGHT CANON — No TODO/FIXME/XXX
+        entry: bash -c 'git diff --cached --name-only | xargs grep -iE "(TODO|FIXME|XXX|HACK|STUB)" && exit 1 || exit 0'
+        language: system
+        files: \.py$
+        exclude: ^data/|^archives/
+
+      # 2. No print(), pdb, ipdb, breakpoint() anywhere
+      - id: light-canon-no-debug
+        name: LIGHT CANON — No print()/pdb/breakpoint
+        entry: >-
+          python -c "
+          import sys, re, pathlib
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(x in f.parts for x in ['data','archives','__pycache__']): continue
+              c = f.read_text(errors='ignore')
+              if re.search(r'\b(print\(|pdb\.|ipdb\.|breakpoint\(|\.set_trace\()', c):
+                  bad.append(str(f))
+          if bad: print('DEBUG STATEMENTS:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        exclude: ^data/|^archives/
+        pass_filenames: false
+
+      # 3. No files < 150 bytes (except __init__.py < 100 bytes)
+      - id: light-canon-no-tiny
+        name: LIGHT CANON — No micro-files
+        entry: >-
+          python -c "
+          import sys, pathlib
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(x in f.parts for x in ['data','archives','__pycache__']): continue
+              s = f.stat().st_size
+              if f.name == '__init__.py' and s < 100: continue
+              if s < 150: bad.append(f'{f}: {s} bytes')
+          if bad: print('TINY FILES:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        exclude: ^data/|^archives/
+        pass_filenames: false
+
+      # 4. No zombie "archive/" folder (singular)
+      - id: light-canon-no-zombie-archive
+        name: LIGHT CANON — Zombie archive/ forbidden
+        entry: bash -c 'test ! -d archive || (echo "ZOMBIE archive/ DETECTED — ONLY archives/ ALLOWED" && exit 1)'
+        language: system
+        files: ^$
+        pass_filenames: false
+
+      # 5. No bare except: or except Exception:
+      - id: light-canon-no-bare-except
+        name: LIGHT CANON — No bare except
+        entry: bash -c 'git diff --cached --name-only | xargs grep -nE "^\s*except\s*:" && exit 1 || exit 0'
+        language: system
+        files: \.py$
+        exclude: ^data/|^archives/
+
+      # 6. No pass-only functions/classes (except in tests with @pytest.mark.skip)
+      - id: light-canon-no-pass-only
+        name: LIGHT CANON — No pass-only definitions
+        entry: >-
+          python -c "
+          import ast, sys, pathlib
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(x in f.parts for x in ['data','archives','tests','__pycache__']): continue
+              try:
+                  tree = ast.parse(f.read_text())
+                  for node in ast.walk(tree):
+                      if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                          if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                              bad.append(f'{f}:{node.lineno} {node.name}')
+              except: pass
+          if bad: print('PASS-ONLY:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        exclude: ^data/|^archives/|^tests/
+        pass_filenames: false
+
+      # 7. No private keys / secrets accidentally checked in
+      - id: light-canon-no-secrets
+        name: LIGHT CANON — No secrets in-code secrets
+        entry: detect-secrets scan --exclude-files ^data/|^archives/ --fail-on-live
+        language: system
+        pass_filenames: false
+        additional_dependencies: [detect-secrets==1.5.0]
+
+  # ===================================================================
+  # 9. CUSTOM PROJECT VALIDATION
   # ===================================================================
   - repo: local
     hooks:
