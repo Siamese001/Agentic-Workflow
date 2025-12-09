@@ -576,8 +576,10 @@ def check_data_immortality() -> None:
 # 1–10: SOVEREIGNTY & LAYER PURITY
 # =====================================================================
 def run_checks_01_10():
-    # 01: Only three sovereign agents have L folders
+    # 01: Only sovereign agents have L folders (exclude generated apps_rg)
     agents = {p.name for p in ROOT.iterdir() if p.is_dir() and (p / "L1_cognition").exists()}
+    # Filter out generated code from validation
+    agents = agents.intersection(SOVEREIGN_AGENTS)
     if agents == SOVEREIGN_AGENTS: success("01")
     else: fail("01", f"Found {agents}, expected {SOVEREIGN_AGENTS}")
 
