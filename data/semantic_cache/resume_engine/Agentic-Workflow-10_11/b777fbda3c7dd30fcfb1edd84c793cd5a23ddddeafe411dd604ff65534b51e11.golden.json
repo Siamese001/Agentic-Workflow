@@ -1,0 +1,11 @@
+{
+  "canonical_form": "\"\"\"Test that all vector search modules can be imported.\"\"\"\nimport pytest\ndef _can_import_pinecone() -> bool:\n\"\"\"Check if Pinecone SDK is properly installed.\"\"\"\ntry:\nfrom pinecone import Pinecone # noqa: F401\nreturn True\nexcept ImportError:\nreturn False\ndef test_import_vector_modules():\n\"\"\"Test that all vector search related modules can be imported.\"\"\"\nimport l2.agents.planning.vector_search_planning # noqa: F401\nimport l2.agents.execution.vector_search_executor # noqa: F401\nassert True\n@pytest.mark.skipif(\nnot _can_import_pinecone(),\nreason=\"Pinecone SDK not properly installed or incompatible version\"\n)\ndef test_import_pinecone_provider():\n\"\"\"Test that pinecone provider can be imported when SDK is available.\"\"\"\nimport providers.pinecone_client # noqa: F401\nassert True",
+  "normalized_signature": "func:_can_import_pinecone;func:test_import_vector_modules;func:test_import_pinecone_provider",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_import_vector_modules,test_import_pinecone_provider",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions",
+    "uses_testing_framework"
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\gemini_service.py",
+    "file_hash": "51db2e5459915c49b908e16003e4233fd64783f3239070a0d0ff57490b079a7a",
+    "size_bytes": 24330,
+    "last_modified": "2025-12-01T12:27:37.055814",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "APICallStatus",
+      "line_number": 54,
+      "docstring": "Status codes for API calls",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "APICallMetrics",
+      "line_number": 64,
+      "docstring": "Metrics for API call tracking",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GeminiService",
+      "line_number": 75,
+      "docstring": "Production-ready Gemini API service with comprehensive error handling.\n\nFeatures:\n- Automatic retry with exponential backoff\n- Rate limiting protection\n- Safety rating handling\n- Response validation and integrity checking\n- Comprehensive metrics tracking\n- Fallback mechanisms for failures",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_gemini_service",
+      "line_number": 655,
+      "docstring": "Get or create the global GeminiService instance.\n\nArgs:\n    default_model: Default model to use\n    force_new: Force creation of new instance\n    \nReturns:\n    GeminiService instance",
+      "imports": [],
+      "dependencies": [
+        "GeminiService"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 88,
+      "docstring": "Initialize the Gemini service with production configurations.\n\nArgs:\n    default_model: Default model to use if not specified in call\n    max_retries: Maximum number of retry attempts\n    retry_delay: Base delay between retries (exponential backoff)",
+      "imports": [],
+      "dependencies": [
+        "APICallMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_environment",
+      "line_number": 112,
+      "docstring": "Validate that the environment is properly configured.\n\nRaises:\n    RuntimeError: If environment is not properly configured",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call_api",
+      "line_number": 145,
+      "docstring": "Execute a production-ready Gemini API call with comprehensive error handling.\n\nArgs:\n    prompt: The user prompt (required, cannot be empty)\n    section_id: Identifier for logging and tracking\n    model: Model name override\n    system_prompt: Optional system prompt\n    reasoning_config: Reasoning configuration\n    temperature: Temperature override (0.0-1.0)\n    max_tokens: Max output tokens\n    return_full_response: Return full API response object\n    validate_response: Validate response for mock/placeholder data\n    \nReturns:\n    Tuple of (generated_text, api_calls_made, full_response)\n    \nRaises:\n    HopExecutionError: If API call fails after all retries\n    ValueError: If input validation fails",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "reasoning_config_to_api_params",
+        "str",
+        "ValueError",
+        "HopExecutionError",
+        "enhance_system_prompt_with_reasoning"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call_with_self_consistency",
+      "line_number": 281,
+      "docstring": "Execute multiple API calls for self-consistency with synthesis.\n\nArgs:\n    prompt: The user prompt\n    section_id: Identifier for logging\n    num_runs: Number of self-consistency runs\n    model: Model name override\n    system_prompt: Optional system prompt\n    reasoning_config: Reasoning configuration\n    temperature: Temperature for generation\n    max_tokens: Max output tokens\n    synthesis_prompt: Custom prompt for synthesis\n    \nReturns:\n    Tuple of (synthesized_result, total_api_calls, individual_responses)",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "range",
+        "HopExecutionError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_api_call",
+      "line_number": 367,
+      "docstring": "Execute a single API call with proper configuration.\n\nReturns:\n    Tuple of (response_object, status)",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_text",
+      "line_number": 433,
+      "docstring": "Extract clean text from API response.\n\nArgs:\n    response: API response object\n    \nReturns:\n    Cleaned text string",
+      "imports": [],
+      "dependencies": [
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthesize_responses",
+      "line_number": 461,
+      "docstring": "Synthesize multiple responses into a single coherent response.\n\nArgs:\n    responses: List of response texts\n    section_id: Identifier for logging\n    synthesis_prompt: Custom synthesis prompt\n    model: Model to use for synthesis\n    \nReturns:\n    Synthesized response text",
+      "imports": [],
+      "dependencies": [
+        "chr",
+        "enumerate",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_no_mock_data",
+      "line_number": 507,
+      "docstring": "Validate that text contains no mock/placeholder data.\n\nArgs:\n    text: Text to validate\n    context: Context for error messages\n    \nRaises:\n    ValueError: If mock data is detected",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_response_integrity",
+      "line_number": 536,
+      "docstring": "Validate response doesn't contain problematic content.\n\nArgs:\n    text: Response text to validate\n    context: Context for error messages\n    \nRaises:\n    ValueError: If response fails validation",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_metrics",
+      "line_number": 566,
+      "docstring": "Get current metrics for the service.\n\nReturns:\n    Dictionary of metrics",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "reset_metrics",
+      "line_number": 594,
+      "docstring": "Reset all metrics to zero.",
+      "imports": [],
+      "dependencies": [
+        "APICallMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call_api_with_json_response",
+      "line_number": 599,
+      "docstring": "Calls the Gemini API and ensures the response is valid JSON.\nThis is the missing method required by rag_RES_v2.py.",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "range"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_6"
+    ],
+    "logging": [
+      "line_7"
+    ],
+    "os": [
+      "line_8"
+    ],
+    "re": [
+      "line_9"
+    ],
+    "time": [
+      "line_10"
+    ],
+    "hashlib": [
+      "line_11"
+    ],
+    "from_typing": [
+      "line_12"
+    ],
+    "from_dataclasses": [
+      "line_13"
+    ],
+    "from_enum": [
+      "line_14"
+    ],
+    "from_models_RES": [
+      "line_29"
+    ],
+    "from_utils_RES_v2": [
+      "line_30"
+    ],
+    "from_config_RES_v2": [
+      "line_33"
+    ],
+    "google.generativeai": [
+      "line_18"
+    ],
+    "warnings": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "get_gemini_service": "get_gemini_service",
+    "__init__": "__init__",
+    "_validate_environment": "_validate_environment",
+    "call_api": "call_api",
+    "call_with_self_consistency": "call_with_self_consistency",
+    "_execute_api_call": "_execute_api_call",
+    "_extract_text": "_extract_text",
+    "_synthesize_responses": "_synthesize_responses",
+    "_validate_no_mock_data": "_validate_no_mock_data",
+    "_validate_response_integrity": "_validate_response_integrity",
+    "get_metrics": "get_metrics",
+    "reset_metrics": "reset_metrics",
+    "call_api_with_json_response": "call_api_with_json_response"
+  },
+  "class_signatures": {
+    "APICallStatus": "APICallStatus",
+    "APICallMetrics": "APICallMetrics",
+    "GeminiService": "GeminiService"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 46,
+    "cognitive_complexity": 33,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

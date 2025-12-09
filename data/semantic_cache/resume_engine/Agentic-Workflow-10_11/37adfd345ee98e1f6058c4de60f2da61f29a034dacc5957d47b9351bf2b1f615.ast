@@ -1,0 +1,314 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_rag_fusion_planning.py",
+    "file_hash": "37adfd345ee98e1f6058c4de60f2da61f29a034dacc5957d47b9351bf2b1f615",
+    "size_bytes": 32896,
+    "last_modified": "2025-12-01T12:27:38.249040",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RetrievalStepType",
+      "line_number": 23,
+      "docstring": "Defines types of information retrieval steps for resume processing.\n\nImproves resume completeness by ensuring all relevant experiences\nand skills are captured systematically.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QueryComplexity",
+      "line_number": 38,
+      "docstring": "Determines how complex a resume query is to process.\n\nImproves resume processing efficiency by matching analysis\ndepth to job requirement complexity.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGRetrievalStep",
+      "line_number": 52,
+      "docstring": "Defines a single document search step for resume information retrieval.\n\nImproves resume relevance by finding job-specific documents\nand experiences that match target positions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FusionPlanStep",
+      "line_number": 83,
+      "docstring": "Combines knowledge graph and document search steps for resume analysis.\n\nImproves resume comprehensiveness by integrating structured career\ndata with relevant job experiences.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "KGRAGFusionPlan",
+      "line_number": 112,
+      "docstring": "Creates comprehensive retrieval plans for resume job matching analysis.\n\nImproves resume targeting by combining career history with job-specific\nrequirements and skills for better alignment.",
+      "imports": [],
+      "dependencies": [
+        "KGQueryPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "KGRAGFusionPlanner",
+      "line_number": 144,
+      "docstring": "Plans comprehensive r\u00e9sum\u00e9 analysis using career data and job requirements.\n\nImproves r\u00e9sum\u00e9 job matching by finding relevant experiences, skills, and achievements for target positions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_temporal_entity_facts",
+      "line_number": 810,
+      "docstring": "Creates r\u00e9sum\u00e9 analysis plans for specific career experiences with timeline context.\n\nImproves r\u00e9sum\u00e9 chronology by showing career progression and experience duration for target jobs.",
+      "imports": [],
+      "dependencies": [
+        "KGRAGFusionPlanner"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_career_path_analysis",
+      "line_number": 828,
+      "docstring": "Creates comprehensive r\u00e9sum\u00e9 analysis plans for career progression and skill development tracking.\n\nImproves r\u00e9sum\u00e9 narrative by showing clear career advancement and skill growth patterns to recruiters.",
+      "imports": [],
+      "dependencies": [
+        "KGRAGFusionPlanner"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_recursive_reasoning",
+      "line_number": 849,
+      "docstring": "Creates deep r\u00e9sum\u00e9 analysis plans with multi-level reasoning for complex career questions.\n\nImproves r\u00e9sum\u00e9 depth by thoroughly analyzing career decisions and their impact on job qualifications.",
+      "imports": [],
+      "dependencies": [
+        "KGRAGFusionPlanner"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 151,
+      "docstring": "Sets up the r\u00e9sum\u00e9 analysis planner with career data processing capabilities.\n\nImproves r\u00e9sum\u00e9 processing speed by using pre-configured analysis templates for common job types.",
+      "imports": [],
+      "dependencies": [
+        "KGRetrievalPlanner"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_fusion_templates",
+      "line_number": 160,
+      "docstring": "Creates r\u00e9sum\u00e9 analysis templates for different job categories and experience levels.\n\nImproves r\u00e9sum\u00e9 relevance by using job-specific analysis patterns that highlight relevant achievements.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_fusion_query",
+      "line_number": 205,
+      "docstring": "Creates a tailored analysis plan for r\u00e9sum\u00e9 job matching and experience highlighting.\n\nImproves r\u00e9sum\u00e9 effectiveness by identifying the most relevant career achievements and skills for specific jobs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_query_complexity",
+      "line_number": 257,
+      "docstring": "Determines how complex a r\u00e9sum\u00e9 question is to analyze and process effectively.\n\nImproves r\u00e9sum\u00e9 analysis efficiency by matching processing depth to job requirement complexity.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_from_fusion_template",
+      "line_number": 305,
+      "docstring": "Creates r\u00e9sum\u00e9 analysis plans using job-specific templates for different career levels.\n\nImproves r\u00e9sum\u00e9 targeting by applying proven analysis patterns for specific job categories and roles.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "enumerate",
+        "KGRAGFusionPlan",
+        "FusionPlanStep",
+        "RAGRetrievalStep"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_simple_fusion",
+      "line_number": 401,
+      "docstring": "Creates basic r\u00e9sum\u00e9 analysis plans for straightforward job matching questions.\n\nImproves r\u00e9sum\u00e9 clarity by highlighting key experiences and skills that directly match job requirements.",
+      "imports": [],
+      "dependencies": [
+        "HopSpec",
+        "RAGRetrievalStep",
+        "KGRAGFusionPlan",
+        "FusionPlanStep"
+      ],
+      "responsibility_level": "L4",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_medium_fusion",
+      "line_number": 455,
+      "docstring": "Creates intermediate r\u00e9sum\u00e9 analysis plans for multi-step career progression questions.\n\nImproves r\u00e9sum\u00e9 comprehensiveness by connecting related experiences and showing career growth patterns.",
+      "imports": [],
+      "dependencies": [
+        "RAGRetrievalStep",
+        "KGRAGFusionPlan",
+        "FusionPlanStep"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_complex_fusion",
+      "line_number": 534,
+      "docstring": "Creates advanced r\u00e9sum\u00e9 analysis plans for complex career trajectory and skill transfer questions.\n\nImproves r\u00e9sum\u00e9 impact by demonstrating sophisticated career progression and transferable expertise.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "enumerate",
+        "KGRAGFusionPlan",
+        "FusionPlanStep",
+        "list",
+        "RAGRetrievalStep"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_recursive_fusion",
+      "line_number": 645,
+      "docstring": "Creates sophisticated r\u00e9sum\u00e9 analysis plans with deep recursive reasoning for complex career narratives.\n\nImproves r\u00e9sum\u00e9 persuasiveness by building compelling career stories that demonstrate growth and expertise.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "enumerate",
+        "KGRAGFusionPlan",
+        "FusionPlanStep",
+        "list",
+        "min",
+        "RAGRetrievalStep"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_fusion_template",
+      "line_number": 789,
+      "docstring": "Retrieves job-specific r\u00e9sum\u00e9 analysis templates for different career stages.\n\nImproves r\u00e9sum\u00e9 processing speed by using proven templates for common job categories.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "list_fusion_templates",
+      "line_number": 797,
+      "docstring": "Lists all available r\u00e9sum\u00e9 analysis templates for different job types and career levels.\n\nImproves r\u00e9sum\u00e9 targeting by showing which specialized analysis templates are available.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_datetime": [
+      "line_11"
+    ],
+    "from_enum": [
+      "line_12"
+    ],
+    "from_kg_retrieval_planning": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "plan_temporal_entity_facts": "plan_temporal_entity_facts",
+    "plan_career_path_analysis": "plan_career_path_analysis",
+    "plan_recursive_reasoning": "plan_recursive_reasoning",
+    "__init__": "__init__",
+    "_build_fusion_templates": "_build_fusion_templates",
+    "plan_fusion_query": "plan_fusion_query",
+    "_analyze_query_complexity": "_analyze_query_complexity",
+    "_plan_from_fusion_template": "_plan_from_fusion_template",
+    "_plan_simple_fusion": "_plan_simple_fusion",
+    "_plan_medium_fusion": "_plan_medium_fusion",
+    "_plan_complex_fusion": "_plan_complex_fusion",
+    "_plan_recursive_fusion": "_plan_recursive_fusion",
+    "get_fusion_template": "get_fusion_template",
+    "list_fusion_templates": "list_fusion_templates"
+  },
+  "class_signatures": {
+    "RetrievalStepType": "RetrievalStepType",
+    "QueryComplexity": "QueryComplexity",
+    "RAGRetrievalStep": "RAGRetrievalStep",
+    "FusionPlanStep": "FusionPlanStep",
+    "KGRAGFusionPlan": "KGRAGFusionPlan",
+    "KGRAGFusionPlanner": "KGRAGFusionPlanner"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 25,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

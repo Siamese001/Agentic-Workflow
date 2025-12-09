@@ -1,0 +1,587 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\helpers.py",
+    "file_hash": "30d585f0c0141b757c9b2ac315b47d60f24efc944569b741c90e2d6e5dd5d473",
+    "size_bytes": 25278,
+    "last_modified": "2025-12-01T12:27:36.410813",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "GateDecision",
+      "line_number": 36,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationSeverity",
+      "line_number": 40,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopStatus",
+      "line_number": 48,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletProvenance",
+      "line_number": 55,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitState",
+      "line_number": 60,
+      "docstring": "Circuit breaker states for resilient RAG operations",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeSection",
+      "line_number": 66,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ReasoningConfig",
+      "line_number": 95,
+      "docstring": "Configuration for Chain-of-Thought, Tree-of-Thought, and Self-Consistency reasoning.\nPRESERVED FROM v15.55 - All parameters and section configs intact.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ContentConstraintsConfig",
+      "line_number": 162,
+      "docstring": "All word count boundaries and content constraints.\nPRESERVED FROM v15.55 - All 32+ constraints intact.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalControlConfig",
+      "line_number": 215,
+      "docstring": "Signal scoring parameters for content generation.\nPRESERVED FROM v15.55.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptAddendumConfig",
+      "line_number": 226,
+      "docstring": "Reasoning directives for system prompts.\nPRESERVED FROM v15.55 - All directive templates intact.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationResult",
+      "line_number": 265,
+      "docstring": "Standardized validation result object.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopCheckpoint",
+      "line_number": 288,
+      "docstring": "A cryptographically verifiable record of a hop's execution.\nThis is the core of the Chain of Custody.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGCritique",
+      "line_number": 309,
+      "docstring": "Output of the LLM-powered critique step.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGMission",
+      "line_number": 317,
+      "docstring": "Mission parameters for the RAG agent.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThematicAnalysis",
+      "line_number": 327,
+      "docstring": "The canonical output of the RAG analysis.\nPRESERVED FROM v15.55 with enhancements from v1.2.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Artifact",
+      "line_number": 357,
+      "docstring": "Represents the state of a data artifact (a file) in the run directory.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopInput",
+      "line_number": 366,
+      "docstring": "Defines a single input dependency for a hop.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopOutput",
+      "line_number": 372,
+      "docstring": "Defines a single output artifact for a hop.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RetryPolicy",
+      "line_number": 378,
+      "docstring": "Defines the retry strategy for a hop.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopSpec",
+      "line_number": 385,
+      "docstring": "Defines a single, executable hop in the workflow DAG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowSpec",
+      "line_number": 396,
+      "docstring": "Defines the entire workflow.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopExecutionError",
+      "line_number": 410,
+      "docstring": "Raised when a hop script fails (non-zero exit code).",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StagingBufferError",
+      "line_number": 414,
+      "docstring": "Raised on issues with the ImmutableStagingBuffer.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowSpecError",
+      "line_number": 418,
+      "docstring": "Raised on issues with loading or parsing the workflow spec.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_normalized_reasoning_params",
+      "line_number": 424,
+      "docstring": "Normalizes and clamps reasoning parameters to safe ranges.\nPRESERVED FROM v15.55 lines 372-390.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_allocate_tokens_from_depth",
+      "line_number": 447,
+      "docstring": "Allocates max_tokens based on reasoning depth and complexity.\nPRESERVED FROM v15.55 lines 392-415.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_reasoning_prompt_addendum",
+      "line_number": 472,
+      "docstring": "Builds reasoning directives to append to system prompts.\nPRESERVED FROM v15.55 lines 417-436.",
+      "imports": [],
+      "dependencies": [
+        "find_directive"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "reasoning_config_to_api_params",
+      "line_number": 495,
+      "docstring": "Converts reasoning config to API parameters with generation config.\nPRESERVED FROM v15.55 lines 334-370.\n\nArgs:\n    reasoning_config: ReasoningConfig instance\n    rag_config_max_tokens: Maximum tokens from RAG config (default 30000)\n\nReturns:\n    Dictionary with generation_config and system_prompt_addendum",
+      "imports": [],
+      "dependencies": [
+        "_allocate_tokens_from_depth",
+        "_get_normalized_reasoning_params",
+        "_build_reasoning_prompt_addendum",
+        "min"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "enhance_system_prompt_with_reasoning",
+      "line_number": 531,
+      "docstring": "Enhance a system prompt with reasoning configuration directives.\nPRESERVED FROM v15.55 lines 438-456.\n\nArgs:\n    base_system_prompt: Original system prompt\n    reasoning_config: ReasoningConfig instance\n    section_id: For logging\n\nReturns:\n    Enhanced system prompt with reasoning directives appended",
+      "imports": [],
+      "dependencies": [
+        "reasoning_config_to_api_params"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal_score",
+      "line_number": 554,
+      "docstring": "Calculate signal score based on keyword matches between content and thematic analysis.\nPRESERVED FROM v15.55 lines 4593-4631.\n\nArgs:\n    text_content: Text to score (str, list, or dict)\n    thematic_analysis: ThematicAnalysis with competitive intelligence\n\nReturns:\n    Float score between 0.0 and 1.0",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "set",
+        "str",
+        "isinstance",
+        "len",
+        "min",
+        "hasattr"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowLogFilter",
+      "line_number": 607,
+      "docstring": "Custom logging filter that injects workflow_id into every log record.\nEnables tracking of logs across distributed systems and concurrent workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_workflow_logging",
+      "line_number": 620,
+      "docstring": "Sets up enhanced logging with timestamped log files and workflow_id tracking.\nPRESERVED FROM v15.55 lines 85-128.\n\nArgs:\n    workflow_id: Optional workflow ID. If None, generates a new UUID.\n    test_mode: If True, skips file handler creation (for testing)\n\nReturns:\n    Tuple of (configured logger instance, log file path)",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "WorkflowLogFilter"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "serialize_dataclass",
+      "line_number": 668,
+      "docstring": "Serialize a dataclass to dict, handling nested dataclasses.",
+      "imports": [],
+      "dependencies": [
+        "asdict",
+        "is_dataclass"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hash_dict",
+      "line_number": 674,
+      "docstring": "Generate SHA-256 hash of a dictionary.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_json_file",
+      "line_number": 679,
+      "docstring": "Load JSON file with error handling.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "save_json_file",
+      "line_number": 691,
+      "docstring": "Save dictionary to JSON file with pretty printing.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "from_dict",
+      "line_number": 274,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "cls"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "from_dict",
+      "line_number": 346,
+      "docstring": "Reconstructs ThematicAnalysis from a dictionary.",
+      "imports": [],
+      "dependencies": [
+        "cls",
+        "setattr",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_hop_by_id",
+      "line_number": 402,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "find_directive",
+      "line_number": 479,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 612,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "filter",
+      "line_number": 616,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_15"
+    ],
+    "copy": [
+      "line_17"
+    ],
+    "hashlib": [
+      "line_18"
+    ],
+    "json": [
+      "line_19"
+    ],
+    "logging": [
+      "line_20"
+    ],
+    "os": [
+      "line_21"
+    ],
+    "re": [
+      "line_22"
+    ],
+    "sys": [
+      "line_23"
+    ],
+    "uuid": [
+      "line_24"
+    ],
+    "from_dataclasses": [
+      "line_25"
+    ],
+    "from_datetime": [
+      "line_26"
+    ],
+    "from_enum": [
+      "line_27"
+    ],
+    "from_pathlib": [
+      "line_28"
+    ],
+    "from_typing": [
+      "line_29"
+    ]
+  },
+  "function_signatures": {
+    "_get_normalized_reasoning_params": "_get_normalized_reasoning_params",
+    "_allocate_tokens_from_depth": "_allocate_tokens_from_depth",
+    "_build_reasoning_prompt_addendum": "_build_reasoning_prompt_addendum",
+    "reasoning_config_to_api_params": "reasoning_config_to_api_params",
+    "enhance_system_prompt_with_reasoning": "enhance_system_prompt_with_reasoning",
+    "calculate_signal_score": "calculate_signal_score",
+    "setup_workflow_logging": "setup_workflow_logging",
+    "serialize_dataclass": "serialize_dataclass",
+    "hash_dict": "hash_dict",
+    "load_json_file": "load_json_file",
+    "save_json_file": "save_json_file",
+    "from_dict": "from_dict",
+    "get_hop_by_id": "get_hop_by_id",
+    "find_directive": "find_directive",
+    "__init__": "__init__",
+    "filter": "filter"
+  },
+  "class_signatures": {
+    "GateDecision": "GateDecision",
+    "ValidationSeverity": "ValidationSeverity",
+    "HopStatus": "HopStatus",
+    "BulletProvenance": "BulletProvenance",
+    "CircuitState": "CircuitState",
+    "ResumeSection": "ResumeSection",
+    "ReasoningConfig": "ReasoningConfig",
+    "ContentConstraintsConfig": "ContentConstraintsConfig",
+    "SignalControlConfig": "SignalControlConfig",
+    "PromptAddendumConfig": "PromptAddendumConfig",
+    "ValidationResult": "ValidationResult",
+    "HopCheckpoint": "HopCheckpoint",
+    "RAGCritique": "RAGCritique",
+    "RAGMission": "RAGMission",
+    "ThematicAnalysis": "ThematicAnalysis",
+    "Artifact": "Artifact",
+    "HopInput": "HopInput",
+    "HopOutput": "HopOutput",
+    "RetryPolicy": "RetryPolicy",
+    "HopSpec": "HopSpec",
+    "WorkflowSpec": "WorkflowSpec",
+    "HopExecutionError": "HopExecutionError",
+    "StagingBufferError": "StagingBufferError",
+    "WorkflowSpecError": "WorkflowSpecError",
+    "WorkflowLogFilter": "WorkflowLogFilter"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 25,
+    "cognitive_complexity": 16,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\agentic_spans.py",
+    "file_hash": "59a845181c098d272fb3c9402906bd0a2fd4adcbd9aa376738d08c8ee28ae369",
+    "size_bytes": 755,
+    "last_modified": "2025-12-01T12:27:37.758402",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "start_agent_span",
+      "line_number": 8,
+      "docstring": "Start an agent-level span and return its span identifier.\n\nThis is a thin convenience wrapper over the core spans module so that\nhigher layers have a semantic home for agent-centric tracing.",
+      "imports": [],
+      "dependencies": [
+        "start_span",
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "end_agent_span",
+      "line_number": 20,
+      "docstring": "End a previously-started agent span.\n\nThe span identifier is passed straight through to the spans module.",
+      "imports": [],
+      "dependencies": [
+        "end_span"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_runtime.observability.spans": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "start_agent_span": "start_agent_span",
+    "end_agent_span": "end_agent_span"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

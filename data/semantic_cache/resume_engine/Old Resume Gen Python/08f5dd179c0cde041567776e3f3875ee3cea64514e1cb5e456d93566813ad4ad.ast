@@ -1,0 +1,185 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_41_MULTI_LLM.py",
+    "file_hash": "08f5dd179c0cde041567776e3f3875ee3cea64514e1cb5e456d93566813ad4ad",
+    "size_bytes": 16384,
+    "last_modified": "2025-12-01T12:27:35.711017",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "JDEnforcementRule",
+      "line_number": 77,
+      "docstring": "Enforcement rules ensuring JD is always used.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDEnforcementResult",
+      "line_number": 85,
+      "docstring": "Result of a JD enforcement check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiLLMProvider",
+      "line_number": 98,
+      "docstring": "Multi-LLM provider supporting both Claude and Gemini APIs.\n\nFeatures:\n- Unified interface for multiple LLM providers\n- Automatic provider selection based on configuration\n- Retry logic and error handling for both APIs\n- Environment variable management for API keys",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_multi_llm",
+      "line_number": 373,
+      "docstring": "Test function to verify both APIs work.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "MultiLLMProvider"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 109,
+      "docstring": "Initialize Multi-LLM Provider.\n\nArgs:\n    provider: \"claude\" or \"gemini\". If None, uses global LLM_PROVIDER",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_call_claude_api",
+      "line_number": 125,
+      "docstring": "Call Claude API using Anthropic Messages API.\n\nArgs:\n    prompt: User prompt\n    system_prompt: System prompt\n    temperature: Sampling temperature (0.0-1.0)\n    max_tokens: Maximum tokens to generate\n\nReturns:\n    Generated text from Claude\n\nRaises:\n    Exception: If API call fails or API key not set",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_call_gemini_api",
+      "line_number": 176,
+      "docstring": "Call Gemini API using Google GenerativeLanguage API.\n\nArgs:\n    prompt: User prompt\n    system_prompt: System instruction\n    temperature: Sampling temperature (0.0-2.0 for Gemini)\n    max_tokens: Maximum tokens to generate\n\nReturns:\n    Generated text from Gemini\n\nRaises:\n    Exception: If API call fails or API key not set",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_make_request_with_retry",
+      "line_number": 240,
+      "docstring": "Make HTTP request with exponential backoff retry logic.\n\nArgs:\n    url: API endpoint URL\n    headers: Request headers\n    payload: Request payload\n    provider_type: \"claude\" or \"gemini\" for response parsing\n\nReturns:\n    Generated text from API\n\nRaises:\n    Exception: If all retry attempts fail",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "str",
+        "Exception",
+        "len",
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call_llm",
+      "line_number": 336,
+      "docstring": "Unified method to call configured LLM provider.\n\nThis is the main method you should use in your code.\nIt automatically routes to the correct API based on configuration.\n\nArgs:\n    prompt: User prompt\n    system_prompt: System prompt/instruction\n    temperature: Sampling temperature\n    max_tokens: Maximum tokens to generate\n\nReturns:\n    Generated text from configured LLM\n\nRaises:\n    Exception: If API call fails",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_22"
+    ],
+    "re": [
+      "line_23"
+    ],
+    "hashlib": [
+      "line_24"
+    ],
+    "math": [
+      "line_25"
+    ],
+    "os": [
+      "line_26"
+    ],
+    "time": [
+      "line_27"
+    ],
+    "requests": [
+      "line_28"
+    ],
+    "from_typing": [
+      "line_29"
+    ],
+    "from_enum": [
+      "line_30"
+    ],
+    "from_datetime": [
+      "line_31"
+    ],
+    "from_dataclasses": [
+      "line_32"
+    ],
+    "from_pathlib": [
+      "line_33"
+    ],
+    "copy": [
+      "line_34"
+    ],
+    "logging": [
+      "line_35"
+    ]
+  },
+  "function_signatures": {
+    "test_multi_llm": "test_multi_llm",
+    "__init__": "__init__",
+    "_call_claude_api": "_call_claude_api",
+    "_call_gemini_api": "_call_gemini_api",
+    "_make_request_with_retry": "_make_request_with_retry",
+    "call_llm": "call_llm"
+  },
+  "class_signatures": {
+    "JDEnforcementRule": "JDEnforcementRule",
+    "JDEnforcementResult": "JDEnforcementResult",
+    "MultiLLMProvider": "MultiLLMProvider"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 22,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

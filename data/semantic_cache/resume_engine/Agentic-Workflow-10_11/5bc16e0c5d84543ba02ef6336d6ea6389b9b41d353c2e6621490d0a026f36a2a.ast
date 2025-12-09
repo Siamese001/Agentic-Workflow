@@ -1,0 +1,91 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\many_shot_examples.py",
+    "file_hash": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a",
+    "size_bytes": 16518,
+    "last_modified": "2025-12-01T12:27:38.249040",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ExampleType",
+      "line_number": 15,
+      "docstring": "Type of example for resume generation workflow.\n\nDefines example categories for improved resume quality guidance.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Example",
+      "line_number": 40,
+      "docstring": "A single input-output example.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_examples",
+      "line_number": 388,
+      "docstring": "Retrieve examples by type with quality filtering.\n\nArgs:\n    example_type: Type of examples to retrieve\n    max_examples: Maximum number of examples to return\n    min_quality: Minimum quality score threshold\n    \nReturns:\n    List of examples sorted by quality score (descending)",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_examples_for_prompt",
+      "line_number": 415,
+      "docstring": "Format examples for inclusion in a prompt.\n\nArgs:\n    examples: List of examples to format\n    \nReturns:\n    Formatted string with examples",
+      "imports": [],
+      "dependencies": [
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_enum": [
+      "line_12"
+    ],
+    "json": [
+      "line_434"
+    ]
+  },
+  "function_signatures": {
+    "get_examples": "get_examples",
+    "format_examples_for_prompt": "format_examples_for_prompt"
+  },
+  "class_signatures": {
+    "ExampleType": "ExampleType",
+    "Example": "Example"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

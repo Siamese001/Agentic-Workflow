@@ -1,0 +1,825 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.4.py",
+    "file_hash": "0694d3e8ab8e25189df3dde642befb48858995d1157599fddf8e28da3bbad226",
+    "size_bytes": 55196,
+    "last_modified": "2025-12-01T12:27:35.900881",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "load_master_resume",
+      "line_number": 33,
+      "docstring": "Load Amit Ayer's master resume from uploaded JSON.",
+      "imports": [],
+      "dependencies": [
+        "open",
+        "print",
+        "_get_mock_master_resume"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_mock_master_resume",
+      "line_number": 45,
+      "docstring": "Return mock master resume for demonstration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RetrievalSource",
+      "line_number": 108,
+      "docstring": "Tracks source of retrieved information for RAG transparency.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PeerJD",
+      "line_number": 116,
+      "docstring": "Peer job description for competitive analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CompetitiveIntelligence",
+      "line_number": 126,
+      "docstring": "K.0 competitive intelligence from peer JDs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThematicAnalysis",
+      "line_number": 146,
+      "docstring": "K.0 Thematic Analysis with RAG support.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PerSectionTolerance",
+      "line_number": 163,
+      "docstring": "Per-section tolerance configuration with elasticity curves.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalElasticityModel",
+      "line_number": 181,
+      "docstring": "Non-linear elasticity model for signal calculation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionCoherenceScorer",
+      "line_number": 207,
+      "docstring": "Coherence validation using coefficient of variation (CV).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JobDescriptionAnalyzer",
+      "line_number": 241,
+      "docstring": "Analyze job descriptions with RAG support.\nImplements K.0 thematic analysis + peer JD retrieval.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "KeywordExtractor",
+      "line_number": 620,
+      "docstring": "Extract and rank keywords with RAG-enhanced competitive intelligence.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletSelector",
+      "line_number": 685,
+      "docstring": "Select bullets from master resume with RAG-enhanced scoring.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerator",
+      "line_number": 771,
+      "docstring": "Main resume generator with full Job_Workflow v1.9.2 RAG integration.\nImplements K.0, HOP-2 data enrichment, and 4-output generation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 1242,
+      "docstring": "Main execution function.",
+      "imports": [],
+      "dependencies": [
+        "open",
+        "print",
+        "ResumeGenerator"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_top_differentiators",
+      "line_number": 136,
+      "docstring": "Return top N differentiator keywords.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_word_range",
+      "line_number": 171,
+      "docstring": "Get allowed word count range.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_signal_range",
+      "line_number": 176,
+      "docstring": "Get signal floor and ceiling.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 184,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_elasticity_multiplier",
+      "line_number": 191,
+      "docstring": "Calculate elasticity multiplier using non-linear curve.",
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal",
+      "line_number": 200,
+      "docstring": "Calculate final signal for a section based on word count.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_cv",
+      "line_number": 211,
+      "docstring": "Calculate coefficient of variation.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_coherence",
+      "line_number": 225,
+      "docstring": "Evaluate coherence based on CV threshold.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 247,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze_with_rag",
+      "line_number": 251,
+      "docstring": "Full RAG analysis matching Job_Workflow v1.9.2 K.0 spec.\n\nArgs:\n    job_desc: Job description text\n    company_name: Target company name for tier matching\n    retrieve_peer_jds: Whether to retrieve peer JDs (default True)\n\nReturns:\n    ThematicAnalysis with full RAG metadata",
+      "imports": [],
+      "dependencies": [
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_primary_theme",
+      "line_number": 314,
+      "docstring": "Extract primary theme with confidence scoring.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_secondary_themes",
+      "line_number": 334,
+      "docstring": "Extract secondary themes.",
+      "imports": [],
+      "dependencies": [
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_classify_role",
+      "line_number": 357,
+      "docstring": "Classify role type with language weight analysis.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_retrieve_competitive_intelligence",
+      "line_number": 401,
+      "docstring": "Retrieve peer JDs and extract competitive intelligence.\nMatches Job_Workflow v1.9.2 HOP-2 data enrichment spec.",
+      "imports": [],
+      "dependencies": [
+        "CompetitiveIntelligence",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_identify_peer_jds",
+      "line_number": 436,
+      "docstring": "Identify peer job descriptions by company tier.\nIn production, would query external JD database.\nFor now, returns mock peer JDs.",
+      "imports": [],
+      "dependencies": [
+        "PeerJD"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_peer_keywords",
+      "line_number": 465,
+      "docstring": "Extract keywords from peer JD (mock implementation).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_differentiator_keywords",
+      "line_number": 473,
+      "docstring": "Extract keywords that differentiate from peer JDs.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_weight_keywords",
+      "line_number": 489,
+      "docstring": "Weight keywords by frequency and table stakes likelihood.",
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_identify_table_stakes",
+      "line_number": 511,
+      "docstring": "Identify table stakes keywords (high frequency, low differentiation).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_fallback_intelligence",
+      "line_number": 518,
+      "docstring": "Fallback intelligence when peer JD retrieval disabled.",
+      "imports": [],
+      "dependencies": [
+        "CompetitiveIntelligence"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_signal_quality",
+      "line_number": 530,
+      "docstring": "Calculate signal quality score (0.0-1.0).\nMust be >= 0.45 to proceed per Job_Workflow v1.9.2.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_authenticity_patterns",
+      "line_number": 548,
+      "docstring": "Build authenticity patterns from master resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_positioning_directives",
+      "line_number": 568,
+      "docstring": "Generate positioning directives for resume generation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_determine_retrieval_method",
+      "line_number": 584,
+      "docstring": "Determine retrieval method based on data quality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_retrieval_sources",
+      "line_number": 593,
+      "docstring": "Build retrieval source metadata for transparency.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 623,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_with_rag",
+      "line_number": 629,
+      "docstring": "Extract keywords with RAG competitive intelligence boost.\n\nArgs:\n    job_desc: Job description text\n    competitive_intel: Optional competitive intelligence from K.0\n\nReturns:\n    Ranked list of keywords",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_base_keywords",
+      "line_number": 653,
+      "docstring": "Extract base keywords using TF-IDF-like approach.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_boost_with_competitive_intel",
+      "line_number": 668,
+      "docstring": "Boost keywords using competitive intelligence differentiators.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 688,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "select_bullets_with_rag",
+      "line_number": 691,
+      "docstring": "Select top bullets using composite scoring:\n- 40% JD keyword match\n- 35% competitive intelligence boost (K2)\n- 25% master resume authenticity\n\nMatches Job_Workflow v1.9.2 K.11 ranking algorithm.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_jd_match",
+      "line_number": 737,
+      "docstring": "Calculate JD keyword match score.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_k2_boost",
+      "line_number": 742,
+      "docstring": "Calculate K2 competitive intelligence boost.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_authenticity",
+      "line_number": 749,
+      "docstring": "Calculate master resume authenticity score.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 777,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "KeywordExtractor",
+        "JobDescriptionAnalyzer",
+        "PerSectionTolerance",
+        "BulletSelector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_resume",
+      "line_number": 790,
+      "docstring": "Generate complete resume with RAG orchestration.\n\nReturns dict with:\n- resume_text: Final resume\n- cover_letter_text: Cover letter\n- qa_report: QA validation report\n- coc_ledger: Chain of custody ledger\n- thematic_analysis: K.0 RAG metadata",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "print",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_executive_summary",
+      "line_number": 905,
+      "docstring": "Generate K.1 executive summary with industry-first positioning.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_headline",
+      "line_number": 932,
+      "docstring": "Generate K.4 LinkedIn headline (60-90 chars).",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_company_bullets",
+      "line_number": 948,
+      "docstring": "Select bullets for company with RAG scoring.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_company_overview",
+      "line_number": 966,
+      "docstring": "Generate company overview paragraph.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_career_highlights",
+      "line_number": 974,
+      "docstring": "Generate K.7 career highlights.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_competencies",
+      "line_number": 984,
+      "docstring": "Generate K.8 strategic competencies (24-30 words each).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_skills_with_k2",
+      "line_number": 1000,
+      "docstring": "Generate K.11 skills with K2 competitive intelligence boost.\nUses composite ranking: 40% JD + 35% K2 + 25% authenticity.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_education",
+      "line_number": 1024,
+      "docstring": "Extract K.10A education from master resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_certifications",
+      "line_number": 1033,
+      "docstring": "Extract K.10B certifications from master resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_resume_text",
+      "line_number": 1037,
+      "docstring": "Build final resume text.",
+      "imports": [],
+      "dependencies": [
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_cover_letter",
+      "line_number": 1112,
+      "docstring": "Generate K.9 cover letter.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_qa_report",
+      "line_number": 1141,
+      "docstring": "Generate comprehensive QA validation report.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_coc_ledger",
+      "line_number": 1211,
+      "docstring": "Generate HOP-8 Chain of Custody ledger.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_18"
+    ],
+    "re": [
+      "line_19"
+    ],
+    "from_typing": [
+      "line_20"
+    ],
+    "from_enum": [
+      "line_21"
+    ],
+    "from_datetime": [
+      "line_22"
+    ],
+    "from_dataclasses": [
+      "line_23"
+    ],
+    "math": [
+      "line_24"
+    ],
+    "hashlib": [
+      "line_25"
+    ]
+  },
+  "function_signatures": {
+    "load_master_resume": "load_master_resume",
+    "_get_mock_master_resume": "_get_mock_master_resume",
+    "main": "main",
+    "get_top_differentiators": "get_top_differentiators",
+    "get_word_range": "get_word_range",
+    "get_signal_range": "get_signal_range",
+    "__init__": "__init__",
+    "calculate_elasticity_multiplier": "calculate_elasticity_multiplier",
+    "calculate_signal": "calculate_signal",
+    "calculate_cv": "calculate_cv",
+    "evaluate_coherence": "evaluate_coherence",
+    "analyze_with_rag": "analyze_with_rag",
+    "_extract_primary_theme": "_extract_primary_theme",
+    "_extract_secondary_themes": "_extract_secondary_themes",
+    "_classify_role": "_classify_role",
+    "_retrieve_competitive_intelligence": "_retrieve_competitive_intelligence",
+    "_identify_peer_jds": "_identify_peer_jds",
+    "_extract_peer_keywords": "_extract_peer_keywords",
+    "_extract_differentiator_keywords": "_extract_differentiator_keywords",
+    "_weight_keywords": "_weight_keywords",
+    "_identify_table_stakes": "_identify_table_stakes",
+    "_get_fallback_intelligence": "_get_fallback_intelligence",
+    "_calculate_signal_quality": "_calculate_signal_quality",
+    "_build_authenticity_patterns": "_build_authenticity_patterns",
+    "_generate_positioning_directives": "_generate_positioning_directives",
+    "_determine_retrieval_method": "_determine_retrieval_method",
+    "_build_retrieval_sources": "_build_retrieval_sources",
+    "extract_with_rag": "extract_with_rag",
+    "_extract_base_keywords": "_extract_base_keywords",
+    "_boost_with_competitive_intel": "_boost_with_competitive_intel",
+    "select_bullets_with_rag": "select_bullets_with_rag",
+    "_calculate_jd_match": "_calculate_jd_match",
+    "_calculate_k2_boost": "_calculate_k2_boost",
+    "_calculate_authenticity": "_calculate_authenticity",
+    "generate_resume": "generate_resume",
+    "_generate_executive_summary": "_generate_executive_summary",
+    "_generate_headline": "_generate_headline",
+    "_select_company_bullets": "_select_company_bullets",
+    "_generate_company_overview": "_generate_company_overview",
+    "_generate_career_highlights": "_generate_career_highlights",
+    "_generate_competencies": "_generate_competencies",
+    "_generate_skills_with_k2": "_generate_skills_with_k2",
+    "_extract_education": "_extract_education",
+    "_extract_certifications": "_extract_certifications",
+    "_build_resume_text": "_build_resume_text",
+    "_generate_cover_letter": "_generate_cover_letter",
+    "_generate_qa_report": "_generate_qa_report",
+    "_generate_coc_ledger": "_generate_coc_ledger"
+  },
+  "class_signatures": {
+    "RetrievalSource": "RetrievalSource",
+    "PeerJD": "PeerJD",
+    "CompetitiveIntelligence": "CompetitiveIntelligence",
+    "ThematicAnalysis": "ThematicAnalysis",
+    "PerSectionTolerance": "PerSectionTolerance",
+    "SignalElasticityModel": "SignalElasticityModel",
+    "SectionCoherenceScorer": "SectionCoherenceScorer",
+    "JobDescriptionAnalyzer": "JobDescriptionAnalyzer",
+    "KeywordExtractor": "KeywordExtractor",
+    "BulletSelector": "BulletSelector",
+    "ResumeGenerator": "ResumeGenerator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 51,
+    "cognitive_complexity": 27,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

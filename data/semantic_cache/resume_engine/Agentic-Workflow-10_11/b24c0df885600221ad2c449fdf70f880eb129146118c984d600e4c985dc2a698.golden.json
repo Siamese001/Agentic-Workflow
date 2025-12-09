@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from orchestration.model_routing import RoutingContext, choose_provider_and_model\ndef test_policy_selection_honors_requested_model():\nctx = RoutingContext(agent_id=\"agent\", task_type=\"llm_call\", execution_profile=None)\nchoice = choose_provider_and_model(ctx, requested_model=\"claude-3-haiku\")\nassert choice.model_name == \"claude-3-haiku\"\nassert choice.provider == \"anthropic\"\ndef test_policy_selection_defaults_when_no_model():\nctx = RoutingContext(agent_id=\"agent\", task_type=\"llm_call\", execution_profile=None)\nchoice = choose_provider_and_model(ctx, requested_model=None)\nassert choice.model_name\nassert choice.provider in {\"openai\", \"anthropic\", \"google\"}",
+  "normalized_signature": "func:test_policy_selection_honors_requested_model;func:test_policy_selection_defaults_when_no_model",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_policy_selection_honors_requested_model,test_policy_selection_defaults_when_no_model",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

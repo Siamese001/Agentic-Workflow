@@ -1,0 +1,206 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\self_correction.py",
+    "file_hash": "3e148cefb46680bac828bd8007cbcad7968f48ef1116bc4066ec7827b19b313b",
+    "size_bytes": 10256,
+    "last_modified": "2025-12-01T12:27:36.872761",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CorrectionSignal",
+      "line_number": 52,
+      "docstring": "Low-level signal that a correction may be needed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CorrectionRecommendation",
+      "line_number": 70,
+      "docstring": "Normalized recommendation for downstream layers.\n\nFields:\n    \u2022 needed:   whether a correction should be triggered\n    \u2022 surface:  one of SELF_CORRECTION_SURFACES\n    \u2022 rationale: human-readable explanation\n    \u2022 metadata: structured supporting info",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_rag_errors",
+      "line_number": 99,
+      "docstring": "Detect whether retrieval was insufficient.",
+      "imports": [],
+      "dependencies": [
+        "CorrectionSignal",
+        "isinstance",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_qa_errors",
+      "line_number": 129,
+      "docstring": "Detect failed QA checks.",
+      "imports": [],
+      "dependencies": [
+        "CorrectionSignal"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_strategy_errors",
+      "line_number": 147,
+      "docstring": "Detect that L1 strategy recommended revision.\n\nNOTE:\n    In the refactored system, L2 StrategyExecutor emits:\n         payload.aggregated_decision\n         payload.aggregated_confidence\n         payload.aggregated_rationale\n    (Wrapped under state[\"strategy_result\"][\"payload\"])",
+      "imports": [],
+      "dependencies": [
+        "CorrectionSignal",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_safety_halt",
+      "line_number": 174,
+      "docstring": "Detect safety failures requiring human escalation.\n\nNew v10_9 safety format:\n    state[\"safety_result\"] = SafetyExecutionPayload.to_dict()\n    \u2192 {\"report\": {\"issues\": [SafetyIssue dicts], ...}}",
+      "imports": [],
+      "dependencies": [
+        "CorrectionSignal",
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_checkpoint_recovery",
+      "line_number": 207,
+      "docstring": "Detect if the last checkpoint indicates workflow failure.",
+      "imports": [],
+      "dependencies": [
+        "CorrectionSignal",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze_state_for_correction",
+      "line_number": 231,
+      "docstring": "Priority-ordered correction analysis:\n\n    1. Safety \u2192 HIL escalation\n    2. QA recheck\n    3. RAG retry\n    4. Strategy replan\n    5. Checkpoint recovery\n\nIf no issues \u2192 needed=False",
+      "imports": [],
+      "dependencies": [
+        "detect",
+        "CorrectionRecommendation"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze_all_surfaces",
+      "line_number": 269,
+      "docstring": "Return ALL applicable correction signals, sorted by enterprise priority.\n\nUseful for:\n    \u2022 Meta-learning\n    \u2022 Telemetry\n    \u2022 Debugging\n    \u2022 State inspection",
+      "imports": [],
+      "dependencies": [
+        "detect"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_patch_dict",
+      "line_number": 300,
+      "docstring": "Convert CorrectionRecommendation to a dict suitable for\nstate insertion under key \"self_correction\" by L4.StateAdapter.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_metadata_block",
+      "line_number": 308,
+      "docstring": "Convert CorrectionRecommendation into simplified metadata for\ntelemetry/meta-learning.",
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 61,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 86,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_26"
+    ],
+    "from_dataclasses": [
+      "line_28"
+    ],
+    "from_typing": [
+      "line_29"
+    ],
+    "from_models": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "_detect_rag_errors": "_detect_rag_errors",
+    "_detect_qa_errors": "_detect_qa_errors",
+    "_detect_strategy_errors": "_detect_strategy_errors",
+    "_detect_safety_halt": "_detect_safety_halt",
+    "_detect_checkpoint_recovery": "_detect_checkpoint_recovery",
+    "analyze_state_for_correction": "analyze_state_for_correction",
+    "analyze_all_surfaces": "analyze_all_surfaces",
+    "to_patch_dict": "to_patch_dict",
+    "to_metadata_block": "to_metadata_block",
+    "to_dict": "to_dict"
+  },
+  "class_signatures": {
+    "CorrectionSignal": "CorrectionSignal",
+    "CorrectionRecommendation": "CorrectionRecommendation"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 15,
+    "cognitive_complexity": 11,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

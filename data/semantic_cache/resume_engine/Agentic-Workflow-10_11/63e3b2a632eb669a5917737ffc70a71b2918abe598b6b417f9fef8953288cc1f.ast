@@ -1,0 +1,21 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\__init__.py",
+    "file_hash": "63e3b2a632eb669a5917737ffc70a71b2918abe598b6b417f9fef8953288cc1f",
+    "size_bytes": 59,
+    "last_modified": "2025-12-01T12:27:38.872991",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

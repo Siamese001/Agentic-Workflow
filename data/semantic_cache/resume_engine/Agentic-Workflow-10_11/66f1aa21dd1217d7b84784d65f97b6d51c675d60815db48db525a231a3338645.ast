@@ -1,0 +1,50 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_evaluator.py",
+    "file_hash": "66f1aa21dd1217d7b84784d65f97b6d51c675d60815db48db525a231a3338645",
+    "size_bytes": 736,
+    "last_modified": "2025-12-01T12:27:40.301596",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_evaluate_case_output_basic",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "list",
+        "load_golden_cases",
+        "GoldenOutput",
+        "evaluate_case_output"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_eval.golden_state.datasets": [
+      "line_1"
+    ],
+    "from_eval.golden_state.evaluator": [
+      "line_2"
+    ],
+    "from_eval.golden_state.models": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "test_evaluate_case_output_basic": "test_evaluate_case_output_basic"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

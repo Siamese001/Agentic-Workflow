@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nL3 safety orchestrator for resume job alignment workflows.\nCoordinates safety planning and execution for resume enhancement.\n\"\"\"\nfrom typing import Any\nfrom l1.safety_planning import plan_safety\nfrom l2.safety_executor import SafetyExecutor\nfrom runtime.observability import record_event\nclass SafetyOrchestrator:\n\"\"\"Pure orchestration for resume safety job alignment workflows.\"\"\"\ndef __init__(self, safety_executor: SafetyExecutor):\nself.safety_executor = safety_executor\ndef orchestrate_safety(self, draft: Any, job: Any, resume: Any) -> str:\n\"\"\"Orchestrates resume safety workflow for job alignment processing.\"\"\"\nrecord_event(\"safety_orchestration_start\", {})\nsafety_plan = plan_safety(draft, job, resume)\nresult = self.safety_executor.execute_safety(\nf\"Execute safety for rules: {safety_plan.policy_rules}\"\n)\nrecord_event(\"safety_orchestration_complete\", {})\nreturn result",
+  "normalized_signature": "func:__init__;func:orchestrate_safety;class:SafetyOrchestrator",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:orchestrate_safety",
+  "test_coverage": []
+}

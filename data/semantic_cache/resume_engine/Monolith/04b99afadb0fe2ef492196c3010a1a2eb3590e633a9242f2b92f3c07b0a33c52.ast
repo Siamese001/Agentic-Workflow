@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Monolith\\DEPRECATION_APPROVAL.md",
+    "file_hash": "04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52",
+    "size_bytes": 5359,
+    "last_modified": "2025-12-01T12:27:36.090619",
+    "engine": "RG",
+    "archive_version": "Monolith",
+    "file_extension": ".md"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\cms\\schemas.py",
+    "file_hash": "ad750ea4c5f317ec37e8dedf9806cf1731fdf04f82612460df18cb87be1339cc",
+    "size_bytes": 2086,
+    "last_modified": "2025-12-01T12:27:38.336649",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PromptType",
+      "line_number": 13,
+      "docstring": "Types of prompts supported by the CMS for resume generation.\n\nDefines prompt categories for consistent resume improvement workflows.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptSchema",
+      "line_number": 26,
+      "docstring": "Schema definition for resume generation prompt validation.\n\nEnsures consistent prompt structure for improved resume quality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationResult",
+      "line_number": 40,
+      "docstring": "Result of resume generation prompt validation.\n\nTracks validation outcomes for consistent resume improvement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_prompt",
+      "line_number": 57,
+      "docstring": "Validates resume generation prompt against schema.\n\nEnsures prompt structure supports consistent resume improvement.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__post_init__",
+      "line_number": 50,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_9"
+    ],
+    "from_enum": [
+      "line_10"
+    ]
+  },
+  "function_signatures": {
+    "validate_prompt": "validate_prompt",
+    "__post_init__": "__post_init__"
+  },
+  "class_signatures": {
+    "PromptType": "PromptType",
+    "PromptSchema": "PromptSchema",
+    "ValidationResult": "ValidationResult"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 5,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

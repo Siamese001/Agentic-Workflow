@@ -1,0 +1,136 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\retrieval\\retrieval.py",
+    "file_hash": "6e5ccdf58700cfcf39c26481863db0c834a46c3d74452616810e0d2d63f71745",
+    "size_bytes": 7761,
+    "last_modified": "2025-12-01T12:27:39.194450",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_run_bm25",
+      "line_number": 31,
+      "docstring": "Performs keyword-based search for r\u00e9sum\u00e9 evidence.\n\nFinds exact matches to ensure comprehensive coverage of relevant r\u00e9sum\u00e9 content.",
+      "imports": [],
+      "dependencies": [
+        "bm25_search"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_dense",
+      "line_number": 48,
+      "docstring": "Performs semantic search for r\u00e9sum\u00e9 improvement.\n\nFinds conceptually similar content to ensure comprehensive r\u00e9sum\u00e9 alignment with job requirements.",
+      "imports": [],
+      "dependencies": [
+        "dense_search"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_chroma",
+      "line_number": 60,
+      "docstring": "Executes hybrid vector search for r\u00e9sum\u00e9 evidence.\n\nCombines multiple search approaches for comprehensive r\u00e9sum\u00e9 improvement data.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "_ChromaConfig",
+        "_chroma_hybrid_search",
+        "zip",
+        "Evidence",
+        "str",
+        "_init_chroma_client",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "orchestrate_retrieval",
+      "line_number": 114,
+      "docstring": "Coordinates comprehensive retrieval for r\u00e9sum\u00e9 improvement.\n\nExecutes multiple search strategies to gather relevant evidence for r\u00e9sum\u00e9 enhancement.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSuccessEvent",
+        "emit_retrieval_success",
+        "getattr",
+        "RetrievalFailureEvent",
+        "fuse_and_rank",
+        "start_span",
+        "RAGResult",
+        "_run_dense",
+        "list",
+        "len",
+        "emit_retrieval_attempt",
+        "RetrievalAttemptEvent",
+        "_run_bm25",
+        "str",
+        "emit_retrieval_failure",
+        "end_span",
+        "_run_chroma"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_rag_retrieval",
+      "line_number": 240,
+      "docstring": "Provides backward-compatible retrieval for r\u00e9sum\u00e9 evidence.\n\nMaintains existing interface while delivering comprehensive r\u00e9sum\u00e9 improvement data.",
+      "imports": [],
+      "dependencies": [
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_9"
+    ],
+    "from_core.models.models": [
+      "line_11"
+    ],
+    "from_observability": [
+      "line_20"
+    ],
+    "from_meta.retrieval.hybrid_ranker": [
+      "line_28"
+    ],
+    "from_retrievers.bm25": [
+      "line_38"
+    ],
+    "from_retrievers.dense": [
+      "line_55"
+    ],
+    "from_infra.storage.vector_store_chroma": [
+      "line_68"
+    ]
+  },
+  "function_signatures": {
+    "_run_bm25": "_run_bm25",
+    "_run_dense": "_run_dense",
+    "_run_chroma": "_run_chroma",
+    "orchestrate_retrieval": "orchestrate_retrieval",
+    "run_rag_retrieval": "run_rag_retrieval"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 10,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

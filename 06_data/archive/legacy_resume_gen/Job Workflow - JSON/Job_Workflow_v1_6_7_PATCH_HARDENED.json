@@ -1,0 +1,452 @@
+{
+  "metadata": {
+    "patch_id": "P-v1.6.7-HEADLINE-CHAR-LIMIT-HARDENED",
+    "patch_name": "Headline Character Limit Enforcement (≤90 chars) - HARDENED",
+    "base_version": "v1.6.6",
+    "target_version": "v1.6.7",
+    "severity": "HIGH",
+    "created_date": "2025-10-15",
+    "author": "User Requirement + Claude Hardening",
+    "status": "READY_FOR_DEPLOYMENT",
+    "hardening_version": "1.0",
+    "refinements_applied": [
+      "Executive summary now clarifies this closes ONE OF SEVERAL enforcement gaps",
+      "Staging buffer additions reduced to only consumed fields (removed char_count_no_spaces)",
+      "Enhanced edge case validation with explicit error messages",
+      "Added comparative validation to highlight other known gaps",
+      "Strengthened QA Report section with gap tracking"
+    ]
+  },
+
+  "executive_summary": "Closes ONE OF SEVERAL critical enforcement-validation gaps by enforcing K.4 headline character limit (≤90 chars) via new validation gate VG_HEADLINE_CHARACTER_COMPLIANCE. Reads from staging_buffer, blocks file writes on violation. Known remaining gaps: K.4 word count (≤4 per segment), K.5A bullet count (exactly 7), K.6A bullet count (exactly 6).",
+
+  "gap_context": {
+    "description": "This patch addresses the K.4 character limit gap within a broader set of identified enforcement-validation gaps",
+    "this_patch_closes": [
+      "K.4 headline character limit enforcement (≤90 chars total)"
+    ],
+    "known_remaining_gaps": [
+      {
+        "gap_id": "GAP-K4-WORD",
+        "description": "K.4 headline word count per segment (≤4 words) not enforced",
+        "severity": "HIGH",
+        "planned_patch": "v1.6.8"
+      },
+      {
+        "gap_id": "GAP-K5A-COUNT",
+        "description": "K.5A bullet count (exactly 7) not enforced",
+        "severity": "HIGH",
+        "planned_patch": "v1.6.9"
+      },
+      {
+        "gap_id": "GAP-K6A-COUNT",
+        "description": "K.6A bullet count (exactly 6) not enforced",
+        "severity": "HIGH",
+        "planned_patch": "v1.6.9"
+      }
+    ]
+  },
+
+  "changes": [
+    {
+      "change_id": "C-1.6.7-001",
+      "description": "Add VG_HEADLINE_CHARACTER_COMPLIANCE validation gate",
+      "section": "5.output.validation_gates",
+      "action": "APPEND",
+      "content": {
+        "VG_HEADLINE_CHARACTER_COMPLIANCE": {
+          "description": "Validates K.4 headline character count ≤90. Reads from staging_buffer, cannot access artist_output.",
+          "execution_point": "POST_K4_GENERATION",
+          "blocking": true,
+          "severity": "CRITICAL",
+          "reads_from": "staging_buffer['K.4'] ONLY",
+          "cannot_access": "artist_output (scope isolated)",
+          "validation_method": {
+            "source": "staging_buffer['K.4']['rendered_text']",
+            "calculate": "len(rendered_text)",
+            "max_chars": "GLOBAL_ENFORCEMENT_SPEC.word_counts.K.4_headline.char_limit (90)",
+            "on_fail": {
+              "action": "raise ValidationException",
+              "message": "K.4 headline exceeds 90 character limit. Actual: {actual_chars} chars. Text: '{headline_text[:100]}...'",
+              "regenerate": true,
+              "max_attempts": 3
+            }
+          },
+          "edge_cases": {
+            "empty_headline": {
+              "check": "len(rendered_text) == 0",
+              "action": "HALT_WITH_MESSAGE: 'K.4 headline is empty. Cannot generate resume with missing headline.'",
+              "severity": "CRITICAL"
+            },
+            "whitespace_only": {
+              "check": "rendered_text.strip() == ''",
+              "action": "HALT_WITH_MESSAGE: 'K.4 headline contains only whitespace. Must contain substantive text.'",
+              "severity": "CRITICAL"
+            },
+            "trailing_whitespace": {
+              "check": "rendered_text != rendered_text.strip()",
+              "action": "WARNING: Strip whitespace before validation",
+              "auto_correct": true
+            }
+          },
+          "on_pass": "Log '✅ VG_HEADLINE_CHARACTER_COMPLIANCE: K.4 headline is {actual_chars} chars (≤90)'",
+          "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN",
+          "scope_verification": {
+            "description": "Verify gate reads from staging_buffer only",
+            "test": "Try to access artist_output from within gate",
+            "expected": "NameError raised (scope isolated)"
+          }
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.7-002",
+      "description": "Update validation gate execution order to include headline check",
+      "section": "2.task.validation_gates.post_generation",
+      "action": "INSERT_AFTER",
+      "insert_after": "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+      "content": "VG_HEADLINE_CHARACTER_COMPLIANCE",
+      "rationale": "Placed after word count validation to maintain logical validation flow (word count → character count)"
+    },
+
+    {
+      "change_id": "C-1.6.7-003",
+      "description": "Add headline character validation to QA Report Section 2 with gap tracking",
+      "section": "5.output.qa_report_generation.sections.2_word_count_validation",
+      "action": "APPEND",
+      "content": {
+        "headline_character_validation": {
+          "section_name": "2.1 Headline Character Count Validation",
+          "format": "markdown_table",
+          "columns": [
+            "Section",
+            "Character Limit",
+            "Actual Characters",
+            "Status"
+          ],
+          "rows": [
+            {
+              "section": "K.4 Headline",
+              "limit": "90",
+              "actual": "{actual_char_count}",
+              "status": "✅ if actual ≤ 90, ❌ if actual > 90"
+            }
+          ],
+          "display_text": "Headline Text: \"{headline_text}\"",
+          "enforcement_gap_tracker": {
+            "description": "Tracks remaining K.4 validation gaps",
+            "display": true,
+            "format": "### Known K.4 Validation Gaps\n\n⚠️ **Enforced in v1.6.7:**\n- ✅ Character limit (≤90 chars total)\n\n⚠️ **NOT YET ENFORCED (planned for v1.6.8+):**\n- ⏳ Word count per segment (≤4 words)\n- ⏳ Segment count validation\n\n*Files may be generated with K.4 headlines that exceed per-segment word limits.*"
+          }
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.7-004",
+      "description": "Update staging buffer to include character count for K.4 (LEAN VERSION - only consumed fields)",
+      "section": "5.output.staging_buffer_creation.implementation_algorithm.processing_steps.K.4",
+      "action": "MERGE",
+      "content": {
+        "calculate": {
+          "rendered_text": "cleaned_text",
+          "char_count": "len(rendered_text)",
+          "word_count": "len(rendered_text.split())",
+          "segment_count": "rendered_text.count('|') + 1"
+        }
+      },
+      "rationale": "Removed char_count_no_spaces from original patch as it is not consumed by any validation gate or QA section. Maintains lean implementation principle."
+    },
+
+    {
+      "change_id": "C-1.6.7-005",
+      "description": "Add critical rule for headline character limit",
+      "section": "6.conditions.critical_rules",
+      "action": "APPEND",
+      "content": [
+        "K.4 CHARACTER LIMIT (v1.6.7): Headline MUST be ≤90 characters total",
+        "K.4 VALIDATION (v1.6.7): VG_HEADLINE_CHARACTER_COMPLIANCE MUST validate K.4 character count",
+        "K.4 SCOPE ISOLATION (v1.6.7): Headline validation MUST read from staging_buffer ONLY",
+        "K.4 KNOWN GAPS (v1.6.7): Word count per segment NOT enforced until v1.6.8+"
+      ]
+    },
+
+    {
+      "change_id": "C-1.6.7-006",
+      "description": "Add headline character limit test suite",
+      "section": "test_suites",
+      "action": "APPEND",
+      "content": {
+        "HEADLINE_CHAR_LIMIT_TESTS": {
+          "suite_id": "HEADLINE_CHAR_LIMIT_TESTS",
+          "total_tests": 10,
+          "categories": {
+            "smoke_tests": [
+              {
+                "test_id": "HL-SMOKE-001",
+                "name": "Headline exactly 90 characters",
+                "check": "Generate headline with exactly 90 chars, verify passes",
+                "expected": "✅ PASS",
+                "severity": "CRITICAL"
+              },
+              {
+                "test_id": "HL-SMOKE-002",
+                "name": "Headline 91 characters",
+                "check": "Generate headline with 91 chars, verify fails",
+                "expected": "❌ FAIL - ValidationException raised",
+                "severity": "CRITICAL"
+              },
+              {
+                "test_id": "HL-SMOKE-003",
+                "name": "Headline 89 characters",
+                "check": "Generate headline with 89 chars, verify passes",
+                "expected": "✅ PASS",
+                "severity": "HIGH"
+              },
+              {
+                "test_id": "HL-SMOKE-004",
+                "name": "Headline at 50 characters (well under limit)",
+                "check": "Generate headline with 50 chars, verify passes",
+                "expected": "✅ PASS",
+                "severity": "MEDIUM"
+              }
+            ],
+            "edge_case_tests": [
+              {
+                "test_id": "HL-EDGE-001",
+                "name": "Empty headline",
+                "check": "Generate empty headline, verify halts",
+                "expected": "HALT with 'K.4 headline is empty'",
+                "severity": "HIGH"
+              },
+              {
+                "test_id": "HL-EDGE-002",
+                "name": "Whitespace-only headline",
+                "check": "Generate headline with only spaces, verify halts",
+                "expected": "HALT with 'K.4 headline contains only whitespace'",
+                "severity": "HIGH"
+              },
+              {
+                "test_id": "HL-EDGE-003",
+                "name": "Headline with trailing whitespace",
+                "check": "Generate headline with trailing spaces, verify auto-stripped",
+                "expected": "WARNING logged, whitespace stripped, validation proceeds",
+                "severity": "MEDIUM"
+              }
+            ],
+            "integration_tests": [
+              {
+                "test_id": "HL-INT-001",
+                "name": "QA Report displays headline character count",
+                "check": "Verify Section 2.1 shows actual character count",
+                "expected": "Table row with K.4 char count",
+                "severity": "MEDIUM"
+              },
+              {
+                "test_id": "HL-INT-002",
+                "name": "Headline regeneration on failure",
+                "check": "Generate 100-char headline, verify regenerates up to 3 times",
+                "expected": "Regeneration attempts logged, eventual pass or halt",
+                "severity": "HIGH"
+              },
+              {
+                "test_id": "HL-INT-003",
+                "name": "File write blocked on headline violation",
+                "check": "Generate 100-char headline, verify NO files written",
+                "expected": "Zero output files, error report only",
+                "severity": "CRITICAL"
+              }
+            ],
+            "scope_isolation_tests": [
+              {
+                "test_id": "HL-SCOPE-001",
+                "name": "Validation reads from staging_buffer only",
+                "check": "Corrupt artist_output K.4 metadata, verify validation unaffected",
+                "method": "Set artist_output['K.4']['char_count'] = 50, staging_buffer['K.4']['char_count'] = 95",
+                "expected": "Validation uses staging_buffer value (95), fails validation",
+                "severity": "CRITICAL"
+              }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.7-007",
+      "description": "Update test suite totals",
+      "section": "test_suites.overview",
+      "action": "REPLACE",
+      "old_content": {
+        "total_tests": 147
+      },
+      "new_content": {
+        "total_tests": 157,
+        "breakdown": {
+          "golden_path_tests": 82,
+          "clerk_validation_tests": 21,
+          "staging_buffer_tests": 32,
+          "qa_completeness_tests": 12,
+          "headline_char_limit_tests": 10
+        }
+      }
+    },
+
+    {
+      "change_id": "C-1.6.7-008",
+      "description": "Update critical success criteria",
+      "section": "critical_success_criteria",
+      "action": "APPEND",
+      "content": {
+        "headline_character_limit_success": [
+          "✅ K.4 headline validated for ≤90 character limit",
+          "✅ VG_HEADLINE_CHARACTER_COMPLIANCE gate reads from staging_buffer",
+          "✅ Headlines exceeding 90 chars trigger validation failure",
+          "✅ File writes blocked when headline >90 chars",
+          "✅ QA Report Section 2.1 displays headline character count",
+          "✅ Regeneration mechanism triggers on headline violation (max 3 attempts)",
+          "✅ Empty and whitespace-only headlines caught and halted",
+          "✅ Gap tracker in QA Report alerts user to remaining K.4 validation gaps"
+        ]
+      }
+    }
+  ],
+
+  "validation_checkpoints": [
+    {
+      "checkpoint_id": "V-1.6.7-001",
+      "name": "Headline character count validation",
+      "checks": [
+        "K.4 character count ≤ 90",
+        "Validation reads from staging_buffer['K.4']['rendered_text']",
+        "ValidationException raised if >90 chars",
+        "QA Report Section 2.1 shows character count",
+        "Gap tracker displayed in Section 2.1"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.7-002",
+      "name": "Edge case handling",
+      "checks": [
+        "Empty headline triggers HALT with specific message",
+        "Whitespace-only headline triggers HALT with specific message",
+        "Trailing whitespace auto-stripped with WARNING",
+        "Exactly 90 chars passes validation",
+        "91+ chars fails validation"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.7-003",
+      "name": "Scope isolation verification",
+      "checks": [
+        "Validation gate receives staging_buffer parameter only",
+        "Attempting to access artist_output raises NameError",
+        "Corrupted artist_output metadata does not affect validation"
+      ]
+    },
+    {
+      "checkpoint_id": "V-1.6.7-004",
+      "name": "Data efficiency verification",
+      "checks": [
+        "Staging buffer contains ONLY consumed fields (char_count, word_count, segment_count)",
+        "No unused fields added (char_count_no_spaces removed)",
+        "All calculated fields used by validation or QA reporting"
+      ]
+    }
+  ],
+
+  "success_criteria": [
+    "VG_HEADLINE_CHARACTER_COMPLIANCE gate added to validation_gates",
+    "Gate executes POST_K4_GENERATION in correct sequence",
+    "Validation reads from staging_buffer (scope isolated)",
+    "Headlines >90 chars block file writes",
+    "QA Report Section 2.1 displays headline character count AND gap tracker",
+    "All 10 headline tests pass (4 smoke + 3 edge + 3 integration + 1 scope)",
+    "ZERO headlines exceeding 90 chars in production",
+    "Gap tracker alerts users to remaining K.4 validation gaps"
+  ],
+
+  "deployment_steps": [
+    "1. Apply all 8 changes (C-1.6.7-001 through C-1.6.7-008)",
+    "2. Verify VG_HEADLINE_CHARACTER_COMPLIANCE added to validation_gates array",
+    "3. Verify gate placed AFTER VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+    "4. Generate test headline with exactly 90 chars → verify passes",
+    "5. Generate test headline with 91 chars → verify fails (ValidationException)",
+    "6. Generate test headline with trailing whitespace → verify auto-stripped",
+    "7. Verify QA Report Section 2.1 displays character count AND gap tracker",
+    "8. Run HL-SCOPE-001 test (corrupt artist_output, verify staging_buffer used)",
+    "9. Run all 157 tests (147 existing + 10 new headline tests)",
+    "10. If all pass → Deploy to production"
+  ],
+
+  "failure_indicators": [
+    "❌ Headlines exceeding 90 chars do NOT trigger validation failure",
+    "❌ Files written despite headline >90 chars",
+    "❌ QA Report missing Section 2.1 headline character count",
+    "❌ QA Report missing gap tracker in Section 2.1",
+    "❌ Validation gate reads from artist_output instead of staging_buffer",
+    "❌ Empty or whitespace-only headlines not caught",
+    "❌ Unused fields (char_count_no_spaces) present in staging buffer",
+    "❌ Trailing whitespace not handled correctly"
+  ],
+
+  "hardening_improvements": {
+    "executive_summary_refinement": {
+      "original": "Enforces K.4 headline character limit (≤90 chars)",
+      "hardened": "Closes ONE OF SEVERAL critical enforcement-validation gaps by enforcing K.4 headline character limit (≤90 chars)",
+      "improvement": "Sets clear expectations that other validation gaps remain"
+    },
+    "data_efficiency": {
+      "original": "Added char_count AND char_count_no_spaces to staging buffer",
+      "hardened": "Added ONLY char_count to staging buffer (removed unused char_count_no_spaces)",
+      "improvement": "Maintains lean implementation principle - only fields consumed by validation or QA"
+    },
+    "edge_case_enhancement": {
+      "original": "Handles empty and whitespace-only headlines",
+      "hardened": "Handles empty, whitespace-only, AND trailing whitespace with specific error messages",
+      "improvement": "More robust edge case handling with auto-correction for trailing whitespace"
+    },
+    "gap_transparency": {
+      "original": "Silent about remaining validation gaps",
+      "hardened": "QA Report Section 2.1 includes gap tracker showing remaining K.4 validation issues",
+      "improvement": "Users are explicitly informed about what IS and IS NOT validated"
+    },
+    "test_coverage_expansion": {
+      "original": "8 tests",
+      "hardened": "10 tests (added scope isolation test + well-under-limit test)",
+      "improvement": "Verifies scope isolation works correctly and tests wider range of valid inputs"
+    }
+  },
+
+  "comparative_analysis": {
+    "alignment_with_exemplary_patch": {
+      "strengths_maintained": [
+        "✅ Holistic implementation (8 changes across multiple layers)",
+        "✅ Robust edge case handling",
+        "✅ Comprehensive testing (10 tests across 4 categories)",
+        "✅ Scope isolation compliance",
+        "✅ Proper severity classification"
+      ],
+      "refinements_applied": [
+        "✅ Executive summary now mentions this addresses ONE gap",
+        "✅ Staging buffer additions reduced to only consumed fields",
+        "✅ Gap tracker added to QA Report for transparency",
+        "✅ Enhanced edge case handling with auto-correction",
+        "✅ Scope isolation explicitly tested"
+      ]
+    }
+  },
+
+  "patch_lineage": {
+    "base_patch": "P-v1.6.7-HEADLINE-CHAR-LIMIT (original)",
+    "hardening_author": "Claude (Sonnet 4.5)",
+    "hardening_methodology": "Applied exemplary patch feedback patterns",
+    "key_improvements": [
+      "Executive summary scoping",
+      "Data efficiency optimization",
+      "Gap transparency enhancement",
+      "Test coverage expansion"
+    ]
+  }
+}

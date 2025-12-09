@@ -1,0 +1,410 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\models.py",
+    "file_hash": "415eebae9862e1f32fdff3db87065e8974743f9df12580d3874303b9823c05fb",
+    "size_bytes": 10086,
+    "last_modified": "2025-12-01T12:27:37.454070",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "BaseToolOutput",
+      "line_number": 9,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftStrategyOutput",
+      "line_number": 13,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RedTeamOutput",
+      "line_number": 17,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RefineSectionOutput",
+      "line_number": 21,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AddMetricsOutput",
+      "line_number": 25,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAClaimOutput",
+      "line_number": 29,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAToneOutput",
+      "line_number": 34,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAThematicAlignmentOutput",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QASemanticEntailmentOutput",
+      "line_number": 44,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QANarrativeThreadOutput",
+      "line_number": 48,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAJDSkillsOutput",
+      "line_number": 52,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QASignalScoreOutput",
+      "line_number": 57,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QATenureOutput",
+      "line_number": 61,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAMissedOpportunitiesOutput",
+      "line_number": 66,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAAdversarialOutput",
+      "line_number": 70,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QABiasOutput",
+      "line_number": 74,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PlannerAssessment",
+      "line_number": 81,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ScenarioSimulationResult",
+      "line_number": 89,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyPlan",
+      "line_number": 97,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GeneratedPrompts",
+      "line_number": 111,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletList",
+      "line_number": 116,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CritiqueResult",
+      "line_number": 120,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILAmbiguityReport",
+      "line_number": 125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PersonaReviewDecision",
+      "line_number": 132,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PersonaConsensus",
+      "line_number": 144,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILFeedbackIntent",
+      "line_number": 154,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILReconciliationResult",
+      "line_number": 163,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILFeedbackRoute",
+      "line_number": 169,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ConstitutionalReviewResult",
+      "line_number": 181,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "from_typing": [
+      "line_4"
+    ],
+    "from_pydantic": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "BaseToolOutput": "BaseToolOutput",
+    "DraftStrategyOutput": "DraftStrategyOutput",
+    "RedTeamOutput": "RedTeamOutput",
+    "RefineSectionOutput": "RefineSectionOutput",
+    "AddMetricsOutput": "AddMetricsOutput",
+    "QAClaimOutput": "QAClaimOutput",
+    "QAToneOutput": "QAToneOutput",
+    "QAThematicAlignmentOutput": "QAThematicAlignmentOutput",
+    "QASemanticEntailmentOutput": "QASemanticEntailmentOutput",
+    "QANarrativeThreadOutput": "QANarrativeThreadOutput",
+    "QAJDSkillsOutput": "QAJDSkillsOutput",
+    "QASignalScoreOutput": "QASignalScoreOutput",
+    "QATenureOutput": "QATenureOutput",
+    "QAMissedOpportunitiesOutput": "QAMissedOpportunitiesOutput",
+    "QAAdversarialOutput": "QAAdversarialOutput",
+    "QABiasOutput": "QABiasOutput",
+    "PlannerAssessment": "PlannerAssessment",
+    "ScenarioSimulationResult": "ScenarioSimulationResult",
+    "StrategyPlan": "StrategyPlan",
+    "GeneratedPrompts": "GeneratedPrompts",
+    "BulletList": "BulletList",
+    "CritiqueResult": "CritiqueResult",
+    "HILAmbiguityReport": "HILAmbiguityReport",
+    "PersonaReviewDecision": "PersonaReviewDecision",
+    "PersonaConsensus": "PersonaConsensus",
+    "HILFeedbackIntent": "HILFeedbackIntent",
+    "HILReconciliationResult": "HILReconciliationResult",
+    "HILFeedbackRoute": "HILFeedbackRoute",
+    "ConstitutionalReviewResult": "ConstitutionalReviewResult"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

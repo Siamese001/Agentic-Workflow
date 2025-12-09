@@ -1,0 +1,46 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\stacks_v10_7\\prompting.py",
+    "file_hash": "92c435a424632432684d55e968bf3f86b7c7cfbd1a077c2b95cd99d1ed4fab7c",
+    "size_bytes": 2084,
+    "last_modified": "2025-12-01T12:27:37.292607",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PromptEngineerAgent",
+      "line_number": 16,
+      "docstring": "LLM-driven prompt engineering that adapts to task complexity.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_4"
+    ],
+    "from_core_v10_7": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "PromptEngineerAgent": "PromptEngineerAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

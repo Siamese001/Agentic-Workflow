@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import List\nfrom meta.metacognition.models import Hypothesis\ndef refine_low_confidence(hypotheses: List[Hypothesis], threshold: float = 0.4) -> List[Hypothesis]:\n\"\"\"Refine hypotheses below a confidence threshold.\nRules:\n- if confidence < threshold / 2, mark hypothesis as effectively discarded\nby prepending a cautionary prefix.\n- elif confidence < 1.0, append a cautious qualifier asking for more\nevidence before acting.\n- otherwise leave content unchanged.\n\"\"\"\nrefined: List[Hypothesis] = []\nfor h in hypotheses:\nconf = float(h.confidence)\ncontent = h.content\nif conf < threshold / 2:\nnew_content = f\"[DISCARDED_CANDIDATE] {content}\"\nelif conf < 1.0:\nnew_content = f\"{content} (needs further evidence before acting)\"\nelse:\nnew_content = content\nrefined.append(h.model_copy(update={\"content\": new_content}))\nreturn refined",
+  "normalized_signature": "func:refine_low_confidence",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:refine_low_confidence",
+  "test_coverage": []
+}

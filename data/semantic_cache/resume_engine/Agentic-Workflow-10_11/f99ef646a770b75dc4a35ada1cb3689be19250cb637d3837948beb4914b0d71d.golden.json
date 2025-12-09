@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Transforms low-level observability events into a simple format so health checks can spot patterns that might harm resume quality or reliability.\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List\nfrom observability import get_all_events\ndef collect_error_events() -> List[Dict[str, Any]]:\n\"\"\"Collects error-like events from the global stream so health detectors can flag recurring issues before they impact resume runs.\"\"\"\nevents: List[Dict[str, Any]] = []\nfor evt in get_all_events():\nattrs = getattr(evt, \"attributes\", {}) or {}\nif attrs.get(\"event_type\") != \"error\":\ncontinue\nevents.append(\n{\n\"event_type\": \"error\",\n\"error_code\": attrs.get(\"error_code\"),\n\"message\": attrs.get(\"message\"),\n}\n)\nreturn events",
+  "normalized_signature": "func:collect_error_events",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:collect_error_events",
+  "test_coverage": []
+}

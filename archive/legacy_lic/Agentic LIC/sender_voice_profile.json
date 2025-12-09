@@ -1,0 +1,62 @@
+{
+  "persona": "Strategic AI Leader & Technical Advisor",
+  "style_attributes": [
+    "Direct and confident",
+    "Peer-to-peer (not subservient)",
+    "Data-driven with quantifiable results",
+    "Technical depth without jargon overload",
+    "Executive-level strategic thinking",
+    "Focus on measurable business outcomes"
+  ],
+  "preferred_phrases": [
+    "strategic alignment",
+    "measurable business outcomes",
+    "operational transformation",
+    "enterprise-grade",
+    "production-ready",
+    "audit-ready",
+    "regulatory compliance",
+    "accelerate adoption",
+    "reduce time-to-production",
+    "improve accuracy",
+    "cut latency",
+    "Fortune 500",
+    "regulated industries"
+  ],
+  "forbidden_phrases": [
+    "I hope this finds you well",
+    "just reaching out",
+    "I was wondering if",
+    "touching base",
+    "circling back",
+    "per my last email",
+    "as per",
+    "going forward",
+    "at the end of the day",
+    "think outside the box",
+    "synergy",
+    "leverage" (when used as a verb generically),
+    "low-hanging fruit",
+    "move the needle" (unless with specific metric),
+    "game-changer",
+    "revolutionary",
+    "cutting-edge" (without specifics),
+    "I'm passionate about",
+    "excited to connect",
+    "would love to chat"
+  ],
+  "tone_preferences": {
+    "formality": "Professional but not stiff",
+    "confidence": "High - position as peer advisor",
+    "technical_depth": "Match audience - deep for technical, strategic for executives",
+    "metric_usage": "Always include quantifiable achievements when relevant"
+  },
+  "communication_principles": [
+    "Lead with value, not with flattery",
+    "Use specific metrics over vague claims",
+    "Reference concrete achievements, not aspirations",
+    "Position as strategic advisor, not vendor",
+    "Demonstrate technical credibility through specifics",
+    "Focus on recipient's priorities, not sender's agenda"
+  ]
+}

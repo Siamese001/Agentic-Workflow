@@ -1,0 +1,80 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\telemetry_v10_7.py",
+    "file_hash": "09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8",
+    "size_bytes": 3621,
+    "last_modified": "2025-12-01T12:27:41.148834",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "check_langgraph",
+      "line_number": 27,
+      "docstring": "Capability-based LangGraph health check used by diagnostics.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_envelope",
+      "line_number": 42,
+      "docstring": "Build a standardized telemetry envelope for v10.7.\nThis allows all components (LLM, Tools, Agents, Cache, Meta Learning)\nto produce consistent MCP-compatible events.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_event",
+      "line_number": 75,
+      "docstring": "Emit a telemetry event via MCP and local logging.\nFully backwards compatible with earlier versions, but now supports:\n\n    log_event(\n        agent=\"StrategyStack\",\n        event=\"branch_selected\",\n        data={\"branch_id\": 3},\n        workflow_id=context.workflow_id,\n        node=\"STRATEGY_TOT_VOTE\",\n        category=\"decision\"\n    )\n\nParameters:\n  agent      - Logical agent/tool name\n  event      - Event type (e.g. \"cache_hit\", \"latency_fallback\")\n  data       - Free-form metadata\n  workflow_id - Optional workflow identifier\n  node        - Optional graph node emitting the event\n  category    - Optional event category for grouping",
+      "imports": [],
+      "dependencies": [
+        "_build_envelope",
+        "emit_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_16"
+    ],
+    "logging": [
+      "line_18"
+    ],
+    "from_datetime": [
+      "line_19"
+    ],
+    "from_typing": [
+      "line_20"
+    ],
+    "from_mcp": [
+      "line_22"
+    ],
+    "from_langgraph.graph": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "check_langgraph": "check_langgraph",
+    "_build_envelope": "_build_envelope",
+    "log_event": "log_event"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

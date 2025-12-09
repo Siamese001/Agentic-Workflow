@@ -1,0 +1,81 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\workflow_engine.py",
+    "file_hash": "bd9e70c02fda7d8556cb7c4d5bec96e57927bbbc22ae7936f30f27b224d93286",
+    "size_bytes": 3007,
+    "last_modified": "2025-12-01T12:27:40.903793",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "EngineConfig",
+      "line_number": 22,
+      "docstring": "Configures r\u00e9sum\u00e9 analysis workflow engine settings for reliability and performance optimization.\n\nImproves r\u00e9sum\u00e9 processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgenticWorkflowEngine",
+      "line_number": 35,
+      "docstring": "Manages r\u00e9sum\u00e9 analysis workflow execution with coordinated multi-agent processing and safety validation.\n\nImproves r\u00e9sum\u00e9 processing by orchestrating complex analysis workflows with proper error handling and retry logic.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 42,
+      "docstring": "Sets up r\u00e9sum\u00e9 workflow engine with retry policies and safety validation for reliable multi-agent processing.\n\nImproves r\u00e9sum\u00e9 processing reliability by configuring error handling and safety checks for complex analysis workflows.",
+      "imports": [],
+      "dependencies": [
+        "EngineConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_6"
+    ],
+    "from_dataclasses": [
+      "line_8"
+    ],
+    "from_datetime": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_l5": [
+      "line_12"
+    ],
+    "from_integration": [
+      "line_14"
+    ],
+    "from_models.dag_models": [
+      "line_15"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__"
+  },
+  "class_signatures": {
+    "EngineConfig": "EngineConfig",
+    "AgenticWorkflowEngine": "AgenticWorkflowEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

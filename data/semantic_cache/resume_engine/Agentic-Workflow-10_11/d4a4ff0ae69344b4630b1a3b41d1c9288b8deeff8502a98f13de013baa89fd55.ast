@@ -1,0 +1,123 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\microvm.py",
+    "file_hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
+    "size_bytes": 2632,
+    "last_modified": "2025-12-01T12:27:38.513091",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "MicroVM",
+      "line_number": 15,
+      "docstring": "Lightweight handle representing a sandboxed microVM instance.\n\nThis is a deterministic stub; no real virtualization is performed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_vm",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "str",
+        "_now_ms",
+        "record_event",
+        "MicroVM"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "teardown_vm",
+      "line_number": 35,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "record_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "exec_in_vm",
+      "line_number": 42,
+      "docstring": "Execute a tool call inside the microVM.\n\nThis implementation is deterministic and does not run arbitrary\ncode. It simulates execution and supports basic timeout behavior.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "int",
+        "ToolCallResult",
+        "SandboxTimeoutError",
+        "_now_ms",
+        "record_event",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_now_ms",
+      "line_number": 88,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "time": [
+      "line_3"
+    ],
+    "uuid": [
+      "line_4"
+    ],
+    "from_dataclasses": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ],
+    "from_observability": [
+      "line_8"
+    ],
+    "from_infra.sandbox.models": [
+      "line_10"
+    ],
+    "from_infra.sandbox.sandbox_errors": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {
+    "create_vm": "create_vm",
+    "teardown_vm": "teardown_vm",
+    "exec_in_vm": "exec_in_vm",
+    "_now_ms": "_now_ms"
+  },
+  "class_signatures": {
+    "MicroVM": "MicroVM"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

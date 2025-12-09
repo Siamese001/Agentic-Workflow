@@ -1,0 +1,180 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_correction_validation.py",
+    "file_hash": "c39bc6090ee54a7f0d10775c6b205c11b9eed6d5f9814cc75fe21470b5976723",
+    "size_bytes": 7029,
+    "last_modified": "2025-12-01T12:27:36.222310",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_8_core",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SelfCorrectionSurface",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "all_surfaces",
+      "line_number": 25,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "should_retry",
+      "line_number": 29,
+      "docstring": "Deterministic stub to indicate whether a local retry is warranted.\n\nFor v10.8, logic must be simple:\n  - If surface is QA_RECHECK and last_result contains \"qa_report\"\n    with any finding.status == \"pending\" \u2192 return True.\n  - Else return False.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_correction",
+      "line_number": 49,
+      "docstring": "Deterministic metadata-only correction recommendation generator.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "should_retry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_correction_event",
+      "line_number": 84,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArbitrationEngine",
+      "line_number": 96,
+      "docstring": "Deterministic stub arbitration engine.\n\nevaluate(state, qa_report, safety_patch) -> Dict[str,str]\nreturns one of: accept, retry, replan, escalate",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_correction_event",
+      "line_number": 147,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_correction",
+      "line_number": 161,
+      "docstring": "Deterministic metadata-only correction recommendation generator.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "should_retry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SelfCorrectionSurface",
+      "line_number": 196,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "all_surfaces",
+      "line_number": 203,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "should_retry",
+      "line_number": 207,
+      "docstring": "Deterministic stub to indicate whether a local retry is warranted.\n\nFor v10.8, logic must be simple:\n  - If surface is QA_RECHECK and last_result contains \"qa_report\"\n    with any finding.status == \"pending\" \u2192 return True.\n  - Else return False.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate",
+      "line_number": 104,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_enum": [
+      "line_8"
+    ],
+    "from_self_correction": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10",
+      "line_11",
+      "line_45",
+      "line_79",
+      "line_93"
+    ]
+  },
+  "function_signatures": {
+    "all_surfaces": "all_surfaces",
+    "should_retry": "should_retry",
+    "evaluate_correction": "evaluate_correction",
+    "record_correction_event": "record_correction_event",
+    "evaluate": "evaluate"
+  },
+  "class_signatures": {
+    "SelfCorrectionSurface": "SelfCorrectionSurface",
+    "ArbitrationEngine": "ArbitrationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 19,
+    "cognitive_complexity": 15,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

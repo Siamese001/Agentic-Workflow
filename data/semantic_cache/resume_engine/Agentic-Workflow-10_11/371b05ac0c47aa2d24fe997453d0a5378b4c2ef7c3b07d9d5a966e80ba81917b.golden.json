@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from eval.simulation.metrics import compute_collaboration_score, compute_conflict_index\nclass _DummyOutcome:\ndef __init__(self, score: float, conflicts: int) -> None:\nself.outcome = {\"golden_eval_score\": score, \"correction_iterations\": conflicts}\nself.agent_conflict_count = conflicts\ndef test_compute_collaboration_score_and_conflict_index():\noutputs = [\n_DummyOutcome(1.0, 0),\n_DummyOutcome(0.0, 2),\n]\ncollab = compute_collaboration_score(outputs)\nconflict = compute_conflict_index(outputs)\nassert isinstance(collab, float)\nassert isinstance(conflict, float)",
+  "normalized_signature": "func:test_compute_collaboration_score_and_conflict_index;func:__init__;class:_DummyOutcome",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:test_compute_collaboration_score_and_conflict_index",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

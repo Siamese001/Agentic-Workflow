@@ -1,0 +1,106 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_ranking.py",
+    "file_hash": "325b420ea069deeeb3a043d88eaef8e18b63dcd3121d0bbdebf4020b989dc30a",
+    "size_bytes": 1594,
+    "last_modified": "2025-12-01T12:27:39.838394",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_make_item",
+      "line_number": 9,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_bm25_score_prefers_important_tokens",
+      "line_number": 13,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "bm25_score",
+        "_make_item"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_dense_score_is_deterministic",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_make_item",
+        "dense_score"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_normalize_scores_range_and_relative_order",
+      "line_number": 27,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max",
+        "Evidence",
+        "normalize_scores",
+        "all"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_merge_scores_deduplicates_by_source_and_text",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "merge_scores",
+        "Evidence",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_meta.ranking": [
+      "line_5"
+    ],
+    "from_core.models.models": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {
+    "_make_item": "_make_item",
+    "test_bm25_score_prefers_important_tokens": "test_bm25_score_prefers_important_tokens",
+    "test_dense_score_is_deterministic": "test_dense_score_is_deterministic",
+    "test_normalize_scores_range_and_relative_order": "test_normalize_scores_range_and_relative_order",
+    "test_merge_scores_deduplicates_by_source_and_text": "test_merge_scores_deduplicates_by_source_and_text"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

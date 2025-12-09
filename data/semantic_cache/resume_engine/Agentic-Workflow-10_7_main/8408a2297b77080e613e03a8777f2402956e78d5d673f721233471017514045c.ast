@@ -1,0 +1,139 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tools\\consolidate_repo.py",
+    "file_hash": "8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c",
+    "size_bytes": 4025,
+    "last_modified": "2025-12-01T12:27:42.124714",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "is_text_file",
+      "line_number": 21,
+      "docstring": "Return True when the file appears to be text, False for binary files.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "iter_repo_files",
+      "line_number": 31,
+      "docstring": "Yield repo-tracked files under the root directory.",
+      "imports": [],
+      "dependencies": [
+        "is_text_file"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_chunk_size",
+      "line_number": 51,
+      "docstring": "Compute a chunk size (lines per part) to stay within max_parts.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "group_files",
+      "line_number": 60,
+      "docstring": "Group paths into parts so that total lines per part stay near chunk_size.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "write_parts",
+      "line_number": 75,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "print",
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_parts",
+      "line_number": 92,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "SystemExit",
+        "sorted",
+        "group_files",
+        "compute_chunk_size",
+        "write_parts",
+        "iter_repo_files"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_args",
+      "line_number": 102,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_10"
+    ],
+    "argparse": [
+      "line_12"
+    ],
+    "math": [
+      "line_13"
+    ],
+    "os": [
+      "line_14"
+    ],
+    "from_pathlib": [
+      "line_15"
+    ],
+    "from_typing": [
+      "line_16"
+    ]
+  },
+  "function_signatures": {
+    "is_text_file": "is_text_file",
+    "iter_repo_files": "iter_repo_files",
+    "compute_chunk_size": "compute_chunk_size",
+    "group_files": "group_files",
+    "write_parts": "write_parts",
+    "build_parts": "build_parts",
+    "parse_args": "parse_args"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 21,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

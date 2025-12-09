@@ -1,0 +1,535 @@
+# Resume Summarization Prompts v1.0
+# Prompts for generating comprehensive resume summaries and insights
+
+resume_summarization:
+  version: "1.0"
+  last_updated: "2024-01-01T00:00:00Z"
+  
+  # Summarization frameworks
+  summarization_frameworks:
+    # Executive summary generation
+    executive_summary:
+      comprehensive_overview:
+        prompt: |
+          Generate a comprehensive executive summary of the resume:
+          
+          Executive Summary Structure:
+          1. Professional Identity:
+             - Core expertise and specializations
+             - Years of experience and career level
+             - Industry and domain knowledge
+             - Key professional accomplishments
+             
+          2. Core Competencies:
+             - Top 5-7 technical and soft skills
+             - Areas of expertise and mastery
+             - Certification and qualification highlights
+             - Industry-specific capabilities
+             
+          3. Career Highlights:
+             - Most significant achievements
+             - Career progression and growth
+             - Notable projects and initiatives
+             - Recognition and awards
+             
+          4. Value Proposition:
+             - Unique differentiators and strengths
+             - Problem-solving capabilities
+             - Leadership and impact potential
+             - Strategic contributions
+             
+          5. Career Trajectory:
+             - Current position and responsibilities
+             - Career progression patterns
+             - Future growth potential
+             - Industry positioning
+             
+          Create a concise, impactful summary (150-200 words) that captures the essence of the professional's capabilities and potential.
+          
+        quality_standards:
+          - "Concise_impact_focused"
+          - "Professional_brand_alignment"
+          - "Achievement_emphasis"
+          - "Future_potential_highlighting"
+          
+    # Skills summarization
+      skills_summary:
+        prompt: |
+          Generate a comprehensive skills summary and analysis:
+          
+          Skills Summary Framework:
+          1. Technical Skills:
+             - Core technical competencies
+             - Programming languages and tools
+             - Platforms and technologies
+             - Technical expertise levels
+             
+          2. Soft Skills:
+             - Communication and interpersonal skills
+             - Leadership and management abilities
+             - Problem-solving and critical thinking
+             - Adaptability and learning capabilities
+             
+          3. Industry Skills:
+             - Domain-specific knowledge
+             - Industry standards and practices
+             - Regulatory and compliance knowledge
+             - Market and business acumen
+             
+          4. Skill Assessment:
+             - Proficiency levels and evidence
+             - Skill gap analysis
+             - Market demand alignment
+             - Development recommendations
+             
+          5. Skill Integration:
+             - How skills combine for impact
+             - Cross-functional capabilities
+             - Skill synergy and complementarity
+             - Unique skill combinations
+             
+          Provide a detailed skills analysis with market relevance and development suggestions.
+          
+        skills_analysis:
+          - "Technical_skill_categorization"
+          - "Soft_skill_assessment"
+          - "Industry_skill_relevance"
+          - "Skill_gap_identification"
+          
+  # Experience summarization
+  experience_summarization:
+    # Career progression analysis
+    career_progression:
+      prompt: |
+          Generate a comprehensive career progression summary:
+          
+          Career Progression Framework:
+          1. Professional Growth:
+             - Career advancement trajectory
+             - Responsibility level progression
+             - Scope and complexity increase
+             - Leadership development
+             
+          2. Industry Evolution:
+             - Industry adaptation and growth
+             - Market condition navigation
+             - Trend adoption and innovation
+             - Competitive positioning
+             
+          3. Skill Development:
+             - Skill acquisition and mastery
+             - Knowledge expansion areas
+             - Learning initiative demonstration
+             - Adaptability evidence
+             
+          4. Impact Measurement:
+             - Quantifiable achievements by role
+             - Business impact progression
+             - Team and organizational influence
+             - Industry contribution growth
+             
+          5. Future Readiness:
+             - Current position strategic value
+             - Next-level preparation
+             - Growth opportunity identification
+             - Career trajectory projection
+             
+          Analyze career patterns and provide strategic insights for future development.
+          
+        progression_analysis:
+          - "Growth_trajectory_assessment"
+          - "Responsibility_evolution"
+          - "Impact_progression"
+          - "Future_readiness_evaluation"
+          
+    # Achievement summarization
+      achievement_synthesis:
+        prompt: |
+          Generate a comprehensive achievement synthesis and analysis:
+          
+          Achievement Synthesis Framework:
+          1. Quantifiable Results:
+             - Revenue and financial impact
+             - Efficiency and productivity gains
+             - Cost reduction and savings
+             - Performance improvements
+             
+          2. Leadership Impact:
+             - Team development and growth
+             - Organizational transformation
+             - Culture and process improvements
+             - Mentorship and knowledge sharing
+             
+          3. Innovation Contributions:
+             - Process and system innovations
+             - New product or service development
+             - Technology implementation
+             - Creative problem-solving
+             
+          4. Client and Stakeholder Value:
+             - Customer satisfaction improvements
+             - Stakeholder relationship building
+             - Partnership and collaboration success
+             - Community and social impact
+             
+          5. Recognition and Awards:
+             - Professional acknowledgments
+             - Industry recognition
+             - Company awards and honors
+             - Speaking and thought leadership
+             
+          Synthesize achievements into compelling narratives that demonstrate consistent value delivery.
+          
+        achievement_analysis:
+          - "Quantifiable_impact_assessment"
+          - "Leadership_contribution_evaluation"
+          - "Innovation_demonstration"
+          - "Recognition_synthesis"
+          
+  # Industry-specific summarization
+  industry_summarization:
+    # Technology industry summary
+    technology_summary:
+      prompt: |
+          Generate technology industry-focused resume summary:
+          
+          Technology Summary Framework:
+          1. Technical Expertise:
+             - Technology stack and architecture
+             - Programming language proficiency
+             - Development methodologies
+             - System design capabilities
+             
+          2. Project Experience:
+             - Technology project scope and complexity
+             - Development lifecycle participation
+             - Technical leadership roles
+             - Innovation and R&D contributions
+             
+          3. Industry Knowledge:
+             - Technology trends awareness
+             - Emerging technology adoption
+             - Competitive landscape understanding
+             - Market dynamics knowledge
+             
+          4. Problem-Solving:
+             - Technical challenge resolution
+             - System optimization achievements
+             - Performance and scalability improvements
+             - Security and compliance implementation
+             
+          5. Community Engagement:
+             - Open source contributions
+             - Technical community participation
+             - Knowledge sharing and mentoring
+             - Industry conference involvement
+          
+          Create a technology-focused summary that highlights technical depth and innovation capabilities.
+          
+        tech_summary_elements:
+          - "Technical_expertise_demonstration"
+          - "Project_experience_synthesis"
+          - "Industry_knowledge_showcase"
+          - "Innovation_capability_highlighting"
+          
+    # Healthcare industry summary
+    healthcare_summary:
+      prompt: |
+          Generate healthcare industry-focused resume summary:
+          
+          Healthcare Summary Framework:
+          1. Clinical Excellence:
+             - Patient care quality achievements
+             - Clinical skill proficiency
+             - Treatment outcome improvements
+             - Patient satisfaction enhancements
+             
+          2. Healthcare Systems:
+             - Process improvement initiatives
+             - Quality assurance contributions
+             - Regulatory compliance expertise
+             - Healthcare technology implementation
+             
+          3. Professional Development:
+             - Continuing education and certifications
+             - Specialty training and advancement
+             - Research and publication contributions
+             - Professional association involvement
+             
+          4. Leadership Impact:
+             - Team and department leadership
+             - Interdisciplinary collaboration
+             - Mentoring and training contributions
+             - Organizational improvement initiatives
+             
+          5. Community Contribution:
+             - Community health initiatives
+             - Public health contributions
+             - Volunteer and service activities
+             - Healthcare advocacy efforts
+          
+          Ensure all summaries maintain patient privacy and healthcare compliance standards.
+          
+        healthcare_summary_elements:
+          - "Clinical_excellence_demonstration"
+          - "Healthcare_systems_expertise"
+          - "Professional_development_showcase"
+          - "Leadership_impact_synthesis"
+          
+  # Career level summarization
+  career_level_summarization:
+    # Entry level summary
+    entry_level_summary:
+      prompt: |
+          Generate entry-level focused resume summary:
+          
+          Entry-Level Summary Framework:
+          1. Academic Foundation:
+             - Educational background and achievements
+             - Relevant coursework and research
+             - Academic honors and recognition
+             - Learning capability demonstration
+             
+          2. Skill Development:
+             - Technical and soft skill acquisition
+             - Certification and training completion
+             - Practical application experience
+             - Learning agility evidence
+             
+          3. Experience Potential:
+             - Internship and project contributions
+             - Volunteer and extracurricular leadership
+             - Part-time work application
+             - Initiative and entrepreneurship
+             
+          4. Growth Readiness:
+             - Career direction clarity
+             - Industry knowledge demonstration
+             - Professional development commitment
+             - Adaptability and potential
+             
+          5. Value Proposition:
+             - Fresh perspective and energy
+             - Latest knowledge and training
+             - Technology and trend awareness
+             - Eagerness to contribute and learn
+          
+          Focus on potential, capability, and readiness for professional growth.
+          
+        entry_level_elements:
+          - "Academic_foundation_highlighting"
+          - "Skill_development_emphasis"
+          - "Potential_demonstration"
+          - "Growth_readiness_showcase"
+          
+    # Executive level summary
+    executive_summary:
+      prompt: |
+          Generate executive-level focused resume summary:
+          
+          Executive Summary Framework:
+          1. Strategic Leadership:
+             - Vision and strategy development
+             - Organizational transformation
+             - Market and industry influence
+             - Thought leadership demonstration
+             
+          2. Business Impact:
+             - P&L responsibility and results
+             - Revenue and growth achievements
+             - Market share expansion
+             - Operational excellence
+             
+          3. Organizational Development:
+             - Leadership team building
+             - Culture and talent development
+             - Succession planning
+             - Change management
+             
+          4. Industry Authority:
+             - Board positions and advisory roles
+             - Speaking and publishing
+             - Industry association leadership
+             - Media and expert commentary
+             
+          5. Future Vision:
+             - Strategic direction setting
+             - Innovation and growth planning
+             - Industry advancement contribution
+             - Legacy and impact vision
+          
+          Demonstrate executive presence, strategic thinking, and organizational influence.
+          
+        executive_elements:
+          - "Strategic_leadership_demonstration"
+          - "Business_impact_quantification"
+          - "Organizational_influence_showcase"
+          - "Industry_authority_establishment"
+          
+  # Specialized summarization
+  specialized_summarization:
+    # Career transition summary
+    career_transition:
+      prompt: |
+          Generate career transition-focused resume summary:
+          
+          Career Transition Framework:
+          1. Transferable Skills:
+             - Core capabilities across industries
+             - Universal professional competencies
+             - Adaptable expertise areas
+             - Cross-functional value
+             
+          2. Bridge Experience:
+             - Relevant experience connections
+             - Industry overlap areas
+             - Skill transfer applications
+             - Transition preparation evidence
+             
+          3. Learning Agility:
+             - Quick learning demonstration
+             - Adaptability evidence
+             - New skill acquisition
+             - Industry knowledge development
+             
+          4. Transition Readiness:
+             - New industry understanding
+             - Role-specific preparation
+             - Network and relationship building
+             - Cultural adaptation capability
+             
+          5. Future Value:
+             - Unique perspective advantages
+             - Diverse experience benefits
+             - Innovation potential
+             - Growth trajectory projection
+          
+          Create compelling narrative that connects past success to future potential.
+          
+        transition_elements:
+          - "Transferable_skill_highlighting"
+          - "Bridge_experience_connection"
+          - "Learning_agility_demonstration"
+          - "Future_value_proposition"
+          
+    # International applications summary
+    international_summary:
+      prompt: |
+          Generate international application-focused resume summary:
+          
+          International Summary Framework:
+          1. Global Experience:
+             - International work and project experience
+             - Cross-cultural collaboration
+             - Global market understanding
+             - International network development
+             
+          2. Cultural Adaptability:
+             - Cross-cultural communication skills
+             - Cultural sensitivity and awareness
+             - International business etiquette
+             - Global teamwork experience
+             
+          3. Language Capabilities:
+             - Language proficiency levels
+             - Professional language application
+             - Cross-cultural communication
+             - Translation and interpretation skills
+             
+          4. Global Perspective:
+             - International market knowledge
+             - Global industry understanding
+             - International business practices
+             - Worldwide trend awareness
+             
+          5. Mobility and Flexibility:
+             - International relocation experience
+             - Global travel capability
+             - Time zone and remote work
+             - Cultural integration success
+          
+          Ensure cultural appropriateness and international professional standards.
+          
+        international_elements:
+          - "Global_experience_synthesis"
+          - "Cultural_adaptability_demonstration"
+          - "Language_capability_showcase"
+          - "Global_perspective_highlighting"
+          
+  # Quality assurance for summarization
+  summarization_quality:
+    # Validation checks
+    validation:
+      prompt: |
+          Validate resume summary quality and effectiveness:
+          
+          Validation Criteria:
+          1. Accuracy and Authenticity:
+             - All claims truthful and verifiable
+             - Professional tone maintenance
+             - Achievement accuracy verification
+             - Experience authenticity confirmation
+             
+          2. Impact and Value:
+             - Clear value proposition articulation
+             - Impact demonstration and quantification
+             - Competitive differentiation
+             - Professional brand alignment
+             
+          3. Relevance and Targeting:
+             - Target role alignment
+             - Industry appropriateness
+             - Career level suitability
+             - Market condition awareness
+             
+          4. Professional Standards:
+             - Ethical compliance adherence
+             - Professional language usage
+             - Cultural appropriateness
+             - Industry standard compliance
+             
+          Review summaries against these criteria and refine as needed.
+          
+        validation_metrics:
+          - "Accuracy_verification_score"
+          - "Value_proposition_strength"
+          - "Relevance_alignment_rating"
+          - "Professional_standards_compliance"
+          
+    # Performance optimization
+      optimization:
+        prompt: |
+          Optimize resume summaries for maximum effectiveness:
+          
+          Optimization Areas:
+          1. Conciseness and Impact:
+             - Word count optimization
+             - Impact density enhancement
+             - Readability score improvement
+             - Engagement optimization
+             
+          2. Strategic Positioning:
+             - Competitive advantage highlighting
+             - Market differentiation
+             - Professional brand strengthening
+             - Career trajectory alignment
+             
+          3. ATS Optimization:
+             - Keyword strategic placement
+             - Industry terminology integration
+             - Parsing compatibility
+             - Search optimization
+             
+          4. Human Engagement:
+             - Recruiter interest generation
+             - Interview invitation potential
+             - Professional impression creation
+             - Memorability enhancement
+          
+          Provide specific optimization recommendations with expected impact.
+          
+        optimization_techniques:
+          - "Conciseness_impact_optimization"
+          - "Strategic_positioning_enhancement"
+          - "Ats_optimization_strategies"
+          - "Human_engagement_improvement"

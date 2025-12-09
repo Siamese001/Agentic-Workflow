@@ -1,0 +1,261 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\orchestrator.py",
+    "file_hash": "650a4f4aa5209aa099de6b583f4248fb0e74cb1f984b99db4f8a2dae69a197fa",
+    "size_bytes": 31431,
+    "last_modified": "2025-12-01T12:27:36.415839",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "WorkflowOrchestrator",
+      "line_number": 60,
+      "docstring": "A spec-driven orchestrator that executes a workflow as a \nDirected Acyclic Graph (DAG), ensuring cryptographic provenance\nfor all data artifacts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 614,
+      "docstring": "Main entry point for running the orchestrator from the CLI.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "Path",
+        "WorkflowOrchestrator"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 67,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Path",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_load_workflow_spec",
+      "line_number": 85,
+      "docstring": "Loads and validates the workflow spec JSON.",
+      "imports": [],
+      "dependencies": [
+        "open",
+        "RetryPolicy",
+        "WorkflowSpec",
+        "HopSpec",
+        "HopInput",
+        "WorkflowSpecError",
+        "HopOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_dag",
+      "line_number": 113,
+      "docstring": "Builds a networkx DiGraph from the workflow spec.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowSpecError",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_setup_run_dir_and_logging",
+      "line_number": 147,
+      "docstring": "Creates the run directory and initializes logging into it.",
+      "imports": [],
+      "dependencies": [
+        "setup_workflow_logging"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_init_static_artifacts",
+      "line_number": 164,
+      "docstring": "Initializes the artifact state dictionary with all known artifacts,\nmarking static inputs as \"ready\".",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "FileNotFoundError",
+        "hash_file",
+        "Artifact"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_hop",
+      "line_number": 218,
+      "docstring": "Executes a single hop with retry logic and cryptographic verification.\nThis is the core execution worker.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "str",
+        "int",
+        "FileNotFoundError",
+        "HopExecutionError",
+        "HopCheckpoint",
+        "hash_file"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_workflow_termination",
+      "line_number": 361,
+      "docstring": "Builds the final result dictionary upon workflow failure.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "type",
+        "str",
+        "isinstance",
+        "default_serializer",
+        "HopCheckpoint"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_coc_ledger",
+      "line_number": 411,
+      "docstring": "Builds the final Chain of Custody ledger.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "Artifact"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_load_static_inputs",
+      "line_number": 457,
+      "docstring": "Writes/copies static inputs to the run_dir and returns their paths.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "FileNotFoundError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_workflow",
+      "line_number": 497,
+      "docstring": "Executes the entire resume generation workflow based on the loaded spec.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "sum",
+        "list",
+        "default_serializer",
+        "Path",
+        "WorkflowSpecError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "json": [
+      "line_10"
+    ],
+    "logging": [
+      "line_11"
+    ],
+    "os": [
+      "line_12"
+    ],
+    "re": [
+      "line_13"
+    ],
+    "shutil": [
+      "line_14"
+    ],
+    "subprocess": [
+      "line_15"
+    ],
+    "time": [
+      "line_16"
+    ],
+    "uuid": [
+      "line_17"
+    ],
+    "from_pathlib": [
+      "line_18"
+    ],
+    "argparse": [
+      "line_19"
+    ],
+    "from_datetime": [
+      "line_20"
+    ],
+    "from_typing": [
+      "line_21"
+    ],
+    "from_helpers": [
+      "line_34"
+    ],
+    "from_dotenv": [
+      "line_42"
+    ],
+    "networkx": [
+      "line_28"
+    ],
+    "google.generativeai": [
+      "line_49"
+    ]
+  },
+  "function_signatures": {
+    "main": "main",
+    "__init__": "__init__",
+    "_load_workflow_spec": "_load_workflow_spec",
+    "_build_dag": "_build_dag",
+    "_setup_run_dir_and_logging": "_setup_run_dir_and_logging",
+    "_init_static_artifacts": "_init_static_artifacts",
+    "_run_hop": "_run_hop",
+    "_handle_workflow_termination": "_handle_workflow_termination",
+    "_build_coc_ledger": "_build_coc_ledger",
+    "_load_static_inputs": "_load_static_inputs",
+    "execute_workflow": "execute_workflow"
+  },
+  "class_signatures": {
+    "WorkflowOrchestrator": "WorkflowOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 60,
+    "cognitive_complexity": 33,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

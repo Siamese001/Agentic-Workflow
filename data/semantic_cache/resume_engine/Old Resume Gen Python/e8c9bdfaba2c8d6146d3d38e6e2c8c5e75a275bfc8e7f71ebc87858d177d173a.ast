@@ -1,0 +1,269 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_4_4_final.py",
+    "file_hash": "e8c9bdfaba2c8d6146d3d38e6e2c8c5e75a275bfc8e7f71ebc87858d177d173a",
+    "size_bytes": 49578,
+    "last_modified": "2025-12-01T12:27:35.928533",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 50,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 61,
+      "docstring": "Amit Ayer's complete master resume - merged from v1.0, v1.2, v2.0, v2.1\nSource: Master_Resume_V2.14.json\n\nNO NEED TO UPLOAD RESUME - Already embedded!",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoleProfiles",
+      "line_number": 350,
+      "docstring": "Curated library of 12 high-value SaaS leadership roles with signal scores.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetricsV4",
+      "line_number": 403,
+      "docstring": "v4.4.4 baseline word count targets - CORRECTED to 1032 words.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAValidationGates",
+      "line_number": 446,
+      "docstring": "QA validation with 6 enforced gates - v4.4.4 fixes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngineV4",
+      "line_number": 526,
+      "docstring": "Main engine v4.4.4 with all fixes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 450,
+      "docstring": "Run all 6 QA gates and return results.",
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "sum",
+        "isinstance",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 529,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "MasterResume",
+        "BaselineResumeMetricsV4",
+        "QAValidationGates",
+        "SaaSRoleProfiles"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_role_type_key",
+      "line_number": 535,
+      "docstring": "Get the proper role type key for EXEC_SUMMARIES lookup.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 547,
+      "docstring": "Execute the 4-output pipeline with all fixes.",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_customized_sections",
+      "line_number": 583,
+      "docstring": "Generate customized resume sections based on JD and profile.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_bullets",
+      "line_number": 689,
+      "docstring": "Select top bullets based on JD relevance and signal score.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_base_signal",
+      "line_number": 695,
+      "docstring": "Calculate weighted signal score.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_ratio_penalty",
+      "line_number": 709,
+      "docstring": "Calculate penalty for Unify/IBM ratio outside target range.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output1_resume",
+      "line_number": 722,
+      "docstring": "Generate OUTPUT 1: Complete resume with fixed headers.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output2_word_count",
+      "line_number": 796,
+      "docstring": "Generate OUTPUT 2: Word count table.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output3_signal_calibration",
+      "line_number": 857,
+      "docstring": "Generate OUTPUT 3: Signal calibration with ASCII bar chart.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "int",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output4_qa_tables",
+      "line_number": 922,
+      "docstring": "Generate OUTPUT 4: QA validation tables.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "re": [
+      "line_18"
+    ],
+    "from_typing": [
+      "line_19"
+    ],
+    "from_dataclasses": [
+      "line_20"
+    ],
+    "from_datetime": [
+      "line_21"
+    ],
+    "from_enum": [
+      "line_22"
+    ],
+    "math": [
+      "line_23"
+    ]
+  },
+  "function_signatures": {
+    "validate": "validate",
+    "__init__": "__init__",
+    "_get_role_type_key": "_get_role_type_key",
+    "execute_pipeline": "execute_pipeline",
+    "_generate_customized_sections": "_generate_customized_sections",
+    "_select_bullets": "_select_bullets",
+    "_calculate_base_signal": "_calculate_base_signal",
+    "_calculate_ratio_penalty": "_calculate_ratio_penalty",
+    "_generate_output1_resume": "_generate_output1_resume",
+    "_generate_output2_word_count": "_generate_output2_word_count",
+    "_generate_output3_signal_calibration": "_generate_output3_signal_calibration",
+    "_generate_output4_qa_tables": "_generate_output4_qa_tables"
+  },
+  "class_signatures": {
+    "TemperatureMode": "TemperatureMode",
+    "MasterResume": "MasterResume",
+    "SaaSRoleProfiles": "SaaSRoleProfiles",
+    "BaselineResumeMetricsV4": "BaselineResumeMetricsV4",
+    "QAValidationGates": "QAValidationGates",
+    "ResumeGenerationEngineV4": "ResumeGenerationEngineV4"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 33,
+    "cognitive_complexity": 19,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

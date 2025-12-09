@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\n\"\"\"Implements simple failure-detection helpers that turn raw telemetry into health signals so recurring problems can be fixed before they degrade resume quality.\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n@dataclass\nclass FailureSignal:\n\"\"\"Represents a coarse failure signal used by health policies to judge how serious repeated issues are for resume runs.\"\"\"\ncode: str\nmessage: str\nseverity: str\nmetadata: Dict[str, Any]\ndef detect_repeated_failures(events: List[Dict[str, Any]], threshold: int = 3) -> List[FailureSignal]:\n\"\"\"Finds repeated error patterns in events so teams can spot unstable behavior that might lead to inconsistent or failed resume outputs.\"\"\"\ncounts: Dict[str, int] = {}\nfor evt in events:\nif evt.get(\"event_type\") != \"error\":\ncontinue\ncode = str(evt.get(\"error_code\") or \"unknown\")\ncounts[code] = counts.get(code, 0) + 1\nsignals: List[FailureSignal] = []\nfor code, count in counts.items():\nif count >= threshold:\nseverity = \"high\" if count >= threshold * 2 else \"medium\"\nsignals.append(\nFailureSignal(\ncode=f\"repeated_{code}\",\nmessage=f\"Error {code!r} occurred {count} times\",\nseverity=severity,\nmetadata={\"count\": count},\n)\n)\nreturn signals",
+  "normalized_signature": "func:detect_repeated_failures;class:FailureSignal",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:detect_repeated_failures",
+  "test_coverage": []
+}

@@ -1,0 +1,9 @@
+{
+  "canonical_form": "class Redis: # pragma: no cover - stub for tests\n\"\"\"Minimal Redis stub so the core module can be imported in tests.\"\"\"\ndef __init__(self, *args, **kwargs):\npass",
+  "normalized_signature": "func:__init__;class:Redis",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

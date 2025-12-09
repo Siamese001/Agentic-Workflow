@@ -1,0 +1,1033 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v6.0\\agent_swarm_v6_0.py",
+    "file_hash": "3d13088d20762f9bf0cca36802a3110e6c0a91c6f85a7290b99c495df4ab59f6",
+    "size_bytes": 34292,
+    "last_modified": "2025-12-01T12:27:36.966040",
+    "engine": "RG",
+    "archive_version": "v6.0",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "WorkflowSteps",
+      "line_number": 59,
+      "docstring": "Centralizes workflow step names to prevent de-sync.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ConductorAgent",
+      "line_number": 81,
+      "docstring": "v6.0 Conductor: Spawns multiple parallel WorkflowPlannerAgents,\neach exploring a different strategy (GTM-focused, Tech-focused, Balanced).\nREFACTORED: Reads strategies directly from CONFIG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowPlannerAgent",
+      "line_number": 177,
+      "docstring": "Creates initial workflow execution plan.\nREFACTORED: Reads the default plan from CONFIG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowCritiqueAgent",
+      "line_number": 215,
+      "docstring": "Critiques workflow execution state.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowRePlannerAgent",
+      "line_number": 224,
+      "docstring": "Creates recovery plans when needed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDParserAgent",
+      "line_number": 240,
+      "docstring": "Parses job description.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThemeIdentifierAgent",
+      "line_number": 245,
+      "docstring": "Identifies themes from JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThemeRankerAgent",
+      "line_number": 250,
+      "docstring": "Ranks themes by importance.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GapAnalysisAgent",
+      "line_number": 255,
+      "docstring": "Analyzes gaps between resume and JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DifferentiatorAgent",
+      "line_number": 260,
+      "docstring": "Identifies key differentiators.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyBriefAssemblerAgent",
+      "line_number": 265,
+      "docstring": "Assembles strategy brief.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyCritiqueAgent",
+      "line_number": 277,
+      "docstring": "Critiques strategy (reflection).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyValidatorAgent",
+      "line_number": 290,
+      "docstring": "Validates strategy brief.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_QueryGeneratorAgent",
+      "line_number": 300,
+      "docstring": "Generates RAG queries.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_SearchAgent",
+      "line_number": 309,
+      "docstring": "Executes RAG searches (ReAct + MoE).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_ChunkingAgent",
+      "line_number": 314,
+      "docstring": "Chunks retrieved content.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_RankingAgent",
+      "line_number": 319,
+      "docstring": "Ranks chunks by relevance.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_FilterAgent",
+      "line_number": 324,
+      "docstring": "Filters low-quality chunks.\nREFACTORED: Reads top_k from config, with a fallback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_CrossReferenceAgent",
+      "line_number": 335,
+      "docstring": "Cross-references information.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_DraftingAgent",
+      "line_number": 340,
+      "docstring": "Drafts RAG output.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_CritiqueAgent",
+      "line_number": 345,
+      "docstring": "Critiques RAG output (reflection).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AdversarialDraftingRouter",
+      "line_number": 361,
+      "docstring": "v6.0 MoE router for adversarial drafting.\nSpawns multiple drafters (Gemini, Claude, Muse) and synthesizes results.\nREFACTORED: Reads enabled drafters from CONFIG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Gemini_Drafter",
+      "line_number": 407,
+      "docstring": "Gemini drafter.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Claude_Drafter",
+      "line_number": 415,
+      "docstring": "Claude drafter.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Muse_Drafter",
+      "line_number": 423,
+      "docstring": "Muse drafter (stub).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SynthesisCritiqueAgent",
+      "line_number": 431,
+      "docstring": "Synthesizes multiple drafts into final output (reflection).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostEstimatorAgent",
+      "line_number": 441,
+      "docstring": "Estimates workflow costs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostTrackerAgent",
+      "line_number": 446,
+      "docstring": "Tracks actual costs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CrewConfiguration",
+      "line_number": 462,
+      "docstring": "Crew configuration.\nREFACTORED: Defaults are now loaded from CONFIG by main.py",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CrewContext",
+      "line_number": 482,
+      "docstring": "Context for crew execution.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Governor",
+      "line_number": 494,
+      "docstring": "v6.0 Governor: Main orchestration agent that delegates to specialists.\nREFACTORED: Reads max_replan_loops from CONFIG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CrewOrchestrator",
+      "line_number": 802,
+      "docstring": "High-level orchestrator.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 88,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 98,
+      "docstring": "Execute Tree of Thought exploration.",
+      "imports": [],
+      "dependencies": [
+        "ConductorDecision",
+        "enumerate",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_branch",
+      "line_number": 119,
+      "docstring": "Execute a single branch.\nStrategy is a config object, not a dict.",
+      "imports": [],
+      "dependencies": [
+        "ConductorBranch"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_create_plan_for_strategy",
+      "line_number": 151,
+      "docstring": "Create execution plan based on strategy.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_vote_on_branches",
+      "line_number": 164,
+      "docstring": "Select the winning branch based on scores.",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 183,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_initial_plan",
+      "line_number": 191,
+      "docstring": "Create initial workflow plan.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowStep",
+        "WorkflowPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "critique",
+      "line_number": 218,
+      "docstring": "Critique current state.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "replan",
+      "line_number": 227,
+      "docstring": "Create recovery plan.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowStep",
+        "WorkflowPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 242,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 247,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 252,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 257,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 262,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 267,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "StrategyBrief"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 279,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ReflectionResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 292,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 302,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 311,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 316,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 321,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 329,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 337,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 342,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 347,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ReflectionResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 368,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Muse_Drafter",
+        "Gemini_Drafter",
+        "Claude_Drafter",
+        "drafter_class"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 390,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "SynthesisCritiqueAgent",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 409,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "draft",
+      "line_number": 412,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 417,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "draft",
+      "line_number": 420,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 425,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "draft",
+      "line_number": 428,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 433,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "estimate",
+      "line_number": 443,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 448,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_cost",
+      "line_number": 451,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_final_cost",
+      "line_number": 454,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 500,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "WorkflowCritiqueAgent",
+        "ConductorAgent",
+        "WorkflowPlannerAgent",
+        "WorkflowRePlannerAgent",
+        "CostEstimatorAgent",
+        "CostTrackerAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_step",
+      "line_number": 526,
+      "docstring": "--- v6.0: Wrapper for execution, telemetry, cost, and circuit breaking ---\nSingle point for all step execution with comprehensive telemetry.",
+      "imports": [],
+      "dependencies": [
+        "type",
+        "str",
+        "NotImplementedError",
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_strategy_stack",
+      "line_number": 583,
+      "docstring": "Execute Strategy Stack.",
+      "imports": [],
+      "dependencies": [
+        "JDParserAgent",
+        "StrategyCritiqueAgent",
+        "GapAnalysisAgent",
+        "ThemeIdentifierAgent",
+        "SemanticFailureError",
+        "ThemeRankerAgent",
+        "DifferentiatorAgent",
+        "StrategyValidatorAgent",
+        "StrategyBriefAssemblerAgent",
+        "ValueError",
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_rag_stack",
+      "line_number": 627,
+      "docstring": "Execute RAG Stack.",
+      "imports": [],
+      "dependencies": [
+        "RAG_FilterAgent",
+        "RAG_ChunkingAgent",
+        "RAG_CritiqueAgent",
+        "RAG_RankingAgent",
+        "RAG_QueryGeneratorAgent",
+        "RAG_CrossReferenceAgent",
+        "RAG_DraftingAgent",
+        "RAG_Blackboard",
+        "RAG_SearchAgent",
+        "RAGMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_prompt_stack",
+      "line_number": 668,
+      "docstring": "Execute Prompt Stack.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_bullet_stack",
+      "line_number": 675,
+      "docstring": "Execute Bullet Swarm.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_drafting_stack",
+      "line_number": 683,
+      "docstring": "Execute Adversarial MoE Drafting.",
+      "imports": [],
+      "dependencies": [
+        "AdversarialDraftingRouter"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_qa_stack",
+      "line_number": 695,
+      "docstring": "Execute MoE QA Stack.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "process_request",
+      "line_number": 704,
+      "docstring": "V5.8.1 Main orchestration with optional Conductor.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Exception",
+        "WorkflowPlannerAgent",
+        "WorkflowBlackboard",
+        "StrategyBlackboard",
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 805,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Governor",
+        "CrewConfiguration"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "process_job_application",
+      "line_number": 828,
+      "docstring": "Process complete job application.",
+      "imports": [],
+      "dependencies": [
+        "CrewContext",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "copy": [
+      "line_11"
+    ],
+    "hashlib": [
+      "line_12"
+    ],
+    "json": [
+      "line_13"
+    ],
+    "logging": [
+      "line_14"
+    ],
+    "os": [
+      "line_15"
+    ],
+    "random": [
+      "line_16"
+    ],
+    "re": [
+      "line_17"
+    ],
+    "time": [
+      "line_18"
+    ],
+    "from_collections": [
+      "line_19"
+    ],
+    "from_enum": [
+      "line_20"
+    ],
+    "from_dataclasses": [
+      "line_21"
+    ],
+    "from_datetime": [
+      "line_22"
+    ],
+    "from_typing": [
+      "line_23"
+    ],
+    "from_core_v6_0": [
+      "line_34"
+    ],
+    "from_validation_stack_v6_0": [
+      "line_51"
+    ],
+    "google.generativeai": [
+      "line_27"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "execute": "execute",
+    "_execute_branch": "_execute_branch",
+    "_create_plan_for_strategy": "_create_plan_for_strategy",
+    "_vote_on_branches": "_vote_on_branches",
+    "create_initial_plan": "create_initial_plan",
+    "critique": "critique",
+    "replan": "replan",
+    "validate": "validate",
+    "draft": "draft",
+    "estimate": "estimate",
+    "log_cost": "log_cost",
+    "log_final_cost": "log_final_cost",
+    "_execute_step": "_execute_step",
+    "_run_strategy_stack": "_run_strategy_stack",
+    "_run_rag_stack": "_run_rag_stack",
+    "_run_prompt_stack": "_run_prompt_stack",
+    "_run_bullet_stack": "_run_bullet_stack",
+    "_run_drafting_stack": "_run_drafting_stack",
+    "_run_qa_stack": "_run_qa_stack",
+    "process_request": "process_request",
+    "process_job_application": "process_job_application"
+  },
+  "class_signatures": {
+    "WorkflowSteps": "WorkflowSteps",
+    "ConductorAgent": "ConductorAgent",
+    "WorkflowPlannerAgent": "WorkflowPlannerAgent",
+    "WorkflowCritiqueAgent": "WorkflowCritiqueAgent",
+    "WorkflowRePlannerAgent": "WorkflowRePlannerAgent",
+    "JDParserAgent": "JDParserAgent",
+    "ThemeIdentifierAgent": "ThemeIdentifierAgent",
+    "ThemeRankerAgent": "ThemeRankerAgent",
+    "GapAnalysisAgent": "GapAnalysisAgent",
+    "DifferentiatorAgent": "DifferentiatorAgent",
+    "StrategyBriefAssemblerAgent": "StrategyBriefAssemblerAgent",
+    "StrategyCritiqueAgent": "StrategyCritiqueAgent",
+    "StrategyValidatorAgent": "StrategyValidatorAgent",
+    "RAG_QueryGeneratorAgent": "RAG_QueryGeneratorAgent",
+    "RAG_SearchAgent": "RAG_SearchAgent",
+    "RAG_ChunkingAgent": "RAG_ChunkingAgent",
+    "RAG_RankingAgent": "RAG_RankingAgent",
+    "RAG_FilterAgent": "RAG_FilterAgent",
+    "RAG_CrossReferenceAgent": "RAG_CrossReferenceAgent",
+    "RAG_DraftingAgent": "RAG_DraftingAgent",
+    "RAG_CritiqueAgent": "RAG_CritiqueAgent",
+    "AdversarialDraftingRouter": "AdversarialDraftingRouter",
+    "Gemini_Drafter": "Gemini_Drafter",
+    "Claude_Drafter": "Claude_Drafter",
+    "Muse_Drafter": "Muse_Drafter",
+    "SynthesisCritiqueAgent": "SynthesisCritiqueAgent",
+    "CostEstimatorAgent": "CostEstimatorAgent",
+    "CostTrackerAgent": "CostTrackerAgent",
+    "CrewConfiguration": "CrewConfiguration",
+    "CrewContext": "CrewContext",
+    "Governor": "Governor",
+    "CrewOrchestrator": "CrewOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 30,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\collectors.py",
+    "file_hash": "8cde2aa609a046a0ed1671b898570223d2c15c3f4b16c141a6fd9e4d228ab9de",
+    "size_bytes": 1138,
+    "last_modified": "2025-12-01T12:27:37.747938",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "append_event",
+      "line_number": 12,
+      "docstring": "Append a telemetry event to the in-memory buffer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_events",
+      "line_number": 18,
+      "docstring": "Return a shallow copy of the telemetry buffer.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear_events",
+      "line_number": 24,
+      "docstring": "Clear all telemetry events and open spans (primarily for tests).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "push_span",
+      "line_number": 31,
+      "docstring": "Push a span record onto the span stack.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pop_span",
+      "line_number": 37,
+      "docstring": "Remove a span record from the span stack if present.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "span_stack",
+      "line_number": 44,
+      "docstring": "Return the internal span stack (for inspection-only).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_core.models.models": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "append_event": "append_event",
+    "get_events": "get_events",
+    "clear_events": "clear_events",
+    "push_span": "push_span",
+    "pop_span": "pop_span",
+    "span_stack": "span_stack"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

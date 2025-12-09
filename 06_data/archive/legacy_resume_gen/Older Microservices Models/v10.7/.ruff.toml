@@ -1,0 +1,24 @@
+line-length = 100
+extend-exclude = [
+    "agent_orchestration_v10_6.py",
+    "agent_orchestration_v10_7.py",
+    "run_learning_v10_6.py",
+    "run_learning_v10_7.py",
+    "run_batch_v10_6.py",
+    "run_batch_v10_7.py",
+    "main_v10_7.py",
+    "main_v10_6.py",
+    "agent_tools_v10_6.py",
+    "agent_tools_v10_7.py",
+    "stacks_v10_6",
+    "stacks_v10_7/prompting.py",
+    "tests",
+]
+
+[lint]
+select = ["E", "F"]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+"core_v10_7.py" = ["E701", "E702", "E721", "E402"]
+"core_v10_6.py" = ["E701", "E702", "E721", "F401", "F541"]

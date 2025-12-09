@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Compatibility shim that re-exports the v10.8 Bullet execution stack.\"\"\"\nfrom stacks_v10_8.bullet_execution import BulletExecutionStack\n__all__ = [\"BulletExecutionStack\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

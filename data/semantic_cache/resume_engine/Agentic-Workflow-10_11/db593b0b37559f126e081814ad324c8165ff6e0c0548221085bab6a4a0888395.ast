@@ -1,0 +1,438 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_kg_components.py",
+    "file_hash": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
+    "size_bytes": 13072,
+    "last_modified": "2025-12-01T12:27:40.097526",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TestTripletStore",
+      "line_number": 67,
+      "docstring": "Test L4 TripletStore functionality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestEntityResolution",
+      "line_number": 136,
+      "docstring": "Test L4 EntityRegistry functionality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestKGRetrievalPlanning",
+      "line_number": 188,
+      "docstring": "Test L1 KG Retrieval Planner.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestKGRetrievalExecutor",
+      "line_number": 228,
+      "docstring": "Test L2 KG Retrieval Executor.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestTripletExtraction",
+      "line_number": 266,
+      "docstring": "Test L2 Triplet Extraction Executor.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestInvalidationExecutor",
+      "line_number": 304,
+      "docstring": "Test L2 Invalidation Executor.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestKGOrchestration",
+      "line_number": 329,
+      "docstring": "Test L3 KG-First Retrieval Orchestration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestLayerBoundaries",
+      "line_number": 368,
+      "docstring": "Test that components respect layer boundaries.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_triplet",
+      "line_number": 70,
+      "docstring": "Test triplet creation.",
+      "imports": [],
+      "dependencies": [
+        "create_triplet"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_triplet_store_add_and_query",
+      "line_number": 85,
+      "docstring": "Test adding and querying triplets.",
+      "imports": [],
+      "dependencies": [
+        "create_triplet",
+        "TripletStore",
+        "TripletQuery",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_triplet_store_predicate_filter",
+      "line_number": 102,
+      "docstring": "Test querying with predicate filter.",
+      "imports": [],
+      "dependencies": [
+        "create_triplet",
+        "TripletStore",
+        "TripletQuery",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_triplet_invalidation",
+      "line_number": 115,
+      "docstring": "Test triplet invalidation.",
+      "imports": [],
+      "dependencies": [
+        "create_triplet",
+        "TripletStore",
+        "TripletQuery",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_entity_creation",
+      "line_number": 139,
+      "docstring": "Test entity creation.",
+      "imports": [],
+      "dependencies": [
+        "create_entity"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_entity_resolution",
+      "line_number": 151,
+      "docstring": "Test resolving entity mentions.",
+      "imports": [],
+      "dependencies": [
+        "EntityRegistry",
+        "create_mention"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_entity_fuzzy_matching",
+      "line_number": 168,
+      "docstring": "Test fuzzy entity matching.",
+      "imports": [],
+      "dependencies": [
+        "create_entity",
+        "EntityRegistry",
+        "create_mention"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_plan_entity_retrieval",
+      "line_number": 191,
+      "docstring": "Test planning entity fact retrieval.",
+      "imports": [],
+      "dependencies": [
+        "plan_entity_retrieval",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_plan_neighborhood_query",
+      "line_number": 199,
+      "docstring": "Test planning multi-hop neighborhood query.",
+      "imports": [],
+      "dependencies": [
+        "KGRetrievalPlanner",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_plan_with_template",
+      "line_number": 213,
+      "docstring": "Test planning with predefined template.",
+      "imports": [],
+      "dependencies": [
+        "KGRetrievalPlanner",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_execute_entity_query",
+      "line_number": 231,
+      "docstring": "Test executing entity fact query.",
+      "imports": [],
+      "dependencies": [
+        "execute_entity_query",
+        "create_triplet",
+        "TripletStore",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_execute_multi_hop",
+      "line_number": 247,
+      "docstring": "Test multi-hop neighborhood query.",
+      "imports": [],
+      "dependencies": [
+        "create_triplet",
+        "TripletStore",
+        "execute_multi_hop_query"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_extract_skills",
+      "line_number": 269,
+      "docstring": "Test skill extraction from text.",
+      "imports": [],
+      "dependencies": [
+        "TripletExtractionExecutor",
+        "len",
+        "create_extraction_plan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_extract_experience",
+      "line_number": 286,
+      "docstring": "Test experience extraction from text.",
+      "imports": [],
+      "dependencies": [
+        "TripletExtractionExecutor",
+        "create_extraction_plan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_invalidation_by_age",
+      "line_number": 307,
+      "docstring": "Test invalidation of old facts.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "TripletStore",
+        "InvalidationExecutor",
+        "create_invalidation_plan",
+        "create_triplet"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_build_retrieval_dag",
+      "line_number": 332,
+      "docstring": "Test building a retrieval DAG.",
+      "imports": [],
+      "dependencies": [
+        "KGFirstRetrievalOrchestrator",
+        "create_hybrid_context"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_dag_execution_order",
+      "line_number": 350,
+      "docstring": "Test DAG topological sort.",
+      "imports": [],
+      "dependencies": [
+        "KGFirstRetrievalOrchestrator",
+        "create_hybrid_context"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_l4_no_execution_logic",
+      "line_number": 371,
+      "docstring": "Verify L4 components don't contain execution logic.",
+      "imports": [],
+      "dependencies": [
+        "create_triplet",
+        "TripletStore",
+        "TripletQuery",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_l1_pure_planning",
+      "line_number": 383,
+      "docstring": "Verify L1 planner produces plans without execution.",
+      "imports": [],
+      "dependencies": [
+        "KGRetrievalPlanner",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_l2_executes_plans",
+      "line_number": 396,
+      "docstring": "Verify L2 executor uses plans from L1.",
+      "imports": [],
+      "dependencies": [
+        "KGRetrievalExecutor",
+        "isinstance",
+        "plan_entity_retrieval",
+        "TripletStore",
+        "create_triplet"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_10"
+    ],
+    "from_datetime": [
+      "line_11"
+    ],
+    "from_l4.triplet_store": [
+      "line_14"
+    ],
+    "from_l4.entity_resolution": [
+      "line_23"
+    ],
+    "from_l1.kg_retrieval_planning": [
+      "line_33"
+    ],
+    "from_l2.kg_retrieval_executor": [
+      "line_42",
+      "line_255"
+    ],
+    "from_l2.triplet_extraction_executor": [
+      "line_47"
+    ],
+    "from_l2.invalidation_executor": [
+      "line_52"
+    ],
+    "from_orchestration.kg_retrieval_orchestration": [
+      "line_60"
+    ]
+  },
+  "function_signatures": {
+    "test_create_triplet": "test_create_triplet",
+    "test_triplet_store_add_and_query": "test_triplet_store_add_and_query",
+    "test_triplet_store_predicate_filter": "test_triplet_store_predicate_filter",
+    "test_triplet_invalidation": "test_triplet_invalidation",
+    "test_entity_creation": "test_entity_creation",
+    "test_entity_resolution": "test_entity_resolution",
+    "test_entity_fuzzy_matching": "test_entity_fuzzy_matching",
+    "test_plan_entity_retrieval": "test_plan_entity_retrieval",
+    "test_plan_neighborhood_query": "test_plan_neighborhood_query",
+    "test_plan_with_template": "test_plan_with_template",
+    "test_execute_entity_query": "test_execute_entity_query",
+    "test_execute_multi_hop": "test_execute_multi_hop",
+    "test_extract_skills": "test_extract_skills",
+    "test_extract_experience": "test_extract_experience",
+    "test_invalidation_by_age": "test_invalidation_by_age",
+    "test_build_retrieval_dag": "test_build_retrieval_dag",
+    "test_dag_execution_order": "test_dag_execution_order",
+    "test_l4_no_execution_logic": "test_l4_no_execution_logic",
+    "test_l1_pure_planning": "test_l1_pure_planning",
+    "test_l2_executes_plans": "test_l2_executes_plans"
+  },
+  "class_signatures": {
+    "TestTripletStore": "TestTripletStore",
+    "TestEntityResolution": "TestEntityResolution",
+    "TestKGRetrievalPlanning": "TestKGRetrievalPlanning",
+    "TestKGRetrievalExecutor": "TestKGRetrievalExecutor",
+    "TestTripletExtraction": "TestTripletExtraction",
+    "TestInvalidationExecutor": "TestInvalidationExecutor",
+    "TestKGOrchestration": "TestKGOrchestration",
+    "TestLayerBoundaries": "TestLayerBoundaries"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

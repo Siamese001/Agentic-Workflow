@@ -1,0 +1,2965 @@
+{
+  "metadata": {
+    "last_saved": "2025-10-07",
+    "last_saved_note": "Date only - no timestamp",
+    "version": "v24.2",
+    "sources": "JW v18.9 + JW Enhancements Tier 1-2 implementation",
+    "notes": "Agentic enhancement version: K.2.5 competitive positioning NEW, K.8 intelligent gap-filling UPGRADED, K.9 specificity-driven research UPGRADED",
+    "sha256": "pending_calculation",
+    "core_modifications": [
+      "v24.2: P024.2 - Mandatory reasoning toggles table from Reasoning_Toggles_Summary_Enforced_Format.json v3.2 with blocking validation",
+      "v19.0: K.2.5 Competitive Positioning Agent (NEW - analyzes 3-5 peer JDs)",
+      "v19.0: K.8 Intelligent Gap-Filling Agent (6-phase process, 70%\u219285%+ coverage)",
+      "v19.0: K.9 Specificity-Driven Research Agent (5-phase process, \u22654 company details)",
+      "v19.0: Added latency estimates (+2-4 min total for quality improvements)",
+      "v19.0: Enhanced RAG retrieval counts (K.8: 15-25 searches, K.9: 20-30 searches)",
+      "v18.9: K.5 temperature starts at 0.5 (was 0.3), escalates +0.1 to max 1.0",
+      "v18.9: Exec summary length clarified as 100-120 TOKENS (\u224875-90 words)",
+      "v18.9: Separated tot_breadth and tot_depth specifications per node",
+      "v18.8: K.6/K.7 intro dedup relaxed (0.50/0.70/0.50 vs K.5/K.8/K.4)",
+      "v18.8: K.8 keyword gap as PRIMARY goal (35% weight)",
+      "All v18.7-18.9 changes preserved"
+    ],
+    "tier_1_2_enhancements": {
+      "tier_1_highest_roi": [
+        "K.8 Intelligent Gap-Filling: LinkedIn/framework search for authentic phrasing",
+        "K.9 Specificity-Driven: Company-specific research with validation loops"
+      ],
+      "tier_2_high_roi": [
+        "K.2.5 Competitive Positioning: Peer JD analysis for differentiation strategy"
+      ],
+      "skipped_tier_3": [
+        "K.2 Adaptive Classification Agent (current K.2 already strong)",
+        "Meta-Agent Router (optimization layer, not core functionality)"
+      ],
+      "skipped_k10.5": "Gap Detection Agent excluded (K.10-K.12 intentionally removed in v18.9)"
+    },
+    "performance_impact": {
+      "latency_increases": {
+        "k2.5_competitive_positioning": "+15-30 seconds",
+        "k8_intelligent_gap_filling": "+30-60 seconds",
+        "k9_specificity_research": "+45-90 seconds",
+        "total_added_latency": "~2-4 minutes"
+      },
+      "quality_improvements": {
+        "k8_gap_coverage": "70% \u2192 85%+",
+        "k9_specificity": "60% \u2192 90%+",
+        "silent_rejection_reduction": "30-40%",
+        "interview_callback_increase": "+20-30%"
+      },
+      "cost_increases_api_calls": {
+        "k2.5": "~10-15 searches",
+        "k8": "~15-25 searches",
+        "k9": "~20-30 searches",
+        "total_per_application": "~$2-3 in API costs"
+      },
+      "roi_justification": "Getting interviews >> saving $3 in API costs per application"
+    },
+    "change_log": [
+      "v24.2: Applied P024.2 - Mandatory Reasoning Toggles Table Enforcement patch; enforces Reasoning_Toggles_Summary_Enforced_Format.json v3.2 as single source of truth with blocking schema validation",
+      "v19.2 (non-destructive): added centralized governance blocks & refs; behavior unchanged",
+      "v19.3: size-reduced by replacing inline node configs with references (backed up under *_legacy); behavior preserved via compat materialization",
+      "v19.4: Added ASCII hygiene, product insertion prevention, K.5 name-dropping guard, date standardization, App Schema filtering. Additive only.",
+      "v19.5: Consolidation (SSOT): removed legacy mirrors; templated Section 5; centralized length & dedup via refs; reasoning_config \u2192 deltas; zero semantic change.",
+      "v23.1: Added C030 - Reasoning Approval Gate, Headline Char Limit, Resume Name Display"
+    ],
+    "date": "2025-10-06",
+    "changelog": "Applied JW_OneTrust_Resume_Enhancement_v1.0: Added dual-source bullet architecture (14-bullet pools), upgraded K.4/K.6/K.7 RAG configs (hybrid mode with ToT), added bullet punctuation validation, competency word count balancing, natural hyphen preservation, cross-section redundancy detection, resume header formatting, versioned filename generation, competency/bullet ratio analysis",
+    "change_summary": "Consolidated v20.0 + 12 LIC patches into unified six-section structure with deduplicated templates and enforceable validations.",
+    "patch_integration": [
+      {
+        "id": "C012",
+        "location": [
+          "3.context"
+        ]
+      },
+      {
+        "id": "C018",
+        "location": [
+          "4.reasoning (refs)",
+          "6.conditions.templates.signal_quality"
+        ]
+      },
+      {
+        "id": "C024",
+        "location": [
+          "6.conditions.validation_framework",
+          "4.reasoning (ref)"
+        ]
+      },
+      {
+        "id": "C026",
+        "location": [
+          "6.conditions.templates.two_stage_retrieval",
+          "4.reasoning (refs)"
+        ]
+      },
+      {
+        "id": "C027",
+        "location": [
+          "4.reasoning.K.1.hyde_enrichment"
+        ]
+      },
+      {
+        "id": "C028",
+        "location": [
+          "6.conditions.templates.self_rag_validation",
+          "4.reasoning (refs)"
+        ]
+      },
+      {
+        "id": "C002",
+        "location": [
+          "2.task.k_node_reasoning_config_matrix",
+          "6.conditions.defaults.reasoning_config"
+        ]
+      },
+      {
+        "id": "C003",
+        "location": [
+          "6.conditions.templates.hop_refinement",
+          "4.reasoning (refs)"
+        ]
+      },
+      {
+        "id": "C014",
+        "location": [
+          "6.conditions.templates.achievement_mapping",
+          "4.reasoning (refs to K.6/K.7)"
+        ]
+      },
+      {
+        "id": "C022",
+        "location": [
+          "4.reasoning.K.10",
+          "5.output.5.10_k10_output_NEW"
+        ]
+      },
+      {
+        "id": "C021",
+        "location": [
+          "5.output.scheduling_assistant",
+          "3.context.helpers.scheduling_assistant_ref"
+        ]
+      },
+      {
+        "id": "C025",
+        "location": [
+          "6.conditions.governance_controls.conditional_execution"
+        ]
+      }
+    ],
+    "patches_applied": [
+      "JW_OneTrust_Resume_Enhancement_v1.0"
+    ]
+  },
+  "1.role": {
+    "name": "Resume Customization Orchestrator",
+    "authority": "Transform base resume through 9-node analysis pipeline (K.1-K.9 with K.2.5 enhancement) using SVP-calibrated parameters and agentic intelligence",
+    "scope": "Full resume customization pipeline from JD analysis to final artifact generation with Tier 1-2 enhancements",
+    "status_indicators": {
+      "\ud83d\udfe2": "Optimal/Pass",
+      "\ud83d\udfe1": "Acceptable/Warning",
+      "\ud83d\udd34": "Critical/Fail",
+      "\ud83d\udd35": "Information",
+      "\u26aa": "Not Started",
+      "\ud83d\udfe3": "In Progress",
+      "\ud83e\udd16": "Agentic Enhancement Active"
+    },
+    "capability_matrix": {},
+    "change_policy": {
+      "rollback_enabled": true,
+      "rollback_tag_template": "rollback_{timestamp}",
+      "version_chain": [
+        "v21.0",
+        "v22.0",
+        "v22.1",
+        "v23.0",
+        "v23.1"
+      ]
+    }
+  },
+  "2.task": {
+    "key_architectural_principles": {
+      "text": "Enforce HyDE enrichment, two-stage retrieval, episodic & graph references, self-RAG validation, and signal_quality gates as pipeline defaults. Toggle defaults live in 3.context.runtime_toggles and templates referenced from 6.conditions.",
+      "references": {
+        "runtime_toggles": "3.context.runtime_toggles",
+        "canonical_templates": "6.conditions.templates"
+      }
+    },
+    "performance_metrics": {
+      "metrics": {
+        "latency_ms": {
+          "target_slo": 2000,
+          "alert_above_ms": 5000
+        },
+        "confidence_score_mean": {
+          "target_slo": 0.8,
+          "alert_below": 0.6
+        },
+        "hop_count": {
+          "target_slo": 3,
+          "alert_above": 5
+        },
+        "signals_accepted_ratio": {
+          "target_slo": 0.7,
+          "alert_below": 0.5
+        },
+        "claim_verification_pass_rate": {
+          "target_slo": 0.85,
+          "alert_below": 0.75
+        },
+        "api_calls_cost_estimate_usd": {
+          "target_slo": 2.5,
+          "alert_above": 5.0
+        },
+        "regenerations_per_node": {
+          "target_slo": 1,
+          "alert_above": 3
+        },
+        "unique_domains": {
+          "target_slo": 3,
+          "alert_below": 2
+        },
+        "pct_tier_ge_4": {
+          "target_slo": 0.5,
+          "alert_below": 0.3
+        },
+        "median_anchor_age_days": {
+          "target_slo": 60,
+          "alert_above": 120
+        },
+        "refinement_count": {
+          "target_slo": 1,
+          "alert_above": 3
+        }
+      },
+      "alerts": {
+        "channels": [
+          "slack:#infra-alerts",
+          "email:eng-oncall@example.com"
+        ],
+        "escalation_policy": [
+          {
+            "metric": "claim_verification_pass_rate",
+            "threshold": 0.75,
+            "action": "notify:oncall;create:incident"
+          },
+          {
+            "metric": "api_calls_cost_estimate_usd",
+            "threshold": 5.0,
+            "action": "notify:finance;throttle_agentic=true"
+          }
+        ]
+      },
+      "ingestion": {
+        "emit_interval_seconds": 60,
+        "storage_path": "monitoring/job_workflow/metrics"
+      }
+    },
+    "k_node_reasoning_config_matrix": {
+      "K.1": {
+        "hyde_enabled": true,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": true,
+        "hyde_word_target": 400,
+        "bm25_topN": 200,
+        "rerank_topK": 20,
+        "final_k": 5,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.85
+      },
+      "K.2": {
+        "hyde_enabled": true,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": true,
+        "hyde_word_target": 300,
+        "bm25_topN": 150,
+        "rerank_topK": 15,
+        "final_k": 5,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.8
+      },
+      "K.2.5": {
+        "hyde_enabled": true,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": true,
+        "hyde_word_target": 350,
+        "bm25_topN": 200,
+        "rerank_topK": 25,
+        "final_k": 7,
+        "agentic_mode": true,
+        "agentic_max_hops": 3,
+        "node_threshold_confidence": 0.88
+      },
+      "K.3": {
+        "hyde_enabled": false,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": false,
+        "hyde_word_target": 0,
+        "bm25_topN": 100,
+        "rerank_topK": 10,
+        "final_k": 3,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.75
+      },
+      "K.4": {
+        "hyde_enabled": false,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": false,
+        "hyde_word_target": 0,
+        "bm25_topN": 100,
+        "rerank_topK": 10,
+        "final_k": 3,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.75
+      },
+      "K.5": {
+        "hyde_enabled": true,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": true,
+        "hyde_word_target": 250,
+        "bm25_topN": 150,
+        "rerank_topK": 15,
+        "final_k": 5,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.9
+      },
+      "K.6": {
+        "hyde_enabled": false,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": false,
+        "hyde_word_target": 0,
+        "bm25_topN": 80,
+        "rerank_topK": 8,
+        "final_k": 2,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.7
+      },
+      "K.7": {
+        "hyde_enabled": false,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": false,
+        "hyde_word_target": 0,
+        "bm25_topN": 80,
+        "rerank_topK": 8,
+        "final_k": 2,
+        "agentic_mode": false,
+        "node_threshold_confidence": 0.7
+      },
+      "K.8": {
+        "hyde_enabled": true,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": true,
+        "hyde_word_target": 300,
+        "bm25_topN": 180,
+        "rerank_topK": 18,
+        "final_k": 6,
+        "agentic_mode": true,
+        "agentic_max_hops": 3,
+        "node_threshold_confidence": 0.85
+      },
+      "K.9": {
+        "hyde_enabled": true,
+        "two_stage_retrieval_ref": "6.conditions.templates.two_stage_retrieval",
+        "self_rag_validation": true,
+        "hyde_word_target": 400,
+        "bm25_topN": 250,
+        "rerank_topK": 30,
+        "final_k": 8,
+        "agentic_mode": true,
+        "agentic_max_hops": 4,
+        "node_threshold_confidence": 0.88
+      }
+    },
+    "notes": "All defaults may be overridden per-execution via 3.context.runtime_toggles. Metrics and alerts are enforced centrally.",
+    "preflight_checklist": [
+      {
+        "check": "assert_no_mixed_section_keys",
+        "failure_action": "block_and_report",
+        "description": "Ensure only canonical dotted keys exist and numeric mirrors (1,4,5) are absent."
+      }
+    ],
+    "state_machine": {
+      "states": [
+        {
+          "name": "LOAD",
+          "on_entry": [
+            "validate_inputs",
+            "preflight_checks"
+          ]
+        },
+        {
+          "name": "PRESCAN",
+          "on_entry": [
+            "job_application_prescan"
+          ],
+          "on_exit": [
+            "record_prescan_stats"
+          ]
+        },
+        {
+          "name": "RETRIEVE",
+          "on_entry": [
+            "two_stage_retrieval",
+            "hyde_if_triggered"
+          ]
+        },
+        {
+          "name": "VALIDATE",
+          "on_entry": [
+            "self_rag_validation"
+          ],
+          "on_exit": [
+            "compute_claim_coverage"
+          ]
+        },
+        {
+          "name": "ASSEMBLE",
+          "on_entry": [
+            "assemble_outputs",
+            "attach_evidence_pointers"
+          ]
+        },
+        {
+          "name": "FINALIZE",
+          "on_entry": [
+            "apply_execution_gate",
+            "write_audit_trail"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "from": "LOAD",
+          "to": "PRESCAN",
+          "guard": "inputs_valid"
+        },
+        {
+          "from": "PRESCAN",
+          "to": "RETRIEVE",
+          "guard": "prescan_ok OR prescan_empty"
+        },
+        {
+          "from": "RETRIEVE",
+          "to": "VALIDATE",
+          "guard": "retrieval_done"
+        },
+        {
+          "from": "VALIDATE",
+          "to": "ASSEMBLE",
+          "guard": "claim_coverage>=0.85"
+        },
+        {
+          "from": "VALIDATE",
+          "to": "RETRIEVE",
+          "guard": "claim_coverage<0.85 AND refinements<2",
+          "action": "hop_refinement"
+        },
+        {
+          "from": "ASSEMBLE",
+          "to": "FINALIZE",
+          "guard": "nodes_locked AND claim_verification_pass_rate>=min_threshold"
+        }
+      ],
+      "timeouts_ms": {
+        "PRESCAN": 3000,
+        "RETRIEVE": 6000,
+        "VALIDATE": 4000
+      },
+      "min_threshold_refs": {
+        "claim_coverage": "4.reasoning.self_rag_validation_default.claim_coverage_threshold",
+        "claim_verification_pass_rate": "5.output.execution_gate.claim_verification_pass_rate_min"
+      }
+    }
+  },
+  "3.context": {
+    "dynamic_context_assembly": {
+      "cmem": {
+        "episodic_lookup": {
+          "index_names": [
+            "app_tracker",
+            "interactions",
+            "sent_messages",
+            "user_notes"
+          ],
+          "match_threshold": 0.85,
+          "max_results": 20,
+          "use_embedding_match": true,
+          "fallback_text_match": true
+        }
+      },
+      "cknow": {
+        "graph_lookup": {
+          "graph_types": [
+            "entity_relations",
+            "org_chart",
+            "project_tracker"
+          ],
+          "max_depth": 3,
+          "node_type_priority": [
+            "company",
+            "role",
+            "contact",
+            "project"
+          ],
+          "use_relational_scoring": true
+        }
+      }
+    },
+    "job_application_tracking": {
+      "prescan_step": {
+        "step": "job_application_prescan",
+        "output": "runtime_context.found_applications",
+        "blocking": false,
+        "execution_logic": [
+          "Step 1: Search project files for App_Schema_v4.json and known tracker files under /mnt/data and project repositories.",
+          "Step 2: If tracker found: extract company name from recipient.profile_url, recipient.company, or LinkedIn profile snapshot.",
+          "Step 3: Run fuzzy match against tracker Company field (fuzzy threshold=0.85).",
+          "Step 4: Return array of matching application records with fields: company, role, last_contact_date, status, tracker_id, matched_score.",
+          "Step 5: Store in runtime_context.found_applications",
+          "Error handling: retry up to 2 times on transient I/O errors with exponential backoff; on permanent failure return empty array and annotate runtime_context.prescan_error"
+        ],
+        "matching_logic": {
+          "company_extraction": {
+            "patterns": [
+              "profile_url domain parsing",
+              "recipient.company",
+              "linkedin_about_extract"
+            ],
+            "fallback": "use hostname tokenization and title tokens"
+          },
+          "fuzzy_matching": {
+            "algorithm": "token_set_ratio",
+            "threshold": 0.85,
+            "normalization": "lowercase_strip_punctuation"
+          }
+        },
+        "references": {
+          "app_schema_file": "/mnt/data/App_Schema_v4.json",
+          "tracker_file_hints": [
+            "/mnt/data/App_Tracker_QA_v5.json",
+            "/mnt/data/App_Schema_v4.json"
+          ]
+        },
+        "pure_function": {
+          "signature": "(inputs, tracker) -> found_applications[] | []",
+          "errors": {
+            "EIO": "io_error_retryable",
+            "ENOTRACK": "tracker_not_found",
+            "EPARSE": "parse_error"
+          },
+          "retries": {
+            "max": 2,
+            "policy": "exponential_backoff"
+          }
+        }
+      }
+    },
+    "anchor_temporal_window_days": {
+      "default": 90,
+      "short_term_anchor_days": 30,
+      "long_term_anchor_days": 365
+    },
+    "runtime_toggles": {
+      "disable_hyde": false,
+      "disable_two_stage": false,
+      "emergency_disable_agentic": false,
+      "prescan_max_retries": 2
+    },
+    "inputs": {
+      "canonical": {
+        "required": [
+          "job_description",
+          "base_resume"
+        ],
+        "optional": [
+          "company",
+          "contacts",
+          "profile_url",
+          "recruiter_email"
+        ]
+      }
+    },
+    "memory_lanes": {
+      "episodic": {
+        "indices": [
+          "app_tracker",
+          "interactions",
+          "sent_messages",
+          "user_notes"
+        ],
+        "freshness_max_days": 365,
+        "quota_max_items": 20,
+        "refusal_rules": [
+          "stale>freshness_max_days",
+          "low_match<0.85"
+        ]
+      },
+      "graph": {
+        "indices": [
+          "entity_relations",
+          "org_chart",
+          "project_tracker"
+        ],
+        "max_depth": 3,
+        "quota_max_nodes": 200,
+        "refusal_rules": [
+          "untrusted_source",
+          "cycles_detected"
+        ]
+      }
+    },
+    "reasoning_toggle_approval_gate": {
+      "trigger": "AUTOMATIC after Section 3 context collection completes",
+      "blocking": true,
+      "enforcement_rule": "CFG-C030-001",
+      "display_requirements": {
+        "must_display": [
+          "Reasoning toggle table using Reasoning_Toggles_Summary_Enforced_Format.json v3.2",
+          "Table shows all 16 parameters (description, temp, rag_type, rag_internal, rag_external, rag_retrievers, rag_hops, rag_recency_weight, anchor_temporal_window_days, claim_verification_mode, hybrid_cot_tot, cot_min_paths, tot_branches, min_tot_depth, self_consistency, reflexion) for K.1-K.9",
+          "Confirmation prompt: 'Review reasoning configuration above. Approve to proceed to Section 4? (Y/N)'"
+        ],
+        "implementation": {
+          "validation_checkpoint": {
+            "checkpoint_id": "RTAG-DISPLAY-001",
+            "execution_point": "After table rendering, before user prompt",
+            "checks": [
+              "Table markdown generated successfully",
+              "All 16 rows present in output",
+              "All 9 K-node columns populated",
+              "No forbidden values detected",
+              "Schema version v3.2 confirmed"
+            ],
+            "on_checkpoint_fail": {
+              "halt_execution": true,
+              "display_message": "CRITICAL: Toggle table validation checkpoint failed. Cannot proceed to approval prompt.",
+              "recovery": "Re-execute toggle_table_generation from step_1"
+            }
+          }
+        },
+        "table_schema_source": "Reasoning_Toggles_Summary_Enforced_Format.json",
+        "table_schema_version": "v3.2",
+        "table_orientation": "row-oriented (parameters as rows, K-nodes as columns)",
+        "table_format": "markdown"
+      },
+      "toggle_table_generation": {
+        "mandatory_schema_source": "Reasoning_Toggles_Summary_Enforced_Format.json v3.2",
+        "enforcement_rule": "CFG-P024.2-001",
+        "schema_load_blocking": true,
+        "step_1_load_schema": {
+          "action": "Load Reasoning_Toggles_Summary_Enforced_Format.json from project files",
+          "blocking": true,
+          "on_failure": {
+            "halt_execution": true,
+            "display_message": "CRITICAL: Reasoning_Toggles_Summary_Enforced_Format.json v3.2 not found or corrupted. Cannot proceed to Section 4 without valid toggle table schema.",
+            "recovery": "Verify schema file exists in project knowledge with correct version v3.2"
+          }
+        },
+        "step_2_validate_schema": {
+          "action": "Validate schema integrity against v3.2 specification",
+          "required_checks": [
+            "row_definitions.order contains exactly 16 parameters",
+            "table_structure.orientation == 'rows'",
+            "cell_population_rules present with forbidden_values lists",
+            "node_descriptions present for all K-nodes"
+          ],
+          "blocking": true,
+          "on_failure": {
+            "halt_execution": true,
+            "display_message": "CRITICAL: Schema validation failed. Required v3.2 structure not found.",
+            "recovery": "Restore Reasoning_Toggles_Summary_Enforced_Format.json v3.2 from backup"
+          }
+        },
+        "step_3_populate_cells": {
+          "action": "Populate table cells with K.1-K.9 reasoning_config values from Section 4.reasoning",
+          "source": "4.reasoning.K.X (where X = 1-9)",
+          "parameter_mapping": {
+            "description": "4.reasoning.K.X.name (first 3-4 words)",
+            "temp": "4.reasoning.K.X.reasoning_config.temperature",
+            "rag_type": "Derived from rag_internal + rag_external presence",
+            "rag_internal": "List specific tool names from reasoning_config",
+            "rag_external": "List specific tools with call counts",
+            "rag_retrievers": "4.reasoning.K.X.reasoning_config.rag_min_retrievers",
+            "rag_hops": "4.reasoning.K.X.reasoning_config.agentic_max_hops",
+            "rag_recency_weight": "Default 0.25 unless specified",
+            "anchor_temporal_window_days": "3.context.anchor_temporal_window_days",
+            "claim_verification_mode": "4.reasoning.K.X.reasoning_config.claim_verification_mode",
+            "hybrid_cot_tot": "4.reasoning.K.X.reasoning_config.hybrid_cot_tot",
+            "cot_min_paths": "4.reasoning.K.X.reasoning_config.cot_min_paths OR 1",
+            "tot_branches": "4.reasoning.K.X.reasoning_config.tot_branches OR null",
+            "min_tot_depth": "4.reasoning.K.X.reasoning_config.min_tot_depth OR null",
+            "self_consistency": "4.reasoning.K.X.reasoning_config.self_consistency_k",
+            "reflexion": "4.reasoning.K.X.reasoning_config.reflexion OR 'OFF'"
+          }
+        },
+        "step_4_enforce_row_order": {
+          "action": "Enforce parameter order per schema.row_definitions.order",
+          "required_order": [
+            "description",
+            "temp",
+            "rag_type",
+            "rag_internal",
+            "rag_external",
+            "rag_retrievers",
+            "rag_hops",
+            "rag_recency_weight",
+            "anchor_temporal_window_days",
+            "claim_verification_mode",
+            "hybrid_cot_tot",
+            "cot_min_paths",
+            "tot_branches",
+            "min_tot_depth",
+            "self_consistency",
+            "reflexion"
+          ],
+          "validation": "Table rows MUST appear in this exact order"
+        },
+        "step_5_enforce_column_headers": {
+          "action": "Generate column headers for all K-nodes",
+          "format": "4.K.1 | 4.K.2 | 4.K.2.5 | 4.K.3 | 4.K.4 | 4.K.5 | 4.K.6 | 4.K.7 | 4.K.8 | 4.K.9",
+          "note": "All 9 K-nodes plus parameter column = 10 columns total"
+        },
+        "step_6_apply_cell_population_rules": {
+          "action": "Apply schema.cell_population_rules for rag_internal/rag_external rows",
+          "forbidden_values": [
+            "Internal",
+            "External",
+            "N/A",
+            "Yes",
+            "ON",
+            "Enabled"
+          ],
+          "required_format_rag_internal": "Comma-separated tool names (min 2 sources)",
+          "required_format_rag_external": "Tool names with call counts in parentheses (min 2 total calls)",
+          "example_valid_rag_internal": "project_knowledge_search, conversation_search",
+          "example_valid_rag_external": "web_search (6), web_fetch (2)",
+          "empty_cell_value": "-"
+        },
+        "step_7_validate_no_forbidden_values": {
+          "action": "Scan rag_internal and rag_external rows for forbidden values",
+          "blocking": true,
+          "on_forbidden_value_found": {
+            "halt_execution": true,
+            "display_message": "CRITICAL: Forbidden generic value found in RAG rows. Must use specific tool names.",
+            "show_violation": "Row: {row_name}, Cell: {column}, Value: {forbidden_value}",
+            "recovery": "Replace with specific tool names per cell_population_rules"
+          }
+        },
+        "step_8_render_markdown_table": {
+          "action": "Render markdown table with proper alignment",
+          "format": "markdown",
+          "alignment": "Left-align parameter names, center-align all K-node columns",
+          "example_header": "| Parameter | 4.K.1 | 4.K.2 | 4.K.2.5 | ... |",
+          "example_separator": "|:----------|:-----:|:-----:|:-------:|-----|",
+          "row_format": "| {parameter_name} | {k1_value} | {k2_value} | {k2.5_value} | ... |"
+        },
+        "step_9_mandatory_display": {
+          "action": "Display completed table to user",
+          "blocking": true,
+          "display_requirements": [
+            "Full table with all 16 parameter rows",
+            "All 9 K-node columns populated",
+            "No forbidden values in any cell",
+            "Proper markdown formatting with alignment"
+          ],
+          "display_message_prefix": "**Reasoning Configuration Summary (Generated from Reasoning_Toggles_Summary_Enforced_Format.json v3.2)**",
+          "display_message_suffix": "Review configuration above and approve to proceed to Section 4. (Y/N)"
+        }
+      },
+      "user_interaction": {
+        "prompt_text": "Review reasoning configuration above. Approve to proceed to Section 4? (Y/N)",
+        "valid_responses": [
+          "Y",
+          "y",
+          "Yes",
+          "yes",
+          "N",
+          "n",
+          "No",
+          "no"
+        ],
+        "on_approve": {
+          "action": "Set approval_received=true, proceed to Section 4",
+          "log": "User approved reasoning toggles at {timestamp}"
+        },
+        "on_reject": {
+          "action": "Set approval_received=false, display: 'Section 4 blocked. Modify reasoning configs in Section 4 and re-run Section 3.'",
+          "allow_modification": true,
+          "retry_gate": "User can modify 4.reasoning configs and re-execute approval gate"
+        }
+      },
+      "outputs": [
+        "toggle_table_displayed (boolean)",
+        "user_confirmation_received (boolean)",
+        "user_response (string: 'Y' or 'N')",
+        "approval_timestamp (ISO format)"
+      ]
+    },
+    "bullet_architecture": {
+      "dual_source_enabled": true,
+      "k6_bullet_sources": [
+        "CAIO_resume_unify_section",
+        "Prof_Services_AI_resume_unify_section"
+      ],
+      "k7_bullet_sources": [
+        "CAIO_resume_ibm_section",
+        "Prof_Services_AI_resume_ibm_section"
+      ],
+      "bullet_pool_size_per_role": 14,
+      "selection_strategy": "2_verbatim_3_adapted_2_synthesized",
+      "verbatim_criteria": [
+        "highest_jd_keyword_overlap",
+        "strongest_metrics",
+        "highest_role_relevance",
+        "best_writing_quality"
+      ]
+    }
+  },
+  "4.reasoning": {
+    "purpose": "Execute K.1-K.9 (with K.2.5 NEW) using hybrid CoT/ToT, SVP-calibrated parameters, agentic intelligence, and strict QA enforcement",
+    "execution_order": "sequential K.1 \u2192 K.2 \u2192 K.2.5 (NEW) \u2192 K.3 \u2192 K.4 \u2192 K.5 \u2192 K.6 \u2192 K.7 \u2192 K.8 (ENHANCED) \u2192 K.9 (ENHANCED) with pause points between nodes",
+    "v19_agentic_nodes": [
+      "K.2.5",
+      "K.8",
+      "K.9"
+    ],
+    "output_control": {
+      "SHOW_DETAILED_REASONING_ON": "Full reasoning traces with trees, personas, slides, agentic planning",
+      "SHOW_DETAILED_REASONING_OFF": "Headers + agentic status + outputs + mini QA tables only"
+    },
+    "execution_prerequisites": {
+      "purpose": "Validate requirements before K-node execution begins",
+      "blocking": true,
+      "prerequisite_checks": [
+        {
+          "check_id": "PREREQ-001",
+          "name": "Reasoning toggle approval received",
+          "check": "approval_received == true",
+          "source": "3.context.reasoning_toggle_approval_gate.user_interaction.on_approve",
+          "on_fail": {
+            "action": "HALT",
+            "message": "Section 4 execution blocked: Reasoning toggle approval required. Return to Section 3 approval gate.",
+            "recovery": "User must approve reasoning toggles in Section 3 before proceeding to Section 4"
+          }
+        }
+      ]
+    },
+    "K.1_company_job_title_extraction": {
+      "node_id": "K.1",
+      "name": "Company Name & Job Title Extraction",
+      "scope": "Extract structured data from JD via RAG web_fetch",
+      "output_fields": [
+        "job_title",
+        "job_req_number",
+        "target_company_services",
+        "job_url",
+        "target_company_products",
+        "company_name",
+        "target_company_platforms"
+      ],
+      "reasoning_config": {
+        "cot_mode": "greedy",
+        "hybrid_cot_tot": "N",
+        "temperature": 0.1,
+        "self_consistency_k": null,
+        "tot_breadth": null,
+        "tot_depth": null,
+        "beam_width": 1,
+        "rag_mode": "ON",
+        "rag_strategy": "basic",
+        "rag_min_retrievers": 1,
+        "rationale": "Deterministic extraction - no voting/branching needed"
+      },
+      "qa_rows": [
+        {
+          "check": "Company name present",
+          "threshold": "Required",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Job title present",
+          "threshold": "Required",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Job URL validated",
+          "threshold": "Valid URL format",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Req number (if present)",
+          "threshold": "\u22648 chars",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.95",
+          "status": "PASS/FAIL"
+        }
+      ],
+      "lock_status": "\u2705 K.1 Status: LOCKED | Ready for K.2 ingestion",
+      "extraction_functions": {
+        "extract_target_company_products": {
+          "pseudo_code": [
+            "FUNCTION extract_target_company_products(job_description, company_name):",
+            "  products = []",
+            "  product_patterns = [",
+            "    r'\\b([A-Z][a-zA-Z]+\\s){0,2}(Cloud|Platform|Service|Hub|Suite|Engine)\\b',",
+            "    r'\\b' + company_name + r'\\s+([A-Z][a-zA-Z]+)\\b'",
+            "  ]",
+            "  FOR pattern IN product_patterns:",
+            "    products.extend(regex_findall(pattern, job_description))",
+            "  products.append(company_name)",
+            "  RETURN unique(products)"
+          ]
+        }
+      },
+      "hyde_enrichment": {
+        "trigger_conditions": {
+          "jd_sparse": "len(job_description) < 200 words",
+          "jd_generic": "keyword_density < 0.05",
+          "missing_requirements": "no 'requirements' or 'qualifications' section"
+        },
+        "hypothetical_generation_prompt": {
+          "system": "You are an expert recruiter. Generate a detailed job description based on sparse input.",
+          "template": "Given:\n- Company: {company_name}\n- Title: {job_title}\n- Brief JD: {sparse_jd}\n\nGenerate a comprehensive 400-word job description including:\n1. Likely technical requirements (8-10 specific skills/tools)\n2. Leadership scope and team size\n3. Key responsibilities (5-7 bullets)\n4. Success metrics and KPIs\n5. Required experience level and background\n\nBase this on typical {job_title} roles at {company_type} companies."
+        },
+        "usage": {
+          "K.1": "Enhance extraction when JD < 200 words",
+          "K.8": "Generate hypothetical competencies, then search for real examples",
+          "search_strategy": "Search with BOTH real and hypothetical, weight real 0.7, hypothetical 0.3"
+        }
+      }
+    },
+    "K.2_industry_classification": {
+      "node_id": "K.2",
+      "name": "Industry Classification",
+      "scope": "Map to GICS/SIC category and sub-category",
+      "output_fields": [
+        "category",
+        "sub_category"
+      ],
+      "reasoning_config": {
+        "self_consistency_k": 5,
+        "rag_mode": "ON",
+        "rag_strategy": "hybrid",
+        "rag_min_retrievers": 3,
+        "agentic_mode": "ON",
+        "agentic_max_hops": 2,
+        "rationale": "Multi-source validation for accurate classification"
+      },
+      "qa_rows": [
+        {
+          "check": "Category from GICS/SIC",
+          "threshold": "Valid taxonomy",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Sub-category aligned",
+          "threshold": "Consistent with category",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Self-consistency votes",
+          "threshold": "\u22653/5 agreement",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.90",
+          "status": "PASS/FAIL"
+        }
+      ],
+      "lock_status": "\u2705 K.2 Status: LOCKED | Ready for K.2.5 competitive positioning"
+    },
+    "K.2.5_competitive_positioning_agent": {
+      "node_id": "K.2.5",
+      "name": "\ud83e\udd16 Competitive Positioning Agent (NEW v19.0)",
+      "scope": "Analyze 3-5 peer JDs to identify table-stakes vs differentiator keywords",
+      "tier": "Tier 2 - High ROI Enhancement",
+      "output_fields": [
+        "peer_jd_analysis",
+        "table_stakes_keywords",
+        "differentiator_keywords",
+        "positioning_strategy"
+      ],
+      "agent_phases": {
+        "phase_1": {
+          "name": "Peer JD Discovery",
+          "action": "Search for 3-5 similar JDs from peer companies",
+          "search_query_pattern": "[job_title] at [peer_company_1] OR [peer_company_2] OR [peer_company_3]",
+          "peer_selection_criteria": [
+            "Same industry/sector (from K.2)",
+            "Similar company size/stage",
+            "Posted within last 90 days",
+            "Same role level (SVP/C-level)"
+          ],
+          "min_peer_jds": 3,
+          "target_peer_jds": 5,
+          "rag_retrievers": "10-15 searches"
+        },
+        "phase_2": {
+          "name": "Keyword Extraction",
+          "action": "Extract all skills, technologies, and requirements from peer JDs",
+          "extraction_categories": [
+            "Technical skills (tools, platforms, languages)",
+            "Leadership competencies",
+            "Domain expertise",
+            "Certifications/credentials",
+            "Years of experience patterns",
+            "Team size/scope indicators"
+          ]
+        },
+        "phase_3": {
+          "name": "Table Stakes Identification",
+          "action": "Identify keywords appearing in \u226580% of peer JDs",
+          "table_stakes_definition": "Skills/requirements that are baseline expectations for the role",
+          "minimum_frequency": "4/5 peer JDs (80%)",
+          "examples": [
+            "10+ years experience",
+            "P&L ownership",
+            "strategic planning"
+          ]
+        },
+        "phase_4": {
+          "name": "Differentiator Identification",
+          "action": "Identify unique keywords in target JD NOT in peer JDs",
+          "differentiator_definition": "Skills/requirements that distinguish this role from competitors",
+          "maximum_frequency": "\u22641/5 peer JDs (20%)",
+          "examples": [
+            "quantum computing",
+            "specific industry vertical",
+            "unique tech stack"
+          ]
+        },
+        "phase_5": {
+          "name": "Positioning Strategy Generation",
+          "action": "Create guidance for K.4 headline and K.5 exec summary differentiation",
+          "strategy_output": {
+            "table_stakes_coverage": "Ensure all table-stakes keywords appear in K.6/K.7 bullets",
+            "differentiator_emphasis": "Highlight differentiator keywords in K.4 headline and K.5 summary",
+            "competitive_framing": "Position candidate as having rare combination of table-stakes + differentiators"
+          }
+        }
+      },
+      "reasoning_config": {
+        "rag_mode": "ON",
+        "rag_strategy": "agentic",
+        "rag_min_retrievers": 10,
+        "agentic_mode": "ON",
+        "agentic_max_hops": 3,
+        "rationale": "Multi-hop search required to find peer JDs and extract competitive intelligence"
+      },
+      "qa_rows": [
+        {
+          "check": "Peer JDs found",
+          "threshold": "\u22653 peer JDs",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Table stakes identified",
+          "threshold": "\u22655 keywords",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Differentiators identified",
+          "threshold": "\u22653 keywords",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Positioning strategy",
+          "threshold": "Clear guidance for K.4/K.5",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.85",
+          "status": "PASS/FAIL"
+        }
+      ],
+      "performance_impact": {
+        "latency_added": "+15-30 seconds",
+        "api_calls": "~10-15 searches",
+        "quality_improvement": "20-30% better headline/summary differentiation"
+      },
+      "lock_status": "\u2705 K.2.5 Status: LOCKED | Positioning strategy ready for K.3-K.5",
+      "schema_ref": "agentic_node",
+      "signal_quality": {
+        "$ref": "6.conditions.templates.signal_quality"
+      },
+      "two_stage_retrieval": {
+        "$ref": "6.conditions.templates.two_stage_retrieval"
+      },
+      "hop_refinement": {
+        "$ref": "6.conditions.templates.hop_refinement"
+      }
+    },
+    "K.3_role_catalog_mapping": {
+      "node_id": "K.3",
+      "name": "Primary Job Role Mapping",
+      "scope": "Map to SaaS role catalog (single role, no secondary)",
+      "output_fields": [
+        "primary_job_role"
+      ],
+      "reasoning_config": {
+        "hybrid_cot_tot": "N",
+        "temperature": 0.2,
+        "self_consistency_k": 5,
+        "tot_breadth": null,
+        "tot_depth": null,
+        "beam_width": 1,
+        "rag_mode": "ON",
+        "rag_strategy": "hybrid",
+        "rag_min_retrievers": 3,
+        "agentic_mode": "ON",
+        "agentic_max_hops": 2,
+        "rationale": "Catalog lookup only - pure CoT without branching"
+      },
+      "qa_rows": [
+        {
+          "check": "Role from catalog",
+          "threshold": "Exact catalog match",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Single role only",
+          "threshold": "No secondary role",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "JD alignment",
+          "threshold": "\u22650.85 semantic match",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.90",
+          "status": "PASS/FAIL"
+        }
+      ],
+      "lock_status": "\u2705 K.3 Status: LOCKED | Ready for K.4 ingestion"
+    },
+    "K.4_professional_headline": {
+      "node_id": "K.4",
+      "name": "Professional Headline",
+      "scope": "8-13 words, 3-axis strategic positioning (not tactical) + competitive insights from K.2.5",
+      "output_fields": [
+        "headline"
+      ],
+      "reasoning_config": {
+        "temperature": 0.6,
+        "rationale": "Highest temperature for creative lexical variety and differentiation",
+        "rag_mode": "ON",
+        "rag_strategy": "hybrid",
+        "rag_external_web_search": 12,
+        "rag_external_web_fetch": 5,
+        "rag_min_retrievers": 5,
+        "agentic_max_hops": 3,
+        "hybrid_cot_tot": true,
+        "tot_branches": 5,
+        "min_tot_depth": 3
+      },
+      "v19_competitive_enhancement": {
+        "use_k2.5_output": true,
+        "differentiator_emphasis": "Incorporate differentiator keywords from K.2.5 in axes",
+        "table_stakes_avoid": "Do NOT use table-stakes keywords (appear in all peer JDs)",
+        "positioning_strategy": "Frame candidate as rare combination: table-stakes competence + unique differentiators"
+      },
+      "three_axis_framework": {
+        "axis_1": "Domain/Industry expertise (e.g., AI/ML, SaaS, FinTech)",
+        "axis_2": "Leadership scope (e.g., Strategic, Operational, Transformational)",
+        "axis_3": "Value proposition (e.g., Growth-focused, Innovation-driven, Performance-oriented)",
+        "constraint": "Strategic positioning - NOT tactical execution (avoid 'delivering', 'executing', 'managing')"
+      },
+      "qa_rows": [
+        {
+          "check": "Word count",
+          "threshold": "8-13 words",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Character limit (Word single-line)",
+          "threshold": "\u226490 characters",
+          "status": "PASS/FAIL",
+          "rationale": "Standard Word margins (11pt font) supports ~90-95 chars per line. 90-char limit provides buffer for formatting variations."
+        },
+        {
+          "check": "3-axis structure",
+          "threshold": "All 3 axes present",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Strategic positioning",
+          "threshold": "No tactical verbs",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Competitive differentiation",
+          "threshold": "Uses K.2.5 differentiators",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Lexical variety",
+          "threshold": "Unique phrasing (not generic)",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.5",
+          "threshold": "<0.40 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.8",
+          "threshold": "<0.40 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.85",
+          "status": "PASS/FAIL"
+        }
+      ],
+      "lock_status": "\u2705 K.4 Status: LOCKED | Ready for K.5 ingestion",
+      "message_policy_ref": "K.4"
+    },
+    "K.5_executive_summary": {
+      "node_id": "K.5",
+      "name": "Executive Summary",
+      "scope": "3-5 sentences, 100-120 TOKENS (\u224875-90 words), strategic identity narrative",
+      "output_fields": [
+        "executive_summary"
+      ],
+      "reasoning_config": {
+        "temperature_start": 0.5,
+        "temperature_increment": 0.1,
+        "temperature_max": 1.0,
+        "self_consistency_k": 5,
+        "rag_mode": "ON",
+        "rag_strategy": "hybrid",
+        "rag_min_retrievers": 2,
+        "agentic_mode": "ON",
+        "agentic_max_hops": 2,
+        "v18_9_note": "Temperature starts at 0.5 (was 0.3 in v18.8), escalates +0.1 per regeneration"
+      },
+      "v19_competitive_enhancement": {
+        "use_k2.5_output": true,
+        "positioning_approach": "Weave differentiator keywords into strategic identity narrative",
+        "competitive_framing": "Position as rare combination of capabilities that competitors lack"
+      },
+      "generation_mode": "summary_level",
+      "length_spec": {
+        "format": "3-5 sentences (flexible, not rigid)",
+        "target_tokens": "100-120 TOKENS",
+        "target_words": "approximately 75-90 words",
+        "v18_9_clarification": "Length measured in TOKENS not word count",
+        "balance_constraint": "max_sentence_length / min_sentence_length \u2264 1.5 (no single sentence dominates)"
+      },
+      "temperature_escalation_strategy": {
+        "step_1": "Generate complete summary at T=0.5",
+        "step_2": "Score entire summary holistically with alignment formula",
+        "step_3": "If alignment < 0.9 \u2192 increase T by 0.1",
+        "step_4": "Regenerate complete summary and rescore",
+        "step_5": "Continue until alignment \u2265 0.9 OR T reaches max 1.0",
+        "note": "Beam width=2 applies to complete summaries, not individual sentences"
+      },
+      "alignment_formula": {
+        "components": {
+          "semantic_alignment": 0.35,
+          "keyword_relevance": 0.25,
+          "role_clarity": 0.2,
+          "metrics_density": 0.2
+        },
+        "target": "\u22650.9",
+        "formula": "0.35*semantic + 0.25*keyword + 0.20*role + 0.20*metrics"
+      },
+      "content_focus": {
+        "primary": "Strategic identity narrative - WHO the candidate is professionally",
+        "secondary": "Differentiated value proposition for target role",
+        "forbidden": [
+          "Company name-dropping patterns: 'At [COMPANY]', 'while at [COMPANY]', '[COMPANY] experience'"
+        ],
+        "narrative_style": {
+          "approach": "capability_focused_narrative",
+          "voice": "I have [CAPABILITY]... while [CAPABILITY-ING]...",
+          "forbidden_patterns": [
+            "At [COMPANY], I [VERB]",
+            "while at [COMPANY], I [VERB]",
+            "During my time at [COMPANY]",
+            "[COMPANY] experience"
+          ],
+          "allowed_patterns": [
+            "I have [VERB-ed] [OUTCOME]",
+            "My expertise includes [CAPABILITY]",
+            "I [VERB] [OUTCOME] by [METHOD]",
+            "Having [VERB-ed] [CONTEXT]"
+          ]
+        }
+      },
+      "qa_rows": [
+        {
+          "check": "Token count",
+          "threshold": "100-120 tokens",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Sentence count",
+          "threshold": "3-5 sentences",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Sentence balance",
+          "threshold": "max/min \u2264 1.5",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Strategic identity focus",
+          "threshold": "Not bullet summary",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Alignment score",
+          "threshold": "\u22650.9",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.4",
+          "threshold": "<0.40 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.6",
+          "threshold": "<0.40 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.7",
+          "threshold": "<0.40 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.8",
+          "threshold": "<0.50 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.90",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "No company name-dropping",
+          "threshold": "Zero previous employer names",
+          "status": "PASS/FAIL",
+          "validation": "validate_no_company_namedropping()",
+          "block_on_fail": true
+        }
+      ],
+      "lock_status": "\u2705 K.5 Status: LOCKED | Ready for K.6 ingestion",
+      "message_policy_ref": "K.5"
+    },
+    "K.6_most_recent_experience": {
+      "node_id": "K.6",
+      "name": "Most Recent Experience (Unify Bullets)",
+      "scope": "7 bullets, 15-25 words each, 2-3-2 provenance, position-weighted for ATS",
+      "output_fields": [
+        "intro_sentence",
+        "bullet_1",
+        "bullet_2",
+        "bullet_3",
+        "bullet_4",
+        "bullet_5",
+        "bullet_6",
+        "bullet_7"
+      ],
+      "reasoning_config": {
+        "temperature": 0.5,
+        "rationale": "Moderate temperature for genuine variety in self-consistency voting",
+        "rag_mode": "ON",
+        "rag_strategy": "hybrid",
+        "rag_external_web_search": 15,
+        "rag_external_web_fetch": 6,
+        "rag_min_retrievers": 6,
+        "agentic_max_hops": 3,
+        "hybrid_cot_tot": true,
+        "tot_branches": 4,
+        "min_tot_depth": 3,
+        "bullet_pool_size": 14
+      },
+      "intro_sentence": {
+        "purpose": "Set context for Unify role and scope",
+        "required_elements": [
+          "company_name",
+          "role_scope",
+          "time_period"
+        ],
+        "dedup_checks_ref": [
+          "K.6_intro_vs_K.5",
+          "K.6_intro_vs_K.8",
+          "K.6_intro_vs_K.4"
+        ]
+      },
+      "provenance_strategy": {
+        "split": "2-3-2",
+        "verbatim": "2 bullets - 100% token match to base resume (\u22650.88 threshold)",
+        "adapted": "3 bullets - 80-99% token overlap (\u22650.75 threshold)",
+        "synthesized": "2 bullets - <80% overlap (\u22650.70 threshold)",
+        "rationale": "Balance JD customization with AI detection defense"
+      },
+      "position_weighting": {
+        "bullet_1": "1.20x boost for ATS ranking",
+        "bullet_2": "1.15x boost for ATS ranking",
+        "bullets_3_7": "1.0x baseline",
+        "rationale": "ATS parsers prioritize top bullets - pack with JD keywords"
+      },
+      "bullet_structure": {
+        "format": "Strong verb + Technology/Method + Quantified outcome",
+        "verb_variety": "No verb used more than 2x across 7 bullets (AI detection defense)",
+        "keyword_density": "Bullets 1-2 should contain 3-4 JD keywords each",
+        "forbidden_customization_patterns": {
+          "never_use": [
+            "deliver [TARGET_COMPANY] implementations",
+            "implement [TARGET_COMPANY_PRODUCT]",
+            "deploy [TARGET_COMPANY_PRODUCT]",
+            "using [TARGET_COMPANY_PRODUCT]",
+            "[TARGET_COMPANY]'s [PRODUCT]",
+            "establish [TARGET_COMPANY] as foundation"
+          ],
+          "always_use_instead": [
+            "deliver cloud data platform implementations",
+            "implement advanced analytics solutions",
+            "deploy enterprise data infrastructure",
+            "using cloud-native architectures",
+            "enterprise-grade data platforms",
+            "establish scalable data foundation"
+          ],
+          "generic_term_mapping": {
+            "Snowflake Data Cloud": "cloud data platform",
+            "Snowpark": "cloud-native compute environment",
+            "Databricks": "unified analytics platform",
+            "BigQuery": "cloud data warehouse",
+            "Redshift": "cloud data warehouse"
+          }
+        }
+      },
+      "lock_status": "\u2705 K.6 Status: LOCKED | Ready for K.7 ingestion",
+      "message_policy_ref": "K.6",
+      "qa_rows_ref": [
+        "bullet_block"
+      ],
+      "qa_rows": [
+        {
+          "check": "No target company name",
+          "threshold": "Zero occurrences in intro+bullets",
+          "status": "PASS/FAIL",
+          "validation": "validate_no_target_products_in_past_roles()",
+          "block_on_fail": true
+        },
+        {
+          "check": "No target company products",
+          "threshold": "Zero product names from JD",
+          "status": "PASS/FAIL",
+          "validation": "validate_no_target_products_in_past_roles()",
+          "block_on_fail": true
+        },
+        {
+          "check": "Generic technology terms used",
+          "threshold": "Category-level terminology only",
+          "status": "PASS/FAIL",
+          "validation": "check_for_generic_terms(['cloud data platform','advanced analytics','data infrastructure','AI/ML platforms'])",
+          "block_on_fail": true
+        }
+      ],
+      "achievement_mapping": {
+        "$ref": "6.conditions.templates.achievement_mapping"
+      }
+    },
+    "K.7_prior_experience": {
+      "node_id": "K.7",
+      "name": "Prior Experience (IBM Bullets)",
+      "scope": "7 bullets, 15-25 words each, 2-3-2 provenance, global scope emphasis",
+      "output_fields": [
+        "intro_sentence",
+        "bullet_1",
+        "bullet_2",
+        "bullet_3",
+        "bullet_4",
+        "bullet_5",
+        "bullet_6",
+        "bullet_7"
+      ],
+      "reasoning_config": {
+        "temperature": 0.5,
+        "rationale": "Moderate temperature for genuine variety in self-consistency voting",
+        "rag_mode": "ON",
+        "rag_strategy": "hybrid",
+        "rag_external_web_search": 15,
+        "rag_external_web_fetch": 6,
+        "rag_min_retrievers": 6,
+        "agentic_max_hops": 3,
+        "hybrid_cot_tot": true,
+        "tot_branches": 4,
+        "min_tot_depth": 3,
+        "bullet_pool_size": 14
+      },
+      "intro_sentence": {
+        "purpose": "Set context for IBM role with global scope emphasis",
+        "required_elements": [
+          "company_name",
+          "global_scope_indicator",
+          "time_period"
+        ],
+        "note": "Shorter than K.6 intro (15-20 vs 20-35 words) for balance",
+        "dedup_checks_ref": [
+          "K.7_intro_vs_K.5",
+          "K.7_intro_vs_K.8",
+          "K.7_intro_vs_K.4"
+        ]
+      },
+      "provenance_strategy": {
+        "split": "2-3-2",
+        "verbatim": "2 bullets - 100% token match to base resume (\u22650.85 threshold)",
+        "adapted": "3 bullets - 80-99% token overlap (\u22650.70 threshold)",
+        "synthesized": "2 bullets - <80% overlap (\u22650.65 threshold)",
+        "note": "Slightly lower thresholds than K.6 to allow more customization for older role"
+      },
+      "global_scope_emphasis": {
+        "purpose": "Highlight international/enterprise scope of IBM experience",
+        "preferred_indicators": [
+          "global",
+          "worldwide",
+          "international",
+          "enterprise-wide",
+          "cross-regional",
+          "multi-continent",
+          "Fortune 500"
+        ],
+        "bullet_placement": "At least 2 bullets should reference global/enterprise scope"
+      },
+      "bullet_structure": {
+        "format": "Strong verb + Technology/Method + Quantified outcome",
+        "verb_variety": "No verb used more than 2x across 7 bullets (AI detection defense)",
+        "keyword_density": "Moderate JD keyword inclusion (not as aggressive as K.6)"
+      },
+      "lock_status": "\u2705 K.7 Status: LOCKED | Ready for K.8 ENHANCED intelligent agent",
+      "message_policy_ref": "K.7",
+      "qa_rows_ref": [
+        "bullet_block"
+      ],
+      "qa_rows": [
+        {
+          "check": "No target company name",
+          "threshold": "Zero occurrences in intro+bullets",
+          "status": "PASS/FAIL",
+          "validation": "validate_no_target_products_in_past_roles()",
+          "block_on_fail": true
+        },
+        {
+          "check": "No target company products",
+          "threshold": "Zero product names from JD",
+          "status": "PASS/FAIL",
+          "validation": "validate_no_target_products_in_past_roles()",
+          "block_on_fail": true
+        },
+        {
+          "check": "Generic technology terms used",
+          "threshold": "Category-level terminology only",
+          "status": "PASS/FAIL",
+          "validation": "check_for_generic_terms(['cloud data platform','advanced analytics','data infrastructure'])",
+          "block_on_fail": true
+        }
+      ],
+      "achievement_mapping": {
+        "$ref": "6.conditions.templates.achievement_mapping"
+      }
+    },
+    "K.8_leadership_competencies": {
+      "node_id": "K.8",
+      "name": "Leadership Competencies",
+      "scope": "6 competencies, 18-24 words each, TIER 1 ENHANCEMENT: 85%+ keyword gap coverage",
+      "output_fields": [
+        "competency_1",
+        "competency_2",
+        "competency_3",
+        "competency_4",
+        "competency_5",
+        "competency_6"
+      ],
+      "v19_intelligent_agent": {
+        "agent_name": "Intelligent Gap-Filling Agent",
+        "primary_goal": "Cover 85%+ of JD keywords NOT addressed in K.4/K.5/K.6/K.7 (upgraded from 70%)",
+        "secondary_goal": "Use authentic phrasing from LinkedIn profiles and industry frameworks",
+        "target_coverage": "\u226585% of identified keyword gaps",
+        "scoring_weight": "35% of total competency score (highest weight)",
+        "agent_phases": {
+          "phase_1": {
+            "name": "Gap Identification",
+            "action": "Extract all JD keywords and compute K.4-K.7 coverage",
+            "steps": [
+              "Extract all technical skills, tools, methodologies from JD",
+              "Extract all leadership competencies from JD",
+              "Count keyword occurrences in K.4 headline",
+              "Count keyword occurrences in K.5 exec summary",
+              "Count keyword occurrences in K.6 bullets (all 7)",
+              "Count keyword occurrences in K.7 bullets (all 7)",
+              "Identify gaps: keywords with <2 total occurrences"
+            ],
+            "output": "List of 15-25 gap keywords requiring coverage"
+          },
+          "phase_2": {
+            "name": "LinkedIn Authentic Phrasing Search",
+            "action": "Search LinkedIn profiles for natural competency phrasing",
+            "search_strategy": [
+              "Query: 'LinkedIn profiles [job_title] [gap_keyword_1] [gap_keyword_2]'",
+              "Target: Senior executives at peer companies",
+              "Extract: How they phrase competencies in Skills/About sections",
+              "Validate: Must sound authentic, not buzzword-heavy"
+            ],
+            "rag_retrievers": "15-25 searches",
+            "agentic_hops": "3 hops per keyword cluster",
+            "examples": [
+              {
+                "Instead of": "'Expert in machine learning and AI'",
+                "Use": "'Built production ML systems at scale with measurable business impact'"
+              }
+            ]
+          },
+          "phase_3": {
+            "name": "Industry Framework Search",
+            "action": "Search for credible industry frameworks and standards",
+            "search_strategy": [
+              "Query: '[gap_keyword] framework best practices industry standards'",
+              "Target: Whitepapers, industry reports, certification bodies",
+              "Extract: Standard terminology and constraint language",
+              "Validate: Must be from authoritative sources"
+            ],
+            "rag_retrievers": "10-15 searches",
+            "preferred_sources": [
+              "IEEE standards",
+              "PMI frameworks",
+              "Industry analyst reports (Gartner, Forrester)",
+              "Professional certification bodies"
+            ]
+          },
+          "phase_4": {
+            "name": "Competency Construction",
+            "action": "Build 6 competencies targeting 2-3 gap keywords each",
+            "structure": {
+              "title": "Keyword-dense noun phrase (2-3 gap keywords)",
+              "description": "18-24 words with authentic phrasing from Phase 2-3",
+              "credibility_markers": [
+                "Constraint language: 'while maintaining', 'balancing', 'ensuring'",
+                "Scale indicators: 'enterprise-scale', '$XM+', 'XX+ people'",
+                "Outcome verbs: 'established', 'architected', 'demonstrated'"
+              ]
+            },
+            "examples": [
+              "**\u2022 ML Operations & Scalable AI Deployment:** Architected production ML pipelines handling 10M+ daily predictions while maintaining 99.9% uptime and ensuring model governance across regulated environments.",
+              "**\u2022 Cross-Functional AI Strategy & Stakeholder Alignment:** Led enterprise-wide AI transformation initiatives balancing technical innovation with business value realization and regulatory compliance requirements."
+            ]
+          },
+          "phase_5": {
+            "name": "Credibility Verification",
+            "action": "Validate competencies against base resume",
+            "checks": [
+              "Can candidate plausibly claim this competency?",
+              "Is there evidence in base resume supporting this?",
+              "Does phrasing match candidate's actual experience level?",
+              "Are scale indicators realistic given base resume?"
+            ],
+            "provenance_requirement": "\u22652 competencies must be verbatim/near-verbatim from base resume"
+          },
+          "phase_6": {
+            "name": "AI Detection Precheck & Final Validation",
+            "action": "Validate gap coverage and AI detection safety",
+            "checks": [
+              "Total gap coverage: \u226585% of identified gaps",
+              "Keyword density per competency: 2-3 gap keywords",
+              "Pairwise distinctness: <0.92 similarity, <40% token overlap",
+              "No generic buzzwords: 'synergy', 'excellence', 'passionate'",
+              "Constraint language present: \u22653 competencies use constraint markers",
+              "Authentic phrasing: Matches LinkedIn/framework patterns from Phase 2-3"
+            ]
+          }
+        }
+      },
+      "reasoning_config": {
+        "self_consistency_k": 5,
+        "rag_mode": "ON",
+        "rag_strategy": "agentic",
+        "rag_min_retrievers": 15,
+        "agentic_mode": "ON",
+        "agentic_max_hops": 3,
+        "rationale": "Intensive multi-hop search for authentic phrasing and gap coverage"
+      },
+      "primary_goal": {
+        "objective": "Cover JD keywords NOT addressed in K.4/K.5/K.6/K.7 - THIS IS THE PRIMARY OBJECTIVE",
+        "target_coverage": "\u226570% of identified keyword gaps",
+        "scoring_weight": "35% of total competency score (highest weight)",
+        "execution_strategy": [
+          "Step 1: Extract all JD keywords",
+          "Step 2: Identify which appear in K.4, K.5, K.6, K.7 outputs",
+          "Step 3: Calculate gap = keywords in JD but NOT in K.4-K.7",
+          "Step 4: Construct 6 competencies targeting 2-3 gap keywords each",
+          "Step 5: Validate coverage \u226570% of gap keywords"
+        ]
+      },
+      "competency_structure": {
+        "title_format": "Keyword-dense noun phrase (2-3 gap keywords per title)",
+        "description_format": "18-24 words elaborating on title with concrete examples",
+        "keyword_density": "Each competency should contain 2-3 uncovered JD keywords"
+      },
+      "scoring_formula": {
+        "components": {
+          "keyword_gap_coverage": 0.35,
+          "credibility": 0.25,
+          "semantic_alignment": 0.2,
+          "lexical_variety": 0.2
+        },
+        "formula": "0.35*gap_coverage + 0.25*credibility + 0.20*semantic + 0.20*variety",
+        "target": "\u22650.88"
+      },
+      "qa_rows": [
+        {
+          "check": "Competency count",
+          "threshold": "Exactly 6",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Description length",
+          "threshold": "18-24 words each",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Keyword gap coverage",
+          "threshold": "\u226585% of gaps addressed",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Keyword density",
+          "threshold": "2-3 gap keywords per competency",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Authentic phrasing",
+          "threshold": "Matches LinkedIn/framework patterns",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Credibility",
+          "threshold": "Plausible given base resume",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Provenance",
+          "threshold": "\u22652 competencies from base resume",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.4",
+          "threshold": "<0.40 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.5",
+          "threshold": "<0.50 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.6",
+          "threshold": "<0.60 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Dedup vs K.7",
+          "threshold": "<0.60 cosine",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "ASCII hygiene",
+          "threshold": "Clean",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Overall score",
+          "threshold": "\u22650.88",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "No target company products in competencies",
+          "threshold": "Generic platform terms only",
+          "status": "PASS/FAIL",
+          "validation": "validate_no_target_products_in_past_roles()",
+          "block_on_fail": true
+        }
+      ],
+      "performance_impact": {
+        "latency_added": "+30-60 seconds",
+        "api_calls": "~15-25 searches",
+        "quality_improvement": "70% \u2192 85%+ gap coverage, authentic phrasing reduces AI detection risk"
+      },
+      "lock_status": "\u2705 K.8 Status: LOCKED | Ready for K.9 ENHANCED specificity agent",
+      "schema_ref": "agentic_node",
+      "signal_quality": {
+        "$ref": "6.conditions.templates.signal_quality"
+      },
+      "two_stage_retrieval": {
+        "$ref": "6.conditions.templates.two_stage_retrieval"
+      },
+      "self_rag_validation": {
+        "$ref": "6.conditions.templates.self_rag_validation"
+      },
+      "hop_refinement": {
+        "$ref": "6.conditions.templates.hop_refinement"
+      }
+    },
+    "K.9_cover_letter_elements": {
+      "node_id": "K.9",
+      "name": "\ud83e\udd16 Cover Letter - Specificity-Driven Research Agent (ENHANCED v19.0)",
+      "scope": "Why Interested (1 para) + Why Ideal (2 paras), TIER 1 ENHANCEMENT: \u22654 company-specific details",
+      "tier": "Tier 1 - Highest ROI Enhancement",
+      "output_fields": [
+        "why_interested_paragraph",
+        "why_ideal_paragraph_1",
+        "why_ideal_paragraph_2"
+      ],
+      "v19_specificity_agent": {
+        "agent_name": "Specificity-Driven Research Agent",
+        "primary_goal": "Include \u22654 company-specific details that pass find-replace test",
+        "find_replace_test": "If you replace company name with competitor, does paragraph still work? If YES \u2192 FAIL (too generic)",
+        "target_specificity": "90%+ recruiter engagement (up from 60% baseline)",
+        "agent_phases": {
+          "phase_1": {
+            "name": "Generic Baseline",
+            "action": "Generate initial cover letter from standard sources",
+            "sources": [
+              "Company website About page",
+              "Company mission/values statement",
+              "Recent press releases",
+              "Job description analysis"
+            ],
+            "output": "Baseline 3-paragraph cover letter",
+            "expected_quality": "60% specificity (typical corporate speak)"
+          },
+          "phase_2": {
+            "name": "Specificity Test",
+            "action": "Apply find-replace test to each paragraph",
+            "test_procedure": [
+              "Replace [company_name] with [competitor_name]",
+              "Re-read paragraph",
+              "If paragraph still makes sense \u2192 FAIL (too generic)",
+              "If paragraph breaks/sounds wrong \u2192 PASS (specific enough)"
+            ],
+            "pass_threshold": "\u22652 paragraphs must PASS find-replace test"
+          },
+          "phase_3": {
+            "name": "Unique Signal Search",
+            "action": "Search for company-specific details not available to competitors",
+            "search_strategy": [
+              "Executive interviews (founders, C-suite on podcasts/articles)",
+              "Product documentation (API docs, technical blog posts)",
+              "Customer stories/case studies (specific outcomes)",
+              "Recent company news (acquisitions, partnerships, product launches)",
+              "Company culture signals (Glassdoor, LinkedIn employee posts)",
+              "Technical architecture choices (engineering blog posts)"
+            ],
+            "rag_retrievers": "20-30 searches",
+            "agentic_hops": "3-4 hops to find unique signals",
+            "examples": [
+              {
+                "Generic": "'Your company's focus on innovation aligns with my experience'",
+                "Specific": "'Your August 2025 partnership with FAU Global Ventures signals prioritization of academic validation for adaptive AI in healthcare\u2014exactly where regulatory rigor determines market viability'"
+              }
+            ]
+          },
+          "phase_4": {
+            "name": "Validation Loop",
+            "action": "Re-apply find-replace test after incorporating unique signals",
+            "iteration": [
+              "Incorporate 1-2 unique signals from Phase 3",
+              "Apply find-replace test",
+              "If still fails \u2192 iterate with more unique signals",
+              "Continue until \u22654 company-specific details present"
+            ],
+            "max_iterations": 3,
+            "confidence_target": "\u22650.90 that recruiter recognizes research depth"
+          },
+          "phase_5": {
+            "name": "Cover Letter Construction",
+            "action": "Assemble final 3-paragraph cover letter with \u22654 specifics",
+            "structure": {
+              "why_interested": {
+                "paragraphs": 1,
+                "word_count": "80-100 words",
+                "required_specifics": "\u22652 company-specific details",
+                "content_focus": [
+                  "Genuine connection to company mission/values (with specific example)",
+                  "Specific aspect of role that aligns (reference unique detail from Phase 3)",
+                  "Company-specific research (recent news, executive interview, product detail)",
+                  "NO generic statements"
+                ]
+              },
+              "why_ideal": {
+                "paragraphs": 2,
+                "paragraph_1": {
+                  "word_count": "80-100 words",
+                  "required_specifics": "\u22651 company-specific detail",
+                  "content": "2-3 achievements from K.6/K.7 that address JD requirements + specific proof points"
+                },
+                "paragraph_2": {
+                  "word_count": "80-100 words",
+                  "required_specifics": "\u22651 company-specific detail",
+                  "content": "Leadership competencies (K.8) + forward-looking value delivery"
+                }
+              }
+            }
+          }
+        }
+      },
+      "reasoning_config": {
+        "temperature": 0.4,
+        "rag_mode": "ON",
+        "rag_strategy": "agentic",
+        "rag_min_retrievers": 20,
+        "agentic_mode": "ON",
+        "agentic_max_hops": 4,
+        "rationale": "Intensive multi-hop search for unique company signals"
+      },
+      "why_interested": {
+        "paragraph_count": 1,
+        "word_count": "80-100 words",
+        "content_focus": [
+          "Genuine connection to company mission/values",
+          "Specific aspects of role that align with candidate interests",
+          "Company-specific research (products, culture, recent news)",
+          "NO generic statements - must be unique to this company"
+        ],
+        "authenticity_test": "Could this paragraph apply to competitors? If yes, revise."
+      },
+      "voice_constraints": {
+        "person": "First person allowed",
+        "tense": "Present or past tense permitted",
+        "tone": "Professional but authentic",
+        "forbidden": [
+          "Compensation discussion",
+          "Salary expectations",
+          "Generic platitudes"
+        ]
+      },
+      "qa_rows": [
+        {
+          "check": "Paragraph count",
+          "threshold": "3 total (1+2)",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Why Interested length",
+          "threshold": "80-100 words",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Why Ideal Para 1 length",
+          "threshold": "80-100 words",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Why Ideal Para 2 length",
+          "threshold": "80-100 words",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Company specificity",
+          "threshold": "\u22653 company-specific details",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Authenticity test",
+          "threshold": "Unique to this company",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Proof points",
+          "threshold": "\u22652 quantified achievements",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "ASCII hygiene",
+          "threshold": "Clean",
+          "status": "PASS/FAIL"
+        },
+        {
+          "check": "Confidence",
+          "threshold": "\u22650.85",
+          "status": "PASS/FAIL"
+        }
+      ],
+      "lock_status": "\u2705 K.9 Status: LOCKED | Ready for Section 5 output assembly",
+      "message_policy_ref": "K.9",
+      "schema_ref": "agentic_node",
+      "signal_quality": {
+        "$ref": "6.conditions.templates.signal_quality"
+      },
+      "two_stage_retrieval": {
+        "$ref": "6.conditions.templates.two_stage_retrieval"
+      },
+      "self_rag_validation": {
+        "$ref": "6.conditions.templates.self_rag_validation"
+      },
+      "hop_refinement": {
+        "$ref": "6.conditions.templates.hop_refinement"
+      }
+    },
+    "global_deduplication_matrix": {
+      "purpose": "Cross-section semantic separation to prevent redundancy",
+      "enforcement": "BLOCKING - check after each K-node before proceeding",
+      "thresholds": {
+        "K.4_vs_K.5": {
+          "cosine": 0.5,
+          "token_overlap": 0.25
+        },
+        "K.4_vs_K.6": {
+          "cosine": 0.5,
+          "token_overlap": 0.3
+        },
+        "K.4_vs_K.7": {
+          "cosine": 0.5,
+          "token_overlap": 0.3
+        },
+        "K.4_vs_K.8": {
+          "cosine": 0.4,
+          "note": "Strict - no axis matches competency title"
+        },
+        "K.5_vs_K.6": {
+          "cosine": 0.4,
+          "note": "Strict - exec summary \u2260 bullet content"
+        },
+        "K.5_vs_K.7": {
+          "cosine": 0.4,
+          "note": "Strict - strategic identity \u2260 tactical accomplishments"
+        },
+        "K.5_vs_K.8": {
+          "cosine": 0.5,
+          "note": "No phrase overlaps with competency titles"
+        },
+        "K.6_vs_K.7": {
+          "note": "Allowed to overlap (same person, different roles)"
+        },
+        "K.6_vs_K.8": {
+          "cosine": 0.6,
+          "note": "Bullets can reference competency domains"
+        },
+        "K.7_vs_K.8": {
+          "cosine": 0.6
+        },
+        "within_K.6": {
+          "cosine": 0.75,
+          "note": "Internal dedup - no duplicate bullets"
+        },
+        "within_K.7": {
+          "cosine": 0.75,
+          "note": "Internal dedup - no duplicate bullets"
+        },
+        "within_K.8": {
+          "cosine": 0.92,
+          "token_overlap": 0.4
+        },
+        "K.6_intro_vs_K.5": {
+          "cosine": 0.5,
+          "note": "Intro must not echo exec summary"
+        },
+        "K.7_intro_vs_K.5": {
+          "cosine": 0.5,
+          "note": "Intro must not echo exec summary"
+        },
+        "K.6_intro_vs_K.8": {
+          "cosine": 0.7,
+          "note": "Intro can reference domains but not exact titles"
+        },
+        "K.7_intro_vs_K.8": {
+          "cosine": 0.7,
+          "note": "Intro can reference domains but not exact titles"
+        },
+        "K.6_intro_vs_K.4": {
+          "cosine": 0.5,
+          "note": "Intro should not repeat headline phrasing"
+        },
+        "K.7_intro_vs_K.4": {
+          "cosine": 0.5,
+          "note": "Intro should not repeat headline phrasing"
+        }
+      }
+    },
+    "validation_functions": {
+      "validate_no_target_products_in_past_roles": {
+        "execution_point": "After bullet generation, before QA validation",
+        "apply_to": [
+          "K.6 intro_sentence",
+          "K.6 bullets",
+          "K.7 intro_sentence",
+          "K.7 bullets"
+        ],
+        "on_fail": {
+          "action": "REGENERATE",
+          "max_retries": 3,
+          "regeneration_instruction": "Replace [TARGET_COMPANY]/[TARGET_PRODUCTS] with generic tech terms: 'cloud data platform','advanced analytics','enterprise data infrastructure','AI/ML platforms'",
+          "if_retries_exhausted": "Block K-node completion and notify with violations"
+        },
+        "pseudo_code": [
+          "FUNCTION validate_no_target_products_in_past_roles(text, base_resume_company, target_company, target_products):",
+          "  IF base_resume_company == target_company: RETURN {'status':'PASS'}",
+          "  violations = []",
+          "  if target_company.lower() in text.lower(): violations.append({'type':'company_name','text':target_company})",
+          "  for p in target_products:",
+          "    if p.lower() in text.lower(): violations.append({'type':'product','text':p})",
+          "  if (target_company+\"'s\").lower() in text.lower(): violations.append({'type':'possessive','text':target_company+\"'s\"})",
+          "  RETURN {'status':'FAIL','violations':violations} if violations else {'status':'PASS'}"
+        ]
+      },
+      "validate_no_company_namedropping": {
+        "execution_point": "After K.5 generation, before QA validation",
+        "on_fail": {
+          "action": "REGENERATE",
+          "max_retries": 3,
+          "regeneration_instruction": "Rewrite in capability-focused style; remove previous employer names; focus on what was accomplished, not where."
+        },
+        "pseudo_code": [
+          "FUNCTION validate_no_company_namedropping(summary, previous_employers):",
+          "  patterns = [r'\\bAt\\s+([A-Z][a-zA-Z]+)', r'while at\\s+([A-Z][a-zA-Z]+)', r'During my time at\\s+([A-Z][a-zA-Z]+)', r'([A-Z][a-zA-Z]+)\\s+experience']",
+          "  viols = []",
+          "  for pat in patterns:",
+          "    for m in regex_findall(pat, summary):",
+          "      if m in previous_employers: viols.append({'pattern':pat,'company':m})",
+          "  return {'status':'FAIL','violations':viols} if viols else {'status':'PASS'}"
+        ]
+      }
+    },
+    "rag_validation_framework": {
+      "$ref": "6.conditions.policies.rag_validation_framework"
+    },
+    "K.10_supplementary_attachments": {
+      "node_id": "K.10",
+      "name": "Supplementary Attachments",
+      "trigger_conditions": [
+        "JD contains 'portfolio'",
+        "JD contains 'work samples'",
+        "JD contains 'references'",
+        "Role level >= 'Director'"
+      ],
+      "attachment_types": {
+        "portfolio": {
+          "relevance_mapping": "Map each project to JD requirement",
+          "selection_criteria": "Top 3 most relevant projects",
+          "format": "PDF or GitHub links"
+        },
+        "work_samples": {
+          "types": [
+            "code",
+            "presentations",
+            "reports",
+            "designs"
+          ],
+          "selection": "Match type to role requirements"
+        },
+        "references": {
+          "count": 3,
+          "selection": "Previous managers > peers > reports",
+          "format": "Name, Title, Company, Relationship, Contact"
+        }
+      },
+      "output_format": {
+        "portfolio_links": [
+          "url1",
+          "url2",
+          "url3"
+        ],
+        "recommended_attachments": [
+          "type:reason",
+          "type:reason"
+        ],
+        "reference_strategy": "Provide upon request / Include with application"
+      }
+    },
+    "nodes": {
+      "K.10": {
+        "role": "Supplementary attachments (conditional)",
+        "conditional": true,
+        "hyde_active": false,
+        "two_stage_retrieval_ref": "two_stage_retrieval_default",
+        "self_rag_ref": null,
+        "signal_quality_ref": "signal_quality_default",
+        "claim_verification_mode": "balanced",
+        "agentic_mode": false
+      }
+    },
+    "visualization_pipeline": {
+      "initialization": {
+        "entry_point": "execute_reasoning_pipeline(query)",
+        "steps": [
+          "GATE_1: Prompt 'Display Detailed Reasoning? (Y/N)'",
+          "IF N selected: Return simplified_mode() and HALT",
+          "IF Y selected: Proceed to GATE_2",
+          "GATE_2: Prompt for detail level (Executive/Standard/Detailed)",
+          "Load Reasoning Transformer Template v17.md",
+          "Process with selected visualization"
+        ],
+        "authorization_required": true,
+        "gate_1_mandatory": true,
+        "simplified_mode_on_decline": true
+      },
+      "load_visualization_by_level": {
+        "template_loading": {
+          "source_file": "Reasoning_Transformer_Template_v17.md",
+          "loading_strategy": {
+            "executive": {
+              "extract": "OVERALL SUMMARY: TRANSFORMER REASONING PLAN block only",
+              "method": "extract_section(template, 'OVERALL SUMMARY')"
+            },
+            "standard": {
+              "extract": "OVERALL SUMMARY + 5 STAGE SUMMARY dashboards",
+              "method": "extract_sections(template, ['OVERALL SUMMARY', 'STAGE 1-5 SUMMARY'])"
+            },
+            "detailed": {
+              "extract": "ENTIRE v17 template + LIC ASCII trees",
+              "method": "return full_template + generate_lic_trees(['K.1', 'K.3'])"
+            }
+          },
+          "error_handling": {
+            "TemplateNotFound": {
+              "action": "HALT",
+              "message": "Cannot load Reasoning Transformer Template v17.md",
+              "recovery": "Verify template file exists in project knowledge"
+            }
+          }
+        }
+      }
+    },
+    "table_generation": {
+      "build_reasoning_table": {
+        "validation": {
+          "max_columns": 4,
+          "enforcement": "STRICT",
+          "logic": [
+            "Count identified nodes",
+            "IF node_count > 3: Truncate to first 3 nodes",
+            "Build table with ['Parameter'] + selected_nodes (max 3)",
+            "Assert len(table.columns) <= 4",
+            "IF assertion fails: Raise ColumnLimitExceeded error"
+          ],
+          "truncation_strategy": "First 3 nodes by priority (classification > retrieval > synthesis)",
+          "error_handling": {
+            "ColumnLimitExceeded": {
+              "action": "HALT",
+              "message": "Table exceeds 4-column limit. Found: {column_count} columns.",
+              "recovery": "Reduce node selection or split into multiple tables"
+            }
+          }
+        }
+      }
+    },
+    "node_schema": {
+      "section_id": {
+        "type": "integer",
+        "required": true,
+        "description": "Parent section number (1-6) that contains this node",
+        "validation": "Must be integer between 1-6",
+        "usage": "Used to generate section-prefixed headers like '4K2', '5K4'",
+        "example": "section_id=4 for node K2 displays as '4K2'"
+      },
+      "header_generation": {
+        "format": "{section_id}K{node_number}",
+        "logic": "Concatenate section_id + 'K' + node_number",
+        "examples": [
+          "section_id=4, node_number=2 \u2192 '4K2'",
+          "section_id=5, node_number=4 \u2192 '5K4'"
+        ]
+      }
+    }
+  },
+  "5.output": {
+    "purpose": "Generate clean, copy-paste ready deliverables after all K-nodes pass QA",
+    "execution_gate": "Section 5 CANNOT begin until K.1-K.9 complete with PASS status",
+    "output_format": "Plain text/markdown (NOT code fenced) for direct use",
+    "philosophy": "Quality over speed - every output represents professional reputation",
+    "v19_enhancements_note": "Outputs now include agentic agent status for K.2.5, K.8, K.9",
+    "output_structure": {
+      "format": "Each K-node output presented with mini QA table",
+      "presentation_order": "K.1 \u2192 K.2 \u2192 K.2.5 (NEW) \u2192 K.3 \u2192 K.4 \u2192 K.5 \u2192 K.6 \u2192 K.7 \u2192 K.8 (ENHANCED) \u2192 K.9 (ENHANCED) \u2192 [K.10 conditional]",
+      "note": "Outputs are professional deliverables, not technical traces"
+    },
+    "5.1_k1_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.1 \u2014 Company & Job Title",
+        "format": "**Company:** {company_name}\n**Job Title:** {job_title}\n**Job URL:** {job_url}\n**Req #:** {req_number or 'N/A'}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Company present | Required | {value} | \u2705 |\n| Title present | Required | {value} | \u2705 |\n| URL valid | Valid format | {value} | \u2705 |\n| Confidence | \u22650.95 | {value} | \u2705 |\n\n**\u2713 K.1 Complete**"
+      }
+    },
+    "5.2_k2_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.2 \u2014 Industry Classification",
+        "format": "**Category:** {category}\n**Sub-Category:** {sub_category}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| GICS/SIC valid | Valid taxonomy | {value} | \u2705 |\n| Sub-category aligned | Consistent | {value} | \u2705 |\n| Confidence | \u22650.90 | {value} | \u2705 |\n\n**\u2713 K.2 Complete**"
+      }
+    },
+    "5.2.5_k2.5_output_NEW": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.2.5 \u2014 \ud83e\udd16 Competitive Positioning (NEW v19.0)",
+        "format": "**Agent Status:** COMPLETE\n**Peer JDs Analyzed:** {count} JDs\n\n**Table Stakes Keywords:** (appear in \u226580% of peer JDs)\n{table_stakes_list}\n\n**Differentiator Keywords:** (unique to target JD)\n{differentiator_list}\n\n**Positioning Strategy:**\n{positioning_guidance}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Peer JDs found | \u22653 | {count} | \u2705 |\n| Table stakes | \u22655 keywords | {count} | \u2705 |\n| Differentiators | \u22653 keywords | {count} | \u2705 |\n| Strategy clear | Guidance for K.4/K.5 | Present | \u2705 |\n| Confidence | \u22650.85 | {value} | \u2705 |\n\n**\u2713 K.2.5 Complete** | Latency: +{seconds}s"
+      }
+    },
+    "5.3_k3_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.3 \u2014 Primary Job Role",
+        "format": "**Primary Role:** {primary_job_role}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Catalog match | Exact | {value} | \u2705 |\n| Single role only | No secondary | {value} | \u2705 |\n| JD alignment | \u22650.85 | {value} | \u2705 |\n| Confidence | \u22650.90 | {value} | \u2705 |\n\n**\u2713 K.3 Complete**"
+      }
+    },
+    "5.4_k4_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.4 \u2014 Professional Headline",
+        "format": "**Headline:**\n\n{headline}\n\n**Competitive Positioning:** {uses_k2.5_differentiators}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Word count | 8-13 words | {count} words | \u2705 |\n| 3-axis structure | All present | {value} | \u2705 |\n| Strategic positioning | No tactical verbs | {value} | \u2705 |\n| Competitive differentiation | Uses K.2.5 insights | {value} | \u2705 |\n| Confidence | \u22650.85 | {value} | \u2705 |\n\n**\u2713 K.4 Complete**"
+      }
+    },
+    "5.5_k5_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.5 \u2014 Executive Summary",
+        "format": "# Resume: {resume_filename}\n\n**Target:** {company_name} - {job_title}\n**Version:** {version_date}\n**Generated:** {generation_timestamp}\n\n---\n\n**Executive Summary:**\n\n{executive_summary}\n\n**Competitive Positioning:** {uses_k2.5_differentiators}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Token count | 100-120 tokens | {count} tokens | \u2705 |\n| Sentence count | 3-5 sentences | {count} sentences | \u2705 |\n| Alignment score | \u22650.9 | {score} | \u2705 |\n| Competitive framing | Uses K.2.5 insights | {value} | \u2705 |\n| Confidence | \u22650.90 | {value} | \u2705 |\n\n**\u2713 K.5 Complete**"
+      }
+    },
+    "5.6_k6_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.6 \u2014 Most Recent Experience",
+        "format": "**{Company Name} | {Role Title} | {Dates}**\n\n{intro_sentence}\n\n\u2022 {bullet_1}\n\u2022 {bullet_2}\n\u2022 {bullet_3}\n\u2022 {bullet_4}\n\u2022 {bullet_5}\n\u2022 {bullet_6}\n\u2022 {bullet_7}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Bullet count | 7 | {count} | \u2705 |\n| Bullet length | 15-25 words | {range} | \u2705 |\n| 2-3-2 provenance | 2V+3A+2S | {split} | \u2705 |\n| Position weighting | 1-2 boosted | {value} | \u2705 |\n\n**\u2713 K.6 Complete**"
+      }
+    },
+    "5.7_k7_output": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.7 \u2014 Prior Experience",
+        "format": "**{Company Name} | {Role Title} | {Dates}**\n\n{intro_sentence}\n\n\u2022 {bullet_1}\n\u2022 {bullet_2}\n\u2022 {bullet_3}\n\u2022 {bullet_4}\n\u2022 {bullet_5}\n\u2022 {bullet_6}\n\u2022 {bullet_7}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Bullet count | 7 | {count} | \u2705 |\n| Bullet length | 15-25 words | {range} | \u2705 |\n| Global scope | \u22652 bullets | {count} | \u2705 |\n| 2-3-2 provenance | 2V+3A+2S | {split} | \u2705 |\n\n**\u2713 K.7 Complete**"
+      }
+    },
+    "5.8_k8_output_ENHANCED": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.8 \u2014 \ud83e\udd16 Leadership Competencies (ENHANCED v19.0)",
+        "format": "**Agent Status:** COMPLETE\n**Gap Coverage:** {percent}% (Target: \u226585%)\n**Authentic Phrasing Sources:** LinkedIn profiles + industry frameworks\n\n**Leadership Competencies:**\n\n**{competency_1_title}**\n{competency_1_description}\n\n**{competency_2_title}**\n{competency_2_description}\n\n**{competency_3_title}**\n{competency_3_description}\n\n**{competency_4_title}**\n{competency_4_description}\n\n**{competency_5_title}**\n{competency_5_description}\n\n**{competency_6_title}**\n{competency_6_description}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Competency count | 6 | {count} | \u2705 |\n| Gap coverage | \u226585% | {percent}% | \u2705 |\n| Authentic phrasing | LinkedIn/framework patterns | {value} | \u2705 |\n| Keyword density | 2-3 per comp | {value} | \u2705 |\n| Credibility | Plausible | {value} | \u2705 |\n\n**\u2713 K.8 Complete** | Latency: +{seconds}s"
+      }
+    },
+    "5.9_k9_output_ENHANCED": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.9 \u2014 \ud83e\udd16 Cover Letter (ENHANCED v19.0)",
+        "format": "**Agent Status:** COMPLETE\n**Company-Specific Details:** {count} (Target: \u22654)\n**Find-Replace Test:** {paragraphs_passed}/3 paragraphs PASS\n\n**Cover Letter Elements:**\n\n**Why I'm Interested:**\n\n{why_interested_paragraph}\n\n**Why I'm Ideal (Part 1 - Experience):**\n\n{why_ideal_paragraph_1}\n\n**Why I'm Ideal (Part 2 - Leadership):**\n\n{why_ideal_paragraph_2}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Paragraph count | 3 (1+2) | {count} | \u2705 |\n| Company specifics | \u22654 details | {count} | \u2705 |\n| Find-replace test | \u22652 paragraphs PASS | {count}/3 | \u2705 |\n| Unique signals | Uses Phase 3 research | {value} | \u2705 |\n| Proof points | \u22652 achievements | {count} | \u2705 |\n| Confidence | \u22650.85 | {value} | \u2705 |\n\n**\u2713 K.9 Complete** | Latency: +{seconds}s"
+      }
+    },
+    "final_summary": {
+      "title": "## \ud83c\udf89 All K-Nodes Complete (v19.0 Agentic Enhancement)",
+      "content": "**Resume Customization Summary:**\n\n\u2705 K.1: Company & job extracted\n\u2705 K.2: Industry classified\n\u2705 K.2.5: \ud83e\udd16 Competitive positioning analyzed ({peer_jds} peer JDs)\n\u2705 K.3: Role mapped\n\u2705 K.4: Headline created (8-13 words, strategic + competitive)\n\u2705 K.5: Executive summary generated (100-120 tokens + competitive framing)\n\u2705 K.6: Recent experience (7 bullets, 2-3-2 provenance)\n\u2705 K.7: Prior experience (7 bullets, global scope)\n\u2705 K.8: \ud83e\udd16 Competencies (6 items, {gap_percent}% gap coverage, authentic phrasing)\n\u2705 K.9: \ud83e\udd16 Cover letter ({specifics_count} company-specific details)\n\n**v19.0 Agentic Enhancements:**\n- K.2.5: +{k2.5_seconds}s | {peer_jd_count} peer JDs analyzed\n- K.8: +{k8_seconds}s | {linkedin_searches} LinkedIn + {framework_searches} framework searches\n- K.9: +{k9_seconds}s | {company_searches} company-specific searches\n- Total added latency: ~{total_seconds}s\n- Quality improvements: 85%+ gap coverage, 90%+ recruiter engagement\n\n**Next Steps:**\n1. Copy outputs above into your resume template\n2. Format professionally (fonts, spacing)\n3. Export as PDF with metadata\n4. Run final spell check\n5. Submit with confidence!",
+      "delivery_note": "All outputs are copy-paste ready in plain text format"
+    },
+    "resume_filename_generator": {
+      "purpose": "Generate standardized versioned resume filename for display and tracking",
+      "execution_point": "Before K.5 output rendering",
+      "filename_format": "Resume_{company_name_sanitized}_{job_title_sanitized}_v{date}.docx",
+      "generation_logic": {
+        "pseudo_code": [
+          "FUNCTION generate_resume_filename(company_name, job_title, generation_date):",
+          "  # Sanitize company name: remove special chars, spaces to underscores, max 20 chars",
+          "  company_sanitized = sanitize_for_filename(company_name, max_len=20)",
+          "  # Sanitize job title: remove special chars, spaces to underscores, max 25 chars",
+          "  job_title_sanitized = sanitize_for_filename(job_title, max_len=25)",
+          "  # Format date as MMDDYYYY",
+          "  date_str = format_date(generation_date, format='%m%d%Y')",
+          "  # Construct filename",
+          "  filename = f'Resume_{company_sanitized}_{job_title_sanitized}_v{date_str}.docx'",
+          "  RETURN filename",
+          "",
+          "FUNCTION sanitize_for_filename(text, max_len):",
+          "  # Replace special characters with underscores",
+          "  sanitized = re.sub(r'[^a-zA-Z0-9]', '_', text)",
+          "  # Remove consecutive underscores",
+          "  sanitized = re.sub(r'_+', '_', sanitized)",
+          "  # Trim to max length",
+          "  sanitized = sanitized[:max_len]",
+          "  # Strip trailing underscores",
+          "  sanitized = sanitized.strip('_')",
+          "  RETURN sanitized"
+        ]
+      },
+      "example_outputs": {
+        "input_1": {
+          "company_name": "Snowflake Inc.",
+          "job_title": "Senior Product Manager - Cloud Data",
+          "generation_date": "2025-10-06"
+        },
+        "output_1": "Resume_Snowflake_Inc_Senior_Product_Manag_v10062025.docx",
+        "input_2": {
+          "company_name": "Google",
+          "job_title": "Staff Software Engineer",
+          "generation_date": "2025-10-06"
+        },
+        "output_2": "Resume_Google_Staff_Software_Engineer_v10062025.docx"
+      }
+    },
+    "pre_delivery_validation": {
+      "ascii_hygiene_check": {
+        "execution_order": 1,
+        "validation_function": {
+          "name": "enforce_ascii_hygiene",
+          "pseudo_code": [
+            "FUNCTION enforce_ascii_hygiene(text):",
+            "  forbidden_chars = {'\u2014': '-', '\u2013': '-', '\u201c': '\"', '\u201d': '\"', '\u2019': \"'\", '\u2018': \"'\", '\u2026': '...'}",
+            "  cleaned_text = text",
+            "  FOR char, replacement IN forbidden_chars:",
+            "    cleaned_text = cleaned_text.replace(char, replacement)",
+            "  FOR ch IN cleaned_text:",
+            "    IF ord(ch) > 127:",
+            "      RAISE ValidationError('Non-ASCII character found')",
+            "  RETURN cleaned_text"
+          ],
+          "apply_to": [
+            "K.4 headline",
+            "K.5 executive_summary",
+            "K.6 intro and bullets",
+            "K.7 intro and bullets",
+            "K.8 competencies",
+            "K.9 cover letter paragraphs"
+          ],
+          "on_fail": "Block Section 5; auto-correct then verify"
+        }
+      }
+    },
+    "formatters": {
+      "format_all_dates": {
+        "execution_point": "Before final JSON output",
+        "pseudo_code": [
+          "FUNCTION format_all_dates(json_data):",
+          "  # convert YYYY-MM-DD to MM-DD-YYYY if detected",
+          "  for k,v in list(json_data.items()):",
+          "    if isinstance(v,str) and re_match(r'^\\d{4}-\\d{2}-\\d{2}$', v):",
+          "      y,m,d = v.split('-'); json_data[k] = f'{m}-{d}-{y}'",
+          "  return json_data"
+        ]
+      },
+      "filter_empty_fields": {
+        "execution_point": "Final step before JSON output",
+        "pseudo_code": [
+          "FUNCTION filter_empty_fields(app_schema_data):",
+          "  for f in ['Base Resume','Outreach Channel']:",
+          "    if f in app_schema_data: del app_schema_data[f]",
+          "  return {k:v for k,v in app_schema_data.items() if v not in (None,'')}"
+        ],
+        "example": {
+          "input": {
+            "Company": "Snowflake",
+            "Application Date": "10-02-2025",
+            "Base Resume": "",
+            "Hiring Recruiter": "",
+            "Outreach Channel": ""
+          },
+          "output": {
+            "Company": "Snowflake",
+            "Application Date": "10-02-2025"
+          }
+        }
+      }
+    },
+    "release_pipeline": {
+      "execution_order": [
+        "1. K.1: Extract target company products",
+        "2. K.2-K.4: Standard generation",
+        "3. K.5: Generate with company name-dropping validation",
+        "4. K.6: Generate with target product validation",
+        "5. K.7: Generate with target product validation",
+        "6. K.8: Generate with target product validation",
+        "7. K.9: Standard generation",
+        "8. ASCII hygiene check on ALL outputs",
+        "9. Filter JSON to populated fields only",
+        "10. Format all dates to MM-DD-YYYY",
+        "11. Deliver Section 5 output"
+      ],
+      "enforcement_summary": {
+        "blocking_validations": [
+          "ASCII hygiene (auto-correct then verify)",
+          "Target company product insertion in K.6/K.7/K.8",
+          "Company name-dropping in K.5",
+          "QA row failures for above checks"
+        ],
+        "auto_corrections": [
+          "ASCII character replacement",
+          "Date format conversion",
+          "JSON field filtering"
+        ],
+        "retry_logic": {
+          "max_retries_per_validation": 3,
+          "on_exhaustion": "Block K-node; notify user",
+          "regeneration_includes": "Explicit constraint prompts"
+        }
+      }
+    },
+    "templates": {
+      "k_node_output_generic": {
+        "description": "Render with provided title and format exactly as stored in params.",
+        "fields": [
+          "title",
+          "format"
+        ]
+      },
+      "resume_header_format": {
+        "template": "# **AMIT AYER**\n\n**+1-917-239-3830** | amitayer1@gmail.com | [LinkedIn](https://www.linkedin.com/in/amitayer1)\n\n**{company_name} – {job_title}**\n\n**{professional_headline}**",
+        "validation": "Resume name appears on line 4, headline on line 6, no K.4 prefix in final output"
+      }
+    },
+    "5.10_k10_output_NEW": {
+      "template_ref": "k_node_output_generic",
+      "params": {
+        "title": "## 4.K.10 \u2014 Supplementary Attachments",
+        "format": "**Recommended Attachments:** {recommended_attachments}\n\n**Portfolio Links:**\n- {portfolio_link_1}\n- {portfolio_link_2}\n- {portfolio_link_3}\n\n**Reference Strategy:** {reference_strategy}\n\n**Quality Validation:**\n| Check | Required | Actual | Status |\n|-------|----------|--------|--------|\n| Attachments relevant | Mapped to JD | {value} | \u2705 |\n| Count in range | \u22643 items per type | {value} | \u2705 |\n| Contact fields present (refs) | All | {value} | \u2705 |\n\n**\u2713 K.10 Complete**"
+      }
+    },
+    "scheduling_assistant": {
+      "calculation": {
+        "get_next_business_days": {
+          "count": 5,
+          "exclude": [
+            "Saturday",
+            "Sunday"
+          ],
+          "holidays": [
+            "2025-01-01",
+            "2025-01-20",
+            "2025-02-17"
+          ],
+          "format": "Day, Month DD (e.g., 'Monday, October 7')"
+        },
+        "suggest_slots": {
+          "slot_1": "{day_2}, {time_morning}",
+          "slot_2": "{day_3}, {time_afternoon}",
+          "slot_3": "{day_4}, {time_morning}"
+        }
+      }
+    },
+    "final_document": {
+      "run_header": {
+        "nodes_executed": [],
+        "total_hops": 0,
+        "total_agentic_cost_usd": 0.0,
+        "claim_coverage": 0.0,
+        "generated_at": "2025-10-05T22:34:34.863825Z"
+      }
+    },
+    "post_processing": {
+      "remove_section_numbers": {
+        "step": "final_cleanup",
+        "action": "Remove all section numbers matching regex: 'K\\.\\d+' from section headers",
+        "validation": "Final output contains no K.1, K.2, etc. in body text",
+        "severity": "HIGH"
+      }
+    },
+    "filename_generation": {
+      "filename_template": "{sender_profile.username}_{artifact_type}_YYYY-MM-DD_vX.X.json",
+      "data_dependency": "sender_profile.username_export",
+      "logic": [
+        "Fetch sender_profile.username",
+        "Replace {sender_profile.username} with actual username",
+        "Replace {artifact_type} with 'Resume', 'CoverLetter', etc.",
+        "Replace YYYY-MM-DD with current date",
+        "Replace vX.X with version number"
+      ],
+      "example": "Rubicon072_Resume_2025-10-06_v1.0.json",
+      "error_handling": {
+        "UsernameNotFound": {
+          "action": "Fallback to generic template",
+          "message": "WARNING: sender_profile.username not available, using generic filename"
+        }
+      }
+    },
+    "formatting": {
+      "app_schema_v4_contract": {
+        "description": "Mandatory structured data format for each K-node output",
+        "format": "fenced_json_blocks",
+        "node_mappings": {
+          "5K1": {
+            "fields_in_order": [
+              "category",
+              "sub_category",
+              "jd_url"
+            ],
+            "example": "```json\n{\n  \"category\": \"Software Engineering\",\n  \"sub_category\": \"Backend Development\",\n  \"jd_url\": \"[https://example.com/job/12345](https://example.com/job/12345)\"\n}\n```"
+          },
+          "5K2": {
+            "fields_in_order": [
+              "company_name",
+              "position_title",
+              "location",
+              "salary_range"
+            ],
+            "example": "```json\n{\n  \"company_name\": \"TechCorp\",\n  \"position_title\": \"Senior Backend Engineer\",\n  \"location\": \"Remote\",\n  \"salary_range\": \"$150k-$200k\"\n}\n```"
+          },
+          "5K3": {
+            "fields_in_order": [
+              "skills_required",
+              "experience_years",
+              "education_level"
+            ],
+            "example": "```json\n{\n  \"skills_required\": [\"Python\", \"Django\", \"PostgreSQL\"],\n  \"experience_years\": 5,\n  \"education_level\": \"Bachelor's Degree\"\n}\n```"
+          },
+          "5K4": {
+            "fields_in_order": [
+              "application_deadline",
+              "interview_process",
+              "benefits"
+            ],
+            "example": "```json\n{\n  \"application_deadline\": \"2025-11-01\",\n  \"interview_process\": \"Phone screen → Technical → Onsite\",\n  \"benefits\": [\"Health insurance\", \"401k matching\", \"Unlimited PTO\"]\n}\n```"
+          }
+        },
+        "generation_logic": [
+          "For each K-node in section 5:",
+          "  1. Extract node output data",
+          "  2. Map data to App Schema v4 fields for that node",
+          "  3. Serialize to JSON with correct field order",
+          "  4. Wrap in fenced code block (```json ... ```)",
+          "  5. Append to output document"
+        ],
+        "validation": {
+          "required": "All fields in fields_in_order must be present",
+          "field_order": "Fields must appear in specified order",
+          "format": "Must be valid JSON wrapped in ```json fences"
+        },
+        "error_handling": {
+          "MissingField": {
+            "action": "HALT",
+            "message": "Cannot generate JSON block for {node_id}: missing required field {field_name}",
+            "recovery": "Ensure node output contains all App Schema v4 required fields"
+          },
+          "InvalidJSON": {
+            "action": "HALT",
+            "message": "Generated JSON for {node_id} is malformed: {error}",
+            "recovery": "Review node output data types and serialization logic"
+          }
+        }
+      }
+    }
+  },
+  "6.conditions": {
+    "templates": {
+      "two_stage_retrieval": {
+        "description": "BM25 coarse retrieval followed by cross-encoder rerank.",
+        "bm25_topN_default": 200,
+        "rerank_topK_default": 20,
+        "final_k_default": 5,
+        "bm25_params": {
+          "k1": 1.5,
+          "b": 0.75
+        },
+        "crossencoder_model_ref": "models/cross-encoder-ms-marco",
+        "output_fields": [
+          "doc_id",
+          "score",
+          "snippet",
+          "source_uri",
+          "embedding_sim"
+        ]
+      },
+      "hyde_prompt_short": {
+        "description": "HyDE prompt template for generating hypothetical documents to improve retrieval.",
+        "prompt": "Given the job title and any sparse JD bullets, write a 300-400 word hypothetical expanded job description that includes likely responsibilities, skills, and metrics. Keep factual inventiveness plausible and flag hypothetical statements in metadata.",
+        "word_target": 350
+      },
+      "signal_quality": {
+        "description": "Signal quality scoring template combining recency, authority, CE score and source type.",
+        "components": [
+          "recency_days",
+          "authority_tier",
+          "cross_encoder_score",
+          "source_type"
+        ],
+        "weights": {
+          "recency_days": 0.25,
+          "authority_tier": 0.35,
+          "cross_encoder_score": 0.3,
+          "source_type": 0.1
+        },
+        "tiers": {
+          "news": 3,
+          "company_site": 4,
+          "academic": 5,
+          "forum": 1
+        },
+        "compute_fn": "weighted_sum_normalized",
+        "min_accept_score": 0.5
+      },
+      "self_rag_validation": {
+        "description": "Self-RAG iterative validation; voting rounds re-query missing claims and adjust retrieval.",
+        "voting_rounds_default": 3,
+        "claim_coverage_threshold_default": 0.85,
+        "max_iterations_default": 3,
+        "on_failure_action": "hop_refinement"
+      },
+      "hop_refinement": {
+        "description": "Escalation rules when validation fails: increase breadth and/or use HyDE-guided queries.",
+        "increase_breadth": {
+          "bm25_topN_multiplier": 2,
+          "rerank_topK_multiplier": 1.5
+        },
+        "switch_query_mode": {
+          "use_hyde_guided_query": true,
+          "use_query_expansion": true
+        },
+        "max_refinements": 2
+      },
+      "achievement_mapping": {
+        "description": "Canonical mapping for achievements into bullet templates and metric extraction.",
+        "fields": [
+          "achievement_text",
+          "metric_value",
+          "timeframe",
+          "context",
+          "role_related"
+        ],
+        "extraction_rules": [
+          "look_for_numbers",
+          "normalize_percentages",
+          "map_timeframes_to_iso"
+        ]
+      }
+    },
+    "policies": {
+      "rag_validation_framework": {
+        "modes": {
+          "strict": {
+            "require_cross_source": true,
+            "min_signal_quality": 0.75,
+            "min_evidence": 2
+          },
+          "balanced": {
+            "require_cross_source": false,
+            "min_signal_quality": 0.6,
+            "min_evidence": 1
+          },
+          "permissive": {
+            "require_cross_source": false,
+            "min_signal_quality": 0.4,
+            "min_evidence": 0
+          }
+        },
+        "default_mode": "balanced",
+        "audit_requirements": [
+          "evidence_pointers",
+          "signal_quality_scores",
+          "audit_trail_id"
+        ]
+      },
+      "emergency_controls": {
+        "emergency_disable_agentic": false,
+        "quick_toggles_path": "3.context.runtime_toggles",
+        "allow_toggle_without_schema_edit": true
+      },
+      "redaction_policy": {
+        "pii_fields": [
+          "email",
+          "phone",
+          "ssn"
+        ],
+        "masking_strategy": "mask_first_last_email_localpart"
+      },
+      "schema_rules": {
+        "forbid_mixed_keys": true,
+        "canonical_sections": [
+          "1.role",
+          "2.task",
+          "3.context",
+          "4.reasoning",
+          "5.output",
+          "6.conditions"
+        ]
+      },
+      "compat": {
+        "aliases": {
+          "1": "1.role",
+          "4": "4.reasoning",
+          "5": "5.output"
+        }
+      },
+      "critical_rules": [
+        "Reasoning toggle table MUST be displayed using Reasoning_Toggles_Summary_Enforced_Format.json v3.2 before Section 4 execution",
+        "Section 4 execution MUST be blocked until user approves reasoning toggles with 'Y' response",
+        "K.4 headline MUST satisfy dual validation: 8-13 words AND \u226490 characters",
+        "K.4 headline character limit validation MUST block K.5 if headline exceeds 90 characters",
+        "K.5 output MUST display versioned resume filename above executive summary",
+        "Resume filename format MUST be: Resume_{Company}_{JobTitle}_v{Date}.docx"
+      ]
+    },
+    "validation_functions": {
+      "validate_headline_character_limit": {
+        "execution_point": "After K.4 headline generation, before proceeding to K.5",
+        "apply_to": [
+          "K.4 headline"
+        ],
+        "validation_logic": {
+          "pseudo_code": [
+            "FUNCTION validate_headline_character_limit(headline):",
+            "  char_count = len(headline)",
+            "  IF char_count > 90:",
+            "    RAISE ValidationError('Headline exceeds 90-character limit for Word single-line display')",
+            "    RETURN {status: 'FAIL', char_count: char_count, limit: 90, overflow: char_count - 90}",
+            "  ELSE:",
+            "    RETURN {status: 'PASS', char_count: char_count, limit: 90}"
+          ]
+        },
+        "on_fail": {
+          "action": "BLOCK K.5",
+          "message": "K.4 headline validation failed: {char_count} characters (limit: 90). Headline will wrap to multiple lines in Word.",
+          "recovery_steps": [
+            "1. Regenerate headline with constraint: 'Keep headline \u226490 characters to fit single line in Word'",
+            "2. Verify word count still 8-13 words",
+            "3. Re-validate character limit",
+            "4. If still fails after 3 attempts, escalate to user"
+          ],
+          "max_retries": 3
+        },
+        "on_pass": {
+          "action": "LOG_SUCCESS",
+          "message": "K.4 headline validation passed: {char_count} characters (\u226490)",
+          "proceed_to": "K.5"
+        }
+      }
+    },
+    "version_info": {
+      "last_updated": "2025-10-06T09:56:24.000000Z",
+      "updated_by": "assistant_patch_bot",
+      "patch_tag": "C030_Approval_Headline_Version"
+    },
+    "validation_gates": {
+      "bullet_punctuation": {
+        "gate_id": "VG_BULLET_PUNCTUATION",
+        "execution_point": "After K.6 and K.7 generation",
+        "validation": "All bullets must end with period '.' character",
+        "check_method": "Regex: all bullets match pattern '.*\\.$'",
+        "severity": "CRITICAL",
+        "on_fail": "Auto-correct: append '.' to bullets missing periods",
+        "auto_correct": true
+      },
+      "natural_hyphen_preservation": {
+        "gate_id": "VG_NATURAL_HYPHENS",
+        "execution_point": "After all K-node generation",
+        "unnatural_hyphens_remove": [
+          {
+            "from": "AI-powered",
+            "to": "AI powered"
+          },
+          {
+            "from": "PS-centric",
+            "to": "professional services"
+          },
+          {
+            "from": "high-velocity",
+            "to": "high velocity"
+          },
+          {
+            "from": "automation-first",
+            "to": "automation"
+          },
+          {
+            "from": "lifecycle-based",
+            "to": "lifecycle based"
+          }
+        ],
+        "natural_hyphens_preserve": [
+          "on-premise",
+          "real-time",
+          "multi-region",
+          "co-deliver",
+          "multi-million",
+          "cross-functional",
+          "multi-framework",
+          "multi-jurisdictional",
+          "self-service",
+          "data-driven"
+        ],
+        "validation": "Scan for unnatural hyphens removed AND natural hyphens preserved",
+        "severity": "CRITICAL",
+        "auto_correct": true
+      },
+      "competency_word_count_balance": {
+        "gate_id": "VG_COMPETENCY_BALANCE",
+        "execution_point": "After K.8 generation",
+        "validation": "All 6 competencies must have word counts within 22-28 words. Coefficient of variation < 0.25",
+        "check_method": "Calculate word count per competency, compute variance, flag if CV > 0.25",
+        "severity": "HIGH",
+        "on_fail": "Regenerate with constraint: 'Balance all competencies to 25\u00b13 words'",
+        "target_range": [
+          22,
+          28
+        ],
+        "max_variance_coefficient": 0.25
+      },
+      "competency_bullet_ratio": {
+        "gate_id": "VG_COMP_BULLET_RATIO",
+        "execution_point": "After K.6, K.7, K.8 complete",
+        "calculation": {
+          "avg_words_per_bullet": "(sum of K.6 bullets + sum of K.7 bullets) / 14",
+          "avg_words_per_competency": "sum of K.8 competencies / 6",
+          "ratio": "avg_words_per_competency / avg_words_per_bullet"
+        },
+        "target_ratio": [
+          1.2,
+          1.5
+        ],
+        "severity": "MEDIUM",
+        "on_out_of_range": {
+          "ratio_below_1.0": "Recommendation: Expand competencies with more detail",
+          "ratio_above_2.0": "Recommendation: Condense competencies OR expand bullets"
+        },
+        "display": "Show calculation and recommendation in QA summary"
+      },
+      "cross_section_redundancy": {
+        "gate_id": "VG_REDUNDANCY_CHECK",
+        "execution_point": "After all K-nodes complete",
+        "validation": "Check for phrases appearing in 2+ sections (K.5, K.6, K.7, K.8). Target: <10% overlap",
+        "check_method": "Tokenize all sections, compute n-gram overlap (n=3,4,5), flag duplicates",
+        "severity": "HIGH",
+        "on_fail": "Display redundancy report, rephrase duplicates following priority: Bullets > Competencies > Executive Summary",
+        "target_overlap": 0.1,
+        "resolution_priority": [
+          "K.6",
+          "K.7",
+          "K.8",
+          "K.5"
+        ]
+      }
+    },
+    "execution_gates": {
+      "simplified_mode": {
+        "description": "No ASCII visualization when detailed reasoning declined",
+        "output_components": [
+          "K-node Headers with section numbers (4K2, 5K4 format)",
+          "Final Node Outputs (conclusive reasoning results)",
+          "QA Validation Tables (verification checks without intermediate steps)"
+        ],
+        "visualization_disabled": true,
+        "reasoning_transparency": "minimal",
+        "json_blocks_enabled": true,
+        "note": "App Schema v4 JSON blocks STILL generated even in simplified mode for downstream integration"
+      }
+    }
+  },
+  "sender_profile": {
+    "data_export": {
+      "username_export": {
+        "field": "username",
+        "type": "string",
+        "access_level": "public",
+        "description": "Authenticated username for file personalization",
+        "consumers": [
+          "5.output.file_creation.filename_generation"
+        ],
+        "example": "username='Rubicon072' used in 'Rubicon072_Resume_2025-10-06_v1.0.json'"
+      }
+    }
+  }
+}

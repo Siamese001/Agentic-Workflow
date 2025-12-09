@@ -1,0 +1,290 @@
+[
+  {
+    "source": "tests/architecture/test_agent_stacks_v10_8_imports.py",
+    "flat": "tests_flat/test_flat__architecture__test_agent_stacks_v10_8_imports.py"
+  },
+  {
+    "source": "tests/architecture/test_architecture_compliance_v10_7.py",
+    "flat": "tests_flat/test_flat__architecture__test_architecture_compliance_v10_7.py"
+  },
+  {
+    "source": "tests/architecture/test_config_v10_7.py",
+    "flat": "tests_flat/test_flat__architecture__test_config_v10_7.py"
+  },
+  {
+    "source": "tests/architecture/test_core_module_exports.py",
+    "flat": "tests_flat/test_flat__architecture__test_core_module_exports.py"
+  },
+  {
+    "source": "tests/architecture/test_no_legacy_stack_imports.py",
+    "flat": "tests_flat/test_flat__architecture__test_no_legacy_stack_imports.py"
+  },
+  {
+    "source": "tests/architecture/test_node_policy_wrapper_v10_7.py",
+    "flat": "tests_flat/test_flat__architecture__test_node_policy_wrapper_v10_7.py"
+  },
+  {
+    "source": "tests/auto_tuning/test_auto_tuning_v10_7.py",
+    "flat": "tests_flat/test_flat__auto_tuning__test_auto_tuning_v10_7.py"
+  },
+  {
+    "source": "tests/autonomy/test_autonomy_engine_v10_7.py",
+    "flat": "tests_flat/test_flat__autonomy__test_autonomy_engine_v10_7.py"
+  },
+  {
+    "source": "tests/collaboration/test_collab_engine.py",
+    "flat": "tests_flat/test_flat__collaboration__test_collab_engine.py"
+  },
+  {
+    "source": "tests/conftest.py",
+    "flat": "tests_flat/conftest.py"
+  },
+  {
+    "source": "tests/constitution/test_constitutional_engine_basic.py",
+    "flat": "tests_flat/test_flat__constitution__test_constitutional_engine_basic.py"
+  },
+  {
+    "source": "tests/contracts/test_contract_invariants_v10_7.py",
+    "flat": "tests_flat/test_flat__contracts__test_contract_invariants_v10_7.py"
+  },
+  {
+    "source": "tests/contracts/test_contract_schemas_v10_7.py",
+    "flat": "tests_flat/test_flat__contracts__test_contract_schemas_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_arbitration_engine_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_arbitration_engine_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_context_budget_manager_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_context_budget_manager_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_cost_tracker_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_cost_tracker_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_model_routing_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_model_routing_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_node_result_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_node_result_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_prompt_templates_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_prompt_templates_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_runtime_timeout_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_runtime_timeout_v10_7.py"
+  },
+  {
+    "source": "tests/core/test_semantic_validator_unit_v10_7.py",
+    "flat": "tests_flat/test_flat__core__test_semantic_validator_unit_v10_7.py"
+  },
+  {
+    "source": "tests/data/test_data_transformation_v10_7.py",
+    "flat": "tests_flat/test_flat__data__test_data_transformation_v10_7.py"
+  },
+  {
+    "source": "tests/design/test_design_validation_dag_v10_7.py",
+    "flat": "tests_flat/test_flat__design__test_design_validation_dag_v10_7.py"
+  },
+  {
+    "source": "tests/drafting/test_drafting_guild_v10_7.py",
+    "flat": "tests_flat/test_flat__drafting__test_drafting_guild_v10_7.py"
+  },
+  {
+    "source": "tests/hil/test_hil_loop_bounding_v10_7.py",
+    "flat": "tests_flat/test_flat__hil__test_hil_loop_bounding_v10_7.py"
+  },
+  {
+    "source": "tests/hil/test_hil_stack_v10_7.py",
+    "flat": "tests_flat/test_flat__hil__test_hil_stack_v10_7.py"
+  },
+  {
+    "source": "tests/integration/test_arbitration_graph_wiring.py",
+    "flat": "tests_flat/test_flat__integration__test_arbitration_graph_wiring.py"
+  },
+  {
+    "source": "tests/integration/test_cache_rag_matrix_v10_7.py",
+    "flat": "tests_flat/test_flat__integration__test_cache_rag_matrix_v10_7.py"
+  },
+  {
+    "source": "tests/integration/test_core_runtime_v10_7.py",
+    "flat": "tests_flat/test_flat__integration__test_core_runtime_v10_7.py"
+  },
+  {
+    "source": "tests/integration/test_end_to_end_paths_v10_7.py",
+    "flat": "tests_flat/test_flat__integration__test_end_to_end_paths_v10_7.py"
+  },
+  {
+    "source": "tests/integration/test_feedback_loops_v10_8.py",
+    "flat": "tests_flat/test_flat__integration__test_feedback_loops_v10_8.py"
+  },
+  {
+    "source": "tests/integration/test_integration_flow_v10_7.py",
+    "flat": "tests_flat/test_flat__integration__test_integration_flow_v10_7.py"
+  },
+  {
+    "source": "tests/integration/test_perf_latency_v10_7.py",
+    "flat": "tests_flat/test_flat__integration__test_perf_latency_v10_7.py"
+  },
+  {
+    "source": "tests/integration/test_safety_pipeline_e2e.py",
+    "flat": "tests_flat/test_flat__integration__test_safety_pipeline_e2e.py"
+  },
+  {
+    "source": "tests/integration/test_sla_latency_v10_7.py",
+    "flat": "tests_flat/test_flat__integration__test_sla_latency_v10_7.py"
+  },
+  {
+    "source": "tests/layering/test_orchestrator_delegation_to_l5.py",
+    "flat": "tests_flat/test_flat__layering__test_orchestrator_delegation_to_l5.py"
+  },
+  {
+    "source": "tests/mcp/test_mcp_context_v10_7.py",
+    "flat": "tests_flat/test_flat__mcp__test_mcp_context_v10_7.py"
+  },
+  {
+    "source": "tests/mcp/test_mcp_matrix_v10_7.py",
+    "flat": "tests_flat/test_flat__mcp__test_mcp_matrix_v10_7.py"
+  },
+  {
+    "source": "tests/memory/test_episodic_memory_v10_7.py",
+    "flat": "tests_flat/test_flat__memory__test_episodic_memory_v10_7.py"
+  },
+  {
+    "source": "tests/meta/test_advanced_meta.py",
+    "flat": "tests_flat/test_flat__meta__test_advanced_meta.py"
+  },
+  {
+    "source": "tests/meta/test_meta_learning_v10_7.py",
+    "flat": "tests_flat/test_flat__meta__test_meta_learning_v10_7.py"
+  },
+  {
+    "source": "tests/mock_detection/test_mock_detection_v10_7.py",
+    "flat": "tests_flat/test_flat__mock_detection__test_mock_detection_v10_7.py"
+  },
+  {
+    "source": "tests/mock_detection/test_mock_sweeper_v10_7.py",
+    "flat": "tests_flat/test_flat__mock_detection__test_mock_sweeper_v10_7.py"
+  },
+  {
+    "source": "tests/orchestration/test_orchestration_state_isolation.py",
+    "flat": "tests_flat/test_flat__orchestration__test_orchestration_state_isolation.py"
+  },
+  {
+    "source": "tests/policy/test_policy_stack_basic.py",
+    "flat": "tests_flat/test_flat__policy__test_policy_stack_basic.py"
+  },
+  {
+    "source": "tests/predictive/test_predictive_caching_v10_7.py",
+    "flat": "tests_flat/test_flat__predictive__test_predictive_caching_v10_7.py"
+  },
+  {
+    "source": "tests/rag/test_rag_invariants_v10_7.py",
+    "flat": "tests_flat/test_flat__rag__test_rag_invariants_v10_7.py"
+  },
+  {
+    "source": "tests/routing/test_arbitration_driven_routing_v10_7.py",
+    "flat": "tests_flat/test_flat__routing__test_arbitration_driven_routing_v10_7.py"
+  },
+  {
+    "source": "tests/routing/test_negative_routing_v10_7.py",
+    "flat": "tests_flat/test_flat__routing__test_negative_routing_v10_7.py"
+  },
+  {
+    "source": "tests/safety/test_safety_policy_stack_basic.py",
+    "flat": "tests_flat/test_flat__safety__test_safety_policy_stack_basic.py"
+  },
+  {
+    "source": "tests/simulations/test_draft_sim.py",
+    "flat": "tests_flat/test_flat__simulations__test_draft_sim.py"
+  },
+  {
+    "source": "tests/simulations/test_rag_sim.py",
+    "flat": "tests_flat/test_flat__simulations__test_rag_sim.py"
+  },
+  {
+    "source": "tests/simulations/test_safety_sim.py",
+    "flat": "tests_flat/test_flat__simulations__test_safety_sim.py"
+  },
+  {
+    "source": "tests/simulations/test_strategy_sim.py",
+    "flat": "tests_flat/test_flat__simulations__test_strategy_sim.py"
+  },
+  {
+    "source": "tests/stacks/test_bullet_execution_v10_7.py",
+    "flat": "tests_flat/test_flat__stacks__test_bullet_execution_v10_7.py"
+  },
+  {
+    "source": "tests/stacks/test_drafting_execution_v10_7.py",
+    "flat": "tests_flat/test_flat__stacks__test_drafting_execution_v10_7.py"
+  },
+  {
+    "source": "tests/stacks/test_execution_stacks_v10_8.py",
+    "flat": "tests_flat/test_flat__stacks__test_execution_stacks_v10_8.py"
+  },
+  {
+    "source": "tests/stacks/test_hil_injection_v10_7.py",
+    "flat": "tests_flat/test_flat__stacks__test_hil_injection_v10_7.py"
+  },
+  {
+    "source": "tests/stacks/test_planning_stacks_v10_8.py",
+    "flat": "tests_flat/test_flat__stacks__test_planning_stacks_v10_8.py"
+  },
+  {
+    "source": "tests/stacks/test_rag_execution_v10_7.py",
+    "flat": "tests_flat/test_flat__stacks__test_rag_execution_v10_7.py"
+  },
+  {
+    "source": "tests/stacks/test_safety_constitutional_v10_7.py",
+    "flat": "tests_flat/test_flat__stacks__test_safety_constitutional_v10_7.py"
+  },
+  {
+    "source": "tests/stacks/test_stack_node_equivalence_v10_7.py",
+    "flat": "tests_flat/test_flat__stacks__test_stack_node_equivalence_v10_7.py"
+  },
+  {
+    "source": "tests/state/test_safety_patch_uniformity.py",
+    "flat": "tests_flat/test_flat__state__test_safety_patch_uniformity.py"
+  },
+  {
+    "source": "tests/state/test_safety_state_integration.py",
+    "flat": "tests_flat/test_flat__state__test_safety_state_integration.py"
+  },
+  {
+    "source": "tests/state/test_safety_state_persistence.py",
+    "flat": "tests_flat/test_flat__state__test_safety_state_persistence.py"
+  },
+  {
+    "source": "tests/state/test_state_adapter_stack_v10_8.py",
+    "flat": "tests_flat/test_flat__state__test_state_adapter_stack_v10_8.py"
+  },
+  {
+    "source": "tests/state/test_state_evolution_v10_7.py",
+    "flat": "tests_flat/test_flat__state__test_state_evolution_v10_7.py"
+  },
+  {
+    "source": "tests/test_baseline_schema_diff_v10_7.py",
+    "flat": "tests_flat/test_flat__test_baseline_schema_diff_v10_7.py"
+  },
+  {
+    "source": "tests/test_flat_equivalence_v10_7.py",
+    "flat": "tests_flat/test_flat__test_flat_equivalence_v10_7.py"
+  },
+  {
+    "source": "tests/validation/test_qa_validation_stack_v10_8.py",
+    "flat": "tests_flat/test_flat__validation__test_qa_validation_stack_v10_8.py"
+  },
+  {
+    "source": "tests/validation/test_semantic_and_qa_validation_v10_7.py",
+    "flat": "tests_flat/test_flat__validation__test_semantic_and_qa_validation_v10_7.py"
+  },
+  {
+    "source": "tests/world_model/test_world_model_store_v10_7.py",
+    "flat": "tests_flat/test_flat__world_model__test_world_model_store_v10_7.py"
+  }
+]
