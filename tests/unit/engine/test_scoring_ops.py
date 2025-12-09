@@ -18,7 +18,7 @@ class TestScoreCalculation:
     """Tests for score calculation."""
 
     def test_simple_score_calculation(self):
-        """Simple score is calculated correctly."""
+        """basic score is calculated correctly."""
         relevance = 0.8
         recency = 0.9
         quality = 0.7

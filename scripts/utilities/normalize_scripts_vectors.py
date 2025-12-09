@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.888936
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
@@ -16,15 +16,15 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AdjustmentResult:
     """Result of adjustment."""
-    original: Any
-    adjusted: Any
+    original: object
+    adjusted: object
     method: str
 
 
 class NormalizeScriptsVectors:
     """Adjuster for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.method = self.config.get("method", "minmax")
         self.target_range = self.config.get("range", (0.0, 1.0))

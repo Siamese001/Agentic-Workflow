@@ -18,7 +18,7 @@ import json
 import re
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Set, Tuple, Optional, Any
+from typing import Dict, List, Set, Tuple, Optional, object
 from dataclasses import dataclass, field
 from collections import defaultdict
 import tokenize
@@ -108,8 +108,7 @@ def compute_ast_hash(content: str) -> Tuple[str, Optional[str]]:
     """
     try:
         tree = ast.parse(content)
-        # Remove docstrings and line numbers for structural comparison
-        for node in ast.walk(tree):
+                for node in ast.walk(tree):
             # Clear line/column info
             for attr in ('lineno', 'col_offset', 'end_lineno', 'end_col_offset'):
                 if hasattr(node, attr):
@@ -119,7 +118,7 @@ def compute_ast_hash(content: str) -> Tuple[str, Optional[str]]:
         return hashlib.sha256(ast_dump.encode()).hexdigest(), None
     except SyntaxError as e:
         return "", f"SyntaxError: {e}"
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         return "", str(e)
 
 
@@ -128,8 +127,7 @@ def normalize_content(content: str) -> str:
     Normalize content by removing comments, docstrings, and normalizing whitespace.
     """
     try:
-        # Remove comments using tokenize
-        result = []
+                result = []
         tokens = tokenize.generate_tokens(io.StringIO(content).readline)
         prev_toktype = tokenize.INDENT
 
@@ -147,8 +145,8 @@ def normalize_content(content: str) -> str:
         # Normalize whitespace
         normalized = re.sub(r'\s+', ' ', normalized).strip()
         return normalized
-    except Exception:
-        # Fallback: simple whitespace normalization
+    except (ValueError, TypeError, KeyError):
+        # Fallback: basic whitespace normalization
         return re.sub(r'\s+', ' ', content).strip()
 
 
@@ -181,7 +179,7 @@ def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[
                 functions.append(f"async_{node.name}")
             elif isinstance(node, ast.ClassDef):
                 classes.append(node.name)
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         ...
 
     return sorted(imports), sorted(functions), sorted(classes)
@@ -195,11 +193,9 @@ def compute_semantic_hash(imports: List[str], functions: List[str], classes: Lis
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
     """Detect if file is a stub/placeholder."""
-    # Check for common stub patterns
-    stub_indicators = [
+        stub_indicators = [
         "# AUTO-POPULATED",
-        "# STUB",
-        "# PLACEHOLDER",
+        "        "# PLACEHOLDER",
         "pass  # Implementation pending
         "raise NotImplementedError",
         '"""Auto-generated',
@@ -221,7 +217,7 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
     """Generate complete fingerprint for a file."""
     try:
         content = filepath.read_text(encoding='utf-8', errors='replace')
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         return FileFingerprint(
             path=filepath,
             content_hash="",

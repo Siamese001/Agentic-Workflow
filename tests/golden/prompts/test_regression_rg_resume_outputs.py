@@ -712,7 +712,7 @@ class NineHopPipeline:
         }
 
         for company in ["unify", "ibm", "tradersense", "ey", "early"]:
-            exp = self.master_resume.EXPERIENCE.get(company, {})
+            exp = self.master_resume.EXPERIENCE.get(comp{})
 
             relevance = 0.0
             if company == "unify":
@@ -772,8 +772,8 @@ class NineHopPipeline:
             "early": self.baseline_metrics.BASELINE_WORDCOUNT["early_bullets"]
         }
 
-        for company, target_words in word_targets.items():
-            bullets = mappings["mappings"]["matched_bullets"].get(company, [])
+        for comptarget_words in word_targets.items():
+            bullets = mappings["mappings"]["matched_bullets"].get(comp[])
 
             # Use BaselineResumeMetrics validation
             self.baseline_metrics.validate_wordcount(
@@ -1020,7 +1020,7 @@ class NineHopPipeline:
         }
 
     # ========================================================================
-    # HELPER METHODS (unchanged)
+    # utility METHODS (unchanged)
     # ========================================================================
 
     def _customize_headline(self, jd_parsed: Dict) -> str:

@@ -1,6 +1,6 @@
 """E2E tests for admin flows - system configuration and management."""
 from __future__ import annotations
-from typing import Dict, List, Any
+from typing import Dict, List, object
 from dataclasses import dataclass
 from enum import Enum
 
@@ -13,7 +13,7 @@ class AdminAction(Enum):
 @dataclass
 class AdminRequest:
     action: AdminAction
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
     admin_id: str
 
 class TestAdminUserManagement:

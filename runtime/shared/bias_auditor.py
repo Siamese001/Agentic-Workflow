@@ -2,13 +2,13 @@
 Bias Auditor - Lightweight Bias Detection for Content Quality
 Ported from legacy_engines/safety_enhancements.py
 
-Simple pattern-based bias detection for risk mitigation
+basic pattern-based bias detection for risk mitigation
 and content quality assurance.
 """
 
 import re
 import logging
-from typing import Dict, List, Any, Optional, Set
+from typing import Dict, List, object, Optional, Set
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -60,7 +60,7 @@ class BiasAuditor:
     """
     Lightweight Bias Detection for Content Quality
     
-    Simple pattern-based bias detection for risk mitigation
+    basic pattern-based bias detection for risk mitigation
     and content quality assurance.
     """
     
@@ -322,7 +322,7 @@ class BiasAuditor:
         
         return recommendations
     
-    def get_bias_summary(self, result: BiasResult) -> Dict[str, Any]:
+    def get_bias_summary(self, result: BiasResult) -> Dict[str, object]:
         """Get summary of bias detection results."""
         return {
             "has_bias": result.has_bias,

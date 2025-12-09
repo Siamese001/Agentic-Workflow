@@ -8,7 +8,7 @@ retrieval by query expansion. Essential for sparse profile enhancement.
 
 import logging
 import re
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -30,7 +30,7 @@ class HyDEDocument:
     hypothetical_doc: str
     expansion_strategy: ExpansionStrategy
     confidence: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -93,7 +93,7 @@ class HyDEProcessor:
     def should_trigger_hyde(
         self,
         profile: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> Tuple[bool, str]:
         """
         Determine if HyDE should be triggered.
@@ -141,7 +141,7 @@ class HyDEProcessor:
         title: str,
         company: str,
         domain: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> HyDEDocument:
         """
         Generate hypothetical profile using title + company + domain.
@@ -160,7 +160,7 @@ class HyDEProcessor:
         
         # Generate template-based hypothetical profile
         # In production, this would call an LLM
-        hypothetical_profile = self._generate_profile_template(title, company, domain)
+        hypothetical_profile = self._generate_profile_template(title, compdomain)
         
         # Validate against forbidden patterns
         validation = self._validate_hypothetical(hypothetical_profile)
@@ -186,7 +186,7 @@ class HyDEProcessor:
         self,
         query: str,
         document_type: str = "article",
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> HyDEDocument:
         """
         Generate hypothetical document for query expansion.
@@ -225,7 +225,7 @@ class HyDEProcessor:
         self,
         query: str,
         profile: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> HyDEResult:
         """
         Expand query using HyDE if appropriate.
@@ -339,11 +339,9 @@ and emerging trends."""
         """Clean content by removing violations."""
         cleaned = content
         
-        # Remove years
-        cleaned = re.sub(r'\b(19|20)\d{2}\b', '', cleaned)
+                cleaned = re.sub(r'\b(19|20)\d{2}\b', '', cleaned)
         
-        # Remove financial figures
-        cleaned = re.sub(r'\$[\d,]+(?:\.\d{2})?', '', cleaned)
+                cleaned = re.sub(r'\$[\d,]+(?:\.\d{2})?', '', cleaned)
         
         # Clean up extra whitespace
         cleaned = re.sub(r'\s+', ' ', cleaned).strip()
@@ -379,7 +377,7 @@ def create_hyde_processor(
 def expand_query_with_hyde(
     query: str,
     profile: Optional[str] = None,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, object]] = None
 ) -> HyDEResult:
     """Convenience function to expand query with HyDE."""
     processor = HyDEProcessor()
@@ -393,4 +391,4 @@ def generate_hypothetical_profile(
 ) -> HyDEDocument:
     """Convenience function to generate hypothetical profile."""
     processor = HyDEProcessor()
-    return processor.generate_hypothetical_profile(title, company, domain)
+    return processor.generate_hypothetical_profile(title, compdomain)

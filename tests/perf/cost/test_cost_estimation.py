@@ -46,7 +46,7 @@ class TestTokenEstimation:
     def test_message_token_estimation_determinism(self):
         """Same message produces same token estimate."""
         message = "This is a test message for token estimation."
-        # Simple heuristic: ~4 chars per token
+        # basic heuristic: ~4 chars per token
         estimate1 = len(message) // 4
         estimate2 = len(message) // 4
         assert estimate1 == estimate2

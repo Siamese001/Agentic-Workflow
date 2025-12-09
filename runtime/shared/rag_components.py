@@ -9,7 +9,7 @@ and context injection.
 import logging
 import time
 import hashlib
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class CacheEntry:
     """Cache entry with metadata"""
     key: str
-    value: Any
+    value: object
     embedding: Optional[List[float]]
     created_at: datetime
     accessed_at: datetime
@@ -105,7 +105,7 @@ class SemanticCache:
     def set(
         self,
         key: str,
-        value: Any,
+        value: object,
         embedding: Optional[List[float]] = None,
         ttl: Optional[int] = None
     ) -> None:
@@ -129,7 +129,7 @@ class SemanticCache:
         self,
         query: str,
         required_targets: List[str],
-        existing_data: Optional[Dict[str, Any]] = None
+        existing_data: Optional[Dict[str, object]] = None
     ) -> CacheSufficiencyResult:
         """
         Evaluate if cached data is sufficient for query.
@@ -199,7 +199,7 @@ class SemanticCache:
         del self.cache[lru_key]
         self.stats['evictions'] += 1
     
-    def _calculate_freshness(self, data: Dict[str, Any]) -> float:
+    def _calculate_freshness(self, data: Dict[str, object]) -> float:
         """Calculate data freshness score."""
         timestamp = data.get('timestamp') or data.get('cached_at')
         
@@ -226,9 +226,9 @@ class SemanticCache:
         except (ValueError, TypeError):
             return 0.5
     
-    def _calculate_similarity(self, query: str, data: Dict[str, Any]) -> float:
+    def _calculate_similarity(self, query: str, data: Dict[str, object]) -> float:
         """Calculate query-data similarity (simplified)."""
-        # Simple word overlap for demonstration
+        # basic word overlap for demonstration
         query_words = set(query.lower().split())
         
         data_text = ' '.join(str(v) for v in data.values() if isinstance(v, str))
@@ -240,7 +240,7 @@ class SemanticCache:
         overlap = len(query_words & data_words)
         return min(overlap / len(query_words), 1.0)
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         """Get cache statistics."""
         total_requests = self.stats['hits'] + self.stats['misses']
         hit_rate = self.stats['hits'] / total_requests if total_requests > 0 else 0.0
@@ -319,7 +319,7 @@ class SelfRAGProcessor:
     def detect_gaps(
         self,
         query: str,
-        evidence: List[Dict[str, Any]]
+        evidence: List[Dict[str, object]]
     ) -> List[KnowledgeGap]:
         """
         Detect knowledge gaps in evidence.
@@ -392,7 +392,7 @@ class SelfRAGProcessor:
     def process(
         self,
         query: str,
-        evidence: List[Dict[str, Any]]
+        evidence: List[Dict[str, object]]
     ) -> SelfRAGResult:
         """
         Process query with Self-RAG.
@@ -433,7 +433,7 @@ class Episode:
     """Memory episode"""
     episode_id: str
     content: str
-    context: Dict[str, Any]
+    context: Dict[str, object]
     timestamp: datetime
     relevance: float
     episode_type: str
@@ -443,7 +443,7 @@ class Episode:
 class EpisodicMemoryResult:
     """Result of episodic memory retrieval"""
     episodes: List[Episode]
-    context_enrichment: Dict[str, Any]
+    context_enrichment: Dict[str, object]
     retrieval_time_ms: int
 
 
@@ -469,7 +469,7 @@ class EpisodicMemory:
         self,
         user_id: str,
         content: str,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         episode_type: str = "interaction"
     ) -> Episode:
         """
@@ -561,7 +561,7 @@ class EpisodicMemory:
         overlap = len(query_words & content_words)
         return min(overlap / len(query_words), 1.0)
     
-    def _build_context_enrichment(self, episodes: List[Episode]) -> Dict[str, Any]:
+    def _build_context_enrichment(self, episodes: List[Episode]) -> Dict[str, object]:
         """Build context enrichment from episodes."""
         if not episodes:
             return {}
@@ -588,7 +588,7 @@ class KGRelationship:
     target: str
     relationship_type: str
     weight: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass

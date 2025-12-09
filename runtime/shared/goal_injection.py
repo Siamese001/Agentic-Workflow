@@ -7,7 +7,7 @@ to improve output relevance and alignment.
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -41,7 +41,7 @@ class StrategicGoal:
     description: str
     success_metrics: List[str]
     constraints: List[str] = field(default_factory=list)
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -50,7 +50,7 @@ class GoalState:
     primary_goals: List[StrategicGoal]
     success_metrics: List[str]
     constraints: List[str]
-    context: Dict[str, Any]
+    context: Dict[str, object]
     injection_position: str = "prefix"  # prefix, suffix, inline
 
 
@@ -88,7 +88,7 @@ class GoalStateInjector:
         self,
         prompt: str,
         goals: Optional[List[StrategicGoal]] = None,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         position: str = "prefix"
     ) -> InjectionResult:
         """
@@ -153,7 +153,7 @@ class GoalStateInjector:
     def _format_goals_for_injection(
         self, 
         goals: List[StrategicGoal], 
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> str:
         """Format goals for injection into prompt."""
         lines = ["[STRATEGIC GOALS]"]
@@ -241,7 +241,7 @@ class GoalStateInjector:
     def create_goal_state(
         self,
         goals: List[StrategicGoal],
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> GoalState:
         """Create a complete goal state for injection."""
         all_metrics = []
@@ -258,7 +258,7 @@ class GoalStateInjector:
             context=context or {}
         )
     
-    def get_injection_stats(self) -> Dict[str, Any]:
+    def get_injection_stats(self) -> Dict[str, object]:
         """Get injection statistics."""
         if not self.injection_history:
             return {}

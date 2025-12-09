@@ -8,7 +8,7 @@ recency, authority, relevance, and completeness factors.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta
@@ -55,13 +55,13 @@ class WeightedResult:
     signal_scores: Dict[str, float]
     final_score: float
     rank: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class WeightingResult:
     """Complete result of signal weighting"""
-    original_results: List[Dict[str, Any]]
+    original_results: List[Dict[str, object]]
     weighted_results: List[WeightedResult]
     weights_used: SignalWeights
     processing_time_ms: int
@@ -106,9 +106,9 @@ class SignalWeighter:
     
     def weight_results(
         self,
-        results: List[Dict[str, Any]],
+        results: List[Dict[str, object]],
         query: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> WeightingResult:
         """
         Apply signal weighting to results.
@@ -186,7 +186,7 @@ class SignalWeighter:
             avg_score=round(avg_score, 4)
         )
     
-    def _calculate_recency_score(self, result: Dict[str, Any]) -> float:
+    def _calculate_recency_score(self, result: Dict[str, object]) -> float:
         """Calculate recency score with linear decay."""
         timestamp = result.get('timestamp') or result.get('date') or result.get('published_at')
         
@@ -218,7 +218,7 @@ class SignalWeighter:
             logger.debug(f"Error parsing timestamp: {e}")
             return 0.5
     
-    def _calculate_authority_score(self, result: Dict[str, Any]) -> float:
+    def _calculate_authority_score(self, result: Dict[str, object]) -> float:
         """Calculate authority score based on source."""
         # Check for explicit authority score
         if 'authority_score' in result:
@@ -235,7 +235,7 @@ class SignalWeighter:
         
         return self.authority_sources.get('unknown', 0.4)
     
-    def _calculate_relevance_score(self, result: Dict[str, Any], query: Optional[str]) -> float:
+    def _calculate_relevance_score(self, result: Dict[str, object], query: Optional[str]) -> float:
         """Calculate relevance score."""
         # Check for explicit relevance score
         if 'relevance_score' in result:
@@ -250,13 +250,13 @@ class SignalWeighter:
         if not content or not query_terms:
             return 0.5
         
-        # Simple term overlap calculation
+        # basic term overlap calculation
         matches = sum(1 for term in query_terms if term in content)
         relevance = matches / len(query_terms)
         
         return min(relevance, 1.0)
     
-    def _calculate_completeness_score(self, result: Dict[str, Any]) -> float:
+    def _calculate_completeness_score(self, result: Dict[str, object]) -> float:
         """Calculate completeness score based on content richness."""
         content = result.get('content', '')
         
@@ -316,7 +316,7 @@ def create_signal_weighter(
 
 
 def weight_results(
-    results: List[Dict[str, Any]],
+    results: List[Dict[str, object]],
     query: Optional[str] = None,
     weights: Optional[SignalWeights] = None
 ) -> WeightingResult:

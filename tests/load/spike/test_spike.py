@@ -48,7 +48,7 @@ class TestSuddenLoadSpike:
                 # Simulate operation
                 _ = i * 2
                 results.append(True)
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 results.append(False)
 
         success_rate = sum(results) / len(results)

@@ -190,7 +190,7 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
                     archive_path = ARCHIVE_DIR / rel_path
                     archive_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(dup_file), str(archive_path))
-                except Exception as e:
+                except (ValueError, TypeError, KeyError) as e:
                     manifest.errors.append({
                         "path": str(rel_path),
                         "error": str(e),

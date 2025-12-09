@@ -20,7 +20,7 @@ def validate_python_syntax(file_path):
         return True, None
     except SyntaxError as e:
         return False, f"Syntax error: {e}"
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         return False, f"Error reading file: {e}"
 
 

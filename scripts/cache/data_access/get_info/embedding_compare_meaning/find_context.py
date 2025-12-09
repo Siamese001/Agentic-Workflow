@@ -110,7 +110,7 @@ def _resolve_path(path_like: str) -> Path:
     path_obj = Path(str(path_like)).expanduser()
     try:
         return path_obj.resolve()
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, OSError):
         return path_obj
 
 
@@ -125,7 +125,7 @@ def _path_is_durable(path_like: str, storage_config: Any) -> bool:
     try:
         target_path = _resolve_path(path_like)
         durable_path = _resolve_path(durable_root)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, OSError):
         return False
 
     try:
@@ -169,7 +169,7 @@ def _describe_redis_mode(redis_client: Any) -> str:
         try:
             ping_fn()
             return "REAL"
-        except Exception as exc:  # pragma: no cover - network dependency
+        except (ValueError, TypeError, RuntimeError, OSError) as exc:  # pragma: no cover - network dependency
             logger.warning("Redis ping failed; continuing with degraded cache: %s", exc)
             return "UNREACHABLE"
     return "UNKNOWN"
@@ -219,14 +219,14 @@ def _log_runtime_capabilities(
 
 def _mcp_get(config_obj: Any, key: str, default: Any) -> Any:
     """
-    Helper to read MCP config fields from either a dict-like structure
+    utility to read MCP config fields from either a dict-like structure
     or an attribute-based config object. This makes context robust to
     both styles of ConfigV10_7.mcp_config.
     """
     # Dict-like
     if isinstance(config_obj, dict):
         return config_obj.get(key, default)
-    # Object-like (dataclass / simple namespace)
+    # Object-like (dataclass / basic namespace)
     return getattr(config_obj, key, default)
 
 
@@ -267,7 +267,7 @@ class WorkflowContext:
         if redis_required:
             try:
                 redis_client.ping()
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, OSError) as e:
                 raise RuntimeError(
                     f"Redis is required but not running: {e}"
                 ) from e
@@ -393,7 +393,7 @@ class WorkflowContext:
         raw_clients = _mcp_get(mcp_config, "clients", [])
         try:
             self._mcp_client_specs = parse_mcp_client_specs(raw_clients)
-        except Exception as exc:
+        except (ValueError, TypeError, RuntimeError, OSError) as exc:
             raise MCPClientInitializationError(f"Invalid MCP configuration: {exc}") from exc
 
     def is_mcp_enabled(self) -> bool:
@@ -416,7 +416,7 @@ class WorkflowContext:
         for spec in self._mcp_client_specs:
             try:
                 clients[spec.name] = instantiate_mcp_client(spec)
-            except Exception as exc:
+            except (ValueError, TypeError, RuntimeError, OSError) as exc:
                 errors[spec.name] = str(exc)
                 if spec.optional:
                     logger.warning(
@@ -517,7 +517,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
             port=config.redis_config.port,
             db=db or config.redis_config.db,
         )
-    else:  # pragma: no cover - defensive stub fallback
+    else:  
         redis_client = MCPClientStub(
             "redis",
             {
@@ -534,14 +534,14 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
                 host=config.chromadb_config.host,
                 port=config.chromadb_config.port,
             )
-        else:  # pragma: no cover - defensive stub fallback
+        else:  
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     else:
         persistent_ctor = getattr(chromadb_module, "PersistentClient", None)
         if callable(persistent_ctor):
             chromadb_client = persistent_ctor(path=config.chromadb_config.persistent_path)
-        else:  # pragma: no cover - defensive stub fallback
+        else:  
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     logger.info("Initialized ChromaDB client")
@@ -549,7 +549,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     embedding_ctor = getattr(embedding_functions, "DefaultEmbeddingFunction", None)
     if callable(embedding_ctor):
         embedding_function = embedding_ctor()
-    else:  # pragma: no cover - stub fallback for local tests
+    else:  
         embedding_function = embedding_functions.EmbeddingFunction()
 
     # 2. Initialize Core Services (All 9+ services)
@@ -667,7 +667,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         )
         collection.delete(where={"workflow_id": workflow_id})
         logger.info("ChromaDB cleanup complete.")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError, OSError) as e:
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 

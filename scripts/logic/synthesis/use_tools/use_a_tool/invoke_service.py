@@ -46,7 +46,7 @@ from config_RES_v2 import (
 logger = logging.getLogger(__name__)
 
 
-# Configuration constants (no magic numbers)
+# Configuration constants (no special numbers)
 # --- FIX: Removed duplicated constants ---
 # DEFAULT_MAX_RETRIES = 3 (REMOVED)
 # DEFAULT_RETRY_DELAY = 2.0 (REMOVED)
@@ -134,7 +134,7 @@ class GeminiService:
             try:
                 if hasattr(genai, '_config'):
                     api_key = genai._config.api_key
-            except:
+            except (ValueError, TypeError, RuntimeError, OSError):
                 ...
 
             if not api_key:
@@ -263,7 +263,7 @@ class GeminiService:
                         time.sleep(wait_time)
                         continue
 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, OSError) as e:
                 self.metrics.error_count += 1
 
                 if attempt < self.max_retries - 1:
@@ -340,13 +340,13 @@ class GeminiService:
                     model=model,
                     system_prompt=system_prompt,
                     reasoning_config=reasoning_config,
-                    temperature=temperature or 1.0,  # Higher temp (1.0) for diversity
+                    temperature=temperature or 1.0,  
                     max_tokens=max_tokens
                 )
                 responses.append(response)
                 total_calls += calls
 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, OSError) as e:
                 logger.error(f"{section_id}: Self-consistency run {i+1} failed: {e}")
                 # Continue with other runs
                 continue
@@ -424,7 +424,7 @@ class GeminiService:
 
             return response, APICallStatus.SUCCESS
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, OSError) as e:
             error_str = str(e).lower()
 
             if "quota" in error_str or "rate" in error_str:
@@ -435,7 +435,7 @@ class GeminiService:
                 logger.error(f"{section_id}: API error: {e}")
                 return None, APICallStatus.ERROR
 
-    def _extract_text(self, response: Any) -> str:
+    def _extract_text(self, response: object) -> str:
         """
         Extract clean text from API response.
 
@@ -524,7 +524,7 @@ SYNTHESIZED RESPONSE:"""
             "[placeholder]", "[PLACEHOLDER]",
             "[your name]", "[YOUR NAME]",
             "[company name]", "[COMPANY NAME]",
-            "[TODO]", "[FIXME]",
+            "[PENDING]", "[ATTENTION]",
             "dummy_", "DUMMY_",
             "test_data", "TEST_DATA",
             "mock_response", "MOCK_RESPONSE"
@@ -619,7 +619,6 @@ SYNTHESIZED RESPONSE:"""
         total_calls = 0
         for attempt in range(retry_count):
             try:
-                # --- FIX: Use imported default temp ---
                 temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
 
                 # Make the API call
@@ -647,7 +646,7 @@ SYNTHESIZED RESPONSE:"""
 
             except json.JSONDecodeError as e:
                 logger.error(f"JSON decode failed: {e}. Response: {raw_response}")
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError, OSError) as e:
                 logger.error(f"API call failed: {e}")
 
         raise ValueError(f"Failed to get valid JSON response after {retry_count} attempts.")

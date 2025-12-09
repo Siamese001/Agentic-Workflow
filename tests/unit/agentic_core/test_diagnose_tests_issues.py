@@ -4,15 +4,15 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 
 
-def test_diagnose_tests_issues(data: Dict[str, Any]) -> Dict[str, Any]:
+def test_diagnose_tests_issues(data: Dict[str, object]) -> Dict[str, object]:
     """Process test diagnose tests issues data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_test_diagnose_tests_issues_config() -> Dict[str, Any]:
+def get_test_diagnose_tests_issues_config() -> Dict[str, object]:
     """Get configuration for test_diagnose_tests_issues."""
     return {"enabled": True, "version": "1.0"}

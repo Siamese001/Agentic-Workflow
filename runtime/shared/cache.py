@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from .clients import OPENAI_DEFAULT_SEED
 
@@ -99,7 +99,7 @@ def generate_llm_cache_key_with_fingerprint(
     return f"{CACHE_KEY_PREFIX}:v{CACHE_KEY_VERSION}:fp:{key_hash}"
 
 
-def extract_cache_metadata(response: Any) -> Dict[str, Any]:
+def extract_cache_metadata(response: object) -> Dict[str, object]:
     """
     Extract cache-relevant metadata from an OpenAI response.
 
@@ -127,7 +127,7 @@ def extract_cache_metadata(response: Any) -> Dict[str, Any]:
                 "completion_tokens": getattr(usage, "completion_tokens", 0),
                 "total_tokens": getattr(usage, "total_tokens", 0),
             }
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         logger.warning(f"Failed to extract cache metadata: {e}")
 
     return metadata

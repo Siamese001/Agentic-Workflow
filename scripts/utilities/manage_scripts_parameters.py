@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.886801
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -20,7 +20,7 @@ class ManagedResource:
     id: str
     type: str
     state: str
-    data: Any = None
+    data: object = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -36,12 +36,12 @@ class ManagementResult:
 class ManageScriptsParameters:
     """Manager for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.resources: Dict[str, ManagedResource] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def create(self, resource_id: str, resource_type: str, data: Any = None) -> ManagementResult:
+    def create(self, resource_id: str, resource_type: str, data: object = None) -> ManagementResult:
         """Create resource."""
         if resource_id in self.resources:
             return ManagementResult(success=False, operation="create", message="Already exists")
@@ -49,7 +49,7 @@ class ManageScriptsParameters:
         self.resources[resource_id] = resource
         return ManagementResult(success=True, operation="create", resource=resource)
 
-    def update(self, resource_id: str, data: Any) -> ManagementResult:
+    def update(self, resource_id: str, data: object) -> ManagementResult:
         """Update resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation="update", message="Not found")

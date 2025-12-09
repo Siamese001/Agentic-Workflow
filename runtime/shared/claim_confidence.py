@@ -8,7 +8,7 @@ based on source verification and evidence support.
 
 import logging
 import re
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -43,7 +43,7 @@ class Claim:
     confidence_level: ConfidenceLevel
     source_support: bool
     deductions: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -116,8 +116,8 @@ class ClaimConfidenceScorer:
     def analyze_claims(
         self,
         content: str,
-        sources: Optional[List[Dict[str, Any]]] = None,
-        context: Optional[Dict[str, Any]] = None
+        sources: Optional[List[Dict[str, object]]] = None,
+        context: Optional[Dict[str, object]] = None
     ) -> ClaimAnalysisResult:
         """
         Analyze claims in content and score confidence.
@@ -212,7 +212,7 @@ class ClaimConfidenceScorer:
     def score_claim(
         self,
         claim_text: str,
-        sources: List[Dict[str, Any]],
+        sources: List[Dict[str, object]],
         claim_index: int
     ) -> Claim:
         """
@@ -281,7 +281,7 @@ class ClaimConfidenceScorer:
             deductions=deductions
         )
     
-    def _check_source_support(self, claim: str, sources: List[Dict[str, Any]]) -> bool:
+    def _check_source_support(self, claim: str, sources: List[Dict[str, object]]) -> bool:
         """Check if claim is supported by sources."""
         if not sources:
             return False
@@ -299,7 +299,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_unsourced_metric(self, claim: str, sources: List[Dict[str, Any]]) -> bool:
+    def _has_unsourced_metric(self, claim: str, sources: List[Dict[str, object]]) -> bool:
         """Check if claim has metrics without source mapping."""
         # Extract metrics from claim
         metric_pattern = r'(\d+%|\d+x|\d+\.?\d*\s*(?:million|billion|thousand|k|m|b))'
@@ -321,7 +321,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_unauthorized_entity(self, claim: str, sources: List[Dict[str, Any]]) -> bool:
+    def _has_unauthorized_entity(self, claim: str, sources: List[Dict[str, object]]) -> bool:
         """Check if claim mentions unauthorized entities."""
         # Extract potential company/organization names
         entity_pattern = r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:Inc|Corp|LLC|Ltd|Co))?\b'
@@ -344,7 +344,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_role_drift(self, claim: str, sources: List[Dict[str, Any]]) -> bool:
+    def _has_role_drift(self, claim: str, sources: List[Dict[str, object]]) -> bool:
         """Check for role terminology drift."""
         role_keywords = [
             "engineer", "developer", "manager", "director", "lead",
@@ -369,7 +369,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_low_coherence(self, claim: str, sources: List[Dict[str, Any]]) -> bool:
+    def _has_low_coherence(self, claim: str, sources: List[Dict[str, object]]) -> bool:
         """Check for low context coherence."""
         if not sources:
             return True
@@ -444,7 +444,7 @@ class ClaimConfidenceScorer:
         
         return recommendations
     
-    def get_analysis_summary(self, result: ClaimAnalysisResult) -> Dict[str, Any]:
+    def get_analysis_summary(self, result: ClaimAnalysisResult) -> Dict[str, object]:
         """Get summary of claim analysis."""
         confidence_distribution = {
             ConfidenceLevel.HIGH.value: 0,
@@ -477,7 +477,7 @@ def create_claim_scorer(
 
 def analyze_claims(
     content: str,
-    sources: Optional[List[Dict[str, Any]]] = None
+    sources: Optional[List[Dict[str, object]]] = None
 ) -> ClaimAnalysisResult:
     """Convenience function to analyze claims."""
     scorer = ClaimConfidenceScorer()

@@ -1,6 +1,6 @@
 """Integration tests for agentic_core + runtime integration."""
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -14,8 +14,8 @@ class LayerType(Enum):
 @dataclass
 class RuntimeContext:
     request_id: str
-    config: Dict[str, Any]
-    state: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, object]
+    state: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
 

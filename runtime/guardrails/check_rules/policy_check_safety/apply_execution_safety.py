@@ -14,7 +14,7 @@ Implements L5 Safety/Policy Layer for apply data safety operations
 """
 
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Union
 
 
 from dataclasses import field
@@ -57,7 +57,7 @@ class ApplyDataSafetySafetyResult:
     """L5 Safety result with full type safety"""
     success: bool
     safety_score: float = 0.0
-    risk_assessment: Dict[str, Any] = field(default_factory=dict)
+    risk_assessment: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
@@ -67,12 +67,12 @@ class ApplyDataSafetySafetySafety(ABC):
     """L5 Abstract base - ensures L5 pure safety behavior"""
 
     @abstractmethod
-    def apply_safety(self, data: Dict[str, Any]) -> ApplyDataSafetySafetyResult:
+    def apply_safety(self, data: Dict[str, object]) -> ApplyDataSafetySafetyResult:
         """Apply safety checks with L5 constraints"""
         ...
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
 
@@ -88,7 +88,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
         self.logger = logging.getLogger(self.__class__.__name__)
         self._safety_rules = self._initialize_safety_rules()
 
-    def apply_safety(self, data: Dict[str, Any]) -> ApplyDataSafetySafetyResult:
+    def apply_safety(self, data: Dict[str, object]) -> ApplyDataSafetySafetyResult:
         """Apply safety checks following L5 architecture principles"""
         self.logger.info("Applying safety checks to data")
 
@@ -117,7 +117,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
         self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for critical dangerous patterns
@@ -145,11 +145,11 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
 
             self.logger.info("Data passed L5 safety validation")
             return True
-        except Exception as e:
-            self.logger.error(f"Safety validation error: {e}")
+        except (ValueError, TypeError, KeyError) as e:
+            self.logger.error("Safety validation error: %s", e)
             return False  # Fail-closed
 
-    def _validate_input(self, data: Dict[str, Any]) -> None:
+    def _validate_input(self, data: Dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary")
@@ -157,7 +157,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
         if not data:
             raise ValueError("Input cannot be empty")
 
-    def _calculate_safety_score(self, data: Dict[str, Any]) -> float:
+    def _calculate_safety_score(self, data: Dict[str, object]) -> float:
         """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
         score = 0.0
         data_str = str(data).lower()
@@ -182,7 +182,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
 
         return min(score, 1.0)
 
-    def _assess_risks(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_risks(self, data: Dict[str, object]) -> Dict[str, object]:
         """Perform comprehensive risk assessment"""
         risks = {
             "injection_risk": self._check_injection_risk(data),
@@ -196,7 +196,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
             "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
         }
 
-    def _check_injection_risk(self, data: Dict[str, Any]) -> str:
+    def _check_injection_risk(self, data: Dict[str, object]) -> str:
         """Check for injection risks"""
         injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
         data_str = str(data)
@@ -207,7 +207,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
 
         return "low"
 
-    def _check_size_risk(self, data: Dict[str, Any]) -> str:
+    def _check_size_risk(self, data: Dict[str, object]) -> str:
         """Check size-related risks"""
         size = len(str(data))
 
@@ -218,7 +218,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
         else:
             return "low"
 
-    def _check_complexity_risk(self, data: Dict[str, Any]) -> str:
+    def _check_complexity_risk(self, data: Dict[str, object]) -> str:
         """Check complexity risks"""
         try:
             # Check nesting depth
@@ -229,10 +229,10 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
                 return "medium"
             else:
                 return "low"
-        except:
+        except (ValueError, TypeError, KeyError):
             return "high"
 
-    def _check_pattern_risk(self, data: Dict[str, Any]) -> str:
+    def _check_pattern_risk(self, data: Dict[str, object]) -> str:
         """Check for risky patterns"""
         risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
         data_str = str(data).lower()
@@ -243,7 +243,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
 
         return "low"
 
-    def _calculate_depth(self, obj: Any, current_depth: int = 0) -> int:
+    def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
         """Calculate nesting depth"""
         if isinstance(obj, dict):
             return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
@@ -252,7 +252,7 @@ class ApplyDataSafetySafetyImpl(ApplyDataSafetySafetySafety):
         else:
             return current_depth
 
-    def _initialize_safety_rules(self) -> List[Dict[str, Any]]:
+    def _initialize_safety_rules(self) -> List[Dict[str, object]]:
         """Initialize L5 safety rules"""
         return [
             {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
@@ -278,7 +278,7 @@ class ApplyDataSafetySafetyInterface:
     def __init__(self, safety: ApplyDataSafetySafetySafety):
         self._safety = safety
 
-    def apply_safety(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def apply_safety(self, data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - applies safety safely"""
         try:
             result = self._safety.apply_safety(data)
@@ -290,7 +290,7 @@ class ApplyDataSafetySafetyInterface:
                 "safety_validated": result.safety_validated,
                 "timestamp": result.timestamp
             }
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             raise SecurityError(f"Safety application failed: {e}")
 
 
@@ -305,7 +305,7 @@ class ApplyDataSafetySafetyFactory:
         return ApplyDataSafetySafetyInterface(safety)
 
 
-def apply_data_safety(data: Dict[str, Any]) -> Dict[str, Any]:
+def apply_data_safety(data: Dict[str, object]) -> Dict[str, object]:
     """
     L5 Main function - apply data safety operations
 
@@ -330,6 +330,6 @@ if __name__ == "__main__":
         result = apply_data_safety(test_data)
         logger.info(f"L5 Safety check successful: {result}")
     except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except Exception as e:
-        logger.error(f"L5 Unexpected error: {e}")
+        logger.error("L5 Security error: %s", e)
+    except (ValueError, TypeError, KeyError) as e:
+        logger.error("L5 Unexpected error: %s", e)

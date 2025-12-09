@@ -10,7 +10,7 @@ import logging
 import re
 import time
 import unicodedata
-from typing import Dict, List, Any, Optional, Set
+from typing import Dict, List, object, Optional, Set
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -216,20 +216,17 @@ class TextSanitizer:
         changes = []
         result = text
         
-        # Remove control characters
-        control_pattern = r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'
+                control_pattern = r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'
         if re.search(control_pattern, result):
             result = re.sub(control_pattern, '', result)
             changes.append("Removed control characters")
         
-        # Remove excessive punctuation
-        punct_pattern = r'([!?.]){3,}'
+                punct_pattern = r'([!?.]){3,}'
         if re.search(punct_pattern, result):
             result = re.sub(punct_pattern, r'\1\1', result)
             changes.append("Reduced excessive punctuation")
         
-        # Remove empty parentheses/brackets
-        empty_pattern = r'\(\s*\)|\[\s*\]|\{\s*\}'
+                empty_pattern = r'\(\s*\)|\[\s*\]|\{\s*\}'
         if re.search(empty_pattern, result):
             result = re.sub(empty_pattern, '', result)
             changes.append("Removed empty brackets")
@@ -262,7 +259,7 @@ class ValidationIssue:
     message: str
     severity: ValidationSeverity
     suggestion: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -410,7 +407,7 @@ class ValidationContext:
         self.issues.clear()
         self.validated_fields.clear()
     
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> Dict[str, object]:
         """Get validation summary."""
         result = self.get_result()
         
@@ -443,9 +440,9 @@ class WorkflowCheckpoint:
     """Workflow checkpoint for rollback"""
     checkpoint_id: str
     phase: WorkflowPhase
-    state_snapshot: Dict[str, Any]
+    state_snapshot: Dict[str, object]
     created_at: datetime
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -453,7 +450,7 @@ class WorkflowState:
     """Complete workflow state"""
     workflow_id: str
     phase: WorkflowPhase
-    data: Dict[str, Any]
+    data: Dict[str, object]
     checkpoints: List[WorkflowCheckpoint]
     started_at: datetime
     updated_at: datetime
@@ -477,7 +474,7 @@ class WorkflowStateManager:
         """
         self.workflow_id = workflow_id or f"wf_{int(time.time())}"
         self.phase = WorkflowPhase.INITIALIZED
-        self.data: Dict[str, Any] = {}
+        self.data: Dict[str, object] = {}
         self.checkpoints: List[WorkflowCheckpoint] = []
         self.started_at = datetime.now()
         self.updated_at = datetime.now()
@@ -485,7 +482,7 @@ class WorkflowStateManager:
         self.error: Optional[str] = None
         
         # Staging buffer for atomic updates
-        self._staging: Dict[str, Any] = {}
+        self._staging: Dict[str, object] = {}
         self._staging_locked = False
     
     def set_phase(self, phase: WorkflowPhase) -> None:
@@ -498,7 +495,7 @@ class WorkflowStateManager:
         
         logger.info(f"Workflow {self.workflow_id} phase: {phase.value}")
     
-    def set_data(self, key: str, value: Any) -> None:
+    def set_data(self, key: str, value: object) -> None:
         """Set data in workflow state."""
         if self._staging_locked:
             raise RuntimeError("Cannot modify state while staging is locked")
@@ -506,11 +503,11 @@ class WorkflowStateManager:
         self.data[key] = value
         self.updated_at = datetime.now()
     
-    def get_data(self, key: str, default: Any = None) -> Any:
+    def get_data(self, key: str, default: object = None) -> object:
         """Get data from workflow state."""
         return self.data.get(key, default)
     
-    def stage_data(self, key: str, value: Any) -> None:
+    def stage_data(self, key: str, value: object) -> None:
         """Stage data for atomic commit."""
         self._staging[key] = value
     
@@ -534,7 +531,7 @@ class WorkflowStateManager:
         """Unlock staging."""
         self._staging_locked = False
     
-    def create_checkpoint(self, metadata: Optional[Dict[str, Any]] = None) -> WorkflowCheckpoint:
+    def create_checkpoint(self, metadata: Optional[Dict[str, object]] = None) -> WorkflowCheckpoint:
         """
         Create a checkpoint for rollback.
         
@@ -586,8 +583,7 @@ class WorkflowStateManager:
         self.phase = checkpoint.phase
         self.updated_at = datetime.now()
         
-        # Remove checkpoints after this one
-        self.checkpoints = self.checkpoints[:checkpoint_index + 1]
+                self.checkpoints = self.checkpoints[:checkpoint_index + 1]
         
         logger.info(f"Rolled back to checkpoint {checkpoint_id}")
         
@@ -621,7 +617,7 @@ class WorkflowStateManager:
             error=self.error
         )
     
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> Dict[str, object]:
         """Get workflow state summary."""
         return {
             'workflow_id': self.workflow_id,
@@ -654,7 +650,7 @@ class WorkflowStateManager:
 class StagingEntry:
     """Entry in staging buffer"""
     key: str
-    value: Any
+    value: object
     staged_at: datetime
     source: str = "unknown"
 
@@ -672,9 +668,9 @@ class ImmutableStagingBuffer:
         self._buffer: Dict[str, StagingEntry] = {}
         self._locked = False
         self._lock_reason: Optional[str] = None
-        self._history: List[Dict[str, Any]] = []
+        self._history: List[Dict[str, object]] = []
     
-    def stage(self, key: str, value: Any, source: str = "unknown") -> None:
+    def stage(self, key: str, value: object, source: str = "unknown") -> None:
         """
         Stage a value.
         
@@ -695,7 +691,7 @@ class ImmutableStagingBuffer:
         
         self._buffer[key] = entry
     
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: object = None) -> object:
         """Get staged value."""
         entry = self._buffer.get(key)
         return entry.value if entry else default
@@ -720,7 +716,7 @@ class ImmutableStagingBuffer:
         """Check if buffer is locked."""
         return self._locked
     
-    def commit(self) -> Dict[str, Any]:
+    def commit(self) -> Dict[str, object]:
         """
         Commit staged values and return them.
         
@@ -754,11 +750,11 @@ class ImmutableStagingBuffer:
         self._locked = False
         self._lock_reason = None
     
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> Dict[str, object]:
         """Get all staged values."""
         return {k: v.value for k, v in self._buffer.items()}
     
-    def get_history(self) -> List[Dict[str, Any]]:
+    def get_history(self) -> List[Dict[str, object]]:
         """Get staging history."""
         return self._history.copy()
     

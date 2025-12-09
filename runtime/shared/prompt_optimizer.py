@@ -9,7 +9,7 @@ and constraint application to improve output quality.
 import logging
 import re
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -75,7 +75,7 @@ class PromptOptimizer:
     def optimize(
         self,
         prompt: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         config: Optional[OptimizationConfig] = None
     ) -> OptimizationResult:
         """
@@ -171,8 +171,7 @@ class PromptOptimizer:
         improvements = []
         optimized = prompt
         
-        # Remove redundant whitespace
-        original_len = len(optimized)
+                original_len = len(optimized)
         optimized = re.sub(r'\s+', ' ', optimized).strip()
         if len(optimized) < original_len:
             improvements.append("Removed redundant whitespace")
@@ -199,8 +198,7 @@ class PromptOptimizer:
             optimized += '.'
             improvements.append("Added proper sentence ending")
         
-        # Remove filler words for aggressive optimization
-        if config.level == OptimizationLevel.AGGRESSIVE:
+                if config.level == OptimizationLevel.AGGRESSIVE:
             filler_words = [
                 r'\bjust\b', r'\breally\b', r'\bactually\b', r'\bbasically\b',
                 r'\bliterally\b', r'\bsimply\b', r'\bobviously\b'
@@ -215,7 +213,7 @@ class PromptOptimizer:
     def _optimize_specificity(
         self,
         prompt: str,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         config: OptimizationConfig
     ) -> tuple[str, List[str]]:
         """Optimize prompt for specificity."""
@@ -299,7 +297,7 @@ class PromptOptimizer:
     def _apply_constraints(
         self,
         prompt: str,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         config: OptimizationConfig
     ) -> tuple[str, List[str]]:
         """Apply constraints to prompt."""
@@ -385,7 +383,7 @@ class PromptOptimizer:
         
         return round(min(max(score, 0.0), 1.0), 3)
     
-    def get_optimization_stats(self) -> Dict[str, Any]:
+    def get_optimization_stats(self) -> Dict[str, object]:
         """Get optimization statistics."""
         if not self.optimization_history:
             return {}

@@ -1,6 +1,6 @@
 """Integration tests for API layer."""
 from __future__ import annotations
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -15,13 +15,13 @@ class APIRequest:
     method: HTTPMethod
     path: str
     headers: Dict[str, str]
-    body: Optional[Dict[str, Any]] = None
+    body: Optional[Dict[str, object]] = None
 
 @dataclass
 class APIResponse:
     status_code: int
     headers: Dict[str, str]
-    body: Dict[str, Any]
+    body: Dict[str, object]
 
 
 class TestAPIEndpointIntegration:

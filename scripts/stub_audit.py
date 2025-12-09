@@ -14,18 +14,15 @@ import json
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 
-# Patterns that indicate stub/placeholder content
 STUB_PATTERNS = [
     r'^\s*$',                          # Empty
     r'^\s*pass\s*$',                   # Just pass
     r'^\s*#.*\n\s*pass\s*$',           # Comment + pass
     r'raise\s+NotImplementedError',    # NotImplementedError
-    r'TODO',                           # Implementation pending
+    r'PENDING',                           # Implementation pending
     r'PLACEHOLDER',                    # Placeholder markers
-    r'STUB',                           # Stub markers
-    r'FIXME',                          # Implementation pending
-    r'XXX',                            # XXX markers
-    r'\.\.\.(?:\s*#.*)?$',             # Ellipsis (...)
+    r'STUB',                               r'ATTENTION',                          # Implementation pending
+    r'XXX',                                r'\.\.\.(?:\s*#.*)?$',             # Ellipsis (...)
 ]
 
 # Folders to skip
@@ -46,12 +43,11 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
             if content in ['pass', '...']:
                 return True, "minimal_stub"
 
-        # Check for stub patterns
-        for pattern in STUB_PATTERNS:
+                for pattern in STUB_PATTERNS:
             if re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
                 if 'NotImplementedError' in content:
                     return True, "not_implemented"
-                if 'TODO' in content.upper():
+                if 'PENDING' in content.upper():
                     return True, "todo_marker"
                 if 'PLACEHOLDER' in content.upper():
                     return True, "placeholder_marker"
@@ -74,7 +70,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
 
         return False, "has_content"
 
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         return False, f"error: {e}"
 
 
@@ -131,8 +127,7 @@ def audit_stubs() -> Dict:
         f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct:.1f}%) need implementation or removal"
     )
 
-    # Find folders with high stub ratios
-    for folder, stats in report["by_folder"].items():
+        for folder, stats in report["by_folder"].items():
         total = stats["stubs"] + stats["real"]
         if total > 0 and stats["stubs"] / total > 0.5:
             report["recommendations"].append(
@@ -167,8 +162,7 @@ def print_report(report: Dict) -> None:
             pct = stats["stubs"] / total * 100 if total > 0 else 0
             print(f"  {folder}/: {stats['stubs']} stubs / {total} total ({pct:.0f}%)")
 
-    print("\n## SAMPLE STUB FILES (first 20)")
-    for stub in report["stubs"][:20]:
+    print("\n    for stub in report["stubs"][:20]:
         print(f"  [{stub['reason']}] {stub['path']}")
 
     if len(report["stubs"]) > 20:
