@@ -18,6 +18,21 @@ exclude: |
 repos:
 
   # ===================================================================
+  # SOVEREIGN AUTO-PROMOTER — FINAL ETERNAL 2025
+  # ===================================================================
+  - repo: local
+    hooks:
+      - id: sovereign-auto-promoter-2025
+        name: Sovereign Auto-Promoter — Eternal 2025 (auto-creates folders)
+        entry: python scripts/sovereign_promoter_2025.py
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+        verbose: true
+        pass_filenames: true
+        exclude: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config|data|archives)/
+
+  # ===================================================================
   # 1. FULL 40/40 CANON — ALL SOVEREIGN CODE (L1/L2/L3 ONLY)
   # ===================================================================
   - repo: local
@@ -38,7 +53,63 @@ repos:
         pass_filenames: false
 
   # ===================================================================
-  # 2. LIGHT CANON — 12 BRUTAL CHECKS FOR NON-SOVEREIGN CODE
+  # 4. BREAKOUT MANAGEMENT SUITE — 2025 EDITION
+  # Runs right after sovereign auto-promoter, before Light Canon
+  # ===================================================================
+  - repo: local
+    hooks:
+      # 1. Auto-create missing __init__.py in new directories
+      - id: auto-init-py
+        name: "[Breakout] Auto-create __init__.py in new packages"
+        entry: python scripts/auto_init_py.py
+        language: system
+        files: ^.*/[^/]+\.py$
+        stages: [pre-commit]
+        pass_filenames: true
+
+      # 2. Auto-sort imports (ruff) on every new/changed file
+      - id: auto-sort-imports
+        name: "[Breakout] Auto-sort imports with ruff"
+        entry: ruff check --select I --fix
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+
+      # 3. Auto-add file to correct pyproject.toml [tool.ruff] path list
+      - id: auto-ruff-path
+        name: "[Breakout] Auto-register new .py in pyproject.toml ruff paths"
+        entry: python scripts/auto_ruff_path.py
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+
+      # 4. Auto-name new files using verb_noun.py canon (e.g. retrieve_claims.py)
+      - id: auto-verb-noun-naming
+        name: "[Breakout] Enforce & auto-rename to verb_noun.py canon"
+        entry: python scripts/enforce_verb_noun.py --auto-rename
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+        pass_filenames: true
+
+      # 5. Auto-add new sovereign file to README table of contents
+      - id: auto-update-readme-toc
+        name: "[Breakout] Auto-update README.md sovereign TOC"
+        entry: python scripts/update_readme_toc.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/.*\.py$
+        stages: [pre-commit]
+
+      # 6. Auto-create companion test file for new sovereign modules
+      - id: auto-create-test
+        name: "[Breakout] Auto-create missing test_*.py for sovereign modules"
+        entry: python scripts/auto_create_test.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/.*\.py$
+        stages: [pre-commit]
+
+  # ===================================================================
+  # 3. LIGHT CANON — 12 BRUTAL CHECKS FOR NON-SOVEREIGN CODE
   # Applies to: tests/, scripts/, runtime/, shared/, tools/, etc.
   # ===================================================================
   - repo: local
