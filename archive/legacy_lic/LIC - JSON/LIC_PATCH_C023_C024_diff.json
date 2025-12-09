@@ -1,0 +1,90 @@
+{
+  "patch_bundle": "LIC_PATCH_C023_C024_v1.0",
+  "updated_file": "LIC_10-03-2025_v7.1.json",
+  "changes": [
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/C_LEVEL/date_cta_enabled",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/C_LEVEL/date_cta_template",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/C_LEVEL/date_format",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/EXECUTIVE/date_cta_enabled",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/EXECUTIVE/date_cta_template",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/EXECUTIVE/date_format",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/RECRUITER/date_cta_enabled",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/RECRUITER/date_cta_template",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/RECRUITER/date_format",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/SENIOR_TA/date_cta_enabled",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/SENIOR_TA/date_cta_template",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.canonical_message_types/K5_CALL_TO_ACTION/parameter_by_message_type/SENIOR_TA/date_format",
+      "change": "ADDED"
+    },
+    {
+      "path": "3.context/execution_flow_v2/sequence",
+      "change": "MODIFIED_LIST",
+      "from_len": 8,
+      "to_len": 10
+    },
+    {
+      "path": "3.context/job_application_prescan",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning/K5_date_specific_cta",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning/validation_rule_schema/rules_compact",
+      "change": "MODIFIED_LIST",
+      "from_len": 59,
+      "to_len": 63
+    },
+    {
+      "path": "5.output/cta_date_generation",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata/patches",
+      "change": "MODIFIED_LIST",
+      "from_len": 22,
+      "to_len": 24
+    },
+    {
+      "path": "metadata/version",
+      "change": "MODIFIED",
+      "from": "LIC_10-03-2025_v7.0",
+      "to": "LIC_10-03-2025_v7.1"
+    }
+  ]
+}

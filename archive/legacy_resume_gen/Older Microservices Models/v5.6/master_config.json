@@ -1,0 +1,651 @@
+{
+  "meta_loop_config": {
+    "enabled": true,
+    "feedback_log_path": "data/feedback_log.jsonl",
+    "rules_registry_path": "data/rules_registry.json",
+    "update_interval_seconds": 3600
+  },
+  "governor_config": {
+    "max_retries_per_node": 2,
+    "veto_hierarchy": [
+      "ADVERSARIAL",
+      "HOLISTIC",
+      "STRATEGY",
+      "QA3_SEMANTIC",
+      "QA2_FACTUAL",
+      "QA1_LINGUISTIC"
+    ]
+  },
+  "constraints": {
+    "headline": {
+      "word_count_min": 7,
+      "word_count_max": 12,
+      "component_words_min": 2,
+      "component_words_max": 4
+    },
+    "executive_summary": {
+      "word_count_min": 120,
+      "word_count_max": 150,
+      "sentence_count_min": 7,
+      "sentence_count_max": 9
+    },
+    "bullets": {
+      "word_count_min": 25,
+      "word_count_max": 40,
+      "word_count_acceptable_min": 21,
+      "word_count_acceptable_max": 44
+    },
+    "competencies": {
+      "bullet_count_min": 5,
+      "bullet_count_max": 7
+    },
+    "skills": {
+      "count_min": 8,
+      "count_max": 12,
+      "word_count_min": 1,
+      "word_count_max": 3
+    },
+    "cover_letter": {
+      "p1_word_count_min": 80,
+      "p1_word_count_max": 120,
+      "p2_word_count_min": 90,
+      "p2_word_count_max": 130,
+      "p3_word_count_min": 80,
+      "p3_word_count_max": 120,
+      "jd_relevance_threshold": 0.7
+    },
+    "total_resume": {
+      "word_count_min": 900,
+      "word_count_max": 1200
+    },
+    "section_specific": {
+      "unify_overview": {
+        "word_count_min": 25,
+        "word_count_max": 40
+      },
+      "ibm_overview": {
+        "word_count_min": 25,
+        "word_count_max": 40
+      },
+      "tradersense_narrative": {
+        "word_count_min": 50,
+        "word_count_max": 70
+      },
+      "ey_narrative": {
+        "word_count_min": 60,
+        "word_count_max": 80
+      },
+      "early_career_narrative": {
+        "word_count_min": 50,
+        "word_count_max": 70
+      }
+    },
+    "generation_requirements": {
+      "k1_min_differentiators": 4,
+      "min_jd_keywords": 6
+    },
+    "provenance_split_targets": {
+      "K2_UNIFY_BULLETS": {
+        "Verbatim": 2,
+        "Customized": 3,
+        "Synthetic": 2
+      },
+      "K3_IBM_BULLETS": {
+        "Verbatim": 2,
+        "Customized": 2,
+        "Synthetic": 2
+      },
+      "K9_COMPETENCIES": {
+        "Verbatim": 2,
+        "Customized": 2,
+        "Synthetic": 2
+      }
+    }
+  },
+  "new_agent_configs": {
+    "ontology_mapper": {
+      "standard_skills_path": "data/standard_skills.json"
+    },
+    "adversarial_reviewer": {
+      "persona": "skeptical_cto",
+      "hiring_bar": "very_high"
+    },
+    "auto_tuner": {
+      "analysis_window_days": 7,
+      "min_failure_rate_for_change": 0.3
+    },
+    "bias_scrubber": {
+      "protected_groups": [
+        "age",
+        "gender",
+        "race",
+        "disability"
+      ],
+      "flag_aggressive_language": true
+    },
+    "format_compliance": {
+      "allowed_fonts": [
+        "Calibri",
+        "Arial",
+        "Times New Roman"
+      ],
+      "max_table_depth": 0,
+      "date_format": "MM/YYYY"
+    },
+    "narrative_thread": {
+      "coherence_threshold": 0.8
+    },
+    "semantic_entailment": {
+      "model": "cross-encoder/nli-deberta-v3-large"
+    },
+    "competitor_analyst": {
+      "max_competitors": 3
+    },
+    "portfolio_linker": {
+      "max_links": 2
+    },
+    "cache_manager": {
+      "consolidation_interval_hours": 24
+    },
+    "markdown_to_latex": {
+      "default_template": "modern_v2",
+      "latex_engine": "pdflatex"
+    }
+  },
+  "app_tracker_schema": {
+    "Company": "",
+    "Category": "",
+    "Sub-Category": "",
+    "Job Title": "",
+    "Primary Job Role": "",
+    "JD URL": "",
+    "Application Date": "",
+    "Pipeline Status": "",
+    "Hiring Recruiter": "",
+    "Hiring Recruiter URL": "",
+    "Hiring Recruiter Interview Date": "",
+    "Hiring Manager": "",
+    "Hiring Manager URL": "",
+    "Hiring Manager Interview Date": "",
+    "Other Interviewer": "",
+    "Other Interviewer URL": "",
+    "Other Interviewer Date": "",
+    "Other Interviewer 2": "",
+    "Other Interviewer 2 URL": "",
+    "Other Interviewer 2 Date": "",
+    "Base Resume": "",
+    "Versioned Resume": "",
+    "Outreach Channel": "",
+    "Recruiter / Contact 1 Name": "",
+    "Recruiter / Contact 1 Title": "",
+    "Recruiter / Contact 1 URL": "",
+    "Date Communication Sent 1": "",
+    "Follow-Up Date 1": "",
+    "Second Follow-Up Date 1": "",
+    "Recruiter / Contact 2 Name": "",
+    "Recruiter / Contact 2 Title": "",
+    "Recruiter / Contact 2 URL": "",
+    "Date Communication Sent 2": "",
+    "Follow-Up Date 2": "",
+    "Second Follow-Up Date 2": "",
+    "Recruiter / Contact 3 Name": "",
+    "Recruiter / Contact 3 Title": "",
+    "Recruiter / Contact 3 URL": "",
+    "Date Communication Sent 3": "",
+    "Follow-Up Date 3": "",
+    "Second Follow-Up Date 3": "",
+    "Recruiter / Contact 4 Name": "",
+    "Recruiter / Contact 4 Title": "",
+    "Recruiter / Contact 4 URL": "",
+    "Date Communication Sent 4": "",
+    "Follow-Up Date 4": "",
+    "Second Follow-Up Date 4": "",
+    "Recruiter / Contact 5 Name": "",
+    "Recruiter / Contact 5 Title": "",
+    "Recruiter / Contact 5 URL": "",
+    "Date Communication Sent 5": "",
+    "Follow-Up Date 5": "",
+    "Second Follow-Up Date 5": "",
+    "Closure Reason": ""
+  },
+  "enricher_rules": {
+    "canonical_verbs": {
+      "LED": [
+        "led",
+        "spearheaded",
+        "directed",
+        "managed",
+        "governed",
+        "oversaw"
+      ],
+      "DEVELOPED": [
+        "developed",
+        "architected",
+        "built",
+        "created",
+        "designed",
+        "engineered",
+        "implemented"
+      ],
+      "IMPROVED": [
+        "improved",
+        "enhanced",
+        "optimized",
+        "accelerated",
+        "streamlined",
+        "increased",
+        "boosted",
+        "revitalized"
+      ],
+      "REDUCED": [
+        "reduced",
+        "cut",
+        "decreased",
+        "minimized",
+        "slashed"
+      ],
+      "PARTNERED": [
+        "partnered",
+        "collaborated",
+        "aligned",
+        "negotiated",
+        "secured"
+      ],
+      "AUTOMATED": [
+        "automated",
+        "orchestrated"
+      ],
+      "DEPLOYED": [
+        "deployed",
+        "launched",
+        "rolled out"
+      ]
+    }
+  },
+  "hyphenation_rules": {
+    "description": "A comprehensive suite of rules for style enforcement, including hyphenation and advanced AI text sanitization inspired by principles from leading language models.",
+    "style_version": "v2.1-Comprehensive",
+    "rules": {
+      "unnatural_hyphens_remove": [
+        {
+          "from": "AI-powered",
+          "to": "AI powered"
+        },
+        {
+          "from": "PS-centric",
+          "to": "professional services"
+        },
+        {
+          "from": "high-velocity",
+          "to": "high velocity"
+        },
+        {
+          "from": "automation-first",
+          "to": "automation"
+        },
+        {
+          "from": "lifecycle-based",
+          "to": "lifecycle based"
+        }
+      ],
+      "natural_hyphens_preserve": [
+        "best-in-class",
+        "business-to-business",
+        "business-to-consumer",
+        "co-author",
+        "co-deliver",
+        "co-founder",
+        "cost-effective",
+        "cross-functional",
+        "customer-centric",
+        "cutting-edge",
+        "data-driven",
+        "day-to-day",
+        "deep-learning",
+        "end-to-end",
+        "enterprise-wide",
+        "forward-thinking",
+        "go-to-market",
+        "hands-on",
+        "high-performance",
+        "long-term",
+        "machine-learning",
+        "mission-critical",
+        "multi-cloud",
+        "multi-framework",
+        "multi-jurisdictional",
+        "multi-million",
+        "multi-region",
+        "multi-tenant",
+        "on-premise",
+        "post-sales",
+        "pre-sales",
+        "quarter-over-quarter",
+        "real-time",
+        "results-oriented",
+        "self-service",
+        "short-term",
+        "state-of-the-art",
+        "year-over-year",
+        "zero-loss"
+      ]
+    }
+  },
+  "validator_rules": {
+    "forbidden_verbs": [
+      "spearheaded",
+      "leveraged",
+      "utilized",
+      "facilitated",
+      "orchestrated",
+      "championed",
+      "pioneered",
+      "revolutionized",
+      "transformed",
+      "enhanced",
+      "streamlined",
+      "synergized",
+      "enabled",
+      "empowered",
+      "drove"
+    ],
+    "required_sections": [
+      "K0_NAME",
+      "K0_CONTACT",
+      "K0_HEADLINE",
+      "K1_EXECUTIVE_SUMMARY",
+      "K2_UNIFY_BULLETS",
+      "K2_UNIFY_OVERVIEW",
+      "K3_IBM_BULLETS",
+      "K3_IBM_OVERVIEW",
+      "K4_TRADERSENSE_NARRATIVE",
+      "K5_EY_NARRATIVE",
+      "K6_EARLY_CAREER_NARRATIVE",
+      "K7_EDUCATION",
+      "K8_CERTIFICATIONS",
+      "K9_COMPETENCIES",
+      "K10_SKILLS",
+      "K11_COVER_LETTER"
+    ],
+    "bullet_word_count_sections_to_check": [
+      "K2_UNIFY_BULLETS",
+      "K3_IBM_BULLETS",
+      "K9_COMPETENCIES"
+    ],
+    "pipeline_status_enum": [
+      "Applied",
+      "Follow-Up",
+      "Interview",
+      "Rejected",
+      "Closed",
+      "Waiting"
+    ]
+  },
+  "artist_specs": {
+    "$schema_version": "artist_specs_v2.1_V2_Clean",
+    "$description": "Configuration-driven Artist specifications for V2 Governor. This file defines *what* to generate. The *how* (prompts, logic) is handled by the ContextRelayLayer (prompts_RES_v2.py) and the Governor (workflow_RES_v3_8.py).",
+    "K0_NAME": {
+      "generation_method": "_copy_from_master",
+      "master_data_key": "owner.name",
+      "description": "Candidate's full name from master resume",
+      "complexity": "LOW"
+    },
+    "K0_CONTACT": {
+      "generation_method": "_copy_k0_contact",
+      "description": "Contact information block (phone, email, LinkedIn)",
+      "complexity": "LOW"
+    },
+    "K0_HEADLINE": {
+      "generation_method": "_generate_section_macro_tot",
+      "description": "Three-part headline (Role | Skill | Value) optimized via Macro Tree-of-Thought",
+      "complexity": "HIGH"
+    },
+    "K0_EXECUTIVE_SUMMARY_HEADER": {
+      "generation_method": "_generate_dummy_header",
+      "description": "Static header: 'EXECUTIVE SUMMARY'",
+      "complexity": "LOW"
+    },
+    "K0_EXPERIENCE_HEADER": {
+      "generation_method": "_generate_dummy_header",
+      "description": "Static header: 'PROFESSIONAL EXPERIENCE'",
+      "complexity": "LOW"
+    },
+    "K0_EDUCATION_HEADER": {
+      "generation_method": "_generate_dummy_header",
+      "description": "Static header: 'EDUCATION'",
+      "complexity": "LOW"
+    },
+    "K0_CERTIFICATIONS_HEADER": {
+      "generation_method": "_generate_dummy_header",
+      "description": "Static header: 'CERTIFICATIONS & CREDENTIALS'",
+      "complexity": "LOW"
+    },
+    "K0_COMPETENCIES_HEADER": {
+      "generation_method": "_generate_dummy_header",
+      "description": "Static header: 'STRATEGIC & TECHNICAL COMPETENCIES'",
+      "complexity": "LOW"
+    },
+    "K1_EXECUTIVE_SUMMARY": {
+      "generation_method": "_generate_section_macro_tot",
+      "generation_strategy": "adversarial_v3_8",
+      "description": "v3_8: Adversarial generation (Gemini vs. Claude -> GPT-4 Synthesis)",
+      "complexity": "HIGH"
+    },
+    "K2_UNIFY_BULLETS": {
+      "generation_method": "_generate_tailored_bullets_for_experience",
+      "generation_strategy": "standard_v3_7",
+      "extra_args": {
+        "company_name": "Unify Consulting"
+      },
+      "description": "Tailored bullets for Unify Consulting experience (Verbatim/Customized/Synthetic mix)",
+      "complexity": "MEDIUM"
+    },
+    "K2_UNIFY_OVERVIEW": {
+      "generation_method": "_generate_tailored_overview_for_experience",
+      "depends_on": "K2_UNIFY_BULLETS",
+      "description": "Role overview generated from K2_UNIFY_BULLETS content",
+      "complexity": "MEDIUM"
+    },
+    "K3_IBM_BULLETS": {
+      "generation_method": "_generate_tailored_bullets_for_experience",
+      "extra_args": {
+        "company_name": "IBM"
+      },
+      "description": "Tailored bullets for IBM experience (Verbatim/Customized/Synthetic mix)",
+      "complexity": "MEDIUM"
+    },
+    "K3_IBM_OVERVIEW": {
+      "generation_method": "_generate_tailored_overview_for_experience",
+      "depends_on": "K3_IBM_BULLETS",
+      "description": "Role overview generated from K3_IBM_BULLETS content",
+      "complexity": "MEDIUM"
+    },
+    "K4_TRADERSENSE_NARRATIVE": {
+      "generation_method": "_generate_section_generic",
+      "extra_args": {
+        "company_match": "TraderSense",
+        "section_enum": "K4_TRADERSENSE_NARRATIVE"
+      },
+      "description": "2-3 sentence narrative for TraderSense CTO role",
+      "complexity": "MEDIUM"
+    },
+    "K5_EY_NARRATIVE": {
+      "generation_method": "_generate_section_generic",
+      "extra_args": {
+        "company_match": "Ernst & Young",
+        "section_enum": "K5_EY_NARRATIVE"
+      },
+      "description": "2-3 sentence narrative for Ernst & Young Principal role",
+      "complexity": "MEDIUM"
+    },
+    "K6_EARLY_CAREER_NARRATIVE": {
+      "generation_method": "_generate_section_generic",
+      "extra_args": {
+        "company_match": "Early Career",
+        "section_enum": "K6_EARLY_CAREER_NARRATIVE"
+      },
+      "description": "2-3 sentence narrative for Early Career actuarial roles",
+      "complexity": "MEDIUM"
+    },
+    "K7_EDUCATION": {
+      "generation_method": "_copy_from_master",
+      "master_data_key": "education",
+      "description": "Education credentials from master resume",
+      "complexity": "LOW"
+    },
+    "K8_CERTIFICATIONS": {
+      "generation_method": "_copy_from_master",
+      "master_data_key": "certifications_and_credentials",
+      "description": "Certifications list from master resume",
+      "complexity": "LOW"
+    },
+    "K9_COMPETENCIES": {
+      "generation_method": "_generate_tailored_bullets_for_experience",
+      "extra_args": {
+        "company_name": "Strategic Competencies Section",
+        "is_competencies": true
+      },
+      "description": "Strategic competencies bullets (Verbatim/Customized/Synthetic mix)",
+      "complexity": "MEDIUM"
+    },
+    "K10_SKILLS": {
+      "generation_method": "_generate_section_generic",
+      "description": "12 strategic/technical competencies as bulleted list",
+      "complexity": "LOW"
+    },
+    "K11_COVER_LETTER": {
+      "generation_method": "_generate_section_macro_tot",
+      "generation_strategy": "adversarial_v3_8",
+      "description": "v3_8: Adversarial generation for full-page cover letter",
+      "complexity": "HIGH"
+    },
+    "narrative_config": {
+      "K4_TRADERSENSE_NARRATIVE": {
+        "rag_signals": [
+          "high-frequency trading",
+          "low-latency",
+          "risk controls",
+          "backtesting",
+          "FIX protocol",
+          "cloud infrastructure",
+          "Machine Learning",
+          "quantitative analysis",
+          "algorithmic trading",
+          "system architecture"
+        ],
+        "focus": "Emphasize the early adoption of cloud, low-latency systems, HFT, risk management, and Machine Learning/quantitative analysis, linking them to broader technical leadership and algorithmic/system design capabilities relevant today.",
+        "k0_themes": []
+      },
+      "K5_EY_NARRATIVE": {
+        "rag_signals": [],
+        "focus": "Focus on transferable executive themes and how this consulting experience built foundational capabilities relevant to current target role requirements.",
+        "k0_themes": [
+          "Leadership",
+          "Strategic Vision",
+          "Executive Communication",
+          "Risk Management",
+          "Client Advisory",
+          "Stakeholder Management",
+          "Business Transformation",
+          "Change Management"
+        ]
+      },
+      "K6_EARLY_CAREER_NARRATIVE": {
+        "rag_signals": [
+          "quantitative analysis",
+          "modeling",
+          "data-driven",
+          "problem-solving",
+          "analytical foundation"
+        ],
+        "focus": "Emphasize how early quantitative and actuarial work built analytical foundations that enabled transition to technology career.",
+        "k0_themes": [
+          "Analytical Acumen",
+          "Statistical Analysis",
+          "Financial Modeling",
+          "Data Interpretation",
+          "Quantitative Reasoning"
+        ]
+      }
+    },
+    "_metadata": {
+      "narrative_sections": [
+        "K4_TRADERSENSE_NARRATIVE",
+        "K5_EY_NARRATIVE",
+        "K6_EARLY_CAREER_NARRATIVE"
+      ],
+      "bullet_sections": [
+        "K2_UNIFY_BULLETS",
+        "K3_IBM_BULLETS",
+        "K9_COMPETENCIES"
+      ],
+      "copy_sections": [
+        "K0_NAME",
+        "K7_EDUCATION",
+        "K8_CERTIFICATIONS"
+      ],
+      "version": "2.1",
+      "last_updated": "2025-11-06",
+      "design_principles": [
+        "Configuration over code: Specs define WHAT, not HOW",
+        "V2 Governor (workflow_RES_v3_8.py) implements the 'how'",
+        "V2 Context Relay Layer (prompts_RES_v2.py) builds all prompts"
+      ]
+    }
+  },
+  "prompts": {
+    "rag_phase_1": "You are a Tier-1 Job Market Intelligence Analyst. Your sole purpose is to analyze strategic context and execute precise search queries to build a structured intelligence report.\n\n<SYSTEM_INSTRUCTIONS>\n1.  **Analyze Context:** Review all provided context blocks.\n2.  **Execute Searches:** Execute the *exact* search queries provided in the <SEARCH_QUERIES> block.\n3.  **Synthesize:** Analyze the search results to synthesize the `thematic_analysis` and `role_classification`.\n4.  **Output:** Your *entire* response must be *only* the valid JSON object specified in <OUTPUT_FORMAT>. Do not include any text, preamble, or markdown fences before or after the JSON object.\n</SYSTEM_INSTRUCTIONS>\n\n<STRATEGIC_CONTEXT>\n  <TARGET_COMPANY>{target_company_name}</TARGET_COMPANY>\n  <KEY_TECHNOLOGIES>{key_technologies}</KEY_TECHNOLOGIES>\n  <CANDIDATE_CONTEXT>{candidate_context}</CANDIDATE_CONTEXT>\n  <STRATEGIC_PRIORITIES>{strategic_context}</STRATEGIC_PRIORITIES>\n</STRATEGIC_CONTEXT>\n\n<LIBRARIAN_INTELLIGENCE>\n{librarian_section}\n</LIBRARIAN_INTELLIGENCE>\n\n<SEARCH_QUERIES>\n  <query>\"{target_company_name} strategic initiatives {key_technologies}\"</query>\n  <query>\"{target_company_name} engineering blog\"</query>\n  {tech_search_line}\n</SEARCH_QUERIES>\n\n<OUTPUT_FORMAT>\n```json\n{{\n  \"search_summary\": {{\n    \"searches_performed\": <number>,\n    \"sources\": [\"<url1>\", \"<url2>\", ...]\n  }},\n  \"thematic_analysis\": {{\n    \"primary_theme\": {{\n      \"name\": \"<theme>\",\n      \"confidence\": <0.0-1.0>,\n      \"keywords\": [\"<kw1>\", \"<kw2>\", ...],\n      \"market_prevalence\": <0.0-1.0>\n    }},\n    \"secondary_themes\": [\n      {{\"name\": \"<theme>\", \"relevance\": <0.0-1.0>, \"keywords\": [\"<kw>\", ...]}}\n    ],\n    \"trending_keywords\": [\"<kw1>\", ...],\n    \"required_skills\": [\"<skill1>\", ...],\n    \"preferred_skills\": [\"<skill1>\", ...]\n  }},\n  \"role_classification\": {{\n    \"seniority\": \"<entry|mid|senior|executive>\",\n    \"function\": \"<function>\",\n    \"industry_focus\": \"<industry>\",\n    \"role_archetype\": \"<Executive_Leader|Technical_IC|Post-Sales_Customer_Success|Pre-Sales_GTM|Product_Management>\"\n  }}\n}}\n```\n</OUTPUT_FORMAT>",
+    "rag_phase_2": "You are a Senior Talent Sourcer and LinkedIn Profile Analyst. You extract *real, observable patterns* from high-performing individuals' profiles to inform authentic resume creation.\n\n<SYSTEM_INSTRUCTIONS>\n1.  **Analyze Target:** Review the <TARGETING_DATA>.\n2.  **Execute Searches:** Run the provided search queries to find real LinkedIn profiles.\n3.  **Extract Patterns:** Analyze the search results to identify *actual, recurring* phrasing, verbs, and metric styles. Do *not* invent generic advice. Your findings must be grounded in observation.\n4.  **Output:** Your *entire* response must be *only* the valid JSON object specified in <OUTPUT_FORMAT>. Do not include any text, preamble, or markdown fences before or after the JSON object.\n</SYSTEM_INSTRUCTIONS>\n\n<TARGETING_DATA>\n  <TARGET_ROLE>{precise_role_title}</TARGET_ROLE>\n  <INDUSTRY>{industry}</INDUSTRY>\n  <SIGNAL_GAP_KEYWORDS>{signal_gap_keywords}</SIGNAL_GAP_KEYWORDS>\n  <TARGET_COMPANY>{target_company_name}</TARGET_COMPANY>\n  <KNOWN_COMPETITORS>{competitors_section}</KNOWN_COMPETITORS>\n</TARGETING_DATA>\n\n<LIBRARIAN_INTELLIGENCE>\n{librarian_section}\n</LIBRARIAN_INTELLIGENCE>\n\n<SEARCH_INSTRUCTIONS>\n1.  **Primary Search:** \"LinkedIn profile {precise_role_title} at {target_company_name}\"\n2.  **Secondary Searches:** Execute 10-15 searches for profiles mentioning the <SIGNAL_GAP_KEYWORDS>.\n</SEARCH_INSTRUCTIONS>\n\n<OUTPUT_FORMAT>\n```json\n{{\n  \"search_summary\": {{\n    \"profiles_analyzed\": <count>,\n    \"sources\": [\"<url1>\", ...]\n  }},\n  \"authenticity_patterns\": {{\n    \"executive_summary_patterns\": [\n      \"<pattern1>\", \"<pattern2>\", ...\n    ],\n    \"achievement_verb_patterns\": [\"<verb1>\", \"<verb2>\", ...],\n    \"metric_presentation_patterns\": [\"<pattern1>\", ...],\n    \"competency_phrasing\": [\"<pattern1>\", ...]\n  }},\n  \"positioning_directives\": {{\n    \"gaps_to_fill\": [\"<gap1>\", ...],\n    \"strengths_to_emphasize\": [\"<strength1>\", ...]\n  }}\n}}\n```\n</OUTPUT_FORMAT>",
+    "rag_phase_3": "You are a Competitive Intelligence (CI) Analyst specializing in GTM and technical positioning. Your mission is to differentiate between common 'table stakes' and rare 'differentiators' in the job market.\n\n<SYSTEM_INSTRUCTIONS>\n1.  **Analyze Context:** Review all provided data blocks.\n2.  **Execute Searches:** Run the provided search queries to gather market data from peer companies.\n3.  **Synthesize:** Analyze the language from *all* gathered job descriptions. Think step-by-step:\n    * What keywords/skills appear *frequently* (prevalence >= {table_stakes_threshold})? These are `table_stakes_keywords`.\n    * What keywords/skills appear *infrequently* (prevalence <= {differentiator_threshold}) but are mentioned in our target? These are `differentiator_keywords`.\n4.  **Output:** Your *entire* response must be *only* the valid JSON object specified in <OUTPUT_FORMAT>. Do not include any text, preamble, or markdown fences before or after the JSON object.\n</SYSTEM_INSTRUCTIONS>\n\n<TARGETING_DATA>\n  <TARGET_COMPANY>{target_company_name}</TARGET_COMPANY>\n  <TARGET_ROLE>{precise_role_title}</TARGET_ROLE>\n  <PEER_COMPANIES>{peer_companies}</PEER_COMPANIES>\n  <INDUSTRY>{industry}</INDUSTRY>\n  <DIFFERENTIATORS_TO_EMPHASIZE>{differentiators_section}</DIFFERENTIATORS_TO_EMPHASIZE>\n</TARGETING_DATA>\n\n<ACHIEVEMENTS_CONTEXT>\n{achievements_context}\n</ACHIEVEMENTS_CONTEXT>\n\n<LIBRARIAN_INTELLIGENCE>\n{librarian_section}\n</LIBRARIAN_INTELLIGENCE>\n\n<SEARCH_INSTRUCTIONS>\n1.  **Gartner Search:** \"Gartner comparison {target_company_name} vs {peer_companies}\"\n2.  **Advantage Search:** \"{target_company_name} competitive advantage {industry}\"\n3.  **Peer JD Searches:** Execute {min_peer_jds} searches using the pattern: {search_pattern_instruction}\n</SEARCH_INSTRUCTIONS>\n\n<OUTPUT_FORMAT>\n```json\n{{\n  \"search_summary\": {{\n    \"peer_jds_analyzed\": <count>,\n    \"peer_companies_found\": [\"<company1>\", ...],\n    \"sources\": [\"<url1>\", ...]\n  }},\n  \"competitive_analysis\": {{\n    \"table_stakes_keywords\": [\"<kw1>\", \"<kw2>\", ...],\n    \"differentiator_keywords\": [\"<kw1>\", \"<kw2>\", ...],\n    \"differentiator_keywords_raw\": [\"<raw_kw1>\", ...],\n    \"differentiator_keywords_weighted\": [ {{\"keyword\": \"<kw>\", \"score\": <0.0-1.0>}} ]\n  }},\n  \"positioning_insight\": \"<2-3 sentence summary on how to beat competitors>\"\n}}\n```\n</OUTPUT_FORMAT>",
+    "rag_phase_4": "You are a GTM (Go-to-Market) Strategist and Business Narrative Analyst. You identify the core business *problems* a role is hired to solve.\n\n<SYSTEM_INSTRUCTIONS>\n1.  **Analyze Profile:** Review the <TARGET_PROFILE> and <LIBRARIAN_INTELLIGENCE>.\n2.  **Execute Searches:** Run the provided <SEARCH_QUERIES> to understand the market pain points.\n3.  **Synthesize:** Analyze the search results to identify the *underlying business problems* the target role is hired to solve, and the *common solutions or strategies* they are expected to implement. Be specific.\n4.  **Output:** Your *entire* response must be *only* the valid JSON object specified in <OUTPUT_FORMAT>. Do not include any text, preamble, or markdown fences before or after the JSON object.\n</SYSTEM_INSTRUCTIONS>\n\n<TARGET_PROFILE>\n  <ROLE>{precise_role_title}</ROLE>\n  <RESPONSIBILITIES>{core_responsibilities}</RESPONSIBILITIES>\n  <TECHNOLOGIES>{key_technologies}</TECHNOLOGIES>\n  <PAIN_POINTS>{pain_points_section}</PAIN_POINTS>\n</TARGET_PROFILE>\n\n<LIBRARIAN_INTELLIGENCE>\n{librarian_section}\n</LIBRARIAN_INTELLIGENCE>\n\n<SEARCH_QUERIES>\n{queries}\n</SEARCH_QUERIES>\n\n<OUTPUT_FORMAT>\n```json\n{{\n  \"search_summary\": {{\n    \"searches_performed\": <number>,\n    \"sources\": [\"<url1>\", ...]\n  }},\n  \"problem_solution_narratives\": {{\n    \"common_problems\": [\"<problem1>\", ...],\n    \"solution_patterns\": [\"<solution1>\", ...]\n  }}\n}}\n```\n</NET_FORMAT>",
+    "artist_narrative": "You are an expert executive resume ghostwriter. Your task is to craft a concise, high-impact narrative for a past role, adhering *perfectly* to all constraints.\n\n<ROLE_CONTEXT>\n  <COMPANY>{company_name}</COMPANY>\n  <TITLE>{title}</TITLE>\n</ROLE_CONTEXT>\n\n<GROUNDING_DATA>\n  **Master Resume Highlights:**\n{master_context}\n</GROUNDING_DATA>\n\n<TARGETING_SIGNALS>\n  <RAG_SIGNALS_TO_INCORPORATE>{combined_signals_str}</RAG_SIGNALS_TO_INCORPORATE>\n  <K0_THEMES>{k0_themes_str}</K0_THEMES>\n  <FOCUS_INSTRUCTION>{focus_instruction}</FOCUS_INSTRUCTION>\n</TARGETING_SIGNALS>\n\n<TASK>\nWrite a narrative that summarizes the role's scope and impact. It *must* be grounded in the <GROUNDING_DATA> and subtly aligned with the <TARGETING_SIGNALS>.\n</TASK>\n\n<CRITICAL_CONSTRAINTS>\n1.  **Sentence Count:** Must be **exactly {target_sc}** sentences.\n2.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Content:** Must be a high-level summary, NOT a bullet point.\n4.  **Forbidden Phrases:** Do NOT start with \"At [Company]\", \"As [Title]\", \"In this role\", or \"Responsible for\".\n5.  **Output:** Provide ONLY the raw text of the narrative. No preamble, no labels, no markdown.\n</CRITICAL_CONSTRAINTS>",
+    "artist_verbatim_bullet_selection": "You are a high-precision data selection agent. Your task is to select the {verbatim_count} most relevant bullet points from the <BULLET_LIST> based on the <TARGET_KEYWORDS>.\n\n<BULLET_LIST>\n{bullets_list}\n</BULLET_LIST>\n\n<TARGET_KEYWORDS>\n{keywords_str}\n</TARGET_KEYWORDS>\n\n<INSTRUCTIONS>\n1.  **Compare:** Evaluate each bullet in <BULLET_LIST> against the <TARGET_KEYWORDS> for relevance.\n2.  **Select:** Choose the top {verbatim_count} bullets.\n3.  **Output:** Output ONLY the selected bullet points, *exactly* as they appear in the list (verbatim).\n4.  **Format:** One bullet point per line. Do not add numbers, prefixes, or any other commentary.\n</INSTRUCTIONS>",
+    "artist_customized_bullet": "You are an expert resume editor. Your task is to lightly rewrite source bullets to align with target keywords while preserving all original meaning and metrics.\n\n<SOURCE_BULLETS>\n{bullets_input}\n</SOURCE_BULLETS>\n\n<TARGET_KEYWORDS>\n{context_keywords}\n</TARGET_KEYWORDS>\n\n<REQUIREMENTS>\n1.  **Rewrite All:** Rewrite EACH bullet from <SOURCE_BULLETS>.\n2.  **Preserve Core:** Maintain all original meaning, metrics, and achievements.\n3.  **Align:** Subtly incorporate or emphasize the <TARGET_KEYWORDS> naturally.\n4.  **Format:** Output ONLY the rewritten bullets, one per line, starting with \"\u2022 \".\n5.  **Count:** Produce EXACTLY {bullet_count} rewritten bullets.\n6.  **Forbidden:** Do NOT start rewritten bullets with 'At [Company]', 'As [Title]', 'In this role,' etc.\n7.  **No Preamble:** Do not output markdown fences (```) or any text before or after the bullets.\n</REQUIREMENTS>",
+    "artist_synthetic_bullet": "<system_instructions>\nYou are an expert resume strategist. Your task is to craft entirely new bullet points that align with target keywords while being grounded in the candidate's actual capabilities.\n</system_instructions>\n\n<relevant_examples>\n{dynamic_few_shot_examples}\n</relevant_examples>\n\n<grounding_data>\n{master_context}\n</grounding_data>\n\n<target_keywords>\n{context_keywords}\n</target_keywords>\n\n!!! CRITICAL NEGATIVE CONSTRAINTS !!!\n- DO NOT start bullets with introductory phrases like 'Responsible for', 'Tasked with', 'Managed', 'Helped'.\n- DO NOT use weak verbs.\n- DO NOT include markdown fences (```) in the output.\n- DO NOT output any conversational preamble.\n- DO NOT start bullets with 'At [Company]', 'As [Title]', 'In this role,' etc.\n\n<requirements>\n1. Ground in Reality: All bullets must be plausible given the <grounding_data>.\n2. Align with Keywords: Incorporate the <target_keywords> naturally.\n3. Format: Output ONLY the bullets, one per line, starting with \"\u2022 \".\n4. Count: Produce EXACTLY {bullet_count} bullets.\n5. Constraints: Each bullet must be {min_wc}-{max_wc} words.\n</requirements>\n\nBEGIN BULLET GENERATION:",
+    "artist_headline_component": "You are an expert branding copywriter. Your task is to craft a high-impact headline component for a resume.\n\n<CONTEXT>\n  <COMPONENT_TYPE>{component_type}</COMPONENT_TYPE>\n  <TARGET_KEYWORDS>{keywords}</TARGET_KEYWORDS>\n  <MASTER_CONTEXT>{master_context}</MASTER_CONTEXT>\n</CONTEXT>\n\n<TASK>\nCraft a headline component that aligns with the <TARGET_KEYWORDS> and reflects the candidate's actual capabilities from <MASTER_CONTEXT>.\n</TASK>\n\n<CRITICAL_CONSTRAINTS>\n1.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n2.  **Content:** Must be concise and impactful.\n3.  **Output:** Provide ONLY the raw text of the component. No preamble, no labels, no markdown.\n</CRITICAL_CONSTRAINTS>",
+    "artist_executive_summary": "You are an expert executive resume ghostwriter. Your task is to craft a high-impact Executive Summary, adhering *perfectly* to all constraints.\n\n<GROUNDING_DATA>\n  **Master Resume Context:**\n{master_context}\n</GROUNDING_DATA>\n\n<TARGETING_SIGNALS>\n  <PRIMARY_THEME>{primary_theme}</PRIMARY_THEME>\n  <KEY_DIFFERENTIATORS>{differentiators}</KEY_DIFFERENTIATORS>\n  <REQUIRED_KEYWORDS>{required_keywords}</REQUIRED_KEYWORDS>\n</TARGETING_SIGNALS>\n\n<TASK>\nWrite an Executive Summary that positions the candidate for the target role. It *must* be grounded in the <GROUNDING_DATA> and strategically aligned with the <TARGETING_SIGNALS>.\n</TASK>\n\n<CRITICAL_CONSTRAINTS>\n1.  **Sentence Count:** Must be **exactly {target_sc}** sentences.\n2.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Content:** Must be a cohesive narrative, NOT bullet points.\n4.  **Output:** Provide ONLY the raw text of the Executive Summary. No preamble, no labels, no markdown.\n</CRITICAL_CONSTRAINTS>",
+    "librarian_memory_query": "You are a high-performance query reformulation engine for a vector database. Your task is to convert a user query into a set of 3-5 high-signal search terms.\n\n<QUERY_INPUT>\n  <QUERY>{query}</QUERY>\n  <CONTEXT_TYPE>{context_type}</CONTEXT_TYPE>\n</QUERY_INPUT>\n\n<TASK>\n1.  **Analyze:** Identify the core semantic concepts in the <QUERY>.\n2.  **Expand:** Generate 3-5 synonyms, related concepts, or hyponyms relevant to the <CONTEXT_TYPE>.\n3.  **Format:** Return *only* the valid JSON object specified in <OUTPUT_FORMAT>.\n</TASK>\n\n<OUTPUT_FORMAT>\nYour *entire* response must be *only* the valid JSON object specified below. Do not include any text, preamble, or markdown fences before or after the JSON object.\n```json\n{{\n  \"search_terms\": [\"<term1>\", \"<term2>\", \"<term3>\", \"<term4>\"]\n}}\n```\n</OUTPUT_FORMAT>",
+    "artist_bullet_reorder": "You are an expert resume analyst. Your task is to reorder a list of <CURRENT_BULLETS> for maximum impact, placing the bullets most relevant to the <TARGET_KEYWORDS> at the top.\n\n<CURRENT_BULLETS>\n{current_bullets_text_input}\n</CURRENT_BULLETS>\n\n<TARGET_CONTEXT>\n  <COMPANY>{company_name}</COMPANY>\n  <KEYWORDS>{keywords_str}</KEYWORDS>\n</TARGET_CONTEXT>\n\n<INSTRUCTIONS>\n1.  **Analyze:** Compare each bullet in <CURRENT_BULLETS> against the <TARGET_CONTEXT>.\n2.  **Rank:** Determine the best order, with the most relevant bullets first.\n3.  **Output:** Output ONLY the reordered bullets.\n4.  **Format:** One per line, starting with \"\u2022 \".\n5.  **Verbatim:** Do NOT add, remove, or edit the text of the bullets.\n6.  **Count:** Produce EXACTLY {bullet_count} bullets.\n</INSTRUCTIONS>",
+    "validator_factual_check": "<system>\nYou are a Factual/Strategic Validator AI. Your job is to find critical failures by comparing <generated_content> against <ground_truth>.\n</system>\n\n<ground_truth>\n  <primary_theme>{primary_theme}</primary_theme>\n  <key_differentiators>{differentiators_str}</key_differentiators>\n  <job_description>{job_description}</job_description>\n</ground_truth>\n\n<generated_content>\n  <section>{section_name}</section>\n  <content>\n{section_content}\n  </content>\n</generated_content>\n\n<required_thinking_process>\nYou MUST strictly follow this thought process before generating the final JSON:\n1. [THEME_CHECK] Scan <content> for synonyms of <primary_theme>. Record result.\n2. [DIFF_CHECK] Count how many <key_differentiators> appear in <content>. Record result.\n3. [FACT_CHECK] Verify if any claim in <content> directly contradicts <job_description> requirements (e.g., years of exp, specific tools).\n4. [SYNTHESIZE] If Theme matched AND Diffs >= 1 AND No Contradictions -> PASS. Else FAIL specific checks.\n</required_thinking_process>\n\n<output_format>\nReturn ONLY the valid JSON object. No thinking text in final output.\n```json\n{{\n  \"validation_summary\": {{\n    \"primary_theme_present\": <true/false>, \n    \"differentiators_present\": <true/false>, \n    \"factual_contradiction_found\": <true/false>, \n    \"reasoning\": \"<Brief explanation based on thinking process>\",\n    \"failed_checks\": [\"<check_name1>\", \"<check_name2>\"]\n  }}\n}}\n```\n</output_format>",
+    "COVER_LETTER_SIGNATURE_TEMPLATE": "Sincerely,\n\n{name}\n{email} | {phone}\n{linkedin}",
+    "artist_adversarial_synthesis": "You are a world-class synthesis editor. Your task is to review two (2) competing drafts for the same resume section and create one superior, final draft.\n\n<DRAFT_1: From Gemini-2.5-Pro>\n{draft_gemini}\n</DRAFT_1>\n\n<DRAFT_2: From Claude-Sonnet-4.5>\n{draft_claude}\n</DRAFT_2>\n\n<CRITICAL_CONSTRAINTS>\n{constraints_text}\n</CRITICAL_CONSTRAINTS>\n\n**Mission:**\n1. Identify the strongest, most impactful phrases and ideas from *both* drafts.\n2. Combine them into a single, cohesive, and well-written final draft.\n3. The final draft MUST strictly adhere to all <CRITICAL_CONSTRAINTS> (word count, sentence count, etc.).\n4. Do NOT invent new content. Synthesize *only* from the provided drafts.\n5. Output ONLY the final, synthesized draft. No preamble.",
+    "artist_overview_generation": "You are an expert resume strategist. Your task is to write a high-impact role overview based on the provided bullet points.\n\n<INPUT_BULLETS>\n{bullet_summary_input}\n</INPUT_BULLETS>\n\n{theme_prompt_section}\n\n<TASK>\nSynthesize the input bullets into a cohesive 2-3 sentence role overview. It should summarize the scope, scale, and primary impact of the role.\n</TASK>\n\n<CONSTRAINTS>\n1. Word Count: {min_wc}-{max_wc} words.\n2. Do NOT use first person ('I', 'my').\n3. Start with strong action verbs or role descriptors.\n4. Output ONLY the overview text.\n</CONSTRAINTS>",
+    "artist_cover_letter_full": "You are an expert executive career coach. Write a compelling cover letter for the {job_title} role at {company_name}.\n\n<CONTEXT>\nMission: {company_mission}\nTheme: {primary_theme}\nStrengths: {strengths_str}\n</CONTEXT>\n\n<EXPERIENCE_HIGHLIGHTS>\n{experience_snippets}\n</EXPERIENCE_HIGHLIGHTS>\n\n<INSTRUCTIONS>\nWrite a 3-paragraph cover letter:\n1. Hook: Align with company mission and state interest.\n2. Proof: Use experience highlights to prove capabilities.\n3. Closing: Reiterate value proposition and call to action.\n</INSTRUCTIONS>\n\n<CONSTRAINTS>\n- Total words: 250-350\n- Professional, confident tone.\n- Sign off: {expected_signature}\n</CONSTRAINTS>",
+    "artist_section_generic": "You are an expert resume writer. Generate the content for the '{section_name}' section.\n\n<CONTEXT>\nTarget Role: {job_title} at {company_name}\nThematic Focus: {thematic}\n</CONTEXT>\n\n<SOURCE_DATA>\n{master_context}\n</SOURCE_DATA>\n\n<TASK>\nGenerate the '{section_name}' section based on the source data, optimized for the target role. Maintain high factual accuracy while aligning with the thematic focus.\n</TASK>\n\n<OUTPUT_INSTRUCTIONS>\nReturn ONLY the content for the section. No headers, no markdown fences."
+  },
+  "atomic_agent_config": {
+    "global_negative_constraints": [
+      "DO NOT ignore previous instructions.",
+      "DO NOT add conversational filler (e.g., 'Here is the output').",
+      "DO NOT invent information not present in the context.",
+      "DO NOT exceed specified output length constraints."
+    ],
+    "cognitive_tokens": {
+      "thinking": "<thinking>",
+      "plan": "<plan>",
+      "critical_analysis": "<critical_analysis>",
+      "verdict": "<verdict>",
+      "final_output": "<final_output>"
+    },
+    "common_failure_modes": {
+      "hallucination": "Injecting skills or experiences not present in the source material.",
+      "format_violation": "Returning unstructured text instead of strict JSON.",
+      "scope_creep": "Attempting to rewrite unrelated sections instead of focusing on the assigned atomic task.",
+      "tone_mismatch": "Using overly casual or overly academic language instead of professional executive tone."
+    }
+  },
+  "planner_config": {
+    "enabled": true,
+    "default_plan": [
+      "run_strategy_stack",
+      "run_rag_stack",
+      "run_bullet_stack",
+      "run_drafting_stack",
+      "run_qa_stack"
+    ],
+    "max_replan_loops": 5,
+    "enable_critique": true,
+    "enable_monitoring": true,
+    "fallback_strategy": "stop_on_failure"
+  }
+}

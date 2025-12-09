@@ -1,0 +1,504 @@
+{
+  "patch_metadata": {
+    "patch_id": "V1.6.2-QA-ARCHITECTURE-FIX",
+    "patch_version": "v1.6.2",
+    "base_version": "v1.6.1",
+    "patch_date": "2025-10-15",
+    "severity": "CRITICAL",
+    "breaking_changes": true,
+    "description": "CRITICAL FIX: Staging buffer was specified in v1.6.0 but never actually implemented. QA continued reading artist_output.metadata causing false-pass validation. V1.6.2 provides ACTUAL implementation code for staging buffer creation and forces all validation gates to use it.",
+    "root_cause": "V1.6.0 added staging_buffer_v2 specification but no implementation code. Validation gates continued using artist_output.metadata path. No enforcement prevented this.",
+    "impact": "ALL v1.6.0 and v1.6.1 outputs suspect - word counts may be wrong, validation may be false-passing",
+    "evidence": {
+      "user_report": "K.1 Executive Summary: QA claimed 134 words ✅, actual text was 96 words",
+      "delta": "38 words short of minimum (118 words)",
+      "should_have_failed": true
+    }
+  },
+
+  "IMPLEMENTATION_ARCHITECTURE": {
+    "description": "Complete implementation specification for staging buffer pattern",
+    "execution_flow": [
+      "1. Artist completes all K-node generation",
+      "2. MANDATORY: create_staging_buffer(artist_output) executes",
+      "3. Staging buffer contains rendered text for ALL sections",
+      "4. ALL validation gates receive staging_buffer parameter ONLY",
+      "5. Validation gates CANNOT access artist_output (enforced via scope isolation)",
+      "6. QA Report reads from staging_buffer validation results",
+      "7. Gate decision: PASS → write files, FAIL → halt with error report"
+    ],
+    
+    "staging_buffer_creation_algorithm": {
+      "function_signature": "def create_staging_buffer(artist_output: dict) -> dict",
+      "execution_point": "POST_ARTIST_PRE_VALIDATION",
+      "mandatory": true,
+      "timeout_seconds": 30,
+      
+      "implementation_pseudocode": "# Staging Buffer Creation - MUST be implemented exactly as specified\n\ndef create_staging_buffer(artist_output):\n    \"\"\"\n    Extracts rendered text from Artist output and calculates metrics.\n    This is the GROUND TRUTH for all QA validation.\n    \"\"\"\n    staging_buffer = {}\n    \n    # K.1 Executive Summary\n    k1_raw = artist_output.get('K.1', '')\n    k1_text = strip_all_xml_tags(k1_raw)\n    k1_text = apply_text_formatting(k1_text)\n    \n    staging_buffer['K.1'] = {\n        'rendered_text': k1_text,\n        'word_count': len(k1_text.split()),\n        'char_count': len(k1_text),\n        'sentence_count': count_sentences(k1_text)\n    }\n    \n    # K.4 Headline\n    k4_raw = artist_output.get('K.4', '')\n    k4_text = strip_all_xml_tags(k4_raw)\n    k4_text = apply_text_formatting(k4_text)\n    \n    staging_buffer['K.4'] = {\n        'rendered_text': k4_text,\n        'char_count': len(k4_text),\n        'word_count': len(k4_text.split()),\n        'segment_count': k4_text.count('|') + 1\n    }\n    \n    # K.5A Bullets (array of 7)\n    k5a_raw = artist_output.get('K.5A', {}).get('bullets', [])\n    k5a_bullets = []\n    for i, bullet_raw in enumerate(k5a_raw):\n        bullet_text = strip_all_xml_tags(bullet_raw.get('text', ''))\n        bullet_text = apply_text_formatting(bullet_text)\n        k5a_bullets.append({\n            'index': i,\n            'rendered_text': bullet_text,\n            'word_count': len(bullet_text.split()),\n            'provenance': bullet_raw.get('provenance', 'UNKNOWN')\n        })\n    \n    staging_buffer['K.5A'] = {\n        'bullets': k5a_bullets,\n        'total_bullets': len(k5a_bullets)\n    }\n    \n    # K.5B Unify Overview\n    k5b_raw = artist_output.get('K.5B', '')\n    k5b_text = strip_all_xml_tags(k5b_raw)\n    k5b_text = apply_text_formatting(k5b_text)\n    \n    staging_buffer['K.5B'] = {\n        'rendered_text': k5b_text,\n        'word_count': len(k5b_text.split()),\n        'char_count': len(k5b_text)\n    }\n    \n    # K.6A Bullets (array of 6)\n    k6a_raw = artist_output.get('K.6A', {}).get('bullets', [])\n    k6a_bullets = []\n    for i, bullet_raw in enumerate(k6a_raw):\n        bullet_text = strip_all_xml_tags(bullet_raw.get('text', ''))\n        bullet_text = apply_text_formatting(bullet_text)\n        k6a_bullets.append({\n            'index': i,\n            'rendered_text': bullet_text,\n            'word_count': len(bullet_text.split()),\n            'provenance': bullet_raw.get('provenance', 'UNKNOWN')\n        })\n    \n    staging_buffer['K.6A'] = {\n        'bullets': k6a_bullets,\n        'total_bullets': len(k6a_bullets)\n    }\n    \n    # K.6B IBM Overview\n    k6b_raw = artist_output.get('K.6B', '')\n    k6b_text = strip_all_xml_tags(k6b_raw)\n    k6b_text = apply_text_formatting(k6b_text)\n    \n    staging_buffer['K.6B'] = {\n        'rendered_text': k6b_text,\n        'word_count': len(k6b_text.split()),\n        'char_count': len(k6b_text)\n    }\n    \n    # K.8 Competencies (array of 6)\n    k8_raw = artist_output.get('K.8', {}).get('competencies', [])\n    k8_comps = []\n    for i, comp_raw in enumerate(k8_raw):\n        title = strip_all_xml_tags(comp_raw.get('title', ''))\n        description = strip_all_xml_tags(comp_raw.get('description', ''))\n        combined = f\"{title}: {description}\"\n        k8_comps.append({\n            'index': i,\n            'title': title,\n            'description': description,\n            'combined_text': combined,\n            'word_count': len(combined.split()),\n            'tier': comp_raw.get('tier', 'UNKNOWN')\n        })\n    \n    staging_buffer['K.8'] = {\n        'competencies': k8_comps,\n        'total_competencies': len(k8_comps)\n    }\n    \n    # K.9 Cover Letter Paragraphs (array of 3)\n    k9_raw = artist_output.get('K.9', {}).get('paragraphs', [])\n    k9_paras = []\n    for i, para_raw in enumerate(k9_raw):\n        para_text = strip_all_xml_tags(para_raw)\n        para_text = apply_text_formatting(para_text)\n        k9_paras.append({\n            'index': i,\n            'rendered_text': para_text,\n            'word_count': len(para_text.split())\n        })\n    \n    # Also store full letter\n    full_letter = '\\n\\n'.join([p['rendered_text'] for p in k9_paras])\n    \n    staging_buffer['K.9'] = {\n        'paragraphs': k9_paras,\n        'full_letter': full_letter,\n        'total_paragraphs': len(k9_paras)\n    }\n    \n    return staging_buffer\n\n\n# Helper functions\ndef strip_all_xml_tags(text):\n    \"\"\"Remove ALL XML-style tags from text\"\"\"\n    import re\n    # Remove tags like <K.1>, </K.1>, [SYNTHETIC], etc.\n    text = re.sub(r'<[^>]+>', '', text)\n    text = re.sub(r'\\[[A-Z_]+\\]', '', text)\n    return text.strip()\n\ndef apply_text_formatting(text):\n    \"\"\"Apply final text formatting (normalize whitespace, etc.)\"\"\"\n    import re\n    # Normalize whitespace\n    text = re.sub(r'\\s+', ' ', text)\n    return text.strip()\n\ndef count_sentences(text):\n    \"\"\"Count sentences by delimiter\"\"\"\n    import re\n    delimiters = re.findall(r'[.!?]', text)\n    return len(delimiters)",
+      
+      "critical_rules": [
+        "MUST strip ALL XML tags before calculating word count",
+        "MUST use len(text.split()) for word counting (Python default)",
+        "MUST store both rendered_text AND calculated metrics",
+        "MUST process ALL sections (K.1, K.4, K.5A, K.5B, K.6A, K.6B, K.8, K.9)",
+        "Staging buffer is immutable after creation - no modifications allowed"
+      ],
+      
+      "validation_checkpoint": {
+        "check": "After staging buffer creation, verify all sections present",
+        "required_keys": ["K.1", "K.4", "K.5A", "K.5B", "K.6A", "K.6B", "K.8", "K.9"],
+        "on_missing": "HALT_WORKFLOW - Staging buffer incomplete"
+      }
+    }
+  },
+
+  "VALIDATION_GATE_REWRITES": {
+    "description": "ALL validation gates must be rewritten to accept staging_buffer parameter ONLY",
+    "enforcement": "Validation functions CANNOT access artist_output - enforced via function signature and scope isolation",
+    
+    "VG_MANDATORY_WORD_COUNT_COMPLIANCE_REWRITE": {
+      "gate_id": "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+      "execution_point": "POST_STAGING_BUFFER_CREATION",
+      "blocking": true,
+      "severity": "CRITICAL",
+      
+      "old_broken_implementation": {
+        "pseudocode": "def validate_word_count(artist_output):\n    k1_count = artist_output['K.1']['metadata']['word_count']\n    if 118 <= k1_count <= 135:\n        return PASS",
+        "problem": "Reads Artist's CLAIM about word count, not actual rendered text"
+      },
+      
+      "new_correct_implementation": {
+        "function_signature": "def validate_word_count(staging_buffer: dict, global_spec: dict) -> ValidationResult",
+        "pseudocode": "def validate_word_count(staging_buffer, global_spec):\n    \"\"\"\n    Validates word counts by reading ACTUAL rendered text from staging buffer.\n    This function CANNOT access artist_output.\n    \"\"\"\n    results = []\n    \n    # K.1 Executive Summary\n    k1_rendered = staging_buffer['K.1']['rendered_text']\n    k1_actual = len(k1_rendered.split())\n    k1_min = global_spec['word_counts']['K.1_executive_summary']['min']  # 118\n    k1_max = global_spec['word_counts']['K.1_executive_summary']['max']  # 135\n    \n    if k1_actual < k1_min:\n        delta = k1_min - k1_actual\n        preview = k1_rendered[:300]\n        raise ValidationException(\n            gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n            section='K.1',\n            message=f\"K.1 Executive Summary FAILED\\n\"\n                    f\"Expected: {k1_min}-{k1_max} words\\n\"\n                    f\"Actual: {k1_actual} words\\n\"\n                    f\"Delta: {delta} words SHORT\\n\\n\"\n                    f\"Text preview (first 300 chars):\\n{preview}...\"\n        )\n    \n    if k1_actual > k1_max:\n        delta = k1_actual - k1_max\n        preview = k1_rendered[:300]\n        raise ValidationException(\n            gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n            section='K.1',\n            message=f\"K.1 Executive Summary FAILED\\n\"\n                    f\"Expected: {k1_min}-{k1_max} words\\n\"\n                    f\"Actual: {k1_actual} words\\n\"\n                    f\"Delta: {delta} words LONG\\n\\n\"\n                    f\"Text preview (first 300 chars):\\n{preview}...\"\n        )\n    \n    results.append({\n        'section': 'K.1',\n        'expected': f\"{k1_min}-{k1_max}\",\n        'actual': k1_actual,\n        'status': 'PASS'\n    })\n    \n    # K.5A Bullets (7 bullets, 28-33 words each)\n    k5a_bullets = staging_buffer['K.5A']['bullets']\n    k5a_min = global_spec['word_counts']['K.5A_unify_bullets']['min']  # 28\n    k5a_max = global_spec['word_counts']['K.5A_unify_bullets']['max']  # 33\n    \n    for bullet in k5a_bullets:\n        bullet_text = bullet['rendered_text']\n        bullet_actual = len(bullet_text.split())\n        bullet_index = bullet['index']\n        \n        if bullet_actual < k5a_min or bullet_actual > k5a_max:\n            raise ValidationException(\n                gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n                section=f'K.5A[{bullet_index}]',\n                message=f\"K.5A Bullet {bullet_index} FAILED\\n\"\n                        f\"Expected: {k5a_min}-{k5a_max} words\\n\"\n                        f\"Actual: {bullet_actual} words\\n\\n\"\n                        f\"Bullet text:\\n{bullet_text}\"\n            )\n        \n        results.append({\n            'section': f'K.5A[{bullet_index}]',\n            'expected': f\"{k5a_min}-{k5a_max}\",\n            'actual': bullet_actual,\n            'status': 'PASS'\n        })\n    \n    # K.5B Unify Overview\n    k5b_rendered = staging_buffer['K.5B']['rendered_text']\n    k5b_actual = len(k5b_rendered.split())\n    k5b_min = global_spec['word_counts']['K.5B_unify_overview']['min']  # 28\n    k5b_max = global_spec['word_counts']['K.5B_unify_overview']['max']  # 34\n    \n    if k5b_actual < k5b_min or k5b_actual > k5b_max:\n        raise ValidationException(\n            gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n            section='K.5B',\n            message=f\"K.5B Unify Overview FAILED\\n\"\n                    f\"Expected: {k5b_min}-{k5b_max} words\\n\"\n                    f\"Actual: {k5b_actual} words\\n\\n\"\n                    f\"Overview text:\\n{k5b_rendered}\"\n        )\n    \n    results.append({\n        'section': 'K.5B',\n        'expected': f\"{k5b_min}-{k5b_max}\",\n        'actual': k5b_actual,\n        'status': 'PASS'\n    })\n    \n    # K.6A Bullets (6 bullets, 24-30 words each)\n    k6a_bullets = staging_buffer['K.6A']['bullets']\n    k6a_min = global_spec['word_counts']['K.6A_ibm_bullets']['min']  # 24\n    k6a_max = global_spec['word_counts']['K.6A_ibm_bullets']['max']  # 30\n    \n    for bullet in k6a_bullets:\n        bullet_text = bullet['rendered_text']\n        bullet_actual = len(bullet_text.split())\n        bullet_index = bullet['index']\n        \n        if bullet_actual < k6a_min or bullet_actual > k6a_max:\n            raise ValidationException(\n                gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n                section=f'K.6A[{bullet_index}]',\n                message=f\"K.6A Bullet {bullet_index} FAILED\\n\"\n                        f\"Expected: {k6a_min}-{k6a_max} words\\n\"\n                        f\"Actual: {bullet_actual} words\\n\\n\"\n                        f\"Bullet text:\\n{bullet_text}\"\n            )\n        \n        results.append({\n            'section': f'K.6A[{bullet_index}]',\n            'expected': f\"{k6a_min}-{k6a_max}\",\n            'actual': bullet_actual,\n            'status': 'PASS'\n        })\n    \n    # K.6B IBM Overview\n    k6b_rendered = staging_buffer['K.6B']['rendered_text']\n    k6b_actual = len(k6b_rendered.split())\n    k6b_min = global_spec['word_counts']['K.6B_ibm_overview']['min']  # 25\n    k6b_max = global_spec['word_counts']['K.6B_ibm_overview']['max']  # 30\n    \n    if k6b_actual < k6b_min or k6b_actual > k6b_max:\n        raise ValidationException(\n            gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n            section='K.6B',\n            message=f\"K.6B IBM Overview FAILED\\n\"\n                    f\"Expected: {k6b_min}-{k6b_max} words\\n\"\n                    f\"Actual: {k6b_actual} words\\n\\n\"\n                    f\"Overview text:\\n{k6b_rendered}\"\n        )\n    \n    results.append({\n        'section': 'K.6B',\n        'expected': f\"{k6b_min}-{k6b_max}\",\n        'actual': k6b_actual,\n        'status': 'PASS'\n    })\n    \n    # K.8 Competencies (6 competencies, 24-30 words each)\n    k8_comps = staging_buffer['K.8']['competencies']\n    k8_min = global_spec['word_counts']['K.8_competencies']['min']  # 24\n    k8_max = global_spec['word_counts']['K.8_competencies']['max']  # 30\n    \n    for comp in k8_comps:\n        comp_text = comp['combined_text']\n        comp_actual = len(comp_text.split())\n        comp_index = comp['index']\n        comp_title = comp['title']\n        \n        if comp_actual < k8_min or comp_actual > k8_max:\n            raise ValidationException(\n                gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n                section=f'K.8[{comp_index}]',\n                message=f\"K.8 Competency {comp_index} FAILED\\n\"\n                        f\"Title: {comp_title}\\n\"\n                        f\"Expected: {k8_min}-{k8_max} words\\n\"\n                        f\"Actual: {comp_actual} words\\n\\n\"\n                        f\"Combined text:\\n{comp_text}\"\n            )\n        \n        results.append({\n            'section': f'K.8[{comp_index}]',\n            'expected': f\"{k8_min}-{k8_max}\",\n            'actual': comp_actual,\n            'status': 'PASS'\n        })\n    \n    # K.9 Cover Letter Paragraphs (3 paragraphs, 85-100 words each)\n    k9_paras = staging_buffer['K.9']['paragraphs']\n    k9_min = global_spec['word_counts']['K.9_cover_letter']['min']  # 85\n    k9_max = global_spec['word_counts']['K.9_cover_letter']['max']  # 100\n    \n    for para in k9_paras:\n        para_text = para['rendered_text']\n        para_actual = len(para_text.split())\n        para_index = para['index']\n        \n        if para_actual < k9_min or para_actual > k9_max:\n            raise ValidationException(\n                gate='VG_MANDATORY_WORD_COUNT_COMPLIANCE',\n                section=f'K.9[{para_index}]',\n                message=f\"K.9 Cover Letter Paragraph {para_index} FAILED\\n\"\n                        f\"Expected: {k9_min}-{k9_max} words\\n\"\n                        f\"Actual: {para_actual} words\\n\\n\"\n                        f\"Paragraph text:\\n{para_text}\"\n            )\n        \n        results.append({\n            'section': f'K.9[{para_index}]',\n            'expected': f\"{k9_min}-{k9_max}\",\n            'actual': para_actual,\n            'status': 'PASS'\n        })\n    \n    return ValidationResult(success=True, results=results)",
+        
+        "enforcement_mechanism": {
+          "function_cannot_access": "artist_output (not in scope)",
+          "function_receives_only": "staging_buffer + global_spec",
+          "validation_method": "len(rendered_text.split()) - Python default word counting"
+        }
+      }
+    },
+    
+    "OTHER_GATES_REWRITE_SUMMARY": {
+      "description": "All other validation gates follow same pattern: accept staging_buffer only, read rendered text",
+      
+      "gates_to_rewrite": [
+        {
+          "gate_id": "VG_INDUSTRY_FIRST_COMPLIANCE",
+          "changes": [
+            "Read K.4 headline from staging_buffer['K.4']['rendered_text']",
+            "Read K.1 opening from staging_buffer['K.1']['rendered_text']",
+            "Parse headline segments from rendered text, not metadata"
+          ]
+        },
+        {
+          "gate_id": "VG_PROSE_QUALITY_COMPLIANCE",
+          "changes": [
+            "Calculate cosine similarity on staging_buffer rendered text",
+            "K.5B cosine to staging_buffer['K.5A']['bullets'][i]['rendered_text']",
+            "K.6B cosine to staging_buffer['K.6A']['bullets'][i]['rendered_text']"
+          ]
+        },
+        {
+          "gate_id": "VG_DEDUPLICATION_COMPLIANCE",
+          "changes": [
+            "78-check matrix uses staging_buffer rendered text for ALL comparisons",
+            "No access to artist_output for any comparison"
+          ]
+        },
+        {
+          "gate_id": "VG_AI_DETECTION_DEFENSE",
+          "changes": [
+            "Read provenance from staging_buffer['K.5A']['bullets'][i]['provenance']",
+            "Calculate synthetic percentage from staging buffer data"
+          ]
+        }
+      ]
+    }
+  },
+
+  "QA_REPORT_ENHANCEMENT": {
+    "description": "Add Section 0.6 to verify staging buffer was correctly used",
+    
+    "section_0_6_staging_buffer_validation": {
+      "section_id": "0.6",
+      "title": "Staging Buffer Validation",
+      "position": "AFTER Section 0.5 (Clerk Factual Data Integrity Summary)",
+      "mandatory": true,
+      
+      "content": {
+        "description": "Verifies that staging buffer was populated correctly and all validation used staging buffer",
+        
+        "subsection_0_6_1_buffer_creation": {
+          "title": "0.6.1 Staging Buffer Creation Check",
+          "table": {
+            "columns": ["Section", "Rendered Text Length", "Word Count Calculated", "Status"],
+            "rows": [
+              ["K.1", "{char_count}", "{word_count}", "✅/❌"],
+              ["K.4", "{char_count}", "{word_count}", "✅/❌"],
+              ["K.5A (7 bullets)", "N/A", "{total_words}", "✅/❌"],
+              ["K.5B", "{char_count}", "{word_count}", "✅/❌"],
+              ["K.6A (6 bullets)", "N/A", "{total_words}", "✅/❌"],
+              ["K.6B", "{char_count}", "{word_count}", "✅/❌"],
+              ["K.8 (6 comps)", "N/A", "{total_words}", "✅/❌"],
+              ["K.9 (3 paras)", "N/A", "{total_words}", "✅/❌"]
+            ]
+          },
+          "validation_check": {
+            "check": "For each section, verify staging_buffer[section] exists and has rendered_text + word_count",
+            "on_missing": "❌ FAIL - Staging buffer incomplete"
+          }
+        },
+        
+        "subsection_0_6_2_calculation_accuracy": {
+          "title": "0.6.2 Word Count Calculation Accuracy",
+          "description": "Verifies that word_count in staging buffer matches len(rendered_text.split())",
+          "table": {
+            "columns": ["Section", "Staged Word Count", "Recalculated", "Match", "Status"],
+            "rows": [
+              ["K.1", "{staging_count}", "{recalc_count}", "✅/❌", "✅/❌"],
+              ["K.5B", "{staging_count}", "{recalc_count}", "✅/❌", "✅/❌"],
+              ["K.6B", "{staging_count}", "{recalc_count}", "✅/❌", "✅/❌"]
+            ]
+          },
+          "critical_check": {
+            "method": "For each section, recalculate word count and compare to staged value",
+            "formula": "recalc = len(staging_buffer[section]['rendered_text'].split())",
+            "requirement": "staged_count MUST equal recalc_count",
+            "on_mismatch": "❌ FAIL - Staging buffer calculation error"
+          }
+        },
+        
+        "subsection_0_6_3_validation_source_audit": {
+          "title": "0.6.3 Validation Source Audit",
+          "description": "Confirms ALL validation gates read from staging buffer, NOT artist_output",
+          "table": {
+            "columns": ["Validation Gate", "Data Source", "Verified", "Status"],
+            "rows": [
+              ["VG_MANDATORY_WORD_COUNT", "staging_buffer", "✅/❌", "✅/❌"],
+              ["VG_INDUSTRY_FIRST", "staging_buffer", "✅/❌", "✅/❌"],
+              ["VG_PROSE_QUALITY", "staging_buffer", "✅/❌", "✅/❌"],
+              ["VG_DEDUPLICATION", "staging_buffer", "✅/❌", "✅/❌"],
+              ["VG_AI_DETECTION", "staging_buffer", "✅/❌", "✅/❌"]
+            ]
+          },
+          "audit_method": {
+            "check": "Code inspection or runtime assertion that validation functions only receive staging_buffer parameter",
+            "enforcement": "If function signature includes artist_output → ❌ FAIL",
+            "on_violation": "CRITICAL ERROR - Validation gate accessing wrong data source"
+          }
+        },
+        
+        "subsection_0_6_4_summary": {
+          "title": "0.6.4 Staging Buffer Summary",
+          "content": [
+            "**Buffer Created:** ✅/❌",
+            "**All Sections Present:** ✅/❌ ({present_count}/8)",
+            "**Calculations Accurate:** ✅/❌",
+            "**Validation Source Verified:** ✅/❌",
+            "**Overall Status:** ✅ PASS / ❌ FAIL"
+          ],
+          "pass_criteria": "ALL subsections must be ✅",
+          "on_any_failure": "DO NOT TRUST QA REPORT - staging buffer not implemented correctly"
+        }
+      }
+    }
+  },
+
+  "TEST_SUITE_V1_6_2": {
+    "description": "32 tests focused on verifying staging buffer is actually used",
+    "total_tests": 32,
+    "critical_focus": "Prove that QA reads staging buffer, NOT metadata",
+    
+    "test_categories": {
+      "STAGING_BUFFER_UNIT_TESTS": {
+        "test_count": 7,
+        "tests": [
+          {
+            "test_id": "STAGE_UNIT_001",
+            "name": "Staging Buffer Object Exists",
+            "method": "After Artist completes, verify staging_buffer object exists in workflow state",
+            "expected": "staging_buffer is dict with keys: K.1, K.4, K.5A, K.5B, K.6A, K.6B, K.8, K.9"
+          },
+          {
+            "test_id": "STAGE_UNIT_002",
+            "name": "K.1 Rendered Text Populated",
+            "method": "Check staging_buffer['K.1']['rendered_text'] is non-empty string with no XML tags",
+            "expected": "rendered_text is string, len > 0, contains no < or [ characters"
+          },
+          {
+            "test_id": "STAGE_UNIT_003",
+            "name": "K.1 Word Count Calculated Correctly",
+            "method": "Recalculate: actual = len(staging_buffer['K.1']['rendered_text'].split())",
+            "expected": "actual == staging_buffer['K.1']['word_count']"
+          },
+          {
+            "test_id": "STAGE_UNIT_004",
+            "name": "K.5A All Bullets Have Rendered Text",
+            "method": "Verify all 7 bullets in staging_buffer['K.5A']['bullets'] have 'rendered_text' key",
+            "expected": "All 7 bullets have non-empty rendered_text"
+          },
+          {
+            "test_id": "STAGE_UNIT_005",
+            "name": "K.9 Paragraph Count Correct",
+            "method": "Check staging_buffer['K.9']['total_paragraphs'] == 3",
+            "expected": "total_paragraphs == 3"
+          },
+          {
+            "test_id": "STAGE_UNIT_006",
+            "name": "Staging Buffer Immutable",
+            "method": "Attempt to modify staging_buffer after creation",
+            "expected": "Modification blocked or raises error"
+          },
+          {
+            "test_id": "STAGE_UNIT_007",
+            "name": "All Sections Have Word Counts",
+            "method": "Verify every section has 'word_count' key with int value",
+            "expected": "All sections have word_count as integer > 0"
+          }
+        ]
+      },
+      
+      "STAGING_BUFFER_INTEGRATION_TESTS": {
+        "test_count": 6,
+        "tests": [
+          {
+            "test_id": "STAGE_INT_001",
+            "name": "Validation Gate Receives Staging Buffer Only",
+            "method": "Inspect validate_word_count function signature",
+            "expected": "Function signature: def validate_word_count(staging_buffer, global_spec) - NO artist_output parameter"
+          },
+          {
+            "test_id": "STAGE_INT_002",
+            "name": "Validation Cannot Access Artist Output",
+            "method": "Code inspection: validate_word_count function body does not reference artist_output",
+            "expected": "No 'artist_output' string found in validation function code"
+          },
+          {
+            "test_id": "STAGE_INT_003",
+            "name": "False Metadata Injection Test",
+            "method": "Set artist_output.metadata['K.1_word_count'] = 999, run validation",
+            "expected": "Validation uses staging_buffer count, ignores 999"
+          },
+          {
+            "test_id": "STAGE_INT_004",
+            "name": "Error Message Includes Rendered Text",
+            "method": "Force word count failure, check error message",
+            "expected": "Error message includes 'Text preview:' with actual rendered text snippet"
+          },
+          {
+            "test_id": "STAGE_INT_005",
+            "name": "QA Report Reads From Staging Buffer",
+            "method": "Check QA Report Section 1 word count table generation code",
+            "expected": "QA Report reads staging_buffer['section']['word_count'], NOT artist_output.metadata"
+          },
+          {
+            "test_id": "STAGE_INT_006",
+            "name": "Section 0.6 Appears in QA Report",
+            "method": "Generate QA Report, verify Section 0.6 present",
+            "expected": "QA Report has Section 0.6: Staging Buffer Validation"
+          }
+        ]
+      },
+      
+      "WORD_COUNT_ACCURACY_TESTS": {
+        "test_count": 10,
+        "description": "Manual verification tests - HUMAN must perform these",
+        "tests": [
+          {
+            "test_id": "MANUAL_001",
+            "name": "K.1 Manual Word Count Verification",
+            "priority": "CRITICAL",
+            "method": "HUMAN PROCEDURE:\n1. Generate resume using V1.6.2\n2. Open Resume_{company}_{date}.txt\n3. Find Executive Summary section\n4. Copy the ENTIRE executive summary paragraph\n5. Open Microsoft Word\n6. Paste the text\n7. Click Tools > Word Count\n8. Note the word count displayed by Word\n9. Open QA_Report_{company}_{date}.md\n10. Find Section 1: Word Count Validation table\n11. Look at K.1 row, 'Actual' column\n12. Compare Word's count to QA Report's count",
+            "expected": "Word count from Microsoft Word EXACTLY matches QA Report 'Actual' value",
+            "on_mismatch": "V1.6.2 FAILED - staging buffer not being used",
+            "example": "If Word shows 128, QA Report must show 128. If Word shows 96 but QA shows 134 → BUG STILL EXISTS"
+          },
+          {
+            "test_id": "MANUAL_002",
+            "name": "K.1 Range Validation",
+            "method": "HUMAN: After MANUAL_001, verify manual count is 118-135",
+            "expected": "118 <= manual_count <= 135"
+          },
+          {
+            "test_id": "MANUAL_003",
+            "name": "K.5B Manual Word Count Verification",
+            "method": "HUMAN: Copy K.5B Unify overview, count in Word, compare to QA Report",
+            "expected": "Word count matches QA Report, within 28-34 range"
+          },
+          {
+            "test_id": "MANUAL_004",
+            "name": "K.6B Manual Word Count Verification",
+            "method": "HUMAN: Copy K.6B IBM overview, count in Word, compare to QA Report",
+            "expected": "Word count matches QA Report, within 25-30 range"
+          },
+          {
+            "test_id": "MANUAL_005",
+            "name": "K.5A Bullet 0 Manual Verification",
+            "method": "HUMAN: Copy first Unify bullet, count in Word, compare to QA Report",
+            "expected": "Word count matches, within 28-33 range"
+          },
+          {
+            "test_id": "MANUAL_006",
+            "name": "K.5A Bullet 3 Manual Verification",
+            "method": "HUMAN: Copy fourth Unify bullet, count in Word, compare to QA Report",
+            "expected": "Word count matches, within 28-33 range"
+          },
+          {
+            "test_id": "MANUAL_007",
+            "name": "K.6A Bullet 0 Manual Verification",
+            "method": "HUMAN: Copy first IBM bullet, count in Word, compare to QA Report",
+            "expected": "Word count matches, within 24-30 range"
+          },
+          {
+            "test_id": "MANUAL_008",
+            "name": "K.9 Paragraph 1 Manual Verification",
+            "method": "HUMAN: Copy first cover letter body paragraph, count in Word, compare to QA Report",
+            "expected": "Word count matches, within 85-100 range"
+          },
+          {
+            "test_id": "MANUAL_009",
+            "name": "Zero Mismatch Audit",
+            "method": "HUMAN: Perform manual counts for ALL sections (K.1, K.5B, K.6B, 7 bullets, 3 paragraphs)",
+            "expected": "ZERO mismatches between manual counts and QA Report"
+          },
+          {
+            "test_id": "MANUAL_010",
+            "name": "QA Report Trustworthiness",
+            "method": "If MANUAL_001-009 all pass, confirm QA Report is trustworthy",
+            "expected": "User can now trust QA Report word counts without manual verification"
+          }
+        ]
+      },
+      
+      "REGRESSION_TESTS": {
+        "test_count": 5,
+        "description": "Verify V1.6.2 doesn't break existing functionality",
+        "tests": [
+          {
+            "test_id": "REGR_001",
+            "name": "V1.6.0 Golden Path Still Works",
+            "method": "Run Master_Resume_V2_13 + VP Customer Success JD",
+            "expected": "All 82 v1.6.0 tests still pass + new staging buffer tests pass"
+          },
+          {
+            "test_id": "REGR_002",
+            "name": "V1.6.1 Clerk Validation Still Works",
+            "method": "Test phone number format validation",
+            "expected": "VG_CLERK_FACTUAL_DATA_INTEGRITY still halts on invalid phone"
+          },
+          {
+            "test_id": "REGR_003",
+            "name": "Four Files Still Generated",
+            "method": "Verify Resume, CoverLetter, QA_Report, AppTracker all created",
+            "expected": "4 files created with correct filenames"
+          },
+          {
+            "test_id": "REGR_004",
+            "name": "QA Report Section Count",
+            "method": "Count sections in QA Report",
+            "expected": "QA Report now has Sections 0-12 (was 0-11 in v1.6.1)"
+          },
+          {
+            "test_id": "REGR_005",
+            "name": "File Content Display Still Works",
+            "method": "Verify all 4 files displayed in chat after generation",
+            "expected": "Full content of all files shown in response"
+          }
+        ]
+      },
+      
+      "PERFORMANCE_TESTS": {
+        "test_count": 4,
+        "description": "Verify staging buffer doesn't add significant overhead",
+        "tests": [
+          {
+            "test_id": "PERF_001",
+            "name": "Staging Buffer Creation Time",
+            "method": "Measure time to execute create_staging_buffer()",
+            "expected": "<5 seconds"
+          },
+          {
+            "test_id": "PERF_002",
+            "name": "Total Workflow Time Impact",
+            "method": "Compare v1.6.1 vs v1.6.2 total execution time",
+            "expected": "<10 seconds difference"
+          },
+          {
+            "test_id": "PERF_003",
+            "name": "Memory Usage",
+            "method": "Check staging_buffer object size in memory",
+            "expected": "<1MB for typical resume"
+          },
+          {
+            "test_id": "PERF_004",
+            "name": "Validation Gate Execution Time",
+            "method": "Measure VG_MANDATORY_WORD_COUNT_COMPLIANCE execution",
+            "expected": "<10 seconds"
+          }
+        ]
+      }
+    }
+  },
+
+  "DEPLOYMENT_CHECKLIST": {
+    "pre_deployment": [
+      "✅ Implement create_staging_buffer() function",
+      "✅ Rewrite validate_word_count() to accept staging_buffer only",
+      "✅ Rewrite all other validation gates to accept staging_buffer only",
+      "✅ Update QA Report generator to read from staging_buffer",
+      "✅ Add Section 0.6 to QA Report",
+      "✅ Add enforcement: validation functions cannot access artist_output",
+      "✅ Run unit tests (7 tests)",
+      "✅ Run integration tests (6 tests)",
+      "✅ Run regression tests (5 tests)",
+      "✅ Run performance tests (4 tests)"
+    ],
+    
+    "deployment": [
+      "✅ Generate test resume with V1.6.2",
+      "✅ Perform MANUAL_001 (K.1 Word verification in Microsoft Word)",
+      "✅ If manual count matches QA Report → PROCEED",
+      "✅ If manual count differs from QA Report → STOP and debug",
+      "✅ Perform MANUAL_003-009 (all other manual verifications)",
+      "✅ If ALL manual tests pass → Deploy to production",
+      "✅ If ANY manual test fails → DO NOT DEPLOY"
+    ],
+    
+    "post_deployment": [
+      "✅ Generate 3 production resumes",
+      "✅ For each resume, manually verify K.1 word count in Word",
+      "✅ All 3 must match their QA Reports",
+      "✅ Monitor for user-reported word count discrepancies",
+      "✅ If discrepancy reported → Investigate staging buffer implementation"
+    ]
+  },
+
+  "CRITICAL_SUCCESS_CRITERIA": {
+    "description": "V1.6.2 is NOT successful unless ALL criteria met",
+    "criteria": [
+      "✅ Staging buffer object created after Artist phase",
+      "✅ Staging buffer contains rendered_text for ALL sections",
+      "✅ Staging buffer word_count calculated via len(rendered_text.split())",
+      "✅ Validation functions receive staging_buffer parameter ONLY",
+      "✅ Validation functions CANNOT access artist_output",
+      "✅ MANUAL_001 test passes (human counts K.1 in Word, matches QA Report)",
+      "✅ Zero mismatches across all manual verification tests",
+      "✅ QA Report Section 0.6 shows ✅ for all subsections",
+      "✅ Error messages include rendered text preview",
+      "✅ User can trust QA Report word counts without manual checking"
+    ],
+    
+    "definition_of_done": "Human manually verifies K.1 word count in Microsoft Word. The count EXACTLY matches QA Report Section 1. This proves staging buffer is being used."
+  },
+
+  "WHAT_WE_LEARNED": {
+    "lesson_1": "Specifications are not implementations - always verify code actually does what spec says",
+    "lesson_2": "False-pass validation is worse than no validation - creates false confidence",
+    "lesson_3": "User-reported bugs always trump automated tests - if user says counts are wrong, believe them",
+    "lesson_4": "Manual verification is mandatory for critical metrics - never trust 100% automated QA",
+    "lesson_5": "Enforce data source constraints at function signature level - don't rely on discipline",
+    "lesson_6": "The original v1.6.0 staging_buffer_v2 was architecture fiction - never implemented",
+    "lesson_7": "This patch is useless without actual implementation code - provide pseudocode developers can follow"
+  }
+}

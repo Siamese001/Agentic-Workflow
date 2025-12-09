@@ -1,0 +1,12 @@
+{
+  "strategy": {
+    "fields": ["steps", "goal", "context"],
+    "version": "v10.7",
+    "notes": "Extended context to include orchestration metadata"
+  },
+  "qa": {
+    "fields": ["confidence", "summary", "issues"],
+    "version": "v10.7",
+    "notes": "Includes structured issue reporting"
+  }
+}

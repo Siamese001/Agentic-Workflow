@@ -1,0 +1,904 @@
+{
+  "patch_metadata": {
+    "patch_id": "LIC-PATCH-v10.20",
+    "base_version": "v10.10",
+    "target_version": "v10.20",
+    "patch_date": "2025-10-14",
+    "total_remediations": 11,
+    "critical_remediations": 7,
+    "warning_remediations": 4,
+    "test_coverage": "100% (30/30 tests will pass after patch)",
+    "breaking_changes": false,
+    "rollback_compatible": true
+  },
+
+  "patch_summary": {
+    "description": "Comprehensive quality and edge case hardening patch based on 30-test validation suite. Addresses 11 critical gaps in boot validation, confidence scoring, metric validation, and error handling.",
+    "key_improvements": [
+      "Enhanced boot validator with spell-check and circular reference detection",
+      "Per-claim confidence enforcement for granular quality control",
+      "Metric context coherence validation",
+      "Placeholder detection and blocking",
+      "Job title position enforcement for job-specific messages",
+      "Multi-failure aggregation for comprehensive error reporting",
+      "Context window overflow handling",
+      "Dynamic holiday calculation for CTA date windows",
+      "CPO classification disambiguation",
+      "Company name validation dictionary",
+      "Template spell-check integration"
+    ]
+  },
+
+  "patches": [
+    {
+      "patch_id": "PATCH-v10.20-001",
+      "severity": "WARNING",
+      "gap_id": "GAP-001",
+      "name": "Template Spell-Check Integration",
+      "description": "Add spell-check validation to boot validator for all templates",
+      "affected_sections": ["3.context.system.boot_validator"],
+      "implementation": {
+        "add_to_boot_validator": {
+          "spell_check_engine": {
+            "enabled": true,
+            "dictionary": "en_US",
+            "custom_terms": [
+              "LinkedIn",
+              "InMail",
+              "GitHub",
+              "DevOps",
+              "SaaS",
+              "API"
+            ],
+            "validation_targets": [
+              "greeting_templates",
+              "cta_templates",
+              "signature_formats"
+            ],
+            "common_typos": {
+              "Hii": "Hi",
+              "Helo": "Hello",
+              "recieve": "receive",
+              "seperate": "separate",
+              "definately": "definitely"
+            },
+            "on_typo_detected": {
+              "action": "BLOCK_SYSTEM_START",
+              "message": "Boot validation failed: Typo detected in {template_type}: '{typo}' should be '{correction}'",
+              "recovery": "Fix typo in template and restart"
+            }
+          }
+        }
+      },
+      "test_validation": "TC-002 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-002",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-002",
+      "name": "Circular Reference Detection",
+      "description": "Add circular reference detection to schema loader to prevent infinite loops",
+      "affected_sections": ["3.context.system.schema_loader"],
+      "implementation": {
+        "add_to_schema_loader": {
+          "circular_reference_detector": {
+            "enabled": true,
+            "execution": "DURING_SCHEMA_LOAD",
+            "blocking": true,
+            "detection_algorithm": {
+              "method": "Depth-First Search with visited tracking",
+              "max_depth": 100,
+              "track_reference_chain": true
+            },
+            "validation_checks": [
+              {
+                "check": "self_reference",
+                "pattern": "schema.field references itself",
+                "severity": "CRITICAL"
+              },
+              {
+                "check": "circular_chain",
+                "pattern": "A → B → C → A",
+                "severity": "CRITICAL"
+              },
+              {
+                "check": "indirect_circular",
+                "pattern": "A → B → C → D → B",
+                "severity": "CRITICAL"
+              }
+            ],
+            "on_circular_ref_detected": {
+              "action": "BLOCK_SYSTEM_START",
+              "message": "Boot validation failed: Circular reference detected in {schema_file}: {reference_chain}",
+              "recovery": "Break circular reference and restart",
+              "log_chain": true
+            }
+          }
+        }
+      },
+      "test_validation": "TC-003 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-003",
+      "severity": "WARNING",
+      "gap_id": "GAP-003",
+      "name": "CPO Classification Disambiguation",
+      "description": "Add CPO-specific logic with RAG fallback to determine TA vs general HR focus",
+      "affected_sections": ["4.reasoning.deterministic_classification_v1"],
+      "implementation": {
+        "add_to_classification": {
+          "cpo_disambiguation": {
+            "trigger": "title contains 'Chief People Officer' OR 'CPO'",
+            "method": "RAG-assisted domain inference",
+            "process": [
+              "Step 1: Check if 'Talent Acquisition' or 'TA' appears in About",
+              "Step 2: If yes → classify as SENIOR_TA",
+              "Step 3: If no → execute RAG query: '{name} {company} responsibilities talent acquisition recruiting'",
+              "Step 4: Analyze RAG results for TA-specific terminology density",
+              "Step 5: If TA_density > 0.6 → SENIOR_TA, else → C_LEVEL"
+            ],
+            "ta_keywords": [
+              "talent acquisition",
+              "recruiting",
+              "recruitment",
+              "hiring",
+              "talent pipeline",
+              "sourcing",
+              "candidate"
+            ],
+            "confidence_thresholds": {
+              "high_confidence": 0.9,
+              "medium_confidence": 0.75,
+              "low_confidence": 0.6
+            },
+            "fallback_strategy": {
+              "if_rag_unavailable": "Prompt user for manual classification",
+              "default_if_ambiguous": "SENIOR_TA"
+            }
+          }
+        },
+        "update_stage_3_mapping": [
+          {
+            "priority": 1.5,
+            "condition": "CPO & TA_focus_confirmed",
+            "output": "SENIOR_TA",
+            "confidence": 0.94
+          },
+          {
+            "priority": 1.6,
+            "condition": "CPO & HR_general_focus",
+            "output": "C_LEVEL",
+            "confidence": 0.92
+          }
+        ]
+      },
+      "test_validation": "TC-005 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-004",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-004",
+      "name": "Per-Claim Confidence Enforcement",
+      "description": "Implement granular per-claim confidence checking before aggregate calculation",
+      "affected_sections": [
+        "4.reasoning.rag_validation_framework.confidence_scoring",
+        "6.validation.master_validation_gate"
+      ],
+      "implementation": {
+        "enhance_confidence_scoring": {
+          "per_claim_validation": {
+            "enabled": true,
+            "execution_point": "BEFORE_AGGREGATE_CALCULATION",
+            "blocking": true,
+            "threshold": 0.80,
+            "validation_process": [
+              "Step 1: Parse K.3 body into atomic claims",
+              "Step 2: Calculate confidence for each claim individually",
+              "Step 3: Check each claim against 0.80 threshold",
+              "Step 4: REJECT any claim below threshold",
+              "Step 5: Remove low-confidence claims from body",
+              "Step 6: Recalculate aggregate with remaining claims",
+              "Step 7: If aggregate still < 0.95, trigger full regeneration"
+            ],
+            "claim_extraction": {
+              "method": "Sentence-level parsing with claim boundary detection",
+              "splitters": [".", ";", "and", "while", "by", "which", "that"],
+              "ignore_patterns": [
+                "greeting",
+                "closing",
+                "transition_phrases"
+              ]
+            },
+            "confidence_calculation": {
+              "base_score": 1.0,
+              "deductions": [
+                {"condition": "No RAG source found", "penalty": -0.5},
+                {"condition": "Metric without source mapping", "penalty": -0.4},
+                {"condition": "Company not in whitelist", "penalty": -1.0},
+                {"condition": "Role drift (similarity <0.92)", "penalty": -0.3},
+                {"condition": "Context coherence <0.80", "penalty": -0.25},
+                {"condition": "Temporal inconsistency", "penalty": -0.2},
+                {"condition": "Vague/generic language", "penalty": -0.15}
+              ]
+            },
+            "rejection_strategy": {
+              "single_claim_below_threshold": {
+                "action": "REMOVE_CLAIM",
+                "log_message": "Claim '{claim_text}' removed (confidence {score} < 0.80)",
+                "regeneration_trigger": "If >2 claims removed or body too short"
+              },
+              "multiple_claims_below_threshold": {
+                "action": "FULL_REGENERATION",
+                "log_message": "Multiple low-confidence claims detected, regenerating K.3",
+                "strategy": "Increase RAG retrievers, apply stricter validation"
+              }
+            }
+          }
+        },
+        "add_qa_rule": {
+          "LIC-QA-106": {
+            "severity": "CRITICAL",
+            "check": "Every claim in K.3 has â‰¥0.80 confidence",
+            "fix": "Remove low-confidence claims or regenerate",
+            "validation_point": "POST_GENERATION",
+            "blocking": true
+          }
+        }
+      },
+      "test_validation": "TC-011 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-005",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-005",
+      "name": "Metric Context Coherence Validation",
+      "description": "Enforce that metrics appear with required context keywords from source",
+      "affected_sections": [
+        "4.reasoning.entity_grounding_framework",
+        "6.validation.qa_rules"
+      ],
+      "implementation": {
+        "enhance_entity_grounding": {
+          "metric_context_validation": {
+            "enabled": true,
+            "execution_point": "POST_GENERATION",
+            "blocking": true,
+            "validation_process": [
+              "Step 1: Extract all metrics from K.3 body",
+              "Step 2: For each metric, lookup required_context_keywords from metric_source_map",
+              "Step 3: Extract Â±20 words surrounding metric in K.3",
+              "Step 4: Check if â‰¥2 required keywords present in surrounding context",
+              "Step 5: If keyword_match_count < 2, REJECT metric usage",
+              "Step 6: Calculate context_coherence_score",
+              "Step 7: If context_coherence_score < 0.80, REJECT"
+            ],
+            "context_extraction": {
+              "window_size": 20,
+              "window_type": "words",
+              "direction": "bidirectional",
+              "include_sentence": true
+            },
+            "keyword_matching": {
+              "exact_match_weight": 1.0,
+              "semantic_match_weight": 0.7,
+              "synonym_match_weight": 0.85,
+              "min_keywords_required": 2,
+              "semantic_similarity_threshold": 0.85
+            },
+            "coherence_scoring": {
+              "formula": "(matched_keywords / required_keywords) * average_similarity",
+              "minimum_score": 0.80,
+              "penalize_missing_keywords": true
+            },
+            "on_validation_failure": {
+              "action": "REJECT_METRIC_USAGE",
+              "message": "Metric '{metric}' missing required context. Required: {keywords}, Found: {found_keywords}",
+              "regeneration": true,
+              "inject_context_requirements": true
+            }
+          }
+        },
+        "update_qa_rule": {
+          "LIC-QA-043": {
+            "severity": "CRITICAL",
+            "check": "Metrics appear with correct context keywords (â‰¥0.80 coherence)",
+            "fix": "Regenerate with context requirements injected",
+            "validation_point": "POST_GENERATION",
+            "blocking": true,
+            "enhanced": true
+          }
+        },
+        "add_qa_rule": {
+          "LIC-QA-107": {
+            "severity": "CRITICAL",
+            "check": "Every metric has â‰¥2 required context keywords within Â±20 words",
+            "fix": "Add context or remove metric",
+            "validation_point": "POST_GENERATION",
+            "blocking": true
+          }
+        }
+      },
+      "test_validation": "TC-015 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-006",
+      "severity": "WARNING",
+      "gap_id": "GAP-006",
+      "name": "Dynamic Holiday Calculation",
+      "description": "Replace hard-coded 2025 holidays with dynamic calculation for all future years",
+      "affected_sections": ["4.reasoning.cta_generator.date_window_engine"],
+      "implementation": {
+        "enhance_date_window_engine": {
+          "dynamic_holiday_calculator": {
+            "enabled": true,
+            "calculation_method": "Rule-based with observance logic",
+            "us_federal_holidays": [
+              {
+                "name": "New Year's Day",
+                "rule": "January 1",
+                "observance": "If weekend, observe on adjacent Monday"
+              },
+              {
+                "name": "Martin Luther King Jr. Day",
+                "rule": "Third Monday of January"
+              },
+              {
+                "name": "Presidents' Day",
+                "rule": "Third Monday of February"
+              },
+              {
+                "name": "Memorial Day",
+                "rule": "Last Monday of May"
+              },
+              {
+                "name": "Juneteenth",
+                "rule": "June 19",
+                "observance": "If weekend, observe on adjacent Friday or Monday"
+              },
+              {
+                "name": "Independence Day",
+                "rule": "July 4",
+                "observance": "If weekend, observe on adjacent Friday or Monday"
+              },
+              {
+                "name": "Labor Day",
+                "rule": "First Monday of September"
+              },
+              {
+                "name": "Columbus Day",
+                "rule": "Second Monday of October"
+              },
+              {
+                "name": "Veterans Day",
+                "rule": "November 11",
+                "observance": "If weekend, observe on adjacent Friday or Monday"
+              },
+              {
+                "name": "Thanksgiving",
+                "rule": "Fourth Thursday of November"
+              },
+              {
+                "name": "Christmas",
+                "rule": "December 25",
+                "observance": "If weekend, observe on adjacent Friday or Monday"
+              }
+            ],
+            "calculation_logic": {
+              "method": "Generate holidays for current_year + 2",
+              "cache_duration": "365 days",
+              "recalculate_trigger": "January 1 each year"
+            },
+            "weekend_observance_rules": {
+              "saturday_holiday": "Observe on Friday",
+              "sunday_holiday": "Observe on Monday"
+            }
+          },
+          "remove_hard_coded_dates": {
+            "action": "Delete us_federal_holidays_2025 array",
+            "replace_with": "dynamic_holiday_calculator"
+          }
+        }
+      },
+      "test_validation": "TC-017 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-007",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-007",
+      "name": "Placeholder Detection Patterns",
+      "description": "Add comprehensive placeholder detection to prevent generic content in final output",
+      "affected_sections": [
+        "6.validation.qa_rules",
+        "6.validation.master_validation_gate"
+      ],
+      "implementation": {
+        "add_placeholder_detector": {
+          "enabled": true,
+          "execution_point": "POST_GENERATION",
+          "blocking": true,
+          "detection_patterns": [
+            {
+              "pattern": "\\[([A-Z_]+)\\]",
+              "description": "Square bracket placeholders [INITIATIVE]",
+              "severity": "CRITICAL"
+            },
+            {
+              "pattern": "\\{([A-Z_]+)\\}",
+              "description": "Curly brace placeholders {COMPANY}",
+              "severity": "CRITICAL"
+            },
+            {
+              "pattern": "__([A-Z_]+)__",
+              "description": "Double underscore placeholders __ROLE__",
+              "severity": "CRITICAL"
+            },
+            {
+              "pattern": "\\[TBD\\]|\\[TODO\\]|\\[PLACEHOLDER\\]",
+              "description": "Common placeholder keywords",
+              "severity": "CRITICAL"
+            },
+            {
+              "pattern": "\\{\\{[^}]+\\}\\}",
+              "description": "Template variable placeholders {{variable}}",
+              "severity": "CRITICAL"
+            },
+            {
+              "pattern": "<[A-Z_]+>",
+              "description": "Angle bracket placeholders <METRIC>",
+              "severity": "WARNING"
+            }
+          ],
+          "scan_targets": [
+            "K.2_subject_line",
+            "K.3_body",
+            "K.5_cta"
+          ],
+          "on_detection": {
+            "action": "REJECT",
+            "error_code": "LIC-QA-067",
+            "message": "Placeholder '{placeholder}' detected in {location}",
+            "fix": "Replace with specific content or regenerate",
+            "regeneration": true
+          },
+          "exceptions": {
+            "allowed_in_templates": true,
+            "allowed_in_examples": true,
+            "allowed_in_documentation": true
+          }
+        },
+        "enhance_qa_rule": {
+          "LIC-QA-067": {
+            "severity": "CRITICAL",
+            "check": "No placeholders in final output using pattern matching",
+            "fix": "Replace placeholder with specific content",
+            "validation_point": "POST_GENERATION",
+            "blocking": true,
+            "enhanced": true,
+            "detection_method": "Regex pattern matching across 6 patterns"
+          }
+        }
+      },
+      "test_validation": "TC-021 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-008",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-008",
+      "name": "Job Title Position Validator",
+      "description": "Enforce job title appears in first 50 words for job-specific messages",
+      "affected_sections": [
+        "6.validation.qa_rules",
+        "6.validation.master_validation_gate"
+      ],
+      "implementation": {
+        "add_job_title_position_validator": {
+          "enabled": true,
+          "trigger": "job_application_confirmed == true",
+          "execution_point": "POST_GENERATION",
+          "blocking": true,
+          "validation_process": [
+            "Step 1: Extract job_title from context",
+            "Step 2: Tokenize K.3 body into words",
+            "Step 3: Find first occurrence of job_title (exact or high-similarity match)",
+            "Step 4: Count word position of first occurrence",
+            "Step 5: If position > 50, REJECT",
+            "Step 6: If not found at all, REJECT with higher severity"
+          ],
+          "word_counting": {
+            "tokenizer": "whitespace + punctuation",
+            "exclude": ["articles", "conjunctions", "prepositions"],
+            "count_type": "content_words_only",
+            "threshold": 50
+          },
+          "matching": {
+            "exact_match_priority": true,
+            "fuzzy_match_threshold": 0.92,
+            "case_insensitive": true,
+            "allow_partial_match": false
+          },
+          "validation_outcomes": {
+            "found_within_50_words": {
+              "action": "ACCEPT",
+              "log": "Job title found at position {position}"
+            },
+            "found_after_50_words": {
+              "action": "REJECT",
+              "error_code": "LIC-QA-075",
+              "message": "Job title '{job_title}' found at position {position}, must be within first 50 words",
+              "fix": "Regenerate K.3 with job title in opening"
+            },
+            "not_found": {
+              "action": "REJECT",
+              "error_code": "LIC-QA-075",
+              "message": "Job title '{job_title}' not found in K.3 body",
+              "fix": "Regenerate K.3 with job title explicitly included",
+              "severity": "CRITICAL"
+            }
+          },
+          "regeneration_strategy": {
+            "inject_constraint": "Job title MUST appear in first sentence or second sentence",
+            "template_suggestion": "I'm reaching out about the {job_title} role...",
+            "max_retries": 2
+          }
+        },
+        "enhance_qa_rule": {
+          "LIC-QA-075": {
+            "severity": "CRITICAL",
+            "check": "If job_confirmed=true, job_title appears in first 50 words of K.3",
+            "fix": "Regenerate K.3 with job title upfront",
+            "validation_point": "POST_GENERATION",
+            "blocking": true,
+            "enhanced": true,
+            "implementation": "Word position counter with fuzzy matching"
+          }
+        }
+      },
+      "test_validation": "TC-022 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-009",
+      "severity": "WARNING",
+      "gap_id": "GAP-009",
+      "name": "Company Name Validation Dictionary",
+      "description": "Add company name spelling validation with common misspelling detection",
+      "affected_sections": [
+        "6.validation.qa_rules",
+        "3.context.sender_profile_management"
+      ],
+      "implementation": {
+        "add_company_name_validator": {
+          "enabled": true,
+          "execution_point": "POST_GENERATION",
+          "blocking": false,
+          "severity": "WARNING",
+          "validation_dictionary": {
+            "source": "project_knowledge_search + manual whitelist",
+            "common_companies": {
+              "ServiceNow": ["Service Now", "Servicenow", "service now"],
+              "LinkedIn": ["Linked In", "linkedIn", "linked-in"],
+              "GitHub": ["Git Hub", "Github"],
+              "PostgreSQL": ["Postgre SQL", "Postgres SQL"],
+              "MySQL": ["My SQL", "MySql"],
+              "MongoDB": ["Mongo DB", "Mongo-DB"],
+              "DevOps": ["Dev Ops", "Dev-Ops"],
+              "AWS": ["A.W.S.", "Amazon Web Services"],
+              "GCP": ["G.C.P.", "Google Cloud Platform"]
+            },
+            "dynamic_loading": {
+              "query": "project_knowledge_search with query: 'company names list target companies'",
+              "merge_with_static": true,
+              "cache_duration": "7 days"
+            }
+          },
+          "validation_process": [
+            "Step 1: Extract all company names from K.3 body",
+            "Step 2: Check each against validation dictionary",
+            "Step 3: For each company, check if it matches misspelling pattern",
+            "Step 4: Calculate similarity score for near-matches",
+            "Step 5: If misspelling detected (similarity > 0.85), suggest correction",
+            "Step 6: If exact misspelling match, auto-correct or warn"
+          ],
+          "fuzzy_matching": {
+            "algorithm": "Levenshtein distance + phonetic matching",
+            "threshold": 0.85,
+            "suggest_corrections": true
+          },
+          "correction_strategy": {
+            "auto_correct": false,
+            "warn_user": true,
+            "provide_suggestions": true,
+            "message_template": "Possible company name misspelling: '{incorrect}' → suggested: '{correct}'"
+          }
+        },
+        "enhance_qa_rule": {
+          "LIC-QA-049": {
+            "severity": "WARNING",
+            "check": "Company names spelled correctly using validation dictionary",
+            "fix": "Correct company name spelling",
+            "validation_point": "POST_GENERATION",
+            "blocking": false,
+            "enhanced": true,
+            "implementation": "Fuzzy matching with Levenshtein distance"
+          }
+        }
+      },
+      "test_validation": "TC-023 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-010",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-010",
+      "name": "Multi-Failure Aggregation",
+      "description": "Enable comprehensive error reporting showing all failures, not just first",
+      "affected_sections": [
+        "6.validation.master_validation_gate",
+        "3.context.system.error_recovery_policy"
+      ],
+      "implementation": {
+        "enhance_master_validation_gate": {
+          "multi_failure_reporting": {
+            "enabled": true,
+            "execution_mode": "COLLECT_ALL_FAILURES",
+            "early_exit": false,
+            "aggregation_strategy": {
+              "collect_all_failures": true,
+              "categorize_by_severity": true,
+              "categorize_by_phase": true,
+              "provide_remediation_order": true
+            },
+            "execution_process": [
+              "Step 1: Run all validation phases regardless of individual failures",
+              "Step 2: Collect all failed checks with details",
+              "Step 3: Categorize failures by severity (CRITICAL, WARNING, INFO)",
+              "Step 4: Categorize failures by phase (entity, confidence, qa, archetype)",
+              "Step 5: Generate prioritized remediation steps",
+              "Step 6: Display comprehensive failure report to user"
+            ],
+            "failure_collection": {
+              "data_structure": {
+                "failed_checks": [
+                  {
+                    "phase": "string",
+                    "check_id": "string",
+                    "severity": "CRITICAL | WARNING | INFO",
+                    "rule_id": "string",
+                    "description": "string",
+                    "location": "string",
+                    "expected": "string",
+                    "actual": "string",
+                    "fix_description": "string",
+                    "auto_fixable": "boolean"
+                  }
+                ],
+                "summary": {
+                  "total_failures": "number",
+                  "critical_count": "number",
+                  "warning_count": "number",
+                  "info_count": "number"
+                }
+              }
+            },
+            "reporting_format": {
+              "display_order": [
+                "CRITICAL failures first",
+                "WARNING failures second",
+                "INFO failures last"
+              ],
+              "grouping": "By phase, then by severity within phase",
+              "include_remediation_order": true,
+              "include_estimated_fix_time": false
+            },
+            "remediation_prioritization": {
+              "critical_first": true,
+              "dependency_aware": true,
+              "suggest_batch_fixes": true,
+              "order_example": [
+                "1. Fix CRITICAL entity hallucinations",
+                "2. Fix CRITICAL confidence issues",
+                "3. Fix WARNING format issues",
+                "4. Fix INFO style issues"
+              ]
+            }
+          }
+        },
+        "update_error_recovery": {
+          "on_multiple_validation_failures": {
+            "action": "DISPLAY_COMPREHENSIVE_REPORT",
+            "allow_partial_fixes": false,
+            "require_all_critical_fixes": true,
+            "user_message": "Multiple validation failures detected. See full report below.",
+            "format": "JSON with severity grouping"
+          }
+        }
+      },
+      "test_validation": "TC-027 will pass after implementation"
+    },
+
+    {
+      "patch_id": "PATCH-v10.20-011",
+      "severity": "CRITICAL",
+      "gap_id": "GAP-011",
+      "name": "Context Window Overflow Handler",
+      "description": "Add intelligent context window management with overflow detection and truncation",
+      "affected_sections": ["3.context.system.context_window_management"],
+      "implementation": {
+        "enhance_context_window_management": {
+          "overflow_detection": {
+            "enabled": true,
+            "monitoring": "CONTINUOUS",
+            "token_counter": {
+              "method": "Accurate tokenization using model-specific tokenizer",
+              "update_frequency": "After each section added",
+              "buffer": 200
+            },
+            "thresholds": {
+              "max_tokens": 8000,
+              "warning_threshold": 7500,
+              "critical_threshold": 7800
+            }
+          },
+          "overflow_handling": {
+            "strategy": "Priority-based intelligent truncation",
+            "execution_trigger": "total_tokens > max_tokens - buffer",
+            "truncation_algorithm": {
+              "phase_1_assessment": "Calculate tokens per section",
+              "phase_2_prioritization": "Rank sections by priority",
+              "phase_3_truncation": "Truncate lowest priority first",
+              "phase_4_validation": "Ensure total <= max_tokens"
+            },
+            "section_priorities": {
+              "sender_profile": {
+                "priority": 1,
+                "preserve": "ALWAYS",
+                "truncation": "NEVER",
+                "reason": "Core credentials required"
+              },
+              "rag_results": {
+                "priority": 2,
+                "preserve": "PREFERABLY",
+                "truncation": "SUMMARIZE_OR_REDUCE",
+                "strategy": "Keep most recent and highest CE scores"
+              },
+              "recipient_context": {
+                "priority": 3,
+                "preserve": "PARTIALLY",
+                "truncation": "VERBOSE_FIELDS",
+                "strategy": "Keep title, company, About; truncate other fields"
+              },
+              "reasoning_space": {
+                "priority": 4,
+                "preserve": "PARTIALLY",
+                "truncation": "AGGRESSIVE",
+                "strategy": "Compress or remove intermediate reasoning"
+              }
+            },
+            "truncation_methods": {
+              "rag_results": {
+                "method": "Drop lowest CE score sources iteratively",
+                "keep_minimum": 3,
+                "summarize_if_needed": true
+              },
+              "recipient_context": {
+                "method": "Remove verbose fields, keep essentials",
+                "essential_fields": ["title", "company", "about"],
+                "removable_fields": ["full_experience", "education_details"]
+              },
+              "reasoning_space": {
+                "method": "Compress reasoning chains",
+                "keep_final_decisions": true,
+                "remove_intermediate_steps": true
+              }
+            }
+          },
+          "overflow_prevention": {
+            "proactive_monitoring": true,
+            "warning_at_threshold": 7500,
+            "action_at_warning": "Suggest reducing RAG calls or content",
+            "fail_safe": "HALT if truncation can't resolve overflow"
+          },
+          "logging": {
+            "log_overflow_events": true,
+            "log_truncation_decisions": true,
+            "log_final_token_count": true,
+            "alert_on_critical_truncation": true
+          }
+        },
+        "add_validation": {
+          "pre_generation_check": {
+            "verify_space_available": true,
+            "estimate_generation_tokens": true,
+            "block_if_insufficient": true
+          },
+          "post_generation_check": {
+            "verify_within_limits": true,
+            "report_usage_stats": true
+          }
+        }
+      },
+      "test_validation": "TC-030 will pass after implementation"
+    }
+  ],
+
+  "new_qa_rules": [
+    {
+      "rule_id": "LIC-QA-106",
+      "severity": "CRITICAL",
+      "check": "Every claim in K.3 has â‰¥0.80 confidence",
+      "fix": "Remove low-confidence claims or regenerate",
+      "validation_point": "POST_GENERATION",
+      "blocking": true,
+      "patch": "PATCH-v10.20-004"
+    },
+    {
+      "rule_id": "LIC-QA-107",
+      "severity": "CRITICAL",
+      "check": "Every metric has â‰¥2 required context keywords within Â±20 words",
+      "fix": "Add context or remove metric",
+      "validation_point": "POST_GENERATION",
+      "blocking": true,
+      "patch": "PATCH-v10.20-005"
+    }
+  ],
+
+  "enhanced_qa_rules": [
+    {
+      "rule_id": "LIC-QA-043",
+      "enhancement": "Added coherence scoring with 0.80 minimum",
+      "patch": "PATCH-v10.20-005"
+    },
+    {
+      "rule_id": "LIC-QA-049",
+      "enhancement": "Added fuzzy matching with Levenshtein distance",
+      "patch": "PATCH-v10.20-009"
+    },
+    {
+      "rule_id": "LIC-QA-067",
+      "enhancement": "Added 6 regex patterns for placeholder detection",
+      "patch": "PATCH-v10.20-007"
+    },
+    {
+      "rule_id": "LIC-QA-075",
+      "enhancement": "Added word position counter with fuzzy matching",
+      "patch": "PATCH-v10.20-008"
+    }
+  ],
+
+  "implementation_order": [
+    "1. PATCH-v10.20-002: Circular reference detection (foundational)",
+    "2. PATCH-v10.20-011: Context window overflow handler (foundational)",
+    "3. PATCH-v10.20-004: Per-claim confidence enforcement (critical quality)",
+    "4. PATCH-v10.20-005: Metric context validation (critical quality)",
+    "5. PATCH-v10.20-007: Placeholder detection (critical quality)",
+    "6. PATCH-v10.20-008: Job title position validator (critical quality)",
+    "7. PATCH-v10.20-010: Multi-failure aggregation (critical UX)",
+    "8. PATCH-v10.20-001: Template spell-check (warning quality)",
+    "9. PATCH-v10.20-003: CPO disambiguation (warning quality)",
+    "10. PATCH-v10.20-006: Dynamic holiday calculation (warning quality)",
+    "11. PATCH-v10.20-009: Company name validation (warning quality)"
+  ],
+
+  "testing_requirements": {
+    "unit_tests": "All 30 test cases from test suite must pass",
+    "integration_tests": "End-to-end workflow must complete successfully",
+    "regression_tests": "All v10.10 passing tests must still pass",
+    "performance_tests": "No degradation > 10% in generation latency",
+    "acceptance_criteria": "100% pass rate on test suite"
+  },
+
+  "deployment_strategy": {
+    "phased_rollout": false,
+    "immediate_deployment": true,
+    "reason": "All patches are non-breaking and additive",
+    "rollback_plan": "Revert to v10.10 if any critical issues",
+    "monitoring_period": "7 days post-deployment"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "from": "LIC_10-02-2025_v5.6.json",
+  "to": "LIC_10-02-2025_v5.6.1.json",
+  "base_sha": "21fe94a064b9d56e2e62d0350dfcd4c922a036c350aa5f8ee619cb15e338b737",
+  "new_sha": "7d966d6181037036e98396c3987f6e0c00962a7a24e729db1278a74a98703adf",
+  "change_count": 18,
+  "changes": [
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta.defaults",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta.template_deprecated",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.signature_templates.note",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta.defaults",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta.template_deprecated",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.signature_templates.note",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta.defaults",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta.template_deprecated",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.signature_templates.note",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta.defaults",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta.template_deprecated",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.signature_templates.note",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta.defaults",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta.template_deprecated",
+      "change": "REMOVED"
+    },
+    {
+      "path": "metadata.base_sha_for_v5_6_1",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v5_6_1",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v5_6_1",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ]
+}
