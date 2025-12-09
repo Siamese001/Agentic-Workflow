@@ -1,0 +1,98 @@
+{
+  "from": "LIC_10-02-2025_v6.1.json",
+  "to": "LIC_10-02-2025_v6.2.json",
+  "base_sha": "fe922471f7aca2a28409ca4858ec034843655ee9248ae0b643d9fb0ed5dc0eca",
+  "new_sha": "a426d4d28d7c50cd92bc91987b491f8b089998f622b2eafa2adca2d7a8ccc29e",
+  "change_count": 22,
+  "changes": [
+    {
+      "path": "4.reasoning._defs.lexicon",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.general_analyst.$ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.general_analyst.icon",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.general_analyst.name",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.general_analyst.responsibilities",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.general_analyst.role",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.general_analyst.slides",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.integration_analyst.$ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.integration_analyst.icon",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.integration_analyst.name",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.integration_analyst.responsibilities",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.integration_analyst.role",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.persona_mapping.integration_analyst.slides",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.personas",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.cta_generation_rules.temporal_framing.lexicon_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.persona_catalog_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.output_format.salutations_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.persona_catalog_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.base_sha_for_v6_2",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v6_2",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v6_2",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ],
+  "size_deltas": []
+}

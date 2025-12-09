@@ -1,0 +1,97 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\robustness_stack.py",
+    "file_hash": "fcbf641e01e132996d550bf98dbf65f8f24f0c169a05bd1dd17219cdd4051a14",
+    "size_bytes": 2743,
+    "last_modified": "2025-12-01T12:27:42.083944",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RobustnessStack",
+      "line_number": 10,
+      "docstring": "Implements workflow-wide retry and backoff heuristics.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 13,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "should_retry",
+      "line_number": 62,
+      "docstring": "Decide whether a stage should retry after a failure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "reset",
+      "line_number": 71,
+      "docstring": "Clear retry history for a stage after success.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_compute_backoff",
+      "line_number": 76,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "asyncio": [
+      "line_5"
+    ],
+    "random": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "should_retry": "should_retry",
+    "reset": "reset",
+    "_compute_backoff": "_compute_backoff"
+  },
+  "class_signatures": {
+    "RobustnessStack": "RobustnessStack"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 5,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

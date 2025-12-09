@@ -1,0 +1,816 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\conftest.py",
+    "file_hash": "ec0e7bbd1e78ab71bc9806c119479287ad8c2493458575c4d38530ba850f8db8",
+    "size_bytes": 18078,
+    "last_modified": "2025-12-01T12:27:37.377701",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DeterministicEmbeddingFunction",
+      "line_number": 35,
+      "docstring": "Predictable embedding function leveraged by caching fixtures.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FakeRedisClient",
+      "line_number": 42,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FakeCollection",
+      "line_number": 56,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowHarness",
+      "line_number": 77,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TraceEvent",
+      "line_number": 90,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TraceRecorder",
+      "line_number": 95,
+      "docstring": "Simple in-memory telemetry recorder mimicking production logging.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_addoption",
+      "line_number": 191,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_configure",
+      "line_number": 200,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_loop",
+      "line_number": 206,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_pyfunc_call",
+      "line_number": 216,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "_run_loop"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_collection_modifyitems",
+      "line_number": 227,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_llm_client",
+      "line_number": 242,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AsyncMock",
+        "MagicMock"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_chromadb_client",
+      "line_number": 258,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "MagicMock",
+        "FakeCollection"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "feedback_log_path",
+      "line_number": 268,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "proposed_rules_path",
+      "line_number": 275,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "workflow_harness",
+      "line_number": 282,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "WorkflowContext",
+        "SemanticValidator",
+        "CacheManager",
+        "ContextBudgetManager",
+        "DeterministicEmbeddingFunction",
+        "ProposedRulesLoader",
+        "MagicMock",
+        "str",
+        "FakeRedisClient",
+        "MetricsCollector",
+        "ConfigV10_7",
+        "WorkflowHarness",
+        "ResponseValidator",
+        "CostTracker",
+        "FeedbackLogReader",
+        "PromptTemplateManager",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_workflow_context",
+      "line_number": 340,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "cache_manager",
+      "line_number": 345,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "prompt_manager",
+      "line_number": 350,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "metrics_collector",
+      "line_number": 355,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "redis_client",
+      "line_number": 360,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "cost_tracker",
+      "line_number": 365,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "base_state",
+      "line_number": 370,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_context_budget_manager",
+      "line_number": 413,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AsyncMock",
+        "MagicMock"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_config",
+      "line_number": 424,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "ConfigV10_7"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "response_validator",
+      "line_number": 439,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ResponseValidator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "semantic_validator",
+      "line_number": 444,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "SemanticValidator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "workflow_state_factory",
+      "line_number": 449,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dummy_cache_entry",
+      "line_number": 459,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "trace_recorder",
+      "line_number": 474,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "TraceRecorder"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "feedback_log_entries",
+      "line_number": 479,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "proposed_rules_entries",
+      "line_number": 505,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "workflow_context_factory",
+      "line_number": 535,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "strategy_plan_payload",
+      "line_number": 545,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "draft_sections",
+      "line_number": 555,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__call__",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 43,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setex",
+      "line_number": 46,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 49,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "delete",
+      "line_number": 52,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 57,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add",
+      "line_number": 60,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "zip"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "query",
+      "line_number": 64,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 98,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record",
+      "line_number": 101,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "TraceEvent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "find",
+      "line_number": 104,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "as_dicts",
+      "line_number": 107,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StateGraph",
+      "line_number": 118,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GraphRecursionError",
+      "line_number": 170,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NodeExecutionError",
+      "line_number": 173,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_factory",
+      "line_number": 450,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_factory",
+      "line_number": 536,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 119,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_node",
+      "line_number": 122,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_entry_point",
+      "line_number": 125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_edge",
+      "line_number": 128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_conditional_edges",
+      "line_number": 131,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compile",
+      "line_number": 134,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "WorkflowTimeoutError",
+        "Graph",
+        "isinstance",
+        "NodeExecutionError",
+        "CompiledGraph",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CompiledGraph",
+      "line_number": 137,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "invoke",
+      "line_number": 150,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_graph",
+      "line_number": 153,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Graph",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Graph",
+      "line_number": 154,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_json",
+      "line_number": 155,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "asyncio": [
+      "line_1"
+    ],
+    "contextlib": [
+      "line_2"
+    ],
+    "json": [
+      "line_3"
+    ],
+    "sys": [
+      "line_4"
+    ],
+    "types": [
+      "line_5"
+    ],
+    "from_dataclasses": [
+      "line_6"
+    ],
+    "from_pathlib": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ],
+    "from_unittest.mock": [
+      "line_9"
+    ],
+    "pytest": [
+      "line_11"
+    ],
+    "from_chromadb.utils": [
+      "line_12"
+    ],
+    "from_core_v10_7": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "pytest_addoption": "pytest_addoption",
+    "pytest_configure": "pytest_configure",
+    "_run_loop": "_run_loop",
+    "pytest_pyfunc_call": "pytest_pyfunc_call",
+    "pytest_collection_modifyitems": "pytest_collection_modifyitems",
+    "mock_llm_client": "mock_llm_client",
+    "mock_chromadb_client": "mock_chromadb_client",
+    "feedback_log_path": "feedback_log_path",
+    "proposed_rules_path": "proposed_rules_path",
+    "workflow_harness": "workflow_harness",
+    "mock_workflow_context": "mock_workflow_context",
+    "cache_manager": "cache_manager",
+    "prompt_manager": "prompt_manager",
+    "metrics_collector": "metrics_collector",
+    "redis_client": "redis_client",
+    "cost_tracker": "cost_tracker",
+    "base_state": "base_state",
+    "mock_context_budget_manager": "mock_context_budget_manager",
+    "mock_config": "mock_config",
+    "response_validator": "response_validator",
+    "semantic_validator": "semantic_validator",
+    "workflow_state_factory": "workflow_state_factory",
+    "dummy_cache_entry": "dummy_cache_entry",
+    "trace_recorder": "trace_recorder",
+    "feedback_log_entries": "feedback_log_entries",
+    "proposed_rules_entries": "proposed_rules_entries",
+    "workflow_context_factory": "workflow_context_factory",
+    "strategy_plan_payload": "strategy_plan_payload",
+    "draft_sections": "draft_sections",
+    "__call__": "__call__",
+    "__init__": "__init__",
+    "setex": "setex",
+    "get": "get",
+    "delete": "delete",
+    "add": "add",
+    "query": "query",
+    "record": "record",
+    "find": "find",
+    "as_dicts": "as_dicts",
+    "_factory": "_factory",
+    "add_node": "add_node",
+    "set_entry_point": "set_entry_point",
+    "add_edge": "add_edge",
+    "add_conditional_edges": "add_conditional_edges",
+    "compile": "compile",
+    "invoke": "invoke",
+    "get_graph": "get_graph",
+    "to_json": "to_json"
+  },
+  "class_signatures": {
+    "DeterministicEmbeddingFunction": "DeterministicEmbeddingFunction",
+    "FakeRedisClient": "FakeRedisClient",
+    "FakeCollection": "FakeCollection",
+    "WorkflowHarness": "WorkflowHarness",
+    "TraceEvent": "TraceEvent",
+    "TraceRecorder": "TraceRecorder",
+    "StateGraph": "StateGraph",
+    "GraphRecursionError": "GraphRecursionError",
+    "NodeExecutionError": "NodeExecutionError",
+    "CompiledGraph": "CompiledGraph",
+    "Graph": "Graph"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 19,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

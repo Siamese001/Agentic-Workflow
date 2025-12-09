@@ -1,0 +1,45 @@
+{
+  "base_file": "LIC_10-03-2025_v7.1.json",
+  "target_file": "LIC_10-03-2025_v7.4.json",
+  "generated_at": "2025-10-03T12:57:16.268870Z",
+  "summary": {
+    "added_keys": 30,
+    "modified_keys": 1,
+    "unchanged_keys": 14
+  },
+  "added_keys": [
+    "3.context.intelligence_source_hierarchy",
+    "3.context.linkedin_input_collection",
+    "4.reasoning.K1.hyde_enrichment",
+    "4.reasoning.K3.execution_flow.self_rag_steps",
+    "4.reasoning.K3.execution_flow.step_3_stage_2_rerank",
+    "4.reasoning.K3.self_rag_triggers",
+    "4.reasoning.about_section_policy",
+    "4.reasoning.rag_source_prioritization.source_weighting_v2",
+    "4.reasoning.rag_source_prioritization.two_stage_retrieval",
+    "4.reasoning.rag_source_prioritization.two_stage_retrieval.stage_1_recall.query_enrichment",
+    "4.reasoning.validation_rule_schema.rules_compact",
+    "4.reasoning.validation_rule_schema.rules_compact#C026_adds",
+    "4.reasoning.validation_rule_schema.rules_compact#C027_adds",
+    "4.reasoning.validation_rule_schema.rules_compact#C028_adds",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-040",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-060",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-061",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-062",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-063",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-064",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-065",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-066",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-067",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-068",
+    "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-069",
+    "5.output.audit.hyde_enrichment_log",
+    "5.output.audit.self_rag_decision_log",
+    "5.output.audit.stage_2_rerank_logs",
+    "performance_benchmarks",
+    "runtime_toggles"
+  ],
+  "modified_keys": [
+    "metadata"
+  ]
+}

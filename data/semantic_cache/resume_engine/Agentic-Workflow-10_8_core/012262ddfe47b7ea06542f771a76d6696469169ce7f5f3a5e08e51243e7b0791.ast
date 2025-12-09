@@ -1,0 +1,288 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_observability_telemetry.py",
+    "file_hash": "012262ddfe47b7ea06542f771a76d6696469169ce7f5f3a5e08e51243e7b0791",
+    "size_bytes": 3680,
+    "last_modified": "2025-12-01T12:27:36.204120",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_8_core",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CostTracker",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetricEvent",
+      "line_number": 44,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SpanEvent",
+      "line_number": 51,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TraceContext",
+      "line_number": 59,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_event",
+      "line_number": 65,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_events",
+      "line_number": 69,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_optimization_hint",
+      "line_number": 74,
+      "docstring": "Deterministic optimization hint based on span durations.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PredictiveCache",
+      "line_number": 84,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PolicyAutoTunerStub",
+      "line_number": 96,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetricEvent",
+      "line_number": 110,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SpanEvent",
+      "line_number": 117,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TraceContext",
+      "line_number": 125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_event",
+      "line_number": 136,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_events",
+      "line_number": 140,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "start_span",
+      "line_number": 23,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "end_span",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "snapshot",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 85,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 88,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 91,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "snapshot",
+      "line_number": 94,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "suggest_config",
+      "line_number": 97,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_dataclasses": [
+      "line_8",
+      "line_9",
+      "line_39"
+    ],
+    "from_typing": [
+      "line_10",
+      "line_11",
+      "line_40",
+      "line_71"
+    ],
+    "time": [
+      "line_12"
+    ]
+  },
+  "function_signatures": {
+    "record_event": "record_event",
+    "get_events": "get_events",
+    "compute_optimization_hint": "compute_optimization_hint",
+    "start_span": "start_span",
+    "end_span": "end_span",
+    "snapshot": "snapshot",
+    "__init__": "__init__",
+    "get": "get",
+    "set": "set",
+    "suggest_config": "suggest_config"
+  },
+  "class_signatures": {
+    "CostTracker": "CostTracker",
+    "MetricEvent": "MetricEvent",
+    "SpanEvent": "SpanEvent",
+    "TraceContext": "TraceContext",
+    "PredictiveCache": "PredictiveCache",
+    "PolicyAutoTunerStub": "PolicyAutoTunerStub"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

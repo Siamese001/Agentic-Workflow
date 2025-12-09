@@ -1,0 +1,143 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\02_hop_enrichment.py",
+    "file_hash": "bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f",
+    "size_bytes": 7369,
+    "last_modified": "2025-12-01T12:27:36.404237",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DuplicateDetector",
+      "line_number": 28,
+      "docstring": "Placeholder duplicate detector",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DataEnricher",
+      "line_number": 34,
+      "docstring": "HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_2",
+      "line_number": 93,
+      "docstring": "Executes the HOP-2 enrichment logic.",
+      "imports": [],
+      "dependencies": [
+        "DataEnricher",
+        "print",
+        "setup_workflow_logging",
+        "len",
+        "open",
+        "exit",
+        "default_serializer",
+        "Path",
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 45,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DuplicateDetector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_canonicalize_verbs",
+      "line_number": 48,
+      "docstring": "Extract and canonicalize verbs from text.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "enrich",
+      "line_number": 56,
+      "docstring": "Enrich extracted data with additional metadata.\nReturns: (enriched_data, validation_results)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "argparse": [
+      "line_9"
+    ],
+    "json": [
+      "line_10"
+    ],
+    "logging": [
+      "line_11"
+    ],
+    "sys": [
+      "line_12"
+    ],
+    "from_datetime": [
+      "line_13"
+    ],
+    "from_pathlib": [
+      "line_14"
+    ],
+    "from_typing": [
+      "line_15"
+    ],
+    "from_helpers": [
+      "line_22"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_2": "run_hop_2",
+    "detect": "detect",
+    "__init__": "__init__",
+    "_canonicalize_verbs": "_canonicalize_verbs",
+    "enrich": "enrich"
+  },
+  "class_signatures": {
+    "DuplicateDetector": "DuplicateDetector",
+    "DataEnricher": "DataEnricher"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 11,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

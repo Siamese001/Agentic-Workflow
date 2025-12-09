@@ -1,0 +1,228 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\policy.py",
+    "file_hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
+    "size_bytes": 9084,
+    "last_modified": "2025-12-01T12:27:38.914953",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PolicyConfigurationError",
+      "line_number": 25,
+      "docstring": "Raised when resume workflow policy configuration is invalid.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PolicyResult",
+      "line_number": 33,
+      "docstring": "Result of evaluating resume workflow policies for enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyEngine",
+      "line_number": 73,
+      "docstring": "Executes safety policies for resume job alignment workflows.\n\nManages policies, evaluates content, and aggregates decisions for enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "final_verdict",
+      "line_number": 39,
+      "docstring": "Determines overall verdict for resume workflow policy decisions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "all_findings",
+      "line_number": 53,
+      "docstring": "Get all findings from all policy decisions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "blocking_findings",
+      "line_number": 61,
+      "docstring": "Gets all findings that would block resume workflow operations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 65,
+      "docstring": "Converts resume workflow policy result to dictionary format.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 80,
+      "docstring": "Initializes safety engine for resume workflow policies.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_policy",
+      "line_number": 89,
+      "docstring": "Adds resume workflow safety policy to the engine.",
+      "imports": [],
+      "dependencies": [
+        "PolicyConfigurationError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "remove_policy",
+      "line_number": 104,
+      "docstring": "Removes resume workflow safety policy from the engine.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_policy",
+      "line_number": 110,
+      "docstring": "Gets resume workflow safety policy by ID.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "list_policies",
+      "line_number": 114,
+      "docstring": "Gets all registered resume workflow safety policies.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate",
+      "line_number": 118,
+      "docstring": "Evaluates resume workflow context against relevant safety policies.\n\nArgs:\n    context: Safety context for resume enhancement evaluation\n    policy_ids: Optional policy IDs to evaluate against\n    severity_threshold: Minimum severity for blocking operations\n\nReturns:\n    PolicyResult with the combined results of all policy evaluations",
+      "imports": [],
+      "dependencies": [
+        "PolicyResult",
+        "sum",
+        "str",
+        "len",
+        "PolicyDecision",
+        "list",
+        "SafetyFinding"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_policies_to_evaluate",
+      "line_number": 205,
+      "docstring": "Gets list of resume workflow policies to evaluate.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_safe",
+      "line_number": 222,
+      "docstring": "Check if the given context is safe according to the specified policies.\n\nThis is a convenience method that returns a simple boolean indicating\nwhether the content is safe (True) or should be blocked (False).\n\nArgs:\n    context: The safety context to evaluate\n    policy_ids: Optional list of policy IDs to evaluate against\n    severity_threshold: Minimum severity level to consider for blocking\n    \nReturns:\n    bool: True if the content is safe, False if it should be blocked",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_dataclasses": [
+      "line_8"
+    ],
+    "logging": [
+      "line_9"
+    ],
+    "uuid": [
+      "line_10"
+    ],
+    "from_datetime": [
+      "line_11"
+    ],
+    "from_types": [
+      "line_13"
+    ]
+  },
+  "function_signatures": {
+    "final_verdict": "final_verdict",
+    "all_findings": "all_findings",
+    "blocking_findings": "blocking_findings",
+    "to_dict": "to_dict",
+    "__init__": "__init__",
+    "add_policy": "add_policy",
+    "remove_policy": "remove_policy",
+    "get_policy": "get_policy",
+    "list_policies": "list_policies",
+    "evaluate": "evaluate",
+    "_get_policies_to_evaluate": "_get_policies_to_evaluate",
+    "check_safe": "check_safe"
+  },
+  "class_signatures": {
+    "PolicyConfigurationError": "PolicyConfigurationError",
+    "PolicyResult": "PolicyResult",
+    "SafetyEngine": "SafetyEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 17,
+    "cognitive_complexity": 11,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

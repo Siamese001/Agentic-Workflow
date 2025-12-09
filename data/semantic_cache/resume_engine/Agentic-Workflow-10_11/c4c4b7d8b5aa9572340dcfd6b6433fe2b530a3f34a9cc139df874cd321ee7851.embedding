@@ -1,0 +1,28 @@
+{
+  "vector_hash": "87b5be6380d689b50bf8e035900db27ccb65242edaabe383c03715c596222ddb",
+  "embedding_model": "text-embedding-ada-002",
+  "vector_dimensions": 16,
+  "embedding_data": [
+    0.874,
+    0.285,
+    0.99,
+    0.095,
+    0.303,
+    0.095,
+    0.935,
+    0.666,
+    0.47,
+    0.051,
+    0.779,
+    0.602,
+    0.93,
+    0.794,
+    0.723,
+    0.71
+  ],
+  "confidence_score": 0.85,
+  "semantic_tags": [
+    "function_definition",
+    "imports"
+  ]
+}

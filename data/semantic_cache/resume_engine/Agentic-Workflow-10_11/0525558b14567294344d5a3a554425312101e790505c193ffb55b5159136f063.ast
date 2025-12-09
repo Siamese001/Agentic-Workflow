@@ -1,0 +1,53 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\slots.py",
+    "file_hash": "0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063",
+    "size_bytes": 854,
+    "last_modified": "2025-12-01T12:27:38.661256",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ContextSlot",
+      "line_number": 12,
+      "docstring": "Represents context slot for r\u00e9sum\u00e9 processing prompt organization.\n\nEnables structured information placement for comprehensive r\u00e9sum\u00e9 enhancement workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "assign_to_slot",
+      "line_number": 23,
+      "docstring": "Assigns context texts to r\u00e9sum\u00e9 processing slots.\n\nEnsures optimal information organization for r\u00e9sum\u00e9 improvement prompt generation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_dataclasses": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "assign_to_slot": "assign_to_slot"
+  },
+  "class_signatures": {
+    "ContextSlot": "ContextSlot"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

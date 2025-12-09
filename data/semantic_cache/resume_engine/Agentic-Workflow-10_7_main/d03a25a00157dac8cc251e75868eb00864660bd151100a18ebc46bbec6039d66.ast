@@ -1,0 +1,161 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\exceptions.py",
+    "file_hash": "d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66",
+    "size_bytes": 1406,
+    "last_modified": "2025-12-01T12:27:41.971197",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "WorkflowError",
+      "line_number": 7,
+      "docstring": "Base exception for workflow failures.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ModelAPIError",
+      "line_number": 11,
+      "docstring": "Raised when an LLM provider call fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JSONParsingError",
+      "line_number": 15,
+      "docstring": "Raised when JSON parsing fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationError",
+      "line_number": 19,
+      "docstring": "Raised when workflow validation fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FileIOError",
+      "line_number": 23,
+      "docstring": "Raised when file IO fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostCeilingExceededError",
+      "line_number": 27,
+      "docstring": "Raised when a workflow exceeds the configured cost ceiling.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreakerOpenError",
+      "line_number": 31,
+      "docstring": "Raised when the circuit breaker remains open.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PydanticSchemaError",
+      "line_number": 35,
+      "docstring": "Raised when Pydantic validation fails.",
+      "imports": [],
+      "dependencies": [
+        "ValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowTimeoutError",
+      "line_number": 39,
+      "docstring": "Raised when async workflow execution exceeds its timeout.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError",
+        "AsyncTimeoutError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MCPClientInitializationError",
+      "line_number": 43,
+      "docstring": "Raised when an MCP client fails to initialize.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "from_asyncio": [
+      "line_4"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "WorkflowError": "WorkflowError",
+    "ModelAPIError": "ModelAPIError",
+    "JSONParsingError": "JSONParsingError",
+    "ValidationError": "ValidationError",
+    "FileIOError": "FileIOError",
+    "CostCeilingExceededError": "CostCeilingExceededError",
+    "CircuitBreakerOpenError": "CircuitBreakerOpenError",
+    "PydanticSchemaError": "PydanticSchemaError",
+    "WorkflowTimeoutError": "WorkflowTimeoutError",
+    "MCPClientInitializationError": "MCPClientInitializationError"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nDAG engine orchestration for r\u00e9sum\u00e9 processing workflows.\nProvides directed acyclic graph execution for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\nfrom .models import Graph, Node, Edge # noqa: F401\nfrom .executor import DAGExecutor # noqa: F401",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

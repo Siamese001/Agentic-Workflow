@@ -1,0 +1,132 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\fusion_executor.py",
+    "file_hash": "741af180908ac64fb1964705420712402c32c5d8e2cb2493e5b8fab6fd8068e9",
+    "size_bytes": 24205,
+    "last_modified": "2025-12-01T12:27:38.797105",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "FusionStepResult",
+      "line_number": 32,
+      "docstring": "Contains results from resume analysis processing steps.\n\nTracks success and data for resume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FusionExecutionResult",
+      "line_number": 54,
+      "docstring": "Contains complete results from resume analysis plan execution.\n\nProvides comprehensive results and metrics for resume job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FusionExecutor",
+      "line_number": 93,
+      "docstring": "Executes resume analysis plans to find job-relevant experiences.\n\nImproves resume job matching by processing career data through\nspecialized analysis steps for optimal alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_successful_step_results",
+      "line_number": 73,
+      "docstring": "Filters and returns successful resume analysis step results.\n\nFocuses on completed analysis steps for accurate job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_step_result",
+      "line_number": 81,
+      "docstring": "Retrieves results from specific resume analysis step by number.\n\nEnables detailed inspection of resume enhancement steps for debugging.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 101,
+      "docstring": "Sets up resume analysis executor with career data processing tools.\n\nConfigures specialized tools for resume job matching analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_complexity_score",
+      "line_number": 573,
+      "docstring": "Measures resume analysis complexity for processing optimization.\n\nProvides metrics to optimize resume job alignment processing.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_datetime": [
+      "line_12"
+    ],
+    "logging": [
+      "line_13"
+    ],
+    "from_l1.kg_rag_fusion_planning": [
+      "line_15",
+      "line_612",
+      "line_631"
+    ],
+    "from_l4.temporal_schemas": [
+      "line_21"
+    ],
+    "from_l4.temporal_kg": [
+      "line_25"
+    ]
+  },
+  "function_signatures": {
+    "get_successful_step_results": "get_successful_step_results",
+    "get_step_result": "get_step_result",
+    "__init__": "__init__",
+    "_calculate_complexity_score": "_calculate_complexity_score"
+  },
+  "class_signatures": {
+    "FusionStepResult": "FusionStepResult",
+    "FusionExecutionResult": "FusionExecutionResult",
+    "FusionExecutor": "FusionExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 33,
+    "cognitive_complexity": 20,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

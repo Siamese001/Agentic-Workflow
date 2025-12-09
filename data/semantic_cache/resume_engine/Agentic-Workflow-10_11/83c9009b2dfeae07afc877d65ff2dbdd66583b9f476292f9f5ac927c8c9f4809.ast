@@ -1,0 +1,73 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\draft_orchestrator.py",
+    "file_hash": "83c9009b2dfeae07afc877d65ff2dbdd66583b9f476292f9f5ac927c8c9f4809",
+    "size_bytes": 1342,
+    "last_modified": "2025-12-01T12:27:38.181673",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DraftOrchestrator",
+      "line_number": 12,
+      "docstring": "Coordinates r\u00e9sum\u00e9 drafting workflow across all layers.\n\nEnsures systematic integration of planning and execution for optimal r\u00e9sum\u00e9 enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "orchestrate_draft",
+      "line_number": 22,
+      "docstring": "Orchestrates complete r\u00e9sum\u00e9 drafting workflow.\n\nIntegrates planning and execution to generate tailored r\u00e9sum\u00e9 content aligned with job requirements.",
+      "imports": [],
+      "dependencies": [
+        "record_event",
+        "plan_drafting"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_7"
+    ],
+    "from_l1.draft_planning": [
+      "line_8"
+    ],
+    "from_l2.draft_executor": [
+      "line_9"
+    ],
+    "from_runtime.observability": [
+      "line_10"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "orchestrate_draft": "orchestrate_draft"
+  },
+  "class_signatures": {
+    "DraftOrchestrator": "DraftOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

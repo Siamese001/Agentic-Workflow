@@ -1,0 +1,73 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_design_validation_v10_7.py",
+    "file_hash": "09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb",
+    "size_bytes": 754,
+    "last_modified": "2025-12-01T12:27:37.185149",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_all_design_nodes_exist",
+      "line_number": 7,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "get_nodes",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_edges_consistency",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_edges",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_placeholder",
+      "line_number": 25,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_1"
+    ],
+    "pytest": [
+      "line_2"
+    ],
+    "from_workflow.graph": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "test_all_design_nodes_exist": "test_all_design_nodes_exist",
+    "test_edges_consistency": "test_edges_consistency",
+    "test_placeholder": "test_placeholder"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

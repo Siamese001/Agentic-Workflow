@@ -1,0 +1,241 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\agents.py",
+    "file_hash": "5cb4b3eff7c906ca05a8933858a7adb203b677dbec09a4f900bb25b2c490aabb",
+    "size_bytes": 12728,
+    "last_modified": "2025-12-01T12:27:36.906721",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "AgentRole",
+      "line_number": 45,
+      "docstring": "Agent role categories. These are NOT executable agents; they purely\nlabel advisory components in meta-level councils.\n\nEach role must own at most 1\u20132 capabilities to preserve agentic\nsubdomain separation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentNode",
+      "line_number": 65,
+      "docstring": "Static node definition for a meta-agent in a graph.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentGraph",
+      "line_number": 75,
+      "docstring": "Static meta-agent directed graph.\n\n* nodes: agent_name -> AgentNode\n* edges: directed edges (advisory flow)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_graph",
+      "line_number": 94,
+      "docstring": "Pure-data summary for telemetry.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_qa_candidate_scores",
+      "line_number": 129,
+      "docstring": "Deterministic scoring for each meta-agent in a QA council.\nHigher score \u2192 higher scrutiny / more conservative decision\ndepending on severity and findings.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "str",
+        "int",
+        "isinstance",
+        "len",
+        "round",
+        "min"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deterministic_vote",
+      "line_number": 195,
+      "docstring": "Highest score wins; ties broken by lowest agent_id.",
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "float",
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_council_result",
+      "line_number": 212,
+      "docstring": "Produce a fully typed MultiAgentCouncilResult for the QA council.\n\nThe council determines:\n    \u2022 aggregated_decision (allow / revise / escalate)\n    \u2022 aggregated_confidence\n    \u2022 individual votes\n    \u2022 rationale and metadata",
+      "imports": [],
+      "dependencies": [
+        "MultiAgentCouncilResult",
+        "float",
+        "getattr",
+        "str",
+        "isinstance",
+        "len",
+        "_qa_candidate_scores",
+        "next",
+        "deterministic_vote",
+        "summarize_graph",
+        "MultiAgentVote"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentOrchestrator",
+      "line_number": 269,
+      "docstring": "META-layer orchestrator.\n\nResponsibilities:\n    \u2022 Evaluate a meta-agent graph (QA, Safety, Meta councils)\n    \u2022 Produce MultiAgentCouncilResult objects\n    \u2022 Provide patch-ready payloads for L4 without applying them\n    \u2022 Provide synthetic meta-layer messages for logging/prompts\n\nIt MUST NOT:\n    \u2022 call L1 planners\n    \u2022 call L2 executors\n    \u2022 call L3 DAG logic\n    \u2022 mutate L4 state directly\n    \u2022 make L5 decisions",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_node",
+      "line_number": 87,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "AgentNode"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_edge",
+      "line_number": 90,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_dict",
+      "line_number": 290,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "vars",
+        "repr",
+        "dict",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthetic_message_for_qa",
+      "line_number": 300,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dispatch_for_qa",
+      "line_number": 314,
+      "docstring": "Execute the QA council and produce an L4-patch-ready payload:\n\n    {\"multi_agent\": {\"qa_council\": {...}}}",
+      "imports": [],
+      "dependencies": [
+        "build_council_result"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_patch_for_block",
+      "line_number": 342,
+      "docstring": "Build a meta-layer patch-ready payload for block/escalation cases.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 360,
+      "docstring": "Return pure-data description of this orchestrator (meta-only).",
+      "imports": [],
+      "dependencies": [
+        "summarize_graph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_29"
+    ],
+    "from_dataclasses": [
+      "line_30"
+    ],
+    "from_typing": [
+      "line_31"
+    ],
+    "from_models": [
+      "line_33"
+    ]
+  },
+  "function_signatures": {
+    "summarize_graph": "summarize_graph",
+    "_qa_candidate_scores": "_qa_candidate_scores",
+    "deterministic_vote": "deterministic_vote",
+    "build_council_result": "build_council_result",
+    "add_node": "add_node",
+    "add_edge": "add_edge",
+    "_plan_dict": "_plan_dict",
+    "_synthetic_message_for_qa": "_synthetic_message_for_qa",
+    "dispatch_for_qa": "dispatch_for_qa",
+    "build_patch_for_block": "build_patch_for_block",
+    "to_dict": "to_dict"
+  },
+  "class_signatures": {
+    "AgentRole": "AgentRole",
+    "AgentNode": "AgentNode",
+    "AgentGraph": "AgentGraph",
+    "MultiAgentOrchestrator": "MultiAgentOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 17,
+    "cognitive_complexity": 13,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\model_routing\\models.py",
+    "file_hash": "9881969da7afd4f37ad758bd721e35c3c346e87c9a37eec2b5271bade3b2c721",
+    "size_bytes": 999,
+    "last_modified": "2025-12-01T12:27:38.583372",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ModelChoice",
+      "line_number": 14,
+      "docstring": "Represents model selection choice for r\u00e9sum\u00e9 processing workflows.\n\nEnables lightweight provider-agnostic model routing for comprehensive r\u00e9sum\u00e9 enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoutingContext",
+      "line_number": 29,
+      "docstring": "Provides routing context for r\u00e9sum\u00e9 processing model selection.\n\nEnsures optimal model choice based on agent and task requirements for r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_dataclasses": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ],
+    "from_core.models.models": [
+      "line_10"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "ModelChoice": "ModelChoice",
+    "RoutingContext": "RoutingContext"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

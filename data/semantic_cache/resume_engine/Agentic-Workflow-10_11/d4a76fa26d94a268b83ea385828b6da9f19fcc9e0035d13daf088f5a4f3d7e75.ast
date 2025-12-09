@@ -1,0 +1,52 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\metacognition\\hypothesis.py",
+    "file_hash": "d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75",
+    "size_bytes": 1901,
+    "last_modified": "2025-12-01T12:27:39.233576",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "generate_initial_hypotheses",
+      "line_number": 8,
+      "docstring": "Generate a small set of coarse hypotheses from task + RAG.\n\nThis implementation is deterministic and uses only cheap heuristics:\n- if there is any evidence, we create 1\u20133 simple hypotheses whose\n  confidence is proportional to the number of evidence items.\n- if no evidence is present, we still produce a single low-confidence\n  hypothesis so downstream code has something to inspect.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "getattr",
+        "len",
+        "Hypothesis",
+        "range",
+        "str",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_meta.metacognition.models": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "generate_initial_hypotheses": "generate_initial_hypotheses"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

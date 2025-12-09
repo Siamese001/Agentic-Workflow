@@ -1,0 +1,74 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\simulation\\metrics.py",
+    "file_hash": "e4f608b8528336abd55a4127a90a63fe983dafaf79e3ceecb41a2e87398eaf6a",
+    "size_bytes": 2193,
+    "last_modified": "2025-12-01T12:27:37.950804",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_as_mapping",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "dict",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_collaboration_score",
+      "line_number": 24,
+      "docstring": "Compute a simple collaboration score over simulation outputs.\n\nThe current implementation looks for a ``golden_eval_score`` field in\neach output's ``outcome`` mapping and returns the average. Missing\nscores are treated as zero.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "_as_mapping"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_conflict_index",
+      "line_number": 46,
+      "docstring": "Compute a heuristic conflict index from simulation outputs.\n\nWe treat any ``correction_iterations`` > 0 or explicit\n``agent_conflict_count`` > 0 as evidence of conflict and return the\nfraction of outputs exhibiting such signals.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "float",
+        "_as_mapping"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "_as_mapping": "_as_mapping",
+    "compute_collaboration_score": "compute_collaboration_score",
+    "compute_conflict_index": "compute_conflict_index"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 12,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

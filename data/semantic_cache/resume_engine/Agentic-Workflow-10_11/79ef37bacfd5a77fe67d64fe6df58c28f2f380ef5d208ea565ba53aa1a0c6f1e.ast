@@ -1,0 +1,135 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\result_parser.py",
+    "file_hash": "79ef37bacfd5a77fe67d64fe6df58c28f2f380ef5d208ea565ba53aa1a0c6f1e",
+    "size_bytes": 2698,
+    "last_modified": "2025-12-01T12:27:38.262152",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "StrategyResult",
+      "line_number": 11,
+      "docstring": "Strategy result data for resume improvement planning.\n\nEnsures structured strategy output for optimal resume job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftResult",
+      "line_number": 21,
+      "docstring": "Draft result data for resume content creation.\n\nEnsures structured draft output for professional resume enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAResult",
+      "line_number": 31,
+      "docstring": "QA result data for resume quality validation.\n\nEnsures structured QA output for resume accuracy assessment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyResult",
+      "line_number": 41,
+      "docstring": "Safety result data for resume compliance checking.\n\nEnsures structured safety output for professional standards.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResultParser",
+      "line_number": 50,
+      "docstring": "Parses resume generation results without execution logic.\n\nEnsures consistent result processing for improved resume\nquality and job alignment validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_strategy_result",
+      "line_number": 59,
+      "docstring": "Parses strategy result for resume improvement planning.\n\nStructures strategy output for optimal resume job alignment.",
+      "imports": [],
+      "dependencies": [
+        "StrategyResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_draft_result",
+      "line_number": 70,
+      "docstring": "Parses draft result for resume content creation.\n\nStructures draft output for professional resume enhancement.",
+      "imports": [],
+      "dependencies": [
+        "DraftResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_qa_result",
+      "line_number": 81,
+      "docstring": "Parses QA result for resume quality validation.\n\nStructures QA output for resume accuracy assessment.",
+      "imports": [],
+      "dependencies": [
+        "QAResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_safety_result",
+      "line_number": 92,
+      "docstring": "Parses safety result for resume compliance checking.\n\nStructures safety output for professional standards validation.",
+      "imports": [],
+      "dependencies": [
+        "SafetyResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_dataclasses": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "parse_strategy_result": "parse_strategy_result",
+    "parse_draft_result": "parse_draft_result",
+    "parse_qa_result": "parse_qa_result",
+    "parse_safety_result": "parse_safety_result"
+  },
+  "class_signatures": {
+    "StrategyResult": "StrategyResult",
+    "DraftResult": "DraftResult",
+    "QAResult": "QAResult",
+    "SafetyResult": "SafetyResult",
+    "ResultParser": "ResultParser"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

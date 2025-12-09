@@ -1,0 +1,951 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v7.0\\agent_swarm_v7_0.py",
+    "file_hash": "d55e7053b063cf27c210a99933cc8a8fda289f72b6892e57df01fc7ea44d00e1",
+    "size_bytes": 51817,
+    "last_modified": "2025-12-01T12:27:42.193769",
+    "engine": "RG",
+    "archive_version": "v7.0",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "WorkflowSteps",
+      "line_number": 107,
+      "docstring": "Centralizes workflow step names to match v7.0 Architecture.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThemeClassifierAgent",
+      "line_number": 119,
+      "docstring": "v7.0 Step 1: Strategy\nReplaces the entire v6.4 strategy stack.\nA simple, fast agent that classifies the input job description.\n\nCorresponds to:\nComponent: ThemeClassifierAgent\nIntelligence: 20 (Low)\nTier: Tier 3 (Speed/Cost)\nModel: Gemini 2.5 Flash-Lite",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_QueryGeneratorAgent",
+      "line_number": 186,
+      "docstring": "v7.0 Step 2: RAG - QueryGen\nGenerates RAG queries based on the strategy.\n\nCorresponds to:\nComponent: RAG_QueryGen\nIntelligence: 75 (High)\nTier: Tier 1 (Flagship)\nModel: Gemini 2.5 Pro",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_SearchAgent",
+      "line_number": 244,
+      "docstring": "v7.0 Step 2: RAG - Search (ReAct)\nExecutes RAG searches with ReAct loop (Thought-Action-Observation).\n\nCorresponds to:\nComponent: RAG_SearchAgent (ReAct)\nIntelligence: 90 (High)\nReAct: Yes\nTier: Tier 1 (Flagship)\nModel: Gemini 2.5 Pro",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_CritiqueAgent",
+      "line_number": 412,
+      "docstring": "v7.0 Step 2: RAG - Critique\nCritiques the RAG results for relevance and sufficiency.\n\nCorresponds to:\nComponent: RAG_Critique\nIntelligence: 85 (High)\nReAct: Yes (Implicitly, as it critiques the search)\nTier: Tier 1 (Flagship)\nModel: Gemini 2.5 Pro",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptStackAgent",
+      "line_number": 478,
+      "docstring": "v7.0 Step 3: Drafting - Prompt Stack\nThis is a simple Python-based agent that assembles prompts.\n\nCorresponds to:\nComponent: Prompt Stack (7 Agents)\nIntelligence: 5 (Low)\nTier: N/A (Python)",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletSwarmAgent",
+      "line_number": 521,
+      "docstring": "v7.0 Step 3: Drafting - Bullet Swarm\nThis is a simple Python-based agent that selects bullets.\n\nCorresponds to:\nComponent: Bullet Swarm (8 Agents)\nIntelligence: 5 (Low)\nTier: N/A (Python)",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AdversarialDraftingRouter",
+      "line_number": 574,
+      "docstring": "v7.0 Step 3: Drafting - Adversarial MoE\nManages the iterative drafting process between Gemini, Claude, and GPT-5.\n\nCorresponds to:\nComponent: AdversarialDrafterStrategist (Gemini)\nComponent: RedTeam (Claude)\nComponent: Refiner (GPT-5)",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowRePlannerAgent",
+      "line_number": 662,
+      "docstring": "v7.0 Step 3: SC Paths\nA medium-intelligence agent to replan workflow if QA fails.\n\nCorresponds to:\nComponent: WorkflowRePlannerAgent\nIntelligence: 70 (Medium)\nReAct: Yes\nTier: Tier 2 (Workhorse)\nModel: Gemini 2.5 Flash",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicQASwarmLLM",
+      "line_number": 726,
+      "docstring": "v7.0 Step 4: Atomic QA Swarm (LLM)\nThis agent orchestrates the 10 parallel LLM-based QA checks.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicQASwarmLogic",
+      "line_number": 823,
+      "docstring": "v7.0 Step 4: Atomic QA Swarm (Logic)\nThis agent runs the 10 parallel, low-intelligence Python-based checks.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostEstimatorAgent",
+      "line_number": 977,
+      "docstring": "Estimates workflow costs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostTrackerAgent",
+      "line_number": 986,
+      "docstring": "Tracks actual costs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FeedbackLoggerAgent",
+      "line_number": 997,
+      "docstring": "Logs validation results to a file for the meta-learning loop.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_blackboard",
+      "line_number": 1045,
+      "docstring": "Helper to construct the v6.5 blackboard for agents.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowBlackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_strategy",
+      "line_number": 1058,
+      "docstring": "Node: Runs Step 1: Strategy",
+      "imports": [],
+      "dependencies": [
+        "ThemeClassifierAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_rag_stack",
+      "line_number": 1065,
+      "docstring": "Node: Runs Step 2: RAG (Query, Search, Critique)",
+      "imports": [],
+      "dependencies": [
+        "RAG_SearchAgent",
+        "RAG_CritiqueAgent",
+        "RAG_QueryGeneratorAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_drafting_stack",
+      "line_number": 1091,
+      "docstring": "Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)",
+      "imports": [],
+      "dependencies": [
+        "AdversarialDraftingRouter",
+        "BulletSwarmAgent",
+        "PromptStackAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_qa_swarm",
+      "line_number": 1113,
+      "docstring": "Node: Runs Step 4: QA (LLM and Logic)",
+      "imports": [],
+      "dependencies": [
+        "FeedbackLoggerAgent",
+        "AtomicQASwarmLLM",
+        "AtomicQASwarmLogic",
+        "len",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_replanner",
+      "line_number": 1148,
+      "docstring": "Node: Runs Step 3 (SC Paths): Re-Planner",
+      "imports": [],
+      "dependencies": [
+        "WorkflowRePlannerAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_qa_results",
+      "line_number": 1176,
+      "docstring": "This is the \"conditional edge\" that replaces the Governor's while loop.\nIt routes to the Re-Planner, to END, or to a FAIL node.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_graph_app",
+      "line_number": 1197,
+      "docstring": "Builds and compiles the persistent v7.0 StateGraph.",
+      "imports": [],
+      "dependencies": [
+        "StateGraph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 131,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 147,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 197,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 213,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "Exception",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 256,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 284,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "range",
+        "str",
+        "isinstance",
+        "action",
+        "ReActTrace",
+        "HopExecutionError",
+        "ToolCall",
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_thought",
+      "line_number": 337,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_action",
+      "line_number": 346,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_is_satisfied",
+      "line_number": 355,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_deduplicate_and_rank",
+      "line_number": 359,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_master_resume_search",
+      "line_number": 369,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_web_search",
+      "line_number": 394,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_api_search_placeholder",
+      "line_number": 406,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 424,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 440,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 488,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 492,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 531,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 535,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 585,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_init_drafter",
+      "line_number": 596,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 605,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 674,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 690,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "HopExecutionError",
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 732,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_init_qa_agent",
+      "line_number": 750,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 762,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "str",
+        "len",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 829,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 847,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "check_func",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_word_count",
+      "line_number": 868,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_forbidden_verbs",
+      "line_number": 877,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_placeholder_text",
+      "line_number": 886,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_contact_info",
+      "line_number": 894,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_capitalization",
+      "line_number": 908,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_punctuation",
+      "line_number": 917,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_for_personal_pronouns",
+      "line_number": 925,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_for_empty_sections",
+      "line_number": 934,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_bullet_format",
+      "line_number": 942,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_acronyms",
+      "line_number": 951,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "estimate",
+      "line_number": 979,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 988,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_cost",
+      "line_number": 991,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_final_cost",
+      "line_number": 994,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 999,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log",
+      "line_number": 1003,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "copy": [
+      "line_34",
+      "line_51"
+    ],
+    "hashlib": [
+      "line_35",
+      "line_52"
+    ],
+    "json": [
+      "line_36",
+      "line_53"
+    ],
+    "logging": [
+      "line_37",
+      "line_54"
+    ],
+    "os": [
+      "line_38",
+      "line_55"
+    ],
+    "random": [
+      "line_39",
+      "line_56"
+    ],
+    "re": [
+      "line_40",
+      "line_57"
+    ],
+    "time": [
+      "line_41",
+      "line_58"
+    ],
+    "from_collections": [
+      "line_42",
+      "line_59"
+    ],
+    "from_enum": [
+      "line_43",
+      "line_60"
+    ],
+    "from_dataclasses": [
+      "line_44",
+      "line_61"
+    ],
+    "from_datetime": [
+      "line_45",
+      "line_62"
+    ],
+    "from_typing": [
+      "line_46",
+      "line_63"
+    ],
+    "from_core_v7_0": [
+      "line_66",
+      "line_1202"
+    ],
+    "from_langgraph.graph": [
+      "line_97",
+      "line_1201"
+    ],
+    "from_langgraph.checkpoint.redis": [
+      "line_98"
+    ]
+  },
+  "function_signatures": {
+    "get_blackboard": "get_blackboard",
+    "run_strategy": "run_strategy",
+    "run_rag_stack": "run_rag_stack",
+    "run_drafting_stack": "run_drafting_stack",
+    "run_qa_swarm": "run_qa_swarm",
+    "run_replanner": "run_replanner",
+    "check_qa_results": "check_qa_results",
+    "get_graph_app": "get_graph_app",
+    "__init__": "__init__",
+    "run": "run",
+    "_generate_thought": "_generate_thought",
+    "_select_action": "_select_action",
+    "_is_satisfied": "_is_satisfied",
+    "_deduplicate_and_rank": "_deduplicate_and_rank",
+    "_tool_master_resume_search": "_tool_master_resume_search",
+    "_tool_web_search": "_tool_web_search",
+    "_tool_api_search_placeholder": "_tool_api_search_placeholder",
+    "_init_drafter": "_init_drafter",
+    "_init_qa_agent": "_init_qa_agent",
+    "_check_word_count": "_check_word_count",
+    "_check_forbidden_verbs": "_check_forbidden_verbs",
+    "_check_placeholder_text": "_check_placeholder_text",
+    "_check_contact_info": "_check_contact_info",
+    "_check_capitalization": "_check_capitalization",
+    "_check_punctuation": "_check_punctuation",
+    "_check_for_personal_pronouns": "_check_for_personal_pronouns",
+    "_check_for_empty_sections": "_check_for_empty_sections",
+    "_check_bullet_format": "_check_bullet_format",
+    "_check_acronyms": "_check_acronyms",
+    "estimate": "estimate",
+    "log_cost": "log_cost",
+    "log_final_cost": "log_final_cost",
+    "log": "log"
+  },
+  "class_signatures": {
+    "WorkflowSteps": "WorkflowSteps",
+    "ThemeClassifierAgent": "ThemeClassifierAgent",
+    "RAG_QueryGeneratorAgent": "RAG_QueryGeneratorAgent",
+    "RAG_SearchAgent": "RAG_SearchAgent",
+    "RAG_CritiqueAgent": "RAG_CritiqueAgent",
+    "PromptStackAgent": "PromptStackAgent",
+    "BulletSwarmAgent": "BulletSwarmAgent",
+    "AdversarialDraftingRouter": "AdversarialDraftingRouter",
+    "WorkflowRePlannerAgent": "WorkflowRePlannerAgent",
+    "AtomicQASwarmLLM": "AtomicQASwarmLLM",
+    "AtomicQASwarmLogic": "AtomicQASwarmLogic",
+    "CostEstimatorAgent": "CostEstimatorAgent",
+    "CostTrackerAgent": "CostTrackerAgent",
+    "FeedbackLoggerAgent": "FeedbackLoggerAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 60,
+    "cognitive_complexity": 30,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

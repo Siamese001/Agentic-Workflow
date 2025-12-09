@@ -1,0 +1,2 @@
+class GraphRecursionError(Exception):
+    pass

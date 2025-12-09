@@ -1,0 +1,62 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\dag\\test_agent_assignment_in_dag.py",
+    "file_hash": "b950bae2af70e2b61490050e5f539eb209bcaec5e1c3c2d721950dabc5ea5945",
+    "size_bytes": 986,
+    "last_modified": "2025-12-01T12:27:39.372285",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_dag_executor_records_agent_assignments",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DAGExecutor",
+        "Node",
+        "Graph",
+        "AgentCard",
+        "AgentRegistry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "asyncio": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_4"
+    ],
+    "from_orchestration.dag_engine": [
+      "line_6"
+    ],
+    "from_orchestration.agent_registry": [
+      "line_7"
+    ],
+    "from_config.agent_profile": [
+      "line_8"
+    ],
+    "from_core.models.models": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "test_dag_executor_records_agent_assignments": "test_dag_executor_records_agent_assignments"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

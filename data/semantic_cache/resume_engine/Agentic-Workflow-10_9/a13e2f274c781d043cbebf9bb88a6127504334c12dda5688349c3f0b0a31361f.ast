@@ -1,0 +1,103 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\simulation.py",
+    "file_hash": "a13e2f274c781d043cbebf9bb88a6127504334c12dda5688349c3f0b0a31361f",
+    "size_bytes": 19622,
+    "last_modified": "2025-12-01T12:27:36.894928",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_state_snapshot",
+      "line_number": 60,
+      "docstring": "Trim the full L4 state to a stable subset suitable for deterministic testing.\n\nWe purposely include only the main L2 outputs and a few key\nhigh-level fields. Volatile or heavy telemetry (e.g., route_trace,\npatch_log, correction_journal) is omitted from the snapshot.\n\nSnapshot shape:\n    {\n      \"strategy_result\": ...,\n      \"rag_result\": ...,\n      \"bullet_result\": ...,\n      \"draft_result\": ...,\n      \"qa_result\": ...,\n      \"safety_result\": ...,\n      \"hil_result\": ...,\n      \"meta_learning_result\": ...,\n      \"multi_agent\": ...,\n      \"self_correction\": ...,\n      \"summary\": ...,\n    }",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Scenarios",
+      "line_number": 103,
+      "docstring": "Houses all simulation scenarios used for deterministic CI testing.\n\nEach scenario:\n    \u2022 Builds an initial_state dict.\n    \u2022 Invokes run_workflow_v10_9(initial_state).\n    \u2022 Returns an object with top-level fields + trimmed state snapshot.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Engine",
+      "line_number": 468,
+      "docstring": "Simulation execution engine.\n\nProvides:\n    \u2022 run(name, overrides=None)\n    \u2022 run_all()\n    \u2022 list()\n    \u2022 sync wrappers\n\nThis is a META-level test harness for CI and regression scenarios.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "list",
+      "line_number": 501,
+      "docstring": "Return a mapping of scenario_name \u2192 docstring (1-line description).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_sync",
+      "line_number": 506,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_all_sync",
+      "line_number": 510,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_47"
+    ],
+    "asyncio": [
+      "line_49"
+    ],
+    "from_typing": [
+      "line_50"
+    ],
+    "from_main_v10_9": [
+      "line_52"
+    ]
+  },
+  "function_signatures": {
+    "_state_snapshot": "_state_snapshot",
+    "list": "list",
+    "run_sync": "run_sync",
+    "run_all_sync": "run_all_sync"
+  },
+  "class_signatures": {
+    "Scenarios": "Scenarios",
+    "Engine": "Engine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 7,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

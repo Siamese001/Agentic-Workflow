@@ -1,0 +1,58 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\tot.py",
+    "file_hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
+    "size_bytes": 1301,
+    "last_modified": "2025-12-01T12:27:38.448778",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ThoughtNode",
+      "line_number": 12,
+      "docstring": "Represents thought node in r\u00e9sum\u00e9 processing reasoning tree.\n\nEnables structured exploration of solution paths for r\u00e9sum\u00e9 improvement tasks.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "tree_search",
+      "line_number": 22,
+      "docstring": "Executes tree-of-thought search for r\u00e9sum\u00e9 processing tasks.\n\nExplores multiple reasoning paths to find optimal r\u00e9sum\u00e9 enhancement solutions.",
+      "imports": [],
+      "dependencies": [
+        "ThoughtNode",
+        "max",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_dataclasses": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "tree_search": "tree_search"
+  },
+  "class_signatures": {
+    "ThoughtNode": "ThoughtNode"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Literal\nfrom pydantic import BaseModel\n@dataclass\nclass GoldenStateTestCase:\n\"\"\"Single golden-state test case.\n`expected_behavior` is a free-form description used by judges.\n`metadata` can hold scenario tags, severity, etc.\n\"\"\"\nid: str\ninput_text: str\nexpected_behavior: str\nmetadata: Dict[str, Any] = field(default_factory=dict)\n@dataclass\nclass JudgeVerdict:\n\"\"\"LM-as-a-judge style verdict.\n`score` is a numeric score (0.0\u20131.0) for aggregation.\n`rating` is a coarse label such as \"pass\" / \"fail\" / \"borderline\".\n\"\"\"\nscore: float\nrating: str\nexplanation: str\n@dataclass\nclass EvalResult:\n\"\"\"Result of running a golden test case through the system.\"\"\"\ntest_id: str\nverdict: JudgeVerdict\nraw_output: str\nreasoning_trace: List[Dict[str, Any]] = field(default_factory=list)\nclass GoldenCase(BaseModel):\nid: str\ninput_text: str\nagent_sequence: List[str]\nexpected_keypoints: List[str]\ncorrectness_criteria: Dict[str, Any]\nclass GoldenOutput(BaseModel):\ncase_id: str\nproduced_keypoints: List[str]\ncorrectness_map: Dict[str, bool]\nsafety_decisions: Dict[str, Any]\nmetacognition_summary: Dict[str, Any]\nfinal_verdict: Literal[\"pass\", \"fail\", \"borderline\"]",
+  "normalized_signature": "class:GoldenStateTestCase;class:JudgeVerdict;class:EvalResult;class:GoldenCase;class:GoldenOutput",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

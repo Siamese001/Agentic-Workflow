@@ -1,0 +1,91 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\vector_search_executor.py",
+    "file_hash": "c46a4e3622e4f411e9533800eb6adb56ce4efeac29e85e46e546424bd3cfe9e9",
+    "size_bytes": 2844,
+    "last_modified": "2025-12-01T12:27:38.787601",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SearchResult",
+      "line_number": 15,
+      "docstring": "Container for resume processing vector search results.\n\nProvides structured data retrieval for resume enhancement\nand job alignment workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "VectorSearchExecutor",
+      "line_number": 27,
+      "docstring": "L2 executor for resume processing vector search operations.\n\nExecutes search plans from L1 via L4's PineconeAdapter for\nresume enhancement and job alignment workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 35,
+      "docstring": "Initializes vector search executor for resume processing.\n\nArgs:\n    pinecone_adapter: L4 PineconeAdapter for resume data retrieval",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_search",
+      "line_number": 44,
+      "docstring": "Executes vector search for resume processing data retrieval.\n\nMain L2 execution method that takes search plan and executes\nvia L4 for resume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "SearchResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_upsert",
+      "line_number": 77,
+      "docstring": "Executes vector upsert for resume processing data storage.\n\nStores resume enhancement data for improved job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_9"
+    ],
+    "from_l4": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "execute_search": "execute_search",
+    "execute_upsert": "execute_upsert"
+  },
+  "class_signatures": {
+    "SearchResult": "SearchResult",
+    "VectorSearchExecutor": "VectorSearchExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

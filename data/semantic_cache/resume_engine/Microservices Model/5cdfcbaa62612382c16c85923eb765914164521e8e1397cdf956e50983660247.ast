@@ -1,0 +1,278 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\03_hop_artist_v1_1.py",
+    "file_hash": "5cdfcbaa62612382c16c85923eb765914164521e8e1397cdf956e50983660247",
+    "size_bytes": 20721,
+    "last_modified": "2025-12-01T12:27:36.374666",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "EmbeddingClient",
+      "line_number": 41,
+      "docstring": "Mock EmbeddingClient for vectorization",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MockGeminiClient",
+      "line_number": 59,
+      "docstring": "Mock LLM client with API call tracking",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArtistGenerator",
+      "line_number": 93,
+      "docstring": "High-signal content generator with configuration integration",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_3",
+      "line_number": 376,
+      "docstring": "Execute HOP-3 Artist generation with configuration integration",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "setup_workflow_logging",
+        "ArtistGenerator",
+        "open",
+        "len",
+        "exit",
+        "Path",
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 43,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "embed",
+      "line_number": 47,
+      "docstring": "Generate mock embedding",
+      "imports": [],
+      "dependencies": [
+        "hash"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "embed_batch",
+      "line_number": 55,
+      "docstring": "Generate embeddings for batch",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 61,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate",
+      "line_number": 65,
+      "docstring": "Simulate LLM generation with reasoning config",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 97,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "MockGeminiClient",
+        "EmbeddingClient"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_reasoning_config",
+      "line_number": 118,
+      "docstring": "Get reasoning configuration for a specific section.\nMaps section keys to pre-configured ReasoningConfig instances.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_constraints_for_section",
+      "line_number": 143,
+      "docstring": "Get word count constraints for a specific section.\nReturns dict with min_wc, max_wc, and other relevant constraints.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_target_vectors",
+      "line_number": 186,
+      "docstring": "Generate target embeddings from HOP-0 thematic analysis",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "len",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_top_bullets",
+      "line_number": 213,
+      "docstring": "Select top-k bullets from a company using semantic similarity",
+      "imports": [],
+      "dependencies": [
+        "cosine_similarity",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_section_with_retry",
+      "line_number": 248,
+      "docstring": "Generate content for a section with reasoning config and retry logic",
+      "imports": [],
+      "dependencies": [
+        "enhance_system_prompt_with_reasoning",
+        "range",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_section_prompt",
+      "line_number": 293,
+      "docstring": "Build prompt with constraints and thematic context",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_all_sections",
+      "line_number": 331,
+      "docstring": "Main generation orchestrator",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "list",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_11"
+    ],
+    "argparse": [
+      "line_13"
+    ],
+    "json": [
+      "line_14"
+    ],
+    "logging": [
+      "line_15"
+    ],
+    "sys": [
+      "line_16"
+    ],
+    "time": [
+      "line_17"
+    ],
+    "from_datetime": [
+      "line_18"
+    ],
+    "from_pathlib": [
+      "line_19"
+    ],
+    "from_typing": [
+      "line_20"
+    ],
+    "numpy": [
+      "line_22"
+    ],
+    "from_sklearn.metrics.pairwise": [
+      "line_23"
+    ],
+    "from_helpers": [
+      "line_30"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_3": "run_hop_3",
+    "__init__": "__init__",
+    "embed": "embed",
+    "embed_batch": "embed_batch",
+    "generate": "generate",
+    "_get_reasoning_config": "_get_reasoning_config",
+    "_get_constraints_for_section": "_get_constraints_for_section",
+    "_get_target_vectors": "_get_target_vectors",
+    "_select_top_bullets": "_select_top_bullets",
+    "_generate_section_with_retry": "_generate_section_with_retry",
+    "_build_section_prompt": "_build_section_prompt",
+    "generate_all_sections": "generate_all_sections"
+  },
+  "class_signatures": {
+    "EmbeddingClient": "EmbeddingClient",
+    "MockGeminiClient": "MockGeminiClient",
+    "ArtistGenerator": "ArtistGenerator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 33,
+    "cognitive_complexity": 19,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

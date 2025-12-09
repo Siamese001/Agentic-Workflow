@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\master_config_v10_7.json",
+    "file_hash": "d705b3573a706e5a2218469ce2d33f09b9c142c6321d8c042c952dc020350321",
+    "size_bytes": 8875,
+    "last_modified": "2025-12-01T12:27:37.090314",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".json"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

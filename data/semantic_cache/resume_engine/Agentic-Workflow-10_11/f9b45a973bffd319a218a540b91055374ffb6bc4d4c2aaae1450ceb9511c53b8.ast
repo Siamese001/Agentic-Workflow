@@ -1,0 +1,131 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\cache\\redis_cache.py",
+    "file_hash": "f9b45a973bffd319a218a540b91055374ffb6bc4d4c2aaae1450ceb9511c53b8",
+    "size_bytes": 3473,
+    "last_modified": "2025-12-01T12:27:39.227613",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RedisNotConfiguredError",
+      "line_number": 16,
+      "docstring": "Raised when Redis usage is requested but not configured/enabled.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RedisClientError",
+      "line_number": 20,
+      "docstring": "Raised when the underlying Redis client cannot be created or used.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_import_redis",
+      "line_number": 24,
+      "docstring": "Import the redis package using provider isolation.\n\nThis helper ensures the module uses the provider layer instead of direct SDK imports.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "init_redis_client",
+      "line_number": 33,
+      "docstring": "Initialise a synchronous Redis client.\n\nParameters\n----------\nurl:\n    Redis connection URL. If omitted, REDIS_URL is read from the\n    environment. If still missing, :class:`RedisNotConfiguredError`\n    is raised.\ntimeout_s:\n    Socket/connect timeout in seconds.",
+      "imports": [],
+      "dependencies": [
+        "RedisNotConfiguredError",
+        "_import_redis",
+        "RedisClientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "redis_healthcheck",
+      "line_number": 62,
+      "docstring": "Return True if the Redis client responds to PING, False otherwise.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_llm_cache",
+      "line_number": 71,
+      "docstring": "Fetch a cached LLM payload by key.\n\nThe value is expected to be JSON-encoded; failures to decode will\nresult in ``None``.",
+      "imports": [],
+      "dependencies": [
+        "RedisClientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_llm_cache",
+      "line_number": 93,
+      "docstring": "Store a cached LLM payload by key.\n\nThe value is JSON-encoded before writing. Errors are surfaced as\n:class:`RedisClientError`.",
+      "imports": [],
+      "dependencies": [
+        "RedisClientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_9"
+    ],
+    "json": [
+      "line_11"
+    ],
+    "os": [
+      "line_12"
+    ],
+    "from_typing": [
+      "line_13"
+    ],
+    "from_providers.redis_client": [
+      "line_29"
+    ]
+  },
+  "function_signatures": {
+    "_import_redis": "_import_redis",
+    "init_redis_client": "init_redis_client",
+    "redis_healthcheck": "redis_healthcheck",
+    "get_llm_cache": "get_llm_cache",
+    "set_llm_cache": "set_llm_cache"
+  },
+  "class_signatures": {
+    "RedisNotConfiguredError": "RedisNotConfiguredError",
+    "RedisClientError": "RedisClientError"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 10,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

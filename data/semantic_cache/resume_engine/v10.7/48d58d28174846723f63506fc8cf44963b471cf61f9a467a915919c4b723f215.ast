@@ -1,0 +1,113 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_core_runtime_v10_7.py",
+    "file_hash": "48d58d28174846723f63506fc8cf44963b471cf61f9a467a915919c4b723f215",
+    "size_bytes": 3072,
+    "last_modified": "2025-12-01T12:27:37.224822",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_circuit_breaker_opening_behavior",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CircuitBreaker",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_circuit_breaker_resets_on_success",
+      "line_number": 31,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CircuitBreaker",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_exponential_backoff_eventual_success",
+      "line_number": 42,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "exponential_backoff_retry",
+        "flaky",
+        "ModelAPIError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_exponential_backoff_propagates",
+      "line_number": 55,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "exponential_backoff_retry",
+        "ModelAPIError",
+        "always_fail"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_cache_manager_exact",
+      "line_number": 72,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_cache_manager_tool_cache",
+      "line_number": 82,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "asyncio": [
+      "line_1"
+    ],
+    "pytest": [
+      "line_2"
+    ],
+    "from_core_v10_7": [
+      "line_4"
+    ]
+  },
+  "function_signatures": {
+    "test_circuit_breaker_opening_behavior": "test_circuit_breaker_opening_behavior",
+    "test_circuit_breaker_resets_on_success": "test_circuit_breaker_resets_on_success",
+    "test_exponential_backoff_eventual_success": "test_exponential_backoff_eventual_success",
+    "test_exponential_backoff_propagates": "test_exponential_backoff_propagates",
+    "test_cache_manager_exact": "test_cache_manager_exact",
+    "test_cache_manager_tool_cache": "test_cache_manager_tool_cache"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 7,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

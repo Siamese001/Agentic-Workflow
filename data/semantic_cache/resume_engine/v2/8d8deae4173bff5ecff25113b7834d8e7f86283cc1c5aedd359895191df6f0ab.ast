@@ -1,0 +1,103 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\run_workflow_RES_v2.py",
+    "file_hash": "8d8deae4173bff5ecff25113b7834d8e7f86283cc1c5aedd359895191df6f0ab",
+    "size_bytes": 11985,
+    "last_modified": "2025-12-01T12:27:37.041068",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "load_job_input",
+      "line_number": 35,
+      "docstring": "Loads the job input JSON file with error handling.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "list_available_runs",
+      "line_number": 62,
+      "docstring": "Lists all available run directories for resume.",
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "open",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 95,
+      "docstring": "V2 Launcher for Resume Workflow Engine with async execution.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "globals",
+        "len",
+        "load_job_input",
+        "list_available_runs",
+        "load_master_resume",
+        "WorkflowOrchestrator",
+        "hasattr"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "argparse": [
+      "line_5"
+    ],
+    "json": [
+      "line_6"
+    ],
+    "os": [
+      "line_7"
+    ],
+    "sys": [
+      "line_8"
+    ],
+    "asyncio": [
+      "line_9"
+    ],
+    "from_datetime": [
+      "line_10"
+    ],
+    "logging": [
+      "line_11"
+    ],
+    "from_workflow_RES_v2": [
+      "line_22"
+    ],
+    "from_config_RES_v2": [
+      "line_27"
+    ],
+    "traceback": [
+      "line_252",
+      "line_315"
+    ]
+  },
+  "function_signatures": {
+    "load_job_input": "load_job_input",
+    "list_available_runs": "list_available_runs",
+    "main": "main"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 26,
+    "cognitive_complexity": 15,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

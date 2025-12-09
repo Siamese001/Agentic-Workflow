@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from eval.golden_state.models import GoldenStateTestCase\nfrom eval.golden_state.judge import evaluate_output\ndef test_judge_empty_output_fails():\ntc = GoldenStateTestCase(id=\"t1\", input_text=\"x\", expected_behavior=\"\", metadata={})\nverdict = evaluate_output(tc, \"\")\nassert verdict.rating == \"fail\"\nassert verdict.score == 0.0\ndef test_judge_detects_key_behavior():\ntc = GoldenStateTestCase(\nid=\"t2\",\ninput_text=\"x\",\nexpected_behavior=\"Summary should be professional\",\nmetadata={},\n)\nverdict = evaluate_output(tc, \"This is a professional summary.\")\nassert verdict.rating == \"pass\"\nassert verdict.score == 1.0",
+  "normalized_signature": "func:test_judge_empty_output_fails;func:test_judge_detects_key_behavior",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_judge_empty_output_fails,test_judge_detects_key_behavior",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "company_name": "Unify Consulting",
+  "core_value_propositions": [
+    "We deploy agentic API frameworks using chain-of-thought prompting to automate complex workflows",
+    "Our context-engineering frameworks with retrieval-augmented pipelines improve generative AI accuracy",
+    "We architect LLM deployment pipelines with embedding stores and vector databases on cloud infrastructure",
+    "We build senior engineering teams focused on transformer models and low-latency inference optimization",
+    "We drive strategic alliances with AWS and leading cloud providers to co-develop generative AI solutions",
+    "We accelerate professional services onboarding with automated LLM-powered discovery and RAG pipelines",
+    "We enable measurable business outcomes by embedding AI-powered analytics into client engagements"
+  ],
+  "whitelisted_team_members": [
+    {
+      "name": "Amit Ayer",
+      "title": "Chief AI Officer"
+    }
+  ],
+  "whitelisted_products": [
+    {
+      "name": "Context-Engineering Framework",
+      "description": "Retrieval-augmented pipelines with semantic caching improving generative AI accuracy by 33%"
+    },
+    {
+      "name": "Agentic API Framework",
+      "description": "Chain-of-thought prompting system automating complex workflows and reducing manual intervention by 28%"
+    },
+    {
+      "name": "LLM Deployment Pipeline",
+      "description": "Enterprise-grade deployment infrastructure with embedding stores and vector databases cutting latency by 38%"
+    },
+    {
+      "name": "RAG Pipeline Platform",
+      "description": "Automated discovery and retrieval-augmented generation system on unified analytics platforms"
+    }
+  ],
+  "whitelisted_case_studies": [
+    {
+      "client": "Fortune 500 Financial Institution",
+      "outcome": "Reduced fraud detection response times by 42% across production deployments"
+    },
+    {
+      "client": "Fortune 500 Portfolio Companies",
+      "outcome": "Improved generative AI accuracy by 33% while accelerating customer solution adoption"
+    },
+    {
+      "client": "Global Banking Clients",
+      "outcome": "Cut regulatory response times by 48% with AI-infused compliance automation"
+    },
+    {
+      "client": "Enterprise Financial Clients",
+      "outcome": "Accelerated time-to-production by 37% across regulated programs"
+    },
+    {
+      "client": "Professional Services Engagements",
+      "outcome": "Reduced client intake times by 43% with automated LLM-powered discovery"
+    },
+    {
+      "client": "Global Financial Institutions",
+      "outcome": "Reduced regulatory remediation cycles by 37% with policy-as-code validators"
+    }
+  ],
+  "quantifiable_achievements": [
+    "Improved generative AI accuracy by 33%",
+    "Cut latency by 38%",
+    "Reduced manual intervention by 28%",
+    "Reduced fraud detection response times by 42%",
+    "Scaled practice from 5 to 18 members",
+    "Reduced development sprint cycles by 27%",
+    "Secured $18M in partnership revenue",
+    "Generated $32M in measurable client value",
+    "Launched 8 client-specific pilots worth $17M in pipeline value",
+    "Reduced client intake times by 43%",
+    "Cut consultant ramp-up by 32 days",
+    "Raised client consistency scores to 91%",
+    "Reduced delivery costs by 22%",
+    "Cut regulatory remediation cycles by 37%",
+    "Raised renewal rates by 23%"
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\config_profiles_v10_10.py",
+    "file_hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
+    "size_bytes": 14598,
+    "last_modified": "2025-12-01T12:27:39.108967",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SafetyTier",
+      "line_number": 36,
+      "docstring": "Defines safety validation levels for r\u00e9sum\u00e9 processing.\n\nEnsures appropriate security measures for professional r\u00e9sum\u00e9 improvement standards.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ModelTier",
+      "line_number": 48,
+      "docstring": "Specifies model performance tiers for r\u00e9sum\u00e9 analysis.\n\nBalances cost and quality for optimal r\u00e9sum\u00e9 enhancement processing.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DAGMode",
+      "line_number": 59,
+      "docstring": "Controls r\u00e9sum\u00e9 processing workflow execution strategy.\n\nOptimizes speed and resource usage for comprehensive r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExecutionProfileSpec",
+      "line_number": 74,
+      "docstring": "Configures comprehensive r\u00e9sum\u00e9 analysis execution parameters.\n\nOptimizes processing strategy for different r\u00e9sum\u00e9 improvement scenarios and requirements.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExecutionProfileV2",
+      "line_number": 136,
+      "docstring": "Aggregates specialized profiles for comprehensive r\u00e9sum\u00e9 processing.\n\nCombines LLM, retrieval, safety, context, and budget configurations for optimal r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_execution_profile_v2",
+      "line_number": 150,
+      "docstring": "Builds comprehensive r\u00e9sum\u00e9 processing profile from specifications.\n\nCreates optimized configuration for different r\u00e9sum\u00e9 improvement scenarios and requirements.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionProfileV2",
+        "str",
+        "LLMProfile",
+        "ContextProfile",
+        "SafetyProfile",
+        "BudgetProfile",
+        "RetrievalProfile",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_balanced_hybrid_retrieval",
+      "line_number": 189,
+      "docstring": "Creates balanced retrieval configuration for r\u00e9sum\u00e9 evidence gathering.\n\nOptimizes search strategy to find relevant data for comprehensive r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "BM25BackendConfig",
+        "GoogleGenAIConfig",
+        "ChromaVectorConfig",
+        "RetrievalConfig",
+        "RedisCacheConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_cheap_bm25_retrieval",
+      "line_number": 218,
+      "docstring": "Creates cost-effective retrieval configuration for r\u00e9sum\u00e9 processing.\n\nProvides efficient keyword-based search for budget-conscious r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "BM25BackendConfig",
+        "RetrievalConfig",
+        "RedisCacheConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_premium_dense_retrieval",
+      "line_number": 241,
+      "docstring": "Creates high-quality semantic retrieval for r\u00e9sum\u00e9 enhancement.\n\nOptimizes conceptual search to find relevant evidence for comprehensive r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "BM25BackendConfig",
+        "GoogleGenAIConfig",
+        "ChromaVectorConfig",
+        "RetrievalConfig",
+        "RedisCacheConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_profile",
+      "line_number": 440,
+      "docstring": "Return a validated ExecutionProfileSpec by ID.\nRaises KeyError for unknown profiles.",
+      "imports": [],
+      "dependencies": [
+        "KeyError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_enum": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_pydantic": [
+      "line_12"
+    ],
+    "from_core.models.models": [
+      "line_14"
+    ],
+    "from_config.llm_profile": [
+      "line_24"
+    ],
+    "from_config.retrieval_profile": [
+      "line_25"
+    ],
+    "from_config.safety_profile": [
+      "line_26"
+    ],
+    "from_config.context_profile": [
+      "line_27"
+    ],
+    "from_config.budget_profile": [
+      "line_28"
+    ]
+  },
+  "function_signatures": {
+    "build_execution_profile_v2": "build_execution_profile_v2",
+    "_balanced_hybrid_retrieval": "_balanced_hybrid_retrieval",
+    "_cheap_bm25_retrieval": "_cheap_bm25_retrieval",
+    "_premium_dense_retrieval": "_premium_dense_retrieval",
+    "get_profile": "get_profile"
+  },
+  "class_signatures": {
+    "SafetyTier": "SafetyTier",
+    "ModelTier": "ModelTier",
+    "DAGMode": "DAGMode",
+    "ExecutionProfileSpec": "ExecutionProfileSpec",
+    "ExecutionProfileV2": "ExecutionProfileV2"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\failure_detector.py",
+    "file_hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
+    "size_bytes": 1523,
+    "last_modified": "2025-12-01T12:27:38.005281",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "FailureSignal",
+      "line_number": 10,
+      "docstring": "Represents a coarse failure signal used by health policies to judge how serious repeated issues are for resume runs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect_repeated_failures",
+      "line_number": 19,
+      "docstring": "Finds repeated error patterns in events so teams can spot unstable behavior that might lead to inconsistent or failed resume outputs.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "FailureSignal"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_dataclasses": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {
+    "detect_repeated_failures": "detect_repeated_failures"
+  },
+  "class_signatures": {
+    "FailureSignal": "FailureSignal"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 5,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

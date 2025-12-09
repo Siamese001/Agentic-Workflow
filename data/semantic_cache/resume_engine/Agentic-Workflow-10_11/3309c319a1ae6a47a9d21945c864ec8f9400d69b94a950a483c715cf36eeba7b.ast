@@ -1,0 +1,98 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\__init__.py",
+    "file_hash": "3309c319a1ae6a47a9d21945c864ec8f9400d69b94a950a483c715cf36eeba7b",
+    "size_bytes": 7983,
+    "last_modified": "2025-12-01T12:27:38.904572",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "safety_gate",
+      "line_number": 38,
+      "docstring": "Check if a safety result allows the operation to proceed.\n\nThis is a simple adapter that checks if there are any blocking findings\nin the safety result. Used by tests and runtime to make go/no-go decisions.\n\nArgs:\n    result: A SafetyResult-like object with a 'findings' attribute\n    \nReturns:\n    bool: True if the operation is safe to proceed, False if blocked",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "str",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "arbitrate_safety",
+      "line_number": 78,
+      "docstring": "Arbitrate between safety findings and council votes to produce a decision.\n\nThis adapter maps safety findings to legacy decision format expected by tests.\n\nDecision mapping:\n- high/critical severity -> \"block\"\n- medium severity -> \"replan\"\n- low/no findings -> \"allow\"\n\nArgs:\n    safety_result: SafetyResult with findings\n    council_vote: CouncilVote (currently unused in decision logic)\n    policy: SafetyPolicy (currently unused in decision logic)\n    ctx: Optional execution context\n    \nReturns:\n    dict: {\"decision\": str, \"reason\": str, \"findings\": list}",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "str",
+        "run_l5",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_l5",
+      "line_number": 172,
+      "docstring": "Run L5 policy evaluation and return a verdict event.\n\nThis is a thin adapter that converts safety results into a policy decision\nevent with verdict and reason fields.\n\nArgs:\n    safety_result: SafetyResult with findings\n    council_vote: CouncilVote (for future use)\n    policy: SafetyPolicy to apply\n    ctx: Optional execution context\n    \nReturns:\n    An event object with 'verdict' and 'reason' attributes",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "str",
+        "L5Event",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L5Event",
+      "line_number": 196,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_types": [
+      "line_10"
+    ],
+    "from_policy": [
+      "line_23"
+    ],
+    "from_dataclasses": [
+      "line_193"
+    ]
+  },
+  "function_signatures": {
+    "safety_gate": "safety_gate",
+    "arbitrate_safety": "arbitrate_safety",
+    "run_l5": "run_l5"
+  },
+  "class_signatures": {
+    "L5Event": "L5Event"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 26,
+    "cognitive_complexity": 21,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\integration\\atomic_integration_bridge.py",
+    "file_hash": "485d0d51d96403c2fda51db3dfa0c9fae7fc1e6677d729907bde47d1d3d1cbd9",
+    "size_bytes": 5062,
+    "last_modified": "2025-12-01T12:27:38.892806",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "AtomicWorkflowBridge",
+      "line_number": 20,
+      "docstring": "Coordinates resume generation across specialized atomic layers.\n\nEnsures each resume section is processed with the right balance of\nplanning, execution, and safety checks for optimal job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicStrategyAgent",
+      "line_number": 46,
+      "docstring": "Handles strategic planning for resume content organization.\n\nAligns resume structure with job requirements for maximum impact\nand applicant tracking system (ATS) compatibility.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicDraftingAgent",
+      "line_number": 61,
+      "docstring": "Manages the creation of initial resume drafts.\n\nEnsures content flows naturally while highlighting relevant\nskills and experiences for the target position.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicQAAgent",
+      "line_number": 76,
+      "docstring": "Validates resume content quality and consistency.\n\nChecks for clarity, relevance, and alignment with job requirements\nto ensure the resume makes a strong first impression.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicSafetyAgent",
+      "line_number": 91,
+      "docstring": "Ensures resume content meets professional and ethical standards.\n\nValidates factual accuracy and prevents misleading claims while\nmaintaining a positive, professional tone throughout the resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 27,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "SafetyValidator",
+        "Path",
+        "StateManager",
+        "UnifiedWorkflowOrchestrator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_atomic_workflow",
+      "line_number": 37,
+      "docstring": "Orchestrates the resume generation workflow through atomic layers.\n\nMaintains clean separation of concerns while ensuring all resume sections\nmeet quality standards and job requirements.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 53,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicWorkflowBridge"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 68,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicWorkflowBridge"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 83,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicWorkflowBridge"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 98,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicWorkflowBridge"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_7"
+    ],
+    "from_pathlib": [
+      "line_8"
+    ],
+    "from_l3.unified_workflow_orchestrator": [
+      "line_11"
+    ],
+    "from_l4.state_manager": [
+      "line_12"
+    ],
+    "from_l5.safety_validator": [
+      "line_13"
+    ],
+    "from_core.routing": [
+      "line_16"
+    ],
+    "from_config.meta_profile": [
+      "line_17"
+    ],
+    "from_runtime.runtime_utils": [
+      "line_18"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "execute_atomic_workflow": "execute_atomic_workflow"
+  },
+  "class_signatures": {
+    "AtomicWorkflowBridge": "AtomicWorkflowBridge",
+    "AtomicStrategyAgent": "AtomicStrategyAgent",
+    "AtomicDraftingAgent": "AtomicDraftingAgent",
+    "AtomicQAAgent": "AtomicQAAgent",
+    "AtomicSafetyAgent": "AtomicSafetyAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

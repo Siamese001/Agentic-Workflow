@@ -1,0 +1,49 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\evaluator.py",
+    "file_hash": "e476d704e1be2736778ff4211c99d331bef8baca3f8d50f7abb0a4b0e99f0060",
+    "size_bytes": 1068,
+    "last_modified": "2025-12-01T12:27:38.034191",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "evaluate_case_output",
+      "line_number": 8,
+      "docstring": "Compares expected keypoints to what the system produced so tests can see whether resumes captured the most important ideas or missed critical content.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_eval.golden_state.models": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "evaluate_case_output": "evaluate_case_output"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\simulation\\models.py",
+    "file_hash": "9277be11ec53c86ee287caac0e74012f9074787c93527aa96dc520aa369e38c0",
+    "size_bytes": 420,
+    "last_modified": "2025-12-01T12:27:37.950804",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SimScenario",
+      "line_number": 8,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SimOutcome",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_pydantic": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "SimScenario": "SimScenario",
+    "SimOutcome": "SimOutcome"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\integration.py",
+    "file_hash": "601f6020fad60757ce948c587aafffa51cf8edf701489a6474763b30aac8f6ac",
+    "size_bytes": 2175,
+    "last_modified": "2025-12-01T12:27:40.895439",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "IntegrationConfig",
+      "line_number": 16,
+      "docstring": "Configuration for orchestration integration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "OrchestrationIntegrator",
+      "line_number": 23,
+      "docstring": "Integrates orchestration components and manages cross-cutting concerns.\n\nProvides integration between different orchestration modules and\nhandles component lifecycle management.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_integrator",
+      "line_number": 60,
+      "docstring": "Get the default orchestration integrator.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 31,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "IntegrationConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "register_component",
+      "line_number": 39,
+      "docstring": "Register a component for integration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_component",
+      "line_number": 43,
+      "docstring": "Get a registered component.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "integrate",
+      "line_number": 47,
+      "docstring": "Perform integration between registered components.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_9"
+    ],
+    "from_core.integration": [
+      "line_12",
+      "line_66"
+    ]
+  },
+  "function_signatures": {
+    "get_integrator": "get_integrator",
+    "__init__": "__init__",
+    "register_component": "register_component",
+    "get_component": "get_component",
+    "integrate": "integrate"
+  },
+  "class_signatures": {
+    "IntegrationConfig": "IntegrationConfig",
+    "OrchestrationIntegrator": "OrchestrationIntegrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

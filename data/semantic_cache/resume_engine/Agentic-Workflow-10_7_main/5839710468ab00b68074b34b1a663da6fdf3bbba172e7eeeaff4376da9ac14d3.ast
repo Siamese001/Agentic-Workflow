@@ -1,0 +1,245 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\resilience.py",
+    "file_hash": "5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3",
+    "size_bytes": 6144,
+    "last_modified": "2025-12-01T12:27:41.986979",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CircuitBreaker",
+      "line_number": 26,
+      "docstring": "Circuit breaker utility used by batch workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "exponential_backoff_retry",
+      "line_number": 52,
+      "docstring": "Decorator factory that applies exponential backoff to async node functions.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "WorkflowError",
+        "wraps",
+        "max",
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "async_timeout",
+      "line_number": 102,
+      "docstring": "Decorator factory that enforces a timeout on async nodes.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "func",
+        "wraps",
+        "WorkflowTimeoutError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_timeout_decorator",
+      "line_number": 120,
+      "docstring": "Compatibility wrapper retained for orchestration helpers.",
+      "imports": [],
+      "dependencies": [
+        "async_timeout",
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_workflow_context",
+      "line_number": 126,
+      "docstring": "Inspect call arguments to find a WorkflowContext instance.",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_context",
+      "line_number": 140,
+      "docstring": "Synchronise the workflow context with the MCP runtime.",
+      "imports": [],
+      "dependencies": [
+        "sync_context"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "wrap_mcp",
+      "line_number": 151,
+      "docstring": "Decorator that ensures MCP clients are initialised for node handlers.",
+      "imports": [],
+      "dependencies": [
+        "wraps",
+        "_extract_workflow_context",
+        "update_context",
+        "wrap_mcp",
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 29,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_success",
+      "line_number": 35,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_failure",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check",
+      "line_number": 45,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CircuitBreakerOpenError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decorator",
+      "line_number": 55,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "range",
+        "WorkflowError",
+        "wraps",
+        "max",
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decorator",
+      "line_number": 105,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float",
+        "func",
+        "wraps",
+        "WorkflowTimeoutError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sync_wrapper",
+      "line_number": 171,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "func",
+        "wraps",
+        "_extract_workflow_context",
+        "update_context"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "asyncio": [
+      "line_4"
+    ],
+    "logging": [
+      "line_5"
+    ],
+    "from_functools": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_mcp": [
+      "line_9"
+    ],
+    "from_exceptions": [
+      "line_11"
+    ],
+    "from_context": [
+      "line_21",
+      "line_129"
+    ]
+  },
+  "function_signatures": {
+    "exponential_backoff_retry": "exponential_backoff_retry",
+    "async_timeout": "async_timeout",
+    "get_timeout_decorator": "get_timeout_decorator",
+    "_extract_workflow_context": "_extract_workflow_context",
+    "update_context": "update_context",
+    "wrap_mcp": "wrap_mcp",
+    "__init__": "__init__",
+    "record_success": "record_success",
+    "record_failure": "record_failure",
+    "check": "check",
+    "decorator": "decorator",
+    "sync_wrapper": "sync_wrapper"
+  },
+  "class_signatures": {
+    "CircuitBreaker": "CircuitBreaker"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 18,
+    "cognitive_complexity": 12,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

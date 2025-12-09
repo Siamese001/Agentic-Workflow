@@ -1,0 +1,109 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\__init__.py",
+    "file_hash": "3feca60f7d80607489d9517baba86345f9e710cff8c7fc9b372853eec3a99e08",
+    "size_bytes": 2018,
+    "last_modified": "2025-12-01T12:27:38.436040",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "register_service",
+      "line_number": 15,
+      "docstring": "Registers service for r\u00e9sum\u00e9 processing dependency injection.\n\nEnables modular service management for comprehensive r\u00e9sum\u00e9 enhancement operations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_service",
+      "line_number": 23,
+      "docstring": "Retrieves registered service for r\u00e9sum\u00e9 processing workflows.\n\nProvides reliable dependency resolution for r\u00e9sum\u00e9 improvement operations.",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "inject_dependencies",
+      "line_number": 33,
+      "docstring": "Creates dependency injection decorator for r\u00e9sum\u00e9 processing functions.\n\nEnables automatic service resolution for modular r\u00e9sum\u00e9 improvement workflows.",
+      "imports": [],
+      "dependencies": [
+        "get_service",
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "initialize_default_services",
+      "line_number": 50,
+      "docstring": "Initializes default services for r\u00e9sum\u00e9 processing architecture.\n\nSets up essential dependencies for comprehensive r\u00e9sum\u00e9 improvement workflows.",
+      "imports": [],
+      "dependencies": [
+        "register_service"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decorator",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_service",
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "wrapper",
+      "line_number": 41,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_service",
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_7"
+    ],
+    "functools": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "register_service": "register_service",
+    "get_service": "get_service",
+    "inject_dependencies": "inject_dependencies",
+    "initialize_default_services": "initialize_default_services",
+    "decorator": "decorator",
+    "wrapper": "wrapper"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

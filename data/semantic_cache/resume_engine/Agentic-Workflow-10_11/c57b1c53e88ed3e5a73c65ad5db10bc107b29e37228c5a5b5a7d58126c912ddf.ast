@@ -1,0 +1,43 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\safety_profile.py",
+    "file_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
+    "size_bytes": 537,
+    "last_modified": "2025-12-01T12:27:39.089274",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SafetyProfile",
+      "line_number": 6,
+      "docstring": "Safety configuration profile used by execution profiles.\n\nThis is intentionally string/primitive based to avoid cycles and\nmirrors the SafetyTier + policy toggles used in ExecutionProfileSpec.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_pydantic": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "SafetyProfile": "SafetyProfile"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

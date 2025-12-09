@@ -1,0 +1,362 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_instructional_prompts.py",
+    "file_hash": "f2c8b0420288e085a11a52308599f63db9328e3906934da0a9a3eadb01f5e74b",
+    "size_bytes": 9977,
+    "last_modified": "2025-12-01T12:27:40.099955",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TestInstructionalPromptStructure",
+      "line_number": 39,
+      "docstring": "Test v6 prompt structure and functionality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestPromptIntegration",
+      "line_number": 109,
+      "docstring": "Test prompt integration with specific agent types.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestManyShotExamples",
+      "line_number": 179,
+      "docstring": "Test many-shot example quality and structure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestPromptQuality",
+      "line_number": 213,
+      "docstring": "Test prompt quality and completeness.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_l1_planner_prompt",
+      "line_number": 42,
+      "docstring": "Test L1 planner prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_l1_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_l2_executor_prompt",
+      "line_number": 57,
+      "docstring": "Test L2 executor prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_l2_executor_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_add_rag_extension",
+      "line_number": 70,
+      "docstring": "Test RAG extension addition.",
+      "imports": [],
+      "dependencies": [
+        "add_rag_extension",
+        "create_l1_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_add_cot_extension",
+      "line_number": 80,
+      "docstring": "Test Chain-of-Thought extension addition.",
+      "imports": [],
+      "dependencies": [
+        "add_cot_extension",
+        "create_l1_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_prompt_render",
+      "line_number": 90,
+      "docstring": "Test prompt rendering.",
+      "imports": [],
+      "dependencies": [
+        "create_l1_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_prompt_validation",
+      "line_number": 100,
+      "docstring": "Test prompt validation.",
+      "imports": [],
+      "dependencies": [
+        "validate_v6_prompt",
+        "create_l1_planner_prompt",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_strategy_planner_prompt",
+      "line_number": 112,
+      "docstring": "Test strategy planner prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_strategy_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_rag_planner_prompt",
+      "line_number": 119,
+      "docstring": "Test RAG planner prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_rag_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_qa_planner_prompt",
+      "line_number": 126,
+      "docstring": "Test QA planner prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_qa_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_safety_planner_prompt",
+      "line_number": 133,
+      "docstring": "Test safety planner prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_safety_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_create_strategy_executor_prompt",
+      "line_number": 141,
+      "docstring": "Test strategy executor prompt creation.",
+      "imports": [],
+      "dependencies": [
+        "create_strategy_executor_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_validate_v6_prompt_l1",
+      "line_number": 148,
+      "docstring": "Test v6 prompt validation for L1.",
+      "imports": [],
+      "dependencies": [
+        "validate_v6_prompt",
+        "LayerContent",
+        "create_l1_planner_prompt",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_validate_v6_prompt_l2",
+      "line_number": 165,
+      "docstring": "Test v6 prompt validation for L2.",
+      "imports": [],
+      "dependencies": [
+        "validate_v6_prompt",
+        "LayerContent",
+        "len",
+        "create_l2_executor_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_examples_have_valid_structure",
+      "line_number": 182,
+      "docstring": "Test that all examples have valid structure.",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_format_examples_for_prompt",
+      "line_number": 196,
+      "docstring": "Test example formatting for prompt inclusion.",
+      "imports": [],
+      "dependencies": [
+        "get_examples",
+        "format_examples_for_prompt",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_example_quality_filtering",
+      "line_number": 205,
+      "docstring": "Test that examples can be filtered by quality.",
+      "imports": [],
+      "dependencies": [
+        "get_examples"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_all_l1_prompts_have_required_layers",
+      "line_number": 216,
+      "docstring": "Test that all L1 prompts have required layers.",
+      "imports": [],
+      "dependencies": [
+        "create_rag_planner_prompt",
+        "create_qa_planner_prompt",
+        "create_safety_planner_prompt",
+        "create_strategy_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_prompt_length_reasonable",
+      "line_number": 231,
+      "docstring": "Test that prompts are not too short or too long.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "create_strategy_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_extensions_are_optional",
+      "line_number": 238,
+      "docstring": "Test that extensions can be disabled.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "create_strategy_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_prompt_consistency",
+      "line_number": 255,
+      "docstring": "Test that prompts maintain consistent formatting.",
+      "imports": [],
+      "dependencies": [
+        "create_rag_planner_prompt",
+        "create_qa_planner_prompt",
+        "len",
+        "create_strategy_planner_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_10"
+    ],
+    "from_l1.instructional_injection_v6": [
+      "line_11"
+    ],
+    "from_l1.many_shot_examples": [
+      "line_22"
+    ],
+    "from_l1.v6_prompt_integration": [
+      "line_29"
+    ]
+  },
+  "function_signatures": {
+    "test_create_l1_planner_prompt": "test_create_l1_planner_prompt",
+    "test_create_l2_executor_prompt": "test_create_l2_executor_prompt",
+    "test_add_rag_extension": "test_add_rag_extension",
+    "test_add_cot_extension": "test_add_cot_extension",
+    "test_prompt_render": "test_prompt_render",
+    "test_prompt_validation": "test_prompt_validation",
+    "test_create_strategy_planner_prompt": "test_create_strategy_planner_prompt",
+    "test_create_rag_planner_prompt": "test_create_rag_planner_prompt",
+    "test_create_qa_planner_prompt": "test_create_qa_planner_prompt",
+    "test_create_safety_planner_prompt": "test_create_safety_planner_prompt",
+    "test_create_strategy_executor_prompt": "test_create_strategy_executor_prompt",
+    "test_validate_v6_prompt_l1": "test_validate_v6_prompt_l1",
+    "test_validate_v6_prompt_l2": "test_validate_v6_prompt_l2",
+    "test_examples_have_valid_structure": "test_examples_have_valid_structure",
+    "test_format_examples_for_prompt": "test_format_examples_for_prompt",
+    "test_example_quality_filtering": "test_example_quality_filtering",
+    "test_all_l1_prompts_have_required_layers": "test_all_l1_prompts_have_required_layers",
+    "test_prompt_length_reasonable": "test_prompt_length_reasonable",
+    "test_extensions_are_optional": "test_extensions_are_optional",
+    "test_prompt_consistency": "test_prompt_consistency"
+  },
+  "class_signatures": {
+    "TestInstructionalPromptStructure": "TestInstructionalPromptStructure",
+    "TestPromptIntegration": "TestPromptIntegration",
+    "TestManyShotExamples": "TestManyShotExamples",
+    "TestPromptQuality": "TestPromptQuality"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

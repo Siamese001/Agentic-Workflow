@@ -1,0 +1,288 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\workflow_RES_v2.py",
+    "file_hash": "53dcfddcbe1a88ed9425dc1f4e6167774235398f1e0f07c4f877862e6cbedd7c",
+    "size_bytes": 41613,
+    "last_modified": "2025-12-01T12:27:37.013538",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "WorkflowOrchestrator",
+      "line_number": 99,
+      "docstring": "Main workflow orchestrator with resumable state-driven architecture.\nSupports both new runs and resume runs with idempotent hop functions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_master_resume",
+      "line_number": 917,
+      "docstring": "Load master resume from JSON file.",
+      "imports": [],
+      "dependencies": [
+        "_load_json_config",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 105,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CostRouter",
+        "CritiqueTool",
+        "str",
+        "TraceRegistry",
+        "QAReportGenerator",
+        "open",
+        "PolicyAgent",
+        "ManifestManager",
+        "FileNotFoundError",
+        "HIL_Interface",
+        "JDEnforcementValidator",
+        "ValueError",
+        "CodeInterpreterTool",
+        "defaultdict",
+        "ContextRelayLayer",
+        "PreFlightValidator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_load_initial_state",
+      "line_number": 254,
+      "docstring": "V2 Ingestion Phase: Runs Hops 0, 1, 2 to populate in-memory state.\n\nThis replaces the old hop-by-hop file serialization approach.\nState flows into memory (self.thematic_analysis, self.enriched_scaffold).",
+      "imports": [],
+      "dependencies": [
+        "DataEnricher",
+        "str",
+        "ArtistGenerator",
+        "len",
+        "CompetitiveAnalysisConfig",
+        "HopExecutionError",
+        "MasterResumeIndex"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_create_buffer_for_section",
+      "line_number": 340,
+      "docstring": "Creates a temporary, locked buffer containing only the section under test.\nUsed by the Validator for per-node validation.\n\nArgs:\n    section_enum: The section being validated\n    draft: The draft content for that section\n    \nReturns:\n    Locked ImmutableStagingBuffer with the section",
+      "imports": [],
+      "dependencies": [
+        "ImmutableStagingBuffer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_drafts_to_buffer",
+      "line_number": 647,
+      "docstring": "Converts the final in-memory self.drafts dict to a locked buffer.\nUsed for final rendering (HOP-7).\n\nReturns:\n    Locked ImmutableStagingBuffer with all drafts",
+      "imports": [],
+      "dependencies": [
+        "ImmutableStagingBuffer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_workflow_termination",
+      "line_number": 831,
+      "docstring": "Centralized handler for workflow failure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_create_jd_analyzer",
+      "line_number": 868,
+      "docstring": "Create JD analyzer instance.",
+      "imports": [],
+      "dependencies": [
+        "EnhancedJobDescriptionAnalyzer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_comprehensive_validation",
+      "line_number": 876,
+      "docstring": "Run comprehensive validation on staging buffer.",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult",
+        "isinstance",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_setup_logging",
+      "line_number": 901,
+      "docstring": "Setup logging for this workflow run.",
+      "imports": [],
+      "dependencies": [
+        "setup_workflow_logging"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_hash_resume",
+      "line_number": 912,
+      "docstring": "Generate hash of master resume for integrity checking.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_5"
+    ],
+    "copy": [
+      "line_7"
+    ],
+    "functools": [
+      "line_8"
+    ],
+    "hashlib": [
+      "line_9"
+    ],
+    "json": [
+      "line_10"
+    ],
+    "logging": [
+      "line_11"
+    ],
+    "os": [
+      "line_12"
+    ],
+    "random": [
+      "line_13"
+    ],
+    "re": [
+      "line_14"
+    ],
+    "time": [
+      "line_15"
+    ],
+    "uuid": [
+      "line_16"
+    ],
+    "from_enum": [
+      "line_17"
+    ],
+    "from_collections": [
+      "line_18"
+    ],
+    "from_datetime": [
+      "line_19"
+    ],
+    "from_functools": [
+      "line_20"
+    ],
+    "from_typing": [
+      "line_21"
+    ],
+    "from_dataclasses": [
+      "line_22"
+    ],
+    "asyncio": [
+      "line_23"
+    ],
+    "from_governor": [
+      "line_26"
+    ],
+    "from_clerk_RES_v2": [
+      "line_33"
+    ],
+    "from_enricher_RES_v2": [
+      "line_34"
+    ],
+    "from_artist_RES_v2": [
+      "line_35"
+    ],
+    "from_renderer_RES_v2": [
+      "line_36"
+    ],
+    "from_models_RES": [
+      "line_39"
+    ],
+    "from_config_RES_v2": [
+      "line_46",
+      "line_921"
+    ],
+    "from_utils_RES_v2": [
+      "line_52"
+    ],
+    "from_interpreter_RES_v2": [
+      "line_58"
+    ],
+    "from_validator_RES_v2": [
+      "line_59",
+      "line_69",
+      "line_502"
+    ],
+    "from_qa_auditor_RES_v2": [
+      "line_62"
+    ],
+    "from_rag_RES_v2": [
+      "line_63"
+    ],
+    "from_state_manager_RES_v2": [
+      "line_64"
+    ],
+    "chromadb": [
+      "line_73"
+    ],
+    "from_chromadb.config": [
+      "line_74"
+    ]
+  },
+  "function_signatures": {
+    "load_master_resume": "load_master_resume",
+    "__init__": "__init__",
+    "_load_initial_state": "_load_initial_state",
+    "_create_buffer_for_section": "_create_buffer_for_section",
+    "_drafts_to_buffer": "_drafts_to_buffer",
+    "_handle_workflow_termination": "_handle_workflow_termination",
+    "_create_jd_analyzer": "_create_jd_analyzer",
+    "_run_comprehensive_validation": "_run_comprehensive_validation",
+    "_setup_logging": "_setup_logging",
+    "_hash_resume": "_hash_resume"
+  },
+  "class_signatures": {
+    "WorkflowOrchestrator": "WorkflowOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 42,
+    "cognitive_complexity": 26,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

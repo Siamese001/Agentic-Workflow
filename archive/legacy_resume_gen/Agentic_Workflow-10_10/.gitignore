@@ -1,0 +1,10 @@
+# archives / snapshots
+*.zip
+
+# python noise
+__pycache__/
+*.pyc
+
+# temp extraction folders
+temp_*/
+

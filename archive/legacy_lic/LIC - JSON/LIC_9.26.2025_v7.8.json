@@ -1,0 +1,1160 @@
+{
+  "1.role": {
+    "standards": {
+      "reasoning_isolation": {
+        "methods_allowed": [
+          "CoT",
+          "ToT",
+          "Self-Consistency",
+          "Reflexion"
+        ],
+        "confined_to_section": 4,
+        "enforced": true
+      },
+      "strict_mzlo": {
+        "requirements": [
+          "zero_loss",
+          "zero_ambiguity",
+          "zero_omission",
+          "zero_misrepresentation"
+        ],
+        "record_conformance": true
+      },
+      "audit_ready_qa": {
+        "enforce": [
+          "QA Tables",
+          "Schema Enforcement"
+        ],
+        "end_to_end": true
+      }
+    }
+  },
+  "2.task": {
+    "success_criteria": {
+      "reasoning_gate": [
+        "Per-key QA tables present and PASS even if SHOW_REASONING=false",
+        "Hybrid CoT+ToT present at plan-time; min_hybrid_paths ≥ 3",
+        "Self-consistency voting when branches diverge",
+        "No reasoning artifacts leak to OUTPUT"
+      ],
+      "output_gate": [
+        "Per-key OUTPUT emitted only after per-key REASONING QA PASS",
+        "ASCII/dash hygiene PASS",
+        "Detected Settings Summary rendered"
+      ]
+    }
+  },
+  "3.context": {
+    "agentic_retrieval_workflow": {
+      "per_key_retrieval_logs": true,
+      "precision_min": 0.9,
+      "recall_min": 0.85,
+      "rerank_required": true,
+      "hyde_required": true
+    },
+    "runtime_toggles": {
+      "SHOW_REASONING": {
+        "default": false,
+        "note": "QA still surfaces mini pass summaries in OUTPUT."
+      },
+      "table_3A_enforcement": {
+        "required_fields": [
+          "group",
+          "toggle",
+          "default",
+          "current",
+          "prompt_section",
+          "configures",
+          "impact",
+          "risk_if_too_high"
+        ],
+        "block_on_missing_or_empty": true
+      },
+      "table_3A": [
+        {
+          "group": "Decoding",
+          "toggle": "TEMPERATURE",
+          "default": "0.8",
+          "current": "0.8",
+          "prompt_section": "4",
+          "configures": "Creativity level",
+          "impact": "Higher=more variety",
+          "risk_if_too_high": "Incoherence"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "TEMPERATURE_OVERRIDES",
+          "default": "{\"FULL_INMAIL\": {\"SUBJECT\":0.85, \"INTRO\":0.55, \"INSIGHTS\":0.65, \"BULLETS\":0.85, \"CTA\":0.20}, \"SHORT_NEW\": {\"BODY\":0.55}}",
+          "current": "{\"FULL_INMAIL\": {\"SUBJECT\":0.85, \"INTRO\":0.55, \"INSIGHTS\":0.65, \"BULLETS\":0.85, \"CTA\":0.20}, \"SHORT_NEW\": {\"BODY\":0.55}}",
+          "prompt_section": "3,4,5",
+          "configures": "Per-slot temperature map (JSON string)",
+          "impact": "Creative where it helps; deterministic on CTA/compliance",
+          "risk_if_too_high": "Off-brand or overly casual tone if set too high"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "TOP_P",
+          "default": "0.95",
+          "current": "0.95",
+          "prompt_section": "4",
+          "configures": "Nucleus mass",
+          "impact": "Controls token pool",
+          "risk_if_too_high": "Noise"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "FREQUENCY_PENALTY",
+          "default": "0.1",
+          "current": "0.1",
+          "prompt_section": "4",
+          "configures": "Reduce repetition",
+          "impact": "Prevents loops",
+          "risk_if_too_high": "Over-pruning"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "PRESENCE_PENALTY",
+          "default": "0.3",
+          "current": "0.3",
+          "prompt_section": "4",
+          "configures": "Encourage novelty",
+          "impact": "Reduces boilerplate",
+          "risk_if_too_high": "Drops key terms"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "MAX_TOKENS",
+          "default": "220",
+          "current": "220",
+          "prompt_section": "3,4,5",
+          "configures": "Length cap per completion",
+          "impact": "Prevents truncation; Short NEW still governed by 360–380 char guard",
+          "risk_if_too_high": "Wasted tokens if too high; truncation if too low"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "SEED",
+          "default": "null",
+          "current": "42",
+          "prompt_section": "5",
+          "configures": "Fixed random seed for reproducible finalization",
+          "impact": "Stable reruns of chosen drafts",
+          "risk_if_too_high": "None"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "MAX_TOKENS_OVERRIDES",
+          "default": "{\"FULL_INMAIL\":{\"SUBJECT\":20,\"INTRO\":40,\"INSIGHTS\":120,\"BULLETS\":180,\"CTA\":30},\"SHORT_NEW\":{\"BODY\":220}}",
+          "current": "{\"FULL_INMAIL\":{\"SUBJECT\":20,\"INTRO\":40,\"INSIGHTS\":120,\"BULLETS\":180,\"CTA\":30},\"SHORT_NEW\":{\"BODY\":220}}",
+          "prompt_section": "3,4,5",
+          "configures": "Max tokens per LIC slot (JSON)",
+          "impact": "Optimizes length targets per section; reduces truncation or bloat",
+          "risk_if_too_high": "Wasted tokens; too low risks truncation"
+        },
+        {
+          "group": "Methods",
+          "toggle": "TOT_MIN_BRANCHES",
+          "default": "3",
+          "current": "3",
+          "prompt_section": "4",
+          "configures": "Minimum ToT branches per K.x",
+          "impact": "Breadth vs latency",
+          "risk_if_too_high": "Branch bloat"
+        },
+        {
+          "group": "Methods",
+          "toggle": "HYBRID_MIN_PATHS",
+          "default": "3",
+          "current": "3",
+          "prompt_section": "4",
+          "configures": "Hybrid paths per K.x",
+          "impact": "Consensus quality",
+          "risk_if_too_high": "Compute increase"
+        },
+        {
+          "group": "Methods",
+          "toggle": "TOT_BRANCH_FACTOR",
+          "default": "3",
+          "current": "3",
+          "prompt_section": "4",
+          "configures": "Beam width b",
+          "impact": "Exploration",
+          "risk_if_too_high": "Latency"
+        },
+        {
+          "group": "Methods",
+          "toggle": "TOT_MAX_DEPTH",
+          "default": "2",
+          "current": "2",
+          "prompt_section": "4",
+          "configures": "Max depth d",
+          "impact": "Coverage",
+          "risk_if_too_high": "Drift"
+        },
+        {
+          "group": "Visibility",
+          "toggle": "SHOW_REASONING",
+          "default": "false",
+          "current": "false",
+          "prompt_section": "3, 4, 5",
+          "configures": "Enables/disables reasoning trace display in output",
+          "impact": "true: Section 4 reasoning + metrics shown; false: traces hidden",
+          "risk_if_too_high": "Info leakage, overwhelm"
+        },
+        {
+          "group": "Visibility",
+          "toggle": "SCRATCHPAD_MODE",
+          "default": "notes_vs_answer",
+          "current": "notes_vs_answer",
+          "prompt_section": "3, 4, 5",
+          "configures": "Switches output mode between notes and answer",
+          "impact": "notes_vs_answer: both; answer: only answer",
+          "risk_if_too_high": "Output bloat"
+        },
+        {
+          "group": "Methods",
+          "toggle": "COT",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4",
+          "configures": "Turns on chain-of-thought stepwise logic",
+          "impact": "true: step-by-step reasoning in Section 4",
+          "risk_if_too_high": "Over-detail, slowness"
+        },
+        {
+          "group": "Methods",
+          "toggle": "TOT",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4",
+          "configures": "Turns on tree-of-thought (branching) reasoning",
+          "impact": "true: multiple branches explored; false: linear only",
+          "risk_if_too_high": "Token/decision sprawl"
+        },
+        {
+          "group": "Methods",
+          "toggle": "HYBRID_COT_TOT",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4",
+          "configures": "Combines CoT and ToT reasoning",
+          "impact": "true: both modes blended; false: only primary",
+          "risk_if_too_high": "Debugging/output sprawl"
+        },
+        {
+          "group": "Methods",
+          "toggle": "SELF_CONSISTENCY",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4, 5",
+          "configures": "Enables voting among reasoning chains",
+          "impact": "true: multi-chain consensus; false: single chain",
+          "risk_if_too_high": "High cost, slow"
+        },
+        {
+          "group": "Methods",
+          "toggle": "SC_K",
+          "default": "5",
+          "current": "5",
+          "prompt_section": "4, 5",
+          "configures": "Number of self-consistency runs (chains)",
+          "impact": "5: five chains compared",
+          "risk_if_too_high": "Wasteful, slow"
+        },
+        {
+          "group": "Methods",
+          "toggle": "SOCRATIC",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "3, 4",
+          "configures": "Clarifying Q&A on ambiguity before reasoning",
+          "impact": "true: Q&A before solve; false: skip clarification",
+          "risk_if_too_high": "Stalls, wasted tokens"
+        },
+        {
+          "group": "Methods",
+          "toggle": "REFLEXION",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4",
+          "configures": "Self-critique and revision cycles",
+          "impact": "Revises for errors/gaps",
+          "risk_if_too_high": "Over-edit, latency"
+        },
+        {
+          "group": "Methods",
+          "toggle": "DECOMPOSITION",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4",
+          "configures": "Split problem into subproblems",
+          "impact": "Each subproblem solved individually",
+          "risk_if_too_high": "Fragmentation, complexity"
+        },
+        {
+          "group": "Methods",
+          "toggle": "SCRATCHPAD",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4, 5",
+          "configures": "Separates notes from answer",
+          "impact": "Internal notes kept",
+          "risk_if_too_high": "Clutter, hard to parse"
+        },
+        {
+          "group": "RAG",
+          "toggle": "RAG_MODE",
+          "default": "ON",
+          "current": "ON",
+          "prompt_section": "3, 4, 5",
+          "configures": "Enable retrieval-augmented generation",
+          "impact": "ON: retrieval active; OFF: generative only",
+          "risk_if_too_high": "Over-grounding"
+        },
+        {
+          "group": "RAG",
+          "toggle": "RAG_STRATEGY",
+          "default": "hybrid",
+          "current": "hybrid",
+          "prompt_section": "3, 4, 5",
+          "configures": "Retrieval mode: keyword, semantic, hybrid",
+          "impact": "hybrid: both; keyword/semantic: one only",
+          "risk_if_too_high": "Too broad/narrow"
+        },
+        {
+          "group": "RAG",
+          "toggle": "RAG_MIN_DOCS",
+          "default": "2",
+          "current": "2",
+          "prompt_section": "3, 4, 5",
+          "configures": "Minimum docs/snippets for grounding",
+          "impact": "2: at least two docs",
+          "risk_if_too_high": "Noise, bloat"
+        },
+        {
+          "group": "RAG",
+          "toggle": "RAG_MAX_DOCS",
+          "default": "8",
+          "current": "8",
+          "prompt_section": "3, 4, 5",
+          "configures": "Maximum docs/snippets for grounding",
+          "impact": "Up to eight docs per answer",
+          "risk_if_too_high": "Slowness, bloat"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "AGENTIC_MODE",
+          "default": "ON",
+          "current": "ON",
+          "prompt_section": "3, 4",
+          "configures": "Enable multi-hop retrieval",
+          "impact": "ON: multi-hop; OFF: single-pass",
+          "risk_if_too_high": "Cycle waste, drift"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "AGENTIC_MAX_HOPS",
+          "default": "2",
+          "current": "2",
+          "prompt_section": "3, 4",
+          "configures": "Maximum retrieval hops",
+          "impact": "2: up to two hops",
+          "risk_if_too_high": "Tangent risk"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "RETRIEVAL_SOURCES",
+          "default": "hybrid",
+          "current": "hybrid",
+          "prompt_section": "3, 4",
+          "configures": "Source pool for retrieval",
+          "impact": "hybrid: both; keyword/semantic: one only",
+          "risk_if_too_high": "Recall/precision risk"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "RETRIEVAL_COUNT",
+          "default": "3",
+          "current": "3",
+          "prompt_section": "3, 4",
+          "configures": "Results returned per retrieval",
+          "impact": "3 results per request",
+          "risk_if_too_high": "Missed facts/noise"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "QUERY_REFINEMENT",
+          "default": "ON",
+          "current": "ON",
+          "prompt_section": "3, 4",
+          "configures": "Retry/rephrase failed queries",
+          "impact": "Retries on failure",
+          "risk_if_too_high": "Loops, waste"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "SOURCE_ATTRIBUTION",
+          "default": "ON",
+          "current": "ON",
+          "prompt_section": "3, 4, 5",
+          "configures": "Mapping of answers to sources",
+          "impact": "Full attribution",
+          "risk_if_too_high": "Bloated output"
+        },
+        {
+          "group": "Retrieval",
+          "toggle": "RETRIEVAL_QUALITY_THRESHOLD",
+          "default": "policy",
+          "current": "policy",
+          "prompt_section": "3, 4, 5",
+          "configures": "Min precision/recall",
+          "impact": "policy: 0.90/0.85 minimums",
+          "risk_if_too_high": "Noise, drift"
+        },
+        {
+          "group": "Metrics",
+          "toggle": "TRACE_TRANSFORMER",
+          "default": "off",
+          "current": "on",
+          "prompt_section": "3, 4, 5",
+          "configures": "Logs model attention/metrics",
+          "impact": "on: full logs; off: none",
+          "risk_if_too_high": "Perf cost, leakage"
+        },
+        {
+          "group": "Metrics",
+          "toggle": "METRICS_OVERLAY",
+          "default": "transformer_v1",
+          "current": "transformer_v1",
+          "prompt_section": "3, 4, 5",
+          "configures": "Overlays run metrics",
+          "impact": "transformer_v1: overlay on",
+          "risk_if_too_high": "Log clutter"
+        },
+        {
+          "group": "Metrics",
+          "toggle": "METRICS_TIER",
+          "default": "1",
+          "current": "1",
+          "prompt_section": "3, 4, 5",
+          "configures": "Depth of metrics logged",
+          "impact": "1: basic; 2: full logs",
+          "risk_if_too_high": "Latency, size"
+        },
+        {
+          "group": "Metrics",
+          "toggle": "METRICS_SAMPLING",
+          "default": "on_suspect",
+          "current": "on_suspect",
+          "prompt_section": "3, 4, 5",
+          "configures": "When to sample metrics logs",
+          "impact": "On anomaly; always/never",
+          "risk_if_too_high": "Missed bugs/cycle waste"
+        },
+        {
+          "group": "Insights",
+          "toggle": "INSIGHTS_SOURCE",
+          "default": "DRQ",
+          "current": "DRQ",
+          "prompt_section": "4",
+          "configures": "Source for insights",
+          "impact": "Forces standalone Deep Research Query",
+          "risk_if_too_high": "More latency, better quality"
+        },
+        {
+          "group": "Insights",
+          "toggle": "INSIGHTS_TEMP",
+          "default": "0.7",
+          "current": "0.7",
+          "prompt_section": "4",
+          "configures": "Creativity for insight phrasing",
+          "impact": "More variety and punch",
+          "risk_if_too_high": "Tone drift"
+        },
+        {
+          "group": "Insights",
+          "toggle": "INSIGHTS_STYLE",
+          "default": "formal",
+          "current": "colloquial",
+          "prompt_section": "4",
+          "configures": "Style for insights",
+          "impact": "Allows off-the-cuff phrasing",
+          "risk_if_too_high": "Too casual for some recipients"
+        },
+        {
+          "group": "Insights",
+          "toggle": "INSIGHTS_VARIETY",
+          "default": "high",
+          "current": "high",
+          "prompt_section": "4",
+          "configures": "Variety across hooks (metric, partnership, trend)",
+          "impact": "Prevents repetitive insights",
+          "risk_if_too_high": "Over-diversification"
+        },
+        {
+          "group": "Insights",
+          "toggle": "INSIGHTS_LENGTH",
+          "default": "22_words",
+          "current": "22_words",
+          "prompt_section": "4",
+          "configures": "Target length per insight",
+          "impact": "Keeps concise yet informative",
+          "risk_if_too_high": "Overly long/short"
+        },
+        {
+          "group": "Insights",
+          "toggle": "HYBRID_INSIGHT_PATHS_MIN",
+          "default": "3",
+          "current": "5",
+          "prompt_section": "4",
+          "configures": "Min hybrid CoT/ToT paths per insight",
+          "impact": "Higher quality selection",
+          "risk_if_too_high": "Latency, cost"
+        },
+        {
+          "group": "Bullets",
+          "toggle": "BULLETS_SOURCE",
+          "default": "resume",
+          "current": "hybrid",
+          "prompt_section": "4",
+          "configures": "Provenance for bullets (resume/RAG/hybrid)",
+          "impact": "Resume-backed with DRQ persona fit",
+          "risk_if_too_high": "Complex selection"
+        },
+        {
+          "group": "Bullets",
+          "toggle": "BULLETS_METRIC_PRIORITY",
+          "default": "medium",
+          "current": "high",
+          "prompt_section": "4",
+          "configures": "Strength of metric requirement",
+          "impact": "Promotes quantified outcomes",
+          "risk_if_too_high": "Can exclude good qualitative wins"
+        },
+        {
+          "group": "Bullets",
+          "toggle": "BULLET_MATCH_POLICY",
+          "default": "none",
+          "current": "semantic_best_DRQ",
+          "prompt_section": "4",
+          "configures": "Matching bullets to recipient background",
+          "impact": "Max relevance to persona",
+          "risk_if_too_high": "Complexity"
+        },
+        {
+          "group": "Bullets",
+          "toggle": "BULLET_TEMP",
+          "default": "0.5",
+          "current": "0.6",
+          "prompt_section": "4",
+          "configures": "Creativity for bullet phrasing",
+          "impact": "Fresh yet controlled",
+          "risk_if_too_high": "Tone drift"
+        },
+        {
+          "group": "Bullets",
+          "toggle": "BULLET_MAX_LENGTH",
+          "default": "25_words",
+          "current": "23_words",
+          "prompt_section": "4",
+          "configures": "Max words per bullet",
+          "impact": "Senior readability",
+          "risk_if_too_high": "Over-constrained"
+        },
+        {
+          "group": "Bullets",
+          "toggle": "HYBRID_BULLET_PATHS_MIN",
+          "default": "3",
+          "current": "5",
+          "prompt_section": "4",
+          "configures": "Min hybrid CoT/ToT paths per bullet",
+          "impact": "Best-of-breed bullet selection",
+          "risk_if_too_high": "Latency, cost"
+        },
+        {
+          "group": "CTA",
+          "toggle": "CTA_SOFTNESS",
+          "default": "medium",
+          "current": "medium",
+          "prompt_section": "4",
+          "configures": "Assertiveness of CTA",
+          "impact": "Tone fit for C-Level",
+          "risk_if_too_high": "Too soft/too pushy"
+        },
+        {
+          "group": "CTA",
+          "toggle": "CTA_WINDOW_TYPE",
+          "default": "explicit",
+          "current": "explicit",
+          "prompt_section": "4",
+          "configures": "Explicit date window expansion",
+          "impact": "Clear scheduling",
+          "risk_if_too_high": "Overly rigid"
+        },
+        {
+          "group": "CTA",
+          "toggle": "CTA_INCLUDE_CONNECT",
+          "default": "true",
+          "current": "true",
+          "prompt_section": "4",
+          "configures": "Connection ask precedes meeting ask",
+          "impact": "Sequencing compliance",
+          "risk_if_too_high": "None"
+        },
+        {
+          "group": "Methods",
+          "toggle": "REFLEXION_ROUNDS",
+          "default": "2",
+          "current": "2",
+          "prompt_section": "4",
+          "configures": "Self-critique passes",
+          "impact": "Higher quality & specificity",
+          "risk_if_too_high": "Latency"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "DECODING_STRATEGY",
+          "default": "sample",
+          "current": "sample",
+          "prompt_section": "4",
+          "configures": "Decoding mode",
+          "impact": "Creativity vs consistency",
+          "risk_if_too_high": "Drift or dullness"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "TOP_K",
+          "default": "60",
+          "current": "60",
+          "prompt_section": "4",
+          "configures": "Candidate cap",
+          "impact": "Variety vs focus",
+          "risk_if_too_high": "Odd tokens"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "CONTRASTIVE_TOP_K",
+          "default": "4",
+          "current": "4",
+          "prompt_section": "4",
+          "configures": "Contrastive option",
+          "impact": "Less repetition",
+          "risk_if_too_high": "Over-conservative"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "CONTRASTIVE_ALPHA",
+          "default": "0.6",
+          "current": "0.6",
+          "prompt_section": "4",
+          "configures": "Novelty penalty",
+          "impact": "Balances novelty/coherence",
+          "risk_if_too_high": "Stylized phrasing"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "MIROSTAT_TAU",
+          "default": "3.8",
+          "current": "3.8",
+          "prompt_section": "4",
+          "configures": "Entropy target",
+          "impact": "Adaptive liveliness",
+          "risk_if_too_high": "Off-topic risk"
+        },
+        {
+          "group": "Decoding",
+          "toggle": "MIROSTAT_ETA",
+          "default": "0.1",
+          "current": "0.1",
+          "prompt_section": "4",
+          "configures": "Adapt rate",
+          "impact": "Stability of entropy control",
+          "risk_if_too_high": "Oscillation"
+        }
+      ],
+      "decoding_profiles": {
+        "profiles": {
+          "expressive_outreach": {
+            "strategy": "sample",
+            "temperature": 0.8,
+            "top_p": 0.95,
+            "top_k": 60,
+            "presence_penalty": 0.3,
+            "frequency_penalty": 0.1,
+            "notes": "Vibrant, professional phrasing."
+          },
+          "executive_polish": {
+            "strategy": "contrastive",
+            "top_k": 4,
+            "penalty_alpha": 0.6,
+            "temperature": 1.0,
+            "notes": "High coherence, low repetition."
+          },
+          "short_new_char_guard": {
+            "strategy": "sample",
+            "temperature": 0.7,
+            "top_p": 0.9,
+            "top_k": 50,
+            "presence_penalty": 0.2,
+            "char_window": [
+              360,
+              380
+            ],
+            "notes": "Tight Short NEW guard."
+          },
+          "mirostat_longform": {
+            "strategy": "mirostat_v2",
+            "tau": 3.8,
+            "eta": 0.1,
+            "temperature": 1.0,
+            "notes": "Adaptive entropy for long bodies."
+          },
+          "deterministic_facts": {
+            "strategy": "greedy",
+            "temperature": 0.0,
+            "top_p": 1.0,
+            "notes": "Exact, short factual slots only."
+          }
+        },
+        "profile_map": {
+          "K.C": "executive_polish",
+          "K.E.new": "expressive_outreach",
+          "K.E.exist": "executive_polish",
+          "K.TA.new": "expressive_outreach",
+          "K.TA.exist": "executive_polish",
+          "K.R.new": "expressive_outreach",
+          "K.R.exist": "executive_polish",
+          "K.SN": "short_new_char_guard"
+        }
+      },
+      "DECODING_PROFILES_ROUTER": "by_message_type",
+      "AGENTIC_PARAMS_ROUTER": "agentic_parameters_by_message_type",
+      "CONTINUITY_OVERLAP_CHECK": true
+    },
+    "decoding_profiles_by_message_type": {
+      "C_LEVEL": {
+        "strategy": "contrastive",
+        "contrastive_k": 5,
+        "contrastive_alpha": 0.65,
+        "temperature": 1.0,
+        "top_p": 1.0,
+        "repetition_penalty": 1.05,
+        "length_penalty": 1.1,
+        "stop_sequences": [
+          "Intro:",
+          "Summary:",
+          "K."
+        ]
+      },
+      "EXECUTIVE": {
+        "strategy": "contrastive",
+        "contrastive_k": 4,
+        "contrastive_alpha": 0.6,
+        "temperature": 0.9,
+        "top_p": 0.95,
+        "repetition_penalty": 1.07,
+        "length_penalty": 1.05,
+        "stop_sequences": [
+          "Intro:",
+          "Summary:",
+          "K."
+        ]
+      },
+      "SENIOR_TA": {
+        "strategy": "sample",
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 60,
+        "presence_penalty": 0.2,
+        "frequency_penalty": 0.1,
+        "length_penalty": 1.0
+      },
+      "RECRUITER": {
+        "strategy": "sample",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "top_k": 50,
+        "presence_penalty": 0.2,
+        "frequency_penalty": 0.0,
+        "length_penalty": 1.0
+      },
+      "SHORT_NEW": {
+        "strategy": "sample",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "top_k": 50,
+        "presence_penalty": 0.3,
+        "frequency_penalty": 0.1,
+        "length_penalty": 0.9,
+        "min_output_tokens": 0
+      }
+    }
+  },
+  "4.reasoning": {
+    "phase_3_hybrid_execution": {
+      "min_hybrid_paths": 5,
+      "cot_primary_linear_path": true,
+      "tot_branch_exploration": {
+        "min_branches": 2,
+        "max_depth": 3
+      }
+    },
+    "phase_4_reflexion": {
+      "critique_rounds_min": 2,
+      "per_key_critiques": true
+    },
+    "phase_5_qa_precheck": {
+      "per_key_required": true,
+      "visible_pass_summary_when_reasoning_hidden": true,
+      "block_on_fail": true,
+      "standards_hardened": true,
+      "global_checks": [
+        "Hybrid mode ON; min paths per K met (C=5, others=3)",
+        "CoT and ToT present; Reflexion 2 rounds; Self-consistency k=5",
+        "Temporal anchoring explicit; dates expanded (ET)",
+        "No reasoning artifacts in OUTPUT; signature exact (Full)",
+        "Dash hygiene: ASCII hyphen-minus only; no em/en/--",
+        "Canonical LinkedIn URLs; no shorteners",
+        "CharCounter applied for Short NEW; 360–380 inclusive",
+        "TA/Recruiter lessons/themes company-focused; no TA/HR content",
+        "C-Level: DRQ toggle ON + handshake Y; RAG not used",
+        "Decoding profile applied per K; parameters within recommended ranges"
+      ],
+      "per_key_qa_templates": {
+        "C_LEVEL": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "EXEC.NEW": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "EXEC.EXIST": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "TA.NEW": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "TA.EXIST": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "RECR.NEW": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "RECR.EXIST": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        },
+        "SHORT_NEW": {
+          "checks": [
+            "Decoding profile applied",
+            "Parameters within recommended ranges"
+          ],
+          "block_on_fail": true
+        }
+      }
+    },
+    "phase_6_validation_metrics": {
+      "mirror_keys_verification": {
+        "verify_presence_for_all": true,
+        "verify_emit_order": "K.1..K.m",
+        "on_fail": "halt_and_remediate"
+      },
+      "self_consistency_mini_cots": 5
+    },
+    "policy_guardrails": {
+      "hybrid_path_enforcement": {
+        "min_paths_per_k": 5,
+        "apply_per_qa_row": true,
+        "block_on_violation": true
+      },
+      "enhanced_qa_gates": {
+        "style_hygiene_lint": {
+          "rules": [
+            "ban_em_dash",
+            "ban_en_dash",
+            "ban_double_hyphen",
+            "ascii_only"
+          ],
+          "block_on_fail": true
+        },
+        "mirror_key_parity_audit": {
+          "require_same_keys_order": true,
+          "block_on_fail": true
+        },
+        "self_consistency_voting": {
+          "k": 5
+        }
+      },
+      "universal_hygiene_post_emit": {
+        "enabled": true,
+        "regex": "[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\u2043\\u2212\\u00A0\\u00AD\\u200B-\\u200F\\u202F\\u2060\\uFEFF]|--",
+        "ascii_whitelist": "U+0020..U+007E plus TAB LF CR",
+        "block_on_fail": true
+      },
+      "insights_hardening": {
+        "drq_required": false,
+        "time_cue_required": true,
+        "min_count": 3,
+        "distinctness_cosine_max": 0.6,
+        "token_overlap_max": 0.35,
+        "variety_required": true,
+        "allow_colloquial_if_toggle": true
+      },
+      "ascii_widescreen_required_per_K": true,
+      "ascii_widescreen_markdown_fence_required": true,
+      "ascii_widescreen_markdown_fence_type": "```markdown",
+      "dow_ascii_widescreen_required": true,
+      "ascii_widescreen_template_v1": "\n===============================================================================\nSECTION 4.K.x — REASONING (HARDENED ASCII, v17)\n===============================================================================\n\nDEPTH 0: 🧑‍💼 GENERAL ANALYST (Greedy Decoding, deterministic)\n-------------------------------------------------------------------------------\n- CoT line cap = 6 slides\n- Greedy decoding -> always pick top-1 token (argmax)\n\nDEPTH 1: 👩‍💻 SPECIALISTS (ToT Branches, Sampling ON)\n-------------------------------------------------------------------------------\n- TOT_MAX_DEPTH=2, TOT_BRANCH_FACTOR=3\n\nDEPTH 2: 👔 SENIOR MANAGER REVIEW (Reflexion)\n-------------------------------------------------------------------------------\n- REFLEXION_ROUNDS=2\n\nDEPTH 2: 🧑‍⚖️ PARTNER POLL (Self-Consistency Vote)\n-------------------------------------------------------------------------------\n- SC_K=5, majority_required=true\n\nDEPTH 3: 🏆 CHOSEN PATH (Final Client Deck)\n-------------------------------------------------------------------------------\n- PASS\n===============================================================================\n",
+      "k4_output_policy": {
+        "field_present_in_schema": false,
+        "on_absent_emit": "{}",
+        "qa": "PASS_WHEN_ABSENT_FIELD"
+      },
+      "section_kx_output_required": true
+    },
+    "KX2_DOW_markdown_v17": "```markdown\n===============================================================================\nSECTION 4.K.2 — REASONING (HARDENED ASCII, v17)\n===============================================================================\n\nDEPTH 0: 🧑‍💼 GENERAL ANALYST (Greedy decoding, deterministic CoT spine)\n-------------------------------------------------------------------------------\n- CoT line cap = 6–7 slides (linear spine).\n- GA assembles baseline from the ordered token hall (🎟 seat badge + 🪪 key card).\n- Mid-spine pause point enables ToT fork after Slide 4.\n\nCoT (Slides 1–4, then pause for ToT)\n  1️⃣ 🏦 Retrieve official site (About)\n  2️⃣ 🏷️ Extract sector phrasing\n  3️⃣ 🕵️ Search for \"commercial bank\"\n  4️⃣ ⚠️ Check ambiguity/conflict\n  — PAUSE — hand off to ToT (Depth 1)\n\nDEPTH 1: 👩‍💻 SPECIALISTS (ToT branches, sampling ON)\n-------------------------------------------------------------------------------\n- TOT_MAX_DEPTH = 2 (each branch = 2 slides)\n- TOT_BRANCH_FACTOR = 3 (A, B, C)\n- Sampling ON (temperature/top-k/top-p active)\n\n╔══════════════════════════════════════════════════════════════════════╗\n║  🌳 ToT-A (GICS/NAICS Specialist)                                    ║\n║    ➀ 🔍 Retrieve code/classification                                 ║\n║    ➁ 🗂 Map to schema (e.g., \"Commercial Banking\")                    ║\n╠══════════════════════════════════════════════════════════════════════╣\n║  🌳 ToT-B (FDIC Regulatory Specialist)                               ║\n║    ➀ 🏛 Lookup bank type in FDIC                                     ║\n║    ➁ 🗂 Map to canonical sector/sub-category                          ║\n╠══════════════════════════════════════════════════════════════════════╣\n║  🌳 ToT-C (LinkedIn Tag Specialist)                                  ║\n║    ➀ 🔗 Extract LinkedIn industry tag                                 ║\n║    ➁ 🗂 Validate mapping to canonical schema                           ║\n╚══════════════════════════════════════════════════════════════════════╝\n\nToT assessment prior to merge (per branch)\n- SchemaCoverage • FactConsistency • RetrievalError • Drift • Canonicality\n- AmbiguityRate • DecisionScore (consensus/vote input)\n\nDEPTH 0 (RESUME): 🧑‍💼 GENERAL ANALYST (finish CoT spine)\n-------------------------------------------------------------------------------\n- GA resumes with merged ToT evidence injected as context.\n\nCoT (Slides 5–7)\n  5️⃣ Validate findings (with ToT input)\n  6️⃣ 🧑‍⚖️ Compare/merge all CoT + ToT results using the criteria above\n  7️⃣ 🏁 Finalize canonical mapping\n\nDEPTH 2: 👩‍⚖️ SENIOR MANAGER REVIEW (Reflexion)\n-------------------------------------------------------------------------------\n- REFLEXION_ROUNDS = 2\n  - Round 1: critique → redlines\n  - Round 2: specialists revise → confirm fixes\n\nDEPTH 2: ⚖️ PARTNER POLL (Self-Consistency Vote)\n-------------------------------------------------------------------------------\n- SC_K = 5, majority_required = true\n- 5 partners independently review distilled variants (3–6 slides each)\n- Consensus ≥ 3/5 PASS; dissent logged as risk note\n\nDEPTH 3: 🏆 CHOSEN PATH (Final Client Deck)\n-------------------------------------------------------------------------------\n- Archetype confirmed • Fixes applied • Risks logged • PASS\n===============================================================================\n```"
+  },
+  "5.output": {
+    "final_answer": {
+      "emit_order": "K.1..K.m",
+      "no_inline_qa_tables": true,
+      "per_key_assertions": {
+        "all_keys_present": true,
+        "no_empty_nodes": true,
+        "emit_order_enforced": true
+      },
+      "mini_qa_pass_summary": {
+        "emit": true,
+        "style": "table",
+        "visible_even_if_reasoning_hidden": true
+      }
+    },
+    "detected_settings_summary_template": {
+      "table_5A_columns": [
+        "Setting",
+        "Active Configuration"
+      ],
+      "required_rows": [
+        "Reasoning Modes",
+        "Hybrid Paths Min",
+        "SHOW_REASONING",
+        "Retrieval Precision Min",
+        "Retrieval Recall Min",
+        "Hygiene Scanner"
+      ]
+    },
+    "output_hygiene_guard": [
+      "No non-ASCII dashes",
+      "ASCII hyphen-minus only",
+      "No smart quotes"
+    ],
+    "universal_hygiene_post_emit": {
+      "enabled": true,
+      "regex": "[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\u2043\\u2212\\u00A0\\u00AD\\u200B-\\u200F\\u202F\\u2060\\uFEFF]|--",
+      "ascii_whitelist": "U+0020..U+007E plus TAB LF CR",
+      "block_on_fail": true
+    },
+    "markdown_pipe_escape_policy": {
+      "escape_pipes_in_tables": true,
+      "escape_backticks_in_fences": true
+    },
+    "visibility_controls": {
+      "show_reasoning_by_default": false,
+      "allow_toggle": true
+    },
+    "render_gate": {
+      "run_allowed": true,
+      "block_if": {
+        "reasoning_leak": true,
+        "hygiene_violation": true
+      }
+    },
+    "style_standalone_conformance": {
+      "professional_concise_structured": true,
+      "complete_and_standalone": true,
+      "no_reasoning_leakage": true
+    },
+    "decoding_profile_echo": {
+      "emit_profile_name_per_K": true,
+      "include_parameters": true
+    },
+    "operator_prompts_gating": [
+      {
+        "id": "prior_message_check_prompt_v1",
+        "title": "Prior message / thread input (human)",
+        "text": "PRIOR-MESSAGE CHECK REQUIRED: Before composing the outreach message, paste any prior messages, threads, or connection notes you have with this contact (include dates). If none, type 'NONE'.\n\nPurpose: ensure the new message does not significantly overlap earlier content and that tone/sequence flow from prior communication. The system will use the pasted thread to (A) avoid repeating claims or facts, (B) prefer follow-up framing vs new opening framing, and (C) flag contradictions.\n\nIf multiple prior reachouts exist, paste the most recent 3 messages or provide a brief summary and date range.",
+        "required": true,
+        "applies_to": [
+          "SHORT_NEW",
+          "RECRUITER",
+          "SENIOR_TA",
+          "EXECUTIVE",
+          "C_LEVEL"
+        ],
+        "notes": "Enables continuity, deduplication, and NEW→EXIST conversion."
+      }
+    ],
+    "app_schema_field_whitelist": [
+      "Company",
+      "Category",
+      "Sub-Category",
+      "Job Title",
+      "Primary Job Role",
+      "JD URL",
+      "Application Date",
+      "Pipeline Status",
+      "Hiring Recruiter",
+      "Hiring Recruiter URL",
+      "Hiring Recruiter Interview Date",
+      "Hiring Manager",
+      "Hiring Manager URL",
+      "Hiring Manager Interview Date",
+      "Other Interviewer",
+      "Other Interviewer URL",
+      "Other Interviewer Date",
+      "Other Interviewer 2",
+      "Other Interviewer 2 URL",
+      "Other Interviewer 2 Date",
+      "Base Resume",
+      "Versioned Resume",
+      "Outreach Channel",
+      "Recruiter / Contact 1 Name",
+      "Recruiter / Contact 1 Title",
+      "Recruiter / Contact 1 URL",
+      "Date Communication Sent 1",
+      "Follow-Up Date 1",
+      "Second Follow-Up Date 1",
+      "Recruiter / Contact 2 Name",
+      "Recruiter / Contact 2 Title",
+      "Recruiter / Contact 2 URL",
+      "Date Communication Sent 2",
+      "Follow-Up Date 2",
+      "Second Follow-Up Date 2",
+      "Recruiter / Contact 3 Name",
+      "Recruiter / Contact 3 Title",
+      "Recruiter / Contact 3 URL",
+      "Date Communication Sent 3",
+      "Follow-Up Date 3",
+      "Second Follow-Up Date 3",
+      "Recruiter / Contact 4 Name",
+      "Recruiter / Contact 4 Title",
+      "Recruiter / Contact 4 URL",
+      "Date Communication Sent 4",
+      "Follow-Up Date 4",
+      "Second Follow-Up Date 4",
+      "Recruiter / Contact 5 Name",
+      "Recruiter / Contact 5 Title",
+      "Recruiter / Contact 5 URL",
+      "Date Communication Sent 5",
+      "Follow-Up Date 5",
+      "Second Follow-Up Date 5",
+      "Closure Reason"
+    ],
+    "app_schema_field_whitelist_enforced": true,
+    "require_fenced_json_per_K": true,
+    "fenced_json_type": "```json"
+  },
+  "6.conditions": {
+    "blockers_union": {
+      "formatting_and_routing": [
+        "Per-key gating violation (4.K.x QA not PASS before 5.K.x)",
+        "Missing or misordered K.* emit order"
+      ],
+      "mapping_and_hygiene": [
+        "Presence of em/en dash or double hyphen in body",
+        "Non-ASCII punctuation in body"
+      ]
+    },
+    "deterministic_release_gate": "Do not release OUTPUT if any Conditions QA Gate row fails.",
+    "smoke_tests": [
+      {
+        "name": "APP_SCHEMA_WHITELIST_ENFORCED",
+        "checks": [
+          "exists($.['5.output'].app_schema_field_whitelist)",
+          "$.['5.output'].app_schema_field_whitelist_enforced == True",
+          "len($.['5.output'].app_schema_field_whitelist) >= 10"
+        ],
+        "block_on_fail": true
+      },
+      {
+        "name": "FENCED_JSON_PER_K",
+        "checks": [
+          "$.['5.output'].require_fenced_json_per_K == True",
+          "$.['5.output'].fenced_json_type == '```json'"
+        ],
+        "block_on_fail": true
+      },
+      {
+        "name": "ASCII_WIDESCREEN_PER_K_V17",
+        "checks": [
+          "$.['4.reasoning'].policy_guardrails.ascii_widescreen_required_per_K == True",
+          "$.['4.reasoning'].policy_guardrails.ascii_widescreen_markdown_fence_required == True",
+          "$.['4.reasoning'].policy_guardrails.ascii_widescreen_markdown_fence_type == '```markdown'",
+          "$.['4.reasoning'].policy_guardrails.ascii_widescreen_template_v1 contains 'SECTION 4.K.x'"
+        ],
+        "block_on_fail": true
+      },
+      {
+        "name": "K4_ABSENT_FIELD_POLICY",
+        "checks": [
+          "exists($.['4.reasoning'].policy_guardrails.k4_output_policy)",
+          "$.['4.reasoning'].policy_guardrails.k4_output_policy.on_absent_emit == '{}'"
+        ],
+        "block_on_fail": true
+      }
+    ]
+  },
+  "metadata": {
+    "version": "v7.8",
+    "patched_from": "v7.7",
+    "patched_at": "2025-09-23T22:19:27.553463+00:00",
+    "governance_alignment": "Aligned to JW 16.4 structural principles (per-key gating, hybrid min paths, QA visibility, output mirroring, hygiene scan).",
+    "smoke_test_pass": true,
+    "smoke_test_failures": [],
+    "patch_notes": [
+      "ensured six-",
+      "role standards expanded",
+      "task success criteria hardened",
+      "context retrieval and toggles set",
+      "reasoning hybrid, QA, and mirror keys added",
+      "output mirroring and hygiene guard set",
+      "conditions blockers expanded",
+      "top-level enforcement and smoke tests added",
+      "v4.0: Decoding best-practice profiles + per-K mapping; decoding toggles in 3A; QA hardening; per-K decoding compliance; Output echo.",
+      "v7.8: Restored K.1–K.X mandatory reasoning ASCII (widescreen, fenced),",
+      "v7.8: Enforced App Schema v4-only fenced canonical output per K,",
+      "v7.8: K.4 policy: emit empty object when field absent in schema,",
+      "v7.8: Added smoke tests for whitelist, fenced JSON, ASCII v17, and K.4 policy."
+    ],
+    "last_saved": "2025-09-29T20:59:00-04:00",
+    "built_from": "/mnt/data/LIC_9.24.2025_v7.json",
+    "notes": "LIC-only essentials; no Section Shell/Job Workflow; diff via memory_bio"
+  },
+  "diff_direction": "memory_bio"
+}

@@ -1,0 +1,64 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\schema_validation.py",
+    "file_hash": "c4139b46aec4fa94a683806ee17e5d681716b2b96090459eb6e95b7441ff8205",
+    "size_bytes": 2042,
+    "last_modified": "2025-12-01T12:27:39.166516",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_get_schema_version",
+      "line_number": 8,
+      "docstring": "Best-effort helper to read a schema_version attribute from a model.\n\nThe validator is intentionally defensive and never raises on simple\nattribute access issues; it only raises when the value is present but\nincompatible with expectations.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_schema_version",
+      "line_number": 22,
+      "docstring": "Validate that a Pydantic model has an expected schema_version.\n\nThis is a light-weight guard used on critical cross-layer contracts\n(e.g., WorkflowPlanBundle, L2ResultBundle) so that incompatible data\nshapes surface early during development and testing.\n\nThe function is intentionally conservative:\n    \u2022 If obj is not a BaseModel (and model_type is not given), it is a no-op.\n    \u2022 If schema_version is missing or None, it is a no-op for now.\n    \u2022 If schema_version is present but not in expected_versions, it raises\n      a ValueError to signal an incompatible contract.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "str",
+        "isinstance",
+        "tuple",
+        "ValueError",
+        "_get_schema_version"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_pydantic": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "_get_schema_version": "_get_schema_version",
+    "validate_schema_version": "validate_schema_version"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "manual_recipient_data": [
+    {
+      "source_type": "RECIPIENT_LINKEDIN_ABOUT",
+      "text": "Paste the recipient's LinkedIn 'About' summary here."
+    },
+    {
+      "source_type": "RECIPIENT_RECENT_POST",
+      "text": "Paste a relevant recent LinkedIn post from the recipient here."
+    },
+    {
+      "source_type": "RECIPIENT_LINKEDIN_ABOUT",
+      "text": "Optional: Add more LinkedIn profile sections (Experience, Education, etc.)"
+    },
+    {
+      "source_type": "COMPANY_BLOG_ANNOUNCEMENT",
+      "text": "Optional: Paste relevant company blog posts or announcements here."
+    },
+    {
+      "source_type": "COMPANY_PRESS_RELEASE",
+      "text": "Optional: Add company press releases or news coverage here."
+    }
+  ]
+}

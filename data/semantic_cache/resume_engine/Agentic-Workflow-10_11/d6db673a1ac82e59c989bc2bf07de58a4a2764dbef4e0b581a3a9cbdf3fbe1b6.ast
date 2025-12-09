@@ -1,0 +1,19 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\instructional_injection_v6.py",
+    "file_hash": "d6db673a1ac82e59c989bc2bf07de58a4a2764dbef4e0b581a3a9cbdf3fbe1b6",
+    "size_bytes": 16070,
+    "last_modified": "2025-12-01T12:27:38.242447",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "error": "syntax_error",
+    "line": 483
+  }
+}

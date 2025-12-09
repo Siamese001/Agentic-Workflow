@@ -1,0 +1,186 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\agents.py",
+    "file_hash": "f19e23abbc46dd07ad9295da6b74577037f3fd83ed3912f6fa1ec4a59009a847",
+    "size_bytes": 7247,
+    "last_modified": "2025-12-01T12:27:37.442436",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "BaseAgent",
+      "line_number": 21,
+      "docstring": "Base class for all agents with v10.7 context injection",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaseTool",
+      "line_number": 131,
+      "docstring": "Base interface for tools used by ReAct Conductors",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 24,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_info",
+      "line_number": 36,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_warning",
+      "line_number": 37,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_error",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_debug",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_feedback",
+      "line_number": 42,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_model_client",
+      "line_number": 57,
+      "docstring": "v10.7 (Fix #15): Gets model client.\nRoutes based on complexity, cost, and latency.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "getattr",
+        "legacy_model_alias"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_mcp_client",
+      "line_number": 116,
+      "docstring": "Retrieve a configured MCP client by name.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_schema",
+      "line_number": 158,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "json": [
+      "line_5"
+    ],
+    "logging": [
+      "line_6"
+    ],
+    "os": [
+      "line_7"
+    ],
+    "from_datetime": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_9"
+    ],
+    "from_constants": [
+      "line_11"
+    ],
+    "from_services": [
+      "line_12"
+    ],
+    "from_clients": [
+      "line_15"
+    ],
+    "from_context": [
+      "line_16"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "log_info": "log_info",
+    "log_warning": "log_warning",
+    "log_error": "log_error",
+    "log_debug": "log_debug",
+    "log_feedback": "log_feedback",
+    "get_model_client": "get_model_client",
+    "get_mcp_client": "get_mcp_client",
+    "get_schema": "get_schema"
+  },
+  "class_signatures": {
+    "BaseAgent": "BaseAgent",
+    "BaseTool": "BaseTool"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 10,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

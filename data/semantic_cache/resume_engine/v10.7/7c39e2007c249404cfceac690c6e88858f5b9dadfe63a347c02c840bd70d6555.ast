@@ -1,0 +1,116 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\pydantic.py",
+    "file_hash": "7c39e2007c249404cfceac690c6e88858f5b9dadfe63a347c02c840bd70d6555",
+    "size_bytes": 1460,
+    "last_modified": "2025-12-01T12:27:37.357389",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ValidationError",
+      "line_number": 1,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "Field",
+      "line_number": 5,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "default_factory"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaseModel",
+      "line_number": 11,
+      "docstring": "Minimal stand-in for pydantic.BaseModel used in tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 14,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "ValidationError",
+        "setattr",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dict",
+      "line_number": 31,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump",
+      "line_number": 35,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_validate",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "cls",
+        "ValidationError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {},
+  "function_signatures": {
+    "Field": "Field",
+    "__init__": "__init__",
+    "dict": "dict",
+    "model_dump": "model_dump",
+    "model_validate": "model_validate"
+  },
+  "class_signatures": {
+    "ValidationError": "ValidationError",
+    "BaseModel": "BaseModel"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 10,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

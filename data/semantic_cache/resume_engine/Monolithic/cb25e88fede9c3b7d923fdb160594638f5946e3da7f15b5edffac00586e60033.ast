@@ -1,0 +1,409 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Monolithic\\test_lic_v11_10.py",
+    "file_hash": "cb25e88fede9c3b7d923fdb160594638f5946e3da7f15b5edffac00586e60033",
+    "size_bytes": 45899,
+    "last_modified": "2025-12-01T12:27:35.989789",
+    "engine": "RG",
+    "archive_version": "Monolithic",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "circuit_breaker",
+      "line_number": 41,
+      "docstring": "Circuit breaker instance",
+      "imports": [],
+      "dependencies": [
+        "CircuitBreaker"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_mission",
+      "line_number": 46,
+      "docstring": "Standard test mission",
+      "imports": [],
+      "dependencies": [
+        "OutreachMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_profile_analysis",
+      "line_number": 70,
+      "docstring": "Standard profile analysis",
+      "imports": [],
+      "dependencies": [
+        "ProfileAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_research_context",
+      "line_number": 81,
+      "docstring": "Standard research context with RAG results",
+      "imports": [],
+      "dependencies": [
+        "RAGResult",
+        "ResearchContext"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_scaffold",
+      "line_number": 104,
+      "docstring": "Standard message scaffold",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "MessageScaffold"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_generated_message",
+      "line_number": 121,
+      "docstring": "Standard generated message",
+      "imports": [],
+      "dependencies": [
+        "GeneratedMessage",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestEnhancement1_MultiAgent",
+      "line_number": 139,
+      "docstring": "Test S2 supervisor delegates to specialist agents",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestEnhancement2_S2InternalLoop",
+      "line_number": 238,
+      "docstring": "Test S2's internal critique and refinement loop",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestEnhancement3_AdversarialCheck",
+      "line_number": 364,
+      "docstring": "Test S2's adversarial red-team verification",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestEnhancement4_MetaLoop",
+      "line_number": 439,
+      "docstring": "Test S6->S2 meta-loop for factual failure recovery",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestRegressionV11_9",
+      "line_number": 657,
+      "docstring": "Ensure v11.9 features still work after v11.10 refactor",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestIntegration",
+      "line_number": 753,
+      "docstring": "End-to-end integration tests",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestPerformance",
+      "line_number": 856,
+      "docstring": "Performance and resource usage tests",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_summary",
+      "line_number": 917,
+      "docstring": "Print test suite summary",
+      "imports": [],
+      "dependencies": [
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_specialist_agents_instantiate",
+      "line_number": 142,
+      "docstring": "Test all specialist agents are created",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "S2_SupervisorAgent",
+        "isinstance",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_adversarial_findings_field_exists",
+      "line_number": 422,
+      "docstring": "Test ResearchContext has adversarial_findings field",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "ResearchContext",
+        "isinstance",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_failure_classifier_enum_exists",
+      "line_number": 442,
+      "docstring": "Test FailureClassifier enum is defined",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_factual_gap_error_exists",
+      "line_number": 448,
+      "docstring": "Test FactualGapError exception is defined",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "FactualGapError",
+        "len",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_sender_grounding_extraction",
+      "line_number": 660,
+      "docstring": "Test sender grounding whitelist extraction",
+      "imports": [],
+      "dependencies": [
+        "RAGResult",
+        "print",
+        "S2_SupervisorAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_context_aware_cta_scaffold",
+      "line_number": 683,
+      "docstring": "Test context-aware CTA generation",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "ScaffoldAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_metric_context_validation",
+      "line_number": 706,
+      "docstring": "Test metric context validation (LIC-E010)",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "set",
+        "len",
+        "GeneratedMessage",
+        "RAGResult",
+        "ValidationAgent",
+        "ResearchContext"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_config_registry_integration",
+      "line_number": 812,
+      "docstring": "Test CONFIG_REGISTRY provides correct values",
+      "imports": [],
+      "dependencies": [
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_circuit_breaker_integration",
+      "line_number": 833,
+      "docstring": "Test circuit breaker functionality",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "CircuitBreaker",
+        "print",
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_memory_efficiency_rag_results",
+      "line_number": 894,
+      "docstring": "Test RAG results don't duplicate excessively",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "range",
+        "len",
+        "RAGResult",
+        "ResearchContext"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "failing_func",
+      "line_number": 840,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "internal",
+      "line_number": 875,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_23"
+    ],
+    "asyncio": [
+      "line_24"
+    ],
+    "from_unittest.mock": [
+      "line_25"
+    ],
+    "from_datetime": [
+      "line_26"
+    ],
+    "from_models": [
+      "line_29"
+    ],
+    "from_workflow": [
+      "line_30"
+    ],
+    "from_validation": [
+      "line_31"
+    ],
+    "from_rag": [
+      "line_32"
+    ],
+    "from_utils": [
+      "line_33"
+    ],
+    "from_config": [
+      "line_34"
+    ],
+    "time": [
+      "line_864"
+    ]
+  },
+  "function_signatures": {
+    "circuit_breaker": "circuit_breaker",
+    "mock_mission": "mock_mission",
+    "mock_profile_analysis": "mock_profile_analysis",
+    "mock_research_context": "mock_research_context",
+    "mock_scaffold": "mock_scaffold",
+    "mock_generated_message": "mock_generated_message",
+    "test_summary": "test_summary",
+    "test_specialist_agents_instantiate": "test_specialist_agents_instantiate",
+    "test_adversarial_findings_field_exists": "test_adversarial_findings_field_exists",
+    "test_failure_classifier_enum_exists": "test_failure_classifier_enum_exists",
+    "test_factual_gap_error_exists": "test_factual_gap_error_exists",
+    "test_sender_grounding_extraction": "test_sender_grounding_extraction",
+    "test_context_aware_cta_scaffold": "test_context_aware_cta_scaffold",
+    "test_metric_context_validation": "test_metric_context_validation",
+    "test_config_registry_integration": "test_config_registry_integration",
+    "test_circuit_breaker_integration": "test_circuit_breaker_integration",
+    "test_memory_efficiency_rag_results": "test_memory_efficiency_rag_results",
+    "failing_func": "failing_func",
+    "internal": "internal"
+  },
+  "class_signatures": {
+    "TestEnhancement1_MultiAgent": "TestEnhancement1_MultiAgent",
+    "TestEnhancement2_S2InternalLoop": "TestEnhancement2_S2InternalLoop",
+    "TestEnhancement3_AdversarialCheck": "TestEnhancement3_AdversarialCheck",
+    "TestEnhancement4_MetaLoop": "TestEnhancement4_MetaLoop",
+    "TestRegressionV11_9": "TestRegressionV11_9",
+    "TestIntegration": "TestIntegration",
+    "TestPerformance": "TestPerformance"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

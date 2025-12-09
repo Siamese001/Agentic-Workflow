@@ -1,0 +1,291 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\meta_profile.py",
+    "file_hash": "a174a17bb4f5db8751f5a2df65479d25ac33a03c2449e8b6930ae09f811b5158",
+    "size_bytes": 7785,
+    "last_modified": "2025-12-01T12:27:39.091347",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RoutingBias",
+      "line_number": 32,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PlanningBias",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QABias",
+      "line_number": 46,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyBias",
+      "line_number": 52,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaProfile",
+      "line_number": 58,
+      "docstring": "Central meta-profile object representing adaptive, soft preferences.\n\nPhase-1 addition:\n-----------------\nprofile_inference : ProfileInferenceResult\n    Stores seniority/domain/skills inference from L1 and routes\n    into planning/routing for richer Agent Boundaries.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaProfileSnapshot",
+      "line_number": 80,
+      "docstring": "Read-only snapshot of MetaProfile used by L1 and routing.\n\nThis is a *view* over the internal MetaProfile plus derived\nprofile inference fields. It must remain backwards compatible\nwith existing Phase-3 consumers (L1, routing, cognitive agents).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "_MetaUpdater",
+      "line_number": 116,
+      "docstring": "Internal singleton managing mutations to the MetaProfile.\nLegal mutation surface occurs here (L4-compatible).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_profile_inference",
+      "line_number": 169,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_profile_inference",
+      "line_number": 173,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_meta_profile_snapshot",
+      "line_number": 177,
+      "docstring": "Construct a typed MetaProfileSnapshot for the given profile name.\n\nThis provides a stable, read-only view for L1 and routing that\nexposes both meta biases and derived profile inference signals.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "MetaProfileSnapshot",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_bias",
+      "line_number": 225,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_planning_bias",
+      "line_number": 229,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_qa_bias",
+      "line_number": 233,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_safety_bias",
+      "line_number": 237,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 122,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "MetaProfile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_profile_inference",
+      "line_number": 128,
+      "docstring": "Replace the stored profile inference.\nL1 callers overwrite the entire typed structure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_profile_inference",
+      "line_number": 135,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_routing",
+      "line_number": 141,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "setattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_planning",
+      "line_number": 145,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "setattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_qa",
+      "line_number": 149,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "setattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_safety",
+      "line_number": 153,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "setattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_21"
+    ],
+    "from_dataclasses": [
+      "line_22"
+    ],
+    "from_typing": [
+      "line_23"
+    ],
+    "from_core.models.models": [
+      "line_25"
+    ]
+  },
+  "function_signatures": {
+    "set_profile_inference": "set_profile_inference",
+    "get_profile_inference": "get_profile_inference",
+    "build_meta_profile_snapshot": "build_meta_profile_snapshot",
+    "get_routing_bias": "get_routing_bias",
+    "get_planning_bias": "get_planning_bias",
+    "get_qa_bias": "get_qa_bias",
+    "get_safety_bias": "get_safety_bias",
+    "__init__": "__init__",
+    "update_profile_inference": "update_profile_inference",
+    "update_routing": "update_routing",
+    "update_planning": "update_planning",
+    "update_qa": "update_qa",
+    "update_safety": "update_safety"
+  },
+  "class_signatures": {
+    "RoutingBias": "RoutingBias",
+    "PlanningBias": "PlanningBias",
+    "QABias": "QABias",
+    "SafetyBias": "SafetyBias",
+    "MetaProfile": "MetaProfile",
+    "MetaProfileSnapshot": "MetaProfileSnapshot",
+    "_MetaUpdater": "_MetaUpdater"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 9,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
