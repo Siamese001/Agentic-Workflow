@@ -71,6 +71,7 @@ MAX_FILES = 20
 
 
 def is_whitelisted(path: Path, rel_parts: List[str]) -> bool:
+    """Execute is_whitelisted operation."""
     name = path.name
     if any(part in STACK_DIR_WHITELIST for part in rel_parts):
         return name.endswith(".py")
@@ -83,6 +84,7 @@ def is_whitelisted(path: Path, rel_parts: List[str]) -> bool:
 
 
 def determine_version(rel_path: str) -> str:
+    """Execute determine_version operation."""
     if "10_8" in rel_path:
         return "10_8"
     if "10_7" in rel_path:
@@ -91,6 +93,7 @@ def determine_version(rel_path: str) -> str:
 
 
 def normalize_key(rel_path: Path) -> str:
+    """Execute normalize_key operation."""
     parts = []
     for part in rel_path.parts:
         part_clean = re.sub(r"10_[78]", "", part)
@@ -101,6 +104,7 @@ def normalize_key(rel_path: Path) -> str:
 
 
 def collect_candidates() -> Dict[str, Tuple[str, Path]]:
+    """Execute collect_candidates operation."""
     candidates: Dict[str, Tuple[str, Path]] = {}
     for root, dirs, files in os.walk(REPO_ROOT):
         dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS and not d.startswith(".") and d not in {EXTRACT_DIR.name, CONSOLIDATED_DIR.name}]
@@ -122,11 +126,13 @@ def collect_candidates() -> Dict[str, Tuple[str, Path]]:
 
 
 def safe_copy(src: Path, dest: Path) -> None:
+    """Execute safe_copy operation."""
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dest)
 
 
 def extract_files() -> Dict[str, Path]:
+    """Execute extract_files operation."""
     if not EXTRACT_DIR.exists():
         EXTRACT_DIR.mkdir(parents=True)
     mapping: Dict[str, Path] = {}
@@ -139,6 +145,7 @@ def extract_files() -> Dict[str, Path]:
 
 
 def sha256_for_file(path: Path) -> str:
+    """Execute sha256_for_file operation."""
     h = hashlib.sha256()
     with path.open("rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
@@ -147,6 +154,7 @@ def sha256_for_file(path: Path) -> str:
 
 
 def assign_bucket(rel_path: Path) -> str:
+    """Execute assign_bucket operation."""
     name = rel_path.name.lower()
     path_str = str(rel_path).lower()
     if "rag" in name or "rag" in path_str:
@@ -177,6 +185,7 @@ def assign_bucket(rel_path: Path) -> str:
 
 
 def merge_sources(bucket: str, sources: List[Tuple[Path, str]]) -> None:
+    """Execute merge_sources operation."""
     output_path = CONSOLIDATED_DIR / f"{bucket}.py" if not bucket.endswith(".py") else CONSOLIDATED_DIR / bucket
     timestamp = datetime.utcnow().isoformat() + "Z"
     header_lines = [
@@ -216,6 +225,7 @@ def merge_sources(bucket: str, sources: List[Tuple[Path, str]]) -> None:
 
 
 def consolidate(mapping: Dict[str, Path]) -> Dict[str, List[str]]:
+    """Execute consolidate operation."""
     bucket_map: Dict[str, List[Tuple[Path, str]]] = {bucket: [] for bucket in BUCKET_ORDER}
     overflow_buckets: List[str] = []
     for key, path in sorted(mapping.items()):
@@ -243,6 +253,7 @@ def consolidate(mapping: Dict[str, Path]) -> Dict[str, List[str]]:
 
 
 def write_manifest(manifest_data: Dict[str, List[str]]) -> None:
+    """Execute write_manifest operation."""
     manifest_path = CONSOLIDATED_DIR / "MANIFEST.md"
     header = "| Final File | L-Layer | Source Files | Superseded? | Merge Rule |\n|---|---|---|---|---|\n"
     lines = [header]
@@ -267,6 +278,7 @@ def write_manifest(manifest_data: Dict[str, List[str]]) -> None:
 
 
 def main() -> None:
+    """Execute main operation."""
     extracted = extract_files()
     manifest_data = consolidate(extracted)
     write_manifest(manifest_data)

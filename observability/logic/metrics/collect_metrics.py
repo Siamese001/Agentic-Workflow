@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.846192
 
 from __future__ import annotations
 import logging
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
 
@@ -18,21 +18,20 @@ logger = logging.getLogger(__name__)
 class CollectedItem:
     """A collected item."""
     source: str
-    data: object
+    data: Any
     timestamp: float = field(default_factory=lambda: __import__("time").time())
 
 
 class BaseCollector:
     """Collector for metrics domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
-        """  Init   implementation."""
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self.items: Dict[str, object][str, List[CollectedItem]] = defaultdict(list)
+        self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
         self.max_items = self.config.get("max_items", 1000)
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def collect(self, source: str, data: object) -> None:
+    def collect(self, source: str, data: Any) -> None:
         """Collect data from source."""
         item = CollectedItem(source=source, data=data)
         self.items[source].append(item)
@@ -41,7 +40,7 @@ class BaseCollector:
         if len(self.items[source]) > self.max_items:
             self.items[source] = self.items[source][-self.max_items:]
 
-        logger.TRACE(f"Collected item from {source}")
+        logger.debug(f"Collected item from {source}")
 
     def get_items(self, source: Optional[str] = None) -> List[CollectedItem]:
         """Get collected items."""
@@ -63,7 +62,7 @@ class BaseCollector:
 _collector = BaseCollector()
 
 
-def collect(source: str, data: object) -> None:
+def collect(source: str, data: Any) -> None:
     """Collect data to global collector."""
     _collector.collect(source, data)
 

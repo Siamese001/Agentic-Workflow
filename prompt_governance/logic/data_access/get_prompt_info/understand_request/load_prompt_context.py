@@ -208,7 +208,6 @@ class WorkflowContext:
     """
 
     def __init__(
-        """  Init   implementation."""
         self,
         config: ConfigV10_7,
         redis_client: RedisType,
@@ -820,15 +819,16 @@ class A2AContext:
                     continue
         self.messages = normalized
 
-    def append(self,
-        """Append implementation."""
+    def append(
+        self,
         *,
         sender: str,
         message_type: str,
-        payload: Dict[str, object][str, object],
+        payload: Dict[str, object],
         recipient: str = "ALL",
         timestamp: Optional[str] = None,
     ) -> None:
+        """Append a message to the A2A context."""
         message = A2AMessage(
             sender=sender,
             recipient=recipient,

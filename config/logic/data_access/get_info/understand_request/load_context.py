@@ -250,7 +250,6 @@ class WorkflowContext:
         semantic_validator: SemanticValidator,
         embedding_function: embedding_functions.EmbeddingFunction,
         arbitration_engine: ArbitrationEngine,
-        """  Init   implementation."""
         predictive_cache_manager: PredictiveCacheManager,
         precompute_engine: PrecomputeEngine,
         tuning_profile: TuningProfile,
@@ -325,6 +324,7 @@ class WorkflowContext:
         logger.info("WorkflowContext initialized with v10.7 injected dependencies")
 
     def get_model_client(self, provider: str, model_name: str) -> object:
+        """Execute get_model_client operation."""
         canonical_name = canonical_model_name(model_name)
         key = f"{provider}:{canonical_name}"
         if key not in self._model_clients:
@@ -339,7 +339,6 @@ class WorkflowContext:
             }
             if provider == "anthropic":
                 self._model_clients[key] = AnthropicAsyncClient(**base_args)
-        """Get Model Client implementation."""
             elif provider == "google":
                 self._model_clients[key] = GeminiAsyncClient(**base_args)
             elif provider == "openai":
@@ -399,6 +398,7 @@ class WorkflowContext:
             raise MCPClientInitializationError(f"Invalid MCP configuration: {exc}") from exc
 
     def is_mcp_enabled(self) -> bool:
+        """Execute is_mcp_enabled operation."""
         return self._mcp_enabled
 
     def ensure_mcp_clients(self) -> Dict[str, Any]:
@@ -450,6 +450,7 @@ class WorkflowContext:
         return self.mcp_clients
 
     def get_mcp_client(self, name: str, default: Optional[Any] = None) -> object:
+        """Execute get_mcp_client operation."""
         clients = self.ensure_mcp_clients()
         if name in clients:
             return clients[name]
@@ -796,6 +797,7 @@ class A2AMessage:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
+        """Execute to_dict operation."""
         return {
         """To Dict implementation."""
             "sender": self.sender,
@@ -806,6 +808,7 @@ class A2AMessage:
         }
 
     def model_dump(self) -> Dict[str, Any]:
+        """Execute model_dump operation."""
         return self.to_dict()
         """Model Dump implementation."""
 
@@ -827,15 +830,15 @@ class A2AContext:
         self.messages = normalized
 
     def append(
-        """Append implementation."""
         self,
         *,
         sender: str,
         message_type: str,
-        payload: Dict[str, object][str, Any],
+        payload: Dict[str, Any],
         recipient: str = "ALL",
         timestamp: Optional[str] = None,
     ) -> None:
+        """Execute append operation."""
         message = A2AMessage(
             sender=sender,
             recipient=recipient,

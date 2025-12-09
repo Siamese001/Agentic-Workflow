@@ -706,6 +706,7 @@ class CapabilityTest:
         try:
             @dc
             class TestClass:
+                """TestClass implementation."""
                 name: str
                 values: List[int] = f(default_factory=list)
                 

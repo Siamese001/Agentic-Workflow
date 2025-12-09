@@ -30,6 +30,7 @@ class Span:
 
     @property
     def duration_ms(self) -> float:
+        """Execute duration_ms operation."""
         if self.end_time:
             return (self.end_time - self.start_time) * 1000
         return 0.0
