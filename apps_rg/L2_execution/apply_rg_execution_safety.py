@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def apply_rg_execution_safety(data: Dict[str, Any]) -> Dict[str, Any]:
+def apply_rg_execution_safety(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply rg execution safety data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_apply_rg_execution_safety_config() -> Dict[str, Any]:
+def get_apply_rg_execution_safety_config() -> Dict[str, object]:
     """Get configuration for apply_rg_execution_safety."""
     return {"enabled": True, "version": "1.0"}

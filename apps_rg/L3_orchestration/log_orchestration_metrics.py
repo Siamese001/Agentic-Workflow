@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class LogOrchestrationMetrics:
     """Diagnostics for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 

@@ -25,7 +25,7 @@ class CollectedItem:
 class BaseCollector:
     """Collector for metrics domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
         self.max_items = self.config.get("max_items", 1000)

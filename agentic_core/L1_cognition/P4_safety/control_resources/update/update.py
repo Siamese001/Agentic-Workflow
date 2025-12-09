@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 
-def update(data: Dict[str, Any]) -> Dict[str, Any]:
+def update(data: Dict[str, object]) -> Dict[str, object]:
     """
     Process an update request for resource control.
     

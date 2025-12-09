@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def validate_cognition_output(data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_cognition_output(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate cognition output data."""
     return {"status": "processed", "input_keys": list(data.keys())}

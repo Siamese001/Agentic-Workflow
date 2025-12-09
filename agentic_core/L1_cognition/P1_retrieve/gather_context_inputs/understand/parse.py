@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def parse(data: Dict[str, Any]) -> Dict[str, Any]:
+def parse(data: Dict[str, object]) -> Dict[str, object]:
     """Process parse data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_parse_config() -> Dict[str, Any]:
+def get_parse_config() -> Dict[str, object]:
     """Get configuration for parse."""
     return {"enabled": True, "version": "1.0"}

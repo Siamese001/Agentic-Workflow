@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 class RetrieveResumeHistory:
     """Retrieval engine for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
-        self.cache: Dict[str, Any] = {}
+        self.cache: Dict[str, object] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self, query: str, filters: Optional[Dict] = None, limit: int = 10) -> RetrievalResult:
@@ -34,7 +34,7 @@ class RetrieveResumeHistory:
         self.cache[cache_key] = result
         return result
 
-    def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[Any]:
+    def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[object]:
         """Execute query."""
         return []
 

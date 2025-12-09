@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def lic_company_research_executor(data: Dict[str, Any]) -> Dict[str, Any]:
+def lic_company_research_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process lic company research executor data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_lic_company_research_executor_config() -> Dict[str, Any]:
+def get_lic_company_research_executor_config() -> Dict[str, object]:
     """Get configuration for lic_company_research_executor."""
     return {"enabled": True, "version": "1.0"}

@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class PrepareOutreachContext:
     """Formatter for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.format_type = self.config.get("format", "default")
         logger.info(f"Initialized {self.__class__.__name__}")

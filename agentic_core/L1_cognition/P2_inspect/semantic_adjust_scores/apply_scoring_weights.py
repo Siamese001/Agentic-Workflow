@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def apply_scoring_weights(data: Dict[str, Any]) -> Dict[str, Any]:
+def apply_scoring_weights(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply scoring weights data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_apply_scoring_weights_config() -> Dict[str, Any]:
+def get_apply_scoring_weights_config() -> Dict[str, object]:
     """Get configuration for apply_scoring_weights."""
     return {"enabled": True, "version": "1.0"}

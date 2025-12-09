@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def perform_core_operation(data: Dict[str, Any]) -> Dict[str, Any]:
+def perform_core_operation(data: Dict[str, object]) -> Dict[str, object]:
     """Process perform core operation data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_perform_core_operation_config() -> Dict[str, Any]:
+def get_perform_core_operation_config() -> Dict[str, object]:
     """Get configuration for perform_core_operation."""
     return {"enabled": True, "version": "1.0"}

@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def enforce_update_rules(data: Dict[str, Any]) -> Dict[str, Any]:
+def enforce_update_rules(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce update rules data."""
     return {"status": "processed", "input_keys": list(data.keys())}

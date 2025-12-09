@@ -13,8 +13,8 @@ class PromptStore:
 
     def __init__(self) -> None:
         """Initialize the prompt store with empty data storage."""
-        self.data: Dict[str, Any] = {}
+        self.data: Dict[str, object] = {}
 
-    def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def process(self, data: Dict[str, object]) -> Dict[str, object]:
         """Process data through the core store for prompt retrieval."""
         return {"status": "processed", "input_keys": list(data.keys())}

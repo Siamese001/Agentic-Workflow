@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def rank_core_components(data: Dict[str, Any]) -> Dict[str, Any]:
+def rank_core_components(data: Dict[str, object]) -> Dict[str, object]:
     """Process rank core components data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_rank_core_components_config() -> Dict[str, Any]:
+def get_rank_core_components_config() -> Dict[str, object]:
     """Get configuration for rank_core_components."""
     return {"enabled": True, "version": "1.0"}

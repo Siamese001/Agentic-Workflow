@@ -260,7 +260,7 @@ class LICCodeInterpreter:
         text1: str,
         text2: str,
         min_word_length: int = 4,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Calculate word overlap between two texts.
 
@@ -296,10 +296,10 @@ class LICCodeInterpreter:
 
     def rank_by_metric(
         self,
-        items: List[Dict[str, Any]],
+        items: List[Dict[str, object]],
         metric_key: str,
         descending: bool = True,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Rank items by a specific metric.
 
@@ -320,8 +320,8 @@ class LICCodeInterpreter:
     def validate_structure(
         self,
         text: str,
-        requirements: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        requirements: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Validate text structure against requirements.
 
@@ -332,7 +332,7 @@ class LICCodeInterpreter:
         Returns:
             Validation result dictionary
         """
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},

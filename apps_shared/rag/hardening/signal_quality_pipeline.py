@@ -69,9 +69,9 @@ class RerankerProtocol(Protocol):
     def rerank(
         self,
         query: str,
-        documents: List[Dict[str, Any]],
+        documents: List[Dict[str, object]],
         top_k: int = 10,
-    ) -> List[Tuple[Dict[str, Any], float]]:
+    ) -> List[Tuple[Dict[str, object], float]]:
         """Rerank documents by relevance to query."""
         ...
 
@@ -115,7 +115,7 @@ class RetrievedDocument:
     relevance_score: float = 0.0
     authority_score: float = 0.0
     recency_score: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     
     @property
@@ -128,7 +128,7 @@ class RetrievedDocument:
             self.recency_score * 0.2
         )
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -153,9 +153,9 @@ class StageResult:
     reasoning: str
     refinement_suggestions: List[str] = field(default_factory=list)
     duration_ms: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "stage": self.stage.name,
@@ -180,7 +180,7 @@ class PipelineResult:
     refinement_count: int = 0
     halt_reason: Optional[str] = None
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary."""
         return {
             "success": self.success,

@@ -209,9 +209,9 @@ class CreativeBriefValidator:
         """Initialize with a creative brief."""
         self.brief = brief
 
-    def validate_headline(self, text: str) -> Dict[str, Any]:
+    def validate_headline(self, text: str) -> Dict[str, object]:
         """Validate headline against brief."""
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -241,9 +241,9 @@ class CreativeBriefValidator:
 
         return result
 
-    def validate_executive_summary(self, text: str) -> Dict[str, Any]:
+    def validate_executive_summary(self, text: str) -> Dict[str, object]:
         """Validate executive summary against brief."""
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -277,9 +277,9 @@ class CreativeBriefValidator:
         self,
         text: str,
         section_key: str = "k6",
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Validate a bullet against brief."""
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -299,9 +299,9 @@ class CreativeBriefValidator:
 
         return result
 
-    def validate_cover_letter_paragraph(self, text: str) -> Dict[str, Any]:
+    def validate_cover_letter_paragraph(self, text: str) -> Dict[str, object]:
         """Validate a cover letter paragraph against brief."""
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},
@@ -322,9 +322,9 @@ class CreativeBriefValidator:
 
         return result
 
-    def validate_competency(self, text: str) -> Dict[str, Any]:
+    def validate_competency(self, text: str) -> Dict[str, object]:
         """Validate a competency description against brief."""
-        result: Dict[str, Any] = {
+        result: Dict[str, object] = {
             "is_valid": True,
             "violations": [],
             "metrics": {},

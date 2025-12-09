@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def match_embedding_patterns(data: Dict[str, Any]) -> Dict[str, Any]:
+def match_embedding_patterns(data: Dict[str, object]) -> Dict[str, object]:
     """Process match embedding patterns data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_match_embedding_patterns_config() -> Dict[str, Any]:
+def get_match_embedding_patterns_config() -> Dict[str, object]:
     """Get configuration for match_embedding_patterns."""
     return {"enabled": True, "version": "1.0"}

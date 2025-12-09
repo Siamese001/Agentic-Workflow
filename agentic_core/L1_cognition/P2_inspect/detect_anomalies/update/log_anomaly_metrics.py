@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def log_anomaly_metrics(data: Dict[str, Any]) -> Dict[str, Any]:
+def log_anomaly_metrics(data: Dict[str, object]) -> Dict[str, object]:
     """Process log anomaly metrics data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_log_anomaly_metrics_config() -> Dict[str, Any]:
+def get_log_anomaly_metrics_config() -> Dict[str, object]:
     """Get configuration for log_anomaly_metrics."""
     return {"enabled": True, "version": "1.0"}

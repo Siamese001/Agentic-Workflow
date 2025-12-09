@@ -24,7 +24,7 @@ class Span:
     name: str
     start_time: float = field(default_factory=time.time)
     end_time: Optional[float] = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: Dict[str, object] = field(default_factory=dict)
     events: List[Dict] = field(default_factory=list)
     parent_id: Optional[str] = None
 
@@ -39,7 +39,7 @@ class Span:
 class ConsoleTraceExporter:
     """Tracer for tracing domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None

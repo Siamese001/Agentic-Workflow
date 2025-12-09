@@ -8,11 +8,11 @@ from typing import Any, Dict
 
 
 
-def apply_core_weights(data: Dict[str, Any]) -> Dict[str, Any]:
+def apply_core_weights(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply core weights data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_apply_core_weights_config() -> Dict[str, Any]:
+def get_apply_core_weights_config() -> Dict[str, object]:
     """Get configuration for apply_core_weights."""
     return {"enabled": True, "version": "1.0"}

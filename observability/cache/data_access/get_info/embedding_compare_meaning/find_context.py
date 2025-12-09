@@ -307,14 +307,14 @@ class WorkflowContext:
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
 
-        self._model_clients: Dict[str, Any] = {}
+        self._model_clients: Dict[str, object] = {}
 
         # MCP integration state
-        self.mcp_clients: Dict[str, Any] = {}
+        self.mcp_clients: Dict[str, object] = {}
         self._mcp_initialized: bool = False
         self._mcp_client_specs: List[MCPClientSpec] = []
         self._mcp_fallback_mode: str = "error"
-        self._mcp_fallback_parameters: Dict[str, Any] = {}
+        self._mcp_fallback_parameters: Dict[str, object] = {}
         self._mcp_errors: Dict[str, str] = {}
         self._mcp_enabled: bool = False
         self.wrap_mcp_nodes: bool = False
@@ -401,7 +401,7 @@ class WorkflowContext:
         """Execute is_mcp_enabled operation."""
         return self._mcp_enabled
 
-    def ensure_mcp_clients(self) -> Dict[str, Any]:
+    def ensure_mcp_clients(self) -> Dict[str, object]:
         """Initialise MCP clients if required and return the registry."""
 
         if self._mcp_initialized:
@@ -412,7 +412,7 @@ class WorkflowContext:
             self._mcp_initialized = True
             return self.mcp_clients
 
-        clients: Dict[str, Any] = {}
+        clients: Dict[str, object] = {}
         errors: Dict[str, str] = {}
 
         for spec in self._mcp_client_specs:
@@ -448,7 +448,7 @@ class WorkflowContext:
         self._mcp_initialized = True
         return self.mcp_clients
 
-    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> object:
+    def get_mcp_client(self, name: str, default: Optional[object] = None) -> object:
         """Execute get_mcp_client operation."""
         clients = self.ensure_mcp_clients()
         if name in clients:
@@ -674,7 +674,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 
-def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, Any]:
+def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, object]:
     """Centralized bias detection service shared by agents and tools."""
 
     logger.debug("Running centralized bias detection service.")
@@ -705,8 +705,8 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
 
 class ResumeContext:
     """ResumeContext implementation."""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
+    sanitized_resume: Dict[str, object] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
 
 
@@ -715,7 +715,7 @@ class JobContext:
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+    parsed_requirements: Dict[str, object] = field(default_factory=dict)
 
 
 class StrategyContext:
@@ -737,19 +737,19 @@ class BulletContext:
 
 class DraftContext:
     """DraftContext implementation."""
-    sections: Dict[str, Any] = field(default_factory=dict)
+    sections: Dict[str, object] = field(default_factory=dict)
 
 
 class QAContext:
     """QAContext implementation."""
-    validation_results: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
     qa_passed: bool = False
     constitutional_review: Optional[ConstitutionalReviewResult] = None  # v10.7 (Fix #30)
 
 
 class ArtifactContext:
     """ArtifactContext implementation."""
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 
 class MetadataContext:
@@ -791,10 +791,10 @@ class A2AMessage:
     sender: str
     recipient: str  # Can be "ALL"
     message_type: str  # e.g., "ERROR", "METRIC", "UI_EVENT"
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Execute to_dict operation."""
         return {
             "sender": self.sender,
@@ -804,7 +804,7 @@ class A2AMessage:
             "timestamp": self.timestamp,
         }
 
-    def model_dump(self) -> Dict[str, Any]:
+    def model_dump(self) -> Dict[str, object]:
         """Execute model_dump operation."""
         return self.to_dict()
 
@@ -830,7 +830,7 @@ class A2AContext:
         *,
         sender: str,
         message_type: str,
-        payload: Dict[str, Any],
+        payload: Dict[str, object],
         recipient: str = "ALL",
         timestamp: Optional[str] = None,
     ) -> None:
@@ -855,9 +855,9 @@ class MainGraphState:
     bullets: BulletContext = field(default_factory=BulletContext)
     draft: DraftContext = field(default_factory=DraftContext)
     qa: QAContext = field(default_factory=QAContext)
-    safety_report: Optional[Dict[str, Any]] = None
-    policy_decision: Optional[Dict[str, Any]] = None
-    constitutional_review: Optional[Dict[str, Any]] = None
+    safety_report: Optional[Dict[str, object]] = None
+    policy_decision: Optional[Dict[str, object]] = None
+    constitutional_review: Optional[Dict[str, object]] = None
     artifacts: ArtifactContext = field(default_factory=ArtifactContext)
     metadata: MetadataContext = field(default_factory=MetadataContext)
     safety: SafetyContext = field(default_factory=SafetyContext)
@@ -868,7 +868,7 @@ class MainGraphState:
     ephemeral: EphemeralState = EphemeralState()
     phase: WorkflowPhase = WorkflowPhase.INIT
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """v10.7: Custom serializer to handle nested Pydantic models."""
         data = asdict(self)
 
@@ -890,7 +890,7 @@ class MainGraphState:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MainGraphState":
+    def from_dict(cls, data: Dict[str, object]) -> "MainGraphState":
         """v10.7: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
 
@@ -966,11 +966,11 @@ class MetaGraphState:
     """v10.7: Meta-learning graph state."""
 
     raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
+    log_summary: Dict[str, object] = field(default_factory=dict)
     patterns: List[Dict] = field(default_factory=list)
     hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
+    proposal: Dict[str, object] = field(default_factory=dict)
+    critique: Dict[str, object] = field(default_factory=dict)
     replan_count: int = 0
     workflow_id: str = ""
     generated_tool_code: Optional[str] = None

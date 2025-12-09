@@ -27,7 +27,7 @@ class ResumeOrchestrator:
         self.constraints = ContentConstraintsConfig()
         self.jd_enforcer = JDEnforcementValidator()
 
-    def run(self, job_description: str) -> Dict[str, Any]:
+    def run(self, job_description: str) -> Dict[str, object]:
         """Execute the full resume generation workflow."""
         # HOP-0: JD Analysis
         self.jd_enforcer.validate_jd_input(job_description, "HOP-0")
@@ -56,7 +56,7 @@ class ResumeOrchestrator:
         self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))
 
 
-def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, Any]:
+def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
     orchestrator = ResumeOrchestrator(master_resume)
     return orchestrator.run(job_description)

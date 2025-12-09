@@ -14,13 +14,13 @@ class Result:
     """Operation result."""
     success: bool
     data: Any = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class HandleCommonFailures:
     """Handler for shared operations."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
 
     def process(self, data: object, context: Optional[Dict] = None) -> Result:

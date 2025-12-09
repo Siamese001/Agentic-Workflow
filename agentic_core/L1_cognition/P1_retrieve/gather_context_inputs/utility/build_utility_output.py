@@ -8,6 +8,6 @@ from typing import Any, Dict
 
 
 
-def build_utility_output(data: Dict[str, Any]) -> Dict[str, Any]:
+def build_utility_output(data: Dict[str, object]) -> Dict[str, object]:
     """Process build utility output data."""
     return {"status": "processed", "input_keys": list(data.keys())}
