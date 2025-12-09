@@ -3,8 +3,7 @@ Unit tests for shared/cache_ops/
 Tests cache operations including data access and guardrails.
 """
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from datetime import datetime, timedelta
 import hashlib
 import json
@@ -73,21 +72,21 @@ class TestCacheGuardrails:
         """Cache respects maximum size limit."""
         max_size = 100
         cache: Dict[str, str] = {}
-        
+
         for i in range(150):
             if len(cache) >= max_size:
                 # Evict oldest entry
                 oldest_key = next(iter(cache))
                 del cache[oldest_key]
             cache[f"key_{i}"] = f"value_{i}"
-        
+
         assert len(cache) <= max_size
 
     def test_cache_value_size_limit(self):
         """Individual cache values respect size limits."""
         max_value_size = 1024 * 1024  # 1MB
         large_value = "x" * (max_value_size + 1)
-        
+
         is_too_large = len(large_value.encode()) > max_value_size
         assert is_too_large is True
 
@@ -107,11 +106,11 @@ class TestCacheGuardrails:
     def test_cache_concurrent_access_safe(self):
         """Cache handles concurrent access safely."""
         cache: Dict[str, int] = {"counter": 0}
-        
+
         # Simulate concurrent increments (in real code, use locks)
         for _ in range(100):
             cache["counter"] += 1
-        
+
         assert cache["counter"] == 100
 
 
@@ -136,7 +135,7 @@ class TestCacheInvalidation:
         keys_to_delete = [k for k in cache if k.startswith(pattern)]
         for key in keys_to_delete:
             del cache[key]
-        
+
         assert len([k for k in cache if k.startswith(pattern)]) == 0
 
     def test_invalidate_all(self):
@@ -152,11 +151,11 @@ class TestCacheInvalidation:
             "child1": {"value": "child1_data"},
             "child2": {"value": "child2_data"},
         }
-        
+
         # Invalidate parent and children
         parent = cache.pop("parent")
         for child_key in parent.get("children", []):
             cache.pop(child_key, None)
-        
+
         assert "parent" not in cache
         assert "child1" not in cache

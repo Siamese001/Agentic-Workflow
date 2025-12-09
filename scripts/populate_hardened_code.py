@@ -6,10 +6,9 @@ Reads the stub scan report and generates hardened implementations for each file.
 """
 
 import json
-import re
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 STUB_REPORT_DIR = REPO_ROOT / "06_data" / "stub_elimination"
@@ -21,7 +20,7 @@ def load_latest_report() -> Dict:
     reports = sorted(STUB_REPORT_DIR.glob("stub_scan_*.json"), reverse=True)
     if not reports:
         raise FileNotFoundError("No stub scan reports found")
-    
+
     with open(reports[0]) as f:
         return json.load(f)
 
@@ -30,7 +29,7 @@ def get_module_type(filepath: Path) -> str:
     """Determine module type from filepath."""
     name = filepath.stem.lower()
     path_str = str(filepath).lower()
-    
+
     if "score" in name or "scoring" in path_str:
         return "scoring"
     elif "validate" in name or "check" in name:
@@ -78,7 +77,7 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
     name = filepath.stem
     class_name = ''.join(word.capitalize() for word in name.split('_'))
     domain = filepath.parent.name
-    
+
     generators = {
         "scoring": generate_scoring_module,
         "validation": generate_validation_module,
@@ -101,7 +100,7 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
         "pii": generate_pii_module,
         "generic": generate_generic_module,
     }
-    
+
     generator = generators.get(module_type, generate_generic_module)
     return generator(name, class_name, domain)
 
@@ -133,25 +132,25 @@ class ScoreResult:
 
 class {class_name}:
     """Scoring engine for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.weights = self.config.get("weights", {{}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def compute_score(self, data: Dict[str, Any], context: Optional[Dict] = None) -> ScoreResult:
         """Compute score for given data."""
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted_score(factors)
         confidence = self._compute_confidence(factors)
-        
+
         return ScoreResult(
             score=max(0.0, min(1.0, raw_score)),
             confidence=confidence,
             factors=factors,
             metadata={{"context": context}}
         )
-    
+
     def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
         """Extract scoring factors from data."""
         factors = {{}}
@@ -159,7 +158,7 @@ class {class_name}:
             if isinstance(value, (int, float)):
                 factors[key] = float(value)
         return factors
-    
+
     def _compute_weighted_score(self, factors: Dict[str, float]) -> float:
         """Compute weighted score."""
         if not factors:
@@ -167,7 +166,7 @@ class {class_name}:
         total_weight = sum(self.weights.get(k, 1.0) for k in factors)
         weighted_sum = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
         return weighted_sum / total_weight if total_weight > 0 else 0.5
-    
+
     def _compute_confidence(self, factors: Dict[str, float]) -> float:
         """Compute confidence level."""
         return min(1.0, len(factors) / 5)
@@ -216,7 +215,7 @@ class ValidationResult:
     """Result of validation."""
     is_valid: bool
     findings: List[ValidationFinding] = field(default_factory=list)
-    
+
     @property
     def errors(self) -> List[ValidationFinding]:
         return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
@@ -224,21 +223,21 @@ class ValidationResult:
 
 class {class_name}:
     """Validator for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.strict = self.config.get("strict", False)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def validate(self, data: Any, schema: Optional[Dict] = None) -> ValidationResult:
         """Validate data against schema."""
         findings = []
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
-        
+
         is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
-    
+
     def _validate_types(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate data types."""
         findings = []
@@ -252,7 +251,7 @@ class {class_name}:
                     severity=ValidationSeverity.ERROR
                 ))
         return findings
-    
+
     def _validate_required(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate required fields."""
         findings = []
@@ -300,36 +299,36 @@ class FormattedOutput:
 
 class {class_name}:
     """Formatter for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.output_format = self.config.get("format", "default")
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def format(self, data: Any, target_format: Optional[str] = None) -> FormattedOutput:
         """Format data to target structure."""
         fmt = target_format or self.output_format
         transformed = self._transform(data)
         formatted = self._format_to_target(transformed, fmt)
-        
+
         return FormattedOutput(
             data=formatted,
             format_type=fmt,
             metadata={{"original_type": type(data).__name__}}
         )
-    
+
     def _transform(self, data: Any) -> Any:
         """Apply transformations."""
         if isinstance(data, str):
             return data.strip()
         return data
-    
+
     def _format_to_target(self, data: Any, fmt: str) -> Any:
         """Format to target."""
         if fmt == "flat" and isinstance(data, dict):
             return self._flatten(data)
         return data
-    
+
     def _flatten(self, data: Dict, prefix: str = "") -> Dict[str, Any]:
         """Flatten nested dict."""
         result = {{}}
@@ -375,24 +374,24 @@ class ComputationResult:
 
 class {class_name}:
     """Computation engine for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.precision = self.config.get("precision", 4)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def compute(self, values: Sequence[float], operation: str = "mean") -> ComputationResult:
         """Perform computation on values."""
         if not values:
             return ComputationResult(value=0.0, method=operation)
-        
+
         result = self._perform_operation(list(values), operation)
         return ComputationResult(
             value=round(result, self.precision),
             method=operation,
             metadata={{"count": len(values)}}
         )
-    
+
     def _perform_operation(self, values: List[float], operation: str) -> float:
         """Perform the operation."""
         if operation == "sum":
@@ -460,23 +459,23 @@ class OrchestrationResult:
 
 class {class_name}:
     """Orchestrator for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.steps: List[Dict] = []
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def add_step(self, name: str, handler: Callable, dependencies: Optional[List[str]] = None) -> "{class_name}":
         """Add a step to orchestration."""
         self.steps.append({{"name": name, "handler": handler, "dependencies": dependencies or []}})
         return self
-    
+
     def execute(self, initial_input: Any = None) -> OrchestrationResult:
         """Execute the workflow."""
         results = []
         context = {{"input": initial_input, "outputs": {{}}}}
         success = True
-        
+
         for step in self.steps:
             start = time.time()
             try:
@@ -499,7 +498,7 @@ class {class_name}:
                     duration_ms=(time.time() - start) * 1000
                 ))
                 break
-        
+
         return OrchestrationResult(
             success=success,
             steps=results,
@@ -542,19 +541,19 @@ class AdjustmentResult:
 
 class {class_name}:
     """Adjuster for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.method = self.config.get("method", "minmax")
         self.target_range = self.config.get("range", (0.0, 1.0))
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def adjust(self, values: Sequence[float], method: Optional[str] = None) -> List[AdjustmentResult]:
         """Adjust values."""
         adj_method = method or self.method
         adjusted = self._apply_adjustment(list(values), adj_method)
         return [AdjustmentResult(original=o, adjusted=a, method=adj_method) for o, a in zip(values, adjusted)]
-    
+
     def _apply_adjustment(self, values: List[float], method: str) -> List[float]:
         """Apply adjustment method."""
         if not values:
@@ -564,7 +563,7 @@ class {class_name}:
         elif method == "zscore":
             return self._zscore(values)
         return values
-    
+
     def _minmax(self, values: List[float]) -> List[float]:
         """Min-max normalization."""
         min_v, max_v = min(values), max(values)
@@ -572,7 +571,7 @@ class {class_name}:
             return [0.5] * len(values)
         t_min, t_max = self.target_range
         return [t_min + (v - min_v) / (max_v - min_v) * (t_max - t_min) for v in values]
-    
+
     def _zscore(self, values: List[float]) -> List[float]:
         """Z-score normalization."""
         import math
@@ -621,19 +620,19 @@ class AssessmentResult:
 
 class {class_name}:
     """Assessor for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.thresholds = self.config.get("thresholds", {{"low": 0.8, "medium": 0.6, "high": 0.4}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def assess(self, data: Any, context: Optional[Dict] = None) -> AssessmentResult:
         """Perform assessment."""
         score = self._compute_score(data)
         level = self._score_to_level(score)
         findings = self._generate_findings(data, score)
         return AssessmentResult(level=level, score=score, findings=findings)
-    
+
     def _compute_score(self, data: Any) -> float:
         """Compute assessment score."""
         if data is None:
@@ -643,7 +642,7 @@ class {class_name}:
         if isinstance(data, (list, str)):
             return min(1.0, len(data) / 100)
         return 0.5
-    
+
     def _score_to_level(self, score: float) -> AssessmentLevel:
         """Convert score to level."""
         if score >= self.thresholds["low"]:
@@ -653,7 +652,7 @@ class {class_name}:
         elif score >= self.thresholds["high"]:
             return AssessmentLevel.HIGH
         return AssessmentLevel.CRITICAL
-    
+
     def _generate_findings(self, data: Any, score: float) -> List[str]:
         """Generate findings."""
         findings = []
@@ -696,26 +695,26 @@ class DiagnosticReport:
 
 class {class_name}:
     """Diagnostics engine for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def diagnose(self, target: Any, context: Optional[Dict] = None) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {{}}
-        
+
         if target is None:
             issues.append("Target is null")
         elif isinstance(target, dict):
             metrics["field_count"] = len(target)
         elif isinstance(target, list):
             metrics["item_count"] = len(target)
-        
+
         metrics["type"] = type(target).__name__
         healthy = len(issues) == 0
-        
+
         return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
 
 
@@ -763,12 +762,12 @@ class ManagementResult:
 
 class {class_name}:
     """Manager for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.resources: Dict[str, ManagedResource] = {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def create(self, resource_id: str, resource_type: str, data: Any = None) -> ManagementResult:
         """Create resource."""
         if resource_id in self.resources:
@@ -776,7 +775,7 @@ class {class_name}:
         resource = ManagedResource(id=resource_id, type=resource_type, state="created", data=data)
         self.resources[resource_id] = resource
         return ManagementResult(success=True, operation="create", resource=resource)
-    
+
     def update(self, resource_id: str, data: Any) -> ManagementResult:
         """Update resource."""
         if resource_id not in self.resources:
@@ -784,14 +783,14 @@ class {class_name}:
         self.resources[resource_id].data = data
         self.resources[resource_id].state = "updated"
         return ManagementResult(success=True, operation="update", resource=self.resources[resource_id])
-    
+
     def delete(self, resource_id: str) -> ManagementResult:
         """Delete resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation="delete", message="Not found")
         resource = self.resources.pop(resource_id)
         return ManagementResult(success=True, operation="delete", resource=resource)
-    
+
     def get(self, resource_id: str) -> Optional[ManagedResource]:
         """Get resource."""
         return self.resources.get(resource_id)
@@ -838,12 +837,12 @@ class OptimizationResult:
 
 class {class_name}:
     """Optimizer for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.method = self.config.get("method", "score")
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def optimize(self, items: List[T], key: Optional[Callable[[T], Any]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
@@ -887,29 +886,29 @@ class Metric:
 
 class {class_name}:
     """Metrics collector for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.metrics: Dict[str, List[Metric]] = defaultdict(list)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def record(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
         """Record a metric."""
         metric = Metric(name=name, value=value, labels=labels or {{}})
         self.metrics[name].append(metric)
         logger.debug(f"Recorded metric {{name}}={{value}}")
-    
+
     def get_metrics(self, name: Optional[str] = None) -> List[Metric]:
         """Get recorded metrics."""
         if name:
             return self.metrics.get(name, [])
         return [m for metrics in self.metrics.values() for m in metrics]
-    
+
     def get_latest(self, name: str) -> Optional[Metric]:
         """Get latest metric value."""
         metrics = self.metrics.get(name, [])
         return metrics[-1] if metrics else None
-    
+
     def clear(self, name: Optional[str] = None) -> None:
         """Clear metrics."""
         if name:
@@ -963,7 +962,7 @@ class Span:
     attributes: Dict[str, Any] = field(default_factory=dict)
     events: List[Dict] = field(default_factory=list)
     parent_id: Optional[str] = None
-    
+
     @property
     def duration_ms(self) -> float:
         if self.end_time:
@@ -973,19 +972,19 @@ class Span:
 
 class {class_name}:
     """Tracer for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     @contextmanager
     def start_span(self, name: str, attributes: Optional[Dict] = None):
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
-        
+
         span = Span(
             trace_id=trace_id,
             span_id=str(uuid.uuid4()),
@@ -993,17 +992,17 @@ class {class_name}:
             attributes=attributes or {{}},
             parent_id=parent_id
         )
-        
+
         prev_span = self._current_span
         self._current_span = span
-        
+
         try:
             yield span
         finally:
             span.end_time = time.time()
             self.spans.append(span)
             self._current_span = prev_span
-    
+
     def add_event(self, name: str, attributes: Optional[Dict] = None) -> None:
         """Add event to current span."""
         if self._current_span:
@@ -1012,7 +1011,7 @@ class {class_name}:
                 "timestamp": time.time(),
                 "attributes": attributes or {{}}
             }})
-    
+
     def get_spans(self) -> List[Span]:
         """Get all recorded spans."""
         return self.spans
@@ -1049,7 +1048,7 @@ logger = logging.getLogger(__name__)
 
 class StructuredFormatter(logging.Formatter):
     """JSON structured log formatter."""
-    
+
     def format(self, record: logging.LogRecord) -> str:
         log_data = {{
             "timestamp": datetime.utcnow().isoformat(),
@@ -1060,24 +1059,24 @@ class StructuredFormatter(logging.Formatter):
             "function": record.funcName,
             "line": record.lineno,
         }}
-        
+
         if hasattr(record, "extra"):
             log_data["extra"] = record.extra
-        
+
         if record.exc_info:
             log_data["exception"] = self.formatException(record.exc_info)
-        
+
         return json.dumps(log_data)
 
 
 class {class_name}:
     """Logger for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.logger = logging.getLogger(self.config.get("name", "{domain}"))
         self._setup_handlers()
-    
+
     def _setup_handlers(self) -> None:
         """Setup log handlers."""
         if not self.logger.handlers:
@@ -1090,19 +1089,19 @@ class {class_name}:
                 ))
             self.logger.addHandler(handler)
             self.logger.setLevel(self.config.get("level", logging.INFO))
-    
+
     def info(self, message: str, **kwargs) -> None:
         """Log info message."""
         self.logger.info(message, extra={{"extra": kwargs}})
-    
+
     def warning(self, message: str, **kwargs) -> None:
         """Log warning message."""
         self.logger.warning(message, extra={{"extra": kwargs}})
-    
+
     def error(self, message: str, **kwargs) -> None:
         """Log error message."""
         self.logger.error(message, extra={{"extra": kwargs}})
-    
+
     def debug(self, message: str, **kwargs) -> None:
         """Log debug message."""
         self.logger.debug(message, extra={{"extra": kwargs}})
@@ -1146,7 +1145,7 @@ class ExportResult:
 
 class BaseExporter(ABC):
     """Base class for exporters."""
-    
+
     @abstractmethod
     def export(self, data: Any) -> ExportResult:
         """Export data."""
@@ -1155,17 +1154,17 @@ class BaseExporter(ABC):
 
 class {class_name}(BaseExporter):
     """Exporter for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def export(self, data: Any) -> ExportResult:
         """Export data to destination."""
         try:
             items = data if isinstance(data, list) else [data]
-            
+
             if self.destination == "stdout":
                 for item in items:
                     print(json.dumps(item, default=str, indent=2))
@@ -1173,7 +1172,7 @@ class {class_name}(BaseExporter):
                 filepath = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
                     json.dump(items, f, default=str, indent=2)
-            
+
             return ExportResult(
                 success=True,
                 items_exported=len(items),
@@ -1212,15 +1211,15 @@ logger = logging.getLogger(__name__)
 
 class {class_name}:
     """Context propagator for {domain} domain."""
-    
+
     HEADER_TRACE_ID = "X-Trace-ID"
     HEADER_SPAN_ID = "X-Span-ID"
     HEADER_SAMPLED = "X-Sampled"
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def inject(self, context: Dict[str, Any], carrier: Dict[str, str]) -> None:
         """Inject context into carrier."""
         if "trace_id" in context:
@@ -1229,18 +1228,18 @@ class {class_name}:
             carrier[self.HEADER_SPAN_ID] = context["span_id"]
         if "sampled" in context:
             carrier[self.HEADER_SAMPLED] = "1" if context["sampled"] else "0"
-    
+
     def extract(self, carrier: Dict[str, str]) -> Dict[str, Any]:
         """Extract context from carrier."""
         context = {{}}
-        
+
         if self.HEADER_TRACE_ID in carrier:
             context["trace_id"] = carrier[self.HEADER_TRACE_ID]
         if self.HEADER_SPAN_ID in carrier:
             context["span_id"] = carrier[self.HEADER_SPAN_ID]
         if self.HEADER_SAMPLED in carrier:
             context["sampled"] = carrier[self.HEADER_SAMPLED] == "1"
-        
+
         return context
 
 
@@ -1282,30 +1281,30 @@ class CollectedItem:
 
 class {class_name}:
     """Collector for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
         self.max_items = self.config.get("max_items", 1000)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def collect(self, source: str, data: Any) -> None:
         """Collect data from source."""
         item = CollectedItem(source=source, data=data)
         self.items[source].append(item)
-        
+
         # Trim if over limit
         if len(self.items[source]) > self.max_items:
             self.items[source] = self.items[source][-self.max_items:]
-        
+
         logger.debug(f"Collected item from {{source}}")
-    
+
     def get_items(self, source: Optional[str] = None) -> List[CollectedItem]:
         """Get collected items."""
         if source:
             return self.items.get(source, [])
         return [item for items in self.items.values() for item in items]
-    
+
     def flush(self, source: Optional[str] = None) -> List[CollectedItem]:
         """Flush and return items."""
         if source:
@@ -1349,7 +1348,7 @@ logger = logging.getLogger(__name__)
 
 class SamplingDecision:
     """Sampling decision."""
-    
+
     def __init__(self, sampled: bool, reason: str):
         self.sampled = sampled
         self.reason = reason
@@ -1357,28 +1356,28 @@ class SamplingDecision:
 
 class {class_name}:
     """Sampler for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.rate = self.config.get("rate", 1.0)
         self.always_sample = self.config.get("always_sample", [])
         logger.info(f"Initialized {{self.__class__.__name__}} with rate={{self.rate}}")
-    
+
     def should_sample(self, context: Optional[Dict] = None) -> SamplingDecision:
         """Determine if should sample."""
         ctx = context or {{}}
-        
+
         # Check always sample conditions
         for condition in self.always_sample:
             if self._matches_condition(ctx, condition):
                 return SamplingDecision(True, "always_sample_match")
-        
+
         # Rate-based sampling
         if random.random() < self.rate:
             return SamplingDecision(True, "rate_sampled")
-        
+
         return SamplingDecision(False, "rate_rejected")
-    
+
     def _matches_condition(self, context: Dict, condition: Dict) -> bool:
         """Check if context matches condition."""
         for key, value in condition.items():
@@ -1429,31 +1428,31 @@ class SimilarityResult:
 
 class {class_name}:
     """Embedding engine for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.model = self.config.get("model", "simple_hash")
         self.dimension = self.config.get("dimension", 128)
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def embed(self, text: str) -> EmbeddingResult:
         """Generate embedding for text."""
         vector = self._generate_vector(text)
         return EmbeddingResult(text=text, vector=vector, model=self.model)
-    
+
     def similarity(self, query: str, candidates: List[str], top_k: int = 5) -> SimilarityResult:
         """Find similar texts."""
         query_vec = self._generate_vector(query)
-        
+
         scores = []
         for candidate in candidates:
             cand_vec = self._generate_vector(candidate)
             score = self._cosine_similarity(query_vec, cand_vec)
             scores.append((candidate, score))
-        
+
         scores.sort(key=lambda x: x[1], reverse=True)
         return SimilarityResult(query=query, matches=scores[:top_k])
-    
+
     def _generate_vector(self, text: str) -> List[float]:
         """Generate vector from text (simple hash-based)."""
         hash_bytes = hashlib.sha256(text.encode()).digest()
@@ -1463,7 +1462,7 @@ class {class_name}:
         while len(vector) < self.dimension:
             vector.append(0.0)
         return vector[:self.dimension]
-    
+
     def _cosine_similarity(self, a: List[float], b: List[float]) -> float:
         """Compute cosine similarity."""
         import math
@@ -1523,24 +1522,24 @@ class RedactionResult:
 
 class {class_name}:
     """PII detector and redactor for {domain} domain."""
-    
+
     PATTERNS = {{
         "email": r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{{2,}}",
         "phone": r"\\b\\d{{3}}[-.]?\\d{{3}}[-.]?\\d{{4}}\\b",
         "ssn": r"\\b\\d{{3}}-\\d{{2}}-\\d{{4}}\\b",
         "credit_card": r"\\b\\d{{4}}[- ]?\\d{{4}}[- ]?\\d{{4}}[- ]?\\d{{4}}\\b",
     }}
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         self.patterns = {{**self.PATTERNS, **self.config.get("patterns", {{}})}}
         self.redaction_char = self.config.get("redaction_char", "*")
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def detect(self, text: str) -> List[PIIMatch]:
         """Detect PII in text."""
         matches = []
-        
+
         for pii_type, pattern in self.patterns.items():
             for match in re.finditer(pattern, text):
                 matches.append(PIIMatch(
@@ -1550,24 +1549,24 @@ class {class_name}:
                     end=match.end(),
                     confidence=0.9
                 ))
-        
+
         return matches
-    
+
     def redact(self, text: str, types: Optional[List[str]] = None) -> RedactionResult:
         """Redact PII from text."""
         matches = self.detect(text)
-        
+
         if types:
             matches = [m for m in matches if m.type in types]
-        
+
         # Sort by position (reverse) to redact from end
         matches.sort(key=lambda m: m.start, reverse=True)
-        
+
         redacted = text
         for match in matches:
             replacement = self.redaction_char * len(match.value)
             redacted = redacted[:match.start] + replacement + redacted[match.end:]
-        
+
         return RedactionResult(original=text, redacted=redacted, matches=matches)
 
 
@@ -1609,11 +1608,11 @@ class OperationResult:
 
 class {class_name}:
     """Utility class for {domain} domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
-    
+
     def execute(self, data: Any, **kwargs) -> OperationResult:
         """Execute operation."""
         try:
@@ -1622,7 +1621,7 @@ class {class_name}:
         except Exception as e:
             logger.error(f"Operation failed: {{e}}")
             return OperationResult(success=False, message=str(e))
-    
+
     def _process(self, data: Any, **kwargs) -> Any:
         """Process data."""
         return data
@@ -1637,7 +1636,7 @@ def execute(data: Any, config: Optional[Dict] = None, **kwargs) -> OperationResu
 def populate_hardened_code(dry_run: bool = True) -> Dict:
     """Populate hardened code for all stub files."""
     report = load_latest_report()
-    
+
     results = {
         "timestamp": datetime.now().isoformat(),
         "dry_run": dry_run,
@@ -1646,45 +1645,45 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
         "files_archived": 0,
         "errors": [],
     }
-    
+
     if not dry_run:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     print("=" * 70)
     print(f"POPULATING HARDENED CODE {'(DRY RUN)' if dry_run else ''}")
     print("=" * 70)
-    
+
     for stub_info in report["stub_files"]:
         filepath = REPO_ROOT / stub_info["path"]
-        
+
         if not filepath.exists():
             continue
-        
+
         # Skip our own scripts
         if "stub_elimination" in str(filepath) or "populate_hardened" in str(filepath):
             continue
-        
+
         # Skip dedup analysis script (it's working code)
         if "comprehensive_dedup_analysis" in str(filepath):
             continue
-        
+
         results["files_processed"] += 1
         module_type = get_module_type(filepath)
-        
+
         print(f"\n[{module_type.upper()}] {stub_info['path']}")
-        
+
         try:
             hardened_code = generate_hardened_code(filepath, module_type)
-            
+
             if not dry_run:
                 # Archive original
                 archive_path = ARCHIVE_DIR / stub_info["path"]
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
-                
+
                 import shutil
                 shutil.copy2(filepath, archive_path)
                 results["files_archived"] += 1
-                
+
                 # Write hardened code
                 filepath.write_text(hardened_code, encoding="utf-8")
                 results["files_updated"] += 1
@@ -1692,11 +1691,11 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
             else:
                 print(f"  [DRY-RUN] Would write {len(hardened_code)} bytes")
                 results["files_updated"] += 1
-                
+
         except Exception as e:
             results["errors"].append({"path": stub_info["path"], "error": str(e)})
             print(f"  [ERROR] {e}")
-    
+
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
@@ -1704,16 +1703,16 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
     print(f"Files updated: {results['files_updated']}")
     print(f"Files archived: {results['files_archived']}")
     print(f"Errors: {len(results['errors'])}")
-    
+
     if dry_run:
         print("\n[DRY RUN] No files were actually modified.")
         print("Run with --execute to apply changes.")
-    
+
     return results
 
 
 if __name__ == "__main__":
     import sys
-    
+
     dry_run = "--execute" not in sys.argv
     results = populate_hardened_code(dry_run=dry_run)

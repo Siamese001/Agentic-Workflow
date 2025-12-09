@@ -61,13 +61,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from .agents import (
-        StrategyLLMAgent,
-        DraftingGuild,
-        SemanticQAAgent,
-        ConstitutionalSafetyAgent,
-        HYDEQueryAgent,
-    )
+    pass
 
 
 from eval.health.adapter import collect_error_events
@@ -285,9 +279,9 @@ async def _execute_retrieval(
 
         # Ensure dependencies are injected via DI container
         ctx = inject_dependencies(ctx)
-        
+
         query = _build_base_query(ctx)
-        
+
         # Call _maybe_run_hyde_query directly (allows test patching via l2.execution.*)
         hyde_query = await _maybe_run_hyde_query(rag_plan, ctx)
 
@@ -487,7 +481,7 @@ async def _execute_safety(
     try:
         # Ensure dependencies are injected via DI container
         ctx = inject_dependencies(ctx)
-        
+
         from .agents import ConstitutionalSafetyAgent
         agent = ConstitutionalSafetyAgent(
             routing_policy=ctx.routing_policy,
@@ -503,7 +497,7 @@ async def _execute_safety(
             resume=ctx.resume,
             config=ctx.config,
         )
-        
+
         # Apply additional safety validation via injected SafetyEngine if available
         safety_engine = ctx.safety_engine or get_service(SafetyEngine)
         if safety_engine and result:
@@ -522,7 +516,7 @@ async def _execute_safety(
             if policy_result.blocking_findings:
                 # Add L5 findings to L2 result for comprehensive safety coverage
                 result.findings.extend(policy_result.blocking_findings)
-        
+
         return result
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.safety_error", exc)

@@ -19,7 +19,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List
 import json
 
 # =============================================================================
@@ -127,10 +127,10 @@ def ensure_init_py(directory: Path) -> None:
 def move_file_with_rename(src: Path, dest_dir: Path, apply_rename: bool = True) -> Path:
     """Move a file to destination directory, optionally applying rename mappings."""
     dest_dir.mkdir(parents=True, exist_ok=True)
-    
+
     new_name = get_new_filename(src.name) if apply_rename else src.name
     dest_path = dest_dir / new_name
-    
+
     # Handle conflicts
     if dest_path.exists() and dest_path != src:
         # Add suffix to avoid overwrite
@@ -140,10 +140,10 @@ def move_file_with_rename(src: Path, dest_dir: Path, apply_rename: bool = True) 
         while dest_path.exists():
             dest_path = dest_dir / f"{stem}_{counter}{suffix}"
             counter += 1
-    
+
     if src != dest_path:
         shutil.move(str(src), str(dest_path))
-    
+
     return dest_path
 
 
@@ -157,38 +157,38 @@ def flatten_layer(layer_path: Path, layer_name: str) -> Dict[str, List[str]]:
     Returns a log of operations performed.
     """
     log = {"moved": [], "deleted_dirs": [], "renamed": []}
-    
+
     if not layer_path.exists():
         return log
-    
+
     # Find all P* directories
     phase_dirs = [d for d in layer_path.iterdir() if d.is_dir() and d.name.startswith("P")]
-    
+
     for phase_dir in phase_dirs:
         # Collect all .py files recursively
         py_files = collect_py_files(phase_dir)
-        
+
         for py_file in py_files:
             if py_file.name == "__init__.py":
                 continue  # Skip __init__.py files
-            
+
             # Move to layer root with rename
             new_path = move_file_with_rename(py_file, layer_path)
             log["moved"].append(f"{py_file} -> {new_path}")
-            
+
             if py_file.name != new_path.name:
                 log["renamed"].append(f"{py_file.name} -> {new_path.name}")
-        
+
         # Remove the phase directory (now empty except for __init__.py files)
         try:
             shutil.rmtree(phase_dir)
             log["deleted_dirs"].append(str(phase_dir))
         except Exception as e:
             print(f"Warning: Could not remove {phase_dir}: {e}")
-    
+
     # Ensure __init__.py exists at layer root
     ensure_init_py(layer_path)
-    
+
     return log
 
 
@@ -197,12 +197,12 @@ def quarantine_l4_non_retrieve(l4_path: Path) -> Dict[str, List[str]]:
     Quarantine L4_memory phases other than P1_retrieve.
     """
     log = {"quarantined": [], "kept": []}
-    
+
     if not l4_path.exists():
         return log
-    
+
     quarantine_dir = l4_path / QUARANTINE_L4
-    
+
     for item in l4_path.iterdir():
         if not item.is_dir():
             continue
@@ -214,7 +214,7 @@ def quarantine_l4_non_retrieve(l4_path: Path) -> Dict[str, List[str]]:
             log["quarantined"].append(f"{item.name} -> {dest}")
         elif item.name in L4_ALLOWED_PHASES:
             log["kept"].append(item.name)
-    
+
     return log
 
 
@@ -224,27 +224,27 @@ def delete_banned_folders(root: Path) -> List[str]:
     Promotes files up before deletion.
     """
     deleted = []
-    
+
     # Walk bottom-up to handle nested banned folders
     for dirpath, dirnames, filenames in os.walk(root, topdown=False):
         current_dir = Path(dirpath)
-        
+
         for dirname in dirnames:
             if is_banned_name(dirname):
                 banned_dir = current_dir / dirname
-                
+
                 # Promote .py files to parent
                 for py_file in collect_py_files(banned_dir):
                     if py_file.name != "__init__.py":
                         move_file_with_rename(py_file, current_dir)
-                
+
                 # Remove the banned directory
                 try:
                     shutil.rmtree(banned_dir)
                     deleted.append(str(banned_dir))
                 except Exception as e:
                     print(f"Warning: Could not remove {banned_dir}: {e}")
-    
+
     return deleted
 
 
@@ -253,16 +253,16 @@ def apply_file_renames(root: Path) -> List[str]:
     Apply rename mappings to all .py files.
     """
     renamed = []
-    
+
     for py_file in root.rglob("*.py"):
         if py_file.name in RENAME_MAPPINGS:
             new_name = RENAME_MAPPINGS[py_file.name]
             new_path = py_file.parent / new_name
-            
+
             if not new_path.exists():
                 py_file.rename(new_path)
                 renamed.append(f"{py_file} -> {new_path}")
-    
+
     return renamed
 
 
@@ -273,20 +273,9 @@ def apply_file_renames(root: Path) -> List[str]:
 def update_meta_yaml(yaml_path: Path) -> None:
     """Update unified_structure_subatomic_meta.yaml with new cognitive_layer_phase_rules."""
     content = yaml_path.read_text(encoding="utf-8")
-    
+
     # Replace cognitive_layer_phase_rules section
-    old_rules = r"""cognitive_layer_phase_rules:
-    L1_cognition:
-      allowed_phases: \[P1_retrieve, P2_inspect, P3_aggregate, P4_safety\]
-    L2_execution:
-      allowed_phases: \[P2_inspect, P3_aggregate, P4_safety\]
-    L3_orchestration:
-      allowed_phases: \[P3_aggregate, P4_safety\]
-    L4_memory:
-      allowed_phases: \[P1_retrieve, P3_aggregate, P4_safety\]
-    L5_safety:
-      allowed_phases: \[P4_safety\]"""
-    
+
     new_rules = """cognitive_layer_phase_rules:
     L1_cognition:
       allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]
@@ -298,7 +287,7 @@ def update_meta_yaml(yaml_path: Path) -> None:
       allowed_phases: [P1_retrieve]
     L5_safety:
       allowed_phases: []"""
-    
+
     # Simple string replacement for the rules
     content = re.sub(
         r"cognitive_layer_phase_rules:.*?L5_safety:\s*\n\s*allowed_phases:.*?\]",
@@ -306,7 +295,7 @@ def update_meta_yaml(yaml_path: Path) -> None:
         content,
         flags=re.DOTALL
     )
-    
+
     # Add subatomic_canon_2025 section if not present
     if "subatomic_canon_2025:" not in content:
         canon_section = """
@@ -326,17 +315,17 @@ subatomic_canon_2025:
     - self_teaching_names
 """
         content += canon_section
-    
+
     yaml_path.write_text(content, encoding="utf-8")
 
 
 def update_main_yaml(yaml_path: Path) -> None:
     """Update unified_structure_subatomic.yaml to reflect flat structure."""
     content = yaml_path.read_text(encoding="utf-8")
-    
+
     # Replace 01_agentic_core with agentic_core in domain references
     content = content.replace("agentic_core", "agentic_core")
-    
+
     yaml_path.write_text(content, encoding="utf-8")
 
 
@@ -349,11 +338,11 @@ def fix_imports_in_file(file_path: Path, old_to_new: Dict[str, str]) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         original = content
-        
+
         for old_name, new_name in old_to_new.items():
             old_module = old_name.replace(".py", "")
             new_module = new_name.replace(".py", "")
-            
+
             # Replace import statements
             content = re.sub(
                 rf"\bfrom\s+(\S+\.)?{re.escape(old_module)}\b",
@@ -365,7 +354,7 @@ def fix_imports_in_file(file_path: Path, old_to_new: Dict[str, str]) -> bool:
                 rf"import \1{new_module}",
                 content
             )
-        
+
         if content != original:
             file_path.write_text(content, encoding="utf-8")
             return True
@@ -378,11 +367,11 @@ def fix_imports_in_file(file_path: Path, old_to_new: Dict[str, str]) -> bool:
 def fix_all_imports(root: Path) -> int:
     """Fix imports across the entire repository."""
     fixed_count = 0
-    
+
     for py_file in root.rglob("*.py"):
         if fix_imports_in_file(py_file, RENAME_MAPPINGS):
             fixed_count += 1
-    
+
     return fixed_count
 
 
@@ -394,7 +383,7 @@ def main():
     print("=" * 70)
     print("SUBATOMIC CANON 2025 — FINAL TRANSFORMATION")
     print("=" * 70)
-    
+
     all_logs = {
         "flattened_layers": {},
         "quarantined_l4": {},
@@ -402,7 +391,7 @@ def main():
         "renamed_files": [],
         "fixed_imports": 0,
     }
-    
+
     # Step 1: Flatten L2, L3, L5 layers
     print("\n[STEP 1] Flattening L2_execution, L3_orchestration, L5_safety...")
     for root in COGNITIVE_ROOTS:
@@ -413,7 +402,7 @@ def main():
                 key = f"{root.name}/{layer}"
                 all_logs["flattened_layers"][key] = log
                 print(f"  ✓ Flattened {key}: {len(log['moved'])} files moved")
-    
+
     # Step 2: Quarantine L4 non-retrieve phases
     print("\n[STEP 2] Quarantining L4_memory non-retrieve phases...")
     for root in COGNITIVE_ROOTS:
@@ -423,46 +412,46 @@ def main():
             key = f"{root.name}/L4_memory"
             all_logs["quarantined_l4"][key] = log
             print(f"  ✓ Quarantined {key}: {len(log['quarantined'])} phases")
-    
+
     # Step 3: Delete banned folders
     print("\n[STEP 3] Deleting banned folders (ops, utils, manager, etc.)...")
     for root in COGNITIVE_ROOTS:
         deleted = delete_banned_folders(root)
         all_logs["deleted_banned"].extend(deleted)
     print(f"  ✓ Deleted {len(all_logs['deleted_banned'])} banned folders")
-    
+
     # Step 4: Apply file renames
     print("\n[STEP 4] Applying many-shot rename mappings...")
     for root in COGNITIVE_ROOTS:
         renamed = apply_file_renames(root)
         all_logs["renamed_files"].extend(renamed)
     print(f"  ✓ Renamed {len(all_logs['renamed_files'])} files")
-    
+
     # Step 5: Update YAML files
     print("\n[STEP 5] Updating YAML SSoT files...")
     meta_yaml = REPO_ROOT / "unified_structure_subatomic_meta.yaml"
     main_yaml = REPO_ROOT / "unified_structure_subatomic.yaml"
-    
+
     if meta_yaml.exists():
         update_meta_yaml(meta_yaml)
         print("  ✓ Updated unified_structure_subatomic_meta.yaml")
-    
+
     if main_yaml.exists():
         update_main_yaml(main_yaml)
         print("  ✓ Updated unified_structure_subatomic.yaml")
-    
+
     # Step 6: Fix imports
     print("\n[STEP 6] Fixing imports repo-wide...")
     fixed = fix_all_imports(REPO_ROOT)
     all_logs["fixed_imports"] = fixed
     print(f"  ✓ Fixed imports in {fixed} files")
-    
+
     # Write transformation log
     log_path = REPO_ROOT / "subatomic_canon_2025_transform_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(all_logs, f, indent=2, default=str)
     print(f"\n[LOG] Transformation log written to: {log_path}")
-    
+
     print("\n" + "=" * 70)
     print("TRANSFORMATION COMPLETE")
     print("=" * 70)

@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Simulation engine implementations.\"\"\"\nfrom .strategy_sim import StrategySimulator\nfrom .rag_sim import RAGSimulator\nfrom .draft_sim import DraftSimulator\nfrom .safety_sim import SafetySimulator\n__all__ = [\n\"StrategySimulator\",\n\"RAGSimulator\",\n\"DraftSimulator\",\n\"SafetySimulator\",\n]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nModel routing data structures for r\u00e9sum\u00e9 processing workflows.\nDefines lightweight model selection and routing context for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Optional\nfrom core.models.models import ExecutionProfile\n@dataclass\nclass ModelChoice:\n\"\"\"\nRepresents model selection choice for r\u00e9sum\u00e9 processing workflows.\nEnables lightweight provider-agnostic model routing for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\nprovider: str\nmodel_name: str\ncost_tier: str # e.g. \"low\", \"medium\", \"high\"\nestimated_cost: float\nlatency_ms: int\n@dataclass\nclass RoutingContext:\n\"\"\"\nProvides routing context for r\u00e9sum\u00e9 processing model selection.\nEnsures optimal model choice based on agent and task requirements for r\u00e9sum\u00e9 improvement.\n\"\"\"\nagent_id: str\ntask_type: str\nexecution_profile: Optional[ExecutionProfile] = None",
+  "normalized_signature": "class:ModelChoice;class:RoutingContext",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

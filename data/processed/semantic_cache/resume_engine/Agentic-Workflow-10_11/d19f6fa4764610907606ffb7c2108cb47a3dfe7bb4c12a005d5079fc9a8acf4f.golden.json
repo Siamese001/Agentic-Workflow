@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole # normalized import\ndef test_agent_registry_register_and_lookup():\nregistry = AgentRegistry()\na1 = AgentCard(agent_id=\"planner-1\", role=AgentRole.PLANNER)\na2 = AgentCard(agent_id=\"qa-1\", role=AgentRole.QA)\nregistry.register_agent(a1)\nregistry.register_agent(a2)\nassert registry.get_agent(\"planner-1\") is a1\nassert registry.get_agent(\"qa-1\") is a2\nplanners = registry.find_agents_by_type(\"planner\")\nassert a1 in planners\ndef test_agent_registry_find_by_capability():\nregistry = AgentRegistry()\na1 = AgentCard(agent_id=\"agent-a\", role=AgentRole.EXECUTION, capabilities=[\"write\"], agent_type=\"drafter\")\na2 = AgentCard(agent_id=\"agent-b\", role=AgentRole.EXECUTION, capabilities=[\"review\"], agent_type=\"qa\")\nregistry.register_agent(a1)\nregistry.register_agent(a2)\nwriters = registry.find_agents_by_capability(\"write\")\nassert a1 in writers",
+  "normalized_signature": "func:test_agent_registry_register_and_lookup;func:test_agent_registry_find_by_capability",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_agent_registry_register_and_lookup,test_agent_registry_find_by_capability",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

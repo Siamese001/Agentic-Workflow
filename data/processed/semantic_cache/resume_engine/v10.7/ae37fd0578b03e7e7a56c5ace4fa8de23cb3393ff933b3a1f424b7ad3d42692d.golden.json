@@ -1,0 +1,9 @@
+{
+  "canonical_form": "\"\"\"Minimal stub for google.generativeai SDK usage in tests.\"\"\"\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import Any, Dict\n@dataclass\nclass GenerativeModel:\nname: str\ndef generate_content(self, prompt: str, **_: Any) -> Dict[str, Any]:\nreturn {\n\"model\": self.name,\n\"prompt\": prompt,\n\"candidates\": [\n{\n\"output\": f\"stubbed generative output for {prompt[:20]}\",\n\"safetyAttributes\": {\"blocked\": False},\n}\n],\n}\ndef configure(**_kwargs: Any) -> None: # pragma: no cover - configuration noop\nreturn None\n__all__ = [\"GenerativeModel\", \"configure\"]",
+  "normalized_signature": "func:configure;func:generate_content;class:GenerativeModel",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:configure,generate_content",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

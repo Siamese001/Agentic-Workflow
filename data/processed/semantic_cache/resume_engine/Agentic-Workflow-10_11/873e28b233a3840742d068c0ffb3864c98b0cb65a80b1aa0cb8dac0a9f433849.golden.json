@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nRelevance scoring for r\u00e9sum\u00e9 processing context items.\nProvides deterministic scoring to prioritize relevant information for r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Tuple\n@dataclass\nclass ContextItem:\n\"\"\"\nRepresents context item for r\u00e9sum\u00e9 processing relevance scoring.\nEnables intelligent information prioritization for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\nid: str\ntext: str\nmetadata: Dict[str, Any]\ndef score_relevance(query: str, items: List[ContextItem]) -> List[Tuple[ContextItem, float]]:\n\"\"\"\nScores context items by relevance to r\u00e9sum\u00e9 improvement queries.\nPrioritizes information that supports comprehensive r\u00e9sum\u00e9 enhancement processing.\n\"\"\"\nq_tokens = set((query or \"\").lower().split())\nscored: List[Tuple[ContextItem, float]] = []\nfor item in items:\ntokens = set((item.text or \"\").lower().split())\nif not tokens:\nscore = 0.0\nelse:\ninter = len(q_tokens & tokens)\nunion = len(q_tokens | tokens) or 1\nscore = inter / union\nscored.append((item, float(score)))\nscored.sort(key=lambda x: (-x[1], x[0].id))\nreturn scored",
+  "normalized_signature": "func:score_relevance;class:ContextItem",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:score_relevance",
+  "test_coverage": []
+}

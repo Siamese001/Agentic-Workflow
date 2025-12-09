@@ -48,9 +48,9 @@ components:
     stage: [P1_prep | P2_exec | P3_eval | P4_recovery]
     type: [Agent | Router | Tool | Database | Interface]
     description: "Brief NL summary of business logic."
-    inputs: 
+    inputs:
       - [Data/Object received]
-    outputs: 
+    outputs:
       - [Data/Object returned]
     dependencies:
       - [id_of_component_called]

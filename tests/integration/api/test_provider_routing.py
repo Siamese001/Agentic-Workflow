@@ -1,7 +1,7 @@
 """Integration tests for API provider routing and fallbacks."""
 from __future__ import annotations
 import os
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 import pytest
 
 from agentic_workflow.runtime.shared.multi_provider_clients import (

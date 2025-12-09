@@ -1,0 +1,33 @@
+{
+  "from": "LIC_10-02-2025_v5.6.2.json",
+  "to": "LIC_10-02-2025_v5.6.3.json",
+  "base_sha": "c1dfb7dac804b61cdae2de5dd899572b9ba4f9048dc79426bbb59361d47fb83d",
+  "new_sha": "e9c87dab0a5901ee4a0683c3382498296f7044f0a9a4f15eabe68670ba758860",
+  "change_count": 6,
+  "changes": [
+    {
+      "path": "4.reasoning.rag_source_prioritization.global_source_weighting.recency_example",
+      "change": "REMOVED"
+    },
+    {
+      "path": "7.docs",
+      "change": "REMOVED"
+    },
+    {
+      "path": "metadata.base_sha_for_v5_6_3",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v5_6_3",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v5_6_3",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ]
+}

@@ -1,12 +1,11 @@
 """Unit tests for runtime/shared/models.py"""
 from __future__ import annotations
 from enum import Enum
-import pytest
 
 from agentic_workflow.runtime.shared.models import (
     GateDecision, ValidationSeverity, CircuitState, HopStatus,
     APICallStatus, ReasoningConfig, ValidationResult, RAGState,
-    HopCheckpoint, APICallMetrics, ImmutableStagingBuffer,
+    ImmutableStagingBuffer,
 )
 
 class TestGateDecision:

@@ -1,0 +1,114 @@
+{
+  "from": "LIC_10-02-2025_v6.0.json",
+  "to": "LIC_10-02-2025_v6.1.json",
+  "base_sha": "744b13e7845b4ad157f921a5ba1e5a9f308ec5fd98deb69250f7330c460ecc3f",
+  "new_sha": "fe922471f7aca2a28409ca4858ec034843655ee9248ae0b643d9fb0ed5dc0eca",
+  "change_count": 26,
+  "changes": [
+    {
+      "path": "4.reasoning._defs.manifests.defaults.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.anti_patterns.do_not_force_podcast_references",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.anti_patterns.do_not_ignore_other_sources",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.anti_patterns.do_not_over_weight_old_podcasts",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.rag_v16_note",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.@inherit",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_help",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-041.example_fail",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-041.example_pass",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-041.fix",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-041.help_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-042.example_fail",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-042.example_pass",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-042.fix",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-042.help_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "7.docs",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.base_sha_for_v6_1",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v6_1",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v6_1",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ],
+  "size_deltas": []
+}

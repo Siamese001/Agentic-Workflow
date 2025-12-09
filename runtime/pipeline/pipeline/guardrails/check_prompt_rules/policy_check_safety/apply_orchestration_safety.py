@@ -17,8 +17,6 @@ Ensures resume generation system remains properly structured for improved
 code maintainability and easier future enhancements.
 """
 
-import os
-import re
 from pathlib import Path
 
 # Define the root directory
@@ -53,13 +51,13 @@ def fix_file(filepath: Path) -> bool:
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         original_content = content
-        
+
         # Apply all mappings
         for old_import, new_import in IMPORT_MAPPINGS.items():
             content = content.replace(old_import, new_import)
-        
+
         # Write back if changed
         if content != original_content:
             with open(filepath, 'w', encoding='utf-8') as f:
@@ -77,20 +75,20 @@ def main():
     for improved code organization and easier maintenance.
     """
     changed_files = []
-    
+
     # Walk through all Python files
     for filepath in ROOT.rglob("*.py"):
         # Skip this script itself
         if filepath.name == "fix_imports.py":
             continue
-        
+
         # Skip __pycache__ and other generated directories
         if "__pycache__" in str(filepath) or ".pytest_cache" in str(filepath):
             continue
-        
+
         if fix_file(filepath):
             changed_files.append(filepath.relative_to(ROOT))
-    
+
     # Print summary
     if changed_files:
         logging.debug(f"Fixed imports in {len(changed_files)} files:")
@@ -101,7 +99,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-

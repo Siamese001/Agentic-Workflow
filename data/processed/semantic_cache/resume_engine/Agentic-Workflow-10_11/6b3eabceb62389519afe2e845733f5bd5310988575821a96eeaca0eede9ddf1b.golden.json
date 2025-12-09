@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from eval.golden_state.models import JudgeVerdict\nfrom eval.golden_state.scorer import aggregate_scores\ndef test_aggregate_scores_basic():\nverdicts = [\nJudgeVerdict(score=1.0, rating=\"pass\", explanation=\"\"),\nJudgeVerdict(score=0.0, rating=\"fail\", explanation=\"\"),\n]\nagg = aggregate_scores(verdicts)\nassert agg[\"avg_score\"] == 0.5\nassert agg[\"pass_count\"] == 1.0\nassert agg[\"fail_count\"] == 1.0\nassert agg[\"total\"] == 2.0",
+  "normalized_signature": "func:test_aggregate_scores_basic",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_aggregate_scores_basic",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

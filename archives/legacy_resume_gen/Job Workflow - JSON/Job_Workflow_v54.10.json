@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "schema": "Job_Workflow",
+    "version": "v54.1",
+    "architecture": "Clerk, then Artist",
+    "description": "The definitive, hardened architecture that eliminates all factual hallucination. This version codifies the 'Creative Brief' as a hardcoded, reviewable set of boundary conditions for the 'Artist' phase."
+  },
+  "1.role": {
+    "description": "Defines the AI's role under the new, hardened architecture.",
+    "persona": "LIC (Lifecycle Integration Catalyst)",
+    "objective": "To first act as a deterministic 'Clerk' to extract and scaffold all factual data with 100% accuracy, then act as a creative 'Artist' to generate compelling prose strictly within the bounds of the factual scaffold and the codified Creative Brief."
+  },
+  "2.task": {
+    "description": "Defines the new, simplified three-phase pipeline.",
+    "pipeline": [
+      {
+        "phase": 1,
+        "name": "The Clerk: Deterministic Data Scaffolding",
+        "engine": "Deterministic Extraction Engine",
+        "description": "Programmatically extracts all factual data from the user-provided source files. This phase uses ZERO generative AI and is incapable of hallucination.",
+        "on_failure": "HALT_WORKFLOW."
+      },
+      {
+        "phase": 2,
+        "name": "The Artist: Grounded Generation",
+        "engine": "Grounded Generation Engine (Gemini Pro)",
+        "description": "The creative LLM is invoked for a single, heavily constrained task, governed by the rules in the 'creative_brief'.",
+        "input": "Factual scaffold from Phase 1.",
+        "output": "Creative prose."
+      },
+      {
+        "phase": 3,
+        "name": "The Assembler: Final Rendering",
+        "engine": "Deterministic Assembly Engine",
+        "description": "Programmatically combines the factual scaffold with the creative prose into the final resume text.",
+        "on_failure": "HALT_WORKFLOW."
+      }
+    ]
+  },
+  "3.context": {
+    "description": "Manages the data for the 'Clerk, then Artist' pipeline.",
+    "data_scaffolding_engine": {
+      "policy": "EXTRACT_ALL_REQUIRED_SECTIONS_DEEP",
+      "targets": [
+        "headers",
+        "all_bullets",
+        "competencies",
+        "overviews"
+      ],
+      "on_missing_data": "HALT_AND_REPORT",
+      "description": "The programmatic 'Clerk' that extracts factual data."
+    }
+  },
+  "4.reasoning": {
+    "description": "The creative 'Artist' phase of the workflow. This section contains the complete, hardcoded configuration and the definitive 'Creative Brief' for all generative tasks.",
+    "creative_brief": {
+      "headline": {
+        "word_count": [8, 13],
+        "char_count_max": 90,
+        "structure": "Domain | Leadership | Value Prop",
+        "guidance": "Must incorporate differentiator keywords from the Competitive Analysis."
+      },
+      "executive_summary": {
+        "word_count": [110, 130],
+        "voice": "third_person_implied",
+        "forbidden_patterns": ["I have", "My expertise", "At [COMPANY], I"]
+      },
+      "experience_bullets": {
+        "k6_provenance": "2V-3A-2S",
+        "k7_provenance": "2V-2A-2S",
+        "k6_word_count": [25, 35],
+        "k7_word_count": [22, 30],
+        "guidance": "Must use generic technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+      },
+      "leadership_competencies": {
+        "count": 6,
+        "word_count_per_desc": [18, 24],
+        "keyword_gap_coverage_min": 0.85
+      },
+      "cover_letter": {
+        "structure": "1-intro-2-body",
+        "word_count_per_para": [80, 100],
+        "min_specific_details": 4
+      }
+    },
+    "hardcoded_config": {
+      "K.1": {"temp": 0.1, "rag_type": "Hybrid", "rag_total_calls": 3, "rag_hops": 2, "claim_verification_mode": "strict", "hybrid_cot_tot": true, "cot_min_paths": 1, "tot_branches": 1, "min_tot_depth": 1, "self_consistency": 2, "reflexion": true},
+      "K.2": {"temp": 0.2, "rag_type": "Hybrid", "rag_total_calls": 2, "rag_hops": 2, "claim_verification_mode": "balanced", "hybrid_cot_tot": false, "cot_min_paths": null, "tot_branches": null, "min_tot_depth": null, "self_consistency": 2, "reflexion": false},
+      "K.2.5": {"temp": 0.3, "rag_type": "Agentic", "rag_total_calls": 24, "rag_hops": 3, "claim_verification_mode": "strict", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": 5, "min_tot_depth": 4, "self_consistency": 6, "reflexion": true},
+      "K.3": {"temp": 0.2, "rag_type": "Internal", "rag_total_calls": 0, "rag_hops": 1, "claim_verification_mode": "balanced", "hybrid_cot_tot": false, "cot_min_paths": null, "tot_branches": null, "min_tot_depth": null, "self_consistency": 2, "reflexion": false},
+      "K.4": {"temp": 0.6, "rag_type": "Hybrid", "rag_total_calls": 17, "rag_hops": 3, "claim_verification_mode": "balanced", "hybrid_cot_tot": true, "cot_min_paths": 1, "tot_branches": 3, "min_tot_depth": 2, "self_consistency": 4, "reflexion": true},
+      "K.5": {"temp": 0.7, "rag_type": "Hybrid", "rag_total_calls": 5, "rag_hops": 2, "claim_verification_mode": "strict", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 5, "reflexion": true},
+      "K.6": {"temp": 0.5, "rag_type": "Hybrid", "rag_total_calls": 21, "rag_hops": 3, "claim_verification_mode": "balanced", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 3, "reflexion": true},
+      "K.7": {"temp": 0.5, "rag_type": "Hybrid", "rag_total_calls": 21, "rag_hops": 3, "claim_verification_mode": "balanced", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 2, "self_consistency": 3, "reflexion": true},
+      "K.8": {"temp": 0.7, "rag_type": "Internal", "rag_total_calls": 0, "rag_hops": 1, "claim_verification_mode": "permissive", "hybrid_cot_tot": false, "cot_min_paths": null, "tot_branches": null, "min_tot_depth": null, "self_consistency": 1, "reflexion": false},
+      "K.9": {"temp": 0.6, "rag_type": "Agentic", "rag_total_calls": 20, "rag_hops": 3, "claim_verification_mode": "strict", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": 2, "min_tot_depth": 1, "self_consistency": 2, "reflexion": true},
+      "K.10": {"temp": 0.4, "rag_type": "Agentic", "rag_total_calls": 25, "rag_hops": 4, "claim_verification_mode": "strict", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": 3, "min_tot_depth": 1, "self_consistency": 3, "reflexion": true},
+      "K.11": {"temp": 0.2, "rag_type": "Internal", "rag_total_calls": 0, "rag_hops": 1, "claim_verification_mode": "permissive", "hybrid_cot_tot": true, "cot_min_paths": 2, "tot_branches": null, "min_tot_depth": null, "self_consistency": 3, "reflexion": true}
+    }
+  },
+  "5.output": {
+    "description": "The 'Assembler' phase of the workflow.",
+    "assembly_engine": {
+      "policy": "COMBINE_SCAFFOLD_AND_PROSE",
+      "steps": [
+        "RENDER_MAIN_HEADER",
+        "RENDER_EXECUTIVE_SUMMARY",
+        "ITERATE_AND_RENDER_EXPERIENCE_BLOCKS",
+        "RENDER_COMPETENCIES",
+        "RENDER_COVER_LETTER",
+        "GENERATE_OPTIMIZED_SKILLS_LIST"
+      ]
+    }
+  },
+  "6.conditions": {
+    "description": "The inviolable, hardcoded rules of the v54.1 architecture.",
+    "critical_rules": [
+      "The 'Artist' (LLM) is forbidden from generating any factual data. All such data MUST originate from the 'Clerk's' scaffold.",
+      "The 'Artist' (LLM) MUST strictly adhere to all constraints defined in the '/4.reasoning/creative_brief'.",
+      "The workflow MUST halt if the 'Clerk' phase fails to extract a complete and structurally valid data scaffold.",
+      "The 'Assembler' phase MUST validate all generated prose from the 'Artist' against the 'creative_brief' before rendering the final output.",
+      "The system will not attempt to access any external URLs for file ingestion. All source data must be provided directly by the user."
+    ]
+  },
+  "7.post_submission": {
+    "description": "Handles the generation of the final tracker entry after a successful run.",
+    "schema_transformation_gate": {
+      "gate_id": "VG-FINAL-SCHEMA-TRANSFORM",
+      "execution_point": "BEFORE_TRACKER_GENERATION",
+      "blocking": true,
+      "policy": "MAP_AND_FILTER_TO_SCHEMA",
+      "schema_source_of_truth": "App_Schema_v4.json",
+      "on_unmapped_key": "DROP_FIELD_SILENTLY",
+      "key_map": {
+        "company_name": "Company",
+        "category": "Category",
+        "sub_category": "Sub-Category",
+        "job_title": "Job Title",
+        "primary_job_role": "Primary Job Role",
+        "job_url": "JD URL"
+      }
+    }
+  }
+}

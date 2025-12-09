@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.timeout = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
-    
+
     def execute(self, action: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute action."""
         start = time.time()
@@ -35,13 +35,13 @@ class ExecuteResumeGeneration:
                 output=output,
                 duration_ms=(time.time() - start) * 1000
             )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
                 success=False,
                 error=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
-    
+
     def _perform_action(self, action: str, params: Dict[str, Any]) -> Any:
         """Perform the action."""
         logger.info(f"Executing {action} with {params}")

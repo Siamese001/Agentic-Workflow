@@ -2,7 +2,6 @@
 from __future__ import annotations
 import time
 from unittest.mock import MagicMock, patch
-import pytest
 
 from agentic_workflow.runtime.shared.sdk_registry import (
     validate_sdk, SDK_REGISTRY, reset_all_clients, get_vector_store,

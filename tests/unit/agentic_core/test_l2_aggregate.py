@@ -1,7 +1,6 @@
 """Unit tests for L2_execution/P3_aggregate - execution result aggregation."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
+from typing import Dict, List
 
 class TestExecutionResultAggregation:
     """Tests for aggregating execution results."""

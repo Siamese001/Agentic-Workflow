@@ -6,8 +6,6 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from shared.models import ValidationResult, ValidationSeverity
-from shared.workflow_types import HopStatus
 
 
 def compute_cognition_score(data: Dict[str, Any]) -> Dict[str, Any]:

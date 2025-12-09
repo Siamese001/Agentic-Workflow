@@ -59,6 +59,3 @@ def validate_schema_version(
         raise ValueError(
             f"Unexpected schema_version={version!r}; expected one of {tuple(expected_versions)!r}"
         )
-
-
-
