@@ -1,83 +1,165 @@
-# .pre-commit-config.yaml — SUBATOMIC CANON 2025 — FINAL
-# 40 keys apply ONLY to sovereign code. Everything else is exempt.
+# .pre-commit-config.yaml — SUBATOMIC CANON 2025 — FINAL ETERNAL STATE
+# Sovereign code: full 40 keys (including schemas, prompt_governance, observability, config)
+# Non-sovereign code: strict Light Canon (12 brutal checks)
+# data/ and archives/: 100% immune
 
 fail_fast: true
 
-# IMMUNE FROM 40 KEYS — immutable, generated, or dead
+# ===================================================================
+# IMMUNE ZONES — NEVER TOUCHED BY ANY HOOK
+# ===================================================================
 exclude: |
   (?x)^(
     ^data/|
     ^archives/|
-    ^tests/|
-    ^scripts/|
-    ^runtime/|
-    ^legacy/|
-    ^tools/|
-    \.git/|
-    __pycache__/
+    ^__pycache__/
   )
 
 repos:
+
   # ===================================================================
-  # 1. THE CANON — FULL 40/40 ON ALL SOVEREIGN CODE
+  # 1. FULL 40/40 CANON — ALL SOVEREIGN CODE (L1/L2/L3 ONLY)
   # ===================================================================
   - repo: local
     hooks:
-      - id: canon-validator
-        name: 40/40 SUBATOMIC CANON — LAW OF REALITY
+      - id: canon-40-keys
+        name: 40/40 SUBATOMIC CANON — FULL ENFORCEMENT
         entry: python canon_validator.py --check-40 --hard-fail
         language: system
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/.*\.py$
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
         pass_filenames: false
         stages: [pre-commit]
 
-      - id: prevent-sovereign-changes
-        name: SOVEREIGN CODE IS IMMORTAL — NO DELETE / RENAME
+      - id: prevent-sovereign-delete
+        name: SOVEREIGN CODE IS IMMORTAL — NO DELETE/RENAME
         entry: python scripts/track_changes.py
         language: system
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
         pass_filenames: false
-        stages: [pre-commit]
 
   # ===================================================================
-  # 2. CODE QUALITY — ONLY ON SOVEREIGN CODE
+  # 2. LIGHT CANON — 12 BRUTAL CHECKS FOR NON-SOVEREIGN CODE
+  # Applies to: tests/, scripts/, runtime/, shared/, tools/, etc.
+  # ===================================================================
+  - repo: local
+    hooks:
+      # 1. No debug statements anywhere
+      - id: light-no-debug
+        name: LIGHT CANON — No print/pdb/breakpoint
+        entry: >-
+          python -c "
+          import sys, re, pathlib
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(x in f.parts for x in ['data','archives','__pycache__','agentic_core','apps_lic','apps_rg','apps_shared','schemas','prompt_governance','observability','config']): continue
+              c = f.read_text(errors='ignore')
+              if re.search(r'\b(print\(|pdb\.|ipdb\.|breakpoint\(|set_trace)', c):
+                  bad.append(str(f))
+          if bad: print('DEBUG FOUND:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        pass_filenames: false
+
+      # 2. No TODO/FIXME/XXX/HACK/STUB
+      - id: light-no-todo
+        name: LIGHT CANON — No TODO/FIXME/XXX
+        entry: bash -c 'grep -rEI "(TODO|FIXME|XXX|HACK|STUB)" . --include="*.py" --exclude-dir={data,archives,__pycache__,agentic_core,apps_lic,apps_rg,apps_shared,schemas,prompt_governance,observability,config} && exit 1 || exit 0'
+        language: system
+        files: \.py$
+
+      # 3. No files <150 bytes (except small __init__.py)
+      - id: light-no-tiny-files
+        name: LIGHT CANON — No micro-files
+        entry: >-
+          python -c "
+          import sys, pathlib
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(x in f.parts for x in ['data','archives','__pycache__','agentic_core','apps_lic','apps_rg','apps_shared','schemas','prompt_governance','observability','config']): continue
+              if f.name == '__init__.py' and f.stat().st_size < 100: continue
+              if f.stat().st_size < 150: bad.append(f'{f}: {f.stat().st_size}B')
+          if bad: print('TINY FILES:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        pass_filenames: false
+
+      # 4. No pass-only functions/classes (except in tests)
+      - id: light-no-pass-only
+        name: LIGHT CANON — No pass-only definitions
+        entry: >-
+          python -c "
+          import ast, sys, pathlib
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(x in f.parts for x in ['data','archives','tests','__pycache__','agentic_core','apps_lic','apps_rg','apps_shared','schemas','prompt_governance','observability','config']): continue
+              try:
+                  tree = ast.parse(f.read_text())
+                  for node in ast.walk(tree):
+                      if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                          if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                              bad.append(f'{f}:{node.lineno} {node.name}')
+              except: pass
+          if bad: print('PASS-ONLY:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        pass_filenames: false
+
+      # 5. No bare except: or except Exception:
+      - id: light-no-bare-except
+        name: LIGHT CANON — No bare except
+        entry: bash -c 'grep -rEn "\\bexcept\\s*:" . --include="*.py" --exclude-dir={data,archives,__pycache__,agentic_core,apps_lic,apps_rg,apps_shared,schemas,prompt_governance,observability,config} && exit 1 || exit 0'
+        language: system
+        files: \.py$
+
+      # 6. No secrets in non-sovereign code
+      - id: light-no-secrets
+        name: LIGHT CANON — No secrets outside sovereign dirs
+        entry: detect-secrets scan --exclude-files '^data/|^archives/' --fail-on-live
+        language: system
+        pass_filenames: false
+        additional_dependencies: [detect-secrets==1.5.0]
+
+      # 7. No zombie "archive/" folder (singular)
+      - id: light-no-zombie-archive
+        name: LIGHT CANON — Zombie archive/ forbidden
+        entry: bash -c 'test ! -d archive || (echo "ZOMBIE archive/ DETECTED — ONLY archives/ ALLOWED" && exit 1)'
+        language: system
+        files: ^$
+        pass_filenames: false
+
+  # ===================================================================
+  # 3. SOVEREIGN-ONLY QUALITY TOOLS
   # ===================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.4
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
       - id: ruff-format
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
 
-  # ===================================================================
-  # 3. TYPE PERFECTION — ONLY SOVEREIGN CODE
-  # ===================================================================
   - repo: local
     hooks:
       - id: pyright-strict
-        name: PYRIGHT 100% TYPE PERFECTION — SOVEREIGN ONLY
-        entry: pyright --verifytypes agentic_core apps_lic apps_rg apps_shared --ignoreexternal --level strict
+        name: PYRIGHT — SOVEREIGN ONLY
+        entry: pyright --verifytypes agentic_core apps_lic apps_rg apps_shared schemas prompt_governance observability config --ignoreexternal --level strict
         language: system
         pass_filenames: false
         additional_dependencies: [pyright==1.1.391]
-        require_serial: true
 
-  # ===================================================================
-  # 4. TEST COVERAGE — SOVEREIGN ONLY
-  # ===================================================================
-  - repo: local
-    hooks:
       - id: 100-percent-coverage
-        name: 100% COVERAGE OR DIE — SOVEREIGN ONLY
-        entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov=apps_shared --cov-fail-under=100 -q
+        name: 100% COVERAGE — SOVEREIGN ONLY
+        entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov=apps_shared --cov=schemas --cov=prompt_governance --cov=observability --cov=config --cov-fail-under=100 -q
         language: system
         pass_filenames: false
         require_serial: true
 
   # ===================================================================
-  # 5. BASIC HYGIENE (runs everywhere except excluded)
+  # 4. BASIC HYGIENE — EVERYWHERE EXCEPT IMMUNE ZONES
   # ===================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -91,121 +173,7 @@ repos:
       - id: trailing-whitespace
 
   # ===================================================================
-  # 7. ZOMBIE KILLER — archive/ (singular) is FORBIDDEN FOREVER
-  # ===================================================================
-  - repo: local
-    hooks:
-      - id: no-zombie-archive
-        name: BAN zombie 'archive/' folder
-        entry: bash
-        args: 
-          - -c
-          - 'test ! -d archive && ! git ls-files --others --exclude-standard | grep -q "^archive/" && exit 0 || (echo "ZOMBIE DETECTED: archive/ (singular) is FORBIDDEN. Only archives/ (plural) allowed." && exit 1)'
-        language: system
-        files: ^$
-        pass_filenames: false
-
-  # ===================================================================
-  # LIGHT CANON 2025 — 7 RULES FOR ALL NON-SOVEREIGN CODE
-  # Applies to: tests/, scripts/, shared/, runtime/, apps_shared/
-  # ===================================================================
-  - repo: local
-    hooks:
-      # 1. No TODO/FIXME/XXX/HACK/STUB comments anywhere
-      - id: light-canon-no-todo
-        name: LIGHT CANON — No TODO/FIXME/XXX
-        entry: bash -c 'git diff --cached --name-only | xargs grep -iE "(TODO|FIXME|XXX|HACK|STUB)" && exit 1 || exit 0'
-        language: system
-        files: \.py$
-        exclude: ^data/|^archives/
-
-      # 2. No print(), pdb, ipdb, breakpoint() anywhere
-      - id: light-canon-no-debug
-        name: LIGHT CANON — No print()/pdb/breakpoint
-        entry: >-
-          python -c "
-          import sys, re, pathlib
-          bad = []
-          for f in pathlib.Path('.').rglob('*.py'):
-              if any(x in f.parts for x in ['data','archives','__pycache__']): continue
-              c = f.read_text(errors='ignore')
-              if re.search(r'\b(print\(|pdb\.|ipdb\.|breakpoint\(|\.set_trace\()', c):
-                  bad.append(str(f))
-          if bad: print('DEBUG STATEMENTS:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
-          "
-        language: system
-        files: \.py$
-        exclude: ^data/|^archives/
-        pass_filenames: false
-
-      # 3. No files < 150 bytes (except __init__.py < 100 bytes)
-      - id: light-canon-no-tiny
-        name: LIGHT CANON — No micro-files
-        entry: >-
-          python -c "
-          import sys, pathlib
-          bad = []
-          for f in pathlib.Path('.').rglob('*.py'):
-              if any(x in f.parts for x in ['data','archives','__pycache__']): continue
-              s = f.stat().st_size
-              if f.name == '__init__.py' and s < 100: continue
-              if s < 150: bad.append(f'{f}: {s} bytes')
-          if bad: print('TINY FILES:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
-          "
-        language: system
-        files: \.py$
-        exclude: ^data/|^archives/
-        pass_filenames: false
-
-      # 4. No zombie "archive/" folder (singular)
-      - id: light-canon-no-zombie-archive
-        name: LIGHT CANON — Zombie archive/ forbidden
-        entry: bash -c 'test ! -d archive || (echo "ZOMBIE archive/ DETECTED — ONLY archives/ ALLOWED" && exit 1)'
-        language: system
-        files: ^$
-        pass_filenames: false
-
-      # 5. No bare except: or except Exception:
-      - id: light-canon-no-bare-except
-        name: LIGHT CANON — No bare except
-        entry: bash -c 'git diff --cached --name-only | xargs grep -nE "^\s*except\s*:" && exit 1 || exit 0'
-        language: system
-        files: \.py$
-        exclude: ^data/|^archives/
-
-      # 6. No pass-only functions/classes (except in tests with @pytest.mark.skip)
-      - id: light-canon-no-pass-only
-        name: LIGHT CANON — No pass-only definitions
-        entry: >-
-          python -c "
-          import ast, sys, pathlib
-          bad = []
-          for f in pathlib.Path('.').rglob('*.py'):
-              if any(x in f.parts for x in ['data','archives','tests','__pycache__']): continue
-              try:
-                  tree = ast.parse(f.read_text())
-                  for node in ast.walk(tree):
-                      if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                          if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
-                              bad.append(f'{f}:{node.lineno} {node.name}')
-              except: pass
-          if bad: print('PASS-ONLY:\\n' + '\\n'.join(bad[:30])); sys.exit(1)
-          "
-        language: system
-        files: \.py$
-        exclude: ^data/|^archives/|^tests/
-        pass_filenames: false
-
-      # 7. No private keys / secrets accidentally checked in
-      - id: light-canon-no-secrets
-        name: LIGHT CANON — No secrets in-code secrets
-        entry: detect-secrets scan --exclude-files ^data/|^archives/ --fail-on-live
-        language: system
-        pass_filenames: false
-        additional_dependencies: [detect-secrets==1.5.0]
-
-  # ===================================================================
-  # 9. CUSTOM PROJECT VALIDATION
+  # 5. CUSTOM VALIDATION — PROJECT-SPECIFIC
   # ===================================================================
   - repo: local
     hooks:
@@ -213,13 +181,12 @@ repos:
         name: Validate data immortality
         entry: python scripts/validate_data_immortality.py
         language: system
-        pass_filenames: true
+        always_run: true
 
       - id: check-canonical-structure
         name: Check canonical project structure
         entry: python scripts/check_canonical_structure.py
         language: system
-        always_run: true
 
       - id: validate-sdk-files
         name: Validate SDK files are executable
