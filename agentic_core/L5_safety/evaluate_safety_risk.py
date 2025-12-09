@@ -19,6 +19,7 @@ from eval.golden_state.models import GoldenOutput
 
 
 def test_evaluate_case_output_basic() -> None:
+    """Test basic evaluation of golden case outputs against expected results."""
     cases = load_golden_cases()
     assert cases
 
