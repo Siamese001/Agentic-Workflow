@@ -33,9 +33,13 @@ TODO_PATTERN = re.compile(r'#.*\b(TODO|FIXME|NOTE|HACK|XXX|TEMP|WIP|DEBUG|STUB|R
 ROOT = Path(__file__).parent.resolve()
 DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 
-# SOVEREIGNTY
-SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
+# SOVEREIGNTY - CANON 2025: 40 KEYS APPLY ONLY TO SOVEREIGN CODE
+SOVEREIGN_AGENTS = {"agentic_core", "apps_lic"}  # apps_rg excluded (generated)
 REQUIRED_LAYERS = ["L1_cognition", "L2_execution", "L3_orchestration", "L4_memory", "L5_safety"]
+
+def is_sovereign_file(f: Path) -> bool:
+    """Check if file is in sovereign code directories (40 keys apply only here)."""
+    return any(parent.name in {"agentic_core", "apps_lic"} for parent in f.parents)
 
 # VERB PHYSICS - EXPANDED TO MATCH ACTUAL CODEBASE
 # L2 execution verbs - includes all action/tool verbs
