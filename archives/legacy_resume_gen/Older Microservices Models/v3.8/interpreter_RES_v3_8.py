@@ -52,7 +52,7 @@ class CodeInterpreterTool:
         }
         self.logger = logging.getLogger(__name__)
     
-    def execute(self, code: str, context: Optional[Dict[str, Any]] = None) -> Any:
+    def execute(self, code: str, context: Optional[Dict[str, object]] = None) -> Any:
         """
         Execute Python code in a sandboxed environment.
         
@@ -195,12 +195,12 @@ except json.JSONDecodeError as e:
                     return True, result["data"], None
                 else:
                     return False, None, result["error"]
-            except:
+            except (ValueError, TypeError, KeyError):
                 return False, None, "Failed to parse validation result"
         
         return False, None, output
 
-    def extract_metrics(self, text: str) -> Dict[str, Any]:
+    def extract_metrics(self, text: str) -> Dict[str, object]:
         """
         Extract numeric metrics from text.
         

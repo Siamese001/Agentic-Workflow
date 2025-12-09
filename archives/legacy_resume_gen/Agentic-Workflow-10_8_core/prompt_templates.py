@@ -59,7 +59,7 @@ def load_template(name: str | None = None) -> Dict[str, str]:
     raise ValueError(f"Unknown template: {name}")
 
 
-def envelope_from_template(name: str | None = None, overrides: Dict[str, Any] | None = None) -> PromptEnvelope:
+def envelope_from_template(name: str | None = None, overrides: Dict[str, object] | None = None) -> PromptEnvelope:
     """Create a PromptEnvelope from a named template with optional overrides."""
 
     template = load_template(name)

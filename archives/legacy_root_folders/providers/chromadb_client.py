@@ -8,7 +8,7 @@ and provides a clean interface for vector store operations.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, object
 
 try:
     import chromadb  # type: ignore
@@ -45,7 +45,7 @@ class ChromaClient:
         """List all collections in ChromaDB."""
         return self.client.list_collections()
     
-    def heartbeat(self) -> Dict[str, Any]:
+    def heartbeat(self) -> Dict[str, object]:
         """Check ChromaDB server heartbeat."""
         return self.client.heartbeat()
     

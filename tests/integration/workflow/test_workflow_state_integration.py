@@ -1,6 +1,6 @@
 """Integration tests for workflow state management."""
 from __future__ import annotations
-from typing import Dict, List, Any
+from typing import Dict, List, object
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -15,7 +15,7 @@ class WorkflowState(Enum):
 class Workflow:
     id: str
     state: WorkflowState
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, object] = field(default_factory=dict)
     checkpoints: List[Dict] = field(default_factory=list)
 
 

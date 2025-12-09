@@ -55,7 +55,7 @@ class FakeRedisClient:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(self, *, embeddings, documents, metadatas, ids):
         for doc, meta, record_id in zip(documents, metadatas, ids):
@@ -89,7 +89,7 @@ class WorkflowHarness:
 @dataclass
 class TraceEvent:
     name: str
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
 
 
 class TraceRecorder:
@@ -104,7 +104,7 @@ class TraceRecorder:
     def find(self, name: str) -> List[TraceEvent]:
         return [event for event in self._events if event.name == name]
 
-    def as_dicts(self) -> List[Dict[str, Any]]:
+    def as_dicts(self) -> List[Dict[str, object]]:
         return [dict(name=event.name, payload=event.payload) for event in self._events]
 
 
@@ -117,7 +117,7 @@ if "langgraph" not in sys.modules:
 
     class StateGraph:  # pragma: no cover - exercised via regression tests
         def __init__(self, _state_type):
-            self.nodes: Dict[str, Any] = {}
+            self.nodes: Dict[str, object] = {}
 
         def add_node(self, name, func):
             self.nodes[name] = func
@@ -367,7 +367,7 @@ def cost_tracker(workflow_harness: WorkflowHarness) -> CostTracker:
 
 
 @pytest.fixture()
-def base_state() -> Dict[str, Any]:
+def base_state() -> Dict[str, object]:
     strategy_plan = {
         "strategy_name": "AI Leadership",
         "focus_areas": ["innovation", "team building"],
@@ -446,8 +446,8 @@ def semantic_validator(metrics_collector: MetricsCollector) -> SemanticValidator
 
 
 @pytest.fixture()
-def workflow_state_factory(base_state: Dict[str, Any]) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    def _factory(overrides: Dict[str, Any]) -> Dict[str, Any]:
+def workflow_state_factory(base_state: Dict[str, object]) -> Callable[[Dict[str, object]], Dict[str, object]]:
+    def _factory(overrides: Dict[str, object]) -> Dict[str, object]:
         merged = json.loads(json.dumps(base_state))
         merged.update(overrides)
         return merged
@@ -456,7 +456,7 @@ def workflow_state_factory(base_state: Dict[str, Any]) -> Callable[[Dict[str, An
 
 
 @pytest.fixture()
-def dummy_cache_entry(cache_manager: CacheManager) -> Dict[str, Any]:
+def dummy_cache_entry(cache_manager: CacheManager) -> Dict[str, object]:
     payload = {"bullets": ["Managed ML org"], "summary": "Seasoned leader"}
     asyncio.run(
         cache_manager.set_llm_cache(
@@ -476,7 +476,7 @@ def trace_recorder() -> TraceRecorder:
 
 
 @pytest.fixture()
-def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, Any]]:
+def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, object]]:
     entries = [
         {
             "timestamp": "2024-01-01T00:00:00Z",
@@ -502,7 +502,7 @@ def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, Any]]:
 
 
 @pytest.fixture()
-def proposed_rules_entries(proposed_rules_path: Path) -> List[Dict[str, Any]]:
+def proposed_rules_entries(proposed_rules_path: Path) -> List[Dict[str, object]]:
     entries = [
         {
             "timestamp": "2024-01-02T00:00:00Z",
@@ -542,7 +542,7 @@ def workflow_context_factory(workflow_harness: WorkflowHarness) -> Callable[[str
 
 
 @pytest.fixture()
-def strategy_plan_payload() -> Dict[str, Any]:
+def strategy_plan_payload() -> Dict[str, object]:
     return {
         "strategy_name": "Impact",
         "focus_areas": ["delivery", "mentorship"],
@@ -552,7 +552,7 @@ def strategy_plan_payload() -> Dict[str, Any]:
 
 
 @pytest.fixture()
-def draft_sections() -> Dict[str, Any]:
+def draft_sections() -> Dict[str, object]:
     return {
         "summary": {"draft": "Delivered AI roadmap"},
         "experience": {

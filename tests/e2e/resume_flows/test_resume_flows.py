@@ -1,7 +1,7 @@
 """E2E tests for resume flows - resume generation and optimization workflows."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -16,8 +16,8 @@ class ResumeSection(Enum):
 class ResumeData:
     name: str
     email: str
-    experience: List[Dict[str, Any]]
-    education: List[Dict[str, Any]]
+    experience: List[Dict[str, object]]
+    education: List[Dict[str, object]]
     skills: List[str]
     summary: Optional[str] = None
 

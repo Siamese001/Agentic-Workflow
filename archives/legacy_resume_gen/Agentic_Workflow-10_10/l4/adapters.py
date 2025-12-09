@@ -104,7 +104,7 @@ class StateManagerAdapter(L4StateManagerInterface):
         except Exception:
             return False
     
-    async def list_states(self, filters: Dict[str, Any]) -> List[StateSnapshot]:
+    async def list_states(self, filters: Dict[str, object]) -> List[StateSnapshot]:
         """List states matching filters."""
         # Simple implementation - would need to be added to StateManager
         return []
@@ -135,7 +135,7 @@ class MemoryManagerAdapter(L4MemoryManagerInterface):
                 results.append(memory)
         return results
     
-    async def update_memory(self, memory_id: str, updates: Dict[str, Any]) -> bool:
+    async def update_memory(self, memory_id: str, updates: Dict[str, object]) -> bool:
         """Update existing memory."""
         try:
             if memory_id in self._memories:
@@ -165,9 +165,9 @@ class VectorStoreAdapter(L4VectorStoreInterface):
     def __init__(self):
         # Simple in-memory implementation for now
         self._vectors: Dict[str, List[float]] = {}
-        self._metadata: Dict[str, Dict[str, Any]] = {}
+        self._metadata: Dict[str, Dict[str, object]] = {}
     
-    async def store_vectors(self, vectors: List[Dict[str, Any]], metadata: List[Dict[str, Any]]) -> bool:
+    async def store_vectors(self, vectors: List[Dict[str, object]], metadata: List[Dict[str, object]]) -> bool:
         """Store vectors with metadata."""
         try:
             for i, vector_data in enumerate(vectors):
@@ -180,7 +180,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
         except Exception:
             return False
     
-    async def search_vectors(self, query_vector: List[float], limit: int, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def search_vectors(self, query_vector: List[float], limit: int, filters: Dict[str, object]) -> List[Dict[str, object]]:
         """Search for similar vectors."""
         # Simple implementation - would use proper similarity search
         results = []
@@ -195,7 +195,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
             })
         return results
     
-    async def update_vectors(self, vector_ids: List[str], updates: List[Dict[str, Any]]) -> bool:
+    async def update_vectors(self, vector_ids: List[str], updates: List[Dict[str, object]]) -> bool:
         """Update existing vectors."""
         try:
             for i, vector_id in enumerate(vector_ids):
@@ -247,7 +247,7 @@ class GraphStoreAdapter(L4GraphStoreInterface):
         except Exception:
             return False
     
-    async def query_graph(self, query: str, parameters: Dict[str, Any]) -> List[Entity | Triplet]:
+    async def query_graph(self, query: str, parameters: Dict[str, object]) -> List[Entity | Triplet]:
         """Query the knowledge graph."""
         # Simple implementation - would use proper graph query language
         results = []
@@ -287,7 +287,7 @@ class TemporalKGAdapter(L4TemporalKGInterface):
         except Exception:
             return False
     
-    async def query_temporal_graph(self, query: str, timestamp: datetime, parameters: Dict[str, Any]) -> List[Entity | Triplet]:
+    async def query_temporal_graph(self, query: str, timestamp: datetime, parameters: Dict[str, object]) -> List[Entity | Triplet]:
         """Query the temporal knowledge graph at a specific time."""
         results = []
         for triplet in self._temporal_triplets:
@@ -303,7 +303,7 @@ class TemporalKGAdapter(L4TemporalKGInterface):
                 results.append(triplet)
         return results
     
-    async def update_temporal_triplet(self, triplet_id: str, updates: Dict[str, Any]) -> bool:
+    async def update_temporal_triplet(self, triplet_id: str, updates: Dict[str, object]) -> bool:
         """Update temporal triplet."""
         # Simple implementation - would need proper indexing
         return True
@@ -378,7 +378,7 @@ class CacheAdapter(L4CacheInterface):
     """Adapter for caching operations."""
     
     def __init__(self):
-        self._cache: Dict[str, Any] = {}
+        self._cache: Dict[str, object] = {}
         self._ttl: Dict[str, datetime] = {}
     
     async def get(self, key: str) -> Optional[Any]:

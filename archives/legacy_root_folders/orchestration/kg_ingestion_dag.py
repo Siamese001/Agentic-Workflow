@@ -99,7 +99,7 @@ class StageResult:
     output_count: int = 0
     processed_count: int = 0
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for storage."""
         return {
             "stage": self.stage.value,
@@ -136,7 +136,7 @@ class IngestionDAGResult:
     checkpoints_saved: List[IngestionStage] = field(default_factory=list)
     resume_from_stage: Optional[IngestionStage] = None
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for storage."""
         return {
             "batch_id": self.batch_id,
@@ -221,7 +221,7 @@ class UnifiedKGIngestionDAG:
         self.active_executions: Dict[str, IngestionDAGResult] = {}
         self.execution_history: List[IngestionDAGResult] = []
     
-    def _define_stages(self) -> Dict[IngestionStage, Dict[str, Any]]:
+    def _define_stages(self) -> Dict[IngestionStage, Dict[str, object]]:
         """Define all ingestion stages with their configurations."""
         return {
             IngestionStage.CHUNKING: {
@@ -310,7 +310,7 @@ class UnifiedKGIngestionDAG:
     async def execute_ingestion_dag(
         self,
         batch: IngestionBatch,
-        source_data: Dict[str, Any],
+        source_data: Dict[str, object],
         resume_from_checkpoint: bool = False,
     ) -> IngestionDAGResult:
         """Execute the complete ingestion DAG.
@@ -410,7 +410,7 @@ class UnifiedKGIngestionDAG:
     
     def _create_stage_executor(self, stage: IngestionStage) -> Callable:
         """Create an executor function for a specific stage."""
-        async def stage_executor(dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+        async def stage_executor(dag_ctx: Dict[str, object]) -> Dict[str, object]:
             return await self._execute_stage(stage, dag_ctx)
         
         return stage_executor
@@ -419,7 +419,7 @@ class UnifiedKGIngestionDAG:
         self,
         dag: DagGraph,
         result: IngestionDAGResult,
-        source_data: Dict[str, Any],
+        source_data: Dict[str, object],
     ) -> None:
         """Execute DAG with failure policy handling."""
         
@@ -444,8 +444,8 @@ class UnifiedKGIngestionDAG:
     async def _execute_stage(
         self,
         stage: IngestionStage,
-        dag_ctx: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        dag_ctx: Dict[str, object],
+    ) -> Dict[str, object]:
         """Execute a single ingestion stage."""
         result = dag_ctx["result"]
         source_data = dag_ctx["source_data"]
@@ -613,7 +613,7 @@ class UnifiedKGIngestionDAG:
         self,
         stage: IngestionStage,
         result: IngestionDAGResult,
-        source_data: Dict[str, Any],
+        source_data: Dict[str, object],
     ) -> Any:
         """Prepare input data for a specific stage."""
         
@@ -760,7 +760,7 @@ class UnifiedKGIngestionDAG:
 # =============================================================================
 
 async def ingest_documents(
-    documents: List[Dict[str, Any]],
+    documents: List[Dict[str, object]],
     l2_executors: Dict[str, Callable],
     l4_state_manager: Optional[Any] = None,
     config: Optional[IngestionDAGConfig] = None,

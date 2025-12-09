@@ -4,7 +4,7 @@ Outreach Engine Insights - Lift & Shift + Enhanced from LIC
 Signal quality scoring and claim confidence modeling
 """
 
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Union, Tuple
 import re
 from datetime import datetime, timedelta
 
@@ -16,12 +16,12 @@ from .models import (
 class SignalQualityScorer:
     """Signal quality scoring - Lift & Shift from LIC"""
     
-    def __init__(self, insight_patterns: Dict[str, Any]):
+    def __init__(self, insight_patterns: Dict[str, object]):
         self.signal_config = insight_patterns.get("signal_quality_scorer", {})
         self.source_weights = self.signal_config.get("source_weights", {})
         self.minimum_signal_threshold = self.signal_config.get("minimum_signal_threshold", 0.7)
     
-    def calculate_signal_quality(self, rag_evidence: List[RAGEvidence]) -> Tuple[float, Dict[str, Any]]:
+    def calculate_signal_quality(self, rag_evidence: List[RAGEvidence]) -> Tuple[float, Dict[str, object]]:
         """Calculate overall signal quality score from RAG evidence"""
         if not rag_evidence:
             return 0.0, {"error": "No RAG evidence provided"}
@@ -67,7 +67,7 @@ class SignalQualityScorer:
             "minimum_threshold": self.minimum_signal_threshold
         }
     
-    def validate_signal_quality(self, signal_score: float, breakdown: Dict[str, Any]) -> List[ValidationResult]:
+    def validate_signal_quality(self, signal_score: float, breakdown: Dict[str, object]) -> List[ValidationResult]:
         """Validate signal quality against thresholds"""
         validation_results = []
         
@@ -102,7 +102,7 @@ class SignalQualityScorer:
         
         return validation_results
     
-    def get_source_weight_summary(self) -> Dict[str, Any]:
+    def get_source_weight_summary(self) -> Dict[str, object]:
         """Get summary of source weights"""
         return {
             "source_weights": self.source_weights,
@@ -115,7 +115,7 @@ class SignalQualityScorer:
 class ClaimConfidenceScorer:
     """Claim confidence scoring - Enhanced from LIC"""
     
-    def __init__(self, insight_patterns: Dict[str, Any]):
+    def __init__(self, insight_patterns: Dict[str, object]):
         self.claim_config = insight_patterns.get("claim_confidence_scorer", {})
         self.per_claim_minimum = self.claim_config.get("per_claim_minimum", 0.8)
         self.aggregate_minimum = self.claim_config.get("aggregate_minimum", 0.95)
@@ -146,7 +146,7 @@ class ClaimConfidenceScorer:
         
         return cleaned_claims
     
-    def score_single_claim(self, claim: str, rag_sources: List[Dict[str, Any]]) -> Tuple[float, Dict[str, Any]]:
+    def score_single_claim(self, claim: str, rag_sources: List[Dict[str, object]]) -> Tuple[float, Dict[str, object]]:
         """Score confidence of a single claim"""
         base_score = self.per_claim_scoring.get("base_score", 1.0)
         deductions = self.per_claim_scoring.get("deductions", [])
@@ -177,7 +177,7 @@ class ClaimConfidenceScorer:
             "meets_minimum": final_score >= self.per_claim_minimum
         }
     
-    def _evaluate_condition(self, condition: str, claim: str, rag_sources: List[Dict[str, Any]]) -> bool:
+    def _evaluate_condition(self, condition: str, claim: str, rag_sources: List[Dict[str, object]]) -> bool:
         """Evaluate if a deduction condition applies"""
         claim_lower = claim.lower()
         
@@ -198,7 +198,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _claim_in_rag_sources(self, claim: str, rag_sources: List[Dict[str, Any]]) -> bool:
+    def _claim_in_rag_sources(self, claim: str, rag_sources: List[Dict[str, object]]) -> bool:
         """Check if claim is supported by RAG sources"""
         claim_words = set(claim.lower().split())
         
@@ -213,7 +213,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_unsourced_metric(self, claim: str, rag_sources: List[Dict[str, Any]]) -> bool:
+    def _has_unsourced_metric(self, claim: str, rag_sources: List[Dict[str, object]]) -> bool:
         """Check if claim has metrics without source mapping"""
         # Extract metrics from claim
         metric_pattern = r'(\d+%|\d+x|\d+\.?\d*\s*(?:million|billion|thousand))'
@@ -235,7 +235,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_unauthorized_company(self, claim: str, rag_sources: List[Dict[str, Any]]) -> bool:
+    def _has_unauthorized_company(self, claim: str, rag_sources: List[Dict[str, object]]) -> bool:
         """Check if claim mentions unauthorized companies"""
         # Extract company names (simplified)
         company_pattern = r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:Inc|Corp|LLC|Ltd|Co))?\b'
@@ -253,7 +253,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_role_drift(self, claim: str, rag_sources: List[Dict[str, Any]]) -> bool:
+    def _has_role_drift(self, claim: str, rag_sources: List[Dict[str, object]]) -> bool:
         """Check for role terminology drift"""
         # This is a simplified implementation
         # In practice, would use semantic similarity
@@ -276,7 +276,7 @@ class ClaimConfidenceScorer:
         
         return False
     
-    def _has_low_coherence(self, claim: str, rag_sources: List[Dict[str, Any]]) -> bool:
+    def _has_low_coherence(self, claim: str, rag_sources: List[Dict[str, object]]) -> bool:
         """Check for low context coherence"""
         # Simplified coherence check based on word overlap
         claim_words = set(claim.lower().split())
@@ -307,7 +307,7 @@ class ClaimConfidenceScorer:
         
         return "Deduction condition met"
     
-    def calculate_aggregate_confidence(self, claim_scores: List[float]) -> Tuple[float, Dict[str, Any]]:
+    def calculate_aggregate_confidence(self, claim_scores: List[float]) -> Tuple[float, Dict[str, object]]:
         """Calculate aggregate confidence from individual claim scores"""
         if not claim_scores:
             return 0.0, {"error": "No claim scores provided"}
@@ -330,7 +330,7 @@ class ClaimConfidenceScorer:
             "per_claim_minimum": self.per_claim_minimum
         }
     
-    def validate_claim_confidence(self, aggregate_score: float, breakdown: Dict[str, Any]) -> List[ValidationResult]:
+    def validate_claim_confidence(self, aggregate_score: float, breakdown: Dict[str, object]) -> List[ValidationResult]:
         """Validate claim confidence against thresholds"""
         validation_results = []
         
@@ -369,7 +369,7 @@ class ClaimConfidenceScorer:
 class InsightsEngine:
     """Main insights engine - Lift & Shift + Enhanced from LIC"""
     
-    def __init__(self, lic_capabilities: Dict[str, Any]):
+    def __init__(self, lic_capabilities: Dict[str, object]):
         self.insight_patterns = lic_capabilities.get("insight_patterns", {})
         self.signal_scorer = SignalQualityScorer(self.insight_patterns)
         self.claim_scorer = ClaimConfidenceScorer(self.insight_patterns)
@@ -378,8 +378,8 @@ class InsightsEngine:
         self,
         message_body: str,
         rag_evidence: List[RAGEvidence],
-        rag_sources: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        rag_sources: List[Dict[str, object]]
+    ) -> Dict[str, object]:
         """Comprehensive message quality analysis"""
         results = {}
         
@@ -432,7 +432,7 @@ class InsightsEngine:
         
         return results
     
-    def get_insights_summary(self) -> Dict[str, Any]:
+    def get_insights_summary(self) -> Dict[str, object]:
         """Get summary of insights configuration"""
         return {
             "signal_quality": {

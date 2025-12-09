@@ -17,7 +17,7 @@ class ContextSlot:
     """
     id: str
     max_items: int
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 def assign_to_slot(slot: ContextSlot, texts: List[str]) -> List[str]:

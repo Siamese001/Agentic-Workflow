@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Dict, List
 
 
-NodeFn = Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]
+NodeFn = Callable[[Dict[str, object]], Awaitable[Dict[str, object]]]
 
 
 @dataclass
@@ -20,7 +20,7 @@ class Node:
     """
     id: str
     fn: NodeFn
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass

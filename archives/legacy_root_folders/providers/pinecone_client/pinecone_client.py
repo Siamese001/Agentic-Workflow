@@ -8,7 +8,7 @@ from openai import OpenAI
 class Vector(TypedDict):
     id: str
     values: List[float]
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 class PineconeClient:
@@ -59,7 +59,7 @@ class PineconeClient:
         vector: List[float],
         top_k: int = 5,
         **kwargs: Any
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Query the vector database for similar vectors.
         
         Args:

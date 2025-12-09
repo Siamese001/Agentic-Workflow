@@ -9,7 +9,7 @@ to ensure consistent resume improvement and job alignment.
 """
 
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 
@@ -23,7 +23,7 @@ class StoredPrompt:
     id: str
     content: str
     template: Optional[str] = None
-    context_schema: Optional[Dict[str, Any]] = None
+    context_schema: Optional[Dict[str, object]] = None
     version: str = "1.0"
     created_at: Optional[str] = None
 

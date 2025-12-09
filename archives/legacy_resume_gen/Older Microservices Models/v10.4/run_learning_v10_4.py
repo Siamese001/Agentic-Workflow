@@ -20,7 +20,7 @@ import redis
 import chromadb
 from chromadb.utils import embedding_functions
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 # v10.4: Import from new core
 from core_v10_4 import (
@@ -53,7 +53,7 @@ class HotReloadRuleManager:
         self.rules_path = rules_path
         self.auto_approve_threshold = auto_approve_threshold
     
-    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+    def write_proposed_rule(self, rule: Dict[str, object], confidence: float) -> bool:
         """Write rule with auto-approval decision"""
         try:
             status = "APPROVED" if confidence >= self.auto_approve_threshold else "PROPOSED"
@@ -99,7 +99,7 @@ class LogReaderAgent(BaseAgent):
 
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
-    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, object]:
         self.log_info("Summarizing logs with LLM (v10.4)...")
         client = self.get_model_client("qa_model")
         
@@ -125,7 +125,7 @@ class AsyncLogSummarizerAgent(BaseAgent):
 
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
-    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, log_summary: Dict[str, object], workflow_id: str) -> List[Dict]:
         self.log_info("Finding patterns in logs (v10.4)...")
         client = self.get_model_client("strategy_model")
         
@@ -148,7 +148,7 @@ class AsyncPatternFinderAgent(BaseAgent):
 
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
-    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, object], workflow_id: str) -> List[Dict]:
         self.log_info("Generating hypotheses (v10.4)...")
         client = self.get_model_client("strategy_model")
         
@@ -174,7 +174,7 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
 
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Drafting proposal for hypothesis (v10.4)...")
         client = self.get_model_client("prompt_engineer_model")
         
@@ -198,7 +198,7 @@ class AsyncProposalDrafterAgent(BaseAgent):
 
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
-    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, proposal: Dict[str, object], patterns: List[Dict], workflow_id: str) -> Dict[str, object]:
         self.log_info("Critiquing proposal (v10.4)...")
         client = self.get_model_client("critique_model")
         

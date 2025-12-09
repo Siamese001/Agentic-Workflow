@@ -41,7 +41,7 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, AsyncMock, patch, Mock
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 from core_v10_1 import (
     WorkflowContext, ConfigV10_1, CacheManager, CostTracker, 

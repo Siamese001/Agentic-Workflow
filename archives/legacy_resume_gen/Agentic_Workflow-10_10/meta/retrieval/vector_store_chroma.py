@@ -9,7 +9,7 @@ from infra.storage.vector_store_chroma import (
 )
 
 
-def chroma_hybrid_search(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, Any]:
+def chroma_hybrid_search(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, object]:
     """META wrapper for Chroma hybrid search.
 
     Delegates to the core vector_store_chroma implementation.
@@ -18,7 +18,7 @@ def chroma_hybrid_search(collection, query_texts: Sequence[str], n_results: int)
     return _core_chroma_hybrid_search(collection, query_texts=query_texts, n_results=n_results)
 
 
-def chroma_semantic_cache_lookup(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, Any]:
+def chroma_semantic_cache_lookup(collection, query_texts: Sequence[str], n_results: int) -> Dict[str, object]:
     """META wrapper for Chroma-based semantic cache lookup."""
 
     return _core_chroma_semantic_cache_lookup(collection, query_texts=query_texts, n_results=n_results)
@@ -28,7 +28,7 @@ def chroma_semantic_cache_upsert(
     collection,
     ids: Sequence[str],
     documents: Sequence[str],
-    metadatas: Optional[Sequence[Dict[str, Any]]] = None,
+    metadatas: Optional[Sequence[Dict[str, object]]] = None,
 ) -> None:
     """META wrapper for Chroma-based semantic cache upsert."""
 

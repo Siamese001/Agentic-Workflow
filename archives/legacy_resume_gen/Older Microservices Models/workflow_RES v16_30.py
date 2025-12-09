@@ -163,7 +163,7 @@ class ClerkExtractor:
         return experience_sections
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 # ============================================================================
 # DATAENRICHER CLASS
@@ -299,7 +299,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         try:
             reconstructed_specs = {}
             for section_name, spec in raw_specs.items():
@@ -345,7 +345,7 @@ class ArtistGenerator:
     def _build_generation_prompt_with_reinforced_constraints(
         self,
         base_prompt: str,
-        constraints: Dict[str, Any],
+        constraints: Dict[str, object],
         attempt_number: int
     ) -> str:
         """
@@ -1690,7 +1690,7 @@ class TextSanitizer:
         # TextUtils is already imported in workflow.py
         self.text_utils = TextUtils()
 
-    def sanitize_buffer(self, staging_buffer: ImmutableStagingBuffer) -> Tuple[List[ValidationResult], Dict[str, Any]]:
+    def sanitize_buffer(self, staging_buffer: ImmutableStagingBuffer) -> Tuple[List[ValidationResult], Dict[str, object]]:
         """
         Iterates through the buffer and sanitizes all string content.
         """
@@ -2940,7 +2940,7 @@ class WorkflowOrchestrator:
         thematic_analysis = None
         try:
             thematic_analysis = self.state_serializer.load(0)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
         
         coc_ledger = self._build_coc_ledger(

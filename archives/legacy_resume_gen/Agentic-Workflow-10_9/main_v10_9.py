@@ -66,11 +66,11 @@ from runtime.runtime_utils_v10_9 import CostTracker
 # =============================================================================
 
 def _initialize_state(
-    initial_state: Optional[Dict[str, Any]],
+    initial_state: Optional[Dict[str, object]],
     *,
     compat_mode: Optional[str],
     debug_mode: bool,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Normalize incoming state for orchestration.
 
@@ -104,10 +104,10 @@ def _initialize_state(
 
 
 def _emit_stream_event(
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]],
+    stream_callback: Optional[Callable[[Dict[str, object]], object]],
     *,
     event_type: str,
-    payload: Dict[str, Any],
+    payload: Dict[str, object],
 ) -> None:
     """
     Best-effort stream event emission.
@@ -120,7 +120,7 @@ def _emit_stream_event(
         pass  # never break main workflow
 
 
-def _build_profiles(state: Dict[str, Any]) -> Dict[str, Any]:
+def _build_profiles(state: Dict[str, object]) -> Dict[str, object]:
     """
     Build the typed FramingProfile, ContextProfile, ToolingProfile,
     SafetyOutputProfile, AccessPolicy used by L1 planners.
@@ -153,7 +153,7 @@ def _build_profiles(state: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _extract_job_resume_texts(state: Dict[str, Any]) -> Dict[str, str]:
+def _extract_job_resume_texts(state: Dict[str, object]) -> Dict[str, str]:
     """
     Extract job_text and resume_text (used across all L1 plans).
     """
@@ -176,7 +176,7 @@ def _extract_job_resume_texts(state: Dict[str, Any]) -> Dict[str, str]:
 # 2. BUILD MASTER PLAN FROM L1
 # =============================================================================
 
-def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
+def _build_master_plan(state: Dict[str, object]) -> PlanObject:
     """
     Build a PLAN for the entire workflow: strategy → rag → drafting → bullets →
     qa → safety → meta_learning → prompt_engineering.
@@ -284,12 +284,12 @@ def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
 # =============================================================================
 
 async def run_workflow_v10_9(
-    initial_state: Dict[str, Any],
+    initial_state: Dict[str, object],
     *,
     compat_mode: Optional[str] = None,
     debug_mode: bool = False,
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
-) -> Dict[str, Any]:
+    stream_callback: Optional[Callable[[Dict[str, object]], object]] = None,
+) -> Dict[str, object]:
     """
     Execute a single v10_9 agentic workflow pass.
     """
@@ -401,12 +401,12 @@ async def run_workflow_v10_9(
 # =============================================================================
 
 def run_workflow_sync(
-    initial_state: Dict[str, Any],
+    initial_state: Dict[str, object],
     *,
     compat_mode: Optional[str] = None,
     debug_mode: bool = False,
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
-) -> Dict[str, Any]:
+    stream_callback: Optional[Callable[[Dict[str, object]], object]] = None,
+) -> Dict[str, object]:
     """
     Blocking wrapper around run_workflow_v10_9() for CLI/local execution.
     """
@@ -438,7 +438,7 @@ if __name__ == "__main__":
         },
     }
 
-    def _print_stream(event: Dict[str, Any]) -> None:
+    def _print_stream(event: Dict[str, object]) -> None:
         print(f"[STREAM] {event['event']}: {event['payload']}")
 
     result = run_workflow_sync(

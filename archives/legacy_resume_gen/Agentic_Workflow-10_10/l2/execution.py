@@ -58,7 +58,7 @@ Ensures robust operation and error handling for comprehensive résumé improveme
 """
 
 
-def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
+def _safe_getattr(obj: object, name: str, default: Any = "") -> Any:
     """
     Safely accesses object attributes for reliable résumé processing.
     

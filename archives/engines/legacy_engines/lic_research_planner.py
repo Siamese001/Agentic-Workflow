@@ -9,7 +9,7 @@ K1-K7 execution pipeline, specifically the K1 research execution phase.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 from enum import Enum
 import logging
 
@@ -29,7 +29,7 @@ class VectorQueryParams:
     """Parameters for vector store queries"""
     n_results: int = 20
     similarity_threshold: float = 0.7
-    filter_metadata: Optional[Dict[str, Any]] = None
+    filter_metadata: Optional[Dict[str, object]] = None
     query_types: List[str] = field(default_factory=lambda: ["company", "recipient", "strategic"])
 
 
@@ -60,7 +60,7 @@ class ResearchQuery:
     expansion_strategy: str  # "semantic", "role_synonym", "temporal", "hybrid"
     priority: int  # 1 = highest priority
     expected_sources: List[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -77,7 +77,7 @@ class ResearchPlan:
     execution_order: List[str]  # Query IDs in execution order
     fallback_strategy: ResearchStrategy
     confidence_threshold: float = 0.7
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class ResearchPlanner:
@@ -144,8 +144,8 @@ class ResearchPlanner:
         role_title: str,
         company_name: str,
         archetype: str,
-        recipient_profile: Dict[str, Any],
-        outreach_context: Dict[str, Any] = None,
+        recipient_profile: Dict[str, object],
+        outreach_context: Dict[str, object] = None,
     ) -> ResearchPlan:
         """Generate a deterministic research execution plan.
         
@@ -216,7 +216,7 @@ class ResearchPlanner:
         
         return plan
     
-    def _determine_primary_strategy(self, archetype: str, context: Dict[str, Any]) -> ResearchStrategy:
+    def _determine_primary_strategy(self, archetype: str, context: Dict[str, object]) -> ResearchStrategy:
         """Determine primary research strategy based on archetype and context."""
         # Default to vector-first for most cases
         if archetype in ["EXECUTIVE", "C_LEVEL"]:
@@ -370,7 +370,7 @@ class ResearchPlanner:
             metadata={"temporal_focus": True}
         )
     
-    def _configure_vector_params(self, archetype: str, context: Dict[str, Any]) -> VectorQueryParams:
+    def _configure_vector_params(self, archetype: str, context: Dict[str, object]) -> VectorQueryParams:
         """Configure vector search parameters."""
         base_params = VectorQueryParams()
         
@@ -392,7 +392,7 @@ class ResearchPlanner:
         
         return base_params
     
-    def _configure_rag_params(self, archetype: str, context: Dict[str, Any]) -> FallbackRAGParams:
+    def _configure_rag_params(self, archetype: str, context: Dict[str, object]) -> FallbackRAGParams:
         """Configure fallback RAG parameters."""
         base_params = FallbackRAGParams()
         
@@ -414,7 +414,7 @@ class ResearchPlanner:
         
         return base_params
     
-    def _configure_cache_params(self, archetype: str, context: Dict[str, Any]) -> CacheCritiqueParams:
+    def _configure_cache_params(self, archetype: str, context: Dict[str, object]) -> CacheCritiqueParams:
         """Configure cache evaluation parameters."""
         base_params = CacheCritiqueParams()
         
@@ -481,7 +481,7 @@ class ResearchPlanner:
         except Exception as e:
             logger.debug(f"Failed to record telemetry: {e}")
     
-    def get_research_summary(self, plan: ResearchPlan) -> Dict[str, Any]:
+    def get_research_summary(self, plan: ResearchPlan) -> Dict[str, object]:
         """Get a summary of the research plan for debugging/telemetry."""
         return {
             "plan_id": f"research_{plan.archetype}_{plan.target_company}",

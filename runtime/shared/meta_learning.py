@@ -11,7 +11,7 @@ adaptive parameter tuning.
 import logging
 import time
 import json
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -54,10 +54,10 @@ class FeedbackSignal:
     task_id: str
     feedback_type: FeedbackType
     score: float  # 0-1
-    context: Dict[str, Any]
+    context: Dict[str, object]
     timestamp: datetime
     source: str = "system"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -70,14 +70,14 @@ class LearningPattern:
     last_seen: datetime
     impact_score: float
     description: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class AdaptationResult:
     """Result of parameter adaptation"""
     adaptation_type: str
-    parameters_changed: Dict[str, Tuple[Any, Any]]  # param: (old, new)
+    parameters_changed: Dict[str, Tuple[object]]  # param: (old, new)
     expected_improvement: float
     confidence: float
     applied_at: datetime
@@ -106,7 +106,7 @@ class FeedbackCollector:
         task_id: str,
         feedback_type: FeedbackType,
         score: float,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         source: str = "system"
     ) -> FeedbackSignal:
         """
@@ -164,7 +164,7 @@ class FeedbackCollector:
             return 0.5
         return sum(s.score for s in signals) / len(signals)
     
-    def get_feedback_summary(self) -> Dict[str, Any]:
+    def get_feedback_summary(self) -> Dict[str, object]:
         """Get summary of collected feedback."""
         summary = {
             'total_signals': len(self.feedback_history),
@@ -411,7 +411,7 @@ class AdaptiveParameterTuner:
             learning_rate: Rate of parameter adjustment
         """
         self.learning_rate = learning_rate
-        self.current_parameters: Dict[str, Any] = self._get_default_parameters()
+        self.current_parameters: Dict[str, object] = self._get_default_parameters()
         self.adaptation_history: List[AdaptationResult] = []
     
     def adapt_parameters(
@@ -488,7 +488,7 @@ class AdaptiveParameterTuner:
             applied_at=datetime.now()
         )
     
-    def _get_default_parameters(self) -> Dict[str, Any]:
+    def _get_default_parameters(self) -> Dict[str, object]:
         """Get default parameters."""
         return {
             'quality_threshold': 0.7,
@@ -499,11 +499,11 @@ class AdaptiveParameterTuner:
             'source_diversity_weight': 1.0
         }
     
-    def get_current_parameters(self) -> Dict[str, Any]:
+    def get_current_parameters(self) -> Dict[str, object]:
         """Get current parameters."""
         return self.current_parameters.copy()
     
-    def set_parameter(self, key: str, value: Any) -> None:
+    def set_parameter(self, key: str, value: object) -> None:
         """Manually set a parameter."""
         self.current_parameters[key] = value
 
@@ -545,7 +545,7 @@ class MetaLearningSystem:
         task_id: str,
         feedback_type: FeedbackType,
         score: float,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> FeedbackSignal:
         """
         Record feedback and trigger learning if in active mode.
@@ -568,7 +568,7 @@ class MetaLearningSystem:
         
         return signal
     
-    def run_learning_cycle(self) -> Dict[str, Any]:
+    def run_learning_cycle(self) -> Dict[str, object]:
         """
         Run a complete learning cycle.
         
@@ -602,11 +602,11 @@ class MetaLearningSystem:
             'current_parameters': self.parameter_tuner.get_current_parameters()
         }
     
-    def get_current_parameters(self) -> Dict[str, Any]:
+    def get_current_parameters(self) -> Dict[str, object]:
         """Get current adapted parameters."""
         return self.parameter_tuner.get_current_parameters()
     
-    def get_learning_stats(self) -> Dict[str, Any]:
+    def get_learning_stats(self) -> Dict[str, object]:
         """Get learning statistics."""
         return {
             **self.learning_stats,
@@ -620,7 +620,7 @@ class MetaLearningSystem:
         self.mode = mode
         logger.info(f"Meta-learning mode set to: {mode.value}")
     
-    def save_state(self) -> Dict[str, Any]:
+    def save_state(self) -> Dict[str, object]:
         """Save learning state for persistence."""
         return {
             'mode': self.mode.value,
@@ -637,7 +637,7 @@ class MetaLearningSystem:
             ]
         }
     
-    def load_state(self, state: Dict[str, Any]) -> None:
+    def load_state(self, state: Dict[str, object]) -> None:
         """Load learning state from persistence."""
         if 'mode' in state:
             self.mode = LearningMode(state['mode'])
@@ -675,7 +675,7 @@ def record_feedback(
     task_id: str,
     feedback_type: FeedbackType,
     score: float,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, object]] = None
 ) -> FeedbackSignal:
     """Convenience function to record feedback."""
     collector = FeedbackCollector()

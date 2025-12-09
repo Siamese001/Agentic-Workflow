@@ -248,7 +248,7 @@ class RAG_SearchAgent(BaseAgent):
             
         self.max_react_iterations = CONFIG.react_config.max_reasoning_loops
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info("Running Step 2: RAG ReAct Search...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG_SearchAgent.")
@@ -995,7 +995,7 @@ class Governor:
             
         return result
 
-    def run_dynamic_orchestration(self) -> Dict[str, Any]:
+    def run_dynamic_orchestration(self) -> Dict[str, object]:
         """
         v6.5: Main orchestration loop, modified to run the v7.0 linear flow.
         """
@@ -1126,7 +1126,7 @@ class Governor:
         finally:
             self.cost_tracker.log_final_cost(self.blackboard.workflow_id, {})
             
-    def _log_feedback(self, validation_results: Dict[str, Any]):
+    def _log_feedback(self, validation_results: Dict[str, object]):
         """Logs validation results for the meta-learning loop."""
         self.feedback_logger.log(validation_results, self.blackboard.workflow_id)
 
@@ -1160,7 +1160,7 @@ class FeedbackLoggerAgent:
         self.log_path = log_path
         self.logger = logging.getLogger("FeedbackLoggerAgent")
     
-    def log(self, validation_results: Dict[str, Any], workflow_id: str):
+    def log(self, validation_results: Dict[str, object], workflow_id: str):
         if not self.log_path:
             self.logger.warning("No feedback_log_path configured. Skipping log.")
             return
@@ -1213,7 +1213,7 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     workflow_id: str
 
 class CrewOrchestrator:
@@ -1245,8 +1245,8 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(f"{__name__}.CrewOrchestrator")
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any],
-                               workflow_id: str) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object],
+                               workflow_id: str) -> Dict[str, object]:
         """Process complete job application."""
         self.logger.info(f"📋 Orchestrating: {company_name} - {job_title}")
         

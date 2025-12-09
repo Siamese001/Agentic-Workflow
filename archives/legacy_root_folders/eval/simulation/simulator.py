@@ -22,7 +22,7 @@ def run_scenario(scenario: SimScenario) -> SimOutcome:
 
     for _ in range(max(scenario.run_count, 1)):
         try:
-            result: Dict[str, Any] = Engine.run_sync(scenario.id, overrides=scenario.initial_context)
+            result: Dict[str, object] = Engine.run_sync(scenario.id, overrides=scenario.initial_context)
         except Exception:  # pragma: no cover - defensive
             continue
 

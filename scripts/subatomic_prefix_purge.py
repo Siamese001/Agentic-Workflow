@@ -44,8 +44,7 @@ IMPORT_RENAMES: Dict[str, str] = {
     "scripts": "scripts",
     "apps_lic": "apps_lic",
     "apps_rg": "apps_rg",
-    "09_apps": "",  # Remove 09_apps prefix entirely
-    "tests": "tests",
+    "09_apps": "",      "tests": "tests",
 }
 
 # =============================================================================
@@ -101,8 +100,7 @@ def promote_apps_to_top_level() -> List[str]:
         promoted.append("09_apps/apps_rg -> apps_rg")
         print("  ✓ Promoted: 09_apps/apps_rg -> apps_rg")
 
-    # Remove 09_apps if empty or only has shared/
-    if apps_dir.exists():
+        if apps_dir.exists():
         remaining = list(apps_dir.iterdir())
         if len(remaining) == 0:
             apps_dir.rmdir()
@@ -123,11 +121,10 @@ def promote_apps_to_top_level() -> List[str]:
                         shutil.move(str(item), str(dest))
                         print(f"  ✓ Moved: 09_apps/{item.name} -> {item.name}")
 
-            # Try to remove 09_apps again
-            try:
+                        try:
                 shutil.rmtree(apps_dir)
                 print("  ✓ Removed: 09_apps/")
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 print(f"  ⚠ Could not remove 09_apps: {e}")
 
     return promoted
@@ -171,8 +168,7 @@ def fix_imports_in_file(file_path: Path) -> bool:
                     content
                 )
             else:
-                # Remove the prefix entirely (for 09_apps)
-                content = re.sub(
+                                content = re.sub(
                     rf"\bfrom\s+{re.escape(old_path)}\.(\S+)",
                     r"from \1",
                     content
@@ -196,7 +192,7 @@ def fix_imports_in_file(file_path: Path) -> bool:
             file_path.write_text(content, encoding="utf-8")
             return True
         return False
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         print(f"  ⚠ Could not fix imports in {file_path}: {e}")
         return False
 
@@ -231,8 +227,7 @@ def update_yaml_files() -> None:
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
 
-        # Remove 09_apps references
-        content = content.replace("09_apps/apps_lic", "apps_lic")
+                content = content.replace("09_apps/apps_lic", "apps_lic")
         content = content.replace("09_apps/apps_rg", "apps_rg")
         content = content.replace("09_apps.", "")
         content = content.replace("09_apps:", "# 09_apps removed - apps_lic and apps_rg are now top-level")
@@ -249,8 +244,7 @@ def update_yaml_files() -> None:
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
 
-        # Remove 09_apps references
-        content = content.replace("09_apps/apps_lic", "apps_lic")
+                content = content.replace("09_apps/apps_lic", "apps_lic")
         content = content.replace("09_apps/apps_rg", "apps_rg")
         content = content.replace("09_apps.", "")
 

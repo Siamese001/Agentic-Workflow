@@ -36,13 +36,13 @@ class EmbeddingFunction:
 class Collection:
     name: str
     embedding_function: Optional[Any] = None
-    _store: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    _store: Dict[str, Dict[str, object]] = field(default_factory=dict)
 
     def add(
         self,
         embeddings: List[List[float]],
         documents: List[str],
-        metadatas: List[Dict[str, Any]],
+        metadatas: List[Dict[str, object]],
         ids: List[str],
     ):
         """Store records in a simple in-memory structure."""
@@ -57,8 +57,8 @@ class Collection:
         self,
         query_embeddings: List[List[float]],
         n_results: int,
-        where: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        where: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """
         Minimal stub for semantic search.
         Computes absolute numerical difference between embeddings.
@@ -84,7 +84,7 @@ class Collection:
             "distances": [[s[2] for s in scored]],
         }
 
-    def delete(self, where: Dict[str, Any]):
+    def delete(self, where: Dict[str, object]):
         """Delete records based on metadata match (only supports equality)."""
         to_delete = []
         for id_, item in self._store.items():

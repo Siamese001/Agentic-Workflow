@@ -180,7 +180,7 @@ class LayerContent:
     content: str
     priority: int = 5  # 1-10, higher = more important
     required: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -190,7 +190,7 @@ class ExtensionContent:
     extension: InstructionalExtension
     content: str
     enabled: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -210,7 +210,7 @@ class InstructionalPrompt:
     # Metadata
     version: str = "v6.0"
     created_by: str = "system"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def add_layer(self, layer_content: LayerContent) -> None:
         """Add or update a layer."""
@@ -414,7 +414,7 @@ def create_l2_executor_prompt(
 # =============================================================================
 
 
-def add_rag_extension(prompt: InstructionalPrompt, rag_config: Dict[str, Any]) -> None:
+def add_rag_extension(prompt: InstructionalPrompt, rag_config: Dict[str, object]) -> None:
     """Add RAG extension to a prompt."""
     
     top_k = rag_config.get("top_k", 10)

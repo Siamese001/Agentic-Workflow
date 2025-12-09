@@ -13,10 +13,10 @@ class FailureSignal:
     code: str
     message: str
     severity: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
-def detect_repeated_failures(events: List[Dict[str, Any]], threshold: int = 3) -> List[FailureSignal]:
+def detect_repeated_failures(events: List[Dict[str, object]], threshold: int = 3) -> List[FailureSignal]:
     """Finds repeated error patterns in events so teams can spot unstable behavior that might lead to inconsistent or failed resume outputs."""
 
     counts: Dict[str, int] = {}

@@ -29,7 +29,7 @@ class StructureLeadAgent(BaseAgent):
     @track_metrics("run_structure_lead")
     async def run_async(
         self,
-        bullets: List[Dict[str, Any]],
+        bullets: List[Dict[str, object]],
         strategy: StrategyPlan,
         workflow_id: str,
     ) -> SpecialistDraftPacket:
@@ -48,10 +48,10 @@ class StructureLeadAgent(BaseAgent):
             else " ".join(bullet_texts[:2])
         ).strip()
 
-        experience_entries: List[Dict[str, Any]] = []
+        experience_entries: List[Dict[str, object]] = []
         for bullet in bullets:
             experience = bullet.get("experience", {}) or {}
-            entry: Dict[str, Any] = {
+            entry: Dict[str, object] = {
                 "company": experience.get("company", ""),
                 "title": experience.get("title", ""),
                 "bullet": bullet.get("text", ""),
@@ -99,13 +99,13 @@ class NarrativeStylistAgent(BaseAgent):
     @track_metrics("run_narrative_stylist")
     async def run_async(
         self,
-        structured_sections: Dict[str, Any],
+        structured_sections: Dict[str, object],
         strategy: StrategyPlan,
         workflow_id: str,
     ) -> SpecialistDraftPacket:
         self.log_info("Drafting Guild >> Narrative Stylist polishing tone...")
 
-        styled_sections: Dict[str, Any] = {}
+        styled_sections: Dict[str, object] = {}
         for section_name, section_payload in structured_sections.items():
             payload_copy = json.loads(json.dumps(section_payload))
             if section_name == "summary":
@@ -156,7 +156,7 @@ class ComplianceEditorAgent(BaseAgent):
     @track_metrics("run_compliance_editor")
     async def run_async(
         self,
-        narrative_sections: Dict[str, Any],
+        narrative_sections: Dict[str, object],
         workflow_id: str,
     ) -> SpecialistDraftPacket:
         self.log_info("Drafting Guild >> Compliance Editor auditing sections...")
@@ -209,8 +209,8 @@ class EvidenceLiaisonAgent(BaseAgent):
     @track_metrics("run_evidence_liaison")
     async def run_async(
         self,
-        sections: Dict[str, Any],
-        resume: Dict[str, Any],
+        sections: Dict[str, object],
+        resume: Dict[str, object],
         workflow_id: str,
     ) -> EvidenceLiaisonPacket:
         self.log_info("Drafting Guild >> Evidence Liaison orchestrating clarifications...")
@@ -256,7 +256,7 @@ class EvidenceLiaisonAgent(BaseAgent):
         return EvidenceLiaisonPacket(clarifications=clarifications, briefs=briefs)
 
     def _harvest_resume_evidence(
-        self, section_name: str, resume: Dict[str, Any]
+        self, section_name: str, resume: Dict[str, object]
     ) -> List[str]:
         evidence: List[str] = []
         if section_name == "experience":
@@ -277,7 +277,7 @@ class CritiqueRoutingPanel(BaseAgent):
     @track_metrics("run_critique_routing_panel")
     async def run_async(
         self,
-        sections: Dict[str, Any],
+        sections: Dict[str, object],
         liaison_packet: EvidenceLiaisonPacket,
         workflow_id: str,
     ) -> CritiquePanelPacket:
@@ -298,7 +298,7 @@ class CritiqueRoutingPanel(BaseAgent):
 
         return CritiquePanelPacket(findings=findings, overall_status=overall_status)
 
-    def _style_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+    def _style_critic(self, sections: Dict[str, object]) -> CritiqueFindingRecord:
         summary = sections.get("summary", {})
         text = ""
         if isinstance(summary, dict):
@@ -349,7 +349,7 @@ class CritiqueRoutingPanel(BaseAgent):
             blockers=[],
         )
 
-    def _policy_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+    def _policy_critic(self, sections: Dict[str, object]) -> CritiqueFindingRecord:
         banned_terms = {"confidential", "classified", "secret"}
         text_blob = json.dumps(sections).lower()
         offenders = [term for term in banned_terms if term in text_blob]
@@ -392,9 +392,9 @@ class DraftingGuildCoordinator(BaseAgent):
     @track_metrics("run_drafting_guild_coordinator")
     async def run_async(
         self,
-        task_context: Dict[str, Any],
+        task_context: Dict[str, object],
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         self.log_info("Drafting Guild Coordinator orchestrating specialists...")
 
         strategy = task_context.get("strategy")
@@ -453,8 +453,8 @@ class DraftingGuildCoordinator(BaseAgent):
             "phases_executed": 5,
         }
 
-    def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
-        merged: Dict[str, Any] = {}
+    def _merge_sections(self, *layers: Dict[str, object]) -> Dict[str, object]:
+        merged: Dict[str, object] = {}
         for layer in layers:
             for key, value in layer.items():
                 merged[key] = json.loads(json.dumps(value))

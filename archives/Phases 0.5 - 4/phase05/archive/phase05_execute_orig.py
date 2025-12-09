@@ -105,7 +105,7 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path, PurePosixPath
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, object
 from dataclasses import dataclass, asdict
 
 # =====================================================================

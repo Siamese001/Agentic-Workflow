@@ -11,8 +11,8 @@ class PromptRendererStack(BaseAgent):
     """L2 stack responsible for rendering prompts from a PromptEnvelope."""
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         env = PromptEnvelope.model_validate(state["prompts"]["prompt_envelope"])
 
         # Collect L5 signals

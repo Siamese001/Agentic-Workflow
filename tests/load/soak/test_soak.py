@@ -1,7 +1,7 @@
 """Soak tests for long-running stability validation."""
 from __future__ import annotations
 import time
-from typing import Dict, List, Any
+from typing import Dict, List, object
 from dataclasses import dataclass
 import gc
 
@@ -33,7 +33,7 @@ class TestMemoryStability:
     def test_dict_operations_stability(self):
         """Soak: Dict operations don't leak memory."""
         for _ in range(500):
-            d: Dict[str, Any] = {}
+            d: Dict[str, object] = {}
             for i in range(100):
                 d[f"key_{i}"] = f"value_{i}"
             d.clear()

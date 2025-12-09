@@ -39,9 +39,9 @@ from core.models.models import (
 class L2ExecutionRequest:
     """Input request for L2 execution operations."""
     plan_id: str
-    parameters: Dict[str, Any]
-    context: Optional[Dict[str, Any]] = None
-    constraints: Optional[Dict[str, Any]] = None
+    parameters: Dict[str, object]
+    context: Optional[Dict[str, object]] = None
+    constraints: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -49,7 +49,7 @@ class L2ExecutionResult:
     """Output result from L2 execution operations."""
     success: bool
     data: Any
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     errors: Optional[List[str]] = None
 
 
@@ -121,12 +121,12 @@ class L2RetrievalExecutorInterface(L2ExecutorInterface):
     """Interface for retrieval operations."""
     
     @abstractmethod
-    async def retrieve(self, query: str, context: Dict[str, Any]) -> RAGResult:
+    async def retrieve(self, query: str, context: Dict[str, object]) -> RAGResult:
         """Retrieve relevant documents/information."""
         pass
     
     @abstractmethod
-    async def hybrid_search(self, query: str, filters: Dict[str, Any]) -> List[Evidence]:
+    async def hybrid_search(self, query: str, filters: Dict[str, object]) -> List[Evidence]:
         """Perform hybrid vector + keyword search."""
         pass
 
@@ -135,7 +135,7 @@ class L2ToolExecutorInterface(L2ExecutorInterface):
     """Interface for generic tool execution operations."""
     
     @abstractmethod
-    async def execute_tool(self, tool_name: str, parameters: Dict[str, Any]) -> L2ExecutionResult:
+    async def execute_tool(self, tool_name: str, parameters: Dict[str, object]) -> L2ExecutionResult:
         """Execute a specific tool with given parameters."""
         pass
     

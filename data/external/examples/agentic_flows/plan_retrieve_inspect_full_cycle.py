@@ -18,7 +18,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, asdict
 from enum import Enum
 
@@ -50,12 +50,12 @@ class WorkflowContext:
     session_id: str
     objective: str
     stage: WorkflowStage
-    data: Dict[str, Any]
+    data: Dict[str, object]
     insights: List[str]
     actions_taken: List[str]
     errors: List[str]
     start_time: datetime
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 class TalentIntelligenceAgent:
     """Production agent for talent intelligence operations"""

@@ -13,7 +13,7 @@ import shutil
 import concurrent.futures
 import uuid
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # Imports from its *own* versioned files (v9.5)
 from main_v9_5 import setup_logging, load_job_input
@@ -64,7 +64,7 @@ def get_compiled_graph():
         app = get_graph_app(checkpointer, enable_hil=False)
     return app, checkpointer
 
-def process_single_job(job_path: str) -> Dict[str, Any]:
+def process_single_job(job_path: str) -> Dict[str, object]:
     """
     Wraps the execution of a single job for the parallel executor.
     Returns a dictionary for the summary CSV.

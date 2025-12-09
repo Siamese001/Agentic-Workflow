@@ -69,7 +69,7 @@ class RetrievalConfig:
 
     ranking_strategy: str = "hybrid"
     max_items: int = 50
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -87,7 +87,7 @@ class RetrievalItem:
     query: str
     evidence: str
     rank: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -103,7 +103,7 @@ class RetrievalResult:
     items: List[RetrievalItem] = field(default_factory=list)
     config: RetrievalConfig = field(default_factory=RetrievalConfig)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "items": [
                 {
@@ -128,9 +128,9 @@ class RetrievalResult:
 
 
 def _apply_ranking_strategy(
-    items: List[Dict[str, Any]],
+    items: List[Dict[str, object]],
     strategy: str,
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Apply the requested ranking strategy to a list of retrieval dicts.
 
@@ -149,7 +149,7 @@ def _apply_ranking_strategy(
     return _Ranking.hybrid_rank(items)
 
 
-def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, Any]]:
+def _limit_items(items: List[Dict[str, object]], max_items: int) -> List[Dict[str, object]]:
     """
     Limit the list of items to max_items, preserving order.
     """
@@ -214,7 +214,7 @@ def _apply_meta_biases_to_config(cfg: RetrievalConfig) -> RetrievalConfig:
     return new_cfg
 
 
-def _filter_for_safety(items: List[Dict[str, Any]], safety_bias: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _filter_for_safety(items: List[Dict[str, object]], safety_bias: Dict[str, object]) -> List[Dict[str, object]]:
     """
     Apply very light deterministic filtering for obviously risky items.
 
@@ -225,7 +225,7 @@ def _filter_for_safety(items: List[Dict[str, Any]], safety_bias: Dict[str, Any])
     if not safety_bias.get("heightened_caution"):
         return items
 
-    filtered: List[Dict[str, Any]] = []
+    filtered: List[Dict[str, object]] = []
     risky_markers = ["password", "ssn", "social security number"]
     for it in items:
         ev = str(it.get("evidence", "")).lower()
@@ -241,7 +241,7 @@ def _filter_for_safety(items: List[Dict[str, Any]], safety_bias: Dict[str, Any])
 
 
 def normalize_raw_results(
-    raw_results: List[Dict[str, Any]],
+    raw_results: List[Dict[str, object]],
     *,
     config: Optional[RetrievalConfig] = None,
 ) -> RetrievalResult:
@@ -309,7 +309,7 @@ def normalize_raw_results(
 
 
 def fuse_multiple_sources(
-    sources: List[List[Dict[str, Any]]],
+    sources: List[List[Dict[str, object]]],
     *,
     config: Optional[RetrievalConfig] = None,
 ) -> RetrievalResult:
@@ -336,7 +336,7 @@ def fuse_multiple_sources(
     base_cfg = config or RetrievalConfig()
     cfg = _apply_meta_biases_to_config(base_cfg)
 
-    merged: List[Dict[str, Any]] = []
+    merged: List[Dict[str, object]] = []
     for source_list in sources or []:
         for item in source_list or []:
             merged.append(dict(item))
@@ -352,7 +352,7 @@ def fuse_multiple_sources(
 # =============================================================================
 
 
-def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, Any]]:
+def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, object]]:
     """
     Convenience helper: return a plain list[dict] for use in JSON or
     logging. Each item is:

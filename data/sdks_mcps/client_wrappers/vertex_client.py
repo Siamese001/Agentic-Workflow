@@ -5,7 +5,7 @@ Implements retry logic, grounding optimization, and configurable safety settings
 import os
 import json
 import time
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
 from vertexai.generative_models import (
     GenerativeModel,
@@ -184,7 +184,7 @@ class VertexClient:
         grounding_threshold: float = 0.7,
         include_citations: bool = True,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Generate response with Google Search grounding and citations.
         
         Args:
@@ -264,7 +264,7 @@ class VertexClient:
         safety_threshold: HarmBlockThreshold = HarmBlockThreshold.BLOCK_NONE,
         custom_safety: Optional[Dict[HarmCategory, HarmBlockThreshold]] = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Generate response with configurable safety settings.
         
         Args:
@@ -339,7 +339,7 @@ class VertexClient:
         
         return chunks
     
-    def _extract_citations(self, grounding_metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_citations(self, grounding_metadata: Dict[str, object]) -> List[Dict[str, object]]:
         """Extract structured citations from grounding metadata."""
         citations = []
         seen_sources = set()
@@ -359,7 +359,7 @@ class VertexClient:
         
         return citations
     
-    def _extract_usage(self, response) -> Dict[str, Any]:
+    def _extract_usage(self, response) -> Dict[str, object]:
         """Extract usage metadata from response."""
         if hasattr(response, 'usage_metadata'):
             return {
@@ -395,7 +395,7 @@ class VertexClient:
         else:
             return Exception(f"Vertex AI error: {error}")
     
-    def get_usage_stats(self) -> Dict[str, Any]:
+    def get_usage_stats(self) -> Dict[str, object]:
         """Get current usage statistics."""
         return self.usage_stats.copy()
     

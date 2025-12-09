@@ -19,14 +19,14 @@ class MCPClientSpec:
     provider: str = "stub"
     module: Optional[str] = None
     class_name: Optional[str] = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: Dict[str, object] = field(default_factory=dict)
     optional: bool = False
 
 
 class MCPClientStub:
     """Fallback stub MCP client used when no implementation exists."""
 
-    def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, parameters: Optional[Dict[str, object]] = None):
         self.name = name
         self.parameters = parameters or {}
 
@@ -35,7 +35,7 @@ class MCPClientStub:
         return f"<MCPClientStub name={self.name} {details}>"
 
 
-def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
+def parse_mcp_client_specs(raw_specs: List[Dict[str, object]]) -> List[MCPClientSpec]:
     """Validate and normalise MCP client specifications."""
 
     specs: List[MCPClientSpec] = []

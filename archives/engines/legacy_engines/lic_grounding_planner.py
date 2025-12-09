@@ -25,7 +25,7 @@ class SenderCapability:
     seniority_claim: str                 # "executive", "manager", "ic", "unknown"
     risk_flags: List[str]                # identified risk flags
     source: str                          # source of capability (achievement, skill, experience)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -36,7 +36,7 @@ class GroundingPlan:
     persona_alignment_notes: List[str]       # alignment observations
     risk_flags: List[str]                    # overall risk flags
     confidence_score: float = 0.0            # overall grounding confidence
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class GroundingPlanner:
@@ -93,8 +93,8 @@ class GroundingPlanner:
     def plan(
         self,
         *,
-        resume_features: Dict[str, Any],
-        outreach_context: Dict[str, Any],
+        resume_features: Dict[str, object],
+        outreach_context: Dict[str, object],
     ) -> GroundingPlan:
         """Generate a deterministic grounding analysis plan.
         
@@ -148,7 +148,7 @@ class GroundingPlanner:
         
         return plan
     
-    def _extract_capabilities(self, resume_features: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_capabilities(self, resume_features: Dict[str, object]) -> List[Dict[str, object]]:
         """Extract raw capabilities from resume features."""
         capabilities = []
         
@@ -211,7 +211,7 @@ class GroundingPlanner:
         logger.debug(f"Extracted {len(capabilities)} capabilities from resume features")
         return capabilities
     
-    def _analyze_capabilities(self, capabilities: List[Dict[str, Any]]) -> List[SenderCapability]:
+    def _analyze_capabilities(self, capabilities: List[Dict[str, object]]) -> List[SenderCapability]:
         """Analyze each capability for risk and verification level."""
         analyzed = []
         
@@ -268,7 +268,7 @@ class GroundingPlanner:
         
         return allowed, disallowed
     
-    def _generate_alignment_notes(self, capabilities: List[SenderCapability], context: Dict[str, Any]) -> List[str]:
+    def _generate_alignment_notes(self, capabilities: List[SenderCapability], context: Dict[str, object]) -> List[str]:
         """Generate persona alignment observations."""
         notes = []
         archetype = context.get("archetype", "").upper()
@@ -438,7 +438,7 @@ class GroundingPlanner:
         except Exception as e:
             logger.debug(f"Failed to record telemetry: {e}")
     
-    def get_grounding_summary(self, plan: GroundingPlan) -> Dict[str, Any]:
+    def get_grounding_summary(self, plan: GroundingPlan) -> Dict[str, object]:
         """Get a summary of the grounding plan for debugging/telemetry."""
         return {
             "plan_id": f"grounding_{len(plan.allowed_claims)}_{len(plan.disallowed_claims)}",

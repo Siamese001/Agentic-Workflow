@@ -20,7 +20,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List, Set
+from typing import Dict, object, Tuple, List, Set
 
 # --- High-Signal Imports ---
 import numpy as np
@@ -129,7 +129,7 @@ class ArtistGenerator:
         self.target_embeddings: np.ndarray | None = None
         self.target_keywords: Set[str] = set()
         self.selected_bullets_map: Dict[str, List[Dict]] = {}
-        self.generated_content: Dict[str, Any] = {}
+        self.generated_content: Dict[str, object] = {}
         self.validation_results: List[ValidationResult] = []
         self.api_calls_made = 0
 

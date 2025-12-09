@@ -5,7 +5,7 @@ Production client for processing high-volume outreach campaigns with 87% token s
 import os
 import time
 import json
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 from anthropic import Anthropic
 from anthropic.types import Message
 
@@ -24,7 +24,7 @@ class BatchMessageProcessor:
         model: str = "claude-3-5-sonnet-20241022",
         max_tokens: int = 1000,
         temperature: float = 0.7
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Create a single batch request with caching headers.
         
         Args:
@@ -69,9 +69,9 @@ class BatchMessageProcessor:
     
     def process_batch_async(
         self,
-        batch_requests: List[Dict[str, Any]],
+        batch_requests: List[Dict[str, object]],
         concurrent_limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Process batch requests with controlled concurrency.
         
         Args:
@@ -84,7 +84,7 @@ class BatchMessageProcessor:
         import asyncio
         from concurrent.futures import ThreadPoolExecutor
         
-        async def process_single_request(request_data: Dict[str, Any]) -> Dict[str, Any]:
+        async def process_single_request(request_data: Dict[str, object]) -> Dict[str, object]:
             """Process individual request with retry logic."""
             max_retries = 3
             base_delay = 1.0
@@ -137,7 +137,7 @@ class BatchMessageProcessor:
         # Run the async batch
         return asyncio.run(run_batch())
     
-    def calculate_cache_savings(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def calculate_cache_savings(self, results: List[Dict[str, object]]) -> Dict[str, object]:
         """Calculate token savings from prompt caching.
         
         Args:
@@ -167,7 +167,7 @@ class BatchMessageProcessor:
         }
 
 
-def create_outreach_batch_requests(leads_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def create_outreach_batch_requests(leads_data: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """Create batch requests for outreach message generation.
     
     Args:

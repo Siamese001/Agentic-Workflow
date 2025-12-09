@@ -37,7 +37,7 @@ class TemporalFact:
     timestamp: datetime
     confidence: float = 1.0
     source: str = "system"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def to_text(self) -> str:
         """
@@ -47,7 +47,7 @@ class TemporalFact:
         """
         return f"{self.subject} {self.predicate} {self.object} (at {self.timestamp.isoformat()})"
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts career fact data to storage format for database persistence and retrieval.
 
@@ -280,7 +280,7 @@ class TemporalKG:
         query_text = " ".join(query_parts) if query_parts else "temporal facts"
         
         # Build metadata filter
-        filter_dict: Dict[str, Any] = {}
+        filter_dict: Dict[str, object] = {}
         
         if query.subject:
             filter_dict["subject"] = {"$eq": query.subject}

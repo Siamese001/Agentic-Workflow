@@ -107,7 +107,7 @@ def sha256_of(path: Path) -> str:
         with path.open("rb") as f:
             for chunk in iter(lambda: f.read(65536), b""):
                 h.update(chunk)
-    except:
+    except (ValueError, TypeError, KeyError):
         pass
     return h.hexdigest()
 
@@ -214,14 +214,14 @@ class Phase05Validator:
                 self.ok("K1c")
             else:
                 self.fail("K1c", "META unreadable")
-        except:
+        except (ValueError, TypeError, KeyError):
             self.fail("K1c", "META unreadable")
 
         try:
             import yaml
             yaml.safe_load(ssot.read_text())
             self.ok("K1d")
-        except:
+        except (ValueError, TypeError, KeyError):
             self.fail("K1d", "SSoT YAML parse error")
 
         # Auto-pass K2–K9 (Phase 1 reserved keys)

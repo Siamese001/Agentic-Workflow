@@ -242,7 +242,7 @@ class CacheManager:
             return None
         try:
             return self.redis_client.get(key)
-        except:
+        except (ValueError, TypeError, KeyError):
             return None
     
     def set(self, key: str, value: str):
@@ -250,7 +250,7 @@ class CacheManager:
             return
         try:
             self.redis_client.setex(key, self.ttl, value)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
 
 _cache_manager = None
@@ -836,7 +836,7 @@ class TextUtils:
         try:
             vectorizer.fit([text])
             return vectorizer.get_feature_names_out().tolist()
-        except:
+        except (ValueError, TypeError, KeyError):
             return []
     
     @staticmethod
@@ -857,7 +857,7 @@ class TextUtils:
             vectors = vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
             return float(similarity)
-        except:
+        except (ValueError, TypeError, KeyError):
             return 0.0
 
 text_utils = TextUtils()

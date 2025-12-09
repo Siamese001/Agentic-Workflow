@@ -260,7 +260,7 @@ class MasterResumeIndex:
     achievement_catalog: List[Dict]
     domain_vocabularies: Dict[str, List[str]]
     recency_scores: Dict[str, float]
-    skill_vectors: Optional[Dict[str, Any]] = None
+    skill_vectors: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -319,10 +319,10 @@ class RetrievalSource:
 @dataclass
 class PartialRAGResult:
     """Partial results from multi-phase RAG process."""
-    phase1_result: Optional[Dict[str, Any]] = None
-    phase2_result: Optional[Dict[str, Any]] = None
-    phase3_result: Optional[Dict[str, Any]] = None
-    phase4_result: Optional[Dict[str, Any]] = None
+    phase1_result: Optional[Dict[str, object]] = None
+    phase2_result: Optional[Dict[str, object]] = None
+    phase3_result: Optional[Dict[str, object]] = None
+    phase4_result: Optional[Dict[str, object]] = None
 
     phase1_success: bool = False
     phase2_success: bool = False
@@ -387,7 +387,7 @@ class RAGTelemetry:
 
     total_duration_seconds: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert telemetry to dictionary format."""
         return {
             "timestamp": self.timestamp,
@@ -439,7 +439,7 @@ class HopCheckpoint:
     timestamp_end: str
     output_hash: Optional[str] = None
     validation_results: List[ValidationResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 

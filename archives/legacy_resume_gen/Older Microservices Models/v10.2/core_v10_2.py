@@ -22,7 +22,7 @@ import chromadb # v10.2: Added
 from chromadb.utils import embedding_functions # v10.2: Added
 from openai import AsyncOpenAI
 from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, object, List, Optional, Tuple
 from datetime import datetime
 from enum import Enum
 
@@ -136,8 +136,8 @@ class FeedbackEntry:
     agent_name: str
     task: str
     feedback_type: str  # "success", "failure", "warning"
-    details: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object]
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class FeedbackLogReader:
     """Reads and parses feedback_log.jsonl for agent selection"""
@@ -222,7 +222,7 @@ class FeedbackLogReader:
         self.logger.info(f"Selected {best_agent} for {task_type} (success rate: {best_rate:.2%})")
         return best_agent
     
-    def get_failure_patterns(self, agent_name: str = None) -> List[Dict[str, Any]]:
+    def get_failure_patterns(self, agent_name: str = None) -> List[Dict[str, object]]:
         """Extract failure patterns for meta-learning"""
         entries = self.read_recent_feedback()
         
@@ -272,9 +272,9 @@ class ProposedRule:
     status: str  # "PROPOSED", "APPROVED", "REJECTED"
     rule_type: str
     description: str
-    config_changes: Dict[str, Any]
+    config_changes: Dict[str, object]
     pattern_id: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class ProposedRulesLoader:
     """Hot-reloads proposed_rules.jsonl for dynamic constitution updates"""
@@ -343,7 +343,7 @@ class ProposedRulesLoader:
         
         return constitution_updates
     
-    def get_constitution_rules(self) -> List[Dict[str, Any]]:
+    def get_constitution_rules(self) -> List[Dict[str, object]]:
         """Extract constitution-type rules for bias detection
         
         Returns list of config_changes dicts from rules with type='constitution'
@@ -359,7 +359,7 @@ class ProposedRulesLoader:
         self.logger.info(f"Extracted {len(constitution_rules)} constitution rules")
         return constitution_rules
     
-    def get_config_overrides(self) -> Dict[str, Any]:
+    def get_config_overrides(self) -> Dict[str, object]:
         """Get approved config overrides"""
         rules = self.load_rules(status_filter="APPROVED")
         
@@ -390,7 +390,7 @@ class CacheManager:
         key_str = f"{provider}:{model}:{prompt}:{temperature}"
         return f"llm_cache:{hashlib.sha256(key_str.encode()).hexdigest()}"
     
-    def get(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, Any]]:
+    def get(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, object]]:
         """Get cached response"""
         cache_key = self._generate_cache_key(provider, model, prompt, temperature)
         
@@ -409,7 +409,7 @@ class CacheManager:
             self._misses += 1
             return None
     
-    def set(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
+    def set(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, object]):
         """Cache response"""
         cache_key = self._generate_cache_key(provider, model, prompt, temperature)
         
@@ -419,7 +419,7 @@ class CacheManager:
         except Exception as e:
             self.logger.error(f"Cache set error: {e}")
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         """Get cache statistics"""
         total = self._hits + self._misses
         hit_rate = (self._hits / total * 100) if total > 0 else 0.0
@@ -500,7 +500,7 @@ class CostTracker:
         
         self.logger.debug(f"Recorded ${cost:.4f} for {workflow_id}")
     
-    def get_cost_summary(self, workflow_id: str) -> Dict[str, Any]:
+    def get_cost_summary(self, workflow_id: str) -> Dict[str, object]:
         """Get cost summary for workflow"""
         calls = self._workflow_costs.get(workflow_id, [])
         total_cost = sum(c["cost"] for c in calls)
@@ -542,7 +542,7 @@ class BaseAgent:
         if self.debug_mode:
             self.logger.debug(f"[{self.__class__.__name__}] {message}")
     
-    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, Any]):
+    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, object]):
         """v10.1: Log feedback to feedback_log.jsonl"""
         try:
             feedback_entry = {
@@ -608,7 +608,7 @@ class AsyncBaseModelClient:
     
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         """Abstract method - implement in subclasses"""
         raise NotImplementedError
 
@@ -617,7 +617,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
     
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         """Async chat completion with caching"""
         import anthropic
         
@@ -678,7 +678,7 @@ class GeminiAsyncClient(AsyncBaseModelClient):
     
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         """Async chat completion with caching"""
         import google.generativeai as genai
         
@@ -737,7 +737,7 @@ class OpenAIAsyncClient(AsyncBaseModelClient):
     
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         """Async chat completion with caching"""
         
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
@@ -822,7 +822,7 @@ class WorkflowContext:
         self.rules_loader = rules_loader
         
         # Model client registry
-        self._model_clients: Dict[str, Any] = {}
+        self._model_clients: Dict[str, object] = {}
         
         logger.info("WorkflowContext initialized with v10.2 injected dependencies")
     
@@ -860,8 +860,8 @@ class WorkflowContext:
 @dataclass
 class ResumeContext:
     """Resume-related state"""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
+    sanitized_resume: Dict[str, object] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
 
 @dataclass
@@ -870,12 +870,12 @@ class JobContext:
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+    parsed_requirements: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class StrategyContext:
     """Strategy state"""
-    strategy_plan: Dict[str, Any] = field(default_factory=dict)
+    strategy_plan: Dict[str, object] = field(default_factory=dict)
     tot_branches: List[Dict] = field(default_factory=list)
 
 @dataclass
@@ -892,18 +892,18 @@ class BulletContext:
 @dataclass
 class DraftContext:
     """Drafting state"""
-    sections: Dict[str, Any] = field(default_factory=dict)
+    sections: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class QAContext:
     """QA state"""
-    validation_results: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
     qa_passed: bool = False
 
 @dataclass
 class ArtifactContext:
     """Artifact storage"""
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class MetadataContext:
@@ -931,7 +931,7 @@ class FeedbackContext:
 class HILContext:
     """v10.2: HIL state"""
     ambiguity_detected: bool = False
-    ambiguity_report: Dict[str, Any] = field(default_factory=dict)
+    ambiguity_report: Dict[str, object] = field(default_factory=dict)
     next_step: str = "" # From feedback router
 
 @dataclass
@@ -950,12 +950,12 @@ class MainGraphState:
     feedback: FeedbackContext = field(default_factory=FeedbackContext)
     hil: HILContext = field(default_factory=HILContext)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dict for LangGraph"""
         return asdict(self)
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
+    def from_dict(cls, data: Dict[str, object]) -> 'MainGraphState':
         """Create from dict"""
         state = cls()
         state.resume = ResumeContext(**data.get("resume", {}))
@@ -976,11 +976,11 @@ class MainGraphState:
 class MetaGraphState:
     """Meta-learning graph state"""
     raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
+    log_summary: Dict[str, object] = field(default_factory=dict)
     patterns: List[Dict] = field(default_factory=list)
     hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
+    proposal: Dict[str, object] = field(default_factory=dict)
+    critique: Dict[str, object] = field(default_factory=dict)
     replan_count: int = 0
     workflow_id: str = ""
 

@@ -211,7 +211,7 @@ def compute_file_hash(path: Path) -> str:
     return h.hexdigest()
 
 
-def read_json(path: Path) -> Dict[str, Any]:
+def read_json(path: Path) -> Dict[str, object]:
     try:
         with path.open("r", encoding="utf-8") as f:
             return json.load(f)
@@ -219,7 +219,7 @@ def read_json(path: Path) -> Dict[str, Any]:
         return {"__error__": str(e), "__path__": str(path)}
 
 
-def write_json(path: Path, data: Dict[str, Any]) -> None:
+def write_json(path: Path, data: Dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, sort_keys=True)
@@ -281,9 +281,9 @@ class ValidationResult:
 
 @dataclass
 class SSoTState:
-    structure: Dict[str, Any]
-    meta: Dict[str, Any]
-    target_subtree: Dict[str, Any]
+    structure: Dict[str, object]
+    meta: Dict[str, object]
+    target_subtree: Dict[str, object]
 
 
 @dataclass
@@ -322,8 +322,8 @@ class SemanticPointer:
 class SemanticCacheState:
     bucket: str
     pointers: List[SemanticPointer]
-    hashes: Dict[str, Dict[str, Any]]
-    component_graph: Dict[str, List[Dict[str, Any]]]
+    hashes: Dict[str, Dict[str, object]]
+    component_graph: Dict[str, List[Dict[str, object]]]
 
 
 @dataclass
@@ -348,7 +348,7 @@ class SemanticDiff:
     diff_kind: str
     confidence: float
     reasons: List[str]
-    extra: Dict[str, Any]
+    extra: Dict[str, object]
 
 
 @dataclass
@@ -373,7 +373,7 @@ class MigrationPlan:
     mode: str
     target_root: str  # canonical root with trailing "/"
     operations: List[Operation]
-    summary: Dict[str, Any]
+    summary: Dict[str, object]
     validations: List[ValidationResult]
     timestamp: str
 
@@ -409,7 +409,7 @@ class Phase2Validator:
     def all_pass(self) -> bool:
         return all(r.ok for r in self.results if r.key.startswith("K"))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "results": [asdict(r) for r in self.results],
             "all_pass": self.all_pass(),
@@ -675,7 +675,7 @@ def load_semantic_cache_state(
 
     # Load component graph (optional but used for semantic context)
     graph_path = SEMANTIC_CACHE_ROOT / "graphs" / "component_graph.json"
-    component_graph: Dict[str, List[Dict[str, Any]]] = {}
+    component_graph: Dict[str, List[Dict[str, object]]] = {}
     if graph_path.exists():
         graph = read_json(graph_path)
         if isinstance(graph.get("nodes"), list) and isinstance(graph.get("edges"), list):
@@ -685,7 +685,7 @@ def load_semantic_cache_state(
                 if cid_from:
                     component_graph.setdefault(cid_from, []).append(e)
 
-    hashes: Dict[str, Dict[str, Any]] = {}
+    hashes: Dict[str, Dict[str, object]] = {}
     return SemanticCacheState(bucket=bucket, pointers=pointers, hashes=hashes, component_graph=component_graph)
 
 
@@ -694,7 +694,7 @@ def load_semantic_cache_state(
 # ======================================================================
 
 
-def flatten_ssot_subtree(subtree: Dict[str, Any], prefix: str = "") -> Tuple[Set[str], Set[str]]:
+def flatten_ssot_subtree(subtree: Dict[str, object], prefix: str = "") -> Tuple[Set[str], Set[str]]:
     """
     Flatten SSoT subtree into (dirs, files) sets of relative paths.
     We interpret mapping keys with dict values as directories, and values
@@ -943,14 +943,14 @@ def compute_embedding_distance(vec_a: Optional[List[float]], vec_b: Optional[Lis
     return 1.0 - cos
 
 
-def load_golden_json(path: Path) -> Optional[Dict[str, Any]]:
+def load_golden_json(path: Path) -> Optional[Dict[str, object]]:
     if not path or not path.exists():
         return None
     data = read_json(path)
     return data if "__error__" not in data else None
 
 
-def compute_golden_diff(live_text: str, golden: Optional[Dict[str, Any]]) -> Tuple[float, str]:
+def compute_golden_diff(live_text: str, golden: Optional[Dict[str, object]]) -> Tuple[float, str]:
     if golden is None:
         return 0.0, "golden_missing"
 
@@ -1410,7 +1410,7 @@ def build_migration_plan(
     for op in operations:
         counts[op.op_type] = counts.get(op.op_type, 0) + 1
 
-    summary: Dict[str, Any] = {
+    summary: Dict[str, object] = {
         "total_operations": len(operations),
         "by_type": counts,
         "target_root": cfg.target_root,

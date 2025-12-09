@@ -8,7 +8,7 @@ contracts only.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, object
 
 from utils_types import PlanObject
 
@@ -17,6 +17,6 @@ class Reasoner(ABC):
     """Abstract base class for L1 planners."""
 
     @abstractmethod
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         """Return a plan object derived from the current orchestration state."""
         raise NotImplementedError

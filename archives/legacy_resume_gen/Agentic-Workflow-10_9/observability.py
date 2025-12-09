@@ -63,7 +63,7 @@ class TraceSpan:
     name: str
     start_time_ms: float
     end_time_ms: float
-    tags: Dict[str, Any] = field(default_factory=dict)
+    tags: Dict[str, object] = field(default_factory=dict)
 
     def duration_ms(self) -> float:
         return max(0.0, self.end_time_ms - self.start_time_ms)
@@ -74,7 +74,7 @@ class Metric:
     """Represents a single numeric metric."""
     name: str
     value: float
-    tags: Dict[str, Any] = field(default_factory=dict)
+    tags: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -115,7 +115,7 @@ class TelemetryBuffer:
 
     # ---- Metrics ------------------------------------------------------------
 
-    def record_metric(self, name: str, value: float, tags: Optional[Dict[str, Any]] = None) -> None:
+    def record_metric(self, name: str, value: float, tags: Optional[Dict[str, object]] = None) -> None:
         m = Metric(name=name, value=float(value), tags=tags or {})
         self._metrics.append(m)
         record_event("metric", {"name": name, "value": value, "tags": tags or {}})
@@ -125,13 +125,13 @@ class TelemetryBuffer:
 
     # ---- Spans --------------------------------------------------------------
 
-    def start_span(self, name: str, tags: Optional[Dict[str, Any]] = None) -> TraceSpan:
+    def start_span(self, name: str, tags: Optional[Dict[str, object]] = None) -> TraceSpan:
         now = time.time() * 1000.0
         span = TraceSpan(name=name, start_time_ms=now, end_time_ms=now, tags=tags or {})
         self._spans.append(span)
         return span
 
-    def end_span(self, span: TraceSpan, extra_tags: Optional[Dict[str, Any]] = None) -> None:
+    def end_span(self, span: TraceSpan, extra_tags: Optional[Dict[str, object]] = None) -> None:
         span.end_time_ms = time.time() * 1000.0
         if extra_tags:
             span.tags.update(extra_tags)
@@ -205,7 +205,7 @@ def trace_span_async(span_name: str):
 # 4. RUN-LEVEL DOMAIN SUMMARIES
 # ============================================================================
 
-def summarize_strategy(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_strategy(workflow_id: str, state: Dict[str, object]) -> None:
     strat = state.get("strategy_result", {}) or {}
     # Our L3 stores the StrategyExecutionPayload.to_dict() directly
     # so we look for aggregated_decision or selected_branch.strategy_name
@@ -220,27 +220,27 @@ def summarize_strategy(workflow_id: str, state: Dict[str, Any]) -> None:
     )
 
 
-def summarize_rag(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_rag(workflow_id: str, state: Dict[str, object]) -> None:
     rag = state.get("rag_result", {}) or {}
     # RAGExecutionPayload.to_dict() shape: {"queries": [...], "documents": [...], ...}
     docs = rag.get("documents") or []
     TELEMETRY.increment_count(workflow_id, "rag_documents", len(docs))
 
 
-def summarize_bullets(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_bullets(workflow_id: str, state: Dict[str, object]) -> None:
     bullets_block = state.get("bullet_result") or {}
     bullets = bullets_block.get("bullets") or []
     TELEMETRY.increment_count(workflow_id, "bullets_generated", len(bullets))
 
 
-def summarize_draft(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_draft(workflow_id: str, state: Dict[str, object]) -> None:
     draft_block = state.get("draft_result") or {}
     # DraftExecutionPayload.to_dict(): {"sections": [...], "full_text": "...", ...}
     sections = draft_block.get("sections") or []
     TELEMETRY.increment_count(workflow_id, "draft_sections", len(sections))
 
 
-def summarize_qa(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_qa(workflow_id: str, state: Dict[str, object]) -> None:
     qa_block = state.get("qa_result") or {}
     report = qa_block.get("report") or qa_block
     issues = report.get("issues", [])
@@ -248,7 +248,7 @@ def summarize_qa(workflow_id: str, state: Dict[str, Any]) -> None:
         TELEMETRY.record_issue(workflow_id, "qa", str(iss))
 
 
-def summarize_safety(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_safety(workflow_id: str, state: Dict[str, object]) -> None:
     safety_block = state.get("safety_result") or {}
     report = safety_block.get("report") or safety_block
     issues = report.get("issues", [])
@@ -256,7 +256,7 @@ def summarize_safety(workflow_id: str, state: Dict[str, Any]) -> None:
         TELEMETRY.record_issue(workflow_id, "safety", str(iss))
 
 
-def summarize_hil(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_hil(workflow_id: str, state: Dict[str, object]) -> None:
     hil = state.get("hil_result") or {}
     response = hil.get("response")
     if response:
@@ -264,7 +264,7 @@ def summarize_hil(workflow_id: str, state: Dict[str, Any]) -> None:
         TELEMETRY.record_issue(workflow_id, "hil", "hil_response_present")
 
 
-def summarize_meta_learning(workflow_id: str, state: Dict[str, Any]) -> None:
+def summarize_meta_learning(workflow_id: str, state: Dict[str, object]) -> None:
     meta = state.get("meta_learning_result") or {}
     snapshot = meta.get("snapshot") or {}
     findings = snapshot.get("findings") or []
@@ -277,10 +277,10 @@ def summarize_meta_learning(workflow_id: str, state: Dict[str, Any]) -> None:
 
 def summarize_run(
     workflow_id: str,
-    state: Dict[str, Any],
+    state: Dict[str, object],
     phase_history: List[str],
     cost_tracker: Optional[CostTracker] = None,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Build a structured run summary for a workflow, combining:
 

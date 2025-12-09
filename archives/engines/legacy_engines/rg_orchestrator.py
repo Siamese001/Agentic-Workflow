@@ -8,7 +8,7 @@ L1 Planning (RGPlanner) → K1 Extract → K2 Clean → K3 Quantify → K4 Rewri
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional
+from typing import Dict, object, List, Optional
 import logging
 from datetime import datetime
 
@@ -34,10 +34,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ResumeGenerationRequest:
     """Resume generation request with all inputs."""
-    job_input: Dict[str, Any]
-    resume_input: Dict[str, Any]
-    processing_options: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    job_input: Dict[str, object]
+    resume_input: Dict[str, object]
+    processing_options: Optional[Dict[str, object]] = None
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -46,11 +46,11 @@ class ResumeGenerationResult:
     success: bool
     final_resume_content: str
     processing_plan: ResumeProcessingPlan
-    k_node_outputs: Dict[str, Any]
+    k_node_outputs: Dict[str, object]
     validation_result: Any
-    processing_metrics: Dict[str, Any]
+    processing_metrics: Dict[str, object]
     error_message: str
-    execution_trace: List[Dict[str, Any]] = field(default_factory=list)
+    execution_trace: List[Dict[str, object]] = field(default_factory=list)
 
 
 @dataclass
@@ -75,7 +75,7 @@ class RGOrchestrator:
     """
     
     def __init__(self, 
-                 config: Optional[Dict[str, Any]] = None,
+                 config: Optional[Dict[str, object]] = None,
                  telemetry_bus: Optional[Any] = None) -> None:
         """Initialize resume generation orchestrator."""
         self.config = config or {}
@@ -323,7 +323,7 @@ class RGOrchestrator:
             
             return error_result
     
-    def _execute_k1_extract(self, input_data: Dict[str, Any], plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> ExtractionOutput:
+    def _execute_k1_extract(self, input_data: Dict[str, object], plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> ExtractionOutput:
         """Execute K1 extraction phase with HyDE expansion."""
         # Update extraction params with job requirements
         extraction_params = plan.extraction_params.copy()
@@ -457,8 +457,8 @@ class RGOrchestrator:
         total_time: float, 
         planning_time: float, 
         k_node_times: Dict[str, int], 
-        k_node_outputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        k_node_outputs: Dict[str, object]
+    ) -> Dict[str, object]:
         """Calculate comprehensive processing metrics."""
         # Calculate success rate
         successful_nodes = sum(1 for output in k_node_outputs.values() if hasattr(output, 'success') and output.success)
@@ -500,7 +500,7 @@ class RGOrchestrator:
         except Exception as e:
             logger.debug(f"Failed to record telemetry: {e}")
     
-    def get_orchestrator_summary(self, result: ResumeGenerationResult) -> Dict[str, Any]:
+    def get_orchestrator_summary(self, result: ResumeGenerationResult) -> Dict[str, object]:
         """Get a summary of the orchestrator execution for debugging/telemetry."""
         return {
             "execution_id": "rg_orchestrator",
@@ -566,11 +566,11 @@ class RGOrchestrator:
     
     def _apply_low_complexity_preprocessing(
         self, 
-        resume_input: Dict[str, Any], 
+        resume_input: Dict[str, object], 
         request: ResumeGenerationRequest,
         plan: ResumeProcessingPlan,
-        execution_trace: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        execution_trace: List[Dict[str, object]]
+    ) -> Dict[str, object]:
         """Apply LOW complexity preprocessing features to resume content."""
         preprocessing_start = datetime.now()
         

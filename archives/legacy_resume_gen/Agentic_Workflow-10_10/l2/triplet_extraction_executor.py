@@ -59,7 +59,7 @@ class ExtractionPlan:
     # Context
     user_id: Optional[str] = None
     job_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -74,7 +74,7 @@ class ExtractedStatement:
     statement_type: str  # skill, experience, education, relationship
     confidence: float
     evidence_span: Tuple[int, int]  # Start and end positions in source
-    temporal_hints: Dict[str, Any] = field(default_factory=dict)
+    temporal_hints: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -410,7 +410,7 @@ class TripletExtractionExecutor:
         text: str,
         start: int,
         end: int,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Extract temporal information near a match.
         
         Args:
@@ -426,7 +426,7 @@ class TripletExtractionExecutor:
         context_end = min(len(text), end + 50)
         context = text[context_start:context_end]
         
-        temporal_info: Dict[str, Any] = {}
+        temporal_info: Dict[str, object] = {}
         
         for pattern, temporal_type in self._temporal_patterns:
             match = re.search(pattern, context, re.IGNORECASE)

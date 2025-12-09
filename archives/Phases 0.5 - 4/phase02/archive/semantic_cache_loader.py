@@ -18,7 +18,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Dict, List, Optional, Set, Tuple, object
 from dataclasses import dataclass, asdict
 from datetime import datetime
 import yaml
@@ -383,7 +383,7 @@ class SemanticCacheLoader:
         """Get the loaded semantic cache state"""
         return self.cache_state
     
-    def get_validation_summary(self) -> Dict[str, Any]:
+    def get_validation_summary(self) -> Dict[str, object]:
         """Get validation summary with all K-keys"""
         passed = sum(1 for r in self.validation_results if r.status == "PASS")
         failed = sum(1 for r in self.validation_results if r.status == "FAIL")

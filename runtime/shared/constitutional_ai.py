@@ -11,7 +11,7 @@ and content compliance checking.
 import re
 import logging
 import time
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from collections import defaultdict
@@ -66,7 +66,7 @@ class ConstitutionalRule:
     action: RuleAction
     replacement: Optional[str] = None
     enabled: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -81,7 +81,7 @@ class ViolationReport:
     content: str  # The violating content
     suggestion: str  # How to fix the violation
     confidence: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -93,12 +93,12 @@ class ConstitutionalReviewResult:
     recommendations: List[str]
     reviewed_at: float
     corrected_content: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class RuleEngine:
     """
-    Simple Rule-Based Validation Engine
+    basic Rule-Based Validation Engine
     
     Applies constitutional rules using pattern matching
     and heuristic analysis without complex ML.
@@ -134,7 +134,7 @@ class RuleEngine:
     def check_compliance(
         self, 
         content: str, 
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         rule_types: Optional[List[RuleType]] = None
     ) -> List[ViolationReport]:
         """
@@ -181,7 +181,7 @@ class RuleEngine:
         self, 
         content: str, 
         rule: ConstitutionalRule, 
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> List[ViolationReport]:
         """Check content against a specific rule."""
         violations = []
@@ -210,7 +210,7 @@ class RuleEngine:
                 violations.extend(context_violations)
         
         except re.error as e:
-            logger.error(f"Regex error in rule {rule.rule_id}: {e}")
+            logger.error("Regex error in rule {rule.rule_id}: %s", e)
         
         return violations
     
@@ -218,7 +218,7 @@ class RuleEngine:
         self, 
         content: str, 
         rule: ConstitutionalRule, 
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> List[ViolationReport]:
         """Check contextual rules that depend on additional information."""
         violations = []
@@ -373,7 +373,7 @@ class ContentValidator:
     def validate_content(
         self, 
         content: str, 
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         auto_correct: bool = False,
         rule_types: Optional[List[RuleType]] = None
     ) -> ConstitutionalReviewResult:
@@ -499,7 +499,7 @@ class ContentValidator:
         
         return corrected_content
     
-    def get_validation_stats(self) -> Dict[str, Any]:
+    def get_validation_stats(self) -> Dict[str, object]:
         """Get validation statistics."""
         if not self.validation_history:
             return {}
@@ -555,7 +555,7 @@ class ConstitutionalAISystem:
     def review_content(
         self, 
         content: str, 
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         auto_correct: bool = False,
         rule_types: Optional[List[RuleType]] = None
     ) -> ConstitutionalReviewResult:
@@ -627,7 +627,7 @@ class ConstitutionalAISystem:
             self.system_stats['last_updated'] = time.time()
         return result
     
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> Dict[str, object]:
         """Get overall system status and statistics."""
         validation_stats = self.content_validator.get_validation_stats()
         

@@ -7,7 +7,7 @@ to ensure system resilience under load. Singleton pattern consistent with Teleme
 
 import threading
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 from dataclasses import dataclass, field
 
 
@@ -161,7 +161,7 @@ class ExecutionBudgetManager:
             self._usage.requests_made += 1
             self._usage.last_activity = time.time()
     
-    def current_usage(self) -> Dict[str, Any]:
+    def current_usage(self) -> Dict[str, object]:
         """Get current budget usage statistics."""
         with self._lock:
             return {
@@ -183,7 +183,7 @@ class ExecutionBudgetManager:
                 }
             }
     
-    def get_limits(self) -> Dict[str, Any]:
+    def get_limits(self) -> Dict[str, object]:
         """Get current budget limits."""
         with self._lock:
             return {
@@ -249,7 +249,7 @@ def get_budget_manager() -> ExecutionBudgetManager:
     return _budget_manager
 
 
-def create_budget_limits_from_config(config: Dict[str, Any]) -> BudgetLimits:
+def create_budget_limits_from_config(config: Dict[str, object]) -> BudgetLimits:
     """Create BudgetLimits from configuration dictionary."""
     return BudgetLimits(
         max_tokens=config.get("max_tokens", 1000000),

@@ -15,8 +15,8 @@ class DAGNode:
     """Structural node definition for DAG orchestration."""
 
     name: str
-    run: Callable[[Dict[str, Any]], NodeResult]
-    condition: Optional[Callable[[Dict[str, Any]], bool]] = None
+    run: Callable[[Dict[str, object]], NodeResult]
+    condition: Optional[Callable[[Dict[str, object]], bool]] = None
     conditional_edges: Dict[str, List[str]] = field(default_factory=dict)
     retries: int = 0
     fallback_edge: Optional[str] = None
@@ -91,9 +91,9 @@ from node_result import NodeResult, NodeStatus
 class DAGExecutor:
     """Deterministic executor for DAG nodes with retry logic."""
 
-    def run(self, dag: DAG, initial_context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def run(self, dag: DAG, initial_context: Dict[str, object] | None = None) -> Dict[str, object]:
         dag.validate()
-        context: Dict[str, Any] = deepcopy(initial_context) if initial_context else {}
+        context: Dict[str, object] = deepcopy(initial_context) if initial_context else {}
 
         parents = self._build_parents_map(dag)
         ready: List[str] = sorted([name for name, deps in parents.items() if not deps])
@@ -122,7 +122,7 @@ class DAGExecutor:
         return context
 
     def _execute_with_retries(
-        self, node_name: str, node: Any, context: Dict[str, Any]
+        self, node_name: str, node: Any, context: Dict[str, object]
     ) -> tuple[NodeResult, Set[str]]:
         attempted: Set[str] = set()
         attempts = node.retries + 1
@@ -135,7 +135,7 @@ class DAGExecutor:
         assert last_result is not None
         return NodeResult(NodeStatus.FAILURE, last_result.payload), attempted
 
-    def _determine_edges(self, dag: DAG, node: Any, context: Dict[str, Any]) -> List[str]:
+    def _determine_edges(self, dag: DAG, node: Any, context: Dict[str, object]) -> List[str]:
         if node.condition:
             try:
                 condition_result = bool(node.condition(context))
@@ -174,8 +174,8 @@ class DAGExecutor:
         ready.sort()
 
     def _execute_parallel_nodes(
-        self, dag: DAG, parallel_nodes: List[str], context: Dict[str, Any], executed: Set[str]
-    ) -> Dict[str, Any]:
+        self, dag: DAG, parallel_nodes: List[str], context: Dict[str, object], executed: Set[str]
+    ) -> Dict[str, object]:
         merged = deepcopy(context)
         for child_name in sorted(parallel_nodes):
             if child_name not in dag.nodes:
@@ -226,7 +226,7 @@ class OrchestrationResult:
     plan: PlanObject
     execution_patch: StatePatch
     safety_patch: StatePatch
-    state: Dict[str, Any]
+    state: Dict[str, object]
 
 
 class GraphOrchestrator:
@@ -246,14 +246,14 @@ class GraphOrchestrator:
         self.cost_tracker = CostTracker()
 
     def orchestrate(
-        self, state: Optional[Dict[str, Any]] = None, enable_multi_agent: bool = True
+        self, state: Optional[Dict[str, object]] = None, enable_multi_agent: bool = True
     ) -> OrchestrationResult:
         """Execute the deterministic orchestration sequence without side effects."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -276,7 +276,7 @@ class GraphOrchestrator:
             plan["routing"]["selected_model"] = routing_decision.model
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -284,12 +284,12 @@ class GraphOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {
@@ -423,7 +423,7 @@ class GraphOrchestrator:
         )
 
     @staticmethod
-    def _latest_content(state: Dict[str, Any]) -> str:
+    def _latest_content(state: Dict[str, object]) -> str:
         """Return the most recent assistant message for safety evaluation."""
 
         messages = state.get("messages") or []
@@ -476,13 +476,13 @@ class RAGOrchestrator:
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Plan, execute, patch, and evaluate safety in order."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -495,7 +495,7 @@ class RAGOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -503,12 +503,12 @@ class RAGOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {
@@ -656,13 +656,13 @@ class DraftOrchestrator:
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Execute the L1→L2→L4→L5 drafting control flow."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -675,7 +675,7 @@ class DraftOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -683,12 +683,12 @@ class DraftOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {
@@ -836,13 +836,13 @@ class BulletOrchestrator:
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Run the deterministic orchestration sequence for bullet outputs."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -855,7 +855,7 @@ class BulletOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -863,12 +863,12 @@ class BulletOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {
@@ -1018,13 +1018,13 @@ class QAOrchestrator:
         self.arbitration_engine = ArbitrationEngine()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Run plan→execute→patch→safety in order."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -1037,7 +1037,7 @@ class QAOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -1045,12 +1045,12 @@ class QAOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {

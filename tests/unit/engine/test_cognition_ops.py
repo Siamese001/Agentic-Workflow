@@ -3,7 +3,7 @@ Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, object
 from dataclasses import dataclass
 from enum import Enum
 
@@ -17,7 +17,7 @@ class IntentType(Enum):
 class ParsedIntent:
     intent_type: IntentType
     confidence: float
-    entities: Dict[str, Any]
+    entities: Dict[str, object]
     original_text: str
 
 class TestUnderstandRequest:

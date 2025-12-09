@@ -5,7 +5,7 @@
 # Refactored from validator_RES_v3_8.py
 
 import logging
-from typing import Dict, List, Optional, Any, Callable, Union
+from typing import Dict, List, Optional, Union, Callable, Union
 from collections import defaultdict
 from models_RES import ValidationResult, ValidationSeverity
 

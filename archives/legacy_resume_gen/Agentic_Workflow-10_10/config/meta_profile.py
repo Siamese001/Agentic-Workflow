@@ -132,7 +132,7 @@ class _MetaUpdater:
         """
         self.profile.profile_inference = inference
 
-    def get_profile_inference(self) -> Dict[str, Any]:
+    def get_profile_inference(self) -> Dict[str, object]:
         return asdict(self.profile.profile_inference)
 
     # -------------------------------
@@ -170,7 +170,7 @@ def set_profile_inference(inference: ProfileInferenceResult):
     _META_UPDATER.update_profile_inference(inference)
 
 
-def get_profile_inference() -> Dict[str, Any]:
+def get_profile_inference() -> Dict[str, object]:
     return _META_UPDATER.get_profile_inference()
 
 
@@ -222,19 +222,19 @@ def build_meta_profile_snapshot(name: str) -> MetaProfileSnapshot:
     )
 
 
-def get_routing_bias() -> Dict[str, Any]:
+def get_routing_bias() -> Dict[str, object]:
     return asdict(_META_UPDATER.profile.routing_bias)
 
 
-def get_planning_bias() -> Dict[str, Any]:
+def get_planning_bias() -> Dict[str, object]:
     return asdict(_META_UPDATER.profile.planning_bias)
 
 
-def get_qa_bias() -> Dict[str, Any]:
+def get_qa_bias() -> Dict[str, object]:
     return asdict(_META_UPDATER.profile.qa_bias)
 
 
-def get_safety_bias() -> Dict[str, Any]:
+def get_safety_bias() -> Dict[str, object]:
     return asdict(_META_UPDATER.profile.safety_bias)
 
 

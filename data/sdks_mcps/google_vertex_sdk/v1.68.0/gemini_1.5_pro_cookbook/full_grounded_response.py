@@ -4,7 +4,7 @@ Production client for generating responses with Google Search grounding and cita
 
 import os
 import json
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 from vertexai.generative_models import GenerativeModel, Part, Tool
 from vertexai.generative_models import grounding as vertex_grounding
 
@@ -35,7 +35,7 @@ class GroundedResponseGenerator:
         max_output_tokens: int = 2048,
         temperature: float = 0.4,
         include_citations: bool = True
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Generate response with optional grounding and citation extraction.
         
         Args:
@@ -112,7 +112,7 @@ class GroundedResponseGenerator:
             }
         }
     
-    def _extract_citations(self, grounding_metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_citations(self, grounding_metadata: Dict[str, object]) -> List[Dict[str, object]]:
         """Extract structured citations from grounding metadata."""
         citations = []
         seen_sources = set()
@@ -134,7 +134,7 @@ class GroundedResponseGenerator:
     
     def format_response_with_citations(
         self,
-        response_data: Dict[str, Any],
+        response_data: Dict[str, object],
         citation_format: str = "footnote"
     ) -> str:
         """Format response with inline citations.
@@ -184,7 +184,7 @@ class GroundedResponseGenerator:
 def research_company_with_grounding(
     company_name: str,
     research_aspects: List[str] = None
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Research company using Gemini with Google Search grounding.
     
     Args:

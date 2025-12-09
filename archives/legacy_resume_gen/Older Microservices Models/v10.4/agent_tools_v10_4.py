@@ -17,7 +17,7 @@
 
 import json
 import logging
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.4: Import from new core
 from core_v10_4 import (
@@ -58,7 +58,7 @@ class DraftingStrategistTool(BaseTool):
     tool_name = "review_draft_strategy"
     output_model = DraftStrategyOutput
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Reviewing draft strategy (v10.4)...")
         client = self.get_model_client("drafting_strategist_model")
         
@@ -94,7 +94,7 @@ class DraftingRedTeamTool(BaseTool):
     tool_name = "red_team_critique"
     output_model = RedTeamOutput
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Red teaming draft (v10.4)...")
         client = self.get_model_client("drafting_redteam_model")
         
@@ -128,7 +128,7 @@ class DraftingRefinerTool(BaseTool):
     tool_name = "refine_section"
     output_model = RefineSectionOutput
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Refining section (v10.4)...")
         client = self.get_model_client("drafting_refiner_model")
         
@@ -165,7 +165,7 @@ class DraftingMetricsTool(BaseTool):
     tool_name = "add_metrics"
     output_model = AddMetricsOutput
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Adding metrics (v10.4)...")
         client = self.get_model_client("drafting_metrics_model")
         
@@ -205,7 +205,7 @@ class QABaseValidatorTool(BaseTool):
     model_config_name = "qa_validator_model" # Gemini 2.5 Flash
     output_model = BaseToolOutput # Subclasses must override this
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running {self.tool_name} (v10.4)...")
         client = self.get_model_client(self.model_config_name)
         
@@ -229,7 +229,7 @@ class QABaseValidatorTool(BaseTool):
             
         return validated_output.model_dump()
         
-    def format_prompt(self, template: str, tool_input: Dict[str, Any]) -> str:
+    def format_prompt(self, template: str, tool_input: Dict[str, object]) -> str:
         """
         Subclasses must implement this to fill their specific template.
         v10.4: TEST FIX - This method *must* provide all possible keys
@@ -334,7 +334,7 @@ class QAAdversarialReviewerTool(BaseTool):
     tool_name = "adversarial_review"
     output_model = QAAdversarialOutput # v10.3
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running Adversarial Review (v10.4)...")
         client = self.get_model_client("qa_adversarial_model")
         
@@ -372,7 +372,7 @@ class QABiasDetectorTool(BaseTool):
     tool_name = "validate_bias"
     output_model = QABiasOutput # v10.3
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         # This tool imports BiasDetectorAgent from agent_stacks_v10_4.py
         # It's a local tool, not an LLM call.
         bias_agent = BiasDetectorAgent(self.context)

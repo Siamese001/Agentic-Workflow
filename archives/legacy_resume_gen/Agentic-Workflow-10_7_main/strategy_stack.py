@@ -28,10 +28,10 @@ class StrategyStackV10_8:
 
     async def plan_strategy_async(
         self,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         workflow_id: str,
-        state: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """Delegate strategy planning to the v10.7 Tree-of-Thought strategist."""
 
         return await self._strategist.run_async(job_context, workflow_id, state)

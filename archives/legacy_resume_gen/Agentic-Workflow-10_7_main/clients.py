@@ -100,7 +100,7 @@ class AsyncBaseModelClient:
 
     async def _run_idempotency_check(
         self,
-        cached_response: Dict[str, Any],
+        cached_response: Dict[str, object],
         messages: List[Dict[str, str]],
         temperature: float,
         response_format: Optional[str] = None,
@@ -140,7 +140,7 @@ class AsyncBaseModelClient:
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
         response_format: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         prompt = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
         provider = self._get_provider_name()
 
@@ -176,7 +176,7 @@ class AsyncBaseModelClient:
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
         response_format: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Subclasses must implement the actual API call logic here."""
         raise NotImplementedError
 
@@ -191,7 +191,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
         response_format: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
             raise ModelAPIError("Missing ANTHROPIC_API_KEY environment variable.")
@@ -211,7 +211,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
         if _AsyncAnthropic is not None:
             try:
                 client = _AsyncAnthropic(api_key=api_key)
-                kwargs: Dict[str, Any] = {
+                kwargs: Dict[str, object] = {
                     "model": self.model_name,
                     "max_tokens": 4096,
                     "temperature": temperature,
@@ -246,7 +246,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
 
                 loop = asyncio.get_running_loop()
                 def _create_sync_message() -> Any:
-                    kwargs: Dict[str, Any] = {
+                    kwargs: Dict[str, object] = {
                         "model": self.model_name,
                         "max_tokens": 4096,
                         "temperature": temperature,
@@ -300,7 +300,7 @@ class GeminiAsyncClient(AsyncBaseModelClient):
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
         response_format: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         if genai is None:
             raise ModelAPIError(
                 "Google GenerativeAI library not installed. "
@@ -314,7 +314,7 @@ class GeminiAsyncClient(AsyncBaseModelClient):
             if not api_key:
                 raise ModelAPIError("Missing GEMINI_API_KEY or GOOGLE_API_KEY.")
             genai.configure(api_key=api_key)
-            gen_config: Dict[str, Any] = {"temperature": temperature}
+            gen_config: Dict[str, object] = {"temperature": temperature}
             if response_format == "json_object":
                 gen_config["response_mime_type"] = "application/json"
 
@@ -352,7 +352,7 @@ class OpenAIAsyncClient(AsyncBaseModelClient):
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
         response_format: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         if AsyncOpenAI is None:
             raise ModelAPIError(
                 "OpenAI library not available. "
@@ -360,7 +360,7 @@ class OpenAIAsyncClient(AsyncBaseModelClient):
             )
         try:
             client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-            completion_kwargs: Dict[str, Any] = {
+            completion_kwargs: Dict[str, object] = {
                 "model": self.model_name,
                 "temperature": temperature,
                 "messages": messages,

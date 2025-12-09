@@ -34,7 +34,7 @@ class NodeExecutionResult(Generic[T]):
     error: Optional[str] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, object] = field(default_factory=dict)
 
     # L4 integration: state linkage
     state_snapshot_id: Optional[str] = None
@@ -61,7 +61,7 @@ class DAGResult:
     start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     end_time: Optional[datetime] = None
     node_results: Dict[str, NodeExecutionResult[Any]] = field(default_factory=dict)
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, object] = field(default_factory=dict)
 
     # L4 integration
     state_snapshots: Dict[str, StateSnapshot] = field(default_factory=dict)
@@ -107,7 +107,7 @@ class DAGResult:
             # Re-evaluate aggregate verdict
             self.__post_init__()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Shallow serialization helper for logging/telemetry."""
 
         return {

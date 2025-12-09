@@ -13,7 +13,7 @@ import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, ClassVar, Dict, List, Optional, TYPE_CHECKING
+from typing import ClassVar, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     pass
@@ -157,10 +157,10 @@ class ValidationResult:
     passed: bool
     severity: ValidationSeverity
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for serialization."""
         return {
             "rule_id": self.rule_id,
@@ -189,18 +189,18 @@ class JDEnforcementResult:
 @dataclass
 class ThematicAnalysis:
     """Thematic analysis derived from job description."""
-    primary_theme: Dict[str, Any] = field(default_factory=dict)
-    secondary_themes: List[Dict[str, Any]] = field(default_factory=list)
-    role_classification: Dict[str, Any] = field(default_factory=dict)
-    positioning_directives: Dict[str, Any] = field(default_factory=dict)
-    authenticity_patterns: Dict[str, Any] = field(default_factory=dict)
+    primary_theme: Dict[str, object] = field(default_factory=dict)
+    secondary_themes: List[Dict[str, object]] = field(default_factory=list)
+    role_classification: Dict[str, object] = field(default_factory=dict)
+    positioning_directives: Dict[str, object] = field(default_factory=dict)
+    authenticity_patterns: Dict[str, object] = field(default_factory=dict)
     competitive_intelligence: Optional[Any] = None
-    problem_solution_narratives: Optional[Dict[str, Any]] = None
+    problem_solution_narratives: Optional[Dict[str, object]] = None
     signal_quality_score: float = 0.0
     retrieval_method: str = "UNKNOWN"
     retrieval_sources: List[Any] = field(default_factory=list)
-    weighting_formula: Optional[Dict[str, Any]] = None
-    evidence_log: List[Dict[str, Any]] = field(default_factory=list)
+    weighting_formula: Optional[Dict[str, object]] = None
+    evidence_log: List[Dict[str, object]] = field(default_factory=list)
 
     def get_primary_keywords(self) -> List[str]:
         """Extract primary keywords from the theme."""
@@ -233,7 +233,7 @@ class CompetitiveIntelligence:
     peer_jds_analyzed_count: int = 0
     differentiator_keywords: List[str] = field(default_factory=list)
     differentiator_keywords_raw: List[str] = field(default_factory=list)
-    differentiator_keywords_weighted: List[Dict[str, Any]] = field(default_factory=list)
+    differentiator_keywords_weighted: List[Dict[str, object]] = field(default_factory=list)
 
     def get_top_differentiators(self, count: int) -> List[str]:
         """Get top N differentiator keywords."""
@@ -276,11 +276,11 @@ class SkillCluster:
 @dataclass
 class MasterResumeIndex:
     """Index of master resume content for RAG."""
-    skill_to_experiences: Dict[str, List[Dict[str, Any]]]
-    achievement_catalog: List[Dict[str, Any]]
+    skill_to_experiences: Dict[str, List[Dict[str, object]]]
+    achievement_catalog: List[Dict[str, object]]
     domain_vocabularies: Dict[str, List[str]]
     recency_scores: Dict[str, float]
-    skill_vectors: Optional[Dict[str, Any]] = None
+    skill_vectors: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -311,7 +311,7 @@ class RAGState:
     phase_name: str
     iteration: int
     evidence_log: List[RAGEvidence] = field(default_factory=list)
-    cumulative_result: Optional[Dict[str, Any]] = None
+    cumulative_result: Optional[Dict[str, object]] = None
     total_api_calls: int = 0
     critiques: List[RAGCritique] = field(default_factory=list)
 
@@ -341,10 +341,10 @@ class RetrievalSource:
 @dataclass
 class PartialRAGResult:
     """Partial results from multi-phase RAG process."""
-    phase1_result: Optional[Dict[str, Any]] = None
-    phase2_result: Optional[Dict[str, Any]] = None
-    phase3_result: Optional[Dict[str, Any]] = None
-    phase4_result: Optional[Dict[str, Any]] = None
+    phase1_result: Optional[Dict[str, object]] = None
+    phase2_result: Optional[Dict[str, object]] = None
+    phase3_result: Optional[Dict[str, object]] = None
+    phase4_result: Optional[Dict[str, object]] = None
     phase1_success: bool = False
     phase2_success: bool = False
     phase3_success: bool = False
@@ -409,7 +409,7 @@ class RAGTelemetry:
     circuit_breaker_triggered: bool = False
     total_duration_seconds: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert telemetry to dictionary format."""
         return {
             "timestamp": self.timestamp,
@@ -451,10 +451,10 @@ class HopCheckpoint:
     timestamp_end: str
     output_hash: Optional[str] = None
     validation_results: List[ValidationResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
 
-    def compute_output_hash(self, output: Any) -> str:
+    def compute_output_hash(self, output: object) -> str:
         """Compute a hash of the output for integrity verification."""
         content = str(output).encode("utf-8")
         return hashlib.sha256(content).hexdigest()
@@ -522,12 +522,12 @@ class ImmutableStagingBuffer:
     """
 
     def __init__(self) -> None:
-        self._data: Dict[str, Any] = {}
+        self._data: Dict[str, object] = {}
         self._locked: bool = False
         self._lock_timestamp: Optional[str] = None
-        self._write_log: List[Dict[str, Any]] = []
+        self._write_log: List[Dict[str, object]] = []
 
-    def set(self, key: str, value: Any) -> None:
+    def set(self, key: str, value: object) -> None:
         """
         Sets a key-value pair, raising an error if locked.
 
@@ -552,7 +552,7 @@ class ImmutableStagingBuffer:
             "timestamp": datetime.now().isoformat(),
         })
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: object = None) -> object:
         """
         Gets a value by key, returning a deep copy to maintain immutability.
 
@@ -585,7 +585,7 @@ class ImmutableStagingBuffer:
         return self._locked
 
     @property
-    def data(self) -> Dict[str, Any]:
+    def data(self) -> Dict[str, object]:
         """Returns a deep copy of the buffer's data."""
         return copy.deepcopy(self._data)
 

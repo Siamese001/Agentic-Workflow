@@ -78,12 +78,12 @@ class SafetyWrappedResult:
     
     success: bool
     answer: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
+    data: Optional[Dict[str, object]] = None
     
     # Safety information
     safety_verdict: Verdict = Verdict.ALLOW
     safety_findings: List[SafetyFinding] = field(default_factory=list)
-    policy_decisions: List[Dict[str, Any]] = field(default_factory=list)
+    policy_decisions: List[Dict[str, object]] = field(default_factory=list)
     
     # Execution metadata
     session_id: str = ""
@@ -93,9 +93,9 @@ class SafetyWrappedResult:
     
     # Compliance
     compliance_flags: List[str] = field(default_factory=list)
-    risk_assessment: Dict[str, Any] = field(default_factory=dict)
+    risk_assessment: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for serialization."""
         return {
             "success": self.success,
@@ -171,7 +171,7 @@ class FusionGovernanceLayer:
         
         # Session tracking
         self.active_sessions: Dict[str, FusionSession] = {}
-        self.session_metrics: Dict[str, Dict[str, Any]] = {}
+        self.session_metrics: Dict[str, Dict[str, object]] = {}
         
         # Safety decision cache
         self.safety_cache: Dict[str, PolicyResult] = {}
@@ -179,9 +179,9 @@ class FusionGovernanceLayer:
     async def run_safe_temporal_kg_rag_session(
         self,
         question: str,
-        user_context: Optional[Dict[str, Any]] = None,
+        user_context: Optional[Dict[str, object]] = None,
         safety_profile: Optional[str] = None,
-        temporal_constraints: Optional[Dict[str, Any]] = None,
+        temporal_constraints: Optional[Dict[str, object]] = None,
         max_recursion_depth: Optional[int] = None,
     ) -> SafetyWrappedResult:
         """Run a complete safe temporal KG + RAG fusion session.
@@ -289,9 +289,9 @@ class FusionGovernanceLayer:
         self,
         session_id: str,
         question: str,
-        user_context: Dict[str, Any],
+        user_context: Dict[str, object],
         safety_profile: Optional[str],
-        temporal_constraints: Dict[str, Any],
+        temporal_constraints: Dict[str, object],
         max_recursion_depth: int,
     ) -> SafetyWrappedResult:
         """Execute the complete fusion pipeline with safety checkpoints."""
@@ -373,7 +373,7 @@ class FusionGovernanceLayer:
     async def _phase_planning(
         self,
         question: str,
-        temporal_constraints: Dict[str, Any],
+        temporal_constraints: Dict[str, object],
         max_recursion_depth: int,
     ) -> Tuple[Optional[KGRAGFusionPlan], Optional[str]]:
         """Phase 1: Generate fusion plan."""
@@ -394,7 +394,7 @@ class FusionGovernanceLayer:
         self,
         session_id: str,
         plan: KGRAGFusionPlan,
-        user_context: Dict[str, Any],
+        user_context: Dict[str, object],
         safety_profile: Optional[str],
     ) -> PolicyResult:
         """Phase 2: Pre-execution safety checkpoint."""
@@ -439,7 +439,7 @@ class FusionGovernanceLayer:
     async def _phase_execution_with_recursion(
         self,
         plan: KGRAGFusionPlan,
-        temporal_constraints: Dict[str, Any],
+        temporal_constraints: Dict[str, object],
         max_recursion_depth: int,
         safety_profile: Optional[str],
     ) -> Tuple[FusionExecutionResult, int]:
@@ -493,7 +493,7 @@ class FusionGovernanceLayer:
         self,
         session_id: str,
         execution_result: FusionExecutionResult,
-        user_context: Dict[str, Any],
+        user_context: Dict[str, object],
         safety_profile: Optional[str],
     ) -> PolicyResult:
         """Phase 4: Post-execution safety filtering."""
@@ -650,7 +650,7 @@ class FusionGovernanceLayer:
         # Fallback: create a summary from available data
         return self._create_fallback_summary(final_results)
     
-    def _create_fallback_summary(self, results: Dict[str, Any]) -> str:
+    def _create_fallback_summary(self, results: Dict[str, object]) -> str:
         """Create a fallback summary from execution results."""
         
         summary_parts = []
@@ -725,7 +725,7 @@ class FusionGovernanceLayer:
         """List all currently active sessions."""
         return list(self.active_sessions.values())
     
-    def get_governance_metrics(self) -> Dict[str, Any]:
+    def get_governance_metrics(self) -> Dict[str, object]:
         """Get governance layer metrics."""
         return {
             "active_sessions": len(self.active_sessions),
@@ -747,7 +747,7 @@ async def ask_temporal_kg_question(
     kg_adapter: Optional[Any] = None,
     vector_store: Optional[Any] = None,
     safety_engine: Optional[SafetyEngine] = None,
-    user_context: Optional[Dict[str, Any]] = None,
+    user_context: Optional[Dict[str, object]] = None,
 ) -> SafetyWrappedResult:
     """Ask a question to the temporal KG with full safety oversight."""
     

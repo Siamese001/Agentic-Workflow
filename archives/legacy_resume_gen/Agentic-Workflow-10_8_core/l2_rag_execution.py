@@ -27,7 +27,7 @@ from l4_memory import ContextBudget
 from utils_types import BudgetConfig, PlanObject, StatePatch
 
 
-def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
+def _synthesize_result(query: str, index: int) -> Dict[str, object]:
     """Create a deterministic retrieval result for a query."""
 
     return {
@@ -40,7 +40,7 @@ def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
 class RAGExecutionAgent(ExecutionAgent):
     """Deterministic retrieval executor that returns state patches only."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         retrieval = plan.get("retrieval", {})
         queries: List[str] = [str(q) for q in retrieval.get("queries", [])]
         filters = retrieval.get("filters", {})

@@ -14,7 +14,7 @@ import os
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -116,14 +116,14 @@ CIRCUIT_BREAKER_HALF_OPEN_MAX_CALLS: int = 3
 
 
 # =============================================================================
-# HELPER FUNCTIONS
+# utility FUNCTIONS
 # =============================================================================
 
 def _load_json_config(
     file_path: Path | str,
     config_name: str,
     required: bool = True,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Load JSON configuration file with error handling.
 
@@ -149,7 +149,7 @@ def _load_json_config(
             logger.debug(f"Optional config file not found: {file_path}")
             return {}
     except json.JSONDecodeError as e:
-        logger.error(f"✗ Invalid JSON in {file_path}: {e}")
+        logger.error("✗ Invalid JSON in {file_path}: %s", e)
         return {}
 
 
@@ -436,7 +436,7 @@ class Config:
         logger.debug("✓ Configuration validation passed")
         return True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert configuration to dictionary."""
         return {
             "model": {
@@ -473,7 +473,7 @@ try:
     CONFIG.validate()
     logger.debug("✓ Configuration loaded and validated successfully")
 except ValueError as e:
-    logger.error(f"✗ Configuration validation failed: {e}")
+    logger.error("✗ Configuration validation failed: %s", e)
     raise
 
 

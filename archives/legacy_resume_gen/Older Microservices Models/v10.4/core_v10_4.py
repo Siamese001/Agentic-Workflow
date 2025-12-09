@@ -31,7 +31,7 @@ from pydantic import BaseModel, Field, ValidationError as PydanticValidationErro
 from chromadb.utils import embedding_functions
 from openai import AsyncOpenAI
 from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
+from typing import Dict, object, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
 from datetime import datetime # v10.4: Added for logging
 
 # v10.4: Logger name updated
@@ -878,8 +878,8 @@ class FeedbackEntry:
     agent_name: str
     task: str
     feedback_type: str
-    details: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object]
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class FeedbackLogReader:
     def __init__(self, feedback_log_path: str):
@@ -949,9 +949,9 @@ class ProposedRule:
     status: str
     rule_type: str
     description: str
-    config_changes: Dict[str, Any]
+    config_changes: Dict[str, object]
     pattern_id: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class ProposedRulesLoader:
     def __init__(self, proposed_rules_path: str):
@@ -1008,7 +1008,7 @@ class ProposedRulesLoader:
             self.logger.error(f"Failed to load proposed rules: {e}")
             return []
     
-    def get_constitution_rules(self) -> List[Dict[str, Any]]:
+    def get_constitution_rules(self) -> List[Dict[str, object]]:
         rules = self.load_rules(status_filter="APPROVED")
         constitution_rules = [
             r.config_changes 
@@ -1035,7 +1035,7 @@ class CacheManager:
         # v10.4: Updated cache key namespace
         return f"llm_cache_v10_4:{hashlib.sha256(key_str.encode()).hexdigest()}"
     
-    def get(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, Any]]:
+    def get(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, object]]:
         cache_key = self._generate_cache_key(provider, model, prompt, temperature)
         try:
             cached_data = self.redis.get(cache_key)
@@ -1052,7 +1052,7 @@ class CacheManager:
             self._misses += 1
             return None
     
-    def set(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
+    def set(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, object]):
         cache_key = self._generate_cache_key(provider, model, prompt, temperature)
         try:
             self.redis.setex(cache_key, self.ttl, json.dumps(response))
@@ -1060,7 +1060,7 @@ class CacheManager:
         except Exception as e:
             self.logger.error(f"Cache set error: {e}")
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         total = self._hits + self._misses
         hit_rate = (self._hits / total * 100) if total > 0 else 0.0
         return {"hits": self._hits, "misses": self._misses, "total_requests": total, "hit_rate_pct": hit_rate}
@@ -1107,7 +1107,7 @@ class CostTracker:
         })
         self.logger.debug(f"Recorded ${cost:.4f} for {workflow_id}")
     
-    def get_cost_summary(self, workflow_id: str) -> Dict[str, Any]:
+    def get_cost_summary(self, workflow_id: str) -> Dict[str, object]:
         calls = self._workflow_costs.get(workflow_id, [])
         total_cost = sum(c["cost"] for c in calls)
         total_input = sum(c["input_tokens"] for c in calls)
@@ -1143,7 +1143,7 @@ class BaseAgent:
     def log_debug(self, message: str):
         if self.debug_mode: self.logger.debug(f"[{self.__class__.__name__}] {message}")
     
-    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, Any]):
+    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, object]):
         try:
             feedback_entry = {
                 "timestamp": datetime.now().isoformat(), "workflow_id": workflow_id,
@@ -1186,13 +1186,13 @@ class AsyncBaseModelClient:
     
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         raise NotImplementedError
 
 class AnthropicAsyncClient(AsyncBaseModelClient):
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         import anthropic
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
@@ -1227,7 +1227,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
 class GeminiAsyncClient(AsyncBaseModelClient):
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         import google.generativeai as genai
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
@@ -1266,7 +1266,7 @@ class GeminiAsyncClient(AsyncBaseModelClient):
 class OpenAIAsyncClient(AsyncBaseModelClient):
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
         
@@ -1338,7 +1338,7 @@ class WorkflowContext:
         self.response_validator = response_validator
         self.context_budget_manager = context_budget_manager
         
-        self._model_clients: Dict[str, Any] = {}
+        self._model_clients: Dict[str, object] = {}
         
         # v10.4: Updated log message
         logger.info("WorkflowContext initialized with v10.4 injected dependencies")
@@ -1369,8 +1369,8 @@ class WorkflowContext:
 # These dataclasses define the structure of the LangGraph state
 @dataclass
 class ResumeContext:
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
+    sanitized_resume: Dict[str, object] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
 
 @dataclass
@@ -1378,7 +1378,7 @@ class JobContext:
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+    parsed_requirements: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class StrategyContext:
@@ -1396,16 +1396,16 @@ class BulletContext:
 
 @dataclass
 class DraftContext:
-    sections: Dict[str, Any] = field(default_factory=dict)
+    sections: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class QAContext:
-    validation_results: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
     qa_passed: bool = False
 
 @dataclass
 class ArtifactContext:
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class MetadataContext:
@@ -1448,7 +1448,7 @@ class MainGraphState:
     feedback: FeedbackContext = field(default_factory=FeedbackContext)
     hil: HILContext = field(default_factory=HILContext)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """v1E.g4: Custom serializer to handle nested Pydantic models."""
         # Use dataclasses.asdict for the base structure
         data = asdict(self)
@@ -1464,7 +1464,7 @@ class MainGraphState:
         return data
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
+    def from_dict(cls, data: Dict[str, object]) -> 'MainGraphState':
         """v1G.g4: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
         
@@ -1505,11 +1505,11 @@ class MainGraphState:
 @dataclass
 class MetaGraphState:
     raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
+    log_summary: Dict[str, object] = field(default_factory=dict)
     patterns: List[Dict] = field(default_factory=list)
     hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
+    proposal: Dict[str, object] = field(default_factory=dict)
+    critique: Dict[str, object] = field(default_factory=dict)
     replan_count: int = 0
     workflow_id: str = ""
 

@@ -51,7 +51,7 @@ except ImportError:
     genai = None
 
 from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
+from typing import Dict, object, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
 from datetime import datetime
 from asyncio import TimeoutError as AsyncTimeoutError
 
@@ -427,7 +427,7 @@ class MetricsCollector:
     """v10.6: In-memory collector for agent/tool observability."""
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.MetricsCollector")
-        self.metrics: List[Dict[str, Any]] = []
+        self.metrics: List[Dict[str, object]] = []
         self.log_path = "./logs/metrics_v10_6.jsonl"
         try:
             os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
@@ -435,7 +435,7 @@ class MetricsCollector:
         except OSError as e:
             self.logger.error(f"Could not create log directory for metrics: {e}")
 
-    def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None):
+    def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: Optional[str] = None, metadata: Optional[Dict[str, object]] = None):
         metric = {
             "timestamp": datetime.now().isoformat(),
             "agent_name": agent_name,
@@ -453,7 +453,7 @@ class MetricsCollector:
         except Exception as e:
             self.logger.error(f"Failed to write metric to log: {e}")
 
-    def get_summary(self) -> List[Dict[str, Any]]:
+    def get_summary(self) -> List[Dict[str, object]]:
         return self.metrics
 
     def get_average_latency(self, agent_name: str, task_name: str) -> Optional[float]:
@@ -554,7 +554,7 @@ class SemanticValidator:
 
 async def _format_prompt_with_defaults(
     template: str, 
-    tool_input: Dict[str, Any], 
+    tool_input: Dict[str, object], 
     budget_manager: ContextBudgetManager,
     goal_state: str,         # v10.6 (Fix #19)
     top_failures: List[str]  # v10.6 (Fix #24)
@@ -892,8 +892,8 @@ class FeedbackEntry:
     agent_name: str
     task: str
     feedback_type: str # "success", "failure", "warning"
-    details: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object]
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class FeedbackLogReader:
     def __init__(self, feedback_log_path: str):
@@ -941,9 +941,9 @@ class ProposedRule:
     status: str
     rule_type: str
     description: str
-    config_changes: Dict[str, Any]
+    config_changes: Dict[str, object]
     pattern_id: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class ProposedRulesLoader:
     def __init__(self, proposed_rules_path: str):
@@ -984,7 +984,7 @@ class ProposedRulesLoader:
             self.logger.error(f"Failed to load proposed rules: {e}")
             return []
     
-    def get_constitution_rules(self) -> List[Dict[str, Any]]:
+    def get_constitution_rules(self) -> List[Dict[str, object]]:
         rules = self.load_rules(status_filter="APPROVED")
         # v10.6 (Fix #30): Also load rules of type 'moral_constitution'
         return [r.config_changes for r in rules if r.rule_type.lower() in ["constitution", "moral_constitution"]]
@@ -1025,7 +1025,7 @@ class CacheManager:
         key_str = f"{provider}:{model}:{prompt}:{temperature}"
         return f"llm_cache_v10_6:{hashlib.sha256(key_str.encode()).hexdigest()}"
 
-    def _generate_tool_cache_key(self, tool_name: str, tool_input: Dict[str, Any]) -> str:
+    def _generate_tool_cache_key(self, tool_name: str, tool_input: Dict[str, object]) -> str:
         try:
             input_str = json.dumps(tool_input, sort_keys=True)
             key_str = f"{tool_name}:{input_str}"
@@ -1034,7 +1034,7 @@ class CacheManager:
             self.logger.warning(f"Could not generate tool cache key for {tool_name}: {e}")
             return ""
 
-    async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, Any]]:
+    async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, object]]:
         # 1. Check Exact Cache (Redis)
         cache_key = self._generate_llm_cache_key(provider, model, prompt, temperature)
         try:
@@ -1072,7 +1072,7 @@ class CacheManager:
         self.logger.debug(f"LLM Cache MISS: {cache_key[:16]}...")
         return None
     
-    async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
+    async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, object]):
         response_str = json.dumps(response)
         
         # 1. Set Exact Cache (Redis)
@@ -1097,7 +1097,7 @@ class CacheManager:
             except Exception as e:
                 self.logger.error(f"Semantic Cache set error: {e}")
 
-    def get_tool_cache(self, tool_name: str, tool_input: Dict[str, Any]) -> Optional[Any]:
+    def get_tool_cache(self, tool_name: str, tool_input: Dict[str, object]) -> Optional[Any]:
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return None
         try:
@@ -1115,7 +1115,7 @@ class CacheManager:
             self._tool_misses += 1
             return None
 
-    def set_tool_cache(self, tool_name: str, tool_input: Dict[str, Any], result: Any):
+    def set_tool_cache(self, tool_name: str, tool_input: Dict[str, object], result: Any):
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return
         try:
@@ -1124,7 +1124,7 @@ class CacheManager:
         except Exception as e:
             self.logger.error(f"Tool Cache set error: {e}")
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         llm_total = self._hits + self._misses + self._semantic_hits
         llm_hit_rate = ((self._hits + self._semantic_hits) / llm_total * 100) if llm_total > 0 else 0.0
         tool_total = self._tool_hits + self._tool_misses
@@ -1168,7 +1168,7 @@ class CostTracker:
             "provider": provider, "model": model, "input_tokens": input_tokens,
             "output_tokens": output_tokens, "cost": cost, "timestamp": datetime.now().isoformat()
         })
-    def get_cost_summary(self, workflow_id: str) -> Dict[str, Any]:
+    def get_cost_summary(self, workflow_id: str) -> Dict[str, object]:
         calls = self._workflow_costs.get(workflow_id, [])
         total_cost = sum(c["cost"] for c in calls)
         return {"workflow_id": workflow_id, "total_workflow_cost": total_cost, "calls": calls}
@@ -1197,7 +1197,7 @@ class BaseAgent:
     def log_debug(self, message: str):
         if self.debug_mode: self.logger.debug(f"[{self.__class__.__name__}] {message}")
     
-    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, Any]):
+    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, object]):
         try:
             feedback_entry = {
                 "timestamp": datetime.now().isoformat(), "workflow_id": workflow_id,
@@ -1277,7 +1277,7 @@ class BaseTool(BaseAgent):
     tool_name: str = "base_tool"
     
     @track_metrics('base_tool_run')
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """v10.6: Wrapper to implement tool caching."""
         if not self.config.caching_config.enable_tool_caching:
             return await self._run_async_internal(tool_input, workflow_id)
@@ -1295,11 +1295,11 @@ class BaseTool(BaseAgent):
         cache_manager.set_tool_cache(self.tool_name, tool_input, result)
         return result
 
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Subclasses must implement their logic here"""
         raise NotImplementedError(f"Tool {self.__class__.__name__} must implement _run_async_internal")
     
-    def get_schema(self) -> Dict[str, Any]:
+    def get_schema(self) -> Dict[str, object]:
         return {
             "name": self.tool_name,
             "description": self.__doc__ or "No description",
@@ -1338,7 +1338,7 @@ class AsyncBaseModelClient:
         if "gpt-" in self.model_name: return "openai"
         return "unknown"
 
-    async def _run_idempotency_check(self, cached_response: Dict[str, Any], 
+    async def _run_idempotency_check(self, cached_response: Dict[str, object], 
                                      messages: List[Dict[str, str]], temperature: float,
                                      response_format: Optional[str] = None):
         """v10.6 (Fix #29): Runs a 'shadow call' to check for cache drift."""
@@ -1367,7 +1367,7 @@ class AsyncBaseModelClient:
     @track_metrics('AsyncBaseModelClient') # v10.6 (Fix #15): Track latency
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
         
@@ -1391,14 +1391,14 @@ class AsyncBaseModelClient:
 
     async def _internal_api_call(self, messages: List[Dict[str, str]], 
                                  temperature: float = 0.7,
-                                 response_format: Optional[str] = None) -> Dict[str, Any]:
+                                 response_format: Optional[str] = None) -> Dict[str, object]:
         """Subclasses must implement the actual API call logic here."""
         raise NotImplementedError
 
 class AnthropicAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         if anthropic is None:
             raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
         try:
@@ -1423,7 +1423,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
 class GeminiAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         if genai is None:
             raise ModelAPIError("Google GenerativeAI library not installed. Run 'pip install google-generativeai'")
         try:
@@ -1447,7 +1447,7 @@ class GeminiAsyncClient(AsyncBaseModelClient):
 class OpenAIAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         try:
             client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
             completion_kwargs = {
@@ -1514,7 +1514,7 @@ class WorkflowContext:
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None # type: ignore
         
-        self._model_clients: Dict[str, Any] = {}
+        self._model_clients: Dict[str, object] = {}
         
         logger.info("WorkflowContext initialized with v10.6 injected dependencies")
     
@@ -1707,7 +1707,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 
-def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, Any]:
+def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, object]:
     """Centralized bias detection service shared by agents and tools."""
 
     logger.debug("Running centralized bias detection service.")
@@ -1741,15 +1741,15 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
 
 @dataclass
 class ResumeContext:
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
+    sanitized_resume: Dict[str, object] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
 @dataclass
 class JobContext:
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+    parsed_requirements: Dict[str, object] = field(default_factory=dict)
 @dataclass
 class StrategyContext:
     strategy_plan: Optional[StrategyPlan] = None 
@@ -1763,15 +1763,15 @@ class BulletContext:
     critiqued_bullets: List[Dict] = field(default_factory=list)
 @dataclass
 class DraftContext:
-    sections: Dict[str, Any] = field(default_factory=dict)
+    sections: Dict[str, object] = field(default_factory=dict)
 @dataclass
 class QAContext:
-    validation_results: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
     qa_passed: bool = False
     constitutional_review: Optional[ConstitutionalReviewResult] = None # v10.6 (Fix #30)
 @dataclass
 class ArtifactContext:
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 @dataclass
 class MetadataContext:
     workflow_id: str = ""
@@ -1803,7 +1803,7 @@ class A2AMessage:
     sender: str
     recipient: str # Can be "ALL"
     message_type: str # e.g., "ERROR", "METRIC", "UI_EVENT"
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 @dataclass
@@ -1827,7 +1827,7 @@ class MainGraphState:
     hil: HILContext = field(default_factory=HILContext)
     a2a: A2AContext = field(default_factory=A2AContext) # v10.6 (Fix #10)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """v10.6: Custom serializer to handle nested Pydantic models."""
         data = asdict(self)
         
@@ -1844,7 +1844,7 @@ class MainGraphState:
         return data
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
+    def from_dict(cls, data: Dict[str, object]) -> 'MainGraphState':
         """v10.6: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
         
@@ -1898,11 +1898,11 @@ class MainGraphState:
 class MetaGraphState:
     """v10.6: Meta-learning graph state."""
     raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
+    log_summary: Dict[str, object] = field(default_factory=dict)
     patterns: List[Dict] = field(default_factory=list)
     hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
+    proposal: Dict[str, object] = field(default_factory=dict)
+    critique: Dict[str, object] = field(default_factory=dict)
     replan_count: int = 0
     workflow_id: str = ""
     generated_tool_code: Optional[str] = None

@@ -12,11 +12,11 @@ def _now_ms() -> int:
     return int(time.time() * 1000)
 
 
-def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, object]:
     """Create a uniquely identified span and record the start time."""
 
     span_id = str(uuid.uuid4())
-    record: Dict[str, Any] = {
+    record: Dict[str, object] = {
         "span_id": span_id,
         "name": name,
         "start_ms": _now_ms(),
@@ -40,7 +40,7 @@ def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any
     return record
 
 
-def end_span(span_record: Dict[str, Any]) -> None:
+def end_span(span_record: Dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
     from runtime.observability.collectors import span_stack  # local import to avoid cycles

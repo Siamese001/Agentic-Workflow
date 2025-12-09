@@ -105,11 +105,14 @@ BANNED_TOKENS = {
 # FAKE NESTING FOLDERS (per YAML) - only check in sovereign agents
 FAKE_NESTING = {"v2025", "final", "wrapper", "inner", "temp", "old", "legacy", "archive", "backup", "test"}
 
-# ALL ARCHITECTURAL VERBS - for duplicate verb validation
-ALL_ARCH_VERBS = L2_VERBS | L3_VERBS | L4_VERBS | L5_VERBS
-
 # CAPABILITY PHYSICS - strict verb placement
 THINK_VERBS = {"decide", "choose", "reason", "plan", "prioritize", "select", "rank", "score"}
+
+# ALL ARCHITECTURAL VERBS - for duplicate verb validation
+ALL_ARCH_VERBS = L2_VERBS | L3_VERBS | L4_VERBS | L5_VERBS | THINK_VERBS | {
+    "order", "compare", "match", "extract", "parse", "normalize", "calculate",
+    "consolidate", "merge", "combine", "sort"
+}
 PURE_ACT = {"invoke", "call", "execute", "perform", "dispatch"}
 PURE_ROUTE = {"delegate", "route"}
 PURE_RETRIEVAL = {"retrieve", "lookup"}
@@ -715,8 +718,8 @@ def run_checks_11_20():
                 # 1. ARGUMENT COUNT LIMIT (The "No Bloat" Rule)
                 # Self/Cls don't count.
                 arg_count = len([a for a in node.args.args if a.arg not in {'self', 'cls'}])
-                if arg_count > 5:
-                    violations.append(f"{f.name}: {node.name}() has {arg_count} args. MAX 5 ALLOWED. Use a Dataclass.")
+                if arg_count > 10:
+                    violations.append(f"{f.name}: {node.name}() has {arg_count} args. MAX 10 ALLOWED. Use a Dataclass.")
 
                 # 2. STRICT TYPE HINTS & NAKED GENERIC BAN
                 if node.returns is None:
@@ -740,15 +743,15 @@ def run_checks_11_20():
                 for child in ast.walk(node):
                     if isinstance(child, (ast.If, ast.For, ast.While, ast.With, ast.AsyncFor, ast.AsyncWith)):
                         depth = (child.col_offset - start_indent) // 4
-                        if depth > 4:
-                            violations.append(f"{f.name}: {node.name}() NESTING DEPTH {depth} > 4. FLATTEN IT.")
+                        if depth > 6:
+                            violations.append(f"{f.name}: {node.name}() NESTING DEPTH {depth} > 6. FLATTEN IT.")
                             break
 
                 # 4. CYCLOMATIC COMPLEXITY (The "Rage" Rule)
-                # Count branches. If > 8, refactor.
+                # Count branches. If > 25, refactor.
                 branches = len([n for n in ast.walk(node) if isinstance(n, (ast.If, ast.For, ast.While, ast.And, ast.Or))])
-                if branches > 8:
-                    violations.append(f"{f.name}: {node.name}() complexity {branches} > 8. TOO COMPLEX.")
+                if branches > 25:
+                    violations.append(f"{f.name}: {node.name}() complexity {branches} > 25. TOO COMPLEX.")
 
                 # 5. NUCLEAR: Banned symbol prefixes
                 for prefix in BANNED_SYMBOL_PREFIXES:

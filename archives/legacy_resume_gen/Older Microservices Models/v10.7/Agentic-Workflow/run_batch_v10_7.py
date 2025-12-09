@@ -67,12 +67,12 @@ SUMMARY_FILE = "batch_summary_v10_7.csv"
 class BatchFeedbackAggregator:
     """ROW 7: Aggregates feedback across batch jobs"""
     def __init__(self):
-        self.job_results: List[Dict[str, Any]] = []
+        self.job_results: List[Dict[str, object]] = []
     
-    def add_job_result(self, result: Dict[str, Any]):
+    def add_job_result(self, result: Dict[str, object]):
         self.job_results.append(result)
     
-    def get_batch_summary(self) -> Dict[str, Any]:
+    def get_batch_summary(self) -> Dict[str, object]:
         if not self.job_results:
             return {}
 
@@ -105,7 +105,7 @@ async def process_single_job_async(
     app, # The compiled graph app
     circuit_breaker: CircuitBreaker,
     batch_aggregator: BatchFeedbackAggregator
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Process a single job asynchronously"""
     
     job_name = os.path.basename(job_file)

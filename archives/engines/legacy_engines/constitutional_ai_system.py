@@ -10,7 +10,7 @@ and content compliance checking.
 
 import logging
 import re
-from typing import Dict, List, Any, Optional, Tuple, Set
+from typing import Dict, List, object, Optional, Tuple, Set
 from dataclasses import dataclass
 from enum import Enum
 from abc import ABC, abstractmethod
@@ -109,7 +109,7 @@ class RuleEngine:
             del self.rules[rule_id]
             logger.debug(f"Removed constitutional rule: {rule_id}")
     
-    def check_compliance(self, content: str, context: Dict[str, Any] = None) -> List[ViolationReport]:
+    def check_compliance(self, content: str, context: Dict[str, object] = None) -> List[ViolationReport]:
         """
         Check content against all constitutional rules.
         
@@ -142,7 +142,7 @@ class RuleEngine:
         self, 
         content: str, 
         rule: ConstitutionalRule, 
-        context: Dict[str, Any] = None
+        context: Dict[str, object] = None
     ) -> List[ViolationReport]:
         """Check content against a specific rule."""
         violations = []
@@ -177,7 +177,7 @@ class RuleEngine:
         self, 
         content: str, 
         rule: ConstitutionalRule, 
-        context: Dict[str, Any] = None
+        context: Dict[str, object] = None
     ) -> List[ViolationReport]:
         """Check contextual rules that depend on additional information."""
         violations = []
@@ -305,7 +305,7 @@ class ContentValidator:
     def validate_content(
         self, 
         content: str, 
-        context: Dict[str, Any] = None,
+        context: Dict[str, object] = None,
         auto_correct: bool = False
     ) -> ConstitutionalReviewResult:
         """
@@ -414,7 +414,7 @@ class ContentValidator:
         
         return corrected_content
     
-    def get_validation_stats(self) -> Dict[str, Any]:
+    def get_validation_stats(self) -> Dict[str, object]:
         """Get validation statistics."""
         if not self.validation_history:
             return {}
@@ -473,7 +473,7 @@ class ConstitutionalAISystem:
     def review_content(
         self, 
         content: str, 
-        context: Dict[str, Any] = None,
+        context: Dict[str, object] = None,
         auto_correct: bool = False
     ) -> ConstitutionalReviewResult:
         """
@@ -545,7 +545,7 @@ class ConstitutionalAISystem:
         
         logger.info(f"Added constitutional rule: {rule_id}")
     
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> Dict[str, object]:
         """Get overall system status and statistics."""
         validation_stats = self.content_validator.get_validation_stats()
         

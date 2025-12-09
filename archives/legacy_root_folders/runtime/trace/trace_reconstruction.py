@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from runtime.observability.collectors import get_events
 
 
-def get_routing_trace() -> List[Dict[str, Any]]:
+def get_routing_trace() -> List[Dict[str, object]]:
     """Return a structured trace of routing decisions from telemetry.
 
     This mirrors the real runtime.trace.trace_reconstruction helper but lives
@@ -14,7 +14,7 @@ def get_routing_trace() -> List[Dict[str, Any]]:
     when tests are run with rootdir=Agentic-Workflow-10_10.
     """
 
-    trace: List[Dict[str, Any]] = []
+    trace: List[Dict[str, object]] = []
     try:
         for evt in get_events():
             if getattr(evt, "name", "") != "routing_decision":

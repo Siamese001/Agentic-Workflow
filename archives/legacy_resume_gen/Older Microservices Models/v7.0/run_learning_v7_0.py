@@ -15,7 +15,7 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, object
 from collections import defaultdict
 
 # Imports from its *own* versioned files (v7.0)
@@ -33,7 +33,7 @@ class PatternFinderAgent:
         self.config = config
         self.logger = logging.getLogger(f"{__name__}.PatternFinderAgent")
     
-    def find_patterns(self, feedback_log_path: str) -> List[Dict[str, Any]]:
+    def find_patterns(self, feedback_log_path: str) -> List[Dict[str, object]]:
         self.logger.info(f"Analyzing feedback log: {feedback_log_path}")
         
         if not os.path.exists(feedback_log_path):
@@ -104,7 +104,7 @@ class MetaPlannerAgent:
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.MetaPlannerAgent")
 
-    def update_rules(self, patterns: List[Dict[str, Any]], rules_registry_path: str) -> bool:
+    def update_rules(self, patterns: List[Dict[str, object]], rules_registry_path: str) -> bool:
         self.logger.info(f"Updating rules registry: {rules_registry_path}")
         
         registry = {}

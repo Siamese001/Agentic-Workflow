@@ -9,14 +9,14 @@ This stub:
 
 from __future__ import annotations
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 
 
 class RedisStubStore:
     """In-memory key-value store with optional TTL support."""
 
     def __init__(self):
-        self._store: Dict[str, Any] = {}
+        self._store: Dict[str, object] = {}
         self._expiry: Dict[str, float] = {}
 
     def cleanup(self):

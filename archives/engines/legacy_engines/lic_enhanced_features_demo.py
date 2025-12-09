@@ -10,7 +10,7 @@ Demonstrates the integration of advanced capabilities:
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 from datetime import datetime, timedelta
 
 from .orchestrator import OutreachOrchestrator, OrchestratorOutput
@@ -29,7 +29,7 @@ class EnhancedOutreachDemo:
         self.cache_critique = LICCacheCritique()
         self.self_correction_provider = SelfCorrectionInjectionProvider()
     
-    def demo_semantic_caching(self) -> Dict[str, Any]:
+    def demo_semantic_caching(self) -> Dict[str, object]:
         """Demonstrate Priority 1: Semantic Caching"""
         print("\n" + "="*60)
         print("PRIORITY 1 DEMO: Semantic Caching")
@@ -77,7 +77,7 @@ class EnhancedOutreachDemo:
             "missing_targets": cache_result.missing_targets
         }
     
-    def demo_error_recovery(self) -> Dict[str, Any]:
+    def demo_error_recovery(self) -> Dict[str, object]:
         """Demonstrate Priority 1: Error Recovery"""
         print("\n" + "="*60)
         print("PRIORITY 1 DEMO: Error Recovery")
@@ -132,7 +132,7 @@ class EnhancedOutreachDemo:
             "attempts_required": 2
         }
     
-    def demo_self_correction(self) -> Dict[str, Any]:
+    def demo_self_correction(self) -> Dict[str, object]:
         """Demonstrate Priority 2: Self-Correction"""
         print("\n" + "="*60)
         print("PRIORITY 2 DEMO: Self-Correction")
@@ -178,7 +178,7 @@ class EnhancedOutreachDemo:
                 "quality_score": quality_score
             }
     
-    def demo_advanced_prompt_engineering(self) -> Dict[str, Any]:
+    def demo_advanced_prompt_engineering(self) -> Dict[str, object]:
         """Demonstrate Priority 2: Advanced Prompt Engineering"""
         print("\n" + "="*60)
         print("PRIORITY 2 DEMO: Advanced Prompt Engineering")
@@ -225,7 +225,7 @@ class EnhancedOutreachDemo:
             "prompt_complexity": "advanced"
         }
     
-    def run_complete_demo(self) -> Dict[str, Any]:
+    def run_complete_demo(self) -> Dict[str, object]:
         """Run all Priority 1 & 2 demonstrations."""
         print("🚀 ENHANCED OUTREACH ENGINE DEMO")
         print("Priority 1 & 2 Features Showcase")

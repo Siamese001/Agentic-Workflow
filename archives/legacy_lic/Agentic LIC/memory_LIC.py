@@ -5,7 +5,7 @@
 __version__ = "13.0"
 
 import os
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, object, Optional, Tuple
 from datetime import datetime
 
 # ChromaDB for vector storage
@@ -74,7 +74,7 @@ class VectorMemoryStore:
         self,
         text: str,
         embedding: List[float],
-        metadata: Dict[str, Any],
+        metadata: Dict[str, object],
         document_id: Optional[str] = None
     ):
         """
@@ -106,8 +106,8 @@ class VectorMemoryStore:
         self,
         query_text: str,
         n_results: int = 20,
-        filter_metadata: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
+        filter_metadata: Optional[Dict[str, object]] = None
+    ) -> List[Dict[str, object]]:
         """
         Query the vector store for relevant documents
         
@@ -152,7 +152,7 @@ class VectorMemoryStore:
         company_name: str,
         query_text: str,
         n_results: int = 20
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Query for documents about a specific company
         
@@ -175,7 +175,7 @@ class VectorMemoryStore:
         executive_name: str,
         query_text: str,
         n_results: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Query for documents about a specific executive
         
@@ -197,7 +197,7 @@ class VectorMemoryStore:
         self,
         company_name: str,
         max_age_days: int = 90
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Get all strategic briefs for a company
         
@@ -256,7 +256,7 @@ class VectorMemoryStore:
             # Return zero vector as fallback
             return [0.0] * 768  # Gemini embedding dimension
     
-    def get_collection_stats(self) -> Dict[str, Any]:
+    def get_collection_stats(self) -> Dict[str, object]:
         """
         Get statistics about the collection
         

@@ -9,7 +9,7 @@ __version__ = "13.0"
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any, Set, Tuple, Callable
+from typing import Dict, List, Optional, Union, Set, Tuple, Callable
 
 # ============================================================================
 # ENUMS & CONSTANTS
@@ -96,13 +96,13 @@ class CircuitBreakerOpenError(Exception):
 class OutreachMission:
     """Complete mission specification (Input)"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: Dict[str, object]
+    recipient_profile: Dict[str, object]
+    job_description: Dict[str, object]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
     route_override: Optional[Route] = None
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class ProfileAnalysis:
@@ -167,8 +167,8 @@ class MessageScaffold:
     """
     route: Route
     archetype: Archetype
-    sections: Dict[str, Dict[str, Any]]
-    constraints: Dict[str, Any]
+    sections: Dict[str, Dict[str, object]]
+    constraints: Dict[str, object]
     locked_sections: Set[str] = field(default_factory=set)
 
 @dataclass
@@ -196,7 +196,7 @@ class ValidationResult:
     severity: ValidationSeverity
     rule_id: str
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: Optional[Dict[str, object]] = None
 
 @dataclass
 class QAReport:

@@ -100,11 +100,11 @@ class PromptInstance:
     role: str
     rendered: str
     envelope: PromptEnvelope
-    variables: Dict[str, Any]
+    variables: Dict[str, object]
     layer: str
     agent: str
     model_tier: str
-    context_budget_hints: Dict[str, Any]
+    context_budget_hints: Dict[str, object]
 
 
 # =============================================================================
@@ -285,7 +285,7 @@ def _render_envelope_with_template(
     return body
 
 
-def _build_context_budget_hints_from_plan(plan: Any) -> Dict[str, Any]:
+def _build_context_budget_hints_from_plan(plan: Any) -> Dict[str, object]:
     """
     Extract context-budget hints from a plan object if it carries them.
 
@@ -314,7 +314,7 @@ def _make_prompt_instance(
     agent: str,
     model_tier: str,
     envelope: PromptEnvelope,
-    variables: Dict[str, Any],
+    variables: Dict[str, object],
 ) -> PromptInstance:
     """
     Core helper to build a PromptInstance with ACL enforcement.

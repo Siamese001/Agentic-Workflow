@@ -24,7 +24,7 @@ from mcp import emit_event
 logger = logging.getLogger("telemetry_v10_7")
 
 
-def check_langgraph() -> Dict[str, Any]:
+def check_langgraph() -> Dict[str, object]:
     """Capability-based LangGraph health check used by diagnostics."""
 
     try:
@@ -42,12 +42,12 @@ def check_langgraph() -> Dict[str, Any]:
 def _build_envelope(
     agent: str,
     event: str,
-    payload: Dict[str, Any],
+    payload: Dict[str, object],
     *,
     workflow_id: Optional[str] = None,
     node: Optional[str] = None,
     category: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Build a standardized telemetry envelope for v10.7.
     This allows all components (LLM, Tools, Agents, Cache, Meta Learning)
@@ -75,7 +75,7 @@ def _build_envelope(
 def log_event(
     agent: str,
     event: str,
-    data: Optional[Dict[str, Any]] = None,
+    data: Optional[Dict[str, object]] = None,
     *,
     workflow_id: Optional[str] = None,
     node: Optional[str] = None,

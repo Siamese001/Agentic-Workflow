@@ -28,8 +28,8 @@ class RAGExecutionStack(BaseAgent):
         self._adapter = StateAdapterStack(context, debug_mode)
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         plan = self._plan_from_state(state)
         experiences = self._extract_experience(state)
@@ -51,8 +51,8 @@ class RAGExecutionStack(BaseAgent):
         await self._ingest_resume_to_chroma_async(experiences, workflow_id)
         corpus_text, corpus_metadata = self._build_bm25_corpus(experiences)
 
-        hyde_runs: List[Dict[str, Any]] = []
-        candidate_batches: List[List[Dict[str, Any]]] = []
+        hyde_runs: List[Dict[str, object]] = []
+        candidate_batches: List[List[Dict[str, object]]] = []
         queries = plan.retrieval_queries or [plan.goal]
 
         for query in queries:
@@ -97,7 +97,7 @@ class RAGExecutionStack(BaseAgent):
         return patch
 
     def _append_agent_note(
-        self, state: Dict[str, Any], metadata: Dict[str, Any]
+        self, state: Dict[str, object], metadata: Dict[str, object]
     ) -> List[str]:
         existing = state.get("memory", {}).get("episodic", {}).get("agent_notes") or []
         note = (
@@ -107,7 +107,7 @@ class RAGExecutionStack(BaseAgent):
         return [*existing, note]
 
     def _collect_vector_ids(
-        self, state: Dict[str, Any], batches: Sequence[Sequence[Dict[str, Any]]]
+        self, state: Dict[str, object], batches: Sequence[Sequence[Dict[str, object]]]
     ) -> List[str]:
         existing_ids = state.get("memory", {}).get("semantic", {}).get(
             "vector_store_ids", []
@@ -128,14 +128,14 @@ class RAGExecutionStack(BaseAgent):
         return collected
 
     async def run_from_state_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         """Compatibility helper that mirrors the previous L3 node behavior."""
 
         workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         return await self.run_async(state, workflow_id)
 
-    def _plan_from_state(self, state: Dict[str, Any]) -> RAGPlan:
+    def _plan_from_state(self, state: Dict[str, object]) -> RAGPlan:
         plan_payload = state.get("rag", {}).get("plan")
         if plan_payload is None:
             return self._fallback_plan(state)
@@ -143,14 +143,14 @@ class RAGExecutionStack(BaseAgent):
             return plan_payload
         return RAGPlan.model_validate(plan_payload)
 
-    def _extract_experience(self, state: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_experience(self, state: Dict[str, object]) -> List[Dict[str, object]]:
         resume = state.get("resume", {})
         master_resume = resume.get("master_resume") or {}
         experience = master_resume.get("professional_experience")
         return list(experience or []) if isinstance(experience, Iterable) else []
 
     async def _ingest_resume_to_chroma_async(
-        self, resume_experience: Sequence[Dict[str, Any]], workflow_id: str
+        self, resume_experience: Sequence[Dict[str, object]], workflow_id: str
     ) -> None:
         if not resume_experience:
             return
@@ -163,7 +163,7 @@ class RAGExecutionStack(BaseAgent):
             return
 
         documents: List[str] = []
-        metadatas: List[Dict[str, Any]] = []
+        metadatas: List[Dict[str, object]] = []
         ids: List[str] = []
         embeddings: List[List[float]] = []
         for exp_index, exp in enumerate(resume_experience):
@@ -201,10 +201,10 @@ class RAGExecutionStack(BaseAgent):
             return
 
     def _build_bm25_corpus(
-        self, resume_experience: Sequence[Dict[str, Any]]
-    ) -> Tuple[List[str], List[Dict[str, Any]]]:
+        self, resume_experience: Sequence[Dict[str, object]]
+    ) -> Tuple[List[str], List[Dict[str, object]]]:
         corpus_text: List[str] = []
-        corpus_metadata: List[Dict[str, Any]] = []
+        corpus_metadata: List[Dict[str, object]] = []
         for exp in resume_experience:
             bullets = " ".join(exp.get("bullet_pool", []))
             document = " ".join(
@@ -218,7 +218,7 @@ class RAGExecutionStack(BaseAgent):
             corpus_metadata.append(exp)
         return corpus_text, corpus_metadata
 
-    async def _run_hyde(self, query: str, workflow_id: str) -> Dict[str, Any]:
+    async def _run_hyde(self, query: str, workflow_id: str) -> Dict[str, object]:
         tool_input = {"query": query, "job_description": query, "style_guide": ""}
         result = await self.hyde_tool.run_async(tool_input, workflow_id)
         document = result.get("hypothetical_document") or query
@@ -229,7 +229,7 @@ class RAGExecutionStack(BaseAgent):
 
     async def _run_chroma_search(
         self, query: str, workflow_id: str
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         try:
             output = await self.chroma_tool.run_async({"query": query}, workflow_id)
         except Exception:
@@ -240,9 +240,9 @@ class RAGExecutionStack(BaseAgent):
         self,
         query: str,
         corpus_text: Sequence[str],
-        corpus_metadata: Sequence[Dict[str, Any]],
+        corpus_metadata: Sequence[Dict[str, object]],
         workflow_id: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         if not corpus_text:
             return []
         payload = {
@@ -259,10 +259,10 @@ class RAGExecutionStack(BaseAgent):
     def _annotate_candidates(
         self,
         query: str,
-        chroma_results: Sequence[Dict[str, Any]],
-        bm25_results: Sequence[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
-        annotated: List[Dict[str, Any]] = []
+        chroma_results: Sequence[Dict[str, object]],
+        bm25_results: Sequence[Dict[str, object]],
+    ) -> List[Dict[str, object]]:
+        annotated: List[Dict[str, object]] = []
         for source, results in ("chroma", chroma_results), ("bm25", bm25_results):
             for entry in results:
                 record = json.loads(json.dumps(entry, default=str))
@@ -272,9 +272,9 @@ class RAGExecutionStack(BaseAgent):
         return annotated
 
     def _merge_candidates(
-        self, batches: Sequence[Sequence[Dict[str, Any]]]
-    ) -> List[Dict[str, Any]]:
-        merged: List[Dict[str, Any]] = []
+        self, batches: Sequence[Sequence[Dict[str, object]]]
+    ) -> List[Dict[str, object]]:
+        merged: List[Dict[str, object]] = []
         seen: set[str] = set()
         for batch in batches:
             for record in batch:
@@ -286,8 +286,8 @@ class RAGExecutionStack(BaseAgent):
         return merged
 
     async def _rerank_candidates(
-        self, plan: RAGPlan, candidates: Sequence[Dict[str, Any]], state: Dict[str, Any]
-    ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        self, plan: RAGPlan, candidates: Sequence[Dict[str, object]], state: Dict[str, object]
+    ) -> Tuple[List[Dict[str, object]], Dict[str, object]]:
         if not candidates:
             return [], {"scores": []}
         rerank_client = self.get_model_client("reranker_model")
@@ -331,10 +331,10 @@ class RAGExecutionStack(BaseAgent):
     def _build_metadata(
         self,
         plan: RAGPlan,
-        hyde_runs: Sequence[Dict[str, Any]],
-        candidates: Sequence[Dict[str, Any]],
-        rerank_meta: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        hyde_runs: Sequence[Dict[str, object]],
+        candidates: Sequence[Dict[str, object]],
+        rerank_meta: Dict[str, object],
+    ) -> Dict[str, object]:
         top_entry = candidates[0] if candidates else {}
         return {
             "goal": plan.goal,
@@ -347,7 +347,7 @@ class RAGExecutionStack(BaseAgent):
             "scores": rerank_meta.get("scores", []),
         }
 
-    def _fallback_plan(self, state: Dict[str, Any]) -> RAGPlan:
+    def _fallback_plan(self, state: Dict[str, object]) -> RAGPlan:
         query = self._derive_query(state)
         goal = f"Surface evidence for {query}" if query else "Surface evidence"
         return RAGPlan(
@@ -358,7 +358,7 @@ class RAGExecutionStack(BaseAgent):
             risk_checks=["Tie every bullet to resume evidence"],
         )
 
-    def _derive_query(self, state: Dict[str, Any]) -> str:
+    def _derive_query(self, state: Dict[str, object]) -> str:
         job = state.get("job", {})
         job_title = job.get("job_title") or job.get("title") or ""
         company = job.get("company") or job.get("employer") or ""

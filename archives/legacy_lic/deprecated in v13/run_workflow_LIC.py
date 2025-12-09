@@ -10,13 +10,13 @@ import os
 from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, object
 
 from models_LIC import OutreachMission
 
 __version__ = "12.0"
 
-def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, Any]:
+def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, object]:
     """
     Loads the mission input JSON file.
     
@@ -46,7 +46,7 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> Dict[str, An
         print(f"Line {e.lineno}, column {e.colno}: {e.msg}")
         sys.exit(1)
 
-def validate_mission_input(input_data: Dict[str, Any]) -> bool:
+def validate_mission_input(input_data: Dict[str, object]) -> bool:
     """
     Validate that mission input contains all required fields.
     
@@ -131,7 +131,7 @@ def print_mission_summary(mission: OutreachMission):
     print(f"Company:      {mission.job_description.get('company', 'N/A')}")
     print(f"Location:     {mission.job_description.get('location', 'N/A')}")
 
-def print_results(result: Dict[str, Any]):
+def print_results(result: Dict[str, object]):
     """Print workflow execution results"""
     print(f"\n{'='*80}")
     print("WORKFLOW RESULTS")

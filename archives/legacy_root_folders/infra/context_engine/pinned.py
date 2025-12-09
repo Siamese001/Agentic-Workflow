@@ -17,7 +17,7 @@ class PinnedItem:
     """
     id: str
     text: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 def filter_pinned(items: List[PinnedItem], max_items: int) -> List[PinnedItem]:

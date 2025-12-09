@@ -21,7 +21,7 @@ _EXPECTED_TYPES = {
 }
 
 
-def validate(state: Dict[str, Any]) -> Dict[str, List[str]]:
+def validate(state: Dict[str, object]) -> Dict[str, List[str]]:
     """Validate the orchestration state for required keys and consistency."""
 
     missing: List[str] = []

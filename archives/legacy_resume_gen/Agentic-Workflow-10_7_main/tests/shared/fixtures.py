@@ -248,7 +248,7 @@ def cost_tracker(workflow_harness: WorkflowContext) -> CostTracker:
 
 
 @pytest.fixture()
-def base_state() -> Dict[str, Any]:
+def base_state() -> Dict[str, object]:
     strategy_plan = {
         "strategy_name": "AI Leadership",
         "focus_areas": ["innovation", "team building"],
@@ -333,8 +333,8 @@ def semantic_validator(metrics_collector: MetricsCollector) -> SemanticValidator
 
 
 @pytest.fixture()
-def workflow_state_factory(base_state: Dict[str, Any]) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    def _factory(overrides: Dict[str, Any]) -> Dict[str, Any]:
+def workflow_state_factory(base_state: Dict[str, object]) -> Callable[[Dict[str, object]], Dict[str, object]]:
+    def _factory(overrides: Dict[str, object]) -> Dict[str, object]:
         merged = json.loads(json.dumps(base_state))
         merged.update(overrides)
         return merged
@@ -343,7 +343,7 @@ def workflow_state_factory(base_state: Dict[str, Any]) -> Callable[[Dict[str, An
 
 
 @pytest.fixture()
-def dummy_cache_entry(cache_manager: CacheManager) -> Dict[str, Any]:
+def dummy_cache_entry(cache_manager: CacheManager) -> Dict[str, object]:
     payload = {"bullets": ["Managed ML org"], "summary": "Seasoned leader"}
     asyncio.run(
         cache_manager.set_llm_cache(
@@ -363,7 +363,7 @@ def trace_recorder() -> TraceRecorder:
 
 
 @pytest.fixture()
-def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, Any]]:
+def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, object]]:
     entries = [
         {
             "timestamp": "2024-01-01T00:00:00Z",
@@ -389,7 +389,7 @@ def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, Any]]:
 
 
 @pytest.fixture()
-def proposed_rules_entries(proposed_rules_path: Path) -> List[Dict[str, Any]]:
+def proposed_rules_entries(proposed_rules_path: Path) -> List[Dict[str, object]]:
     entries = [
         {
             "timestamp": "2024-01-02T00:00:00Z",
@@ -429,7 +429,7 @@ def workflow_context_factory(workflow_harness: WorkflowContext) -> Callable[[str
 
 
 @pytest.fixture()
-def strategy_plan_payload() -> Dict[str, Any]:
+def strategy_plan_payload() -> Dict[str, object]:
     return {
         "strategy_name": "Impact",
         "focus_areas": ["delivery", "mentorship"],
@@ -439,7 +439,7 @@ def strategy_plan_payload() -> Dict[str, Any]:
 
 
 @pytest.fixture()
-def draft_sections() -> Dict[str, Any]:
+def draft_sections() -> Dict[str, object]:
     return {
         "summary": {"draft": "Delivered AI roadmap"},
         "experience": {

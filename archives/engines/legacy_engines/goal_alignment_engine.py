@@ -7,7 +7,7 @@ alignment by 30-50% through goal-aware prompt engineering.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 import re
@@ -450,7 +450,7 @@ class GoalAlignmentEngine:
         
         return goals
     
-    def get_alignment_stats(self) -> Dict[str, Any]:
+    def get_alignment_stats(self) -> Dict[str, object]:
         """Get alignment statistics."""
         if not self.alignment_history:
             return {}

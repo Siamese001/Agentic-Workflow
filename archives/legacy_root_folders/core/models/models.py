@@ -113,7 +113,7 @@ class AgentCard(BaseModel):
     communication_channels: List[str] = Field(default_factory=list)
 
     # Arbitrary policy / governance scope.
-    policy_scope: Dict[str, Any] = Field(default_factory=dict)
+    policy_scope: Dict[str, object] = Field(default_factory=dict)
 
 
 # ======================================================================
@@ -126,7 +126,7 @@ class JobDescription(BaseModel):
     title: str
     company: str
     description: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class ResumeProfile(BaseModel):
@@ -135,7 +135,7 @@ class ResumeProfile(BaseModel):
     headline: Optional[str] = None
     summary: Optional[str] = None
     raw_text: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class JobInput(BaseModel):
@@ -156,9 +156,9 @@ class ResumeInput(BaseModel):
     """L1-facing view of resume inputs used for planning."""
 
     summary: Optional[str] = None
-    experience_sections: Optional[List[Dict[str, Any]]] = None
+    experience_sections: Optional[List[Dict[str, object]]] = None
     skills: Optional[List[Any]] = None
-    projects: Optional[List[Dict[str, Any]]] = None
+    projects: Optional[List[Dict[str, object]]] = None
 
 
 @dataclass
@@ -215,7 +215,7 @@ class WorkflowState(BaseModel):
     safety_summary: Optional[str] = None
 
     # Arbitrary extensions
-    slots: Dict[str, Any] = Field(default_factory=dict)
+    slots: Dict[str, object] = Field(default_factory=dict)
 
 
 # Events and rollback artifacts used by L4
@@ -262,7 +262,7 @@ class WorkflowStatePatch(BaseModel):
     safety_summary: Optional[str] = None
 
     # Arbitrary dynamic slots
-    slots: Dict[str, Any] = Field(default_factory=dict)
+    slots: Dict[str, object] = Field(default_factory=dict)
 
 
 # ======================================================================
@@ -319,7 +319,7 @@ class ExecutionContext(BaseModel):
     # PHASE C: Retrieved Context (from L4)
     rag_results: List[Any] = Field(default_factory=list)  # RAG retrieval results
     temporal_kg_facts: List[Any] = Field(default_factory=list)  # Temporal KG facts
-    scene_context: Dict[str, Any] = Field(default_factory=dict)  # Assembled scene for planning
+    scene_context: Dict[str, object] = Field(default_factory=dict)  # Assembled scene for planning
 
     # PHASE C: L5 Safety Adapters
     safety_engine: Any = None  # L5 SafetyEngine for policy enforcement
@@ -327,7 +327,7 @@ class ExecutionContext(BaseModel):
     # Telemetry / cost containers
     cost_snapshot: Optional["CostSnapshot"] = None
 
-    def span_context(self) -> Dict[str, Any]:
+    def span_context(self) -> Dict[str, object]:
         return {}
     
     def get_pinecone_namespace(self) -> str:
@@ -371,7 +371,7 @@ class ExecutionProfile(BaseModel):
     name: str
     description: str
     retrieval: "RetrievalConfig"  # type: ignore[name-defined]
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class RoutingHint(BaseModel):
@@ -384,7 +384,7 @@ class RoutingHint(BaseModel):
     complexity: ComplexityLevel
     reasoning_mode: ReasoningMode
     execution_profile: ExecutionProfile
-    meta: Dict[str, Any] = Field(default_factory=dict)
+    meta: Dict[str, object] = Field(default_factory=dict)
 
 
 # ======================================================================
@@ -409,7 +409,7 @@ class DraftSection(BaseModel):
     id: str
     title: str
     body: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
     @property
     def text(self) -> str:
@@ -428,7 +428,7 @@ class QAFinding(BaseModel):
     category: str
     severity: str
     message: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class QACheckResult(BaseModel):
@@ -452,7 +452,7 @@ class SafetyFinding(BaseModel):
     category: str
     severity: str
     message: str
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
     @property
     def id(self) -> str:
@@ -523,7 +523,7 @@ class TelemetryEvent(BaseModel):
     span_id: Optional[str] = None
     parent_span_id: Optional[str] = None
     workflow_id: Optional[str] = None
-    attributes: Dict[str, Any] = Field(default_factory=dict)
+    attributes: Dict[str, object] = Field(default_factory=dict)
 
 
 class CostSnapshot(BaseModel):
@@ -536,7 +536,7 @@ class CostSnapshot(BaseModel):
 
     total_tokens: int = 0
     total_cost_usd: float = 0.0
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
 
 class RetrievalAttemptEvent(TelemetryEvent):
@@ -554,7 +554,7 @@ class RankingEvent(TelemetryEvent):
     stage: str
     input_count: int
     output_count: int
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
 
 class RetrievalSuccessEvent(TelemetryEvent):
@@ -609,8 +609,8 @@ class AgentMessage(BaseModel):
     ]
 
     # Free-form payload and metadata.
-    content: Dict[str, Any] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    content: Dict[str, object] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
     # Backwards-compatibility aliases.
     @property
@@ -636,7 +636,7 @@ class MultiAgentVote(BaseModel):
     decision: str
     confidence: float
     rationale: str
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: Dict[str, object] = Field(default_factory=dict)
 
 
 class MultiAgentCouncilResult(BaseModel):
@@ -646,7 +646,7 @@ class MultiAgentCouncilResult(BaseModel):
     aggregated_decision: str
     aggregated_confidence: float
     rationale: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class CorrectionEvent(TelemetryEvent):
@@ -688,7 +688,7 @@ class PromptDefinition(BaseModel):
     id: str
     text: str
     version: PromptVersion
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class PromptMeta(BaseModel):
@@ -698,10 +698,10 @@ class PromptMeta(BaseModel):
     structured, not the rendered prompt text itself.
     """
 
-    sections: List[Dict[str, Any]] = Field(default_factory=list)
+    sections: List[Dict[str, object]] = Field(default_factory=list)
     injection_types: List[str] = Field(default_factory=list)
-    taxonomy: Dict[str, Any] = Field(default_factory=dict)
-    meta_bias: Dict[str, Any] = Field(default_factory=dict)
+    taxonomy: Dict[str, object] = Field(default_factory=dict)
+    meta_bias: Dict[str, object] = Field(default_factory=dict)
 
 
 class PolicyDecisionEvent(BaseModel):
@@ -725,7 +725,7 @@ class PolicyDecisionEvent(BaseModel):
 class ResilienceError(BaseModel):
     code: str
     message: str
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
 
 class TransientError(ResilienceError):
@@ -759,7 +759,7 @@ class CircuitBreakerState(BaseModel):
     backoff_ms: int = 0
     breaker_state: Optional[str] = None
     error: Optional[ResilienceError] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class SeniorityClassifierResult(BaseModel):
@@ -768,7 +768,7 @@ class SeniorityClassifierResult(BaseModel):
     labels: List[str] = Field(default_factory=list)
     primary_label: Optional[str] = None
     confidence: float = 0.0
-    features: Dict[str, Any] = Field(default_factory=dict)
+    features: Dict[str, object] = Field(default_factory=dict)
 
 
 class ProfileInferenceResult(BaseModel):
@@ -790,7 +790,7 @@ class DomainClassifierResult(BaseModel):
     labels: List[str] = Field(default_factory=list)
     primary_label: Optional[str] = None
     confidence: float = 0.0
-    features: Dict[str, Any] = Field(default_factory=dict)
+    features: Dict[str, object] = Field(default_factory=dict)
 
 
 class SkillClassifierResult(BaseModel):
@@ -799,7 +799,7 @@ class SkillClassifierResult(BaseModel):
     labels: List[str] = Field(default_factory=list)
     primary_label: Optional[str] = None
     confidence: float = 0.0
-    features: Dict[str, Any] = Field(default_factory=dict)
+    features: Dict[str, object] = Field(default_factory=dict)
 
 
 class SkillClusterResult(BaseModel):
@@ -808,7 +808,7 @@ class SkillClusterResult(BaseModel):
     labels: List[str] = Field(default_factory=list)
     primary_label: Optional[str] = None
     confidence: float = 0.0
-    features: Dict[str, Any] = Field(default_factory=dict)
+    features: Dict[str, object] = Field(default_factory=dict)
 
 
 class ResilienceDecision(BaseModel):
@@ -816,7 +816,7 @@ class ResilienceDecision(BaseModel):
 
     action: str
     reason: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class CouncilVote(BaseModel):
@@ -927,7 +927,7 @@ class Evidence(BaseModel):
     text: str
     score: float
     source: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class RedisCacheConfig(BaseModel):
@@ -1054,9 +1054,9 @@ class DAGNode(BaseModel):
     
     id: str
     type: str
-    parameters: Dict[str, Any] = Field(default_factory=dict)
+    parameters: Dict[str, object] = Field(default_factory=dict)
     dependencies: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class DAGEdge(BaseModel):
@@ -1065,7 +1065,7 @@ class DAGEdge(BaseModel):
     from_node: str
     to_node: str
     condition: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class NodeResult(BaseModel):
@@ -1074,7 +1074,7 @@ class NodeResult(BaseModel):
     node_id: str
     success: bool
     data: Optional[Any] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
     error: Optional[str] = None
     execution_time: Optional[float] = None
 
@@ -1084,7 +1084,7 @@ class StateSnapshot(BaseModel):
     
     execution_id: str
     timestamp: datetime
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
     status: WorkflowStatus = WorkflowStatus.PENDING
 
 
@@ -1094,7 +1094,7 @@ class MemoryFragment(BaseModel):
     id: str
     content: str
     embedding: Optional[List[float]] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.now)
     access_count: int = 0
 
@@ -1107,7 +1107,7 @@ class Provenance(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     user_id: Optional[str] = None
     parent_id: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class Entity(BaseModel):
@@ -1116,8 +1116,8 @@ class Entity(BaseModel):
     id: str
     name: str
     type: str
-    properties: Dict[str, Any] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    properties: Dict[str, object] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class Triplet(BaseModel):
@@ -1127,8 +1127,8 @@ class Triplet(BaseModel):
     predicate: str
     object: str
     confidence: Optional[float] = None
-    temporal_metadata: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    temporal_metadata: Optional[Dict[str, object]] = None
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class TemporalKG(BaseModel):
@@ -1137,7 +1137,7 @@ class TemporalKG(BaseModel):
     entities: List[Entity] = Field(default_factory=list)
     triplets: List[Triplet] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=datetime.now)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class PolicyViolation(BaseModel):
@@ -1159,7 +1159,7 @@ class HitLRequest(BaseModel):
     context: ExecutionContext
     created_at: datetime = Field(default_factory=datetime.now)
     status: str = "pending"
-    response: Optional[Dict[str, Any]] = None
+    response: Optional[Dict[str, object]] = None
     processed_at: Optional[datetime] = None
 
 
@@ -1170,7 +1170,7 @@ class LLMRequest(BaseModel):
     model: str
     temperature: Optional[float] = None
     max_tokens: Optional[int] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class LLMResponse(BaseModel):
@@ -1179,16 +1179,16 @@ class LLMResponse(BaseModel):
     content: str
     model: str
     token_usage: Optional[Dict[str, int]] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class PlanningResult(BaseModel):
     """Result from planning operations."""
     
     plan_id: str
-    steps: List[Dict[str, Any]] = Field(default_factory=list)
+    steps: List[Dict[str, object]] = Field(default_factory=list)
     confidence: float = 0.0
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class TaskDecomposition(BaseModel):
@@ -1197,7 +1197,7 @@ class TaskDecomposition(BaseModel):
     main_task: str
     subtasks: List[str] = Field(default_factory=list)
     dependencies: Dict[str, List[str]] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class UncertaintyEstimate(BaseModel):
@@ -1206,7 +1206,7 @@ class UncertaintyEstimate(BaseModel):
     uncertainty_score: float = 0.0
     confidence_interval: Optional[tuple[float, float]] = None
     factors: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class AgentCouncilVote(BaseModel):
@@ -1223,8 +1223,8 @@ class MetaProfileSnapshot(BaseModel):
     """Snapshot of meta-profile configuration."""
     
     profile_id: str
-    preferences: Dict[str, Any] = Field(default_factory=dict)
-    constraints: Dict[str, Any] = Field(default_factory=dict)
+    preferences: Dict[str, object] = Field(default_factory=dict)
+    constraints: Dict[str, object] = Field(default_factory=dict)
     timestamp: datetime = Field(default_factory=datetime.now)
 
 
@@ -1253,8 +1253,8 @@ class PromptEnvelope:
     
     def __init__(
         self,
-        context: Optional[Dict[str, Any]] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None,
+        metadata: Optional[Dict[str, object]] = None
     ):
         self.context = context or {}
         self.metadata = metadata or {}

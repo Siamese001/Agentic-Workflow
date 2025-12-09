@@ -10,7 +10,7 @@ from typing import Any, Dict
 class Client:
     api_key: str | None = None
 
-    def messages_create(self, *, model: str, messages: list[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:
+    def messages_create(self, *, model: str, messages: list[Dict[str, object]], **kwargs: Any) -> Dict[str, object]:
         return {
             "model": model,
             "messages": messages,

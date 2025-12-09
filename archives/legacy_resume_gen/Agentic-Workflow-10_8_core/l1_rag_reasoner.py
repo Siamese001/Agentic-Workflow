@@ -19,7 +19,7 @@ from retrieval import RetrievalConfig
 from l4_memory import get_evidence_view
 
 
-def _latest_user_message(state: Dict[str, Any]) -> str:
+def _latest_user_message(state: Dict[str, object]) -> str:
     """Return the most recent user message content from state messages."""
 
     messages = state.get("messages") or []
@@ -31,7 +31,7 @@ def _latest_user_message(state: Dict[str, Any]) -> str:
     return ""
 
 
-def _build_queries(state: Dict[str, Any]) -> List[str]:
+def _build_queries(state: Dict[str, object]) -> List[str]:
     """Create deterministic RAG queries from state signals."""
 
     explicit_queries = state.get("rag_queries") or []
@@ -52,7 +52,7 @@ def _build_queries(state: Dict[str, Any]) -> List[str]:
 class RAGReasoner(Reasoner):
     """Plan deterministic retrieval intents for downstream execution."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         evidence_view = get_evidence_view(state)
         queries = _build_queries(state)
         filters = state.get("rag_filters") or {}

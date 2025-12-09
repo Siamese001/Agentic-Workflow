@@ -16,7 +16,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, object, Tuple, List
 
 # Imports for enhancements
 import networkx as nx

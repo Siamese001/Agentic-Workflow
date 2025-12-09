@@ -29,10 +29,10 @@ def _build_checks(plan: PlanObject) -> List[str]:
     return checks
 
 
-def _derive_findings(state: Dict[str, Any], checks: List[str]) -> List[Dict[str, Any]]:
+def _derive_findings(state: Dict[str, object], checks: List[str]) -> List[Dict[str, object]]:
     """Produce deterministic validation findings based on available state."""
 
-    findings: List[Dict[str, Any]] = []
+    findings: List[Dict[str, object]] = []
     has_messages = bool(state.get("messages"))
     for check in checks:
         findings.append(
@@ -48,7 +48,7 @@ def _derive_findings(state: Dict[str, Any], checks: List[str]) -> List[Dict[str,
 class QAValidationAgent(ExecutionAgent):
     """Perform deterministic QA validation that emits state patches only."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         evidence = get_evidence_view(state)
         checks = _build_checks(plan)
         findings = _derive_findings(state, checks)

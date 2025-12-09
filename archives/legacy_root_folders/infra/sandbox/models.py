@@ -16,7 +16,7 @@ class ToolCallRequest(BaseModel):
     args: List[str] = Field(default_factory=list)
     env: Dict[str, str] = Field(default_factory=dict)
     timeout_s: float = 30.0
-    resource_limits: Dict[str, Any] = Field(default_factory=dict)
+    resource_limits: Dict[str, object] = Field(default_factory=dict)
 
 
 class ToolCallResult(BaseModel):
@@ -26,7 +26,7 @@ class ToolCallResult(BaseModel):
     stdout: str = ""
     stderr: str = ""
     exit_code: int = 0
-    resource_usage: Dict[str, Any] = Field(default_factory=dict)
+    resource_usage: Dict[str, object] = Field(default_factory=dict)
     duration_ms: int = 0
 
 
@@ -37,7 +37,7 @@ class SandboxEvent(BaseModel):
     ts_ms: int
     vm_id: Optional[str] = None
     tool_name: Optional[str] = None
-    attributes: Dict[str, Any] = Field(default_factory=dict)
+    attributes: Dict[str, object] = Field(default_factory=dict)
 
 
 

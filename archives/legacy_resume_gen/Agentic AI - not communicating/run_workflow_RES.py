@@ -77,7 +77,7 @@ def list_available_runs():
                 title = manifest.get('job_input', {}).get('job_title', 'Unknown')
                 start_time = manifest.get('start_time_utc', 'Unknown')
                 print(f"  {run_id}: {company} - {title} (Started: {start_time})")
-            except:
+            except (ValueError, TypeError, KeyError):
                 print(f"  {run_id}: (manifest unreadable)")
         else:
             print(f"  {run_id}: (no manifest)")

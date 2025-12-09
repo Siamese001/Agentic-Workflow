@@ -13,7 +13,7 @@ import sys
 from unittest.mock import Mock, MagicMock, patch, call
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, object
 
 # Add the module to path
 sys.path.insert(0, '/home/claude')

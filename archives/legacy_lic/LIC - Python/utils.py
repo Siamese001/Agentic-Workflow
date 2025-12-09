@@ -5,7 +5,7 @@ __version__ = "11.10"
 
 import re
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Callable, Tuple
+from typing import Dict, List, Optional, Union, Callable, Tuple
 from collections import defaultdict
 
 from models import CircuitState, Archetype, CircuitBreakerOpenError

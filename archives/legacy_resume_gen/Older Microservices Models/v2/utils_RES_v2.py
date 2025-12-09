@@ -501,7 +501,7 @@ class TelemetryLogger:
 def reasoning_config_to_api_params(
     reasoning_config: ReasoningConfig,
     section_id: str
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Converts a ReasoningConfig dataclass into API parameters.
     (This is a stub, as the full logic depends on the specific API)
@@ -572,7 +572,7 @@ def enhance_system_prompt_with_reasoning(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt: int
 ) -> str:
     """

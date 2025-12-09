@@ -267,7 +267,7 @@ class RAG_SearchAgent(BaseAgent):
             self.client = None
             self.critique_client = None
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info(f"Running Step 2: RAG Search (ReAct) for {len(queries)} queries...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG Search.")
@@ -1047,7 +1047,7 @@ def get_blackboard(state: 'GraphState') -> WorkflowBlackboard:
         artifacts=state["artifacts"]
     )
 
-def run_strategy(state: 'GraphState') -> Dict[str, Any]:
+def run_strategy(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 1: Strategy Classification"""
     blackboard = get_blackboard(state)
     
@@ -1056,7 +1056,7 @@ def run_strategy(state: 'GraphState') -> Dict[str, Any]:
     
     return {"artifacts": {"strategy_brief": strategy_brief}}
 
-def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_rag_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 2: RAG (QueryGen, Search, Critique)"""
     blackboard = get_blackboard(state)
     
@@ -1081,7 +1081,7 @@ def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
         "rag_critique": critique_result
     }}
 
-def run_bullet_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_bullet_stack(state: 'GraphState') -> Dict[str, object]:
     """v8.0 Node: Runs the new Advanced Bullet Swarm (Req #2)"""
     blackboard = get_blackboard(state)
     
@@ -1091,7 +1091,7 @@ def run_bullet_stack(state: 'GraphState') -> Dict[str, Any]:
     
     return {"artifacts": {"generated_bullets": bullets}}
 
-def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_drafting_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)"""
     # v8.0: This node is now split into two: run_bullet_stack and run_drafting_stack
     # This function is now *only* for drafting.
@@ -1114,7 +1114,7 @@ def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
         "final_draft": final_draft
     }}
 
-def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
+def run_qa_swarm(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 4: QA (LLM and Logic)"""
     blackboard = get_blackboard(state)
     final_draft = state["artifacts"].get("final_draft", "")
@@ -1149,7 +1149,7 @@ def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
         "validation_results": validation_summary
     }}
 
-def run_replanner(state: 'GraphState') -> Dict[str, Any]:
+def run_replanner(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3 (SC Paths): Re-Planner"""
     blackboard = get_blackboard(state)
     agent = WorkflowRePlannerAgent(blackboard, debug_mode=True) # v8.0 logic is now inside this agent
@@ -1178,7 +1178,7 @@ def run_replanner(state: 'GraphState') -> Dict[str, Any]:
 
 # --- v7.5 New Nodes ---
 
-def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
+def human_review_pause(state: 'GraphState') -> Dict[str, object]:
     """
     Node: This node saves the final draft to the state for HIL diffing.
     The graph will be configured to *interrupt* before this node,
@@ -1188,7 +1188,7 @@ def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
     # Save the AI draft so we can diff it against the human's version
     return {"original_draft": state["artifacts"]["final_draft"]}
 
-def run_preference_capture(state: 'GraphState') -> Dict[str, Any]:
+def run_preference_capture(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 5: Preference Capture"""
     if not CONFIG.hil_config.enable_preference_learning:
         return {"preference_insight": {"status": "disabled"}}

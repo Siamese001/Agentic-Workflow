@@ -41,7 +41,7 @@ class FusionStepResult:
     data: Any = None
     error: Optional[str] = None
     execution_time_ms: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     # MoR execution metadata
     recursion_depth_used: int = 1
@@ -60,7 +60,7 @@ class FusionExecutionResult:
     plan_id: str
     success: bool
     step_results: List[FusionStepResult] = field(default_factory=list)
-    final_results: Dict[str, Any] = field(default_factory=dict)
+    final_results: Dict[str, object] = field(default_factory=dict)
     total_execution_time_ms: int = 0
     error: Optional[str] = None
     
@@ -114,7 +114,7 @@ class FusionExecutor:
     async def execute_fusion_plan(
         self,
         plan: KGRAGFusionPlan,
-        execution_context: Optional[Dict[str, Any]] = None,
+        execution_context: Optional[Dict[str, object]] = None,
     ) -> FusionExecutionResult:
         """
         Executes complete résumé analysis plan to find job-relevant experiences and skills.
@@ -189,7 +189,7 @@ class FusionExecutor:
         self,
         step: FusionPlanStep,
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
+        context: Dict[str, object],
     ) -> FusionStepResult:
         """
         Executes individual résumé analysis step to process specific career data.
@@ -250,8 +250,8 @@ class FusionExecutor:
         self,
         hop_spec: Any,  # HopSpec from kg_retrieval_planning
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Traverses career knowledge graph to find related job experiences and skills.
 
@@ -310,8 +310,8 @@ class FusionExecutor:
         self,
         rag_step: RAGRetrievalStep,
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Searches document database for job-relevant experiences and skill descriptions.
 
@@ -363,8 +363,8 @@ class FusionExecutor:
         self,
         step: FusionPlanStep,
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Identifies and standardizes company names, job titles, and skills in career data.
 
@@ -408,8 +408,8 @@ class FusionExecutor:
         self,
         step: FusionPlanStep,
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Filters career experiences by date ranges and time periods for job relevance.
 
@@ -457,8 +457,8 @@ class FusionExecutor:
         self,
         step: FusionPlanStep,
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Combines and ranks career experiences and skills for job matching relevance.
 
@@ -496,8 +496,8 @@ class FusionExecutor:
         self,
         step: FusionPlanStep,
         plan: KGRAGFusionPlan,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: Dict[str, object],
+    ) -> Dict[str, object]:
         """
         Performs deeper analysis of complex career questions for comprehensive résumé insights.
 
@@ -539,7 +539,7 @@ class FusionExecutor:
         self,
         step_results: List[FusionStepResult],
         plan: KGRAGFusionPlan,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Combines all résumé analysis results into comprehensive job matching insights.
 
@@ -618,7 +618,7 @@ async def execute_simple_fusion(
 
 async def execute_temporal_entity_facts(
     entity_id: str,
-    temporal_range: Optional[Dict[str, Any]] = None,
+    temporal_range: Optional[Dict[str, object]] = None,
     kg_adapter: Optional[TemporalKG] = None,
 ) -> FusionExecutionResult:
     """

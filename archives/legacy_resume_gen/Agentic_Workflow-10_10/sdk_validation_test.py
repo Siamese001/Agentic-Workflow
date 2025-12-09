@@ -6,10 +6,10 @@ Note: type: ignore comments are intentional for optional dependencies being vali
 
 import sys
 import json
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # Test results storage
-results: List[Dict[str, Any]] = []
+results: List[Dict[str, object]] = []
 
 
 def record_test_result(name: str, status: str, details: str = "", error: str = ""):

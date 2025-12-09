@@ -90,7 +90,7 @@ class KGQueryPlan:
     deduplicate: bool = True
     
     # Context
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -202,7 +202,7 @@ class KGRetrievalPlanner:
         max_hops: int = 3,
         temporal_constraint: Optional[datetime] = None,
         template_name: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
     ) -> KGQueryPlan:
         """Create a query plan for résumé processing KG retrieval.
         
@@ -268,7 +268,7 @@ class KGRetrievalPlanner:
         start_entities: List[str],
         target_entities: Optional[List[str]],
         temporal_constraint: Optional[datetime],
-        context: Optional[Dict[str, Any]],
+        context: Optional[Dict[str, object]],
     ) -> KGQueryPlan:
         """Create plan from a template."""
         return KGQueryPlan(
@@ -288,7 +288,7 @@ class KGRetrievalPlanner:
         entities: List[str],
         predicates: Optional[List[str]],
         temporal_constraint: Optional[datetime],
-        context: Optional[Dict[str, Any]],
+        context: Optional[Dict[str, object]],
     ) -> KGQueryPlan:
         """Plan query to get all facts about entities."""
         hops = [
@@ -317,7 +317,7 @@ class KGRetrievalPlanner:
         target_entities: List[str],
         max_hops: int,
         temporal_constraint: Optional[datetime],
-        context: Optional[Dict[str, Any]],
+        context: Optional[Dict[str, object]],
     ) -> KGQueryPlan:
         """Plan path finding query between entities."""
         # Build hops for BFS-style traversal
@@ -349,7 +349,7 @@ class KGRetrievalPlanner:
         max_hops: int,
         predicates: Optional[List[str]],
         temporal_constraint: Optional[datetime],
-        context: Optional[Dict[str, Any]],
+        context: Optional[Dict[str, object]],
     ) -> KGQueryPlan:
         """Plan N-hop neighborhood exploration."""
         hops = []
@@ -379,7 +379,7 @@ class KGRetrievalPlanner:
         entities: List[str],
         timestamp: datetime,
         predicates: Optional[List[str]],
-        context: Optional[Dict[str, Any]],
+        context: Optional[Dict[str, object]],
     ) -> KGQueryPlan:
         """Plan query for facts valid at a specific time."""
         hops = [

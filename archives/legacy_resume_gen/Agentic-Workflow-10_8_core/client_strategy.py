@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, object
 
 from model_invocation import invoke_model
 
@@ -6,22 +6,22 @@ from model_invocation import invoke_model
 class ModelClient:
     """Abstract client for model execution. Deterministic stub only."""
 
-    def __init__(self, route_metadata: Dict[str, Any] | None = None) -> None:
+    def __init__(self, route_metadata: Dict[str, object] | None = None) -> None:
         self.route_metadata = route_metadata or {}
 
-    def complete(self, prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    def complete(self, prompt: str, config: Dict[str, object]) -> Dict[str, object]:
         """Invoke the deterministic stub with a fully rendered prompt."""
 
         merged_metadata = {**self.route_metadata, **(config or {})}
         return invoke_model(prompt, merged_metadata)
 
 
-def build_client_for_route(route: Dict[str, Any]) -> ModelClient:
+def build_client_for_route(route: Dict[str, object]) -> ModelClient:
     # Return a new client bound to route metadata; side-effect free
     return ModelClient(route)
 
 
-def configure_for_routing(route: Dict[str, Any]) -> Dict[str, Any]:
+def configure_for_routing(route: Dict[str, object]) -> Dict[str, object]:
     selected_model = route.get("selected_model") or route.get("model")
     model_name = selected_model or "stub-model-for-" + route.get("complexity", "default")
     endpoint = route.get("endpoint") or "/v1/" + route.get("complexity", "default")
@@ -33,7 +33,7 @@ def configure_for_routing(route: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def run_model_for_plan(plan: Dict[str, Any], state: Dict[str, Any]):
+def run_model_for_plan(plan: Dict[str, object], state: Dict[str, object]):
     from prompt_utils import build_prompt_from_plan_and_state
     from core.routing import RoutingCriteria, decide_route
     from core.routing import get_routing_plan

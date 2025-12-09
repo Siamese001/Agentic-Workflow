@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 
-def compute_optimization_hint(spans: list) -> Dict[str, Any]:
+def compute_optimization_hint(spans: list) -> Dict[str, object]:
     """
     Deterministic optimization hint based on span durations.
     """

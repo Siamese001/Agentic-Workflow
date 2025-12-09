@@ -100,7 +100,7 @@ class WorkflowV52:
         job_title: str,
         master_resume_path: Optional[str] = None,
         output_dir: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Run the complete workflow for a single job application.
         
@@ -184,7 +184,7 @@ class WorkflowV52:
             self.logger.info("Workflow v5.4 execution completed")
             self.logger.info("=" * 80)
     
-    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, Any]:
+    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, object]:
         """Load master resume from file or use default."""
         # Try provided path first
         if master_resume_path and os.path.exists(master_resume_path):
@@ -209,7 +209,7 @@ class WorkflowV52:
         self.logger.warning("No master resume found, using empty template")
         return self._create_empty_master_resume()
     
-    def _create_empty_master_resume(self) -> Dict[str, Any]:
+    def _create_empty_master_resume(self) -> Dict[str, object]:
         """Create an empty master resume template."""
         return {
             "owner": {
@@ -229,7 +229,7 @@ class WorkflowV52:
     
     def _save_artifacts(
         self,
-        results: Dict[str, Any],
+        results: Dict[str, object],
         output_dir: str,
         company_name: str,
         job_title: str
@@ -271,7 +271,7 @@ class WorkflowV52:
 # PART 2: RUNNER FUNCTIONS (from run_workflow_RES_v5_2.py)
 # ============================================================================
 
-def load_job_input(file_path: str) -> Dict[str, Any]:
+def load_job_input(file_path: str) -> Dict[str, object]:
     """Load job input from JSON file."""
     try:
         with open(file_path, 'r') as f:
@@ -283,7 +283,7 @@ def load_job_input(file_path: str) -> Dict[str, Any]:
         logger.error(f"Invalid JSON in job input file: {e}")
         raise
 
-def load_master_resume(file_path: str) -> Dict[str, Any]:
+def load_master_resume(file_path: str) -> Dict[str, object]:
     """Load master resume from JSON file."""
     try:
         with open(file_path, 'r') as f:
@@ -295,7 +295,7 @@ def load_master_resume(file_path: str) -> Dict[str, Any]:
         logger.error(f"Invalid JSON in master resume file: {e}")
         raise
 
-def print_summary(results: Dict[str, Any]) -> None:
+def print_summary(results: Dict[str, object]) -> None:
     """Print a comprehensive summary of workflow results."""
     print("\n" + "=" * 80)
     print("WORKFLOW EXECUTION SUMMARY")

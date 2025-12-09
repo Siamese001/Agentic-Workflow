@@ -82,7 +82,7 @@ class SearchResult:
     id: str
     score: float
     text: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     dense_score: float = 0.0
     sparse_score: float = 0.0
     fused_score: float = 0.0
@@ -194,7 +194,7 @@ class HybridSearchExecutor:
         query: str,
         namespace: str,
         top_k: int,
-        metadata_filter: Optional[Dict[str, Any]],
+        metadata_filter: Optional[Dict[str, object]],
     ) -> List[SearchResult]:
         """Execute dense vector search."""
         try:
@@ -228,7 +228,7 @@ class HybridSearchExecutor:
         query: str,
         namespace: str,
         top_k: int,
-        metadata_filter: Optional[Dict[str, Any]],
+        metadata_filter: Optional[Dict[str, object]],
     ) -> List[SearchResult]:
         """Execute sparse (BM25-style) search.
         
@@ -309,12 +309,12 @@ class HybridSearchExecutor:
     def _build_metadata_filter(
         self,
         config: HybridSearchConfig,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[Dict[str, object]]:
         """Build Pinecone metadata filter from config."""
         if not config.filters and not config.temporal_filter:
             return None
         
-        filter_dict: Dict[str, Any] = {}
+        filter_dict: Dict[str, object] = {}
         
         # Add custom filters
         for f in config.filters:

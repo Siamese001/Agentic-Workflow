@@ -48,13 +48,13 @@ class QAOrchestrator:
         self.arbitration_engine = ArbitrationEngine()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Run plan→execute→patch→safety in order."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -67,7 +67,7 @@ class QAOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -75,12 +75,12 @@ class QAOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {

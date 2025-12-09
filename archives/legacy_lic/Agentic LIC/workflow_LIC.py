@@ -8,7 +8,7 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from pathlib import Path
 
 # Core infrastructure
@@ -46,7 +46,7 @@ class HOP2_ResearchAgent:
     
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, object],
         memory_store: VectorMemoryStore,
         search_client: GoogleSearchClient,
         llm_client: GeminiLLMClient
@@ -139,7 +139,7 @@ class HOP2_ResearchAgent:
         company: str,
         recipient: str,
         archetype: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Query vector store for pre-computed intelligence"""
         
         # Query by company
@@ -187,7 +187,7 @@ class HOP2_ResearchAgent:
             "cache_confidence": cache_confidence
         }
     
-    def _critique_cache(self, cached_context: Dict[str, Any]) -> tuple[bool, List[str]]:
+    def _critique_cache(self, cached_context: Dict[str, object]) -> tuple[bool, List[str]]:
         """Evaluate if cached context is sufficient"""
         
         min_confidence = self.critique_params["min_confidence_score"]
@@ -229,7 +229,7 @@ class HOP2_ResearchAgent:
         company: str,
         recipient: str,
         gaps: List[str]
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Run fallback RAG only for identified gaps"""
         
         fallback_results = []
@@ -259,9 +259,9 @@ class HOP2_ResearchAgent:
     
     def _merge_contexts(
         self,
-        cached: Dict[str, Any],
-        fallback: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        cached: Dict[str, object],
+        fallback: Dict[str, object]
+    ) -> Dict[str, object]:
         """Merge cached and fallback contexts"""
         
         merged = cached.copy()
@@ -272,7 +272,7 @@ class HOP2_ResearchAgent:
         
         return merged
     
-    def _calculate_signal_score(self, results: List[Dict[str, Any]]) -> float:
+    def _calculate_signal_score(self, results: List[Dict[str, object]]) -> float:
         """Calculate aggregate signal quality score"""
         if not results:
             return 0.0
@@ -306,7 +306,7 @@ class HOP2_ResearchAgent:
         self,
         results: List[Dict],
         source_type: str
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Format search results for consistency"""
         
         formatted = []
@@ -347,7 +347,7 @@ class HOP5_GenerationAgent:
     
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, object],
         llm_client: GeminiLLMClient,
         tool: CodeInterpreterTool
     ):
@@ -457,9 +457,9 @@ class HOP5_GenerationAgent:
     
     async def _generate_single_draft(
         self,
-        research: Dict[str, Any],
-        grounding: Dict[str, Any],
-        scaffold: Dict[str, Any],
+        research: Dict[str, object],
+        grounding: Dict[str, object],
+        scaffold: Dict[str, object],
         temperature: float
     ) -> str:
         """Generate a single message draft"""
@@ -505,9 +505,9 @@ class HOP5_GenerationAgent:
     
     def _score_candidates_with_tool(
         self,
-        candidates: List[Dict[str, Any]],
-        research: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        candidates: List[Dict[str, object]],
+        research: Dict[str, object]
+    ) -> List[Dict[str, object]]:
         """
         Score candidates using CodeInterpreterTool (Fast Loop)
         
@@ -533,7 +533,7 @@ class HOP5_GenerationAgent:
         
         return scored
     
-    def _extract_sender_summary(self, grounding: Dict[str, Any]) -> str:
+    def _extract_sender_summary(self, grounding: Dict[str, object]) -> str:
         """Extract top 5 sender capabilities"""
         
         sender_grounding = grounding.get("sender_grounding", {})
@@ -552,7 +552,7 @@ class HOP5_GenerationAgent:
         
         return "\n".join(summary_lines) if summary_lines else "- Professional with relevant experience"
     
-    def _extract_recipient_summary(self, research: Dict[str, Any], strategic_brief: str) -> str:
+    def _extract_recipient_summary(self, research: Dict[str, object], strategic_brief: str) -> str:
         """Extract top 5 recipient priorities"""
         
         summary_lines = []
@@ -569,7 +569,7 @@ class HOP5_GenerationAgent:
         
         return "\n".join(summary_lines) if summary_lines else "- Professional at target company"
     
-    def _load_voice_profile(self) -> Dict[str, Any]:
+    def _load_voice_profile(self) -> Dict[str, object]:
         """Load sender voice profile"""
         if os.path.exists("sender_voice_profile.json"):
             with open("sender_voice_profile.json", 'r') as f:
@@ -603,7 +603,7 @@ class HOP6_ValidationAgent:
     
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, object],
         toolkit: ValidationToolkit
     ):
         """
@@ -681,10 +681,10 @@ class HOP6_ValidationAgent:
     def _validate_draft(
         self,
         text: str,
-        draft: Dict[str, Any],
-        research: Dict[str, Any],
-        grounding: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        draft: Dict[str, object],
+        research: Dict[str, object],
+        grounding: Dict[str, object]
+    ) -> List[Dict[str, object]]:
         """Run all validation rules from config"""
         
         results = []
@@ -838,7 +838,7 @@ class HOP8_QAReportAgent:
     Output: outputs/QA_Report.md
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize with externalized config
         
@@ -887,7 +887,7 @@ class HOP8_QAReportAgent:
         
         return str(report_path)
     
-    def _generate_markdown_report(self, states: Dict[str, Any], mission_id: str) -> str:
+    def _generate_markdown_report(self, states: Dict[str, object], mission_id: str) -> str:
         """Generate comprehensive markdown report"""
         
         lines = []
@@ -997,7 +997,7 @@ class HOP8_QAReportAgent:
         
         return "\n".join(lines)
     
-    def _calculate_quality_score(self, states: Dict[str, Any]) -> float:
+    def _calculate_quality_score(self, states: Dict[str, object]) -> float:
         """Calculate overall quality score"""
         
         research = states.get("HOP-2", {})
@@ -1102,7 +1102,7 @@ class HOPOrchestrator:
         
         print(f"[HOPOrchestrator] Initialized with {len(self.agents)} agents")
     
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """
         Execute complete workflow using HOP architecture
         

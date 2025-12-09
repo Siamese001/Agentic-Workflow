@@ -6,7 +6,7 @@ from core.models.models import TelemetryEvent
 
 
 _telemetry_buffer: List[TelemetryEvent] = []
-_span_stack: List[Dict[str, Any]] = []
+_span_stack: List[Dict[str, object]] = []
 
 
 def append_event(evt: TelemetryEvent) -> None:
@@ -28,20 +28,20 @@ def clear_events() -> None:
     _span_stack.clear()
 
 
-def push_span(record: Dict[str, Any]) -> None:
+def push_span(record: Dict[str, object]) -> None:
     """Push a span record onto the span stack."""
 
     _span_stack.append(record)
 
 
-def pop_span(record: Dict[str, Any]) -> None:
+def pop_span(record: Dict[str, object]) -> None:
     """Remove a span record from the span stack if present."""
 
     if record in _span_stack:
         _span_stack.remove(record)
 
 
-def span_stack() -> List[Dict[str, Any]]:
+def span_stack() -> List[Dict[str, object]]:
     """Return the internal span stack (for inspection-only)."""
 
     return _span_stack

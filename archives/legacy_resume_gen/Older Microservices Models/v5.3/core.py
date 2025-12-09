@@ -516,7 +516,7 @@ class DuplicateDetector:
             vectors = vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
             return float(similarity)
-        except:
+        except (ValueError, TypeError, KeyError):
             return 0.0
 
 class TextSanitizer:

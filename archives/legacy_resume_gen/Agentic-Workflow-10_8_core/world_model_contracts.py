@@ -30,13 +30,13 @@ def _coerce_content(value: Any) -> str:
     return "" if value is None else str(value)
 
 
-def normalize_world_facts(facts: List[dict]) -> List[Dict[str, Any]]:
+def normalize_world_facts(facts: List[dict]) -> List[Dict[str, object]]:
     """Normalize a list of world facts into the deterministic schema."""
 
-    normalized: List[Dict[str, Any]] = []
+    normalized: List[Dict[str, object]] = []
     for fact in facts or []:
         if isinstance(fact, dict):
-            fact_copy: Dict[str, Any] = dict(fact)
+            fact_copy: Dict[str, object] = dict(fact)
         else:
             fact_copy = {"content": _coerce_content(fact)}
 

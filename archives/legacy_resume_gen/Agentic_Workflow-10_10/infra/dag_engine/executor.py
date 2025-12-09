@@ -36,7 +36,7 @@ class DAGExecutor:
             return None
 
         node = self._graph.nodes[node_id]
-        meta: Dict[str, Any] = getattr(node, "metadata", {}) or {}
+        meta: Dict[str, object] = getattr(node, "metadata", {}) or {}
 
         preferred: List[str] = list(meta.get("preferred_agent_ids", []) or [])
         agent_type: Optional[str] = meta.get("agent_type")
@@ -65,8 +65,8 @@ class DAGExecutor:
     async def run(
         self,
         start_nodes: Optional[Iterable[str]] = None,
-        ctx: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        ctx: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """
         Executes résumé processing DAG with proper dependency resolution.
 

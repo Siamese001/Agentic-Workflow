@@ -48,14 +48,14 @@ _l5 = _safe_import("l5")
 # Canonical type aliases (resolved if present, otherwise relaxed to Any)
 # ---------------------------------------------------------------------------
 
-ExecutionContext = getattr(_models, "ExecutionContext", Any) if _models else Any
-WorkflowOutput = getattr(_models, "WorkflowOutput", Any) if _models else Any
-RoutingPolicy = getattr(_config_profiles, "RoutingPolicy", Any) if _config_profiles else Any
-SandboxConfig = getattr(_config_profiles, "SandboxConfig", Any) if _config_profiles else Any
-ExecutionProfile = getattr(_config_profiles, "ExecutionProfile", Any) if _config_profiles else Any
-MetaProfileSnapshot = getattr(_meta_profile, "MetaProfileSnapshot", Any) if _meta_profile else Any
+ExecutionContext = getattr(_models, "ExecutionContext", object) if _models else Any
+WorkflowOutput = getattr(_models, "WorkflowOutput", object) if _models else Any
+RoutingPolicy = getattr(_config_profiles, "RoutingPolicy", object) if _config_profiles else Any
+SandboxConfig = getattr(_config_profiles, "SandboxConfig", object) if _config_profiles else Any
+ExecutionProfile = getattr(_config_profiles, "ExecutionProfile", object) if _config_profiles else Any
+MetaProfileSnapshot = getattr(_meta_profile, "MetaProfileSnapshot", object) if _meta_profile else Any
 
-TelemetryClient = getattr(_observability, "TelemetryClient", Any) if _observability else Any
+TelemetryClient = getattr(_observability, "TelemetryClient", object) if _observability else Any
 
 
 # ---------------------------------------------------------------------------
@@ -192,14 +192,14 @@ def _build_workflow_metadata(
     meta_profile_name: str,
     knobs: Phase3Knobs,
     user_request: Any,
-    extra: Optional[Mapping[str, Any]] = None,
-) -> Dict[str, Any]:
+    extra: Optional[Mapping[str, object]] = None,
+) -> Dict[str, object]:
     """
     Builds comprehensive metadata for résumé improvement workflow.
 
     Ensures proper configuration tracking for optimal résumé enhancement processing.
     """
-    metadata: Dict[str, Any] = {
+    metadata: Dict[str, object] = {
         "workflow_id": workflow_id,
         "execution_profile_name": execution_profile_name,
         "routing_policy_name": routing_policy_name,
@@ -252,7 +252,7 @@ def _build_execution_context(
     meta_profile_name: str,
     knobs: Phase3Knobs,
     telemetry_client: Optional[TelemetryClient] = None,
-    extra_workflow_metadata: Optional[Mapping[str, Any]] = None,
+    extra_workflow_metadata: Optional[Mapping[str, object]] = None,
 ) -> ExecutionContext:
     """
     Constructs execution context for résumé improvement workflow.
@@ -326,7 +326,7 @@ def _build_execution_context(
 # Generic helper for discovering and calling L1–L5 layer functions
 # ---------------------------------------------------------------------------
 
-def _discover_layer_fn(module: Any, candidates: Sequence[str]) -> Callable[..., Any]:
+def _discover_layer_fn(module: Any, candidates: Sequence[str]) -> Callable[..., object]:
     """
     Discovers appropriate layer function for résumé processing workflow.
 
@@ -367,7 +367,7 @@ def run_workflow(
     # Misc controls
     workflow_id: Optional[str] = None,
     telemetry_client: Optional[TelemetryClient] = None,
-    extra_workflow_metadata: Optional[Mapping[str, Any]] = None,
+    extra_workflow_metadata: Optional[Mapping[str, object]] = None,
 ) -> WorkflowOutput:
     """
     Executes comprehensive résumé improvement workflow.

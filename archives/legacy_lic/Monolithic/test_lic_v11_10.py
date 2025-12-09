@@ -843,7 +843,7 @@ class TestIntegration:
         for _ in range(2):
             try:
                 cb.call(failing_func)
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass
         
         assert cb.state == CircuitState.OPEN

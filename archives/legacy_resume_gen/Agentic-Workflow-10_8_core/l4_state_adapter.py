@@ -23,7 +23,7 @@ class StateAdapter:
     def __init__(self, memory_manager: MemoryManager | None = None, state_machine: StateMachine | None = None) -> None:
         self.memory_manager = memory_manager or MemoryManager()
         self.state_machine = state_machine or StateMachine()
-        self._state: Dict[str, Any] = {
+        self._state: Dict[str, object] = {
             "messages": [],
             "rag_history": [],
             "summary": "",
@@ -35,12 +35,12 @@ class StateAdapter:
         }
 
     @property
-    def state(self) -> Dict[str, Any]:
+    def state(self) -> Dict[str, object]:
         """Return a deep copy of the current state."""
 
         return copy.deepcopy(self._state)
 
-    def apply_patch(self, patch: StatePatch) -> Dict[str, Any]:
+    def apply_patch(self, patch: StatePatch) -> Dict[str, object]:
         """Apply a patch, reconcile memory budgets, and update cached state."""
 
         updated = apply_patch(self._state, patch)

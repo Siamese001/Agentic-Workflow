@@ -36,7 +36,7 @@ class DIContainer(Protocol):
 class SimpleDIContainer:
     """Simple dependency injection container."""
     
-    _services: Dict[type, Any] = field(default_factory=dict)
+    _services: Dict[type, object] = field(default_factory=dict)
     
     def get(self, service_type: type[T]) -> Optional[T]:
         """Get a service instance by type."""

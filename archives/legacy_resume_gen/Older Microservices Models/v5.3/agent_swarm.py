@@ -142,15 +142,15 @@ AGENT_COMPLEXITY = {
 class CrewContext:
     """Context for crew operations (if not already defined)."""
     job_description: str = ""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
     strategy: Optional[StrategyBrief] = None
     staging_buffer: Optional[Any] = None
     thematic_analysis: Optional[Any] = None
     company_name: str = ""
     job_title: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 class SwarmAgent:
     """Base class for all swarm agents."""
@@ -165,7 +165,7 @@ class SwarmAgent:
 class FeedbackLoggerAgent(SwarmAgent):
     """Logs HIL interactions and QA failures for pattern finding."""
     def __init__(self): super().__init__("FeedbackLoggerAgent")
-    def log_event(self, event_type: str, data: Dict[str, Any]):
+    def log_event(self, event_type: str, data: Dict[str, object]):
         # In a real async system, this would write to a dedicated log stream
         pass
 
@@ -182,7 +182,7 @@ class AutoTunerAgent(SwarmAgent):
     def __init__(self): 
         super().__init__("AutoTunerAgent")
     
-    def analyze_telemetry(self, log_path: str) -> Dict[str, Any]:
+    def analyze_telemetry(self, log_path: str) -> Dict[str, object]:
         # Finds patterns like "K1 always fails word count when set < 100"
         return {"recommended_changes": {}}
 
@@ -436,7 +436,7 @@ class GeminiResponse:
     """Response structure from Gemini API."""
     text: str
     usage: Dict[str, int]
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     cached: bool = False
     
 @dataclass
@@ -669,7 +669,7 @@ class Library_Specialist:
             logger.error(f"Failed to initialize ChromaDB: {e}")
             self.enabled = False
     
-    def store_memory(self, content: str, metadata: Dict[str, Any]) -> bool:
+    def store_memory(self, content: str, metadata: Dict[str, object]) -> bool:
         """Store a memory in persistent storage."""
         if not self.enabled:
             return False
@@ -696,7 +696,7 @@ class Library_Specialist:
             return False
     
     def retrieve_memories(self, query: str, n_results: int = 5, 
-                         filter_metadata: Optional[Dict] = None) -> List[Dict[str, Any]]:
+                         filter_metadata: Optional[Dict] = None) -> List[Dict[str, object]]:
         """Retrieve relevant memories based on query."""
         if not self.enabled:
             return []
@@ -729,7 +729,7 @@ class Library_Specialist:
             logger.error(f"Failed to retrieve memories: {e}")
             return []
     
-    def rehydrate_master_index(self, master_resume: Dict[str, Any]) -> MasterResumeIndex:
+    def rehydrate_master_index(self, master_resume: Dict[str, object]) -> MasterResumeIndex:
         """
         V5.2 PATCH: Rehydrate MasterResumeIndex from master resume data.
         This is the critical recovery mechanism from v3.8.
@@ -819,7 +819,7 @@ class Web_Specialist:
         return True
     
     def fetch_competitive_intelligence(self, company_name: str, 
-                                      job_title: str) -> Dict[str, Any]:
+                                      job_title: str) -> Dict[str, object]:
         """Fetch competitive intelligence about company and role."""
         if not self._check_circuit_breaker():
             logger.warning("Circuit breaker OPEN - returning cached data")
@@ -886,7 +886,7 @@ class RAG_Synthesizer:
         self.gemini_service = get_gemini_service()
     
     def execute_rag_mission(self, mission: RAGMission, 
-                           context: Dict[str, Any]) -> Dict[str, Any]:
+                           context: Dict[str, object]) -> Dict[str, object]:
         """Execute a complete 4-phase RAG mission."""
         logger.info(f"🎯 Executing RAG mission for phase: {mission.phase.value}")
         
@@ -922,7 +922,7 @@ class RAG_Synthesizer:
             return results
     
     def _execute_extraction(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute extraction phase."""
         prompt = get_rag_phase_prompt(RAGPhase.EXTRACTION, mission, context)
         response = self.gemini_service.generate(prompt, temperature=0.3)
@@ -947,7 +947,7 @@ class RAG_Synthesizer:
         }
     
     def _execute_enrichment(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute enrichment phase."""
         # Use extracted evidence as base
         base_evidence = context.get('extraction_evidence', [])
@@ -971,7 +971,7 @@ class RAG_Synthesizer:
         }
     
     def _execute_synthesis(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute synthesis phase."""
         prompt = get_rag_phase_prompt(RAGPhase.SYNTHESIS, mission, context)
         response = self.gemini_service.generate(prompt, temperature=0.7)
@@ -986,7 +986,7 @@ class RAG_Synthesizer:
         }
     
     def _execute_validation(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute validation phase."""
         prompt = get_rag_phase_prompt(RAGPhase.VALIDATION, mission, context)
         response = self.gemini_service.generate(prompt, temperature=0.2)
@@ -1004,8 +1004,8 @@ class RAG_Synthesizer:
             'evidence': context.get('synthesis_evidence', [])
         }
     
-    def _calculate_signal_score(self, results: Dict[str, Any], 
-                               context: Dict[str, Any]) -> float:
+    def _calculate_signal_score(self, results: Dict[str, object], 
+                               context: Dict[str, object]) -> float:
         """Calculate signal quality score for results."""
         score = 0.0
         factors = []
@@ -1045,7 +1045,7 @@ class QA_Auditor:
     def audit_output(self, staging_buffer: ImmutableStagingBuffer,
                     thematic_analysis: ThematicAnalysis,
                     job_description: str,
-                    master_resume: Dict[str, Any]) -> Dict[str, Any]:
+                    master_resume: Dict[str, object]) -> Dict[str, object]:
         """Perform comprehensive QA audit."""
         logger.info("🔍 Performing QA audit on output")
         
@@ -1096,12 +1096,12 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     staging_buffer: ImmutableStagingBuffer = field(default_factory=ImmutableStagingBuffer)
     thematic_analysis: Optional[ThematicAnalysis] = None
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class Governor:
     """
@@ -1158,7 +1158,7 @@ class Governor:
         # Validation engine
         self.validator = PreFlightValidator()
     
-    def process_request(self, context: CrewContext) -> Dict[str, Any]:
+    def process_request(self, context: CrewContext) -> Dict[str, object]:
         """
         Main orchestration method - processes a complete job application.
         V5.2 10 Agents Patch: Integrated multi-tier validation flow.
@@ -1245,7 +1245,7 @@ class Governor:
             results['validation'] = {'passed': False, 'error': str(e)}
             return results
     
-    def _handle_veto(self, veto: VetoSignal, context: CrewContext, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _handle_veto(self, veto: VetoSignal, context: CrewContext, results: Dict[str, object]) -> Dict[str, object]:
         """Handle a veto signal from validation."""
         self.logger.warning(f"🚫 VETO from {veto.agent_name}: {veto.message} (Level: {veto.level})")
         
@@ -1288,7 +1288,7 @@ class Governor:
         
         return analysis
     
-    def _execute_rag_pipeline(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_rag_pipeline(self, context: CrewContext) -> Dict[str, object]:
         """Execute 4-phase RAG pipeline."""
         results = {}
         accumulated_context = {'job_description': context.job_description}
@@ -1399,7 +1399,7 @@ class Governor:
         
         return template_map.get(section, 'generic_section')
     
-    def _validate_output(self, context: CrewContext) -> Dict[str, Any]:
+    def _validate_output(self, context: CrewContext) -> Dict[str, object]:
         """Validate generated output."""
         passed, results, signal_score = self.validator.validate(
             staging_buffer=context.staging_buffer,
@@ -1417,7 +1417,7 @@ class Governor:
             'production_ready': passed and signal_score >= CONFIG.min_confidence_score
         }
     
-    def _assemble_artifacts(self, context: CrewContext) -> Dict[str, Any]:
+    def _assemble_artifacts(self, context: CrewContext) -> Dict[str, object]:
         """Assemble final artifacts from validated content."""
         artifacts = {}
         
@@ -1491,7 +1491,7 @@ class Governor:
         
         return artifacts
     
-    def _format_qa_report(self, validation_results: Dict[str, Any]) -> str:
+    def _format_qa_report(self, validation_results: Dict[str, object]) -> str:
         """Format validation results as QA report."""
         report = f"""# QA Report
 
@@ -1520,8 +1520,8 @@ class HIL_EscalationAgent:
         self.escalation_log = []
         self.escalation_file = CACHE_DIR / "hil_escalations.json"
     
-    def escalate(self, issue: str, context: Dict[str, Any], 
-                severity: str = "HIGH") -> Dict[str, Any]:
+    def escalate(self, issue: str, context: Dict[str, object], 
+                severity: str = "HIGH") -> Dict[str, object]:
         """
         Escalate issue to human operator.
         V5.2 PATCH: Persist using json.dump instead of in-memory storage.
@@ -1559,7 +1559,7 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(__name__)
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any]) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object]) -> Dict[str, object]:
         """
         Process a complete job application through the crew.
         """

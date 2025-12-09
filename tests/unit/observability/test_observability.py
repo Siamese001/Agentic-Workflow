@@ -1,7 +1,7 @@
 """Unit tests for observability - logging, tracing, and metrics."""
 from __future__ import annotations
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -18,7 +18,7 @@ class LogEntry:
     level: LogLevel
     message: str
     timestamp: datetime
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class Span:
@@ -27,7 +27,7 @@ class Span:
     span_id: str
     start_time: float
     end_time: Optional[float] = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: Dict[str, object] = field(default_factory=dict)
 
 class TestStructuredLogging:
     """Tests for structured logging."""

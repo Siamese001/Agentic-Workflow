@@ -44,9 +44,9 @@ import tempfile
 import os
 import re
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock, patch, Mock, ANY
+from unittest.mock import MagicMock, AsyncMock, patch, Mock, object
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.5: Import from new core
 from core_v10_5 import (
@@ -1472,10 +1472,10 @@ async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
     
     # Verify the decorator called the metrics collector
     mock_workflow_context.metrics_collector.record.assert_any_call(
-        "PIISanitizerAgent", "run_pii_sanitizer", ANY, success=True, error=None, metadata=ANY
+        "PIISanitizerAgent", "run_pii_sanitizer", object, success=True, error=None, metadata=ANY
     )
     mock_workflow_context.metrics_collector.record.assert_any_call(
-        "BiasDetectorAgent", "run_bias_detector", ANY, success=True, error=None, metadata=ANY
+        "BiasDetectorAgent", "run_bias_detector", object, success=True, error=None, metadata=ANY
     )
 
 # ============================================================================

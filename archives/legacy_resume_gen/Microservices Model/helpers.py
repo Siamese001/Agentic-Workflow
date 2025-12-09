@@ -301,7 +301,7 @@ class HopCheckpoint:
     output_artifact_hashes: Dict[str, str] = field(default_factory=dict)
     
     validation_results: List[ValidationResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
     retry_count: int = 0
 

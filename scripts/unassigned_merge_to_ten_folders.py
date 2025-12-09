@@ -80,12 +80,12 @@ def compute_hash(filepath: Path) -> str:
     return sha256.hexdigest()[:16]
 
 
-def analyze_content(filepath: Path) -> Dict[str, any]:
+def analyze_content(filepath: Path) -> Dict[str, str]:
     """Analyze file content to determine routing hints."""
     try:
         with open(filepath, "r", encoding="utf-8", errors="replace") as f:
             content = f.read(5000)
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return {"type": "binary", "hints": []}
 
     hints = []
@@ -385,7 +385,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                 manifest.routed_files += 1
                 print(f"  [DRY-RUN] {filepath.name} → {target_folder}/{target_subpath}")
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             manifest.errors.append({
                 "source": str(filepath),
                 "error": str(e),

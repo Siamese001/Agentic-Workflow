@@ -71,10 +71,10 @@ class ToTStrategistAgent(BaseAgent):
 
     async def _generate_branches(
         self,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         client: Any,
         branching_factor: int,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         prompt_template = self.prompt_manager.get_template("strategy_tot_branch")
 
         branch_tasks = []
@@ -103,7 +103,7 @@ class ToTStrategistAgent(BaseAgent):
 
         responses = await asyncio.gather(*branch_tasks, return_exceptions=True)
 
-        branches: List[Dict[str, Any]] = []
+        branches: List[Dict[str, object]] = []
         for i, res in enumerate(responses):
             if isinstance(res, Exception):
                 self.log_warning(f"ToT Branch {i + 1} failed API call: {res}")
@@ -116,7 +116,7 @@ class ToTStrategistAgent(BaseAgent):
         return branches
 
     @track_metrics("run_tot_strategy")
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating ToT strategy with voting (v10.7)...")
 
         branching_factor = self.config.agent_stacks.strategy_tot_branching_factor

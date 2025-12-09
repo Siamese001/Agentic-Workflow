@@ -86,11 +86,11 @@ class SafetyFinding:
     type: Union[FindingType, str]
     severity: Severity
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
     location: Optional[str] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to a dictionary for serialization."""
         return {
             'id': self.id,
@@ -108,7 +108,7 @@ class PolicyDecision:
     policy_id: str
     verdict: Verdict
     findings: List[SafetyFinding]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
     @property
@@ -116,7 +116,7 @@ class PolicyDecision:
         """Check if there are any findings that would cause a block."""
         return any(f.severity >= Severity.HIGH for f in self.findings)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to a dictionary for serialization."""
         return {
             'policy_id': self.policy_id,
@@ -145,7 +145,7 @@ class SafetyContext:
     session_id: Optional[str] = None
     
     # Additional context for policy evaluation
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def get(self, key: str, default: Any = None) -> Any:
         """Get a value from the context with a default."""

@@ -17,7 +17,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List, Set
+from typing import Dict, object, Tuple, List, Set
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -112,7 +112,7 @@ class ArtistGenerator:
         self.target_embeddings: np.ndarray | None = None
         self.target_keywords: Set[str] = set()
         self.selected_bullets_map: Dict[str, List[Dict]] = {}
-        self.generated_content: Dict[str, Any] = {}
+        self.generated_content: Dict[str, object] = {}
         self.api_calls_made = 0
 
     def _get_reasoning_config(self, section_key: str) -> ReasoningConfig:
@@ -328,7 +328,7 @@ class ArtistGenerator:
 
         return f"Generate content for {section_key} targeting {primary_theme}."
 
-    def generate_all_sections(self) -> Tuple[Dict[str, Any], int]:
+    def generate_all_sections(self) -> Tuple[Dict[str, object], int]:
         """
         Main generation orchestrator
         """

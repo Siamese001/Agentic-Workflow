@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, object, Awaitable, Callable, Dict, Optional, Tuple
 
 from mcp import sync_context
 
@@ -123,7 +123,7 @@ def get_timeout_decorator(timeout_seconds: float) -> Callable[[Callable[..., Awa
     return async_timeout(int(timeout_seconds))
 
 
-def _extract_workflow_context(args: Tuple[Any, ...], kwargs: Dict[str, Any]) -> Optional["WorkflowContext"]:
+def _extract_workflow_context(args: Tuple[Any, ...], kwargs: Dict[str, object]) -> Optional["WorkflowContext"]:
     """Inspect call arguments to find a WorkflowContext instance."""
 
     from .context import WorkflowContext  # Local import avoids circular import issues.

@@ -22,7 +22,7 @@ import redis
 import chromadb
 from chromadb.utils import embedding_functions
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # v10.4: Import from new core
 from core_v10_4 import (
@@ -61,7 +61,7 @@ def setup_logging(config: ConfigV10_4, debug_mode: bool = False):
     
     logger.info(f"v10.4 Logging initialized: {config.logging_config.log_file}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> Dict[str, object]:
     """Load job input JSON"""
     try:
         with open(path, 'r') as f:
@@ -79,7 +79,7 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Run workflow asynchronously with v10.4 Hybrid RAG & Validation"""
     
     logger.info(f"===== Starting v10.4 Instructional Injection Workflow =====")

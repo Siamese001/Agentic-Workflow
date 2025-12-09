@@ -69,7 +69,7 @@ class HealingWorkflow:
     # Configuration
     conflict_types: List[ConflictType] = field(default_factory=list)
     entity_filters: List[str] = field(default_factory=list)
-    temporal_scope: Optional[Dict[str, Any]] = None
+    temporal_scope: Optional[Dict[str, object]] = None
     
     # Execution tracking
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
@@ -82,9 +82,9 @@ class HealingWorkflow:
     entities_processed: List[str] = field(default_factory=list)
     
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts résumé repair workflow data to storage format for tracking and auditing.
 
@@ -172,7 +172,7 @@ class TemporalKGSelfHealingController:
     async def run_temporal_kg_self_heal_cycle(
         self,
         trigger: HealingTrigger = HealingTrigger.SCHEDULED,
-        scope: Optional[Dict[str, Any]] = None,
+        scope: Optional[Dict[str, object]] = None,
     ) -> HealingWorkflow:
         """
         Executes complete résumé data consistency check and automatic repair cycle.
@@ -328,7 +328,7 @@ class TemporalKGSelfHealingController:
         
         return DagGraph(nodes=nodes, edges=edges)
     
-    async def _node_conflict_detection(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    async def _node_conflict_detection(self, dag_ctx: Dict[str, object]) -> Dict[str, object]:
         """Detect conflicts in the temporal KG."""
         workflow = dag_ctx["workflow"]
         
@@ -359,7 +359,7 @@ class TemporalKGSelfHealingController:
             logger.error(f"Conflict detection failed: {str(e)}")
             return {"conflicts_detected": 0, "detection_success": False, "error": str(e)}
     
-    async def _node_conflict_analysis(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    async def _node_conflict_analysis(self, dag_ctx: Dict[str, object]) -> Dict[str, object]:
         """
         Analyzes résumé data conflicts to prioritize the most impactful fixes for career timeline accuracy.
 
@@ -403,7 +403,7 @@ class TemporalKGSelfHealingController:
             logger.error(f"Conflict analysis failed: {str(e)}")
             return {"analysis_success": False, "error": str(e)}
     
-    async def _node_entity_resolution(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    async def _node_entity_resolution(self, dag_ctx: Dict[str, object]) -> Dict[str, object]:
         """Resolve entity identity conflicts."""
         workflow = dag_ctx["workflow"]
         
@@ -439,7 +439,7 @@ class TemporalKGSelfHealingController:
             logger.error(f"Entity resolution failed: {str(e)}")
             return {"entities_resolved": 0, "resolution_success": False, "error": str(e)}
     
-    async def _node_triplet_repair(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    async def _node_triplet_repair(self, dag_ctx: Dict[str, object]) -> Dict[str, object]:
         """
         Repairs conflicting career facts and timeline data to ensure résumé consistency and accuracy.
 
@@ -479,7 +479,7 @@ class TemporalKGSelfHealingController:
             logger.error(f"Triplet repair failed: {str(e)}")
             return {"triplets_repaired": 0, "repair_success": False, "error": str(e)}
     
-    async def _node_temporal_invalidation(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    async def _node_temporal_invalidation(self, dag_ctx: Dict[str, object]) -> Dict[str, object]:
         """Apply temporal invalidation logic."""
         workflow = dag_ctx["workflow"]
         
@@ -503,7 +503,7 @@ class TemporalKGSelfHealingController:
             logger.error(f"Temporal invalidation failed: {str(e)}")
             return {"invalidations_applied": 0, "invalidation_success": False, "error": str(e)}
     
-    async def _node_validation(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    async def _node_validation(self, dag_ctx: Dict[str, object]) -> Dict[str, object]:
         """
         Validates résumé repair results to ensure career data fixes are correct and complete.
 
@@ -544,7 +544,7 @@ class TemporalKGSelfHealingController:
         """
         return list(self.active_workflows.values())
     
-    def get_healing_metrics(self) -> Dict[str, Any]:
+    def get_healing_metrics(self) -> Dict[str, object]:
         """
         Provides résumé data repair performance metrics and quality improvement statistics.
 

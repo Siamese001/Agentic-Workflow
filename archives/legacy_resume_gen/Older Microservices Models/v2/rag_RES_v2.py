@@ -146,7 +146,7 @@ class LibrarianAgent:
         thematic_analysis: ThematicAnalysis,
         company_name: str,
         job_title: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, object]] = None
     ) -> None:
         """
         Stores successful RAGMission and analysis for future reference.
@@ -195,7 +195,7 @@ class LibrarianAgent:
         query: str,
         company_name: Optional[str] = None,
         n_results: int = 3
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Queries for similar past missions to inform current extraction.
         
@@ -486,7 +486,7 @@ class PhaseExecutor:
             signal.signal(signal.SIGALRM, old_handler)
             signal.alarm(0)
 
-    def _validate_phase_result(self, result: Dict[str, Any], phase_name: str) -> bool:
+    def _validate_phase_result(self, result: Dict[str, object], phase_name: str) -> bool:
         # ... existing code ...
         """Validates that a phase result has the expected structure."""
         if not isinstance(result, dict):
@@ -539,7 +539,7 @@ class WebSearchTool:
         self,
         prompt: str,
         phase_name: str = "unknown"
-    ) -> Tuple[Dict[str, Any], int]:
+    ) -> Tuple[Dict[str, object], int]:
         """
         Execute search and analysis using Gemini with Google Search.
         
@@ -1300,7 +1300,7 @@ class EnhancedJobDescriptionAnalyzer:
         return ['microsoft', 'google', 'amazon']
     
     @staticmethod
-    def _dict_to_thematic_analysis(data: Dict[str, Any]) -> ThematicAnalysis:
+    def _dict_to_thematic_analysis(data: Dict[str, object]) -> ThematicAnalysis:
         # ... existing code ...
         """
         Converts a dictionary to ThematicAnalysis dataclass.

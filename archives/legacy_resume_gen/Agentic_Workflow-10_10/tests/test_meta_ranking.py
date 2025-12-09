@@ -6,7 +6,7 @@ from meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores
 from core.models.models import Evidence
 
 
-def _make_item(text: str) -> Dict[str, Any]:
+def _make_item(text: str) -> Dict[str, object]:
     return {"text": text}
 
 

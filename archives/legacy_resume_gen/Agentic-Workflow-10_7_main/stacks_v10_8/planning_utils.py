@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List
 
 
-def extract_job_profile(state: Dict[str, Any]) -> Dict[str, Any]:
+def extract_job_profile(state: Dict[str, object]) -> Dict[str, object]:
     job = state.get("job") or {}
 
     def _first(*keys: str) -> str:
@@ -40,7 +40,7 @@ def extract_job_profile(state: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def extract_resume_profile(state: Dict[str, Any]) -> Dict[str, Any]:
+def extract_resume_profile(state: Dict[str, object]) -> Dict[str, object]:
     resume = state.get("resume") or {}
     master_resume = resume.get("master_resume") or {}
     summary = (
@@ -55,7 +55,7 @@ def extract_resume_profile(state: Dict[str, Any]) -> Dict[str, Any]:
     return {"summary": str(summary), "experiences": experiences}
 
 
-def describe_experience(experience: Dict[str, Any]) -> str:
+def describe_experience(experience: Dict[str, object]) -> str:
     title = experience.get("title") or experience.get("role") or "Role"
     company = experience.get("company") or experience.get("employer") or "Company"
     scope = (
@@ -70,7 +70,7 @@ def describe_experience(experience: Dict[str, Any]) -> str:
     return description
 
 
-def detect_metrics(experiences: List[Dict[str, Any]]) -> List[str]:
+def detect_metrics(experiences: List[Dict[str, object]]) -> List[str]:
     metrics: List[str] = []
     for exp in experiences:
         text_parts: List[str] = []
@@ -89,7 +89,7 @@ def detect_metrics(experiences: List[Dict[str, Any]]) -> List[str]:
     return metrics
 
 
-def collect_sections(state: Dict[str, Any]) -> List[str]:
+def collect_sections(state: Dict[str, object]) -> List[str]:
     draft = state.get("draft") or {}
     sections = draft.get("sections")
     if isinstance(sections, dict) and sections:
@@ -97,7 +97,7 @@ def collect_sections(state: Dict[str, Any]) -> List[str]:
     return ["summary", "experience", "skills"]
 
 
-def missing_requirements(requirements: List[str], experiences: List[Dict[str, Any]]) -> List[str]:
+def missing_requirements(requirements: List[str], experiences: List[Dict[str, object]]) -> List[str]:
     if not requirements:
         return []
     combined = " ".join(

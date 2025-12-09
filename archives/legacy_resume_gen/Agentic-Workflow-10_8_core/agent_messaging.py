@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, object
 from multi_agent import AgentRole
 
 
@@ -7,8 +7,8 @@ from multi_agent import AgentRole
 class AgentMessage:
     sender: AgentRole
     recipient: AgentRole
-    content: Dict[str, Any]
-    metadata: Dict[str, Any]
+    content: Dict[str, object]
+    metadata: Dict[str, object]
 
 
 def route_to_specialist(graph, message: AgentMessage):

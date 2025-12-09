@@ -10,7 +10,7 @@ document expansion.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 import re
 from abc import ABC, abstractmethod
@@ -24,7 +24,7 @@ class GoalState:
     primary_goals: List[str]
     success_metrics: List[str]
     constraints: List[str]
-    context: Dict[str, Any]
+    context: Dict[str, object]
 
 
 @dataclass
@@ -43,7 +43,7 @@ class WeightedResult:
     base_score: float
     signal_score: float
     final_score: float
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 class GoalStateInjector:
@@ -146,7 +146,7 @@ class HyDEProcessor:
             'personnel': "Generate hypothetical team bios or organizational structure"
         }
     
-    def generate_hypothetical_doc(self, query: str, context: Dict[str, Any] = None) -> HyDEDocument:
+    def generate_hypothetical_doc(self, query: str, context: Dict[str, object] = None) -> HyDEDocument:
         """
         Generate hypothetical document for better retrieval.
         
@@ -193,7 +193,7 @@ class HyDEProcessor:
         self, 
         query: str, 
         strategy: str, 
-        context: Dict[str, Any] = None
+        context: Dict[str, object] = None
     ) -> str:
         """Create hypothetical document content."""
         strategy_prompt = self.expansion_strategies.get(strategy, "Generate relevant content for")
@@ -245,9 +245,9 @@ class SignalWeighter:
     
     def weight_results(
         self, 
-        results: List[Dict[str, Any]], 
+        results: List[Dict[str, object]], 
         query: str,
-        context: Dict[str, Any] = None
+        context: Dict[str, object] = None
     ) -> List[WeightedResult]:
         """
         Apply intelligent scoring to retrieval results.
@@ -303,7 +303,7 @@ class SignalWeighter:
         
         return weighted_results
     
-    def _calculate_recency_score(self, result: Dict[str, Any]) -> float:
+    def _calculate_recency_score(self, result: Dict[str, object]) -> float:
         """Calculate recency-based score."""
         # In production, use actual timestamps
         # For now, use simple heuristic
@@ -311,7 +311,7 @@ class SignalWeighter:
             return 0.8  # Assume recent if date is present
         return 0.5  # Default score
     
-    def _calculate_authority_score(self, result: Dict[str, Any]) -> float:
+    def _calculate_authority_score(self, result: Dict[str, object]) -> float:
         """Calculate authority-based score."""
         # Check for authority indicators
         content = result.get('content', '').lower()
@@ -320,7 +320,7 @@ class SignalWeighter:
         authority_count = sum(1 for indicator in authority_indicators if indicator in content)
         return min(0.5 + (authority_count * 0.1), 1.0)
     
-    def _calculate_relevance_score(self, result: Dict[str, Any], query: str) -> float:
+    def _calculate_relevance_score(self, result: Dict[str, object], query: str) -> float:
         """Calculate query relevance score."""
         content = result.get('content', '').lower()
         query_words = query.lower().split()
@@ -334,7 +334,7 @@ class SignalWeighter:
         
         return min(relevance_score, 1.0)
     
-    def _calculate_completeness_score(self, result: Dict[str, Any]) -> float:
+    def _calculate_completeness_score(self, result: Dict[str, object]) -> float:
         """Calculate completeness-based score."""
         content = result.get('content', '')
         
@@ -369,8 +369,8 @@ class RetrievalEnhancer:
         base_prompt: str,
         goals: List[str],
         query: str,
-        results: List[Dict[str, Any]],
-        context: Dict[str, Any] = None
+        results: List[Dict[str, object]],
+        context: Dict[str, object] = None
     ) -> Tuple[str, HyDEDocument, List[WeightedResult]]:
         """
         Apply comprehensive retrieval enhancements.

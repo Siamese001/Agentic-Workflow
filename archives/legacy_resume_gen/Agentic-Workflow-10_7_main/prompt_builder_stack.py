@@ -20,8 +20,8 @@ class PromptBuilderStack:
         strategy_plan: Any,
         complexity: str,
         workflow_id: str,
-        state: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """Execute prompt engineering and emit a structured state patch."""
 
         prompts_result = await self._prompt_agent.run_async(
@@ -31,7 +31,7 @@ class PromptBuilderStack:
             state,
         )
 
-        prompts_payload: Dict[str, Any] = {}
+        prompts_payload: Dict[str, object] = {}
         prompts_model = prompts_result.get("prompts") if isinstance(prompts_result, dict) else None
         if prompts_model is None:
             prompts_payload = prompts_result if isinstance(prompts_result, dict) else {}

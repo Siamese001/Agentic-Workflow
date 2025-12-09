@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any, Dict, List, Protocol
 
 
-class PlanObject(Dict[str, Any]):
+class PlanObject(Dict[str, object]):
     """Lightweight plan container used by L1 planners.
 
     The structure remains intentionally flexible while preserving
@@ -20,11 +20,11 @@ class PlanObject(Dict[str, Any]):
     """
 
 
-class StatePatch(Dict[str, Any]):
+class StatePatch(Dict[str, object]):
     """Patch structure applied to the mutable orchestration state."""
 
 
-class Message(Dict[str, Any]):
+class Message(Dict[str, object]):
     """Generic message payload used by memory management."""
 
 
@@ -54,18 +54,18 @@ class Phase(str, Enum):
 class ReasonerProtocol(Protocol):
     """Protocol for L1 planners."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         ...
 
 
 class ExecutionAgentProtocol(Protocol):
     """Protocol for L2 execution agents."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         ...
 
 
 # World-model related aliases (lightweight and dependency-free)
-WorldModel = Dict[str, Any]
-UserProfile = Dict[str, Any]
-SessionMetadata = Dict[str, Any]
+WorldModel = Dict[str, object]
+UserProfile = Dict[str, object]
+SessionMetadata = Dict[str, object]

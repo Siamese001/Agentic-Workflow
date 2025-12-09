@@ -1300,7 +1300,7 @@ def generate_global_and_semantic_artifacts(
 
     # Global component graph file — serialize nodes and edges in a fully
     # deterministic order (by hash, then component_id / edge tuple).
-    nodes_serialized: List[Dict[str, Any]] = []
+    nodes_serialized: List[Dict[str, object]] = []
     for h in sorted(components_by_hash.keys()):
         for c in components_by_hash[h]:
             nodes_serialized.append(
@@ -1327,7 +1327,7 @@ def generate_global_and_semantic_artifacts(
 
     # Emit deterministic component ordering per-hash for Phase 3 span-based
     # regeneration (sorted by span_start, span_end, component_id).
-    sorted_components: Dict[str, List[Dict[str, Any]]] = {}
+    sorted_components: Dict[str, List[Dict[str, object]]] = {}
     for h in sorted(components_by_hash.keys()):
         comps = sorted(
             components_by_hash[h],

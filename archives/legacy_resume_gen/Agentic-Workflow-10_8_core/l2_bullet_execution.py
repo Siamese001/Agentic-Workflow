@@ -20,7 +20,7 @@ from utils_types import PlanObject, StatePatch
 class BulletExecutionAgent(ExecutionAgent):
     """Convert planning intents into bulletized state patches."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         items: List[str] = [str(item) for item in plan.get("deliverables", plan.get("items", []))]
         if not items:
             items = [str(plan.get("objective", "unspecified-objective"))]

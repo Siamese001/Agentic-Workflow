@@ -12,7 +12,7 @@ class StrategySimRequest(SimulationInput):
 
     job_title: str
     company: str
-    strategy_plan: Dict[str, Any]
+    strategy_plan: Dict[str, object]
 
 
 class StrategySimMetrics(BaseModel):
@@ -27,5 +27,5 @@ class StrategySimMetrics(BaseModel):
 class StrategySimResult(SimulationResult):
     """Result model for strategy simulations."""
 
-    metrics: Dict[str, Any]
-    details: Dict[str, Any]
+    metrics: Dict[str, object]
+    details: Dict[str, object]

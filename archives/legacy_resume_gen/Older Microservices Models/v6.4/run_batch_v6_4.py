@@ -12,7 +12,7 @@ import logging
 import shutil
 import concurrent.futures
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # Imports from its *own* versioned files
 from main_v6_4 import WorkflowV64, setup_logging
@@ -33,7 +33,7 @@ BATCH_QUEUE_DIR = "batch_queue"
 BATCH_COMPLETE_DIR = "batch_complete"
 SUMMARY_FILE = "batch_summary_v6_4.csv"
 
-def process_single_job(job_path: str) -> Dict[str, Any]:
+def process_single_job(job_path: str) -> Dict[str, object]:
     """
     Wraps the execution of a single job for the parallel executor.
     Returns a dictionary for the summary CSV.

@@ -672,7 +672,7 @@ class TextUtils:
         try:
             vectorizer.fit([text])
             return vectorizer.get_feature_names_out().tolist()
-        except:
+        except (ValueError, TypeError, KeyError):
             return []
     
     @staticmethod
@@ -693,7 +693,7 @@ class TextUtils:
             vectors = vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
             return float(similarity)
-        except:
+        except (ValueError, TypeError, KeyError):
             return 0.0
 
 text_utils = TextUtils()

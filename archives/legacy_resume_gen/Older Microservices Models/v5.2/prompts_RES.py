@@ -9,7 +9,7 @@ import re
 import json
 import logging
 import os
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, object
 from collections import defaultdict
 
 # --- REFACTOR: Import global CONFIG ---
@@ -51,7 +51,7 @@ def build_crl_context_for_section(
     thematic_analysis: 'ThematicAnalysis',
     enriched_scaffold: Dict,
     **kwargs
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     V2 INTEGRATION: Builds context dictionary for ContextRelayLayer.
     
@@ -1064,7 +1064,7 @@ def build_overview_generation_prompt(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt_number: int
 ) -> str:
     """

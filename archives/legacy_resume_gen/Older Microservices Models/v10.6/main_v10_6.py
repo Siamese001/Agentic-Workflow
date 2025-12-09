@@ -23,7 +23,7 @@ import asyncio
 import argparse
 import uuid
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # v10.6: Import from new core
 from core_v10_6 import (
@@ -66,7 +66,7 @@ def setup_logging(config: ConfigV10_6, debug_mode: bool = False):
     logger.info(f"v10.6 Logging initialized: {config.logging_config.log_file}")
     logger.info(f"v10.6 Metrics logging to: {metrics_log_path}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> Dict[str, object]:
     """Load job input JSON"""
     try:
         with open(path, 'r') as f:
@@ -84,7 +84,7 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Run workflow asynchronously with v10.6 streaming and validation"""
     
     logger.info(f"===== Starting v10.6 Instructional Injection Workflow =====")

@@ -1,6 +1,6 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, object
 
 class TestExecutionResultInspection:
     """Tests for inspecting execution results."""
@@ -25,7 +25,7 @@ class TestExecutionResultInspection:
 
     def test_inspect_empty_result(self):
         """Edge case: Empty result handling."""
-        result: Dict[str, Any] = {}
+        result: Dict[str, object] = {}
         data = result.get("data")
         assert data is None
 

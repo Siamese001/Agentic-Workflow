@@ -1,6 +1,6 @@
 """Integration tests for full pipeline execution."""
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -17,9 +17,9 @@ class PipelineStage(Enum):
 class PipelineState:
     pipeline_id: str
     stage: PipelineStage
-    input_data: Dict[str, Any]
-    intermediate_results: Dict[str, Any] = field(default_factory=dict)
-    final_output: Optional[Dict[str, Any]] = None
+    input_data: Dict[str, object]
+    intermediate_results: Dict[str, object] = field(default_factory=dict)
+    final_output: Optional[Dict[str, object]] = None
     errors: List[str] = field(default_factory=list)
     metrics: Dict[str, float] = field(default_factory=dict)
 

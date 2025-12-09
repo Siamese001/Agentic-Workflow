@@ -29,7 +29,7 @@ Prioritizes exact matches to ensure comprehensive résumé content coverage.
 """
 
 
-def _bm25_score(item: Dict[str, Any]) -> float:
+def _bm25_score(item: Dict[str, object]) -> float:
     """
     Calculates keyword relevance score for résumé evidence.
     
@@ -54,7 +54,7 @@ def _bm25_score(item: Dict[str, Any]) -> float:
     return float(base)
 
 
-def _dense_score(item: Dict[str, Any]) -> float:
+def _dense_score(item: Dict[str, object]) -> float:
     """
     Calculates semantic similarity score for résumé content.
     
@@ -68,7 +68,7 @@ def _dense_score(item: Dict[str, Any]) -> float:
     return float((h % 10_000_000) / 10_000_000.0)
 
 
-def _hybrid_score(item: Dict[str, Any]) -> float:
+def _hybrid_score(item: Dict[str, object]) -> float:
     """
     Combines keyword and semantic scores for résumé ranking.
     
@@ -86,7 +86,7 @@ Delivers deterministic scoring to prioritize most relevant résumé improvement 
 """
 
 
-def bm25_score(item: Dict[str, Any]) -> float:
+def bm25_score(item: Dict[str, object]) -> float:
     """
     Provides backward-compatible BM25 scoring for résumé evidence.
     
@@ -95,7 +95,7 @@ def bm25_score(item: Dict[str, Any]) -> float:
     return _bm25_score(item)
 
 
-def dense_score(item: Dict[str, Any]) -> float:
+def dense_score(item: Dict[str, object]) -> float:
     """
     Provides backward-compatible semantic scoring for résumé evidence.
     
@@ -104,13 +104,13 @@ def dense_score(item: Dict[str, Any]) -> float:
     return _dense_score(item)
 
 
-def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Ranks résumé evidence by keyword relevance.
 
     Prioritizes exact matches to ensure comprehensive résumé content coverage.
     """
-    scored: List[Dict[str, Any]] = []
+    scored: List[Dict[str, object]] = []
     for it in items or []:
         new_it = dict(it)
         new_it["score"] = _bm25_score(new_it)
@@ -122,13 +122,13 @@ def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return scored
 
 
-def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Ranks résumé evidence by semantic similarity.
     
     Finds conceptually relevant content to enhance résumé job alignment.
     """
-    scored: List[Dict[str, Any]] = []
+    scored: List[Dict[str, object]] = []
     for it in items or []:
         new_it = dict(it)
         new_it["score"] = _dense_score(new_it)
@@ -140,13 +140,13 @@ def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return scored
 
 
-def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Ranks résumé evidence by combined relevance scoring.
     
     Balances exact matches with conceptual relevance for optimal résumé improvement.
     """
-    scored: List[Dict[str, Any]] = []
+    scored: List[Dict[str, object]] = []
     for it in items or []:
         new_it = dict(it)
         new_it["score"] = _hybrid_score(new_it)
@@ -159,10 +159,10 @@ def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def rank_documents(
-    items: List[Dict[str, Any]],
+    items: List[Dict[str, object]],
     *,
     strategy: str = "hybrid",
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Ranks résumé documents using optimal scoring strategy.
     
@@ -218,12 +218,12 @@ def _rrf_weights_from_config(
 
 
 def fuse_ranked_groups(
-    groups: List[List[Dict[str, Any]]],
+    groups: List[List[Dict[str, object]]],
     *,
     use_rrf: bool = True,
     cfg: Optional[Any] = None,
     rrf_k: int = 60,
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Fuses multiple ranked lists for optimal résumé evidence prioritization.
     
@@ -235,7 +235,7 @@ def fuse_ranked_groups(
         return []
 
     if not use_rrf:
-        flattened: List[Dict[str, Any]] = []
+        flattened: List[Dict[str, object]] = []
         seen: set[Tuple[str, str]] = set()
 
         for group in groups or []:
@@ -268,7 +268,7 @@ def fuse_ranked_groups(
     # ----- RRF path -----
     weights = _rrf_weights_from_config(cfg, len(groups))
     doc_scores: Dict[Tuple[str, str], float] = {}
-    doc_repr: Dict[Tuple[str, str], Dict[str, Any]] = {}
+    doc_repr: Dict[Tuple[str, str], Dict[str, object]] = {}
 
     for g_idx, group in enumerate(groups):
         w = weights[g_idx] if g_idx < len(weights) else 1.0
@@ -279,7 +279,7 @@ def fuse_ranked_groups(
             r = rank_idx + 1
             doc_scores[key] = doc_scores.get(key, 0.0) + (w / float(rrf_k + r))
 
-    fused: List[Dict[str, Any]] = []
+    fused: List[Dict[str, object]] = []
     for key, score in doc_scores.items():
         item = dict(doc_repr[key])
         item["score"] = score
@@ -329,11 +329,11 @@ Maintains legacy interface while delivering optimal résumé content prioritizat
 
 
 def fuse_ranked_groups_for_strategy(
-    groups: List[List[Dict[str, Any]]],
+    groups: List[List[Dict[str, object]]],
     *,
     strategy: str = "hybrid",
     cfg: Optional[Any] = None,
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Applies optimal ranking fusion for résumé evidence groups.
     
@@ -439,7 +439,7 @@ def rank_evidence(
         return []
 
     # Convert to dicts, re-use dict-based rankers, then map back
-    items: List[Dict[str, Any]] = []
+    items: List[Dict[str, object]] = []
     for ev in evidence:
         items.append(
             {
@@ -501,7 +501,7 @@ def fuse_evidence_groups_rrf(
 
     weights = _rrf_weights_from_config(cfg, len(groups))
     scores: Dict[Tuple[str, str], float] = {}
-    reprs: Dict[Tuple[str, str], Any] = {}
+    reprs: Dict[Tuple[str, str], object] = {}
 
     for g_idx, group in enumerate(groups):
         w = weights[g_idx] if g_idx < len(weights) else 1.0

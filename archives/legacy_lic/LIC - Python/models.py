@@ -6,7 +6,7 @@ __version__ = "11.10"
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any, Set, Tuple, Callable
+from typing import Dict, List, Optional, Union, Set, Tuple, Callable
 
 # ============================================================================
 # ENUMS & CONSTANTS
@@ -107,13 +107,13 @@ class CircuitBreakerOpenError(Exception):
 class OutreachMission:
     """Complete mission specification"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: Dict[str, object]
+    recipient_profile: Dict[str, object]
+    job_description: Dict[str, object]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
     route_override: Optional[Route] = None
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class ProfileAnalysis:
@@ -157,8 +157,8 @@ class ResearchContext:
     rag_results: List[RAGResult]
     signal_score: float = 0.0
     reflexion_iterations: int = 0
-    prior_applications: List[Dict[str, Any]] = field(default_factory=list)
-    mission_context: Dict[str, Any] = field(default_factory=dict)
+    prior_applications: List[Dict[str, object]] = field(default_factory=list)
+    mission_context: Dict[str, object] = field(default_factory=dict)
     sender_context: List[str] = field(default_factory=list)
     sender_grounding: Optional[SenderGroundingWhitelists] = None
     adversarial_findings: List[str] = field(default_factory=list) # NEW v11.10
@@ -168,8 +168,8 @@ class MessageScaffold:
     """Structural scaffold for message generation"""
     route: Route
     archetype: Archetype
-    sections: Dict[str, Dict[str, Any]]
-    constraints: Dict[str, Any]
+    sections: Dict[str, Dict[str, object]]
+    constraints: Dict[str, object]
     locked_sections: Set[str] = field(default_factory=set)
     context_aware_cta: bool = False
 
@@ -193,7 +193,7 @@ class ValidationResult:
     severity: ValidationSeverity
     rule_id: str
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: Optional[Dict[str, object]] = None
 
 @dataclass
 class QAReport:

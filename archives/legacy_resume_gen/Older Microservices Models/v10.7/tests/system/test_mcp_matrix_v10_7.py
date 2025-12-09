@@ -174,7 +174,7 @@ def test_resolve_mcp_client_optional_returns_stub(workflow_context: WorkflowCont
     class DummyTool(BaseTool):
         tool_name = "dummy"
 
-        async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
             return {}
 
     tool = DummyTool(workflow_context)
@@ -195,7 +195,7 @@ def test_resolve_mcp_client_required_raises_without_fallback(workflow_context: W
         class DummyTool(BaseTool):
             tool_name = "dummy-required"
 
-            async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+            async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
                 return {}
 
         tool = DummyTool(workflow_context)

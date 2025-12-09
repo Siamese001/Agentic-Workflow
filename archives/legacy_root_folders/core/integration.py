@@ -43,7 +43,7 @@ def create_workflow_context(
     workflow_id: str,
     initial_state: TState,
     safety_system: Optional[Any] = None,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
 ) -> WorkflowContext:
     """
     Creates résumé analysis workflow context for coordinating multi-agent execution and state management.

@@ -16,7 +16,7 @@ class CostTracker:
         if name in self.spans and self.spans[name]["end"] is None:
             self.spans[name]["end"] = time.perf_counter()
 
-    def snapshot(self) -> Dict[str, Any]:
+    def snapshot(self) -> Dict[str, object]:
         snapshot_spans: List[Dict[str, float]] = []
         for span_name in sorted(self.spans.keys()):
             span = self.spans[span_name]

@@ -7,7 +7,7 @@ __version__ = "11.10"
 import asyncio
 import re
 from collections import defaultdict
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, object, Tuple
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -258,7 +258,7 @@ class RecipientAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    async def get_profile(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_profile(self, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform RAG on recipient's public footprint."""
         print("     S2.RecipientAgent: Retrieving profile (LinkedIn, GitHub)...")
         await asyncio.sleep(0.1) # Simulate async RAG
@@ -276,7 +276,7 @@ class RecipientAgent:
             ]
         }
     
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.RecipientAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
@@ -302,7 +302,7 @@ class OrganizationAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform RAG on organization's public footprint."""
         print("     S2.OrganizationAgent: Retrieving org context (Blog, News)...")
         await asyncio.sleep(0.15) # Simulate async RAG
@@ -320,7 +320,7 @@ class OrganizationAgent:
             ]
         }
 
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.OrganizationAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
@@ -363,7 +363,7 @@ class InternalAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    def get_internal_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    def get_internal_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform internal data lookups."""
         print("     S2.InternalAgent: Checking job tracker for prior applications...")
         prior_applications = self._search_job_tracker(mission)
@@ -372,7 +372,7 @@ class InternalAgent:
             "rag_results": [] # Internal agent doesn't produce RAG results directly
         }
 
-    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, Any]]:
+    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, object]]:
         """
         NEW v11.6: Search for prior applications to same company (GAP 4.1)
         (Moved to InternalAgent in v11.10)

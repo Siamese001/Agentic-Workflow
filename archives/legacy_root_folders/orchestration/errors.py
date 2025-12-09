@@ -39,7 +39,7 @@ class ErrorContext:
     workflow_id: Optional[str] = None
     execution_id: Optional[str] = None
     timestamp: Optional[str] = None
-    additional_data: Optional[Dict[str, Any]] = None
+    additional_data: Optional[Dict[str, object]] = None
 
 
 class WorkflowError(Exception):

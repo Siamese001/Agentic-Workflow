@@ -5,7 +5,7 @@ Implements robust error handling, retry logic, and structured output parsing.
 import os
 import json
 import time
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
 import openai
 from openai import OpenAI, APIError, RateLimitError, APITimeoutError
@@ -60,12 +60,12 @@ class OpenAIClient:
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
-        response_format: Optional[Dict[str, Any]] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
+        response_format: Optional[Dict[str, object]] = None,
+        tools: Optional[List[Dict[str, object]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, object]]] = None,
         stream: bool = False,
         **kwargs
-    ) -> Union[ChatCompletion, Any]:
+    ) -> Union[ChatCompletion, object]:
         """Execute chat completion with retry logic and error handling.
         
         Args:
@@ -117,10 +117,10 @@ class OpenAIClient:
     def structured_completion(
         self,
         messages: List[Dict[str, str]],
-        schema: Dict[str, Any],
+        schema: Dict[str, object],
         model: Optional[str] = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute structured output completion with validation.
         
         Args:
@@ -210,9 +210,9 @@ class OpenAIClient:
     
     def batch_completion(
         self,
-        batch_requests: List[Dict[str, Any]],
+        batch_requests: List[Dict[str, object]],
         concurrent_limit: int = 5
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Execute multiple completions with controlled concurrency.
         
         Args:
@@ -252,7 +252,7 @@ class OpenAIClient:
             cost = (usage.prompt_tokens * 0.0025 + usage.completion_tokens * 0.01) / 1000
             self.usage_stats["total_cost"] += cost
     
-    def _validate_schema(self, data: Any, schema: Dict[str, Any]):
+    def _validate_schema(self, data: Any, schema: Dict[str, object]):
         """Basic schema validation for structured output."""
         schema_type = schema.get("type")
         
@@ -292,7 +292,7 @@ class OpenAIClient:
         else:
             return APIError(f"Unexpected error: {error}")
     
-    def get_usage_stats(self) -> Dict[str, Any]:
+    def get_usage_stats(self) -> Dict[str, object]:
         """Get current usage statistics."""
         return self.usage_stats.copy()
     

@@ -95,7 +95,7 @@ class SelfCorrectionEngine:
     def should_correct(
         self,
         output: str,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         quality_score: float = 0.5
     ) -> List[CorrectionRule]:
         """
@@ -122,7 +122,7 @@ class SelfCorrectionEngine:
         self,
         rule: CorrectionRule,
         output: str,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> Tuple[str, float]:
         """
         Apply a correction rule to improve output.
@@ -168,7 +168,7 @@ class SelfCorrectionEngine:
             self.logger.error(f"Correction failed: {e}")
             return output, 0.0
     
-    def _evaluate_trigger(self, condition: str, output: str, context: Dict[str, Any]) -> bool:
+    def _evaluate_trigger(self, condition: str, output: str, context: Dict[str, object]) -> bool:
         """Evaluate if a trigger condition is met."""
         # Simple condition evaluation - in production would be more sophisticated
         if "output_length < 50" in condition and len(output) < 50:
@@ -188,14 +188,14 @@ class SelfCorrectionEngine:
         
         return False
     
-    def _refine_prompt_output(self, output: str, context: Dict[str, Any]) -> str:
+    def _refine_prompt_output(self, output: str, context: Dict[str, object]) -> str:
         """Refine output for better prompt clarity."""
         if len(output) < 50:
             # Add more detail to short outputs
             return f"{output}\n\nAdditional details and specific examples should be included to strengthen this response."
         return output
     
-    def _validate_and_fix_output(self, output: str, context: Dict[str, Any]) -> str:
+    def _validate_and_fix_output(self, output: str, context: Dict[str, object]) -> str:
         """Validate and fix output format."""
         try:
             parsed = json.loads(output)
@@ -216,14 +216,14 @@ class SelfCorrectionEngine:
                 # Return a valid JSON structure as fallback
                 return json.dumps({"error": "Invalid JSON format", "original": output})
     
-    def _adjust_strategy_output(self, output: str, context: Dict[str, Any]) -> str:
+    def _adjust_strategy_output(self, output: str, context: Dict[str, object]) -> str:
         """Adjust strategy based on evidence and context."""
         # Simple strategy adjustment
         if "strategy" in output.lower():
             return f"{output}\n\nStrategy refined based on available evidence and job requirements."
         return output
     
-    def _recover_from_error(self, output: str, context: Dict[str, Any]) -> str:
+    def _recover_from_error(self, output: str, context: Dict[str, object]) -> str:
         """Recover from execution errors."""
         return json.dumps({
             "error_recovery": True,
@@ -231,7 +231,7 @@ class SelfCorrectionEngine:
             "original_error": output
         })
     
-    def _calculate_quality_score(self, output: str, context: Dict[str, Any]) -> float:
+    def _calculate_quality_score(self, output: str, context: Dict[str, object]) -> float:
         """Calculate quality score for output."""
         score = 0.5  # Base score
         
@@ -264,7 +264,7 @@ class SelfCorrectionInjectionProvider:
         self,
         prompt_extensions: Dict[InstructionalExtension, ExtensionContent],
         agent_type: str,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> Dict[InstructionalExtension, ExtensionContent]:
         """
         Add self-correction instructions as a V6 extension.
@@ -288,7 +288,7 @@ class SelfCorrectionInjectionProvider:
         
         return prompt_extensions
     
-    def _build_correction_instructions(self, agent_type: str, context: Dict[str, Any]) -> str:
+    def _build_correction_instructions(self, agent_type: str, context: Dict[str, object]) -> str:
         """Build self-correction instructions for the agent type."""
         instructions = [
             "## SELF-CORRECTION INSTRUCTIONS",
@@ -330,7 +330,7 @@ class SelfCorrectionInjectionProvider:
         self,
         output: str,
         agent_type: str,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> Tuple[str, List[CorrectionAttempt]]:
         """
         Apply self-corrections if needed based on output quality.

@@ -7,10 +7,10 @@ from typing import Any, Dict, List
 from observability import get_all_events
 
 
-def collect_error_events() -> List[Dict[str, Any]]:
+def collect_error_events() -> List[Dict[str, object]]:
     """Collects error-like events from the global stream so health detectors can flag recurring issues before they impact resume runs."""
 
-    events: List[Dict[str, Any]] = []
+    events: List[Dict[str, object]] = []
     for evt in get_all_events():
         attrs = getattr(evt, "attributes", {}) or {}
         if attrs.get("event_type") != "error":

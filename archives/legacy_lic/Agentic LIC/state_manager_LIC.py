@@ -8,7 +8,7 @@ import json
 import os
 import hashlib
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from datetime import datetime
 import shutil
 
@@ -51,7 +51,7 @@ class StateManager:
     def write_state(
         self,
         hop_id: str,
-        data: Dict[str, Any],
+        data: Dict[str, object],
         atomic: bool = True
     ) -> str:
         """
@@ -106,7 +106,7 @@ class StateManager:
         self,
         hop_id: str,
         validate_checksum: bool = False
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Read state file for a HOP
         
@@ -179,7 +179,7 @@ class StateManager:
         
         return state_files
     
-    def get_workflow_progress(self) -> Dict[str, Any]:
+    def get_workflow_progress(self) -> Dict[str, object]:
         """
         Get workflow progress summary
         
@@ -440,7 +440,7 @@ class StateValidator:
     }
     
     @classmethod
-    def validate_state(cls, hop_id: str, state_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    def validate_state(cls, hop_id: str, state_data: Dict[str, object]) -> Tuple[bool, List[str]]:
         """
         Validate state data against expected schema
         

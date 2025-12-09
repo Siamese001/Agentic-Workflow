@@ -22,7 +22,7 @@
 import json
 import logging
 import asyncio
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.4: Import from new core
 from core_v10_4 import (
@@ -120,7 +120,7 @@ class ReActConductorAgent(BaseAgent):
         }
         self.style_guide = "Style: Professional, high-impact, and metrics-driven."
 
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct Drafting Conductor (v10.4)...")
         
         # Feedback-aware tuning can be re-implemented here
@@ -254,7 +254,7 @@ class QAConductorAgent(BaseAgent):
         }
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor (v10.4)...")
         
         # Feedback-aware tuning can be re-implemented here

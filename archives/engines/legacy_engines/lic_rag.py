@@ -4,7 +4,7 @@ Outreach Engine RAG Pipeline v75 - Lift & Shift + Enhanced from LIC
 6-stage RAG validation pipeline with HyDE, hybrid recall, cross-encoder reranking, self-RAG, episodic memory, knowledge graph, and few-shot injection
 """
 
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 import re
 from datetime import datetime, timedelta
 
@@ -16,7 +16,7 @@ from .models import (
 class HyDEProcessor:
     """HyDE (Hypothetical Document Embeddings) processor - Enhanced from LIC"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.hyde_config = rag_config.get("stage_0_hyde", {})
         self.enabled = self.hyde_config.get("enabled", True)
         self.trigger_conditions = self.hyde_config.get("trigger", {})
@@ -24,7 +24,7 @@ class HyDEProcessor:
         self.validation_rules = self.hyde_config.get("validation", {})
         self.max_retries = self.validation_rules.get("max_retries", 3)
     
-    def should_trigger_hyde(self, recipient_profile: Dict[str, Any]) -> bool:
+    def should_trigger_hyde(self, recipient_profile: Dict[str, object]) -> bool:
         """Determine if HyDE should be triggered based on recipient profile"""
         if not self.enabled:
             return False
@@ -47,7 +47,7 @@ class HyDEProcessor:
     
     def generate_hypothetical_profile(
         self, 
-        recipient_profile: Dict[str, Any],
+        recipient_profile: Dict[str, object],
         llm_client: Optional[Any] = None
     ) -> Tuple[str, List[ValidationResult]]:
         """Generate hypothetical profile using title + company + domain"""
@@ -119,7 +119,7 @@ class HyDEProcessor:
 class HybridRecall:
     """Hybrid recall system - Lift & Shift from LIC"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.recall_config = rag_config.get("stage_1_hybrid_recall", {})
         self.web_search_calls = self.recall_config.get("web_search_calls", 6)
         self.internal_sources = self.recall_config.get("internal_sources", [])
@@ -132,7 +132,7 @@ class HybridRecall:
             "domain expertise"
         ]
     
-    def generate_diverse_queries(self, recipient_profile: Dict[str, Any], job_context: Optional[Dict] = None) -> List[str]:
+    def generate_diverse_queries(self, recipient_profile: Dict[str, object], job_context: Optional[Dict] = None) -> List[str]:
         """Generate 6 diverse queries for hybrid recall"""
         queries = []
         name = recipient_profile.get("name", "")
@@ -160,7 +160,7 @@ class HybridRecall:
         
         return queries
     
-    def simulate_hybrid_recall(self, queries: List[str]) -> List[Dict[str, Any]]:
+    def simulate_hybrid_recall(self, queries: List[str]) -> List[Dict[str, object]]:
         """Simulate hybrid recall results (in real implementation would call search APIs)"""
         results = []
         
@@ -184,7 +184,7 @@ class HybridRecall:
 class CrossEncoderReranker:
     """Cross-encoder reranking - Lift & Shift from LIC"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.rerank_config = rag_config.get("stage_2_cross_encoder_reranking", {})
         self.model = self.rerank_config.get("model", "cross-encoder/ms-marco-MiniLM-L-6-v2")
         self.threshold = self.rerank_config.get("threshold", 0.75)
@@ -194,7 +194,7 @@ class CrossEncoderReranker:
     
     def rerank_results(
         self, 
-        raw_results: List[Dict[str, Any]], 
+        raw_results: List[Dict[str, object]], 
         query: str
     ) -> List[RAGEvidence]:
         """Rerank results using cross-encoder scoring"""
@@ -241,14 +241,14 @@ class CrossEncoderReranker:
             else:
                 # Linear decay
                 return 1.0 - (days_ago / self.anchor_window_days)
-        except:
+        except (ValueError, TypeError, KeyError):
             return 0.5  # Default for invalid timestamps
 
 
 class SelfRAGProcessor:
     """Self-RAG processor - Enhanced from LIC (non-hop based)"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.selfrag_config = rag_config.get("stage_3_self_rag", {})
         self.max_iterations = self.selfrag_config.get("max_hops", 6)  # Renamed from hops to iterations
         self.min_iterations = self.selfrag_config.get("min_hops", 2)
@@ -299,7 +299,7 @@ class SelfRAGProcessor:
 class EpisodicMemory:
     """Episodic memory retrieval - Lift & Shift from LIC"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.episodic_config = rag_config.get("stage_4_episodic_memory", {})
         self.enabled = self.episodic_config.get("enabled", True)
         self.trigger_routes = self.episodic_config.get("trigger", "route == FOLLOW_UP")
@@ -310,7 +310,7 @@ class EpisodicMemory:
         route: str, 
         sender_id: str, 
         recipient_id: str
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Retrieve episodic memory from past interactions"""
         if not self.enabled or route != "FOLLOW_UP":
             return []
@@ -338,16 +338,16 @@ class EpisodicMemory:
 class KnowledgeGraphInjector:
     """Knowledge graph injection - Lift & Shift from LIC"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.kg_config = rag_config.get("stage_5_knowledge_graph", {})
         self.enabled = self.kg_config.get("enabled", True)
         self.queries = self.kg_config.get("queries", [])
     
     def inject_knowledge_graph_context(
         self, 
-        sender_profile: Dict[str, Any], 
-        recipient_profile: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        sender_profile: Dict[str, object], 
+        recipient_profile: Dict[str, object]
+    ) -> List[Dict[str, object]]:
         """Inject knowledge graph relationship context"""
         if not self.enabled:
             return []
@@ -410,7 +410,7 @@ class KnowledgeGraphInjector:
 class FewShotInjector:
     """Few-shot example injector - Lift & Shift from LIC"""
     
-    def __init__(self, rag_config: Dict[str, Any]):
+    def __init__(self, rag_config: Dict[str, object]):
         self.fewshot_config = rag_config.get("stage_6_few_shot_injection", {})
         self.enabled = self.fewshot_config.get("enabled", True)
         examples_str = self.fewshot_config.get("examples", "3-5")
@@ -453,7 +453,7 @@ class FewShotInjector:
 class RAGPipelineV75:
     """Main RAG Pipeline v75 - Lift & Shift + Enhanced from LIC"""
     
-    def __init__(self, lic_capabilities: Dict[str, Any]):
+    def __init__(self, lic_capabilities: Dict[str, object]):
         self.scenario_rules = lic_capabilities.get("scenario_rules", {})
         self.rag_config = self.scenario_rules.get("rag_pipeline_v75", {})
         
@@ -468,8 +468,8 @@ class RAGPipelineV75:
     
     def execute_rag_pipeline(
         self,
-        recipient_profile: Dict[str, Any],
-        sender_profile: Dict[str, Any],
+        recipient_profile: Dict[str, object],
+        sender_profile: Dict[str, object],
         job_context: Optional[Dict] = None,
         route: Optional[str] = None
     ) -> Tuple[RAGResult, List[ValidationResult]]:
@@ -573,7 +573,7 @@ class RAGPipelineV75:
         
         return validation_results
     
-    def get_pipeline_summary(self) -> Dict[str, Any]:
+    def get_pipeline_summary(self) -> Dict[str, object]:
         """Get summary of RAG pipeline configuration"""
         return {
             "pipeline_version": "v75",

@@ -10,7 +10,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Union, Tuple
 
 # Live API clients
 from llm_clients import GeminiLLMClient
@@ -201,7 +201,7 @@ class ScaffoldAgent:
         self.status = AgentStatus.COMPLETED
         return scaffold
     
-    def _define_sections(self, route: Route, constraints: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    def _define_sections(self, route: Route, constraints: Dict[str, object]) -> Dict[str, Dict[str, object]]:
         """Define required sections based on route"""
         
         if route == Route.CONNECTION_REQ:
@@ -756,7 +756,7 @@ Draft the complete message. Output ONLY the message content, no preamble or expl
 """
         return prompt
     
-    def _load_voice_profile(self) -> Dict[str, Any]:
+    def _load_voice_profile(self) -> Dict[str, object]:
         """Load sender_voice_profile.json if available"""
         filepath = "sender_voice_profile.json"
         if not os.path.exists(filepath):
@@ -826,9 +826,9 @@ class WorkflowOrchestrator:
         self.validation_agent = ValidationAgent(self.circuit_breaker)
         self.qa_agent = QAAgent(self.circuit_breaker)
         
-        self.events: List[Dict[str, Any]] = []
+        self.events: List[Dict[str, object]] = []
     
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """
         Execute complete workflow with S6->S2 meta-loop
         """
@@ -1002,7 +1002,7 @@ class WorkflowOrchestrator:
         self,
         mission: OutreachMission,
         message: GeneratedMessage,
-        result: Dict[str, Any]
+        result: Dict[str, object]
     ):
         """
         Post-send tracking with message_ledger.json update

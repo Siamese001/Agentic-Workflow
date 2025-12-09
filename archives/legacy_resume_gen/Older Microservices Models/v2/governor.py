@@ -4,7 +4,7 @@
 
 import logging
 import json
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, object, Optional, List, Tuple
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
@@ -99,7 +99,7 @@ class PolicyAgent:
         node: str, 
         failure_type: str, 
         retries: int
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Determines the next action based on failure analysis.
         
@@ -137,7 +137,7 @@ class PolicyAgent:
         else:
             return {"action": "hybrid_review_escalation"}
     
-    def _first_failure_strategy(self, node: str, failure_type: str) -> Dict[str, Any]:
+    def _first_failure_strategy(self, node: str, failure_type: str) -> Dict[str, object]:
         """Strategy for first failure attempt."""
         
         if failure_type == "MECHANICAL":
@@ -179,7 +179,7 @@ class PolicyAgent:
                 }
             }
     
-    def _second_failure_strategy(self, node: str, failure_type: str) -> Dict[str, Any]:
+    def _second_failure_strategy(self, node: str, failure_type: str) -> Dict[str, object]:
         """Strategy for second failure attempt - more aggressive."""
         
         self.logger.warning(f"{node}: Second failure. Applying aggressive strategy.")
@@ -235,7 +235,7 @@ class PolicyAgent:
         
         self.logger.debug(f"Recorded outcome: {node} | {strategy} | Success: {success}")
     
-    def get_effectiveness_report(self) -> Dict[str, Any]:
+    def get_effectiveness_report(self) -> Dict[str, object]:
         """Generate effectiveness report for Meta-Planner."""
         return {
             "strategy_effectiveness": self.strategy_effectiveness,
@@ -335,7 +335,7 @@ class CostRouter:
         self.logger.warning(f"Section {section_name} not in artist_specs or no complexity defined. Defaulting to MEDIUM.")
         return "MEDIUM"
     
-    def get_cost_report(self) -> Dict[str, Any]:
+    def get_cost_report(self) -> Dict[str, object]:
         """Generate cost analysis report."""
         return {
             "model_usage": dict(self.model_usage_count),
@@ -390,7 +390,7 @@ class ContextRelayLayer:
         temperature: float,
         critique_context: Optional[str] = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Builds the complete context envelope for the Writer.
         
@@ -682,9 +682,9 @@ class HIL_Interface:
     def notify(
         self,
         section_enum: ResumeSection,
-        drafts: Dict[ResumeSection, Any],
+        drafts: Dict[ResumeSection, object],
         critique_context: Optional[str]
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Notifies human for review and waits for decision.
         
@@ -748,7 +748,7 @@ class HIL_Interface:
         self.logger.info(f"Logging HIL decision to feedback pipeline: {decision['section']}")
         # In production: Send to message queue / database for meta-planner analysis
     
-    def get_hil_summary(self) -> Dict[str, Any]:
+    def get_hil_summary(self) -> Dict[str, object]:
         """Generate summary of HIL activity."""
         return {
             "total_escalations": self.escalation_count,
@@ -774,14 +774,14 @@ class TraceRegistry:
     
     def __init__(self, run_id: str):
         self.run_id = run_id
-        self.trace_log: List[Dict[str, Any]] = []
+        self.trace_log: List[Dict[str, object]] = []
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.info(f"TraceRegistry initialized for run {run_id}")
         
         # Event counters
         self.event_counts: Dict[str, int] = defaultdict(int)
         
-    def log(self, level: str, message: str, metadata: Optional[Dict[str, Any]] = None):
+    def log(self, level: str, message: str, metadata: Optional[Dict[str, object]] = None):
         """
         Logs a structured trace event.
         
@@ -806,22 +806,22 @@ class TraceRegistry:
         metadata_str = f" | {metadata}" if metadata else ""
         log_func(f"{message}{metadata_str}")
     
-    def get_full_trace(self) -> List[Dict[str, Any]]:
+    def get_full_trace(self) -> List[Dict[str, object]]:
         """Returns the complete trace log."""
         return self.trace_log.copy()
     
-    def get_events_by_level(self, level: str) -> List[Dict[str, Any]]:
+    def get_events_by_level(self, level: str) -> List[Dict[str, object]]:
         """Get all events of a specific level."""
         return [e for e in self.trace_log if e["level"] == level.upper()]
     
-    def get_events_by_node(self, node_name: str) -> List[Dict[str, Any]]:
+    def get_events_by_node(self, node_name: str) -> List[Dict[str, object]]:
         """Get all events related to a specific node."""
         return [
             e for e in self.trace_log 
             if e.get("metadata", {}).get("node") == node_name
         ]
     
-    def get_summary_stats(self) -> Dict[str, Any]:
+    def get_summary_stats(self) -> Dict[str, object]:
         """Generate summary statistics of trace events."""
         return {
             "total_events": len(self.trace_log),

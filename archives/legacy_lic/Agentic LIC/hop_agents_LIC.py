@@ -6,7 +6,7 @@ __version__ = "13.0"
 
 import json
 import os
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from datetime import datetime
 
 from models_LIC import (
@@ -36,7 +36,7 @@ class HOP1_ProfileAnalysisAgent:
     Output: state/1_profile_analysis.json
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize with externalized configuration
         
@@ -130,7 +130,7 @@ class HOP3_SenderGroundingAgent:
     Output: state/3_sender_grounding.json
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize with externalized configuration
         
@@ -239,7 +239,7 @@ class HOP4_RoutingAgent:
     Output: state/4_routing_decision.json
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize with externalized configuration
         
@@ -354,7 +354,7 @@ class HOP7_GateDecisionAgent:
     - PASS: return True → proceed to output
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize with externalized configuration
         
@@ -524,7 +524,7 @@ class HOP7_GateDecisionAgent:
     
     def _classify_failure(
         self,
-        failures: List[Dict[str, Any]]
+        failures: List[Dict[str, object]]
     ) -> Tuple[FailureClassifier, str]:
         """
         Classify failure type to determine retry strategy
@@ -563,7 +563,7 @@ class HOPOrchestrator:
     each reading from and writing to state/ directory
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize orchestrator with configuration
         
@@ -581,7 +581,7 @@ class HOPOrchestrator:
             "HOP-7": HOP7_GateDecisionAgent(config)
         }
     
-    def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """
         Execute workflow by iterating through HOPs
         

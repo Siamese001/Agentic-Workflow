@@ -16,8 +16,8 @@ from core.integration import WorkflowExecutionConfig
 class IntegrationConfig:
     """Configuration for orchestration integration."""
     enabled_components: List[str]
-    connection_settings: Dict[str, Any]
-    retry_policy: Dict[str, Any]
+    connection_settings: Dict[str, object]
+    retry_policy: Dict[str, object]
 
 
 class OrchestrationIntegrator:
@@ -34,7 +34,7 @@ class OrchestrationIntegrator:
             connection_settings={},
             retry_policy={}
         )
-        self._components: Dict[str, Any] = {}
+        self._components: Dict[str, object] = {}
     
     def register_component(self, name: str, component: Any) -> None:
         """Register a component for integration."""

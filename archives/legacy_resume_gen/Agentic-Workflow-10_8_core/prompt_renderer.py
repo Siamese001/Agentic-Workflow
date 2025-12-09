@@ -41,7 +41,7 @@ class PromptRenderer:
         self,
         envelope: PromptEnvelope | None = None,
         template: str | Dict[str, str] | None = None,
-        runtime_context: Optional[Dict[str, Any]] = None,
+        runtime_context: Optional[Dict[str, object]] = None,
     ) -> str:
         """Assemble a full prompt string in deterministic section order."""
 
@@ -89,7 +89,7 @@ class PromptRenderer:
             return load_template(template)
         return dict(template)
 
-    def get_render_metadata(self) -> Dict[str, Any]:
+    def get_render_metadata(self) -> Dict[str, object]:
         return self.get_last_render_metadata()
 
     def get_last_render_metadata(self):

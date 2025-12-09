@@ -42,7 +42,7 @@ class CodeInterpreterTool:
             'min': min,
         }
     
-    def execute(self, code: str, context: Optional[Dict[str, Any]] = None) -> Any:
+    def execute(self, code: str, context: Optional[Dict[str, object]] = None) -> Any:
         """
         Execute Python code in a sandboxed environment.
         

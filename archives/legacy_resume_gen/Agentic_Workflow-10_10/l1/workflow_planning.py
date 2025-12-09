@@ -113,7 +113,7 @@ Ensures the best AI models are selected based on user profile for consistent ré
 """
 
 
-def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot]) -> Dict[str, Any]:
+def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot]) -> Dict[str, object]:
     """
     Converts meta-profile into routing configuration.
     
@@ -151,7 +151,7 @@ def _build_prompt_meta(
     Creates structured prompt planning data for consistent résumé improvement workflows.
     """
 
-    sections: List[Dict[str, Any]] = []
+    sections: List[Dict[str, object]] = []
 
     # High-level conceptual sections broadly aligned with Strategy/RAG/Drafting/QA/Safety.
     sections.append({"id": "strategy", "role": "planner", "order": 0})
@@ -168,13 +168,13 @@ def _build_prompt_meta(
         "safety_policies",
     ]
 
-    taxonomy: Dict[str, Any] = {
+    taxonomy: Dict[str, object] = {
         "profile_id": profile_spec.id,
         "safety_tier": getattr(profile_spec.safety_tier, "value", profile_spec.safety_tier),
         "model_tier": getattr(profile_spec.model_tier, "value", profile_spec.model_tier),
     }
 
-    meta_bias: Dict[str, Any] = {}
+    meta_bias: Dict[str, object] = {}
     if meta_profile is not None:
         meta_bias = {
             "reasoning_mode_hint": meta_profile.reasoning_mode_hint,

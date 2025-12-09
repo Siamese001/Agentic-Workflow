@@ -26,7 +26,7 @@ class Reasoner(ABC):
     """Abstract base class for L1 planners."""
 
     @abstractmethod
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         """Return a plan object derived from the current orchestration state."""
         raise NotImplementedError
 
@@ -55,7 +55,7 @@ def _as_list(value: Any) -> List[str]:
     return [str(value)]
 
 
-def _objective_from_state(state: Dict[str, Any]) -> str:
+def _objective_from_state(state: Dict[str, object]) -> str:
     """Extract a stable objective string from the orchestration state."""
 
     for key in ("objective", "task", "goal"):
@@ -68,7 +68,7 @@ def _objective_from_state(state: Dict[str, Any]) -> str:
 class StrategyReasoner(Reasoner):
     """Deterministic multi-step strategy planner for L1."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         objective = _objective_from_state(state)
         constraints = sorted(_as_list(state.get("constraints")))
         dependencies = sorted(_as_list(state.get("dependencies")))
@@ -153,7 +153,7 @@ Implements deterministic planning logic that emits only PlanObject instances.
 """
 
 
-def _latest_user_message(state: Dict[str, Any]) -> str:
+def _latest_user_message(state: Dict[str, object]) -> str:
     """Return the most recent user message content from state messages."""
 
     messages = state.get("messages") or []
@@ -165,7 +165,7 @@ def _latest_user_message(state: Dict[str, Any]) -> str:
     return ""
 
 
-def _build_queries(state: Dict[str, Any]) -> List[str]:
+def _build_queries(state: Dict[str, object]) -> List[str]:
     """Create deterministic RAG queries from state signals."""
 
     explicit_queries = state.get("rag_queries") or []
@@ -186,7 +186,7 @@ def _build_queries(state: Dict[str, Any]) -> List[str]:
 class RAGReasoner(Reasoner):
     """Plan deterministic retrieval intents for downstream execution."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         evidence_view = get_evidence_view(state)
         queries = _build_queries(state)
         filters = state.get("rag_filters") or {}
@@ -256,7 +256,7 @@ Implements deterministic planning logic that emits only PlanObject instances.
 """
 
 
-def _collect_sections(state: Dict[str, Any]) -> List[str]:
+def _collect_sections(state: Dict[str, object]) -> List[str]:
     """Assemble deterministic section headings for the draft."""
 
     if state.get("outline"):
@@ -272,7 +272,7 @@ def _collect_sections(state: Dict[str, Any]) -> List[str]:
 class DraftingReasoner(Reasoner):
     """Create drafting briefs for L2 executors without side effects."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         objective = state.get("objective", "unspecified-objective")
         tone = state.get("tone", "neutral")
         audience = state.get("audience", "general")

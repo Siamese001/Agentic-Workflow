@@ -19,11 +19,11 @@ class MicroVM:
     """
 
     id: str
-    resource_limits: Dict[str, Any]
+    resource_limits: Dict[str, object]
     created_at_ms: int
 
 
-def create_vm(resource_limits: Dict[str, Any] | None = None) -> MicroVM:
+def create_vm(resource_limits: Dict[str, object] | None = None) -> MicroVM:
     vm = MicroVM(id=str(uuid.uuid4()), resource_limits=dict(resource_limits or {}), created_at_ms=_now_ms())
     record_event(
         "sandbox_start",

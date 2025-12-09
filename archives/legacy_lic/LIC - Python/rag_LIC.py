@@ -10,7 +10,7 @@ import json
 import os
 import glob
 from collections import defaultdict
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, object, Tuple, Optional
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -280,7 +280,7 @@ class RecipientAgent:
         self.circuit_breaker = circuit_breaker
         self.search_client = search_client
 
-    async def validate_entity(self, entity_name: str, entity_context: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def validate_entity(self, entity_name: str, entity_context: str, mission: OutreachMission) -> Dict[str, object]:
         """
         NEW v12.0: Validate a specific entity (person, initiative) from strategic brief.
         """
@@ -308,7 +308,7 @@ class RecipientAgent:
             "staleness_warning": staleness_warning
         }
     
-    async def get_profile(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_profile(self, mission: OutreachMission) -> Dict[str, object]:
         """Legacy method - minimal search for basic profile validation."""
         print("     S2.RecipientAgent: Basic profile validation...")
         
@@ -325,7 +325,7 @@ class RecipientAgent:
         
         return {"rag_results": rag_results}
     
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Perform targeted refinement RAG."""
         print(f"     S2.RecipientAgent: Running refinement task: '{task[:50]}...'")
         
@@ -380,7 +380,7 @@ class OrganizationAgent:
         self.circuit_breaker = circuit_breaker
         self.search_client = search_client
 
-    async def validate_initiative(self, initiative_name: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def validate_initiative(self, initiative_name: str, mission: OutreachMission) -> Dict[str, object]:
         """
         NEW v12.0: Validate a specific initiative from strategic brief.
         """
@@ -405,7 +405,7 @@ class OrganizationAgent:
             "staleness_warning": staleness_warning
         }
 
-    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Legacy method - minimal search for basic org validation."""
         print("     S2.OrganizationAgent: Basic org validation...")
         
@@ -421,7 +421,7 @@ class OrganizationAgent:
         
         return {"rag_results": rag_results}
 
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Perform targeted refinement RAG."""
         print(f"     S2.OrganizationAgent: Running refinement task: '{task[:50]}...'")
         
@@ -481,7 +481,7 @@ class InternalAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    def get_internal_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    def get_internal_context(self, mission: OutreachMission) -> Dict[str, object]:
         """
         v12.0: Load sender grounding + strategic brief.
         """
@@ -718,7 +718,7 @@ class InternalAgent:
         
         return rag_results
 
-    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, Any]]:
+    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, object]]:
         """Search job tracker for prior applications (placeholder)."""
         # This would integrate with actual job tracking system
         return []

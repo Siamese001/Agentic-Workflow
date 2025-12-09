@@ -52,10 +52,10 @@ def _tokenize(text: str) -> List[str]:
 
 def bm25_search(
     query: str,
-    corpus: Sequence[Dict[str, Any]],
+    corpus: Sequence[Dict[str, object]],
     *,
     cfg: BM25Config,
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """Run BM25 search over an in-memory corpus.
 
     Parameters
@@ -69,7 +69,7 @@ def bm25_search(
 
     Returns
     -------
-    List[Dict[str, Any]]
+    List[Dict[str, object]]
         Items annotated with ``score`` and sorted by descending score.
     """
 
@@ -84,7 +84,7 @@ def bm25_search(
 
     scores = bm25.get_scores(_tokenize(query))
 
-    enriched: List[Dict[str, Any]] = []
+    enriched: List[Dict[str, object]] = []
     for item, score in zip(corpus, scores):
         new_item = dict(item)
         new_item["score"] = float(score)

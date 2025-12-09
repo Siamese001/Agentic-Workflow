@@ -76,7 +76,7 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Set, Callable
+from typing import Dict, List, Optional, Union, Tuple, Set, Callable
 from uuid import uuid4
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -654,7 +654,7 @@ AVOID: Generic qualifications, vague interest statements, over-selling unrelated
         return cls.ARCHETYPE_TONE_MAPPINGS.get(archetype, {}).get(param_name)
     
     @classmethod
-    def get_route_constraints(cls, route: Route, archetype: Optional[Archetype] = None) -> Dict[str, Any]:
+    def get_route_constraints(cls, route: Route, archetype: Optional[Archetype] = None) -> Dict[str, object]:
         """Get route constraints with optional archetype override"""
         constraints = cls.ROUTE_CONSTRAINTS[route].copy()
         
@@ -674,13 +674,13 @@ AVOID: Generic qualifications, vague interest statements, over-selling unrelated
 class OutreachMission:
     """Complete mission specification"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: Dict[str, object]
+    recipient_profile: Dict[str, object]
+    job_description: Dict[str, object]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
     route_override: Optional[Route] = None
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -716,8 +716,8 @@ class ResearchContext:
     rag_results: List[RAGResult]
     signal_score: float = 0.0  # NEW v11.6
     reflexion_iterations: int = 0  # NEW v11.6
-    prior_applications: List[Dict[str, Any]] = field(default_factory=list)  # NEW v11.6
-    mission_context: Dict[str, Any] = field(default_factory=dict)  # NEW v11.7 - for validation context
+    prior_applications: List[Dict[str, object]] = field(default_factory=list)  # NEW v11.6
+    mission_context: Dict[str, object] = field(default_factory=dict)  # NEW v11.7 - for validation context
     sender_context: List[str] = field(default_factory=list)  # NEW v11.7
     sender_grounding: Optional['SenderGroundingWhitelists'] = None  # NEW v11.9
     adversarial_findings: List[str] = field(default_factory=list) # NEW v11.10
@@ -728,8 +728,8 @@ class MessageScaffold:
     """Structural scaffold for message generation"""
     route: Route
     archetype: Archetype
-    sections: Dict[str, Dict[str, Any]]
-    constraints: Dict[str, Any]
+    sections: Dict[str, Dict[str, object]]
+    constraints: Dict[str, object]
     locked_sections: Set[str] = field(default_factory=set)
     context_aware_cta: bool = False  # NEW v11.9 - controls CTA generation logic
 
@@ -755,7 +755,7 @@ class ValidationResult:
     severity: ValidationSeverity
     rule_id: str
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -1284,7 +1284,7 @@ class MessageDiversityValidator:
             
             return is_diverse, max_similarity, most_similar
         
-        except:
+        except (ValueError, TypeError, KeyError):
             # If vectorization fails, assume diverse
             return True, 0.0, ""
     
@@ -1419,7 +1419,7 @@ class RecipientAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    async def get_profile(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_profile(self, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform RAG on recipient's public footprint."""
         print("     S2.RecipientAgent: Retrieving profile (LinkedIn, GitHub)...")
         await asyncio.sleep(0.1) # Simulate async RAG
@@ -1437,7 +1437,7 @@ class RecipientAgent:
             ]
         }
     
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.RecipientAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
@@ -1464,7 +1464,7 @@ class OrganizationAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def get_organization_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform RAG on organization's public footprint."""
         print("     S2.OrganizationAgent: Retrieving org context (Blog, News)...")
         await asyncio.sleep(0.15) # Simulate async RAG
@@ -1482,7 +1482,7 @@ class OrganizationAgent:
             ]
         }
 
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, Any]:
+    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform a targeted refinement RAG task."""
         print(f"     S2.OrganizationAgent: Running refinement task: '{task[:50]}...'")
         await asyncio.sleep(0.1)
@@ -1526,7 +1526,7 @@ class InternalAgent:
     def __init__(self, circuit_breaker: CircuitBreaker):
         self.circuit_breaker = circuit_breaker
 
-    def get_internal_context(self, mission: OutreachMission) -> Dict[str, Any]:
+    def get_internal_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Mock: Perform internal data lookups."""
         print("     S2.InternalAgent: Checking job tracker for prior applications...")
         prior_applications = self._search_job_tracker(mission)
@@ -1535,7 +1535,7 @@ class InternalAgent:
             "rag_results": [] # Internal agent doesn't produce RAG results directly
         }
 
-    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, Any]]:
+    def _search_job_tracker(self, mission: OutreachMission) -> List[Dict[str, object]]:
         """
         NEW v11.6: Search for prior applications to same company (GAP 4.1)
         (Moved to InternalAgent in v11.10)
@@ -2462,9 +2462,9 @@ class WorkflowOrchestrator:
         self.validation_agent = ValidationAgent(self.circuit_breaker)
         self.qa_agent = QAAgent(self.circuit_breaker)
         
-        self.events: List[Dict[str, Any]] = []
+        self.events: List[Dict[str, object]] = []
     
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """
         Execute complete workflow
         NEW v11.10: Now contains the S6->S2 "Meta-Loop" (Enhancement 4)
@@ -2674,7 +2674,7 @@ class WorkflowOrchestrator:
         self,
         mission: OutreachMission,
         message: GeneratedMessage,
-        result: Dict[str, Any]
+        result: Dict[str, object]
     ):
         """
         NEW v11.6: Post-send tracking and app tracker generation (GAP 10.1, 10.2)
@@ -2727,7 +2727,7 @@ def create_orchestrator() -> WorkflowOrchestrator:
     return WorkflowOrchestrator()
 
 
-def collect_sender_profile() -> Dict[str, Any]:
+def collect_sender_profile() -> Dict[str, object]:
     """Collect sender profile information interactively"""
     print("\n" + "="*80)
     print("SENDER PROFILE COLLECTION")
@@ -2754,7 +2754,7 @@ def collect_sender_profile() -> Dict[str, Any]:
     }
 
 
-def collect_recipient_profile() -> Dict[str, Any]:
+def collect_recipient_profile() -> Dict[str, object]:
     """Collect recipient profile information interactively"""
     print("\n" + "="*80)
     print("RECIPIENT PROFILE COLLECTION")
@@ -2786,7 +2786,7 @@ def collect_recipient_profile() -> Dict[str, Any]:
     }
 
 
-def collect_job_description() -> Dict[str, Any]:
+def collect_job_description() -> Dict[str, object]:
     """Collect job description information interactively"""
     print("\n" + "="*80)
     print("JOB DESCRIPTION COLLECTION")

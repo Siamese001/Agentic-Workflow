@@ -27,7 +27,7 @@ class PersonaPlan:
     decision_maker_type: str             # "analytical" | "intuitive" | "collaborative" | "directive"
     time_preference: str                 # "immediate" | "considered" | "deliberate"
     confidence_score: float = 0.0        # persona match confidence
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class PersonaPlanner:
@@ -138,9 +138,9 @@ class PersonaPlanner:
         self,
         *,
         archetype: str,
-        recipient_profile: Dict[str, Any],
+        recipient_profile: Dict[str, object],
         grounding_plan: Optional[Any] = None,
-        outreach_context: Dict[str, Any] = None,
+        outreach_context: Dict[str, object] = None,
     ) -> PersonaPlan:
         """Generate a deterministic persona plan.
         
@@ -199,7 +199,7 @@ class PersonaPlanner:
         
         return plan
     
-    def _get_base_persona(self, archetype: str) -> Dict[str, Any]:
+    def _get_base_persona(self, archetype: str) -> Dict[str, object]:
         """Get base persona mapping for archetype."""
         archetype_map = {
             "C_LEVEL": self.executive_persona,
@@ -212,7 +212,7 @@ class PersonaPlanner:
         logger.debug(f"Base persona for {archetype}: {base['tone_style']}")
         return base
     
-    def _apply_seniority_adjustments(self, persona: Dict[str, Any], profile: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_seniority_adjustments(self, persona: Dict[str, object], profile: Dict[str, object]) -> Dict[str, object]:
         """Apply seniority-based adjustments to persona."""
         seniority = profile.get("seniority", "").upper()
         adjustments = self.seniority_adjustments.get(seniority, {})
@@ -225,7 +225,7 @@ class PersonaPlanner:
         logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
         return adjusted
     
-    def _apply_industry_adjustments(self, persona: Dict[str, Any], profile: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_industry_adjustments(self, persona: Dict[str, object], profile: Dict[str, object], context: Dict[str, object]) -> Dict[str, object]:
         """Apply industry-specific adjustments to persona."""
         # Try multiple sources for industry
         industry = (
@@ -248,7 +248,7 @@ class PersonaPlanner:
         logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
         return adjusted
     
-    def _apply_grounding_refinements(self, persona: Dict[str, Any], grounding_plan: Optional[Any]) -> Dict[str, Any]:
+    def _apply_grounding_refinements(self, persona: Dict[str, object], grounding_plan: Optional[Any]) -> Dict[str, object]:
         """Apply grounding-based refinements to persona."""
         if not grounding_plan:
             return persona
@@ -284,7 +284,7 @@ class PersonaPlanner:
         logger.debug("Applied grounding-based refinements")
         return refined
     
-    def _calculate_confidence_score(self, archetype: str, profile: Dict[str, Any], persona: Dict[str, Any]) -> float:
+    def _calculate_confidence_score(self, archetype: str, profile: Dict[str, object], persona: Dict[str, object]) -> float:
         """Calculate persona match confidence score."""
         base_score = 0.7  # Start with reasonable confidence
         
@@ -303,7 +303,7 @@ class PersonaPlanner:
         
         return round(min(base_score, 1.0), 3)
     
-    def _count_adjustments(self, base: Dict[str, Any], final: Dict[str, Any]) -> int:
+    def _count_adjustments(self, base: Dict[str, object], final: Dict[str, object]) -> int:
         """Count how many adjustments were made to base persona."""
         count = 0
         for key in base:
@@ -325,7 +325,7 @@ class PersonaPlanner:
         except Exception as e:
             logger.debug(f"Failed to record telemetry: {e}")
     
-    def get_persona_summary(self, plan: PersonaPlan) -> Dict[str, Any]:
+    def get_persona_summary(self, plan: PersonaPlan) -> Dict[str, object]:
         """Get a summary of the persona plan for debugging/telemetry."""
         return {
             "plan_id": f"persona_{plan.archetype}_{plan.tone_style}",

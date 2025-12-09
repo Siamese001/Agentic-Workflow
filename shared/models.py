@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 # Re-exports for backwards compatibility
 from shared.reasoning_config import ReasoningConfig
@@ -49,21 +49,21 @@ class ValidationResult:
     passed: bool
     severity: ValidationSeverity
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class ThematicAnalysis:
     """Thematic analysis results from content inspection."""
 
-    primary_theme: Dict[str, Any] = field(default_factory=dict)
-    secondary_themes: List[Dict[str, Any]] = field(default_factory=list)
-    role_classification: Dict[str, Any] = field(default_factory=dict)
-    positioning_directives: Dict[str, Any] = field(default_factory=dict)
-    authenticity_patterns: Dict[str, Any] = field(default_factory=dict)
-    competitive_intelligence: Any = None
-    problem_solution_narratives: Optional[Dict[str, Any]] = None
+    primary_theme: Dict[str, object] = field(default_factory=dict)
+    secondary_themes: List[Dict[str, object]] = field(default_factory=list)
+    role_classification: Dict[str, object] = field(default_factory=dict)
+    positioning_directives: Dict[str, object] = field(default_factory=dict)
+    authenticity_patterns: Dict[str, object] = field(default_factory=dict)
+    competitive_intelligence: object = None
+    problem_solution_narratives: Optional[Dict[str, object]] = None
     signal_quality_score: float = 0.0
     retrieval_method: str = "UNKNOWN"
     retrieval_sources: List[Any] = field(default_factory=list)
-    weighting_formula: Optional[Dict[str, Any]] = None
+    weighting_formula: Optional[Dict[str, object]] = None

@@ -81,7 +81,7 @@ import traceback
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Union
 
 import yaml
 
@@ -881,7 +881,7 @@ def load_golden_content(hash_value: str) -> str:
         return None
 
 
-def load_semantic_components(hash_value: str) -> Optional[List[Dict[str, Any]]]:
+def load_semantic_components(hash_value: str) -> Optional[List[Dict[str, object]]]:
     """
     Load semantic component metadata for a given hash from:
         06_data/semantic_cache/semantic/{hash}.semantic.json
@@ -1075,7 +1075,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
         target_filename = target_path.name
 
         # Filter components that correspond to this file (by filename match).
-        selected_comps: List[Dict[str, Any]] = []
+        selected_comps: List[Dict[str, object]] = []
         for c in comps_meta:
             c_file = c.get("file") or ""
             try:
@@ -1091,7 +1091,7 @@ def apply_semantic_ops(ctx: ExecutionContext, semantic_ops: List[PlanOperation])
 
         # Sort components STRICTLY by span_start to preserve file order (Determinism).
         # Kind is only a tie-breaker.
-        def comp_sort_key(c: Dict[str, Any]) -> tuple:
+        def comp_sort_key(c: Dict[str, object]) -> tuple:
             start = int(c.get("span_start") or 0)
             # Secondary sort by end to put larger blocks first if starting same line (rare)
             end = int(c.get("span_end") or 0) 

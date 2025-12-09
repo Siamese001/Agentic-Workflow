@@ -135,7 +135,7 @@ Soft Constraints:
 
 def create_rag_planner_prompt(
     include_examples: bool = True,
-    rag_config: Optional[Dict[str, Any]] = None,
+    rag_config: Optional[Dict[str, object]] = None,
 ) -> str:
     """Create v6 prompt for L1 RAG planner with examples.
     

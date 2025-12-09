@@ -15,7 +15,7 @@ import uuid
 import asyncio
 import redis
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 # GAP 4 FIX: Removed global CONFIG import
 from core_v10_1 import (
@@ -42,7 +42,7 @@ class HotReloadRuleManager:
         self.rules_path = rules_path
         self.auto_approve_threshold = auto_approve_threshold
     
-    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+    def write_proposed_rule(self, rule: Dict[str, object], confidence: float) -> bool:
         """Write rule with auto-approval decision"""
         try:
             if confidence >= self.auto_approve_threshold:
@@ -114,7 +114,7 @@ class LogReaderAgent(BaseAgent):
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
     
-    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, object]:
         """Summarize logs"""
         self.log_info("Summarizing logs with LLM...")
         
@@ -152,7 +152,7 @@ Output JSON summary."""
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
     
-    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, log_summary: Dict[str, object], workflow_id: str) -> List[Dict]:
         """Find recurring patterns"""
         self.log_info("Finding patterns in logs...")
         
@@ -182,7 +182,7 @@ class AsyncPatternFinderAgent(BaseAgent):
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
     
-    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, object], workflow_id: str) -> List[Dict]:
         """Generate hypotheses for patterns"""
         self.log_info("Generating hypotheses...")
         
@@ -215,7 +215,7 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
     
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Draft change proposal"""
         self.log_info(f"Drafting proposal for hypothesis: {hypothesis.get('id', 'unknown')}")
         
@@ -247,7 +247,7 @@ class AsyncProposalDrafterAgent(BaseAgent):
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
     
-    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, proposal: Dict[str, object], patterns: List[Dict], workflow_id: str) -> Dict[str, object]:
         """Critique proposal"""
         self.log_info("Critiquing proposal...")
         

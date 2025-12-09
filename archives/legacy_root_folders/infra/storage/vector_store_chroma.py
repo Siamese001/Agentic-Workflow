@@ -19,7 +19,7 @@ Non-responsibilities:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, Sequence
+from typing import Optional, Dict, object, Sequence
 
 
 class ChromaNotConfiguredError(RuntimeError):
@@ -83,9 +83,9 @@ def chroma_hybrid_search(
     query_texts: Sequence[str],
     *,
     n_results: int = 20,
-    where: Optional[Dict[str, Any]] = None,
-    where_document: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    where: Optional[Dict[str, object]] = None,
+    where_document: Optional[Dict[str, object]] = None,
+) -> Dict[str, object]:
     """Run a hybrid (dense + lexical) search over a Chroma collection.
 
     This is a thin wrapper around ``collection.query``. It returns the
@@ -109,8 +109,8 @@ def chroma_semantic_cache_lookup(
     query_texts: Sequence[str],
     *,
     n_results: int = 1,
-    where: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    where: Optional[Dict[str, object]] = None,
+) -> Dict[str, object]:
     """Look up cached results from a Chroma collection.
 
     This is a thin wrapper around ``collection.query`` for semantic cache lookups.
@@ -131,7 +131,7 @@ def chroma_semantic_cache_upsert(
     collection,
     ids: Sequence[str],
     documents: Sequence[str],
-    metadatas: Optional[Sequence[Dict[str, Any]]] = None,
+    metadatas: Optional[Sequence[Dict[str, object]]] = None,
 ) -> None:
     """Upsert documents into a Chroma collection for semantic caching.
 

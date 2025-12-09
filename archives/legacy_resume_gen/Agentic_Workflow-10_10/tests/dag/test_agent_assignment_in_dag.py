@@ -9,7 +9,7 @@ from config.agent_profile import AgentCard
 from core.models.models import AgentRole
 
 
-async def _noop(ctx: Dict[str, Any]) -> Dict[str, Any]:
+async def _noop(ctx: Dict[str, object]) -> Dict[str, object]:
     return dict(ctx)
 
 

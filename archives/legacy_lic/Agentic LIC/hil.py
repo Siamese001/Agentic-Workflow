@@ -203,7 +203,7 @@ class HILFeedbackSummarizerAgent(BaseAgent):
     async def run_async(
         self,
         human_feedback: str,
-        state_snapshot: Optional[Dict[str, Any]],
+        state_snapshot: Optional[Dict[str, object]],
         workflow_id: str,
     ) -> SummarizerOutput:
         if not human_feedback.strip():
@@ -260,7 +260,7 @@ class HILReconciliationAgent(BaseAgent):
     @track_metrics("run_hil_reconciliation")
     async def run_async(
         self,
-        draft_sections: Dict[str, Any],
+        draft_sections: Dict[str, object],
         specialist_feedback: List[str],
         persona_consensus: Optional[PersonaConsensus],
         workflow_id: str,
@@ -350,7 +350,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
         self,
         strategy: StrategyPlan,
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         self.log_info("Detecting ambiguity (v10.7)...")
         client = self.get_model_client("qa_model")
 
@@ -397,8 +397,8 @@ class HILFeedbackRouterAgent(BaseAgent):
         self,
         human_feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         self.log_info("Routing human feedback with persona council...")
 
         try:

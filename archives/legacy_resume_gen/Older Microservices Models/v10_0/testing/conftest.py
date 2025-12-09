@@ -415,7 +415,7 @@ def cleanup_test_artifacts(tmp_path):
     if tmp_path.exists():
         try:
             shutil.rmtree(tmp_path)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
 
 

@@ -7,7 +7,7 @@ import re
 import json
 import logging
 import os  # <-- Import os
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, object
 from collections import defaultdict
 
 # --- FIX: Import the DATA_DIR constant ---
@@ -311,7 +311,7 @@ def build_macro_tot_generation_prompt(
 
 def build_evaluator_scoring_prompt(
     drafts: List[str],
-    criteria: Dict[str, Any],
+    criteria: Dict[str, object],
     section_name: str
 ) -> str:
     """
@@ -545,7 +545,7 @@ def build_overview_generation_prompt(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt_number: int
 ) -> str:
     """

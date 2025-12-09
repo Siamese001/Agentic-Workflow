@@ -63,7 +63,7 @@ class CanonicalEntity:
     part_of: Optional[str] = None  # Parent entity ID
     
     # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def add_alias(self, alias: str) -> None:
         """Add an alias for this entity."""
@@ -78,7 +78,7 @@ class CanonicalEntity:
             return True
         return normalized in self.normalized_forms
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for storage."""
         return {
             "id": self.id,
@@ -126,7 +126,7 @@ class EntityMention:
     
     # Metadata
     extracted_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -446,7 +446,7 @@ def create_entity(
     entity_type: EntityType,
     aliases: Optional[List[str]] = None,
     source: str = "extraction",
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
 ) -> CanonicalEntity:
     """Create a new canonical entity.
     

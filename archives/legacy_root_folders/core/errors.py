@@ -53,9 +53,9 @@ class ErrorContext:
     node_id: Optional[str] = None
     component: Optional[str] = None
     operation: Optional[str] = None
-    metadata: Dict[str, Any] = None
+    metadata: Dict[str, object] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to a dictionary for serialization."""
 
         return {
@@ -80,7 +80,7 @@ class WorkflowError(Exception):
     def __str__(self) -> str:
         return f"[{self.code}] {self.message}"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert the error to a dictionary for serialization."""
 
         return {
@@ -102,7 +102,7 @@ class NodeExecutionError(WorkflowError):
         node_id: str,
         cause: Optional[Exception] = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, object]] = None,
     ) -> None:
         super().__init__(
             code=WorkflowErrorCode.NODE_EXECUTION_FAILED,
@@ -126,7 +126,7 @@ class SafetyViolationError(WorkflowError):
     def __init__(
         self,
         message: str,
-        policy_decisions: Dict[str, Any],
+        policy_decisions: Dict[str, object],
         node_id: Optional[str] = None,
         workflow_id: str = "unknown",
     ) -> None:

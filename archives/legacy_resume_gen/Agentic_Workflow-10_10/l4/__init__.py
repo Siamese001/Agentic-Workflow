@@ -64,7 +64,7 @@ def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
         # non-dataclass objects by simply returning the original.
         return state
 
-    updates: Dict[str, Any] = {}
+    updates: Dict[str, object] = {}
 
     if has_messages:
         messages = getattr(state, "messages")
@@ -87,7 +87,7 @@ def record_correction_event(
     *,
     surface: str,
     message: str,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
     ctx: Any = None,  # kept for signature compatibility; intentionally unused
 ) -> Any:
     """
@@ -132,7 +132,7 @@ def apply_state_patch(
     ctx: Any,
     *,
     safety_passed: bool = True
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Applies L2 results as state patch for résumé processing workflows.
     

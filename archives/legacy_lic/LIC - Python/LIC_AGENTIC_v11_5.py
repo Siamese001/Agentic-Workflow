@@ -57,7 +57,7 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Set
+from typing import Dict, List, Optional, Union, Tuple, Set
 from uuid import uuid4
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -483,9 +483,9 @@ SIMILARITY_THRESHOLDS = {
 class OutreachMission:
     """Immutable mission parameters"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: Dict[str, object]
+    recipient_profile: Dict[str, object]
+    job_description: Dict[str, object]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
     created_at: datetime = field(default_factory=datetime.now)
@@ -507,11 +507,11 @@ class ResearchContext:
     """Research findings and metadata"""
     mission_id: str
     research_queries: List[str]
-    findings: Dict[str, Any]
+    findings: Dict[str, object]
     sources_used: List[str]
     total_rag_calls: int
     research_hops: int
-    critique_history: List[Dict[str, Any]] = field(default_factory=list)
+    critique_history: List[Dict[str, object]] = field(default_factory=list)
     reflexion_cycles: int = 0
     created_at: datetime = field(default_factory=datetime.now)
 
@@ -523,7 +523,7 @@ class MessageScaffold:
     route: Route
     archetype: Archetype
     target_word_count: int
-    tone_guidance: Dict[str, Any]
+    tone_guidance: Dict[str, object]
     key_talking_points: List[str]
     forbidden_topics: List[str]
     created_at: datetime = field(default_factory=datetime.now)
@@ -537,7 +537,7 @@ class GenerationContext:
     max_attempts: int = 5
     locked_sections: Set[str] = field(default_factory=set)
     section_temperatures: Dict[str, float] = field(default_factory=dict)
-    failure_history: List[Dict[str, Any]] = field(default_factory=list)
+    failure_history: List[Dict[str, object]] = field(default_factory=list)
     adaptive_retry_count: int = 0
 
 
@@ -549,7 +549,7 @@ class ImmutableStagingBuffer:
     """
     mission_id: str
     content: Dict[str, str]
-    ground_truth_metrics: Dict[str, Any]
+    ground_truth_metrics: Dict[str, object]
     checksum: str
     created_at: datetime = field(default_factory=datetime.now)
     
@@ -558,7 +558,7 @@ class ImmutableStagingBuffer:
         self.ground_truth_metrics = self._calculate_ground_truth()
         self.checksum = self._calculate_checksum()
     
-    def _calculate_ground_truth(self) -> Dict[str, Any]:
+    def _calculate_ground_truth(self) -> Dict[str, object]:
         """Recalculate all metrics independently - NEVER trust LLM claims"""
         metrics = {}
         for section, text in self.content.items():
@@ -677,9 +677,9 @@ class WorkflowResult:
     message: ImmutableStagingBuffer
     qa_report: str
     production_ready: bool
-    qa_summary: Dict[str, Any]
+    qa_summary: Dict[str, object]
     workflow_time: float
-    events: List[Dict[str, Any]]
+    events: List[Dict[str, object]]
 
 
 @dataclass
@@ -690,7 +690,7 @@ class Event:
     timestamp: datetime
     mission_id: str
     agent_id: str
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
 
 
 # ============================================================================
@@ -707,7 +707,7 @@ class ConstraintFailureClassifier:
     def classify_failure(
         validation_results: List[ValidationResult],
         section: str
-    ) -> Tuple[ConstraintFailureType, Dict[str, Any]]:
+    ) -> Tuple[ConstraintFailureType, Dict[str, object]]:
         """
         Analyze validation failures and recommend adaptive retry strategy
         
@@ -794,7 +794,7 @@ class SimilarityCrossValidator:
         self,
         staging_buffer: ImmutableStagingBuffer,
         previous_buffers: List[ImmutableStagingBuffer]
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Cross-validate current buffer against previous K-node generations
         
@@ -847,7 +847,7 @@ class SimilarityCrossValidator:
     def check_section_duplication(
         self,
         staging_buffer: ImmutableStagingBuffer
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Check for duplication WITHIN sections of the same buffer
         """
@@ -1394,7 +1394,7 @@ class GenerationOrchestrator:
         mission: OutreachMission, 
         scaffold: MessageScaffold,
         temperature: float,
-        reasoning_params: Dict[str, Any]
+        reasoning_params: Dict[str, object]
     ) -> str:
         """
         Generate individual section with archetype-aware parameters
@@ -1823,7 +1823,7 @@ def create_orchestrator() -> WorkflowOrchestrator:
 # INTERACTIVE INPUT COLLECTION
 # ============================================================================
 
-def collect_sender_profile() -> Dict[str, Any]:
+def collect_sender_profile() -> Dict[str, object]:
     """
     Collect sender profile information interactively
     
@@ -1895,7 +1895,7 @@ def collect_sender_profile() -> Dict[str, Any]:
     }
 
 
-def collect_recipient_profile() -> Dict[str, Any]:
+def collect_recipient_profile() -> Dict[str, object]:
     """
     Collect recipient profile information interactively
     
@@ -1946,7 +1946,7 @@ def collect_recipient_profile() -> Dict[str, Any]:
     }
 
 
-def collect_job_description() -> Dict[str, Any]:
+def collect_job_description() -> Dict[str, object]:
     """
     Collect job description information interactively
     

@@ -46,13 +46,13 @@ class DraftOrchestrator:
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Execute the L1→L2→L4→L5 drafting control flow."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -65,7 +65,7 @@ class DraftOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -73,12 +73,12 @@ class DraftOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {

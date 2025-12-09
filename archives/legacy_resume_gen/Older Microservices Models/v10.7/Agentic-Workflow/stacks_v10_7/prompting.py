@@ -22,7 +22,7 @@ class PromptEngineerAgent(BaseAgent):
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         self.log_info(f"Engineering prompts (Complexity: {complexity})...")
 
         client = self.get_model_client("prompt_engineer_model")

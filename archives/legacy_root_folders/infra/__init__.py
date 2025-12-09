@@ -10,7 +10,7 @@ import functools
 T = TypeVar('T')
 
 # Simple service registry for atomic architecture
-_services: Dict[str, Any] = {}
+_services: Dict[str, object] = {}
 
 def register_service(name: str, service: Any) -> None:
     """

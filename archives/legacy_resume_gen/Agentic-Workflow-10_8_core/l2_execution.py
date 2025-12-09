@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, object
 
 from utils_types import PlanObject, StatePatch
 
@@ -13,7 +13,7 @@ class ExecutionAgent(ABC):
     """Abstract executor interface for L2 agents."""
 
     @abstractmethod
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         """Execute a plan against the current state and return a state patch."""
         raise NotImplementedError
 """
@@ -43,7 +43,7 @@ from l4_memory import ContextBudget
 from utils_types import BudgetConfig, PlanObject, StatePatch
 
 
-def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
+def _synthesize_result(query: str, index: int) -> Dict[str, object]:
     """Create a deterministic retrieval result for a query."""
 
     return {
@@ -56,7 +56,7 @@ def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
 class RAGExecutionAgent(ExecutionAgent):
     """Deterministic retrieval executor that returns state patches only."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         retrieval = plan.get("retrieval", {})
         queries: List[str] = [str(q) for q in retrieval.get("queries", [])]
         filters = retrieval.get("filters", {})
@@ -115,7 +115,7 @@ from utils_types import PlanObject, StatePatch
 class BulletExecutionAgent(ExecutionAgent):
     """Convert planning intents into bulletized state patches."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         items: List[str] = [str(item) for item in plan.get("deliverables", plan.get("items", []))]
         if not items:
             items = [str(plan.get("objective", "unspecified-objective"))]
@@ -169,7 +169,7 @@ def _compose_section(title: str, tone: str, audience: str) -> str:
 class DraftingExecutionAgent(ExecutionAgent):
     """Create draft content without performing any tool calls."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         tone = str(plan.get("tone", "neutral"))
         audience = str(plan.get("audience", "general"))
         sections: List[str] = [str(section) for section in plan.get("sections", [])]
@@ -234,10 +234,10 @@ def _build_checks(plan: PlanObject) -> List[str]:
     return checks
 
 
-def _derive_findings(state: Dict[str, Any], checks: List[str]) -> List[Dict[str, Any]]:
+def _derive_findings(state: Dict[str, object], checks: List[str]) -> List[Dict[str, object]]:
     """Produce deterministic validation findings based on available state."""
 
-    findings: List[Dict[str, Any]] = []
+    findings: List[Dict[str, object]] = []
     has_messages = bool(state.get("messages"))
     for check in checks:
         findings.append(
@@ -253,7 +253,7 @@ def _derive_findings(state: Dict[str, Any], checks: List[str]) -> List[Dict[str,
 class QAValidationAgent(ExecutionAgent):
     """Perform deterministic QA validation that emits state patches only."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         evidence = get_evidence_view(state)
         checks = _build_checks(plan)
         findings = _derive_findings(state, checks)

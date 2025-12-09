@@ -343,7 +343,7 @@ class TextSanitizer:
 
         return text.strip()
 
-    def sanitize_buffer(self, buffer: 'ImmutableStagingBuffer') -> Tuple[List[ValidationResult], Dict[str, Any]]:
+    def sanitize_buffer(self, buffer: 'ImmutableStagingBuffer') -> Tuple[List[ValidationResult], Dict[str, object]]:
         """
         Recursively sanitizes all string values within the staging buffer's data.
         
@@ -518,7 +518,7 @@ def build_reasoning_prompt_addendum(config: ReasoningConfig) -> str:
 
 # --- START: ADDED MISSING FUNCTIONS ---
 
-def reasoning_config_to_api_params(config: ReasoningConfig) -> Dict[str, Any]:
+def reasoning_config_to_api_params(config: ReasoningConfig) -> Dict[str, object]:
     """
     Converts a ReasoningConfig object into a dictionary for the Gemini API.
     
@@ -734,7 +734,7 @@ class CodeInterpreterTool:
             'min': min,
         }
     
-    def execute(self, code: str, context: Optional[Dict[str, Any]] = None) -> Any:
+    def execute(self, code: str, context: Optional[Dict[str, object]] = None) -> Any:
         """
         Execute Python code in a sandboxed environment.
         

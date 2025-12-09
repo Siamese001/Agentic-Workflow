@@ -4,7 +4,7 @@ Shows 87% token savings achieved in production through strategic cache control.
 
 import os
 import time
-from typing import List, Dict, Any
+from typing import List, Dict, object
 from anthropic import Anthropic
 
 
@@ -15,7 +15,7 @@ class PromptCachingDemo:
         self.client = Anthropic(api_key=api_key or os.getenv("ANTHROPIC_API_KEY"))
         self.cache_header = {"cache_control": {"type": "ephemeral"}}
     
-    def cached_system_prompt(self) -> Dict[str, Any]:
+    def cached_system_prompt(self) -> Dict[str, object]:
         """System prompt with caching enabled for reuse across messages."""
         return {
             "type": "text",
@@ -37,7 +37,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
             **self.cache_header
         }
     
-    def cached_template_message(self, template_type: str) -> Dict[str, Any]:
+    def cached_template_message(self, template_type: str) -> Dict[str, object]:
         """Cached message templates for common scenarios."""
         templates = {
             "resume_review": {
@@ -73,7 +73,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
         }
         return templates.get(template_type, templates["resume_review"])
     
-    def uncached_user_input(self, user_content: str) -> Dict[str, Any]:
+    def uncached_user_input(self, user_content: str) -> Dict[str, object]:
         """User-specific content without caching (unique per request)."""
         return {
             "type": "text",
@@ -86,7 +86,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
         template_type: str = "resume_review",
         model: str = "claude-3-5-sonnet-20241022",
         max_tokens: int = 1500
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Send message with strategic caching applied."""
         
         message = self.client.messages.create(
@@ -121,7 +121,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
             "response_id": message.id
         }
     
-    def demonstrate_cache_effectiveness(self) -> Dict[str, Any]:
+    def demonstrate_cache_effectiveness(self) -> Dict[str, object]:
         """Run demonstration showing cache hit/miss patterns and savings."""
         
         # Test scenarios with varying cache hit rates
@@ -227,7 +227,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
         return summary
 
 
-def production_optimization_tips() -> Dict[str, Any]:
+def production_optimization_tips() -> Dict[str, object]:
     """Return production optimization tips for prompt caching."""
     return {
         "cache_strategy": {

@@ -8,7 +8,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 from outreach_engine import (
     # Core models
@@ -23,7 +23,7 @@ from outreach_engine import (
     FusionPlanner
 )
 
-def load_lic_capabilities() -> Dict[str, Any]:
+def load_lic_capabilities() -> Dict[str, object]:
     """Load LIC capabilities from reconstructed_capabilities.py"""
     try:
         sys.path.append(os.path.join(os.path.dirname(__file__), 'LIC_capabilities'))
@@ -35,7 +35,7 @@ def load_lic_capabilities() -> Dict[str, Any]:
         print("🔄 Using demo configuration...")
         return get_demo_configuration()
 
-def get_demo_configuration() -> Dict[str, Any]:
+def get_demo_configuration() -> Dict[str, object]:
     """Demo configuration for testing without real LIC data"""
     return {
         "routing_rules": {
@@ -415,7 +415,7 @@ def get_demo_configuration() -> Dict[str, Any]:
         }
     }
 
-def create_demo_sender_profile() -> Dict[str, Any]:
+def create_demo_sender_profile() -> Dict[str, object]:
     """Create realistic sender profile for demo"""
     return {
         "name": "Jane Doe",
@@ -453,7 +453,7 @@ def create_demo_sender_profile() -> Dict[str, Any]:
         "summary": "Senior software engineer specializing in scalable systems and cloud architecture"
     }
 
-def create_demo_recipient_profiles() -> List[Dict[str, Any]]:
+def create_demo_recipient_profiles() -> List[Dict[str, object]]:
     """Create diverse recipient profiles for demo"""
     return [
         {
@@ -518,7 +518,7 @@ def create_demo_recipient_profiles() -> List[Dict[str, Any]]:
         }
     ]
 
-def create_demo_job_context() -> Dict[str, Any]:
+def create_demo_job_context() -> Dict[str, object]:
     """Create realistic job context for demo"""
     return {
         "title": "Principal Software Engineer, Cloud Infrastructure",

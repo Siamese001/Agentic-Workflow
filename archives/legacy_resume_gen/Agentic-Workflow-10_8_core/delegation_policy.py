@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, object
 from multi_agent import AgentRole
 
 
@@ -17,7 +17,7 @@ def can_delegate(from_role: AgentRole, to_role: AgentRole) -> bool:
     return False
 
 
-def delegation_metadata(sender: AgentRole, recipient: AgentRole) -> Dict[str, Any]:
+def delegation_metadata(sender: AgentRole, recipient: AgentRole) -> Dict[str, object]:
     return {
         "from": sender.value,
         "to": recipient.value,

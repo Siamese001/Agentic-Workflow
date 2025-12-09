@@ -8,7 +8,7 @@ by multiple modules but was lost during canonical structure cleanup.
 from typing import Any, Dict, Optional
 
 
-def compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
+def compile_prompt(prompt: str, context: Optional[Dict[str, object]] = None) -> str:
     """
     Compile a prompt template with context variables.
     
@@ -40,10 +40,10 @@ class PromptCompiler:
     Content Management System prompt compiler.
     """
     
-    def __init__(self, default_context: Optional[Dict[str, Any]] = None):
+    def __init__(self, default_context: Optional[Dict[str, object]] = None):
         self.default_context = default_context or {}
     
-    def compile(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
+    def compile(self, prompt: str, context: Optional[Dict[str, object]] = None) -> str:
         """Compile prompt with merged context."""
         merged_context = {**self.default_context, **(context or {})}
         return compile_prompt(prompt, merged_context)

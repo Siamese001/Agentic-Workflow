@@ -7,7 +7,7 @@ affecting core behavior. Singleton pattern with in-memory storage.
 
 import time
 import threading
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 
 @dataclass
@@ -15,7 +15,7 @@ class TelemetryEvent:
     """Structured telemetry event."""
     name: str
     layer: str
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
     timestamp: float = field(default_factory=time.time)
     event_type: str = "event"  # "event", "error", "trace"
 
@@ -26,7 +26,7 @@ class TelemetryError:
     name: str
     layer: str
     error: BaseException
-    context: Dict[str, Any]
+    context: Dict[str, object]
     timestamp: float = field(default_factory=time.time)
     event_type: str = "error"
 
@@ -34,7 +34,7 @@ class TelemetryError:
 @dataclass
 class TelemetryTrace:
     """Structured telemetry trace."""
-    trace: Dict[str, Any]
+    trace: Dict[str, object]
     timestamp: float = field(default_factory=time.time)
     event_type: str = "trace"
 
@@ -70,7 +70,7 @@ class TelemetryBus:
             self._enabled = enabled
             self._detail_level = detail_level
     
-    def record_event(self, name: str, layer: str, payload: Dict[str, Any]) -> None:
+    def record_event(self, name: str, layer: str, payload: Dict[str, object]) -> None:
         """Record a telemetry event."""
         if not self._enabled:
             return
@@ -92,7 +92,7 @@ class TelemetryBus:
             # Telemetry failures should never break workflows
             pass
     
-    def record_error(self, name: str, layer: str, error: BaseException, context: Dict[str, Any]) -> None:
+    def record_error(self, name: str, layer: str, error: BaseException, context: Dict[str, object]) -> None:
         """Record an error event."""
         if not self._enabled:
             return
@@ -119,7 +119,7 @@ class TelemetryBus:
             # Telemetry failures should never break workflows
             pass
     
-    def record_trace(self, trace: Dict[str, Any]) -> None:
+    def record_trace(self, trace: Dict[str, object]) -> None:
         """Record a trace event."""
         if not self._enabled:
             return
@@ -129,7 +129,7 @@ class TelemetryBus:
             trace_event = TelemetryTrace(trace=trace.copy())
             self._traces.append(trace_event)
     
-    def _filter_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _filter_payload(self, payload: Dict[str, object]) -> Dict[str, object]:
         """Filter payload based on detail level and remove sensitive data."""
         try:
             if payload is None:
@@ -205,7 +205,7 @@ class TelemetryBus:
             self._errors.clear()
             self._traces.clear()
     
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> Dict[str, object]:
         """Get telemetry summary statistics."""
         with self._lock:
             # Include layers from both events and errors

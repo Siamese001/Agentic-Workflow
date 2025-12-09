@@ -8,7 +8,7 @@ advantage through deeper business intelligence insights.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 import re
@@ -83,7 +83,7 @@ class CompanyIntelligenceBundle:
             'risk': ['challenge', 'competition', 'market', 'regulatory', 'technical']
         }
     
-    def analyze_company(self, company_data: Dict[str, Any]) -> CompanyInsights:
+    def analyze_company(self, company_data: Dict[str, object]) -> CompanyInsights:
         """
         Comprehensive company intelligence analysis.
         
@@ -134,7 +134,7 @@ class CompanyIntelligenceBundle:
         
         return insights
     
-    def _determine_business_stage(self, company_data: Dict[str, Any]) -> BusinessStage:
+    def _determine_business_stage(self, company_data: Dict[str, object]) -> BusinessStage:
         """Determine company business stage based on available data."""
         description = company_data.get('description', '').lower()
         funding = company_data.get('funding', {})
@@ -163,7 +163,7 @@ class CompanyIntelligenceBundle:
         
         return BusinessStage.GROWTH  # Default assumption
     
-    def _analyze_market_position(self, company_data: Dict[str, Any]) -> str:
+    def _analyze_market_position(self, company_data: Dict[str, object]) -> str:
         """Analyze company's market position."""
         description = company_data.get('description', '').lower()
         market_data = company_data.get('market', {})
@@ -187,7 +187,7 @@ class CompanyIntelligenceBundle:
         
         return 'competitive'  # Default position
     
-    def _identify_competitive_advantages(self, company_data: Dict[str, Any]) -> List[str]:
+    def _identify_competitive_advantages(self, company_data: Dict[str, object]) -> List[str]:
         """Identify company's competitive advantages."""
         description = company_data.get('description', '')
         advantages = []
@@ -207,7 +207,7 @@ class CompanyIntelligenceBundle:
         
         return advantages[:5]  # Limit to top 5 advantages
     
-    def _extract_growth_indicators(self, company_data: Dict[str, Any]) -> List[str]:
+    def _extract_growth_indicators(self, company_data: Dict[str, object]) -> List[str]:
         """Extract growth indicators from company data."""
         description = company_data.get('description', '').lower()
         funding = company_data.get('funding', {})
@@ -231,7 +231,7 @@ class CompanyIntelligenceBundle:
         
         return growth_indicators[:4]  # Limit to top 4 indicators
     
-    def _assess_risk_factors(self, company_data: Dict[str, Any]) -> List[str]:
+    def _assess_risk_factors(self, company_data: Dict[str, object]) -> List[str]:
         """Assess potential risk factors."""
         description = company_data.get('description', '').lower()
         market_data = company_data.get('market', {})
@@ -260,7 +260,7 @@ class CompanyIntelligenceBundle:
     
     def _determine_strategic_priorities(
         self, 
-        company_data: Dict[str, Any], 
+        company_data: Dict[str, object], 
         business_stage: BusinessStage
     ) -> List[str]:
         """Determine strategic priorities based on business stage."""
@@ -286,7 +286,7 @@ class CompanyIntelligenceBundle:
         
         return priorities[:4]  # Limit to top 4 priorities
     
-    def _calculate_company_confidence(self, company_data: Dict[str, Any]) -> float:
+    def _calculate_company_confidence(self, company_data: Dict[str, object]) -> float:
         """Calculate confidence score for company analysis."""
         confidence = 0.5  # Base confidence
         
@@ -332,7 +332,7 @@ class ProductIntelligenceBundle:
             'insights': ['data', 'analytics', 'insights', 'intelligence', 'visibility']
         }
     
-    def analyze_product(self, product_data: Dict[str, Any]) -> ProductInsights:
+    def analyze_product(self, product_data: Dict[str, object]) -> ProductInsights:
         """
         Deep product intelligence analysis.
         
@@ -387,7 +387,7 @@ class ProductIntelligenceBundle:
         
         return insights
     
-    def _determine_product_category(self, product_data: Dict[str, Any]) -> ProductCategory:
+    def _determine_product_category(self, product_data: Dict[str, object]) -> ProductCategory:
         """Determine product category based on description and features."""
         description = product_data.get('description', '').lower()
         features = [f.lower() for f in product_data.get('features', [])]
@@ -406,7 +406,7 @@ class ProductIntelligenceBundle:
         
         return ProductCategory.SERVICE  # Default category
     
-    def _extract_value_proposition(self, product_data: Dict[str, Any]) -> str:
+    def _extract_value_proposition(self, product_data: Dict[str, object]) -> str:
         """Extract core value proposition from product data."""
         description = product_data.get('description', '')
         
@@ -435,7 +435,7 @@ class ProductIntelligenceBundle:
         
         return "Provides unique value to customers"
     
-    def _identify_target_market(self, product_data: Dict[str, Any]) -> str:
+    def _identify_target_market(self, product_data: Dict[str, object]) -> str:
         """Identify primary target market."""
         description = product_data.get('description', '').lower()
         market_data = product_data.get('market', {})
@@ -456,7 +456,7 @@ class ProductIntelligenceBundle:
         
         return "General market"  # Default
     
-    def _find_competitive_differentiators(self, product_data: Dict[str, Any]) -> List[str]:
+    def _find_competitive_differentiators(self, product_data: Dict[str, object]) -> List[str]:
         """Find competitive differentiators."""
         description = product_data.get('description', '')
         features = product_data.get('features', [])
@@ -481,7 +481,7 @@ class ProductIntelligenceBundle:
         
         return differentiators[:4]  # Limit to top 4 differentiators
     
-    def _assess_technical_strengths(self, product_data: Dict[str, Any]) -> List[str]:
+    def _assess_technical_strengths(self, product_data: Dict[str, object]) -> List[str]:
         """Assess technical strengths of the product."""
         features = product_data.get('features', [])
         description = product_data.get('description', '')
@@ -506,7 +506,7 @@ class ProductIntelligenceBundle:
         
         return strengths[:3]  # Limit to top 3 strengths
     
-    def _identify_market_opportunities(self, product_data: Dict[str, Any]) -> List[str]:
+    def _identify_market_opportunities(self, product_data: Dict[str, object]) -> List[str]:
         """Identify market opportunities for the product."""
         market_data = product_data.get('market', {})
         opportunities = []
@@ -532,7 +532,7 @@ class ProductIntelligenceBundle:
         
         return opportunities[:3]  # Limit to top 3 opportunities
     
-    def _assess_adoption_challenges(self, product_data: Dict[str, Any]) -> List[str]:
+    def _assess_adoption_challenges(self, product_data: Dict[str, object]) -> List[str]:
         """Assess potential adoption challenges."""
         description = product_data.get('description', '').lower()
         features = product_data.get('features', [])
@@ -556,7 +556,7 @@ class ProductIntelligenceBundle:
         
         return challenges[:2]  # Limit to top 2 challenges
     
-    def _calculate_product_confidence(self, product_data: Dict[str, Any]) -> float:
+    def _calculate_product_confidence(self, product_data: Dict[str, object]) -> float:
         """Calculate confidence score for product analysis."""
         confidence = 0.5  # Base confidence
         
@@ -594,8 +594,8 @@ class IntelligenceBundleSystem:
     
     def analyze_business_intelligence(
         self,
-        company_data: Dict[str, Any],
-        product_data: Dict[str, Any]
+        company_data: Dict[str, object],
+        product_data: Dict[str, object]
     ) -> Tuple[CompanyInsights, ProductInsights]:
         """
         Apply comprehensive business intelligence analysis.

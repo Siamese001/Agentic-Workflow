@@ -5,7 +5,7 @@ from typing import Any, Iterable, Type
 from pydantic import BaseModel
 
 
-def _get_schema_version(obj: Any) -> str | None:
+def _get_schema_version(obj: object) -> str | None:
     """Best-effort helper to read a schema_version attribute from a model.
 
     The validator is intentionally defensive and never raises on simple
@@ -20,7 +20,7 @@ def _get_schema_version(obj: Any) -> str | None:
 
 
 def validate_schema_version(
-    obj: Any,
+    obj: object,
     expected_versions: Iterable[str] = ("v1",),
     model_type: Type[BaseModel] | None = None,
 ) -> None:
