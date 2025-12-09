@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\orchestrate_core_planning.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "6072bb76a222e9df",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L3_orchestration\\P1_retrieve\\get_info\\understand_request\\orchestrate_core_planning.py",
-  "created": "2025-12-07T11:54:50.461122"
-}

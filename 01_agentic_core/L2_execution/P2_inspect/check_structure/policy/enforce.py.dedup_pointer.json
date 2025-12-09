@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\security_controls\\guardrails\\check_rules\\manage_runtime_costs_state_update_ops\\enforce_safety_budget.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "be5a3a2377ebb5bb",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P2_inspect\\check_structure\\policy\\enforce.py",
-  "created": "2025-12-07T11:54:46.576012"
-}

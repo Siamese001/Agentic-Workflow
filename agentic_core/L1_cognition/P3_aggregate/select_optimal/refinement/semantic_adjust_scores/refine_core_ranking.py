@@ -1,0 +1,20 @@
+# Ownership: agentic_core / L1_cognition
+# -*- coding: utf-8 -*-
+"""Refine Core Ranking - atomic wrapper."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, List
+
+from shared.models import ValidationResult, ValidationSeverity
+from shared.workflow_types import HopStatus, HopCheckpoint
+
+
+def refine_core_ranking(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Process refine core ranking data."""
+    return {"status": "processed", "input_keys": list(data.keys())}
+
+
+def get_refine_core_ranking_config() -> Dict[str, Any]:
+    """Get configuration for refine_core_ranking."""
+    return {"enabled": True, "version": "1.0"}

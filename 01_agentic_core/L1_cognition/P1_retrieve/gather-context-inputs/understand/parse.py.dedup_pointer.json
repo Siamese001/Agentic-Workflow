@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\logic\\data_access\\get_info\\understand_request\\parse_settings.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "1376e309e5c191b7",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L1_cognition\\P1_retrieve\\gather-context-inputs\\understand\\parse.py",
-  "created": "2025-12-07T11:54:50.794298"
-}
