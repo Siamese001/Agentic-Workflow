@@ -30,7 +30,7 @@ class TokenBudgetInspector:
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def diagnose(self, target: Any, context: Optional[Dict] = None) -> DiagnosticReport:
+    def diagnose(self, target: object, context: Optional[Dict] = None) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {}

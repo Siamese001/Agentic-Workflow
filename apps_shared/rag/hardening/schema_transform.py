@@ -66,13 +66,13 @@ class KeyMapping:
     transformer: Optional[Callable[[Any], Any]] = None
     validator: Optional[Callable[[Any], bool]] = None
     
-    def transform(self, value: Any) -> Any:
+    def transform(self, value: object) -> object:
         """Apply transformation to value."""
         if self.transformer:
             return self.transformer(value)
         return value
     
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: object) -> bool:
         """Validate the value."""
         if self.validator:
             return self.validator(value)
@@ -87,7 +87,7 @@ class EnumSpec:
     case_sensitive: bool = False
     allow_null: bool = False
     
-    def validate(self, value: Any) -> Tuple[bool, str]:
+    def validate(self, value: object) -> Tuple[bool, str]:
         """Validate value against enum spec."""
         if value is None:
             if self.allow_null:
@@ -411,7 +411,7 @@ class DataLossPreventionGate:
         self.max_array_length = max_array_length
         self.check_truncation = check_truncation
         
-    def check(self, original: Any, transformed: Any, field_name: str) -> List[TransformViolation]:
+    def check(self, original: object, transformed: object, field_name: str) -> List[TransformViolation]:
         """
         Check for potential data loss between original and transformed values.
         
@@ -509,7 +509,7 @@ class ControlledVocabularyValidator:
             self._vocabularies[field_name] = {v.lower() for v in allowed_values}
         self._case_sensitive[field_name] = case_sensitive
         
-    def validate(self, field_name: str, value: Any) -> Tuple[bool, str]:
+    def validate(self, field_name: str, value: object) -> Tuple[bool, str]:
         """Validate a value against its controlled vocabulary."""
         if field_name not in self._vocabularies:
             return (True, "No vocabulary defined")

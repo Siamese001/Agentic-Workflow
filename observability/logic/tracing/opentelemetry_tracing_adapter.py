@@ -29,7 +29,7 @@ class OpentelemetryTracingAdapter:
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def execute(self, data: Any, **kwargs) -> OperationResult:
+    def execute(self, data: object, **kwargs) -> OperationResult:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
@@ -38,7 +38,7 @@ class OpentelemetryTracingAdapter:
             logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
 
-    def _process(self, data: Any, **kwargs) -> Any:
+    def _process(self, data: object, **kwargs) -> object:
         """Process data."""
         return data
 

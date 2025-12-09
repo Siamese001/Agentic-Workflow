@@ -134,7 +134,7 @@ class GeminiService:
             try:
                 if hasattr(genai, '_config'):
                     api_key = genai._config.api_key
-            except:
+            except (ValueError, TypeError, RuntimeError):
                 ...
 
             if not api_key:
@@ -435,7 +435,7 @@ class GeminiService:
                 logger.error(f"{section_id}: API error: {e}")
                 return None, APICallStatus.ERROR
 
-    def _extract_text(self, response: Any) -> str:
+    def _extract_text(self, response: object) -> str:
         """
         Extract clean text from API response.
 
