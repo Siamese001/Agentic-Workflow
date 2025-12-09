@@ -119,7 +119,7 @@ class ProvenanceTracker:
             bullet_text: The bullet text
             category: Category of the bullet
             sources: List of provenance sources
-            bullet_id: Optional ID (auto-generated if None)
+            bullet_id: Optional ID (generated if None)
 
         Returns:
             Bullet ID
