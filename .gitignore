@@ -36,6 +36,12 @@ outputs/
 logs/
 !observability/logs/
 
-# semantic cache - generated artifacts (exclude from git)
-06_data/semantic_cache/
+# semantic cache - curated knowledge plane (SSoT v4.2)
+# v1_curated/ and v2_curated/ are tracked as durable knowledge assets
+# Only ignore runtime-generated artifacts at the root level
+!06_data/semantic_cache/
+!06_data/semantic_cache/v1_curated/
+!06_data/semantic_cache/v2_curated/
+!06_data/semantic_cache/curated_chunks/
+!06_data/semantic_cache/lineage.json
 

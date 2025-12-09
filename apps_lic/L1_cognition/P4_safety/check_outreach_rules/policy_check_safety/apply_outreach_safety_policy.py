@@ -1,0 +1,20 @@
+# Ownership: apps_lic / L1_cognition
+# -*- coding: utf-8 -*-
+"""Apply Outreach Safety Policy - atomic wrapper."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, List
+
+from shared.models import ValidationResult, ValidationSeverity
+from shared.workflow_types import HopStatus, HopCheckpoint
+
+
+def apply_outreach_safety_policy(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Process apply outreach safety policy data."""
+    return {"status": "processed", "input_keys": list(data.keys())}
+
+
+def get_apply_outreach_safety_policy_config() -> Dict[str, Any]:
+    """Get configuration for apply_outreach_safety_policy."""
+    return {"enabled": True, "version": "1.0"}

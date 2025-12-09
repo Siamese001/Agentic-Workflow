@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L3_orchestration\\P1_retrieve\\gather_context_inputs\\integrate_source_signals\\understand_request\\__init__.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "91415a22e4a16b1e",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L2_execution\\P4_safety\\__init__.py",
-  "created": "2025-12-07T11:54:45.667061"
-}
