@@ -83,7 +83,7 @@ Ensures robust operation for resume job alignment workflows.
 """
 
 
-def _safe_getattr(obj: Any, name: str, default: Any = "") -> object:
+def _safe_getattr(obj: object, name: str, default: object = "") -> object:
     """
     Safely accesses object attributes for reliable resume processing.
 

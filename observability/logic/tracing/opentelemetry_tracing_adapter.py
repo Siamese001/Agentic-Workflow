@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class OperationResult:
     """Result of operation."""
     success: bool
-    data: Any = None
+    data: object = None
     message: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
 
@@ -43,6 +43,6 @@ class OpentelemetryTracingAdapter:
         return data
 
 
-def execute(data: Any, config: Optional[Dict] = None, **kwargs) -> OperationResult:
+def execute(data: object, config: Optional[Dict] = None, **kwargs) -> OperationResult:
     """Convenience function."""
     return OpentelemetryTracingAdapter(config).execute(data, **kwargs)

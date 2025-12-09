@@ -48,6 +48,6 @@ class TokenBudgetInspector:
         return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
 
 
-def diagnose(target: Any, config: Optional[Dict] = None) -> DiagnosticReport:
+def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
     return TokenBudgetInspector(config).diagnose(target)

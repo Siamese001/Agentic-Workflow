@@ -160,7 +160,7 @@ def _detect_meta_learning_persistence(config: ConfigV10_7) -> str:
     return "NONE"
 
 
-def _describe_redis_mode(redis_client: Any) -> str:
+def _describe_redis_mode(redis_client: object) -> str:
     if isinstance(redis_client, MCPClientStub):
         return "STUB"
 
@@ -217,7 +217,7 @@ def _log_runtime_capabilities(
     )
 
 
-def _mcp_get(config_obj: Any, key: str, default: object) -> object:
+def _mcp_get(config_obj: object, key: str, default: object) -> object:
     """
     Helper to read MCP config fields from either a dict-like structure
     or an attribute-based config object. This makes context robust to

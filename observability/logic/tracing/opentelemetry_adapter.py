@@ -23,7 +23,7 @@ EMBEDDED_SOURCES = {
 from state_adapter_stack import StateAdapterStack
 
 
-def test_safety_fields_persist_via_patch():
+def test_safety_fields_persist_via_patch() -> None:
     base = MainGraphState()
     patch = {
         "safety_report": {"is_safe": True, "findings": []},
