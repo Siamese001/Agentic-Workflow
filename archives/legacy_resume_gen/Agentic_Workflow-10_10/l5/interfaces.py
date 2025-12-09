@@ -64,7 +64,7 @@ class L5PolicyRequest:
     data: Any
     context: ExecutionContext
     policy_types: List[PolicyType]
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -76,7 +76,7 @@ class L5PolicyResult:
     violations: List[PolicyViolation]
     modified_data: Optional[Any] = None
     hitl_request: Optional[HitLRequest] = None
-    metadata: Dict[str, Any] = None
+    metadata: Dict[str, object] = None
 
 
 class L5PolicyEnforcerInterface(ABC):
@@ -93,7 +93,7 @@ class L5PolicyEnforcerInterface(ABC):
         pass
     
     @abstractmethod
-    async def validate_policy_config(self, policy_config: Dict[str, Any]) -> bool:
+    async def validate_policy_config(self, policy_config: Dict[str, object]) -> bool:
         """Validate policy configuration."""
         pass
 
@@ -155,7 +155,7 @@ class L5ComplianceCheckerInterface(ABC):
         pass
     
     @abstractmethod
-    async def audit_operation(self, operation: str, data: Any, context: ExecutionContext) -> Dict[str, Any]:
+    async def audit_operation(self, operation: str, data: Any, context: ExecutionContext) -> Dict[str, object]:
         """Create audit trail for operation."""
         pass
 
@@ -174,7 +174,7 @@ class L5HitLInterface(ABC):
         pass
     
     @abstractmethod
-    async def process_hitl_response(self, request_id: str, response: Dict[str, Any]) -> bool:
+    async def process_hitl_response(self, request_id: str, response: Dict[str, object]) -> bool:
         """Process human response to approval request."""
         pass
     
@@ -188,7 +188,7 @@ class L5ResourceGuardInterface(ABC):
     """Interface for resource guarding operations."""
     
     @abstractmethod
-    async def check_resource_limits(self, resource_usage: Dict[str, Any], limits: Dict[str, Any]) -> bool:
+    async def check_resource_limits(self, resource_usage: Dict[str, object], limits: Dict[str, object]) -> bool:
         """Check if resource usage exceeds limits."""
         pass
     
@@ -207,7 +207,7 @@ class L5AuditLoggerInterface(ABC):
     """Interface for audit logging operations."""
     
     @abstractmethod
-    async def log_policy_event(self, event_type: str, data: Dict[str, Any], context: ExecutionContext) -> bool:
+    async def log_policy_event(self, event_type: str, data: Dict[str, object], context: ExecutionContext) -> bool:
         """Log policy-related events."""
         pass
     
@@ -217,12 +217,12 @@ class L5AuditLoggerInterface(ABC):
         pass
     
     @abstractmethod
-    async def create_compliance_report(self, time_range: Dict[str, datetime], filters: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_compliance_report(self, time_range: Dict[str, datetime], filters: Dict[str, object]) -> Dict[str, object]:
         """Generate compliance reports."""
         pass
     
     @abstractmethod
-    async def export_audit_trail(self, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def export_audit_trail(self, filters: Dict[str, object]) -> List[Dict[str, object]]:
         """Export audit trail data."""
         pass
 
@@ -235,4 +235,4 @@ class SafetyViolation:
     detected_content: str
     confidence: float
     severity: Severity
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]

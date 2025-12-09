@@ -25,8 +25,8 @@ class RAGOrchestratorStack(BaseAgent):
         self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         current_state = state
 
@@ -100,7 +100,7 @@ class RAGOrchestratorStack(BaseAgent):
         return current_state
 
     def _append_a2a_message(
-        self, state: Dict[str, Any], *, message_type: str, payload: Dict[str, Any]
+        self, state: Dict[str, object], *, message_type: str, payload: Dict[str, object]
     ) -> None:
         channel = state.setdefault("a2a", {})
         messages = channel.setdefault("messages", [])
@@ -114,7 +114,7 @@ class RAGOrchestratorStack(BaseAgent):
             }
         )
 
-    def _ensure_plan_metadata(self, plan_patch: Dict[str, Any]) -> Dict[str, Any]:
+    def _ensure_plan_metadata(self, plan_patch: Dict[str, object]) -> Dict[str, object]:
         plan_payload = (plan_patch.get("rag", {}) or {}).get("plan", {})
         if isinstance(plan_payload, dict) and "use_hyde" not in plan_payload:
             plan_payload["use_hyde"] = True
@@ -122,10 +122,10 @@ class RAGOrchestratorStack(BaseAgent):
 
     async def _maybe_retry_rag(
         self,
-        state: Dict[str, Any],
+        state: Dict[str, object],
         workflow_id: str,
-        plan_payload: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        plan_payload: Dict[str, object],
+    ) -> Dict[str, object]:
         scm = getattr(self, "self_correction_manager", None)
         bullets = state.get("resume", {}).get("experience_bullets", [])
         should_retry = plan_payload.get("use_hyde", True) and not bullets
@@ -165,7 +165,7 @@ class RAGOrchestratorStack(BaseAgent):
         )
         return state
 
-    async def _record_arbitration(self, state: Dict[str, Any], workflow_id: str) -> None:
+    async def _record_arbitration(self, state: Dict[str, object], workflow_id: str) -> None:
         engine = getattr(self.context, "arbitration_engine", None)
         if engine is None:
             return

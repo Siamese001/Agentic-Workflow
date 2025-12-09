@@ -34,7 +34,7 @@ class V10Model(BaseModel):
     """
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    def dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:  # type: ignore[override]
+    def dict(self, *args: Any, **kwargs: Any) -> Dict[str, object]:  # type: ignore[override]
         def _serialize(value: Any) -> Any:
             if isinstance(value, BaseModel):
                 return value.dict()
@@ -46,14 +46,14 @@ class V10Model(BaseModel):
                 return value.value
             return value
 
-        result: Dict[str, Any] = {}
+        result: Dict[str, object] = {}
         for key, value in self.__dict__.items():
             if key.startswith("__"):
                 continue
             result[key] = _serialize(value)
         return result
 
-    def model_dump(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:  # type: ignore[override]
+    def model_dump(self, *args: Any, **kwargs: Any) -> Dict[str, object]:  # type: ignore[override]
         return self.dict()
 
     def model_dump_json(self, *args: Any, **kwargs: Any) -> str:  # type: ignore[override]
@@ -91,7 +91,7 @@ class NodeResult(V10Model):
         default=None, description="Short error category.")
     error_message: Optional[str] = Field(
         default=None, description="Human-readable error detail.")
-    payload: Dict[str, Any] = Field(
+    payload: Dict[str, object] = Field(
         default_factory=dict,
         description="Node-specific payload or patch.",
     )
@@ -293,7 +293,7 @@ class PromptEnvelope(V10Model):
     reasoning: str = ""
     instructions: str = ""
     tool_context: str = ""
-    safety_context: Dict[str, Any] = Field(default_factory=dict)
+    safety_context: Dict[str, object] = Field(default_factory=dict)
     output_schema: str = ""
 
     def __str__(self) -> str:
@@ -311,7 +311,7 @@ class SelfCorrectionReport(V10Model):
     action_taken: str
     retry_count: int = Field(0, ge=0)
     resolved: bool = False
-    notes: Dict[str, Any] = Field(default_factory=dict)
+    notes: Dict[str, object] = Field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -397,7 +397,7 @@ class ArbitrationReport(V10Model):
         default=None,
         description="Optional suggested route label (e.g., 'REPLAN_STRATEGY').",
     )
-    metrics_snapshot: Dict[str, Any] = Field(
+    metrics_snapshot: Dict[str, object] = Field(
         default_factory=dict,
         description="Optional snapshot of relevant metrics or signals.",
     )

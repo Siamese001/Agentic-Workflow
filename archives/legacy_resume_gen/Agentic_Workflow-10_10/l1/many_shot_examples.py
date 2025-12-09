@@ -56,9 +56,9 @@ class Example:
     example_id: str
     example_type: ExampleType
     description: str
-    input_data: Dict[str, Any]
-    expected_output: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    input_data: Dict[str, object]
+    expected_output: Dict[str, object]
+    metadata: Dict[str, object] = field(default_factory=dict)
     quality_score: float = 1.0  # 0.0-1.0
 
 

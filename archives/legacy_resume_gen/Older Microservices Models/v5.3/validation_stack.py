@@ -124,7 +124,7 @@ class ValidationContext:
     
     def _calculate_metric_details(self, section_enum: ResumeSection, 
                                  metrics_to_calc: List[Tuple[str, Callable]], 
-                                 constraints: Dict[str, Any]) -> Dict:
+                                 constraints: Dict[str, object]) -> Dict:
         """Helper to calculate and cache metrics for a section."""
         text = self.get(section_enum.value, '')
         details = {}

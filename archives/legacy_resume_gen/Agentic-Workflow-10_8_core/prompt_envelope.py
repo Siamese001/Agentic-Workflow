@@ -28,7 +28,7 @@ class PromptEnvelope:
     instructions: str = ""
     safety_signals: str = ""
     output_schema: str = ""
-    metadata: Dict[str, Any] = field(
+    metadata: Dict[str, object] = field(
         default_factory=lambda: {
             "taxonomy": {
                 "sections": [s.value for s in PromptSection],
@@ -50,7 +50,7 @@ class PromptEnvelope:
             "Output Schema": self.output_schema.strip(),
         }
 
-    def to_dict(self, plan: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def to_dict(self, plan: Dict[str, object] | None = None) -> Dict[str, object]:
         """Materialize the envelope as a serializable dictionary."""
 
         metadata = dict(self.metadata)

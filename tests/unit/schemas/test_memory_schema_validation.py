@@ -5,27 +5,27 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Type
+from typing import Iterable, Type
 
 from pydantic import BaseModel
 
 
-def _get_schema_version(obj: Any) -> str | None:
-    """Best-effort helper to read a schema_version attribute from a model.
+def _get_schema_version(obj: object) -> str | None:
+    """Best-effort utility to read a schema_version attribute from a model.
 
-    The validator is intentionally defensive and never raises on simple
+    The validator is intentionally defensive and never raises on basic
     attribute access issues; it only raises when the value is present but
     incompatible with expectations.
     """
 
     try:
         return getattr(obj, "schema_version", None)
-    except Exception:  # pragma: no cover - extreme defensive
+    except (ValueError, TypeError, KeyError):  # pragma: no cover - extreme defensive
         return None
 
 
 def validate_schema_version(
-    obj: Any,
+    obj: object,
     expected_versions: Iterable[str] = ("v1",),
     model_type: Type[BaseModel] | None = None,
 ) -> None:
@@ -47,7 +47,7 @@ def validate_schema_version(
         return
 
     if model_type is None and not isinstance(obj, BaseModel):
-        # Non-Pydantic payloads are ignored by this helper.
+        # Non-Pydantic payloads are ignored by this utility.
         return
 
     version = _get_schema_version(obj)

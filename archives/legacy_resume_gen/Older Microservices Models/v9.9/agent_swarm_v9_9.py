@@ -80,7 +80,7 @@ class BiasDetectorAgent(BaseAgent):
         }
         self.log_info("Local bias detection patterns initialized")
     
-    def run(self, content: str, context: Optional[str] = None) -> Dict[str, Any]:
+    def run(self, content: str, context: Optional[str] = None) -> Dict[str, object]:
         """Detect bias using LOCAL regex (NO external API calls)."""
         self.log_info("Analyzing content for bias locally...")
         
@@ -146,7 +146,7 @@ class PIISanitizerAgent(BaseAgent):
             self.analyzer = None
             self.anonymizer = None
     
-    def run(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume_data: Dict[str, object]) -> Dict[str, object]:
         """Sanitize PII using local Presidio (NO external API calls)."""
         self.log_info("Sanitizing PII locally with Presidio...")
         
@@ -204,7 +204,7 @@ class ToTStrategistAgent(BaseAgent):
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
         self.branching_factor = CONFIG.agent_stacks.strategy_tot_branching_factor
     
-    def run(self, master_resume: Dict, job_input: Dict) -> Dict[str, Any]:
+    def run(self, master_resume: Dict, job_input: Dict) -> Dict[str, object]:
         """Generate strategic approaches."""
         self.log_info(f"Generating {self.branching_factor} thought branches...")
         
@@ -241,7 +241,7 @@ class ToTStrategistAgent(BaseAgent):
             self.log_error(f"ToT failed: {e}")
             raise AgentExecutionError(f"ToTStrategistAgent failed: {e}")
     
-    def _simplified_strategy(self, master_resume: Dict, job_input: Dict) -> Dict[str, Any]:
+    def _simplified_strategy(self, master_resume: Dict, job_input: Dict) -> Dict[str, object]:
         """Fallback strategy."""
         return {
             "strategy_thoughts": [],
@@ -260,7 +260,7 @@ class DynamicPromptEngineerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
     
-    def run(self, strategy: Dict, job_requirements: List[str], candidate_context: Dict) -> Dict[str, Any]:
+    def run(self, strategy: Dict, job_requirements: List[str], candidate_context: Dict) -> Dict[str, object]:
         """Engineer optimal prompt."""
         self.log_info("Engineering prompt...")
         
@@ -296,7 +296,7 @@ class DynamicPromptEngineerAgent(BaseAgent):
             self.log_error(f"Prompt engineering failed: {e}")
             return self._template_prompt(strategy, job_requirements)
     
-    def _template_prompt(self, strategy: Dict, job_requirements: List[str]) -> Dict[str, Any]:
+    def _template_prompt(self, strategy: Dict, job_requirements: List[str]) -> Dict[str, object]:
         """Fallback template."""
         return {
             "system_prompt": f"Write resume bullets. Strategy: {strategy.get('positioning_theme', 'N/A')}",
@@ -313,7 +313,7 @@ class BulletCritiqueAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, bullet: str, strategy: Dict, source_experience: Dict, target_requirements: List[str]) -> Dict[str, Any]:
+    def run(self, bullet: str, strategy: Dict, source_experience: Dict, target_requirements: List[str]) -> Dict[str, object]:
         """Critique bullet."""
         self.log_info("Critiquing bullet...")
         
@@ -367,7 +367,7 @@ class ReActConductorAgent(BaseAgent):
         """Override in subclass to define actions."""
         return []
     
-    def run(self, goal: str, state: Dict) -> Dict[str, Any]:
+    def run(self, goal: str, state: Dict) -> Dict[str, object]:
         """Execute ReAct loop."""
         self.log_info(f"Starting ReAct loop. Goal: {goal}")
         
@@ -408,7 +408,7 @@ class ReActConductorAgent(BaseAgent):
             "steps": step_count
         }
     
-    def _react_step(self, goal: str, state: Dict, prior_actions: List[Dict]) -> Optional[Dict[str, Any]]:
+    def _react_step(self, goal: str, state: Dict, prior_actions: List[Dict]) -> Optional[Dict[str, object]]:
         """Execute single ReAct step."""
         try:
             available_actions = self._get_available_actions()
@@ -445,7 +445,7 @@ class ReActConductorAgent(BaseAgent):
             self.log_error(f"ReAct step failed: {e}")
             return None
     
-    def _fallback_plan(self) -> Dict[str, Any]:
+    def _fallback_plan(self) -> Dict[str, object]:
         """Fallback when ReAct disabled."""
         return {
             "thoughts": [],
@@ -527,7 +527,7 @@ class ToolSelectorAgent(BaseAgent):
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
         self.tool_registry = TOOL_REGISTRY
     
-    def run(self, task_description: str) -> Dict[str, Any]:
+    def run(self, task_description: str) -> Dict[str, object]:
         """Select best tools for task."""
         self.log_info(f"Selecting tools for: {task_description[:50]}...")
         
@@ -589,7 +589,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
         self.hil_manager = HIL_MANAGER
     
-    def run(self, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def run(self, context: Dict[str, object]) -> Optional[Dict[str, object]]:
         """Detect ambiguities in context."""
         self.log_info("Detecting ambiguities...")
         
@@ -671,7 +671,7 @@ class HyDEGeneratorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
     
-    def run(self, query: str) -> Dict[str, Any]:
+    def run(self, query: str) -> Dict[str, object]:
         """Generate hypothetical ideal document."""
         self.log_info("Generating HyDE document...")
         
@@ -720,7 +720,7 @@ class RAG_ReRankerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, query: str, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def run(self, query: str, documents: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """Rerank documents by relevance."""
         self.log_info(f"Reranking {len(documents)} documents...")
         
@@ -791,7 +791,7 @@ class RAG_SearchAgent(BaseAgent):
         self.hyde_generator = HyDEGeneratorAgent(blackboard, debug_mode) if CONFIG.agent_stacks.enable_hyde else None
         self.reranker = RAG_ReRankerAgent(blackboard, debug_mode) if CONFIG.agent_stacks.enable_reranking else None
     
-    def run(self, query: str, master_resume: Dict) -> List[Dict[str, Any]]:
+    def run(self, query: str, master_resume: Dict) -> List[Dict[str, object]]:
         """Search with HyDE and reranking."""
         self.log_info(f"RAG search: {query[:50]}...")
         
@@ -814,7 +814,7 @@ class RAG_SearchAgent(BaseAgent):
         self.log_info(f"Retrieved {len(results)} relevant bullets")
         return results
     
-    def _search_master_resume(self, query: str, expansion_terms: List[str], master_resume: Dict) -> List[Dict[str, Any]]:
+    def _search_master_resume(self, query: str, expansion_terms: List[str], master_resume: Dict) -> List[Dict[str, object]]:
         """Internal search logic."""
         results = []
         all_search_terms = query.split() + expansion_terms
@@ -843,7 +843,7 @@ class JDParserAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, raw_jd: str) -> Dict[str, Any]:
+    def run(self, raw_jd: str) -> Dict[str, object]:
         """Parse JD."""
         self.log_info("Parsing JD...")
         
@@ -947,7 +947,7 @@ class QAValidatorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, draft: str, requirements: Dict) -> Dict[str, Any]:
+    def run(self, draft: str, requirements: Dict) -> Dict[str, object]:
         """Validate draft."""
         self.log_info("Running QA...")
         

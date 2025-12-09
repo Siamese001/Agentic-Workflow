@@ -17,7 +17,7 @@ import json
 import pytest
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, object
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from uuid import uuid4
 
@@ -327,7 +327,7 @@ class TestCircuitBreaker:
         for _ in range(5):
             try:
                 circuit_breaker.call(func)
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass
         
         assert circuit_breaker.state == "OPEN"
@@ -898,7 +898,7 @@ class TestEdgeCases:
             try:
                 # Call through circuit breaker
                 circuit_breaker.call(lambda: llm_client_mock.anthropic_client.messages.create())
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass
         
         # Next call should raise CircuitBreakerOpenError

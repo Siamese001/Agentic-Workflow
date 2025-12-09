@@ -9,7 +9,7 @@
 import asyncio
 import logging
 import re
-from typing import Dict, Any, List, Optional
+from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # Local Presidio for PII (v9.9 security hardening preserved)
@@ -88,7 +88,7 @@ class BiasDetectorAgent(BaseAgent):
     def __init__(self, context: WorkflowContext, debug_mode: bool = False):
         super().__init__(context, debug_mode)
 
-    def run(self, text: str) -> Dict[str, Any]:
+    def run(self, text: str) -> Dict[str, object]:
         """Detect bias using local regex"""
         self.log_info("Running LOCAL bias detection...")
         

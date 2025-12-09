@@ -129,7 +129,7 @@ class GeminiService:
             try:
                 if hasattr(genai, '_config'):
                     api_key = genai._config.api_key
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass
             
             if not api_key:
@@ -378,7 +378,7 @@ class GeminiService:
         temperature: float,
         max_tokens: int,
         section_id: str,
-        api_params: Dict[str, Any]
+        api_params: Dict[str, object]
     ) -> Tuple[Any, APICallStatus]:
         """
         Execute a single API call with proper configuration.
@@ -571,7 +571,7 @@ SYNTHESIZED RESPONSE:"""
             if pattern in text:
                 logger.warning(f"{context}: Response contains potential error: '{pattern}'")
     
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> Dict[str, object]:
         """
         Get current metrics for the service.
         
@@ -614,7 +614,7 @@ SYNTHESIZED RESPONSE:"""
         max_tokens: Optional[int] = None,
         # --- END FIX ---
         retry_count: int = 3,
-    ) -> Tuple[dict, int, Any]: # <-- FIX: Return tuple
+    ) -> Tuple[dict, int, object]: # <-- FIX: Return tuple
         """
         Calls the Gemini API and ensures the response is valid JSON.
         This is the missing method required by rag_RES.py.

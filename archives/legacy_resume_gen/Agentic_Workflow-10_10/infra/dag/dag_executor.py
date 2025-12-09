@@ -21,8 +21,8 @@ class DAGExecutor:
     async def run(
         self,
         start_nodes: Optional[Iterable[str]] = None,
-        ctx: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        ctx: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """
         Executes résumé processing DAG with proper dependency resolution.
 

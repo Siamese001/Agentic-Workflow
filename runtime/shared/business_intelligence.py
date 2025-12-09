@@ -9,7 +9,7 @@ Includes company and product intelligence bundles.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -55,7 +55,7 @@ class CompanyInsights:
     risk_factors: List[str]
     strategic_priorities: List[str]
     confidence_score: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -70,7 +70,7 @@ class ProductInsights:
     market_opportunities: List[str]
     adoption_challenges: List[str]
     confidence_score: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -98,8 +98,8 @@ class CompanyIntelligenceBundle:
     
     def analyze(
         self,
-        company_data: Dict[str, Any],
-        context: Optional[Dict[str, Any]] = None
+        company_data: Dict[str, object],
+        context: Optional[Dict[str, object]] = None
     ) -> CompanyInsights:
         """
         Analyze company data for business intelligence.
@@ -154,7 +154,7 @@ class CompanyIntelligenceBundle:
             }
         )
     
-    def _determine_business_stage(self, data: Dict[str, Any]) -> BusinessStage:
+    def _determine_business_stage(self, data: Dict[str, object]) -> BusinessStage:
         """Determine company's business stage."""
         employee_count = data.get('employee_count', 0)
         revenue = data.get('revenue', 0)
@@ -173,7 +173,7 @@ class CompanyIntelligenceBundle:
         else:
             return BusinessStage.ENTERPRISE
     
-    def _determine_market_position(self, data: Dict[str, Any]) -> MarketPosition:
+    def _determine_market_position(self, data: Dict[str, object]) -> MarketPosition:
         """Determine company's market position."""
         market_share = data.get('market_share', 0)
         brand_recognition = data.get('brand_recognition', 'low').lower()
@@ -190,7 +190,7 @@ class CompanyIntelligenceBundle:
         else:
             return MarketPosition.EMERGING
     
-    def _extract_competitive_advantages(self, data: Dict[str, Any]) -> List[str]:
+    def _extract_competitive_advantages(self, data: Dict[str, object]) -> List[str]:
         """Extract competitive advantages from company data."""
         advantages = []
         
@@ -225,7 +225,7 @@ class CompanyIntelligenceBundle:
         
         return advantages[:5]  # Limit to top 5
     
-    def _identify_growth_indicators(self, data: Dict[str, Any]) -> List[str]:
+    def _identify_growth_indicators(self, data: Dict[str, object]) -> List[str]:
         """Identify growth indicators."""
         indicators = []
         
@@ -253,7 +253,7 @@ class CompanyIntelligenceBundle:
         
         return indicators[:5]
     
-    def _assess_risk_factors(self, data: Dict[str, Any]) -> List[str]:
+    def _assess_risk_factors(self, data: Dict[str, object]) -> List[str]:
         """Assess risk factors."""
         risks = []
         
@@ -279,7 +279,7 @@ class CompanyIntelligenceBundle:
     
     def _determine_strategic_priorities(
         self,
-        data: Dict[str, Any],
+        data: Dict[str, object],
         stage: BusinessStage,
         position: MarketPosition
     ) -> List[str]:
@@ -308,7 +308,7 @@ class CompanyIntelligenceBundle:
         
         return priorities[:5]
     
-    def _calculate_confidence(self, data: Dict[str, Any]) -> float:
+    def _calculate_confidence(self, data: Dict[str, object]) -> float:
         """Calculate confidence score based on data completeness."""
         key_fields = [
             'name', 'employee_count', 'revenue', 'industry',
@@ -320,7 +320,7 @@ class CompanyIntelligenceBundle:
         
         return round(confidence, 3)
     
-    def _assess_data_completeness(self, data: Dict[str, Any]) -> str:
+    def _assess_data_completeness(self, data: Dict[str, object]) -> str:
         """Assess data completeness level."""
         key_fields = ['name', 'employee_count', 'revenue', 'industry', 'funding_stage']
         present = sum(1 for f in key_fields if data.get(f))
@@ -367,8 +367,8 @@ class ProductIntelligenceBundle:
     
     def analyze(
         self,
-        product_data: Dict[str, Any],
-        context: Optional[Dict[str, Any]] = None
+        product_data: Dict[str, object],
+        context: Optional[Dict[str, object]] = None
     ) -> ProductInsights:
         """
         Analyze product data for business intelligence.
@@ -425,7 +425,7 @@ class ProductIntelligenceBundle:
             }
         )
     
-    def _determine_category(self, data: Dict[str, Any]) -> ProductCategory:
+    def _determine_category(self, data: Dict[str, object]) -> ProductCategory:
         """Determine product category."""
         product_type = data.get('type', '').lower()
         description = data.get('description', '').lower()
@@ -443,7 +443,7 @@ class ProductIntelligenceBundle:
         else:
             return ProductCategory.ENTERPRISE
     
-    def _extract_value_proposition(self, data: Dict[str, Any]) -> str:
+    def _extract_value_proposition(self, data: Dict[str, object]) -> str:
         """Extract value proposition."""
         if data.get('value_proposition'):
             return data['value_proposition']
@@ -455,7 +455,7 @@ class ProductIntelligenceBundle:
         
         return f"{name} helps {target} by {benefit}"
     
-    def _identify_target_market(self, data: Dict[str, Any]) -> str:
+    def _identify_target_market(self, data: Dict[str, object]) -> str:
         """Identify target market."""
         if data.get('target_market'):
             return data['target_market']
@@ -475,7 +475,7 @@ class ProductIntelligenceBundle:
         
         return ", ".join(segments) if segments else "General market"
     
-    def _extract_differentiators(self, data: Dict[str, Any]) -> List[str]:
+    def _extract_differentiators(self, data: Dict[str, object]) -> List[str]:
         """Extract competitive differentiators."""
         differentiators = []
         
@@ -502,7 +502,7 @@ class ProductIntelligenceBundle:
         
         return differentiators[:5]
     
-    def _identify_technical_strengths(self, data: Dict[str, Any]) -> List[str]:
+    def _identify_technical_strengths(self, data: Dict[str, object]) -> List[str]:
         """Identify technical strengths."""
         strengths = []
         
@@ -528,7 +528,7 @@ class ProductIntelligenceBundle:
     
     def _identify_opportunities(
         self,
-        data: Dict[str, Any],
+        data: Dict[str, object],
         category: ProductCategory
     ) -> List[str]:
         """Identify market opportunities."""
@@ -559,7 +559,7 @@ class ProductIntelligenceBundle:
     
     def _identify_challenges(
         self,
-        data: Dict[str, Any],
+        data: Dict[str, object],
         category: ProductCategory
     ) -> List[str]:
         """Identify adoption challenges."""
@@ -585,7 +585,7 @@ class ProductIntelligenceBundle:
         
         return challenges[:5]
     
-    def _calculate_confidence(self, data: Dict[str, Any]) -> float:
+    def _calculate_confidence(self, data: Dict[str, object]) -> float:
         """Calculate confidence score."""
         key_fields = [
             'name', 'type', 'description', 'target_market',
@@ -597,7 +597,7 @@ class ProductIntelligenceBundle:
         
         return round(confidence, 3)
     
-    def _assess_data_completeness(self, data: Dict[str, Any]) -> str:
+    def _assess_data_completeness(self, data: Dict[str, object]) -> str:
         """Assess data completeness level."""
         key_fields = ['name', 'type', 'description', 'target_market']
         present = sum(1 for f in key_fields if data.get(f))
@@ -636,9 +636,9 @@ class IntelligenceBundleSystem:
     
     def analyze(
         self,
-        company_data: Optional[Dict[str, Any]] = None,
-        product_data: Optional[Dict[str, Any]] = None,
-        context: Optional[Dict[str, Any]] = None
+        company_data: Optional[Dict[str, object]] = None,
+        product_data: Optional[Dict[str, object]] = None,
+        context: Optional[Dict[str, object]] = None
     ) -> IntelligenceResult:
         """
         Perform comprehensive business intelligence analysis.
@@ -683,7 +683,7 @@ class IntelligenceBundleSystem:
             processing_time_ms=processing_time
         )
     
-    def get_summary(self, result: IntelligenceResult) -> Dict[str, Any]:
+    def get_summary(self, result: IntelligenceResult) -> Dict[str, object]:
         """Get summary of intelligence analysis."""
         summary = {
             'overall_confidence': result.overall_confidence,
@@ -726,13 +726,13 @@ def create_product_bundle() -> ProductIntelligenceBundle:
     return ProductIntelligenceBundle()
 
 
-def analyze_company(company_data: Dict[str, Any]) -> CompanyInsights:
+def analyze_company(company_data: Dict[str, object]) -> CompanyInsights:
     """Convenience function to analyze company."""
     bundle = CompanyIntelligenceBundle()
     return bundle.analyze(company_data)
 
 
-def analyze_product(product_data: Dict[str, Any]) -> ProductInsights:
+def analyze_product(product_data: Dict[str, object]) -> ProductInsights:
     """Convenience function to analyze product."""
     bundle = ProductIntelligenceBundle()
     return bundle.analyze(product_data)

@@ -91,10 +91,10 @@ class EnhancedOutreachOrchestrator:
     
     def generate_outreach_message(
         self,
-        mission: Dict[str, Any],
-        sender_profile: Dict[str, Any],
-        recipient_context: Dict[str, Any],
-        existing_cache: Optional[Dict[str, Any]] = None
+        mission: Dict[str, object],
+        sender_profile: Dict[str, object],
+        recipient_context: Dict[str, object],
+        existing_cache: Optional[Dict[str, object]] = None
     ) -> OrchestratorOutput:
         """Generate outreach message with all priority enhancements."""
         
@@ -162,9 +162,9 @@ class EnhancedOutreachOrchestrator:
     
     def _evaluate_cache_sufficiency(
         self,
-        existing_cache: Dict[str, Any],
-        mission: Dict[str, Any],
-        execution_trace: List[Dict[str, Any]]
+        existing_cache: Dict[str, object],
+        mission: Dict[str, object],
+        execution_trace: List[Dict[str, object]]
     ) -> LICCacheCritiqueResult:
         """Evaluate if existing cache is sufficient for current mission."""
         logger.info("Evaluating cache sufficiency")
@@ -196,11 +196,11 @@ class EnhancedOutreachOrchestrator:
     
     def _apply_advanced_prompt_engineering(
         self,
-        mission: Dict[str, Any],
-        sender_profile: Dict[str, Any],
-        recipient_context: Dict[str, Any],
-        execution_trace: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        mission: Dict[str, object],
+        sender_profile: Dict[str, object],
+        recipient_context: Dict[str, object],
+        execution_trace: List[Dict[str, object]]
+    ) -> Dict[str, object]:
         """Apply advanced prompt engineering to enhance mission."""
         logger.info("Applying advanced prompt engineering")
         
@@ -229,10 +229,10 @@ class EnhancedOutreachOrchestrator:
     
     def _execute_with_error_recovery(
         self,
-        mission: Dict[str, Any],
-        sender_profile: Dict[str, Any],
-        recipient_context: Dict[str, Any],
-        execution_trace: List[Dict[str, Any]]
+        mission: Dict[str, object],
+        sender_profile: Dict[str, object],
+        recipient_context: Dict[str, object],
+        execution_trace: List[Dict[str, object]]
     ) -> OrchestratorOutput:
         """Execute pipeline with error recovery mechanisms."""
         if not self.config.enable_error_recovery:
@@ -282,10 +282,10 @@ class EnhancedOutreachOrchestrator:
     
     def _execute_fallback_strategy(
         self,
-        mission: Dict[str, Any],
-        sender_profile: Dict[str, Any],
-        recipient_context: Dict[str, Any],
-        execution_trace: List[Dict[str, Any]]
+        mission: Dict[str, object],
+        sender_profile: Dict[str, object],
+        recipient_context: Dict[str, object],
+        execution_trace: List[Dict[str, object]]
     ) -> OrchestratorOutput:
         """Execute fallback strategy when main pipeline fails."""
         logger.info("Executing fallback strategy")
@@ -319,8 +319,8 @@ class EnhancedOutreachOrchestrator:
     def _apply_self_correction(
         self,
         pipeline_result: OrchestratorOutput,
-        mission: Dict[str, Any],
-        execution_trace: List[Dict[str, Any]]
+        mission: Dict[str, object],
+        execution_trace: List[Dict[str, object]]
     ) -> OrchestratorOutput:
         """Apply self-correction to improve pipeline result."""
         logger.info("Applying self-correction")
@@ -344,7 +344,7 @@ class EnhancedOutreachOrchestrator:
     def _create_cache_based_output(
         self,
         cache_result: LICCacheCritiqueResult,
-        execution_trace: List[Dict[str, Any]],
+        execution_trace: List[Dict[str, object]],
         start_time: float
     ) -> OrchestratorOutput:
         """Create output when using existing cache."""

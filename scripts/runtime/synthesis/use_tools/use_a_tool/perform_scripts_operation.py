@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - perform_data_operations
 Implements L1 Cognitive Planning Layer for perform data operations operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
@@ -37,7 +37,7 @@ class PerformDataOperationsOrchestratorConstraints:
 class PerformDataOperationsOrchestratorResult:
     """L5 Result structure with full type safety"""
     success: bool
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
@@ -46,12 +46,12 @@ class PerformDataOperationsOrchestratorProcessor(ABC):
     """L5 Abstract base - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: Dict[str, Any]) -> PerformDataOperationsOrchestratorResult:
+    def process(self, input_data: Dict[str, object]) -> PerformDataOperationsOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
 
     @abstractmethod
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
 
@@ -65,7 +65,7 @@ class PerformDataOperationsOrchestratorImpl(PerformDataOperationsOrchestratorPro
         self.constraints = constraints or PerformDataOperationsOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, Any]) -> PerformDataOperationsOrchestratorResult:
+    def process(self, input_data: Dict[str, object]) -> PerformDataOperationsOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
 
@@ -87,7 +87,7 @@ class PerformDataOperationsOrchestratorImpl(PerformDataOperationsOrchestratorPro
         self.logger.info(f"Successfully processed: {result.success}")
         return result
 
-    def validate_safety(self, data: Dict[str, Any]) -> bool:
+    def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
@@ -105,11 +105,11 @@ class PerformDataOperationsOrchestratorImpl(PerformDataOperationsOrchestratorPro
 
             self.logger.info("Data passed L5 safety validation")
             return True
-        except Exception as e:
-            self.logger.error(f"Safety validation error: {e}")
+        except (ValueError, TypeError, KeyError) as e:
+            self.logger.error("Safety validation error: %s", e)
             return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, Any]) -> None:
+    def _validate_input(self, input_data: Dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
             raise ValueError("Input must be a dictionary")
@@ -133,7 +133,7 @@ class PerformDataOperationsOrchestratorInterface:
     def __init__(self, processor: PerformDataOperationsOrchestratorProcessor):
         self._processor = processor
 
-    def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
@@ -144,7 +144,7 @@ class PerformDataOperationsOrchestratorInterface:
                 "safety_validated": result.safety_validated,
                 "timestamp": result.timestamp
             }
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
 # L5 Factory
@@ -159,7 +159,7 @@ class PerformDataOperationsOrchestratorFactory:
         return PerformDataOperationsOrchestratorInterface(processor)
 
 # L5 Main execution point
-def perform_data_operations(input_data: Dict[str, Any]) -> Dict[str, Any]:
+def perform_data_operations(input_data: Dict[str, object]) -> Dict[str, object]:
     """
     L5 Main function - perform data operations operations
 
@@ -183,6 +183,6 @@ if __name__ == "__main__":
         result = perform_data_operations(test_data)
         logger.info(f"L5 Execution successful: {result}")
     except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except Exception as e:
-        logger.error(f"L5 Unexpected error: {e}")
+        logger.error("L5 Security error: %s", e)
+    except (ValueError, TypeError, KeyError) as e:
+        logger.error("L5 Unexpected error: %s", e)

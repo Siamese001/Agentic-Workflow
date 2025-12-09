@@ -813,7 +813,7 @@ class ValidationEngine:
             
         return router_class(config)
     
-    def validate_all(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate_all(self, context: ValidationContext) -> Dict[str, object]:
         """
         Execute all MoE routers and aggregate results.
         REFACTORED: Passes the full ValidationContext or specific parts as needed.

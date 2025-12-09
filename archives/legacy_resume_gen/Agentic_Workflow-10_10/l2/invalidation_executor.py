@@ -73,7 +73,7 @@ class InvalidationResult:
     invalidated: bool
     reason: Optional[InvalidationReason] = None
     superseded_by: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -358,7 +358,7 @@ class InvalidationExecutor:
         self,
         subject: str,
         reason: InvalidationReason = InvalidationReason.MANUAL,
-        details: Optional[Dict[str, Any]] = None,
+        details: Optional[Dict[str, object]] = None,
     ) -> List[InvalidationResult]:
         """Invalidate all triplets for a subject.
         

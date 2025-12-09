@@ -15,7 +15,7 @@ Non-responsibilities:
 - Orchestration (L3)
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 from dataclasses import dataclass
 
 from l4 import PineconeAdapter, VectorQueryResult
@@ -30,7 +30,7 @@ class SearchResult:
     """
     id: str
     score: float
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 class VectorSearchExecutor:
@@ -54,7 +54,7 @@ class VectorSearchExecutor:
         namespace: str,
         query_text: str,
         top_k: int = 5,
-        metadata_filter: Optional[Dict[str, Any]] = None,
+        metadata_filter: Optional[Dict[str, object]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[SearchResult]:
         """
@@ -96,7 +96,7 @@ class VectorSearchExecutor:
         namespace: str,
         texts: List[str],
         record_type: str = "doc",
-        metadata_list: Optional[List[Dict[str, Any]]] = None,
+        metadata_list: Optional[List[Dict[str, object]]] = None,
     ) -> List[str]:
         """
         Executes vector upsert operation for résumé processing data storage.

@@ -14,7 +14,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, object, Tuple, List
 
 import numpy as np # Import numpy for embedding math
 

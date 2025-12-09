@@ -17,7 +17,7 @@ class GoldenStateTestCase:
     id: str
     input_text: str
     expected_behavior: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,7 +40,7 @@ class EvalResult:
     test_id: str
     verdict: JudgeVerdict
     raw_output: str
-    reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+    reasoning_trace: List[Dict[str, object]] = field(default_factory=list)
 
 
 class GoldenCase(BaseModel):
@@ -48,15 +48,15 @@ class GoldenCase(BaseModel):
     input_text: str
     agent_sequence: List[str]
     expected_keypoints: List[str]
-    correctness_criteria: Dict[str, Any]
+    correctness_criteria: Dict[str, object]
 
 
 class GoldenOutput(BaseModel):
     case_id: str
     produced_keypoints: List[str]
     correctness_map: Dict[str, bool]
-    safety_decisions: Dict[str, Any]
-    metacognition_summary: Dict[str, Any]
+    safety_decisions: Dict[str, object]
+    metacognition_summary: Dict[str, object]
     final_verdict: Literal["pass", "fail", "borderline"]
 
 

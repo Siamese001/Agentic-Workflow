@@ -8,7 +8,7 @@ in retrieval accuracy through intelligent scoring fusion.
 
 import logging
 import math
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 from collections import defaultdict, Counter
 import re
@@ -23,7 +23,7 @@ class ScoringResult:
     semantic_score: float
     bm25_score: float
     hybrid_score: float
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 @dataclass
@@ -150,7 +150,7 @@ class HybridScorer:
         self.bm25_scorer = BM25Scorer()
         self.is_indexed = False
     
-    def build_hybrid_index(self, documents: List[Dict[str, Any]]) -> None:
+    def build_hybrid_index(self, documents: List[Dict[str, object]]) -> None:
         """
         Build hybrid scoring index from documents.
         
@@ -215,7 +215,7 @@ class HybridScorer:
     def score_documents(
         self,
         query: str,
-        documents: List[Dict[str, Any]] = None,
+        documents: List[Dict[str, object]] = None,
         query_embedding: Optional[List[float]] = None
     ) -> List[ScoringResult]:
         """
@@ -277,7 +277,7 @@ class HybridScorer:
     def _calculate_semantic_scores(
         self,
         query: str,
-        documents: List[Dict[str, Any]],
+        documents: List[Dict[str, object]],
         query_embedding: Optional[List[float]] = None
     ) -> List[float]:
         """Calculate semantic similarity scores."""
@@ -301,7 +301,7 @@ class HybridScorer:
         
         return semantic_scores
     
-    def _calculate_recency_scores(self, documents: List[Dict[str, Any]]) -> List[float]:
+    def _calculate_recency_scores(self, documents: List[Dict[str, object]]) -> List[float]:
         """Calculate recency-based scores."""
         recency_scores = []
         
@@ -316,7 +316,7 @@ class HybridScorer:
         
         return recency_scores
     
-    def _calculate_authority_scores(self, documents: List[Dict[str, Any]]) -> List[float]:
+    def _calculate_authority_scores(self, documents: List[Dict[str, object]]) -> List[float]:
         """Calculate authority-based scores."""
         authority_scores = []
         
@@ -367,7 +367,7 @@ class HybridScoringSystem:
         self.hybrid_scorer = HybridScorer()
         self.performance_history = []
     
-    def initialize_system(self, documents: List[Dict[str, Any]]) -> None:
+    def initialize_system(self, documents: List[Dict[str, object]]) -> None:
         """
         Initialize the hybrid scoring system.
         
@@ -385,7 +385,7 @@ class HybridScoringSystem:
         self,
         query: str,
         top_k: int = 10,
-        documents: List[Dict[str, Any]] = None
+        documents: List[Dict[str, object]] = None
     ) -> List[ScoringResult]:
         """
         Perform hybrid search.
@@ -406,7 +406,7 @@ class HybridScoringSystem:
         
         return top_results
     
-    def _optimize_weights(self, documents: List[Dict[str, Any]]) -> None:
+    def _optimize_weights(self, documents: List[Dict[str, object]]) -> None:
         """Optimize scoring weights based on document characteristics."""
         # Simple weight optimization based on document analysis
         doc_count = len(documents)

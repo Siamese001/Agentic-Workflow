@@ -15,7 +15,7 @@ import shutil
 import asyncio
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 import redis
 
 from main_v10_1 import setup_logging, load_job_input
@@ -57,13 +57,13 @@ class BatchFeedbackAggregator:
     """ROW 7: Aggregates feedback across batch jobs"""
     
     def __init__(self):
-        self.job_results: List[Dict[str, Any]] = []
+        self.job_results: List[Dict[str, object]] = []
     
-    def add_job_result(self, result: Dict[str, Any]):
+    def add_job_result(self, result: Dict[str, object]):
         """Add a completed job result"""
         self.job_results.append(result)
     
-    def get_batch_summary(self) -> Dict[str, Any]:
+    def get_batch_summary(self) -> Dict[str, object]:
         """Generate batch-level feedback summary"""
         if not self.job_results:
             return {}
@@ -121,7 +121,7 @@ async def process_single_job_async(
     app, # The compiled graph app
     circuit_breaker: CircuitBreaker,
     batch_aggregator: BatchFeedbackAggregator
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Process a single job asynchronously"""
     
     job_name = os.path.basename(job_file)

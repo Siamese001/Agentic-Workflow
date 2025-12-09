@@ -9,7 +9,7 @@ Combines semantic similarity and BM25 keyword scoring for
 import logging
 import math
 import time
-from typing import Dict, List, Any, Optional, Set
+from typing import Dict, List, object, Optional, Set
 from dataclasses import dataclass, field
 from collections import Counter
 
@@ -35,7 +35,7 @@ class ScoringResult:
     bm25_score: float
     hybrid_score: float
     rank: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -45,7 +45,7 @@ class HybridScoringResult:
     results: List[ScoringResult]
     config: ScoringConfig
     processing_time_ms: int
-    corpus_stats: Dict[str, Any] = field(default_factory=dict)
+    corpus_stats: Dict[str, object] = field(default_factory=dict)
 
 
 class BM25Scorer:
@@ -74,7 +74,7 @@ class BM25Scorer:
         self.term_doc_freqs: Dict[str, int] = {}  # Number of docs containing term
         self.index_built = False
     
-    def build_index(self, documents: List[Dict[str, Any]]) -> None:
+    def build_index(self, documents: List[Dict[str, object]]) -> None:
         """
         Build BM25 index from documents.
         
@@ -107,7 +107,7 @@ class BM25Scorer:
         
         logger.info(f"BM25 index built: {self.doc_count} docs, {len(self.term_doc_freqs)} unique terms")
     
-    def score(self, query: str, document: Dict[str, Any]) -> float:
+    def score(self, query: str, document: Dict[str, object]) -> float:
         """
         Calculate BM25 score for a document given a query.
         
@@ -159,7 +159,7 @@ class BM25Scorer:
     
     def _tokenize(self, text: str) -> List[str]:
         """Tokenize text into terms."""
-        # Simple tokenization - lowercase and split on non-alphanumeric
+        # basic tokenization - lowercase and split on non-alphanumeric
         import re
         tokens = re.findall(r'\b\w+\b', text.lower())
         # Filter short tokens and stopwords
@@ -172,7 +172,7 @@ class BM25Scorer:
                      'not', 'only', 'own', 'same', 'than', 'too', 'very', 'just'}
         return [t for t in tokens if len(t) > 2 and t not in stopwords]
     
-    def _build_minimal_index(self, document: Dict[str, Any]) -> None:
+    def _build_minimal_index(self, document: Dict[str, object]) -> None:
         """Build minimal index for single document scoring."""
         content = document.get('content', '')
         terms = self._tokenize(content)
@@ -192,14 +192,14 @@ class SemanticScorer:
     Semantic Similarity Scoring
     
     Calculates semantic similarity between query and documents.
-    Uses simple word overlap for demonstration; in production would use embeddings.
+    Uses basic word overlap for demonstration; in production would use embeddings.
     """
     
     def __init__(self):
         """Initialize semantic scorer."""
         pass
     
-    def score(self, query: str, document: Dict[str, Any]) -> float:
+    def score(self, query: str, document: Dict[str, object]) -> float:
         """
         Calculate semantic similarity score.
         
@@ -257,7 +257,7 @@ class HybridScorer:
     def score_documents(
         self,
         query: str,
-        documents: List[Dict[str, Any]],
+        documents: List[Dict[str, object]],
         build_index: bool = True
     ) -> HybridScoringResult:
         """
@@ -350,7 +350,7 @@ class HybridScorer:
     def optimize_weights(
         self,
         query: str,
-        documents: List[Dict[str, Any]],
+        documents: List[Dict[str, object]],
         relevance_labels: Optional[List[int]] = None
     ) -> ScoringConfig:
         """
@@ -408,7 +408,7 @@ def create_bm25_scorer(k1: float = 1.5, b: float = 0.75) -> BM25Scorer:
 
 def score_documents(
     query: str,
-    documents: List[Dict[str, Any]],
+    documents: List[Dict[str, object]],
     semantic_weight: float = 0.6,
     bm25_weight: float = 0.4
 ) -> HybridScoringResult:

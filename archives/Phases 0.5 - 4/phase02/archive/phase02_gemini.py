@@ -28,7 +28,7 @@ import sys
 import time
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
+from typing import Dict, List, Optional, Set, Tuple, object, Union
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from enum import Enum
@@ -1216,7 +1216,7 @@ class SemanticCacheLoader:
                     try:
                         with open(full_path, 'r', encoding='utf-8') as f:
                             resolved[key] = json.load(f)
-                    except:
+                    except (ValueError, TypeError, KeyError):
                         pass
         return resolved
 

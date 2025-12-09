@@ -66,7 +66,7 @@ logger = logging.getLogger(__name__)
 # HELPER FUNCTIONS
 # ============================================================================
 
-def load_job_input(filepath: str) -> Dict[str, Any]:
+def load_job_input(filepath: str) -> Dict[str, object]:
     """Load job input from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -136,7 +136,7 @@ def setup_logging(debug_mode: bool):
     logger.info(f"Logging configured. Level: {log_level}, File: {log_config.log_file}")
 
 
-def print_summary(results: Dict[str, Any], workflow_id: str, start_time: datetime):
+def print_summary(results: Dict[str, object], workflow_id: str, start_time: datetime):
     """Print workflow execution summary from final graph state."""
     print("\n" + "=" * 80)
     print(f"WORKFLOW EXECUTION SUMMARY (v8.5)")

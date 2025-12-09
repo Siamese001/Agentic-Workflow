@@ -49,7 +49,7 @@ CACHE_DIR = ROOT_DIR / "cache"
 # JSON CONFIG LOADER (NOW CENTRALIZED)
 # ============================================================================
 
-def _load_json_config(filename: str, description: str, required: bool = True) -> Dict[str, Any]:
+def _load_json_config(filename: str, description: str, required: bool = True) -> Dict[str, object]:
     """
     Loads a JSON config file.
     It now checks the provided path first, then checks relative to DATA_DIR.

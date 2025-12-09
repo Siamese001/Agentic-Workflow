@@ -31,7 +31,7 @@ import asyncio
 import os
 import importlib.util
 import inspect
-from typing import Dict, Any, List, Callable, Awaitable, Tuple
+from typing import Dict, object, List, Callable, Awaitable, Tuple
 from functools import wraps, partial
 
 # v10.6: Import from new core
@@ -231,7 +231,7 @@ class QAConductorAgent(BaseAgent):
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
     @track_metrics('run_react_qa_conductor')
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor (v10.6)...")
 
         max_steps = self.config.agent_stacks.conductor_max_steps
@@ -680,7 +680,7 @@ def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_h
     )
     timeout_wrapper = get_timeout_decorator(timeout_seconds)
 
-    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, Any]]]):
+    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, object]]]):
         workflow.add_node(name, timeout_wrapper(func))
 
     # --- ADD NODES (v10.6: Added new nodes) ---

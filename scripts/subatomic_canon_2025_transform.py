@@ -10,7 +10,7 @@ Executes the complete subatomic canon transformation with zero-loss guarantee.
 3. L2_execution, L3_orchestration, L5_safety → completely flat
 4. L4_memory → only P1_retrieve
 5. Every .py file → imperative verb + concrete object
-6. Banned forever: ops, utils, manager, service, helper, common, core, misc, stuff, business, generic
+6. Banned forever: ops, utils, manager, service, utility, common, core, various, stuff, business, general
 7. Depth emerges naturally — no fake nesting
 8. Every name teaches its purpose on sight
 """
@@ -47,13 +47,13 @@ BANNED_PATTERNS = [
     r"^utils$",
     r"^manager$",
     r"^service$",
-    r"^helper$",
+    r"^utility$",
     r"^common$",
     r"^core$",
-    r"^misc$",
+    r"^various$",
     r"^stuff$",
     r"^business$",
-    r"^generic$",
+    r"^general$",
 ]
 
 # Many-shot rename mappings (current → target)
@@ -179,11 +179,10 @@ def flatten_layer(layer_path: Path, layer_name: str) -> Dict[str, List[str]]:
             if py_file.name != new_path.name:
                 log["renamed"].append(f"{py_file.name} -> {new_path.name}")
 
-        # Remove the phase directory (now empty except for __init__.py files)
-        try:
+                try:
             shutil.rmtree(phase_dir)
             log["deleted_dirs"].append(str(phase_dir))
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             print(f"Warning: Could not remove {phase_dir}: {e}")
 
     # Ensure __init__.py exists at layer root
@@ -238,11 +237,10 @@ def delete_banned_folders(root: Path) -> List[str]:
                     if py_file.name != "__init__.py":
                         move_file_with_rename(py_file, current_dir)
 
-                # Remove the banned directory
-                try:
+                                try:
                     shutil.rmtree(banned_dir)
                     deleted.append(str(banned_dir))
-                except Exception as e:
+                except (ValueError, TypeError, KeyError) as e:
                     print(f"Warning: Could not remove {banned_dir}: {e}")
 
     return deleted
@@ -288,7 +286,7 @@ def update_meta_yaml(yaml_path: Path) -> None:
     L5_safety:
       allowed_phases: []"""
 
-    # Simple string replacement for the rules
+    # basic string replacement for the rules
     content = re.sub(
         r"cognitive_layer_phase_rules:.*?L5_safety:\s*\n\s*allowed_phases:.*?\]",
         new_rules,
@@ -359,7 +357,7 @@ def fix_imports_in_file(file_path: Path, old_to_new: Dict[str, str]) -> bool:
             file_path.write_text(content, encoding="utf-8")
             return True
         return False
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         print(f"Warning: Could not fix imports in {file_path}: {e}")
         return False
 

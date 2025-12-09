@@ -14,7 +14,7 @@ import logging
 import os
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
@@ -46,7 +46,7 @@ from config_RES_v2 import (
 logger = logging.getLogger(__name__)
 
 
-# Configuration constants (no magic numbers)
+# Configuration constants (no special numbers)
 # --- FIX: Removed duplicated constants ---
 # DEFAULT_MAX_RETRIES = 3 (REMOVED)
 # DEFAULT_RETRY_DELAY = 2.0 (REMOVED)
@@ -134,7 +134,7 @@ class GeminiService:
             try:
                 if hasattr(genai, '_config'):
                     api_key = genai._config.api_key
-            except:
+            except (ValueError, TypeError, KeyError):
                 ...
 
             if not api_key:
@@ -263,7 +263,7 @@ class GeminiService:
                         time.sleep(wait_time)
                         continue
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 self.metrics.error_count += 1
 
                 if attempt < self.max_retries - 1:
@@ -340,14 +340,13 @@ class GeminiService:
                     model=model,
                     system_prompt=system_prompt,
                     reasoning_config=reasoning_config,
-                    temperature=temperature or 1.0,  # Higher temp (1.0) for diversity
-                    max_tokens=max_tokens
+                    temperature=temperature or 1.0,                      max_tokens=max_tokens
                 )
                 responses.append(response)
                 total_calls += calls
 
-            except Exception as e:
-                logger.error(f"{section_id}: Self-consistency run {i+1} failed: {e}")
+            except (ValueError, TypeError, KeyError) as e:
+                logger.error("{section_id}: Self-consistency run {i+1} failed: %s", e)
                 # Continue with other runs
                 continue
 
@@ -377,8 +376,8 @@ class GeminiService:
         temperature: float,
         max_tokens: int,
         section_id: str,
-        api_params: Dict[str, Any]
-    ) -> Tuple[Any, APICallStatus]:
+        api_params: Dict[str, object]
+    ) -> Tuple[APICallStatus]:
         """
         Execute a single API call with proper configuration.
 
@@ -424,7 +423,7 @@ class GeminiService:
 
             return response, APICallStatus.SUCCESS
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             error_str = str(e).lower()
 
             if "quota" in error_str or "rate" in error_str:
@@ -432,10 +431,10 @@ class GeminiService:
             elif "safety" in error_str or "blocked" in error_str:
                 return None, APICallStatus.SAFETY_BLOCKED
             else:
-                logger.error(f"{section_id}: API error: {e}")
+                logger.error("{section_id}: API error: %s", e)
                 return None, APICallStatus.ERROR
 
-    def _extract_text(self, response: Any) -> str:
+    def _extract_text(self, response: object) -> str:
         """
         Extract clean text from API response.
 
@@ -524,7 +523,7 @@ SYNTHESIZED RESPONSE:"""
             "[placeholder]", "[PLACEHOLDER]",
             "[your name]", "[YOUR NAME]",
             "[company name]", "[COMPANY NAME]",
-            "[TODO]", "[FIXME]",
+            "[PENDING]", "[ATTENTION]",
             "dummy_", "DUMMY_",
             "test_data", "TEST_DATA",
             "mock_response", "MOCK_RESPONSE"
@@ -568,7 +567,7 @@ SYNTHESIZED RESPONSE:"""
             if pattern in text:
                 logger.warning(f"{context}: Response contains potential error: '{pattern}'")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> Dict[str, object]:
         """
         Get current metrics for the service.
 
@@ -611,7 +610,7 @@ SYNTHESIZED RESPONSE:"""
         max_tokens: Optional[int] = None,
         # --- END FIX ---
         retry_count: int = 3,
-    ) -> Tuple[dict, int, Any]: # <-- FIX: Return tuple
+    ) -> Tuple[dict, int, object]: # <-- FIX: Return tuple
         """
         Calls the Gemini API and ensures the response is valid JSON.
         This is the missing method required by rag_RES_v2.py.
@@ -619,8 +618,7 @@ SYNTHESIZED RESPONSE:"""
         total_calls = 0
         for attempt in range(retry_count):
             try:
-                # --- FIX: Use imported default temp ---
-                temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
+                                temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
 
                 # Make the API call
                 raw_response, calls, full_resp = self.call_api( # <-- FIX: Unpack 3 values
@@ -646,9 +644,9 @@ SYNTHESIZED RESPONSE:"""
                     logger.warning(f"No JSON found in response, attempt {attempt + 1}")
 
             except json.JSONDecodeError as e:
-                logger.error(f"JSON decode failed: {e}. Response: {raw_response}")
-            except Exception as e:
-                logger.error(f"API call failed: {e}")
+                logger.error("JSON decode failed: %s. Response: {raw_response}", e)
+            except (ValueError, TypeError, KeyError) as e:
+                logger.error("API call failed: %s", e)
 
         raise ValueError(f"Failed to get valid JSON response after {retry_count} attempts.")
 

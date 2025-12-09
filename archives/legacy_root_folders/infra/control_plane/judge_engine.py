@@ -20,7 +20,7 @@ def evaluate_with_guard_model(
     Provides structured safety assessment for comprehensive résumé enhancement operations.
     """
 
-    signals: Dict[str, Any] = {
+    signals: Dict[str, object] = {
         "max_severity": rules_result.max_severity,
         "match_count": len(rules_result.matches),
         "has_pii": rules_result.has_pii,

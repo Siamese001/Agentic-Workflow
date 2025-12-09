@@ -17,7 +17,7 @@ class SafetyEvent(BaseModel):
     workflow_id: Optional[str] = None
     agent_id: Optional[str] = None
     stage: Optional[str] = None
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: Dict[str, object] = Field(default_factory=dict)
 
 
 class DecisionEvent(BaseModel):
@@ -30,7 +30,7 @@ class DecisionEvent(BaseModel):
     decision_type: str
     action: str
     reason: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class CostEvent(BaseModel):
@@ -44,7 +44,7 @@ class CostEvent(BaseModel):
     model_name: str
     estimated_cost: float
     latency_ms: int
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 

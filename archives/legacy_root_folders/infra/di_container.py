@@ -10,7 +10,7 @@ import functools
 T = TypeVar('T')
 
 # Simple service registry for atomic architecture
-_services: Dict[str, Any] = {}
+_services: Dict[str, object] = {}
 
 class SimpleDIContainer:
     """
@@ -20,7 +20,7 @@ class SimpleDIContainer:
     """
     
     def __init__(self):
-        self._services: Dict[str, Any] = {}
+        self._services: Dict[str, object] = {}
     
     def register(self, name: str, service: Any) -> None:
         """

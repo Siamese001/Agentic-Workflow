@@ -5,7 +5,7 @@ Production client for real-time streaming with configurable safety thresholds.
 import os
 import json
 import time
-from typing import Iterator, Dict, Any, Optional, List
+from typing import Iterator, Dict, object, Optional, List
 from vertexai.generative_models import (
     GenerativeModel,
     Content,
@@ -69,7 +69,7 @@ class StreamingVertexClient:
         temperature: float = 0.7,
         max_tokens: int = 2048,
         candidate_count: int = 1
-    ) -> Iterator[Dict[str, Any]]:
+    ) -> Iterator[Dict[str, object]]:
         """Stream response with configurable safety settings.
         
         Args:
@@ -151,7 +151,7 @@ class StreamingVertexClient:
         self,
         prompt: str,
         **stream_kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Collect full stream and aggregate metadata.
         
         Args:

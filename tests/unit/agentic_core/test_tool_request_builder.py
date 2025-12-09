@@ -17,7 +17,7 @@ This replaces the 10_8/10_7 mixed router behavior and provides:
 """
 
 from __future__ import annotations
-from typing import Any, Dict, Callable, Awaitable
+from typing import Dict, Callable, Awaitable
 
 from shared.models import PlanObject
 from shared.exceptions import OrchestrationError
@@ -31,7 +31,7 @@ from l2.qa_execution import execute_qa
 from l2.safety_execution import execute_safety
 
 
-_EXECUTOR_MAP: Dict[str, Callable[[PlanObject, Dict[str, Any]], Awaitable[Any]]] = {
+_EXECUTOR_MAP: Dict[str, Callable[[PlanObject, Dict[str, object]], Awaitable[Any]]] = {
     "strategy": execute_strategy,
     "rag": execute_rag,
     "bullets": execute_bullets,
@@ -41,7 +41,7 @@ _EXECUTOR_MAP: Dict[str, Callable[[PlanObject, Dict[str, Any]], Awaitable[Any]]]
 }
 
 
-def route_executor(plan: PlanObject) -> Callable[[PlanObject, Dict[str, Any]], Awaitable[Any]]:
+def route_executor(plan: PlanObject) -> Callable[[PlanObject, Dict[str, object]], Awaitable[Any]]:
     """
     Determine the correct L2 executor based solely on plan.mode.
     """

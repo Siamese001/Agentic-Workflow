@@ -10,14 +10,14 @@ import os
 from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, object
 
 from workflow import WorkflowOrchestrator
 from models import OutreachMission
 
 __version__ = "11.10"
 
-def load_mission_input(filename: str = "mission_input.json") -> Dict[str, Any]:
+def load_mission_input(filename: str = "mission_input.json") -> Dict[str, object]:
     """Loads the mission input JSON file."""
     if not os.path.exists(filename):
         print(f"FATAL: {filename} not found. Please create it.")

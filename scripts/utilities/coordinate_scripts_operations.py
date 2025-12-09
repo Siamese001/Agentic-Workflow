@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.880015
 from __future__ import annotations
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -27,7 +27,7 @@ class StepResult:
     """Result of orchestration step."""
     step_name: str
     status: StepStatus
-    output: Any = None
+    output: object = None
     error: Optional[str] = None
     duration_ms: float = 0.0
 
@@ -37,13 +37,13 @@ class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
-    final_output: Any = None
+    final_output: object = None
 
 
 class CoordinateScriptsOperations:
     """Orchestrator for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.steps: List[Dict] = []
         logger.info(f"Initialized {self.__class__.__name__}")
@@ -53,7 +53,7 @@ class CoordinateScriptsOperations:
         self.steps.append({"name": name, "handler": handler, "dependencies": dependencies or []})
         return self
 
-    def execute(self, initial_input: Any = None) -> OrchestrationResult:
+    def execute(self, initial_input: object = None) -> OrchestrationResult:
         """Execute the workflow."""
         results = []
         context = {"input": initial_input, "outputs": {}}
@@ -72,7 +72,7 @@ class CoordinateScriptsOperations:
                     output=output,
                     duration_ms=(time.time() - start) * 1000
                 ))
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 success = False
                 results.append(StepResult(
                     step_name=step["name"],
@@ -89,7 +89,7 @@ class CoordinateScriptsOperations:
         )
 
 
-def orchestrate(steps: List[Dict], initial_input: Any = None, config: Optional[Dict] = None) -> OrchestrationResult:
+def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     orch = CoordinateScriptsOperations(config)
     for step in steps:

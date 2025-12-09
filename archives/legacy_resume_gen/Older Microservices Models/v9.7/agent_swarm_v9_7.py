@@ -43,7 +43,7 @@ class BiasDetectorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, content: str, context: Optional[str] = None) -> Dict[str, Any]:
+    def run(self, content: str, context: Optional[str] = None) -> Dict[str, object]:
         """Detect bias in content."""
         self.log_info("Analyzing content for bias...")
         
@@ -81,7 +81,7 @@ class PIISanitizerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume_data: Dict[str, object]) -> Dict[str, object]:
         """Sanitize PII from resume data."""
         self.log_info("Sanitizing PII from resume...")
         
@@ -137,7 +137,7 @@ class ToTStrategistAgent(BaseAgent):
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
         self.branching_factor = CONFIG.agent_stacks.strategy_tot_branching_factor
     
-    def run(self, master_resume: Dict, job_input: Dict) -> Dict[str, Any]:
+    def run(self, master_resume: Dict, job_input: Dict) -> Dict[str, object]:
         """Generate and select optimal strategy using Tree-of-Thoughts."""
         self.log_info(f"Generating {self.branching_factor} strategic thought branches...")
         
@@ -175,7 +175,7 @@ class ToTStrategistAgent(BaseAgent):
             self.log_error(f"ToT strategy generation failed: {e}")
             raise AgentExecutionError(f"ToTStrategistAgent failed: {e}")
     
-    def _simplified_strategy(self, master_resume: Dict, job_input: Dict) -> Dict[str, Any]:
+    def _simplified_strategy(self, master_resume: Dict, job_input: Dict) -> Dict[str, object]:
         """Fallback: simplified strategy if ToT is disabled."""
         return {
             "strategy_thoughts": [],
@@ -201,7 +201,7 @@ class DynamicPromptEngineerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
     
-    def run(self, strategy: Dict, job_requirements: List[str], candidate_context: Dict) -> Dict[str, Any]:
+    def run(self, strategy: Dict, job_requirements: List[str], candidate_context: Dict) -> Dict[str, object]:
         """Generate optimized prompt for bullet writing."""
         self.log_info("Engineering prompt for bullet generation...")
         
@@ -235,7 +235,7 @@ class DynamicPromptEngineerAgent(BaseAgent):
             self.log_error(f"Prompt engineering failed: {e}")
             return self._template_prompt(strategy, job_requirements)
     
-    def _template_prompt(self, strategy: Dict, job_requirements: List[str]) -> Dict[str, Any]:
+    def _template_prompt(self, strategy: Dict, job_requirements: List[str]) -> Dict[str, object]:
         """Fallback: template-based prompt."""
         return {
             "system_prompt": f"You are writing resume bullets. Strategy: {strategy.get('positioning_theme', 'N/A')}",
@@ -259,7 +259,7 @@ class BulletCritiqueAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, bullet: str, strategy: Dict, source_experience: Dict, target_requirements: List[str]) -> Dict[str, Any]:
+    def run(self, bullet: str, strategy: Dict, source_experience: Dict, target_requirements: List[str]) -> Dict[str, object]:
         """Critique a single bullet."""
         self.log_info("Critiquing generated bullet...")
         
@@ -310,7 +310,7 @@ class JDParserAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, raw_jd: str) -> Dict[str, Any]:
+    def run(self, raw_jd: str) -> Dict[str, object]:
         """Parse JD into structured format."""
         self.log_info("Parsing job description...")
         
@@ -356,7 +356,7 @@ class RAG_SearchAgent(BaseAgent):
     def __init__(self, blackboard: Dict, debug_mode: bool = False):
         super().__init__(blackboard, debug_mode)
     
-    def run(self, query: str, master_resume: Dict) -> List[Dict[str, Any]]:
+    def run(self, query: str, master_resume: Dict) -> List[Dict[str, object]]:
         """Search master resume for relevant content."""
         self.log_info(f"RAG search for: {query[:50]}...")
         
@@ -438,7 +438,7 @@ class QAValidatorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, draft: str, requirements: Dict) -> Dict[str, Any]:
+    def run(self, draft: str, requirements: Dict) -> Dict[str, object]:
         """Validate draft quality."""
         self.log_info("Running QA validation...")
         
@@ -487,7 +487,7 @@ class DraftingConductorAgent(BaseAgent):
     def __init__(self, blackboard: Dict, debug_mode: bool = False):
         super().__init__(blackboard, debug_mode)
     
-    def run(self, state: Dict) -> Dict[str, Any]:
+    def run(self, state: Dict) -> Dict[str, object]:
         """Execute drafting plan."""
         self.log_info("Orchestrating drafting workflow...")
         
@@ -502,7 +502,7 @@ class QAConductorAgent(BaseAgent):
     def __init__(self, blackboard: Dict, debug_mode: bool = False):
         super().__init__(blackboard, debug_mode)
     
-    def run(self, state: Dict) -> Dict[str, Any]:
+    def run(self, state: Dict) -> Dict[str, object]:
         """Execute QA plan."""
         self.log_info("Orchestrating QA workflow...")
         

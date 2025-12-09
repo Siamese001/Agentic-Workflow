@@ -30,7 +30,7 @@ class AtomicWorkflowBridge:
             routing_policy, sandbox, state_manager, safety_validator, meta_profile
         )
     
-    def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, Any]:
+    def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, object]:
         """Execute workflow through strict L1-L5 atomic layers."""
         return self.unified_orchestrator.orchestrate_full_workflow(job, resume, config)
 

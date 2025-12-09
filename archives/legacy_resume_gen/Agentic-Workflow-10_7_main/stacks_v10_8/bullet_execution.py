@@ -28,8 +28,8 @@ class BulletExecutionStack(BaseAgent):
         self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def generate_from_state_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         """Extract inputs from state and delegate to ``generate_async``."""
 
         prompts_bucket = state.get("prompts", {})
@@ -66,8 +66,8 @@ class BulletExecutionStack(BaseAgent):
         )
 
     async def critique_from_state_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         """Extract bullets and critique prompt directly from agentic_core.shared state."""
 
         prompts_bucket = state.get("prompts", {})
@@ -90,10 +90,10 @@ class BulletExecutionStack(BaseAgent):
     async def generate_async(
         self,
         prompt: str,
-        experiences: List[Dict[str, Any]],
+        experiences: List[Dict[str, object]],
         strategy: StrategyPlan,
         workflow_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Generate bullets by delegating to the async generator helper."""
 
         task_context = {"prompts": [prompt], "experience": experiences}
@@ -122,10 +122,10 @@ class BulletExecutionStack(BaseAgent):
 
     async def critique_async(
         self,
-        bullets: List[Dict[str, Any]],
+        bullets: List[Dict[str, object]],
         critique_prompt: str,
         workflow_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Critique generated bullets using the critique helper."""
 
         critiqued = await self.critique_agent.run_async(
@@ -151,8 +151,8 @@ class BulletExecutionStack(BaseAgent):
         return patch
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         plan = self._plan_from_state(state)
         experiences = self._extract_experiences(state)
@@ -183,7 +183,7 @@ class BulletExecutionStack(BaseAgent):
         patch["constitutional_review"] = constitutional_review.dict()
         return patch
 
-    def _plan_from_state(self, state: Dict[str, Any]) -> BulletPlan:
+    def _plan_from_state(self, state: Dict[str, object]) -> BulletPlan:
         plan_payload = state.get("bullets", {}).get("plan")
         if plan_payload is None:
             raise ValueError("Bullet plan missing from state['bullets']['plan']")
@@ -191,13 +191,13 @@ class BulletExecutionStack(BaseAgent):
             return plan_payload
         return BulletPlan.model_validate(plan_payload)
 
-    def _extract_experiences(self, state: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_experiences(self, state: Dict[str, object]) -> List[Dict[str, object]]:
         resume = state.get("resume", {})
         master_resume = resume.get("master_resume") or {}
         experiences = master_resume.get("professional_experience") or []
         return list(experiences)
 
-    def _plan_instructions(self, plan: BulletPlan) -> Dict[str, Any]:
+    def _plan_instructions(self, plan: BulletPlan) -> Dict[str, object]:
         return {
             "target_sections": plan.target_sections,
             "highlight_order": plan.highlight_order,
@@ -209,10 +209,10 @@ class BulletExecutionStack(BaseAgent):
     def _generate_bullets(
         self,
         plan: BulletPlan,
-        experiences: List[Dict[str, Any]],
+        experiences: List[Dict[str, object]],
         workflow_id: str,
-    ) -> List[Dict[str, Any]]:
-        generated: List[Dict[str, Any]] = []
+    ) -> List[Dict[str, object]]:
+        generated: List[Dict[str, object]] = []
         guidelines = "; ".join(plan.style_guidelines)
         metrics_hint = ", ".join(plan.metrics_focus) or "impact metrics"
         highlights = plan.highlight_order or []

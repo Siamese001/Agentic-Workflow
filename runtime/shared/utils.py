@@ -16,7 +16,7 @@ import re
 import uuid
 from dataclasses import asdict
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .models import ThematicAnalysis, ReasoningConfig
@@ -62,10 +62,8 @@ def sanitize_filename(filename: str) -> str:
     Returns:
         Sanitized filename safe for filesystem use
     """
-    # Remove or replace characters that are invalid in filenames
-    sanitized = re.sub(r'[<>:"/\\|?*]', '_', filename)
-    # Remove leading/trailing whitespace and dots
-    sanitized = sanitized.strip(' .')
+        sanitized = re.sub(r'[<>:"/\\|?*]', '_', filename)
+        sanitized = sanitized.strip(' .')
     # Limit length
     if len(sanitized) > 200:
         sanitized = sanitized[:200]
@@ -140,7 +138,7 @@ def setup_workflow_logging(
             file_handler.setFormatter(log_formatter)
             file_handler.addFilter(WorkflowLogFilter(workflow_id))
             root_logger.addHandler(file_handler)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logging.error(f"Failed to create file logger at {log_filename}: {e}")
             test_mode = True
 
@@ -164,7 +162,7 @@ class TextUtils:
     def count_sentences(text: str) -> int:
         """
         Counts the number of sentences in a text.
-        Uses simple heuristic: split on '.', '!', '?'
+        Uses basic heuristic: split on '.', '!', '?'
         """
         if not text:
             return 0
@@ -174,7 +172,7 @@ class TextUtils:
     @staticmethod
     def count_words(text: str) -> int:
         """
-        Counts words in text using simple whitespace split.
+        Counts words in text using basic whitespace split.
         """
         if not text:
             return 0
@@ -294,7 +292,7 @@ class TextUtils:
             tfidf_matrix = vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logging.warning(f"Error calculating similarity: {e}")
             return 0.0
 
@@ -396,7 +394,7 @@ class DuplicateDetector:
 
             return duplicates
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logging.warning(f"Duplicate detection failed: {e}")
             return []
 
@@ -475,7 +473,7 @@ class TelemetryLogger:
         self.log_path = log_path
         self.logger = logging.getLogger(__name__)
 
-    def log(self, telemetry_data: Any) -> None:
+    def log(self, telemetry_data: object) -> None:
         """Logs a telemetry event."""
         try:
             if hasattr(telemetry_data, '__dataclass_fields__'):
@@ -497,8 +495,8 @@ class TelemetryLogger:
             with open(self.log_path, 'a', encoding='utf-8') as f:
                 json.dump(log_entry, f)
                 f.write('\n')
-        except Exception as e:
-            self.logger.error(f"Failed to write telemetry log: {e}")
+        except (ValueError, TypeError, KeyError) as e:
+            self.logger.error("Failed to write telemetry log: %s", e)
 
 
 # =============================================================================
@@ -508,7 +506,7 @@ class TelemetryLogger:
 def reasoning_config_to_api_params(
     reasoning_config: ReasoningConfig,
     section_id: str,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Converts a ReasoningConfig dataclass into API parameters.
 
@@ -519,7 +517,7 @@ def reasoning_config_to_api_params(
     Returns:
         Dictionary of API parameters
     """
-    params: Dict[str, Any] = {}
+    params: Dict[str, object] = {}
 
     if reasoning_config.self_consistency > 1:
         params["temperature_adjustment"] = 0.2
@@ -588,7 +586,7 @@ def enhance_system_prompt_with_reasoning(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt: int,
 ) -> str:
     """

@@ -3,7 +3,7 @@ from typing import Any, Dict
 CORRECTION_JOURNAL = []
 
 
-def record_correction_event(surface: str, recommendation: Dict[str, Any], plan: Dict[str, Any]):
+def record_correction_event(surface: str, recommendation: Dict[str, object], plan: Dict[str, object]):
     CORRECTION_JOURNAL.append(
         {
             "surface": surface,

@@ -6,7 +6,7 @@ Extends existing LICCacheCritique with vector similarity scoring
 to reduce redundant research by 30-50%.
 """
 
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 import numpy as np
 from dataclasses import dataclass
 import hashlib
@@ -39,7 +39,7 @@ class EnhancedSemanticCache(LICCacheCritique):
     
     def evaluate_with_embeddings(
         self, 
-        cache_data: Dict[str, Any], 
+        cache_data: Dict[str, object], 
         targets: List[str], 
         query_embedding: Optional[np.ndarray] = None
     ) -> VectorSimilarityResult:
@@ -82,7 +82,7 @@ class EnhancedSemanticCache(LICCacheCritique):
     
     def _calculate_similarity(
         self, 
-        cache_data: Dict[str, Any], 
+        cache_data: Dict[str, object], 
         query_embedding: np.ndarray
     ) -> float:
         """Calculate similarity between cache and query."""
@@ -105,7 +105,7 @@ class EnhancedSemanticCache(LICCacheCritique):
     
     def should_use_cache(
         self, 
-        cache_data: Dict[str, Any], 
+        cache_data: Dict[str, object], 
         query: str, 
         targets: List[str],
         max_age_hours: int = 24
@@ -130,7 +130,7 @@ class EnhancedSemanticCache(LICCacheCritique):
         
         return result.is_sufficient, result
     
-    def _is_fresh(self, cache_data: Dict[str, Any], max_age_hours: int) -> bool:
+    def _is_fresh(self, cache_data: Dict[str, object], max_age_hours: int) -> bool:
         """Check if cache data is fresh enough."""
         if "timestamp" not in cache_data:
             return False
@@ -144,7 +144,7 @@ class EnhancedSemanticCache(LICCacheCritique):
     def update_cache_with_embedding(
         self, 
         cache_key: str, 
-        data: Dict[str, Any], 
+        data: Dict[str, object], 
         embedding: Optional[np.ndarray] = None
     ) -> None:
         """Update cache with new data and optional embedding."""

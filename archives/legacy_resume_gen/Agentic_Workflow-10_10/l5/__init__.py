@@ -81,7 +81,7 @@ def arbitrate_safety(
     council_vote: Any,
     policy: Any,
     ctx: Any = None
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Arbitrate between safety findings and council votes to produce a decision.
     

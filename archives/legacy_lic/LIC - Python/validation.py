@@ -4,7 +4,7 @@
 __version__ = "11.10"
 
 import re
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, object, Tuple
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -289,7 +289,7 @@ class MessageDiversityValidator:
             
             return is_diverse, max_similarity, most_similar
         
-        except:
+        except (ValueError, TypeError, KeyError):
             # If vectorization fails, assume diverse
             return True, 0.0, ""
     

@@ -13,7 +13,7 @@ _UNSET = object()
 class ValidationError(Exception):
     """Pydantic-style validation error container."""
 
-    def __init__(self, errors: List[Dict[str, Any]]):
+    def __init__(self, errors: List[Dict[str, object]]):
         self._errors = [
             {
                 "loc": list(error.get("loc", [])),
@@ -25,11 +25,11 @@ class ValidationError(Exception):
         message = "; ".join(error["msg"] for error in self._errors)
         super().__init__(message)
 
-    def errors(self) -> List[Dict[str, Any]]:
+    def errors(self) -> List[Dict[str, object]]:
         return self._errors
 
 
-def _error(loc: Tuple[Any, ...], msg: str, type_: str) -> Dict[str, Any]:
+def _error(loc: Tuple[Any, ...], msg: str, type_: str) -> Dict[str, object]:
     return {"loc": list(loc), "msg": msg, "type": type_}
 
 
@@ -55,7 +55,7 @@ def Field(default: Any = _UNSET, *, default_factory=None, **metadata: Any) -> Fi
     return FieldInfo(default=default, default_factory=default_factory, **metadata)
 
 
-def ConfigDict(**kwargs: Any) -> Dict[str, Any]:
+def ConfigDict(**kwargs: Any) -> Dict[str, object]:
     return dict(kwargs)
 
 
@@ -113,7 +113,7 @@ class BaseModelMeta(type):
 
 class BaseModel(metaclass=BaseModelMeta):
     __fields__: Dict[str, FieldInfo] = {}
-    __config__: Dict[str, Any] = {
+    __config__: Dict[str, object] = {
         "extra": "ignore",
         "arbitrary_types_allowed": False,
         "validate_assignment": False,
@@ -122,7 +122,7 @@ class BaseModel(metaclass=BaseModelMeta):
     def __init__(self, **data: Any) -> None:
         input_data = dict(data)
         values = {}
-        errors: List[Dict[str, Any]] = []
+        errors: List[Dict[str, object]] = []
         for name, field in self.__fields__.items():
             raw_value = input_data.pop(name, _UNSET)
             if raw_value is _UNSET:
@@ -154,7 +154,7 @@ class BaseModel(metaclass=BaseModelMeta):
         self.__dict__.update(values)
 
     @classmethod
-    def parse_obj(cls: Type["BaseModel"], obj: Any) -> "BaseModel":
+    def parse_obj(cls: Type["BaseModel"], obj: object) -> "BaseModel":
         if isinstance(obj, cls):
             return obj
         if isinstance(obj, str):
@@ -169,10 +169,10 @@ class BaseModel(metaclass=BaseModelMeta):
         return cls(**dict(obj))
 
     @classmethod
-    def model_validate(cls, obj: Any) -> "BaseModel":
+    def model_validate(cls, obj: object) -> "BaseModel":
         return cls.parse_obj(obj)
 
-    def dict(self) -> Dict[str, Any]:
+    def dict(self) -> Dict[str, object]:
         result = {}
         for name in self.__fields__:
             if hasattr(self, name):
@@ -183,7 +183,7 @@ class BaseModel(metaclass=BaseModelMeta):
                     result[key] = _serialize_value(value)
         return result
 
-    def model_dump(self) -> Dict[str, Any]:
+    def model_dump(self) -> Dict[str, object]:
         return self.dict()
 
     def json(self) -> str:
@@ -200,7 +200,7 @@ def _is_optional(annotation: Any) -> bool:
     return False
 
 
-def _validate_type(value: Any, annotation: Any, loc: Tuple[Any, ...], config: Dict[str, Any]) -> Any:
+def _validate_type(value: Any, annotation: Any, loc: Tuple[Any, ...], config: Dict[str, object]) -> Any:
     if annotation is Any or annotation is None:
         return value
     if annotation is type(None):
@@ -209,7 +209,7 @@ def _validate_type(value: Any, annotation: Any, loc: Tuple[Any, ...], config: Di
         raise ValidationError([_error(loc, "value is not None", "type_error.none")])
     origin = get_origin(annotation)
     if origin is Union:
-        errors: List[Dict[str, Any]] = []
+        errors: List[Dict[str, object]] = []
         for arg in get_args(annotation):
             try:
                 return _validate_type(value, arg, loc, config)
@@ -227,7 +227,7 @@ def _validate_type(value: Any, annotation: Any, loc: Tuple[Any, ...], config: Di
         if not isinstance(value, (list, tuple)):
             raise ValidationError([_error(loc, "value is not a valid list", "type_error.list")])
         result = []
-        errors: List[Dict[str, Any]] = []
+        errors: List[Dict[str, object]] = []
         for idx, item in enumerate(value):
             try:
                 result.append(_validate_type(item, item_type, loc + (idx,), config))
@@ -237,11 +237,11 @@ def _validate_type(value: Any, annotation: Any, loc: Tuple[Any, ...], config: Di
             raise ValidationError(errors)
         return list(result)
     if origin in (dict, Dict, Mapping):
-        key_type, value_type = (get_args(annotation) + (Any, Any))[:2]
+        key_type, value_type = (get_args(annotation) + (Any, object))[:2]
         if not isinstance(value, Mapping):
             raise ValidationError([_error(loc, "value is not a valid dict", "type_error.dict")])
         result_dict = {}
-        errors: List[Dict[str, Any]] = []
+        errors: List[Dict[str, object]] = []
         for key, item in value.items():
             key_loc = loc + (key,)
             try:

@@ -52,13 +52,13 @@ class InMemoryRedis:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(
         self,
         *,
         documents: List[str],
-        metadatas: List[Dict[str, Any]],
+        metadatas: List[Dict[str, object]],
         ids: List[str],
         embeddings: Optional[List[List[float]]] = None,
         **_: Any,
@@ -79,10 +79,10 @@ class FakeCollection:
         query_texts: Optional[List[str]] = None,
         query_embeddings: Optional[List[List[float]]] = None,
         n_results: int,
-        where: Dict[str, Any],
+        where: Dict[str, object],
         **_: Any,
-    ) -> Dict[str, Any]:
-        matches: List[Dict[str, Any]] = []
+    ) -> Dict[str, object]:
+        matches: List[Dict[str, object]] = []
         for record in self.records.values():
             metadata = record["metadata"]
             if all(metadata.get(k) == v for k, v in where.items()):
@@ -107,7 +107,7 @@ class FakeChromaClient:
 @dataclass
 class TraceEvent:
     name: str
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
 
 
 class TraceRecorder:
@@ -122,7 +122,7 @@ class TraceRecorder:
     def find(self, name: str) -> List[TraceEvent]:
         return [event for event in self._events if event.name == name]
 
-    def as_dicts(self) -> List[Dict[str, Any]]:
+    def as_dicts(self) -> List[Dict[str, object]]:
         return [dict(name=event.name, payload=event.payload) for event in self._events]
 
 

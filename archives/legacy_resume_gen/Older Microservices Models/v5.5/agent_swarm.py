@@ -172,16 +172,16 @@ AGENT_COMPLEXITY = {
 class CrewContext:
     """Context for crew operations (if not already defined)."""
     job_description: str = ""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
     strategy: Optional[StrategyBrief] = None
     staging_buffer: Optional[Any] = None
     thematic_analysis: Optional[ThematicAnalysis] = None # Fixed typing
     workflow_id: str = "" # --- PRIORITY #1 ---
     company_name: str = ""
     job_title: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 class SwarmAgent:
     """Base class for all swarm agents."""
@@ -196,7 +196,7 @@ class SwarmAgent:
 class FeedbackLoggerAgent(SwarmAgent):
     """Logs HIL interactions and QA failures for pattern finding."""
     def __init__(self): super().__init__("FeedbackLoggerAgent")
-    def log_event(self, event_type: str, data: Dict[str, Any]):
+    def log_event(self, event_type: str, data: Dict[str, object]):
         # In a real async system, this would write to a dedicated log stream
         pass
 
@@ -211,7 +211,7 @@ class MetaPlannerAgent(SwarmAgent):
 class PatternFinderAgent(SwarmAgent):
     """V5.5: Reads structured logs to find patterns for the Meta-Planner."""
     def __init__(self): super().__init__("PatternFinderAgent")
-    def find_patterns(self, log_file: str) -> Dict[str, Any]:
+    def find_patterns(self, log_file: str) -> Dict[str, object]:
         # e.g., "grep 'VETO_MECHANICAL' workflow.log.jsonl | jq .error | sort | uniq -c"
         return {"common_errors": {"Forbidden jargon": 50}}
 
@@ -220,7 +220,7 @@ class AutoTunerAgent(SwarmAgent):
     def __init__(self): 
         super().__init__("AutoTunerAgent")
     
-    def analyze_telemetry(self, log_path: str) -> Dict[str, Any]:
+    def analyze_telemetry(self, log_path: str) -> Dict[str, object]:
         # Finds patterns like "K1 always fails word count when set < 100"
         return {"recommended_changes": {}}
 
@@ -538,7 +538,7 @@ class GeminiResponse:
     """Response structure from Gemini API."""
     text: str
     usage: Dict[str, int]
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     cached: bool = False
     
 @dataclass
@@ -771,7 +771,7 @@ class Library_Specialist:
             logger.error(f"Failed to initialize ChromaDB: {e}")
             self.enabled = False
     
-    def store_memory(self, content: str, metadata: Dict[str, Any]) -> bool:
+    def store_memory(self, content: str, metadata: Dict[str, object]) -> bool:
         """Store a memory in persistent storage."""
         if not self.enabled:
             return False
@@ -798,7 +798,7 @@ class Library_Specialist:
             return False
     
     def retrieve_memories(self, query: str, n_results: int = 5, 
-                         filter_metadata: Optional[Dict] = None) -> List[Dict[str, Any]]:
+                         filter_metadata: Optional[Dict] = None) -> List[Dict[str, object]]:
         """Retrieve relevant memories based on query."""
         if not self.enabled:
             return []
@@ -831,7 +831,7 @@ class Library_Specialist:
             logger.error(f"Failed to retrieve memories: {e}")
             return []
     
-    def rehydrate_master_index(self, master_resume: Dict[str, Any]) -> MasterResumeIndex:
+    def rehydrate_master_index(self, master_resume: Dict[str, object]) -> MasterResumeIndex:
         """
         V5.4 PATCH: Rehydrate MasterResumeIndex from master resume data.
         This is the critical recovery mechanism from v3.8.
@@ -921,7 +921,7 @@ class Web_Specialist:
         return True
     
     def fetch_competitive_intelligence(self, company_name: str, 
-                                      job_title: str) -> Dict[str, Any]:
+                                      job_title: str) -> Dict[str, object]:
         """Fetch competitive intelligence about company and role."""
         if not self._check_circuit_breaker():
             logger.warning("Circuit breaker OPEN - returning cached data")
@@ -989,14 +989,14 @@ class RAG_SearchAgent(SwarmAgent):
         super().__init__("RAG_SearchAgent")
         self.web = web_specialist
         self.lib = library_specialist
-    def search(self, queries: List[str]) -> List[Dict[str, Any]]:
+    def search(self, queries: List[str]) -> List[Dict[str, object]]:
         # Stub
         return [{"source": "web", "content": "Search result 1..."}, {"source": "library", "content": "Memory 1..."}]
 
 class RAG_ChunkingAgent(SwarmAgent):
     """V5.5: RAG Step 3. Breaks documents into manageable chunks."""
     def __init__(self): super().__init__("RAG_ChunkingAgent")
-    def chunk(self, documents: List[Dict[str, Any]]) -> List[str]:
+    def chunk(self, documents: List[Dict[str, object]]) -> List[str]:
         # Stub
         return [doc['content'][:100] if 'content' in doc else "" for doc in documents] # Simplified chunking
 
@@ -1016,7 +1016,7 @@ class RAG_FilterAgent(SwarmAgent):
 class RAG_CrossReferenceAgent(SwarmAgent):
     """V5.5: RAG Step 6. Annotates chunks with master resume facts."""
     def __init__(self): super().__init__("RAG_CrossReferenceAgent")
-    def annotate(self, chunks: List[Tuple[str, float]], master: Dict) -> List[Dict[str, Any]]:
+    def annotate(self, chunks: List[Tuple[str, float]], master: Dict) -> List[Dict[str, object]]:
         # Stub
         return [{"chunk": chunk[0], "score": chunk[1], "validation": "SUPPORTED_BY_MASTER"} for chunk in chunks]
 
@@ -1056,7 +1056,7 @@ class QA_Auditor:
     def audit_output(self, staging_buffer: ImmutableStagingBuffer,
                     thematic_analysis: ThematicAnalysis,
                     job_description: str,
-                    master_resume: Dict[str, Any]) -> Dict[str, Any]:
+                    master_resume: Dict[str, object]) -> Dict[str, object]:
         """Perform comprehensive QA audit."""
         logger.info("🔍 Performing QA audit on output")
         
@@ -1107,12 +1107,12 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     staging_buffer: ImmutableStagingBuffer = field(default_factory=ImmutableStagingBuffer)
     thematic_analysis: Optional[ThematicAnalysis] = None
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class Governor:
     """
@@ -1194,7 +1194,7 @@ class Governor:
         # Validation engine
         self.validator = PreFlightValidator()
 
-        def process_request(self, context: CrewContext) -> Dict[str, Any]:
+        def process_request(self, context: CrewContext) -> Dict[str, object]:
         """
         Main orchestration method - processes a complete job application.
         V5.4 10 Agents Patch: Integrated multi-tier validation flow.
@@ -1317,7 +1317,7 @@ class Governor:
             results['validation'] = {'passed': False, 'error': str(e)}
             return results
     
-    def _handle_veto(self, veto: VetoSignal, context: CrewContext, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _handle_veto(self, veto: VetoSignal, context: CrewContext, results: Dict[str, object]) -> Dict[str, object]:
         """Handle a veto signal from validation."""
         self.logger.warning(f"🚫 VETO from {veto.agent_name}: {veto.message} (Level: {veto.level})")
         
@@ -1360,7 +1360,7 @@ class Governor:
         
         return analysis
     
-    def _execute_rag_pipeline(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_rag_pipeline(self, context: CrewContext) -> Dict[str, object]:
         """Execute 4-phase RAG pipeline."""
         results = {}
         accumulated_context = {'job_description': context.job_description}
@@ -1471,7 +1471,7 @@ class Governor:
         
         return template_map.get(section, 'generic_section')
     
-    def _validate_output(self, context: CrewContext) -> Dict[str, Any]:
+    def _validate_output(self, context: CrewContext) -> Dict[str, object]:
         """Validate generated output."""
         passed, results, signal_score = self.validator.validate(
             staging_buffer=context.staging_buffer,
@@ -1489,7 +1489,7 @@ class Governor:
             'production_ready': passed and signal_score >= CONFIG.min_confidence_score
         }
     
-    def _assemble_artifacts(self, context: CrewContext) -> Dict[str, Any]:
+    def _assemble_artifacts(self, context: CrewContext) -> Dict[str, object]:
         """Assemble final artifacts from validated content."""
         artifacts = {}
         
@@ -1563,7 +1563,7 @@ class Governor:
         
         return artifacts
     
-    def _format_qa_report(self, validation_results: Dict[str, Any]) -> str:
+    def _format_qa_report(self, validation_results: Dict[str, object]) -> str:
         """Format validation results as QA report."""
         report = f"""# QA Report
 
@@ -1592,8 +1592,8 @@ class HIL_EscalationAgent:
         self.escalation_log = []
         self.escalation_file = CACHE_DIR / "hil_escalations.json"
     
-    def escalate(self, issue: str, context: Dict[str, Any], 
-                severity: str = "HIGH") -> Dict[str, Any]:
+    def escalate(self, issue: str, context: Dict[str, object], 
+                severity: str = "HIGH") -> Dict[str, object]:
         """
         Escalate issue to human operator.
         V5.4 PATCH: Persist using json.dump instead of in-memory storage.
@@ -1632,8 +1632,8 @@ class CrewOrchestrator:
         self.logger = WorkflowLoggerAdapter(logging.getLogger(__name__), {"workflow_id": "N/A"})
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any],
-                               workflow_id: str) -> Dict[str, Any]: # --- PRIORITY #1 ---
+                               job_title: str, master_resume: Dict[str, object],
+                               workflow_id: str) -> Dict[str, object]: # --- PRIORITY #1 ---
         """
         Process a complete job application through the crew.
         """

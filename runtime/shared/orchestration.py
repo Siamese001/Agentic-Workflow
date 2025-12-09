@@ -8,7 +8,7 @@ with error recovery, execution tracing, and fusion planning.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional, Callable, Tuple
+from typing import Dict, List, object, Optional, Callable, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -130,7 +130,7 @@ class CircuitBreaker:
             self.state = CircuitState.OPEN
             logger.warning(f"Circuit breaker OPEN after {self.failure_count} failures")
     
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> Dict[str, object]:
         """Get circuit breaker state."""
         return {
             'state': self.state.value,
@@ -213,7 +213,7 @@ class ErrorRecoveryManager:
                     recovered_value=result
                 )
             
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 last_error = str(e)
                 logger.warning(f"Attempt {attempt} failed for {operation_name}: {e}")
                 
@@ -247,7 +247,7 @@ class ErrorRecoveryManager:
                     final_error=None,
                     recovered_value=result
                 )
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 error = str(e)
         
         self.recovery_stats['failed_recoveries'] += 1
@@ -269,7 +269,7 @@ class ErrorRecoveryManager:
         
         return min(delay, self.retry_config.max_delay_seconds)
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         """Get recovery statistics."""
         return {
             **self.recovery_stats,
@@ -306,7 +306,7 @@ class TraceStep:
     input_summary: Optional[str] = None
     output_summary: Optional[str] = None
     error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -319,7 +319,7 @@ class ExecutionTrace:
     end_time: Optional[float]
     total_duration_ms: int = 0
     status: str = "running"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class ExecutionTracer:
@@ -456,7 +456,7 @@ class ExecutionTracer:
         
         return trace
     
-    def _summarize(self, data: Any) -> str:
+    def _summarize(self, data: object) -> str:
         """Summarize data for trace."""
         if data is None:
             return "None"
@@ -476,7 +476,7 @@ class ExecutionTracer:
         """Get trace by ID."""
         return self.traces.get(trace_id)
     
-    def get_trace_summary(self, trace: ExecutionTrace) -> Dict[str, Any]:
+    def get_trace_summary(self, trace: ExecutionTrace) -> Dict[str, object]:
         """Get summary of trace."""
         step_durations = [s.duration_ms for s in trace.steps if s.duration_ms > 0]
         
@@ -506,7 +506,7 @@ class ValueProposition:
     angle: str
     expected_impact: float
     relevance_score: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -518,7 +518,7 @@ class MessageSectionPlan:
     tone_guidance: str
     cta_guidance: Optional[str]
     word_count_target: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -532,7 +532,7 @@ class FusionPlan:
     primary_cta_style: str
     fallback_cta_style: str
     confidence_score: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class FusionPlanner:
@@ -553,9 +553,9 @@ class FusionPlanner:
         role_title: str,
         company_name: str,
         archetype: str,
-        achievements: List[Dict[str, Any]],
-        signals: List[Dict[str, Any]],
-        context: Optional[Dict[str, Any]] = None
+        achievements: List[Dict[str, object]],
+        signals: List[Dict[str, object]],
+        context: Optional[Dict[str, object]] = None
     ) -> FusionPlan:
         """
         Create a fusion plan.
@@ -604,8 +604,8 @@ class FusionPlanner:
     
     def _generate_value_propositions(
         self,
-        achievements: List[Dict[str, Any]],
-        signals: List[Dict[str, Any]],
+        achievements: List[Dict[str, object]],
+        signals: List[Dict[str, object]],
         archetype: str
     ) -> List[ValueProposition]:
         """Generate value propositions from achievements and signals."""
@@ -635,9 +635,9 @@ class FusionPlanner:
     
     def _find_matching_signal(
         self,
-        achievement: Dict[str, Any],
-        signals: List[Dict[str, Any]]
-    ) -> Optional[Dict[str, Any]]:
+        achievement: Dict[str, object],
+        signals: List[Dict[str, object]]
+    ) -> Optional[Dict[str, object]]:
         """Find signal that matches achievement."""
         achievement_text = achievement.get('text', '').lower()
         achievement_words = set(achievement_text.split())
@@ -661,8 +661,8 @@ class FusionPlanner:
     
     def _determine_angle(
         self,
-        achievement: Dict[str, Any],
-        signal: Dict[str, Any]
+        achievement: Dict[str, object],
+        signal: Dict[str, object]
     ) -> str:
         """Determine messaging angle."""
         achievement_text = achievement.get('text', '').lower()
@@ -680,8 +680,8 @@ class FusionPlanner:
     
     def _calculate_impact(
         self,
-        achievement: Dict[str, Any],
-        signal: Dict[str, Any]
+        achievement: Dict[str, object],
+        signal: Dict[str, object]
     ) -> float:
         """Calculate expected impact of value proposition."""
         base_impact = 0.5
@@ -704,7 +704,7 @@ class FusionPlanner:
         self,
         value_propositions: List[ValueProposition],
         archetype: str,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> List[MessageSectionPlan]:
         """Create section plans for message."""
         sections = []
@@ -750,7 +750,7 @@ class FusionPlanner:
     def _determine_cta_styles(
         self,
         archetype: str,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> Tuple[str, str]:
         """Determine primary and fallback CTA styles."""
         config = self.archetype_configs.get(archetype, {})
@@ -763,7 +763,7 @@ class FusionPlanner:
     def _calculate_confidence(
         self,
         value_propositions: List[ValueProposition],
-        signals: List[Dict[str, Any]]
+        signals: List[Dict[str, object]]
     ) -> float:
         """Calculate plan confidence score."""
         if not value_propositions:
@@ -779,7 +779,7 @@ class FusionPlanner:
         
         return round(confidence, 3)
     
-    def _load_archetype_configs(self) -> Dict[str, Dict[str, Any]]:
+    def _load_archetype_configs(self) -> Dict[str, Dict[str, object]]:
         """Load archetype configurations."""
         return {
             "executive": {

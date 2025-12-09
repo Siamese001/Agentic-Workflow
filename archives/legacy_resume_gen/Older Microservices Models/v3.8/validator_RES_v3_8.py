@@ -8,7 +8,7 @@ import re
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable
+from typing import Dict, List, Optional, Union, Tuple, Set, Union, Callable
 from collections import defaultdict
 from functools import partial
 
@@ -415,7 +415,7 @@ class PreFlightValidator:
         # Use try-except to safely get details that might not be calculated yet
         try:
             jd_keywords = context.jd_keyword_range_details.get("jd_keywords_found", [])
-        except:
+        except (ValueError, TypeError, KeyError):
             jd_keywords = [] # Fallback
             
         primary_theme = context.thematic_analysis.primary_theme.get("name", "").lower()

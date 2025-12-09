@@ -6,7 +6,7 @@ import os
 import json
 import time
 import random
-from typing import Dict, Any, Optional, List, Union, Callable
+from typing import Dict, object, Optional, List, Union, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 import threading
@@ -32,7 +32,7 @@ class ProviderConfig:
     weight: float = 1.0  # For load balancing
     max_retries: int = 2
     timeout: int = 60
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -143,11 +143,11 @@ class MultiProviderRouter:
     
     def chat_completion(
         self,
-        messages: List[Dict[str, Any]],
+        messages: List[Dict[str, object]],
         strategy: Optional[str] = None,
         providers: Optional[List[Provider]] = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Route chat completion request to optimal provider.
         
         Args:
@@ -213,10 +213,10 @@ class MultiProviderRouter:
     
     def structured_completion(
         self,
-        messages: List[Dict[str, Any]],
-        schema: Dict[str, Any],
+        messages: List[Dict[str, object]],
+        schema: Dict[str, object],
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Route structured output completion to optimal provider."""
         # Prefer OpenAI for structured output (best JSON schema support)
         preferred_providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GOOGLE_VERTEX]
@@ -260,10 +260,10 @@ class MultiProviderRouter:
     
     def batch_completion(
         self,
-        batch_requests: List[Dict[str, Any]],
+        batch_requests: List[Dict[str, object]],
         strategy: str = "weighted",
         **kwargs
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Route batch requests across multiple providers."""
         # Distribute requests across providers
         provider_distribution = self._distribute_batch_requests(batch_requests, strategy)
@@ -350,7 +350,7 @@ class MultiProviderRouter:
         else:
             return healthy_providers
     
-    def _distribute_batch_requests(self, requests: List[Dict[str, Any]], strategy: str) -> Dict[Provider, List[Dict[str, Any]]]:
+    def _distribute_batch_requests(self, requests: List[Dict[str, object]], strategy: str) -> Dict[Provider, List[Dict[str, object]]]:
         """Distribute batch requests across providers."""
         available_providers = self._select_providers(None, strategy)
         
@@ -382,7 +382,7 @@ class MultiProviderRouter:
         
         return distribution
     
-    def _call_provider(self, provider: Provider, messages: List[Dict[str, Any]], **kwargs) -> Any:
+    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs) -> Any:
         """Call the specific provider with appropriate format."""
         client = self.clients[provider]
         
@@ -523,7 +523,7 @@ class MultiProviderRouter:
                 if self.health_status[provider]["consecutive_failures"] >= 3:
                     self.health_status[provider]["healthy"] = False
     
-    def get_router_stats(self) -> Dict[str, Any]:
+    def get_router_stats(self) -> Dict[str, object]:
         """Get comprehensive router statistics."""
         total_requests = sum(stats["requests"] for stats in self.usage_stats.values())
         total_successes = sum(stats["successes"] for stats in self.usage_stats.values())

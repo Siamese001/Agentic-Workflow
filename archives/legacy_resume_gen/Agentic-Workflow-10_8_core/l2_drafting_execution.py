@@ -26,7 +26,7 @@ def _compose_section(title: str, tone: str, audience: str) -> str:
 class DraftingExecutionAgent(ExecutionAgent):
     """Create draft content without performing any tool calls."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         tone = str(plan.get("tone", "neutral"))
         audience = str(plan.get("audience", "general"))
         sections: List[str] = [str(section) for section in plan.get("sections", [])]

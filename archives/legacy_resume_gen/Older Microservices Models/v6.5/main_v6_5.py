@@ -127,7 +127,7 @@ class WorkflowV65:
         job_title: str,
         master_resume_path: Optional[str] = None,
         output_dir: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Run the complete workflow for a single job application.
         """
@@ -203,7 +203,7 @@ class WorkflowV65:
             self.logger.info(f"Workflow v6.5 execution finished [workflow_id: {workflow_id}]")
             self.logger.info("=" * 80)
     
-    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, Any]:
+    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, object]:
         """
         Load master resume from file or use default.
         REFACTORED: Reads fallback paths from CONFIG.
@@ -239,7 +239,7 @@ class WorkflowV65:
         # Convert namespace back to dict for consistency
         return vars(CONFIG.file_paths.empty_master_resume_template)
     
-    def _save_artifacts(self, results: Dict[str, Any], output_dir: str, 
+    def _save_artifacts(self, results: Dict[str, object], output_dir: str, 
                        company_name: str, job_title: str):
         """Save workflow artifacts to output directory."""
         output_path = Path(output_dir)
@@ -274,7 +274,7 @@ class WorkflowV65:
 # HELPER FUNCTIONS
 # ============================================================================
 
-def load_job_input(filepath: str) -> Dict[str, Any]:
+def load_job_input(filepath: str) -> Dict[str, object]:
     """Load job input from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -346,7 +346,7 @@ def setup_logging(debug_mode: bool):
     logger.info(f"Logging configured. Level: {log_level}, File: {log_config.log_file}")
 
 
-def print_summary(results: Dict[str, Any]):
+def print_summary(results: Dict[str, object]):
     """Print workflow execution summary."""
     print("\n" + "=" * 80)
     print("WORKFLOW EXECUTION SUMMARY (v6.5)")

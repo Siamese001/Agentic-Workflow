@@ -13,7 +13,7 @@ import uuid
 import asyncio
 import redis
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 from core_v10_0 import (
     CONFIG, WorkflowContext, BaseAgent, MetaGraphState,
@@ -65,7 +65,7 @@ class AsyncPatternFinderAgent(BaseAgent):
         super().__init__(context, debug_mode)
         self.client = context.get_model_client("google", "gemini-2.0-flash-exp")
     
-    async def run_async(self, raw_logs: Dict[str, str]) -> List[Dict[str, Any]]:
+    async def run_async(self, raw_logs: Dict[str, str]) -> List[Dict[str, object]]:
         self.log_info("Analyzing logs for patterns (ASYNC)...")
         
         if not raw_logs["feedback_log"] and not raw_logs["preference_log"]:

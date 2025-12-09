@@ -282,7 +282,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         try:
             reconstructed_specs = {}
             for section_name, spec in raw_specs.items():
@@ -328,7 +328,7 @@ class ArtistGenerator:
     def _build_generation_prompt_with_reinforced_constraints(
         self,
         base_prompt: str,
-        constraints: Dict[str, Any],
+        constraints: Dict[str, object],
         attempt_number: int
     ) -> str:
         """
@@ -1648,7 +1648,7 @@ class ImmutableStagingBuffer:
 import re
 import json
 import logging
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Union, Tuple
 
 class TextSanitizer:
     FORBIDDEN_DASHES: str = (
@@ -2464,9 +2464,9 @@ class WorkflowOrchestrator:
 
         temperature_schedule = [1.0, 0.8, 0.6, 0.4, 0.2]
         max_attempts = len(temperature_schedule)
-        final_generation_state: Dict[str, Any] = {}
+        final_generation_state: Dict[str, object] = {}
         locked_section_temps: Dict[ResumeSection, float] = {}
-        copied_content: Dict[str, Any] = {}
+        copied_content: Dict[str, object] = {}
 
         all_llm_sections = {
             section_enum for section_enum, spec in artist.SECTION_GENERATION_SPECS.items()
@@ -2558,7 +2558,7 @@ class WorkflowOrchestrator:
             self.logger.info(f"    Sections to generate: {[s.name for s in sections_to_generate]}")
             attempt_start_time = time.time()
             calls_this_attempt = 0
-            newly_generated_content: Dict[str, Any] = {}
+            newly_generated_content: Dict[str, object] = {}
 
             try:
                 temp_overrides = {section: temperature for section in sections_to_generate}
@@ -3290,7 +3290,7 @@ class WorkflowOrchestrator:
             self.logger.warning(f"Could not rename log file: {e}", exc_info=True)
 
 
-    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, Any]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
+    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, object]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
         end_time = datetime.now(); duration = (end_time - start_time).total_seconds(); status = HopStatus.PASS
         if error_message:
             status = HopStatus.FAIL
@@ -3629,7 +3629,7 @@ class HopCheckpoint:
     timestamp_end: str
     output_hash: Optional[str] = None
     validation_results: List[ValidationResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 # NOTE: HopExecutionError and StagingBufferError are imported from models.py
@@ -3637,14 +3637,14 @@ class HopCheckpoint:
 
 import re
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict
 
 import re
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict

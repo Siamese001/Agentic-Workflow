@@ -8,7 +8,7 @@ MERKLE-INTENDED: ca2f37be3f2bdc98bace3f3d1c9562fd1f315b85c62299f119c7e71df3f3354
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 class AgenticWorkflowError(Exception):
@@ -29,7 +29,7 @@ class AgenticWorkflowError(Exception):
         self,
         message: str,
         error_code: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         recoverable: bool = False,
     ) -> None:
         super().__init__(message)
@@ -38,7 +38,7 @@ class AgenticWorkflowError(Exception):
         self.context = context or {}
         self.recoverable = recoverable
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert exception to dictionary for logging/serialization."""
         return {
             "error_type": self.__class__.__name__,
@@ -75,7 +75,7 @@ class HopExecutionError(AgenticWorkflowError):
         hop_id: Optional[str] = None,
         hop_name: Optional[str] = None,
         phase: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -103,7 +103,7 @@ class StagingBufferError(AgenticWorkflowError):
         message: str,
         key: Optional[str] = None,
         operation: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -134,7 +134,7 @@ class CircuitBreakerOpenError(AgenticWorkflowError):
         service_name: Optional[str] = None,
         failure_count: int = 0,
         reset_time: Optional[float] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -164,7 +164,7 @@ class PhaseTimeoutError(AgenticWorkflowError):
         phase_name: Optional[str] = None,
         timeout_seconds: Optional[float] = None,
         elapsed_seconds: Optional[float] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -191,7 +191,7 @@ class PipelineError(AgenticWorkflowError):
         message: str,
         pipeline_name: Optional[str] = None,
         stage: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -226,7 +226,7 @@ class FactualFailureException(AgenticWorkflowError):
         check_name: Optional[str] = None,
         expected: Optional[Any] = None,
         actual: Optional[Any] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -256,7 +256,7 @@ class ValidationError(AgenticWorkflowError):
         field: Optional[str] = None,
         rule: Optional[str] = None,
         violations: Optional[List[str]] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -288,7 +288,7 @@ class ConfigurationError(AgenticWorkflowError):
         message: str,
         config_key: Optional[str] = None,
         config_file: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -322,7 +322,7 @@ class APIError(AgenticWorkflowError):
         status_code: Optional[int] = None,
         response_body: Optional[str] = None,
         retry_after: Optional[float] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -356,7 +356,7 @@ class MCPClientInitializationError(AgenticWorkflowError):
         message: str,
         client_name: Optional[str] = None,
         service_type: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({
@@ -389,7 +389,7 @@ class SemanticCacheError(AgenticWorkflowError):
         message: str,
         cache_key: Optional[str] = None,
         operation: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         context = kwargs.pop("context", {})
         context.update({

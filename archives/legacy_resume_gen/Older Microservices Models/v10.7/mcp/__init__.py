@@ -12,10 +12,10 @@ from typing import Any, Callable, Dict
 logger = logging.getLogger("mcp")
 
 _ROOT = Path(__file__).resolve().parent.parent
-_TOOL_CACHE: Dict[str, Any] = {}
-_SCHEMA_CACHE: Dict[str, Any] = {}
-_AGENT_CACHE: Dict[str, Any] = {}
-_CONTEXT_STATE: Dict[str, Any] = {}
+_TOOL_CACHE: Dict[str, object] = {}
+_SCHEMA_CACHE: Dict[str, object] = {}
+_AGENT_CACHE: Dict[str, object] = {}
+_CONTEXT_STATE: Dict[str, object] = {}
 
 _AGENT_SPECS: Dict[str, tuple[str, str]] = {
     "SafetyGuardStack": ("stacks_v10_7", "PromptInjectionDetectorAgent"),
@@ -72,7 +72,7 @@ def get_agent(agent_id: str) -> Any:
     return agent_cls
 
 
-def get_schema(schema_name: str) -> Dict[str, Any]:
+def get_schema(schema_name: str) -> Dict[str, object]:
     """Load and cache schemas declared in the manifest."""
 
     if schema_name not in _SCHEMA_CACHE:
@@ -96,13 +96,13 @@ def sync_context(context: Any, *, scope: str = "default") -> None:
         logger.debug("Failed to sync context for scope '%s': %s", scope, exc)
 
 
-def emit_event(payload: Dict[str, Any]) -> None:
+def emit_event(payload: Dict[str, object]) -> None:
     """Broadcast telemetry events to the MCP runtime."""
 
     logger.info("[MCP] %s", json.dumps(payload, default=str))
 
 
-def register_tool(tool_id: str, factory: Callable[[], Any]) -> None:
+def register_tool(tool_id: str, factory: Callable[[], object]) -> None:
     """Allow tests to inject custom tools."""
 
     _TOOL_CACHE.pop(tool_id, None)

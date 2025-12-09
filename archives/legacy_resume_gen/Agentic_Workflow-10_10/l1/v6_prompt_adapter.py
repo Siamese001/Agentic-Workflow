@@ -37,7 +37,7 @@ class V6PromptConfig:
     
     include_examples: bool = True
     enable_cot: bool = True
-    rag_config: Optional[Dict[str, Any]] = None
+    rag_config: Optional[Dict[str, object]] = None
 
 
 def build_v6_strategy_prompt(

@@ -4,7 +4,7 @@ Production client used for resume extraction and message classification.
 
 import os
 import json
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, object
 from pydantic import BaseModel, Field
 from openai import OpenAI
 from openai.types.chat import ChatCompletionChunk
@@ -31,7 +31,7 @@ def stream_structured_resume(
     model: str = "gpt-4o-2024-08-06",
     max_tokens: int = 4000,
     temperature: float = 0.1
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Stream resume extraction with structured output.
     
     Args:

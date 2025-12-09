@@ -89,7 +89,7 @@ class KGRetrievalResult:
     facts_by_predicate: Dict[str, List[Triplet]] = field(default_factory=dict)
     
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class KGRetrievalExecutor:

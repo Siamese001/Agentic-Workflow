@@ -18,7 +18,7 @@ class RepairAction:
 
     kind: str  # e.g. "retry", "downgrade", "replan", "escalate"
     reason: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:

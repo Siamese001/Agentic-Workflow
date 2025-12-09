@@ -8,7 +8,7 @@ except ImportError:
     _graph = None
     _NEO4J_AVAILABLE = False
 
-def graph_query(cypher: str, params: Dict[str, Any] | None = None) -> List[Any]:
+def graph_query(cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
     """
     Executes Cypher queries against Neo4j for resume data retrieval.
 

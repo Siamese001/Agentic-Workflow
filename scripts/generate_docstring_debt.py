@@ -33,7 +33,7 @@ for f in root.rglob("*.py"):
                     continue
                 if not ast.get_docstring(node):
                     missing.add(f"{rel}:{name}")
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         pass
 
 print('"""')

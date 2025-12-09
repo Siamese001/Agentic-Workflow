@@ -30,7 +30,7 @@ def get_file_hash(path: Path) -> str:
     try:
         content = path.read_bytes()
         return hashlib.md5(content).hexdigest()
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return ""
 
 
@@ -45,7 +45,7 @@ def get_file_signature(path: Path) -> tuple:
                 first_meaningful = line.strip()[:80]
                 break
         return (get_file_hash(path), path.stat().st_size, first_meaningful)
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return ("", 0, "")
 
 
@@ -139,7 +139,7 @@ def main():
                         shown += 1
                         if shown >= 15:
                             break
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 print(f"    ERROR: {e}")
 
     print("\n" + "=" * 80)

@@ -62,13 +62,13 @@ class WorkflowContext(Generic[TState]):
         workflow_id: str,
         state_manager: StateManager[TState],
         safety_system: Optional[SafetySystem] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, object]] = None,
         start_time: Optional[datetime] = None,
     ) -> None:
         self.workflow_id = workflow_id
         self.state_manager = state_manager
         self.safety_system = safety_system
-        self.metadata: Dict[str, Any] = metadata or {}
+        self.metadata: Dict[str, object] = metadata or {}
         self.start_time = start_time or datetime.now(UTC)
 
         self._error_handlers: Dict[Type[BaseException], Callable[[BaseException], Awaitable[None]]] = {}

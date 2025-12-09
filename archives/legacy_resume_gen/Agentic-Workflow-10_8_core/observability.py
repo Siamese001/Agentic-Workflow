@@ -18,7 +18,7 @@ class CostTracker:
         if name in self.spans and self.spans[name]["end"] is None:
             self.spans[name]["end"] = time.perf_counter()
 
-    def snapshot(self) -> Dict[str, Any]:
+    def snapshot(self) -> Dict[str, object]:
         snapshot_spans: List[Dict[str, float]] = []
         for span_name in sorted(self.spans.keys()):
             span = self.spans[span_name]
@@ -35,7 +35,7 @@ from typing import Any, Dict
 class MetricEvent:
     name: str
     value: float
-    tags: Dict[str, Any]
+    tags: Dict[str, object]
 
 
 @dataclass
@@ -43,7 +43,7 @@ class SpanEvent:
     name: str
     start_time_ms: int
     end_time_ms: int
-    tags: Dict[str, Any]
+    tags: Dict[str, object]
 
 
 @dataclass
@@ -62,7 +62,7 @@ def get_events():
 from typing import Any, Dict
 
 
-def compute_optimization_hint(spans: list) -> Dict[str, Any]:
+def compute_optimization_hint(spans: list) -> Dict[str, object]:
     """
     Deterministic optimization hint based on span durations.
     """

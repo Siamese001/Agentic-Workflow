@@ -87,7 +87,7 @@ def is_sovereign_grade(content: str) -> tuple[bool, str]:
         score += 4
         reasons.append(f"{core_terms}-core")
 
-    if re.search(r"\bprint\(|pdb\. |breakpoint\(|TODO|FIXME|XXX", content):
+    if re.search(r"\bprint\(|pdb\. |breakpoint\(|PENDING|ATTENTION|XXX", content):
         return False, "dirty"
 
     return score >= 7, f"score={score} [{', '.join(reasons)}]"

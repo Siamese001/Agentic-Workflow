@@ -8,7 +8,7 @@ utilization by 20% and message personalization.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 import re
@@ -77,7 +77,7 @@ class EvidenceRanker:
             'completeness': 0.15   # How complete the evidence is
         }
     
-    def rank_evidence(self, evidence_list: List[Dict[str, Any]], query: str) -> List[EvidenceItem]:
+    def rank_evidence(self, evidence_list: List[Dict[str, object]], query: str) -> List[EvidenceItem]:
         """
         Score and rank evidence by relevance and quality.
         
@@ -124,7 +124,7 @@ class EvidenceRanker:
         
         return ranked_items
     
-    def _calculate_relevance_score(self, evidence: Dict[str, Any], query: str) -> float:
+    def _calculate_relevance_score(self, evidence: Dict[str, object], query: str) -> float:
         """Calculate relevance score based on query match."""
         content = evidence.get('content', '').lower()
         query_words = query.lower().split()
@@ -142,7 +142,7 @@ class EvidenceRanker:
         
         return min(base_relevance, 1.0)
     
-    def _calculate_content_quality(self, evidence: Dict[str, Any]) -> float:
+    def _calculate_content_quality(self, evidence: Dict[str, object]) -> float:
         """Calculate content quality score."""
         content = evidence.get('content', '')
         
@@ -168,7 +168,7 @@ class EvidenceRanker:
         
         return min(score, 1.0)
     
-    def _calculate_freshness_score(self, evidence: Dict[str, Any]) -> float:
+    def _calculate_freshness_score(self, evidence: Dict[str, object]) -> float:
         """Calculate freshness score based on recency."""
         # In production, use actual timestamps
         # For now, use simple heuristics
@@ -181,7 +181,7 @@ class EvidenceRanker:
         else:
             return 0.5
     
-    def _calculate_authority_score(self, evidence: Dict[str, Any]) -> float:
+    def _calculate_authority_score(self, evidence: Dict[str, object]) -> float:
         """Calculate authority score based on source credibility."""
         source = evidence.get('source', '').lower()
         content = evidence.get('content', '').lower()
@@ -220,7 +220,7 @@ class AdvancedToneModel:
         self.tone_profiles = self._create_tone_profiles()
         self.adaptation_patterns = self._create_adaptation_patterns()
     
-    def adapt_tone(self, content: str, persona: Dict[str, Any]) -> ToneAdaptation:
+    def adapt_tone(self, content: str, persona: Dict[str, object]) -> ToneAdaptation:
         """
         Apply sophisticated tone adjustments.
         
@@ -318,7 +318,7 @@ class AdvancedToneModel:
             )
         }
     
-    def _create_adaptation_patterns(self) -> Dict[str, Any]:
+    def _create_adaptation_patterns(self) -> Dict[str, object]:
         """Create adaptation patterns for different tone modifications."""
         return {
             'formality_words': {
@@ -335,7 +335,7 @@ class AdvancedToneModel:
             }
         }
     
-    def _determine_target_tone(self, persona: Dict[str, Any]) -> ToneType:
+    def _determine_target_tone(self, persona: Dict[str, object]) -> ToneType:
         """Determine target tone from persona configuration."""
         persona_tone = persona.get('tone', 'professional').lower()
         
@@ -446,10 +446,10 @@ class ContentQualityEnhancer:
     
     def enhance_content_quality(
         self,
-        evidence_list: List[Dict[str, Any]],
+        evidence_list: List[Dict[str, object]],
         content: str,
         query: str,
-        persona: Dict[str, Any],
+        persona: Dict[str, object],
         top_evidence_k: int = 5
     ) -> Tuple[List[EvidenceItem], ToneAdaptation]:
         """

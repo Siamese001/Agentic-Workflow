@@ -11,7 +11,7 @@ import logging
 import os
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 from core_v9_7 import (
     CONFIG, BaseAgent, get_model_client, MetaGraphState,
@@ -55,7 +55,7 @@ class PatternFinderAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, raw_logs: Dict[str, str]) -> List[Dict[str, Any]]:
+    def run(self, raw_logs: Dict[str, str]) -> List[Dict[str, object]]:
         self.log_info(f"Analyzing log data to find patterns...")
         if not raw_logs["feedback_log"] and not raw_logs["preference_log"]:
             self.log_warning("No log data found. No patterns to find.")

@@ -1,7 +1,7 @@
 """E2E tests for complete resume generation lifecycle."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any
+from typing import Dict, List, object
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -19,8 +19,8 @@ class ResumePhase(Enum):
 class ResumeGenerationState:
     session_id: str
     phase: ResumePhase
-    user_data: Dict[str, Any] = field(default_factory=dict)
-    job_data: Dict[str, Any] = field(default_factory=dict)
+    user_data: Dict[str, object] = field(default_factory=dict)
+    job_data: Dict[str, object] = field(default_factory=dict)
     generated_content: Dict[str, str] = field(default_factory=dict)
     scores: Dict[str, float] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
@@ -253,7 +253,7 @@ class TestResumeQualityE2E:
         """E2E: Grammar is checked in resume content."""
         content = "Led team of engineers to delivered project on time"  # Grammar error
 
-        # Simple check for common issues
+        # basic check for common issues
         issues = []
         if " to delivered " in content:
             issues.append("verb_tense_error")

@@ -13,8 +13,8 @@ class DAGNode:
     """Structural node definition for DAG orchestration."""
 
     name: str
-    run: Callable[[Dict[str, Any]], NodeResult]
-    condition: Optional[Callable[[Dict[str, Any]], bool]] = None
+    run: Callable[[Dict[str, object]], NodeResult]
+    condition: Optional[Callable[[Dict[str, object]], bool]] = None
     conditional_edges: Dict[str, List[str]] = field(default_factory=dict)
     retries: int = 0
     fallback_edge: Optional[str] = None

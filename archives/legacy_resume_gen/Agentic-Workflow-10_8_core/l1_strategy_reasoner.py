@@ -30,7 +30,7 @@ def _as_list(value: Any) -> List[str]:
     return [str(value)]
 
 
-def _objective_from_state(state: Dict[str, Any]) -> str:
+def _objective_from_state(state: Dict[str, object]) -> str:
     """Extract a stable objective string from the orchestration state."""
 
     for key in ("objective", "task", "goal"):
@@ -43,7 +43,7 @@ def _objective_from_state(state: Dict[str, Any]) -> str:
 class StrategyReasoner(Reasoner):
     """Deterministic multi-step strategy planner for L1."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         objective = _objective_from_state(state)
         constraints = sorted(_as_list(state.get("constraints")))
         dependencies = sorted(_as_list(state.get("dependencies")))

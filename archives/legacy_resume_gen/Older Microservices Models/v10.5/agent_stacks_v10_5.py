@@ -36,7 +36,7 @@ import uuid
 # import chromadb # v10.5 REFACTOR: Removed
 # from chromadb.utils import embedding_functions # v10.5 REFACTOR: Removed
 from collections import Counter
-from typing import Dict, Any, List, Optional
+from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # v10.5 REFACTOR: Removed BM25 check
@@ -104,7 +104,7 @@ class PIISanitizerAgent(BaseAgent):
     }
     
     @track_metrics('run_pii_sanitizer') # v10.5 (Fix #8)
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
         
@@ -127,7 +127,7 @@ class BiasDetectorAgent(BaseAgent):
     """v10.5: Local bias detection with dynamic constitution."""
     
     @track_metrics('run_bias_detector') # v10.5 (Fix #8)
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         
         # v10.5 TEST FIX: Call rules_loader as expected by test
@@ -165,7 +165,7 @@ class PromptInjectionDetectorAgent(BaseAgent):
         confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the detection")
     
     @track_metrics('run_pi_detector') # v10.5 (Fix #8)
-    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting prompt injection...")
         
         if not self.config.agent_stacks.enable_prompt_injection_detection:
@@ -240,7 +240,7 @@ class QueryComplexityClassifier(BaseAgent):
 class ToTStrategistAgent(BaseAgent):
     """v10.5 (Fix #9): ToT strategist with self-consistency voting."""
     
-    async def _generate_branches(self, job_context: Dict[str, Any], client: Any, branching_factor: int) -> List[Dict]:
+    async def _generate_branches(self, job_context: Dict[str, object], client: Any, branching_factor: int) -> List[Dict]:
         """v10.5 (TEST FIX): Extracted branch generation logic."""
         prompt_template = self.prompt_manager.get_template("strategy_tot_branch")
         
@@ -280,7 +280,7 @@ class ToTStrategistAgent(BaseAgent):
         return branches
     
     @track_metrics('run_tot_strategy') # v10.5 (Fix #8)
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating ToT strategy with voting (v10.5)...")
         
         # Note: Feedback-aware branching logic (from v10.4) is preserved
@@ -351,7 +351,7 @@ class PromptEngineerAgent(BaseAgent):
     """v10.5 (Fix #11): LLM-driven prompt engineering, now complexity-aware."""
     
     @track_metrics('run_prompt_engineer') # v10.5 (Fix #8)
-    async def run_async(self, strategy: StrategyPlan, complexity: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: StrategyPlan, complexity: str, workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Engineering prompts (Complexity: {complexity})...")
         
         client = self.get_model_client("prompt_engineer_model") # Uses dynamic routing
@@ -708,7 +708,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
     """v10.5: Proactively detects ambiguity."""
     
     @track_metrics('run_ambiguity_detector') # v10.5 (Fix #8)
-    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting ambiguity (v10.5)...")
         client = self.get_model_client("qa_model")
         
@@ -733,7 +733,7 @@ class HILFeedbackRouterAgent(BaseAgent):
     """v10.5 (Fix #5): Routes human feedback, now with INJECT_EDIT."""
     
     @track_metrics('run_feedback_router') # v10.5 (Fix #8)
-    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Routing human feedback (v10.5)...")
         
         try:

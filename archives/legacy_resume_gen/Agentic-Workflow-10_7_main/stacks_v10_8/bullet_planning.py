@@ -22,12 +22,12 @@ class BulletPlanningStack(BaseAgent):
         super().__init__(context, debug_mode)
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         plan = self._build_plan(state)
         return {"bullets": {"plan": plan.model_dump()}}
 
-    def _build_plan(self, state: Dict[str, Any]) -> BulletPlan:
+    def _build_plan(self, state: Dict[str, object]) -> BulletPlan:
         job_profile = extract_job_profile(state)
         resume_profile = extract_resume_profile(state)
         experiences = resume_profile["experiences"]
@@ -45,7 +45,7 @@ class BulletPlanningStack(BaseAgent):
         )
 
     def _highlight_order(
-        self, job_profile: Dict[str, Any], experiences: List[Dict[str, Any]]
+        self, job_profile: Dict[str, object], experiences: List[Dict[str, object]]
     ) -> List[str]:
         if experiences:
             ordered = [describe_experience(exp) for exp in experiences[:3]]
@@ -54,7 +54,7 @@ class BulletPlanningStack(BaseAgent):
         return [f"Show relevant wins for {title}"]
 
     def _style_guidelines(
-        self, job_profile: Dict[str, Any], state: Dict[str, Any]
+        self, job_profile: Dict[str, object], state: Dict[str, object]
     ) -> List[str]:
         strategy_plan = state.get("strategy", {}).get("strategy_plan") or {}
         if hasattr(strategy_plan, "model_dump"):
@@ -71,7 +71,7 @@ class BulletPlanningStack(BaseAgent):
         return guidelines
 
     def _validation_checks(
-        self, job_profile: Dict[str, Any], experiences: List[Dict[str, Any]]
+        self, job_profile: Dict[str, object], experiences: List[Dict[str, object]]
     ) -> List[str]:
         checks = [
             "Each bullet must cite a unique accomplishment",

@@ -25,11 +25,11 @@ class _SyntheticResult:
     workflow_id: str
     summary: str
     events: Iterable[str]
-    resume: Dict[str, Any]
-    merged_output: Dict[str, Any]
-    state: Dict[str, Any]
+    resume: Dict[str, object]
+    merged_output: Dict[str, object]
+    state: Dict[str, object]
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> Dict[str, object]:
         return {
             "status": self.status,
             "workflow_id": self.workflow_id,
@@ -59,7 +59,7 @@ def _ensure_runtime_paths(config: ConfigV10_7) -> None:
         directory.mkdir(parents=True, exist_ok=True)
 
 
-def _synthesise_events(context: Dict[str, Any]) -> list[str]:
+def _synthesise_events(context: Dict[str, object]) -> list[str]:
     """Derive predictable events for contract and integration tests."""
 
     resume_text = json.dumps(context, sort_keys=True).lower()
@@ -76,7 +76,7 @@ def _synthesise_events(context: Dict[str, Any]) -> list[str]:
     return events
 
 
-def _synthetic_resume(context: Dict[str, Any]) -> Dict[str, Any]:
+def _synthetic_resume(context: Dict[str, object]) -> Dict[str, object]:
     """Return a structured resume payload used by schema validation tests."""
 
     resume_name = context.get("resume", "Candidate")
@@ -118,7 +118,7 @@ def _synthetic_resume(context: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _legacy_resume_view(full_state: Dict[str, Any]) -> Dict[str, Any]:
+def _legacy_resume_view(full_state: Dict[str, object]) -> Dict[str, object]:
     resume = full_state.get("resume", {}) if isinstance(full_state, dict) else {}
     return {
         "candidate": resume.get("candidate"),
@@ -131,7 +131,7 @@ def _legacy_resume_view(full_state: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _build_synthetic_state(
-    resume_payload: Dict[str, Any], events: Iterable[str]
+    resume_payload: Dict[str, object], events: Iterable[str]
 ) -> MainGraphState:
     state = MainGraphState()
     state.resume.master_resume = resume_payload
@@ -147,11 +147,11 @@ def _build_synthetic_state(
     return state
 
 
-def _full_resume_view(full_state: Dict[str, Any]) -> Dict[str, Any]:
+def _full_resume_view(full_state: Dict[str, object]) -> Dict[str, object]:
     return full_state.get("resume", {}) if isinstance(full_state, dict) else {}
 
 
-def _run_synthetic(context: Dict[str, Any], compat_mode: Optional[str] = None) -> Dict[str, Any]:
+def _run_synthetic(context: Dict[str, object], compat_mode: Optional[str] = None) -> Dict[str, object]:
     """Generate deterministic results for tests that provide context dictionaries."""
 
     normalized = json.loads(json.dumps(context, sort_keys=True))
@@ -191,7 +191,7 @@ def _run_synthetic(context: Dict[str, Any], compat_mode: Optional[str] = None) -
 
 
 def _run_workflow_legacy(
-    context_or_job_input: Optional[Dict[str, Any] | str | Path],
+    context_or_job_input: Optional[Dict[str, object] | str | Path],
     *,
     job_input_path: Optional[str | Path],
     master_resume_path: Optional[str | Path],
@@ -199,7 +199,7 @@ def _run_workflow_legacy(
     enable_hil: bool,
     enable_mcp: Optional[bool],
     debug_mode: bool,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     cfg_path = Path(config_path or _DEFAULT_CONFIG)
     config = ConfigV10_7(str(cfg_path))
     _ensure_runtime_paths(config)
@@ -222,7 +222,7 @@ def _run_workflow_legacy(
 
 
 def _run_workflow_v10_8(
-    context_or_job_input: Optional[Dict[str, Any] | str | Path],
+    context_or_job_input: Optional[Dict[str, object] | str | Path],
     *,
     job_input_path: Optional[str | Path],
     master_resume_path: Optional[str | Path],
@@ -230,7 +230,7 @@ def _run_workflow_v10_8(
     enable_hil: bool,
     enable_mcp: Optional[bool],
     debug_mode: bool,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     cfg_path = Path(config_path or _DEFAULT_CONFIG)
     config = ConfigV10_7(str(cfg_path))
     _ensure_runtime_paths(config)
@@ -253,7 +253,7 @@ def _run_workflow_v10_8(
 
 
 def run_workflow(
-    context_or_job_input: Optional[Dict[str, Any] | str | Path] = None,
+    context_or_job_input: Optional[Dict[str, object] | str | Path] = None,
     *,
     job_input_path: Optional[str | Path] = None,
     master_resume_path: Optional[str | Path] = None,
@@ -262,7 +262,7 @@ def run_workflow(
     enable_hil: bool = True,
     enable_mcp: Optional[bool] = None,
     debug_mode: bool = False,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Entry point used by tests to execute the workflow."""
 
     if isinstance(context_or_job_input, dict):

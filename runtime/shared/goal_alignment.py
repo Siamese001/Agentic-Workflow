@@ -8,7 +8,7 @@ by 30-50% through goal-aware prompt engineering.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -88,7 +88,7 @@ class GoalAlignmentEngine:
         self,
         prompt: str,
         goals: Optional[List[StrategicGoal]] = None,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         strategy: Optional[AlignmentStrategy] = None
     ) -> AlignmentResult:
         """
@@ -167,7 +167,7 @@ class GoalAlignmentEngine:
         self,
         prompt: str,
         goals: List[StrategicGoal],
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> tuple[str, List[str]]:
         """Inject goals into prompt."""
         improvements = []
@@ -201,7 +201,7 @@ class GoalAlignmentEngine:
         self,
         prompt: str,
         goals: List[StrategicGoal],
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> tuple[str, List[str]]:
         """Apply constraints based on goals."""
         improvements = []
@@ -233,7 +233,7 @@ class GoalAlignmentEngine:
         self,
         prompt: str,
         goals: List[StrategicGoal],
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> tuple[str, List[str]]:
         """Optimize prompt structure for goals."""
         improvements = []
@@ -270,7 +270,7 @@ class GoalAlignmentEngine:
         self,
         prompt: str,
         goals: List[StrategicGoal],
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> tuple[str, List[str]]:
         """Add validation requirements based on goals."""
         improvements = []
@@ -376,7 +376,7 @@ class GoalAlignmentEngine:
         objectives: List[str],
         default_category: GoalCategory = GoalCategory.BUSINESS
     ) -> List[StrategicGoal]:
-        """Create goals from simple objective strings."""
+        """Create goals from basic objective strings."""
         goals = []
         
         for i, objective in enumerate(objectives):
@@ -391,7 +391,7 @@ class GoalAlignmentEngine:
         
         return goals
     
-    def get_alignment_stats(self) -> Dict[str, Any]:
+    def get_alignment_stats(self) -> Dict[str, object]:
         """Get alignment statistics."""
         if not self.alignment_history:
             return {}

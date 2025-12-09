@@ -5,7 +5,7 @@ from typing import Any, Dict
 from runtime.observability.spans import start_span, end_span
 
 
-def start_agent_span(name: str, meta: Dict[str, Any]) -> str:
+def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     """Start an agent-level span and return its span identifier.
 
     This is a thin convenience wrapper over the core spans module so that

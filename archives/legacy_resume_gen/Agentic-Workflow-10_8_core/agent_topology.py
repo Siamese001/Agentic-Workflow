@@ -1,6 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
-from typing import List, Dict, Any
+from typing import List, Dict, object
 
 
 class AgentRole(str, Enum):
@@ -15,7 +15,7 @@ class AgentRole(str, Enum):
 @dataclass
 class AgentNode:
     role: AgentRole
-    config: Dict[str, Any]
+    config: Dict[str, object]
 
 
 @dataclass

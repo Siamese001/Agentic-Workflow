@@ -9,7 +9,7 @@ and formality adaptations.
 
 import logging
 import re
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -81,7 +81,7 @@ class AdvancedToneModel:
         content: str,
         target_tone: ToneType,
         formality: FormalityLevel = FormalityLevel.NEUTRAL,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, object]] = None
     ) -> ToneAdaptation:
         """
         Adapt content to target tone and formality.
@@ -139,8 +139,7 @@ class AdvancedToneModel:
             if warmth_count > 0:
                 changes_made.append(f"Added warmth to {warmth_count} phrases")
         
-        # Remove avoided patterns
-        adapted_content, removed_count = self._remove_avoided_patterns(adapted_content, profile)
+                adapted_content, removed_count = self._remove_avoided_patterns(adapted_content, profile)
         if removed_count > 0:
             changes_made.append(f"Removed {removed_count} inappropriate patterns")
         
@@ -165,7 +164,7 @@ class AdvancedToneModel:
         self,
         tone_type: ToneType,
         formality: FormalityLevel,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> ToneProfile:
         """Get or create tone profile for target tone."""
         base_profile = self.tone_profiles.get(tone_type)
@@ -476,7 +475,7 @@ class AdvancedToneModel:
             }
         }
     
-    def _load_formality_patterns(self) -> Dict[FormalityLevel, Dict[str, Any]]:
+    def _load_formality_patterns(self) -> Dict[FormalityLevel, Dict[str, object]]:
         """Load formality-specific patterns."""
         return {
             FormalityLevel.VERY_FORMAL: {

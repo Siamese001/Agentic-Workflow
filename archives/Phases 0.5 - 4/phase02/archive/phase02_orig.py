@@ -21,7 +21,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
+from typing import Dict, List, Optional, Set, Tuple, object, Union
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from enum import Enum

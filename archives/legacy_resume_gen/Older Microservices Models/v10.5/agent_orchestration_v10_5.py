@@ -32,7 +32,7 @@
 import json
 import logging
 import asyncio
-from typing import Dict, Any, List, Callable, Awaitable
+from typing import Dict, object, List, Callable, Awaitable
 from functools import wraps
 
 # v10.5: Import from new core
@@ -158,7 +158,7 @@ class ReActConductorAgent(BaseAgent):
         self.style_guide = "Style: Professional, high-impact, and metrics-driven."
 
     @track_metrics('run_react_draft_conductor') # v10.5 (Fix #8)
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct Drafting Conductor (v10.5)...")
         
         client = self.get_model_client("react_conductor_model") # Uses dynamic routing
@@ -287,7 +287,7 @@ class QAConductorAgent(BaseAgent):
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
     @track_metrics('run_react_qa_conductor') # v10.5 (Fix #8)
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor (v10.5)...")
         
         max_steps = 15

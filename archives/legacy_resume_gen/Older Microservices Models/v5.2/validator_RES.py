@@ -8,7 +8,7 @@ import re
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable
+from typing import Dict, List, Optional, Union, Tuple, Set, Union, Callable
 from collections import defaultdict
 from functools import partial
 

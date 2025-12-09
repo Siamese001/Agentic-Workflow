@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 
 class CircuitState(Enum):
@@ -60,7 +60,7 @@ class HopCheckpoint:
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
     error: Optional[str] = None
-    output: Optional[Dict[str, Any]] = None
+    output: Optional[Dict[str, object]] = None
 
 
 @dataclass

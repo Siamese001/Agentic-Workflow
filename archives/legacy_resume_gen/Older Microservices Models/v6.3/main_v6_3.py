@@ -122,7 +122,7 @@ class WorkflowV63:
         job_title: str,
         master_resume_path: Optional[str] = None,
         output_dir: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Run the complete workflow for a single job application.
         """
@@ -198,7 +198,7 @@ class WorkflowV63:
             self.logger.info(f"Workflow v6.3 execution finished [workflow_id: {workflow_id}]")
             self.logger.info("=" * 80)
     
-    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, Any]:
+    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, object]:
         """
         Load master resume from file or use default.
         REFACTORED: Reads fallback paths from CONFIG.
@@ -230,7 +230,7 @@ class WorkflowV63:
         # Convert namespace back to dict for consistency
         return vars(CONFIG.file_paths.empty_master_resume_template)
     
-    def _create_empty_master_resume(self) -> Dict[str, Any]:
+    def _create_empty_master_resume(self) -> Dict[str, object]:
         """
         DEPRECATED: Left for compatibility, but _load_master_resume now handles this.
         REFACTORED: Reads empty template from CONFIG.
@@ -238,7 +238,7 @@ class WorkflowV63:
         self.logger.warning("Using empty master resume template from config.")
         return vars(CONFIG.file_paths.empty_master_resume_template)
     
-    def _save_artifacts(self, results: Dict[str, Any], output_dir: str, 
+    def _save_artifacts(self, results: Dict[str, object], output_dir: str, 
                        company_name: str, job_title: str):
         """Save workflow artifacts to output directory."""
         output_path = Path(output_dir)
@@ -279,7 +279,7 @@ class WorkflowV63:
 # HELPER FUNCTIONS
 # ============================================================================
 
-def load_job_input(filepath: str) -> Dict[str, Any]:
+def load_job_input(filepath: str) -> Dict[str, object]:
     """Load job input from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -296,7 +296,7 @@ def load_job_input(filepath: str) -> Dict[str, Any]:
         logger.error(f"Failed to load job input: {e}")
         raise
 
-def load_master_resume(filepath: str) -> Dict[str, Any]:
+def load_master_resume(filepath: str) -> Dict[str, object]:
     """Load master resume from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -352,7 +352,7 @@ def setup_logging(debug_mode: bool):
     logger.info(f"Logging configured. Level: {log_level}, File: {log_config.log_file}")
 
 
-def print_summary(results: Dict[str, Any]):
+def print_summary(results: Dict[str, object]):
     """Print workflow execution summary."""
     print("\n" + "=" * 80)
     print("WORKFLOW EXECUTION SUMMARY")

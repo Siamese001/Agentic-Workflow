@@ -17,7 +17,7 @@ from l1_reasoning import Reasoner
 from utils_types import PlanObject
 
 
-def _collect_sections(state: Dict[str, Any]) -> List[str]:
+def _collect_sections(state: Dict[str, object]) -> List[str]:
     """Assemble deterministic section headings for the draft."""
 
     if state.get("outline"):
@@ -33,7 +33,7 @@ def _collect_sections(state: Dict[str, Any]) -> List[str]:
 class DraftingReasoner(Reasoner):
     """Create drafting briefs for L2 executors without side effects."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         objective = state.get("objective", "unspecified-objective")
         tone = state.get("tone", "neutral")
         audience = state.get("audience", "general")

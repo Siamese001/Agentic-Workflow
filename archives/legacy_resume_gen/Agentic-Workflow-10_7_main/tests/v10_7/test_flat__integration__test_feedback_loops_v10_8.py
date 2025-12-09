@@ -31,11 +31,11 @@ from stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack
 
 
 class _StubPlanning:
-    def __init__(self, patch: Dict[str, Any]):
+    def __init__(self, patch: Dict[str, object]):
         self.patch = patch
         self.calls = 0
 
-    async def run_async(self, *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         return deepcopy(self.patch)
 
@@ -44,7 +44,7 @@ class _StubRAGExecution:
     def __init__(self) -> None:
         self.calls = 0
 
-    async def run_async(self, state: Dict[str, Any], *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         if self.calls == 1:
             return {"resume": {"experience_bullets": []}, "rag": {"metadata": {"call": self.calls}}}
@@ -59,7 +59,7 @@ class _StubBulletExecution:
     def __init__(self) -> None:
         self.calls = 0
 
-    async def run_async(self, *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         return {"bullets": {"plan": {"target_sections": ["summary"]}, "generated_bullets": [{"id": "x"}]}}
 
@@ -72,7 +72,7 @@ class _StubDraftExecution:
     def __init__(self) -> None:
         self.calls = 0
 
-    async def run_async(self, *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         status = "revise" if self.calls == 1 else "approved"
         sections = {"summary": {"draft": f"run-{self.calls}"}}

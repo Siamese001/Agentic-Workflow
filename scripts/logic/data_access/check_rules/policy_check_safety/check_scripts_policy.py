@@ -11,7 +11,7 @@ Defines policy interface and implements safety engine for resume enhancement.
 from __future__ import annotations
 
 
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Dict, List, Optional, TypeVar
 
 
 from dataclasses import field
@@ -50,7 +50,7 @@ T = TypeVar('T')
 class PolicyResult:
     """Result of evaluating resume workflow policies for enhancement."""
     decisions: List[PolicyDecision] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
     @property
     def final_verdict(self) -> Verdict:
@@ -79,7 +79,7 @@ class PolicyResult:
         """Gets all findings that would block resume workflow operations."""
         return [f for f in self.all_findings if f.severity >= Severity.HIGH]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Converts resume workflow policy result to dictionary format."""
         return {
             'verdict': self.final_verdict.value,
@@ -173,7 +173,7 @@ class SafetyEngine:
                     f"with {len(decision.findings)} findings"
                 )
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
                 logger.error(error_msg, exc_info=True)
 
@@ -246,7 +246,7 @@ class SafetyEngine:
         """
         Check if the given context is safe according to the specified policies.
 
-        This is a convenience method that returns a simple boolean indicating
+        This is a convenience method that returns a basic boolean indicating
         whether the content is safe (True) or should be blocked (False).
 
         Args:

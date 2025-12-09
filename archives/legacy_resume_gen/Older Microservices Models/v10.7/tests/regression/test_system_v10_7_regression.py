@@ -90,14 +90,14 @@ class InMemoryRedis:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(
         self,
         *,
         embeddings: List[List[float]],
         documents: List[str],
-        metadatas: List[Dict[str, Any]],
+        metadatas: List[Dict[str, object]],
         ids: List[str],
     ) -> None:
         for doc, metadata, record_id in zip(documents, metadatas, ids):
@@ -108,8 +108,8 @@ class FakeCollection:
         *,
         query_embeddings: List[List[float]],
         n_results: int,
-        where: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        where: Dict[str, object],
+    ) -> Dict[str, object]:
         for record in self.records.values():
             metadata = record["metadata"]
             if all(metadata.get(key) == value for key, value in where.items()):
@@ -492,8 +492,8 @@ async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
          patch('agent_stacks_v10_7.BiasDetectorAgent.run', return_value={"bias_detected": False}):
         from agent_orchestration_v10_7 import run_sanitize_pii
         await run_sanitize_pii(base_state, mock_workflow_context)
-    mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", ANY, success=True, error=None, metadata=ANY)
-    mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", ANY, success=True, error=None, metadata=ANY)
+    mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", object, success=True, error=None, metadata=ANY)
+    mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", object, success=True, error=None, metadata=ANY)
 
 # ============================================================================
 <<<<<<< HEAD

@@ -69,7 +69,7 @@ def get_module_type(filepath: Path) -> str:
     elif "pii" in name or "redact" in name:
         return "pii"
     else:
-        return "generic"
+        return "general"
 
 
 def generate_hardened_code(filepath: Path, module_type: str) -> str:
@@ -98,7 +98,7 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
         "sampling": generate_sampling_module,
         "embedding": generate_embedding_module,
         "pii": generate_pii_module,
-        "generic": generate_generic_module,
+        "general": generate_generic_module,
     }
 
     generator = generators.get(module_type, generate_generic_module)
@@ -115,7 +115,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -127,18 +127,18 @@ class ScoreResult:
     score: float
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Scoring engine for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.weights = self.config.get("weights", {{}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def compute_score(self, data: Dict[str, Any], context: Optional[Dict] = None) -> ScoreResult:
+    def compute_score(self, data: Dict[str, object], context: Optional[Dict] = None) -> ScoreResult:
         """Compute score for given data."""
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted_score(factors)
@@ -151,7 +151,7 @@ class {class_name}:
             metadata={{"context": context}}
         )
 
-    def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_factors(self, data: Dict[str, object]) -> Dict[str, float]:
         """Extract scoring factors from data."""
         factors = {{}}
         for key, value in data.items():
@@ -172,7 +172,7 @@ class {class_name}:
         return min(1.0, len(factors) / 5)
 
 
-def score(data: Dict[str, Any], config: Optional[Dict] = None) -> ScoreResult:
+def score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Convenience function for scoring."""
     return {class_name}(config).compute_score(data)
 '''
@@ -188,7 +188,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -224,12 +224,12 @@ class ValidationResult:
 class {class_name}:
     """Validator for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.strict = self.config.get("strict", False)
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def validate(self, data: Any, schema: Optional[Dict] = None) -> ValidationResult:
+    def validate(self, data: object, schema: Optional[Dict] = None) -> ValidationResult:
         """Validate data against schema."""
         findings = []
         findings.extend(self._validate_types(data, schema))
@@ -238,7 +238,7 @@ class {class_name}:
         is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
 
-    def _validate_types(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
+    def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate data types."""
         findings = []
         if schema and "type" in schema:
@@ -252,7 +252,7 @@ class {class_name}:
                 ))
         return findings
 
-    def _validate_required(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
+    def _validate_required(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate required fields."""
         findings = []
         if schema and "required" in schema and isinstance(data, dict):
@@ -267,7 +267,7 @@ class {class_name}:
         return findings
 
 
-def validate(data: Any, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
+def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return {class_name}(config).validate(data, schema)
 '''
@@ -283,7 +283,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -292,20 +292,20 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FormattedOutput:
     """Result of formatting."""
-    data: Any
+    data: object
     format_type: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Formatter for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.output_format = self.config.get("format", "default")
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def format(self, data: Any, target_format: Optional[str] = None) -> FormattedOutput:
+    def format(self, data: object, target_format: Optional[str] = None) -> FormattedOutput:
         """Format data to target structure."""
         fmt = target_format or self.output_format
         transformed = self._transform(data)
@@ -317,19 +317,19 @@ class {class_name}:
             metadata={{"original_type": type(data).__name__}}
         )
 
-    def _transform(self, data: Any) -> Any:
+    def _transform(self, data: object) -> object:
         """Apply transformations."""
         if isinstance(data, str):
             return data.strip()
         return data
 
-    def _format_to_target(self, data: Any, fmt: str) -> Any:
+    def _format_to_target(self, data: object, fmt: str) -> object:
         """Format to target."""
         if fmt == "flat" and isinstance(data, dict):
             return self._flatten(data)
         return data
 
-    def _flatten(self, data: Dict, prefix: str = "") -> Dict[str, Any]:
+    def _flatten(self, data: Dict, prefix: str = "") -> Dict[str, object]:
         """Flatten nested dict."""
         result = {{}}
         for key, value in data.items():
@@ -341,7 +341,7 @@ class {class_name}:
         return result
 
 
-def format_data(data: Any, config: Optional[Dict] = None) -> FormattedOutput:
+def format_data(data: object, config: Optional[Dict] = None) -> FormattedOutput:
     """Convenience function for formatting."""
     return {class_name}(config).format(data)
 '''
@@ -358,7 +358,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import math
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -367,15 +367,15 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ComputationResult:
     """Result of computation."""
-    value: Any
+    value: object
     method: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Computation engine for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.precision = self.config.get("precision", 4)
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -425,7 +425,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -444,7 +444,7 @@ class StepResult:
     """Result of orchestration step."""
     step_name: str
     status: StepStatus
-    output: Any = None
+    output: object = None
     error: Optional[str] = None
     duration_ms: float = 0.0
 
@@ -454,13 +454,13 @@ class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
-    final_output: Any = None
+    final_output: object = None
 
 
 class {class_name}:
     """Orchestrator for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.steps: List[Dict] = []
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -470,7 +470,7 @@ class {class_name}:
         self.steps.append({{"name": name, "handler": handler, "dependencies": dependencies or []}})
         return self
 
-    def execute(self, initial_input: Any = None) -> OrchestrationResult:
+    def execute(self, initial_input: object = None) -> OrchestrationResult:
         """Execute the workflow."""
         results = []
         context = {{"input": initial_input, "outputs": {{}}}}
@@ -489,7 +489,7 @@ class {class_name}:
                     output=output,
                     duration_ms=(time.time() - start) * 1000
                 ))
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 success = False
                 results.append(StepResult(
                     step_name=step["name"],
@@ -506,7 +506,7 @@ class {class_name}:
         )
 
 
-def orchestrate(steps: List[Dict], initial_input: Any = None, config: Optional[Dict] = None) -> OrchestrationResult:
+def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     orch = {class_name}(config)
     for step in steps:
@@ -525,7 +525,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -534,15 +534,15 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AdjustmentResult:
     """Result of adjustment."""
-    original: Any
-    adjusted: Any
+    original: object
+    adjusted: object
     method: str
 
 
 class {class_name}:
     """Adjuster for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.method = self.config.get("method", "minmax")
         self.target_range = self.config.get("range", (0.0, 1.0))
@@ -596,7 +596,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -621,19 +621,19 @@ class AssessmentResult:
 class {class_name}:
     """Assessor for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.thresholds = self.config.get("thresholds", {{"low": 0.8, "medium": 0.6, "high": 0.4}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def assess(self, data: Any, context: Optional[Dict] = None) -> AssessmentResult:
+    def assess(self, data: object, context: Optional[Dict] = None) -> AssessmentResult:
         """Perform assessment."""
         score = self._compute_score(data)
         level = self._score_to_level(score)
         findings = self._generate_findings(data, score)
         return AssessmentResult(level=level, score=score, findings=findings)
 
-    def _compute_score(self, data: Any) -> float:
+    def _compute_score(self, data: object) -> float:
         """Compute assessment score."""
         if data is None:
             return 0.0
@@ -653,7 +653,7 @@ class {class_name}:
             return AssessmentLevel.HIGH
         return AssessmentLevel.CRITICAL
 
-    def _generate_findings(self, data: Any, score: float) -> List[str]:
+    def _generate_findings(self, data: object, score: float) -> List[str]:
         """Generate findings."""
         findings = []
         if score < 0.5:
@@ -661,7 +661,7 @@ class {class_name}:
         return findings
 
 
-def assess(data: Any, config: Optional[Dict] = None) -> AssessmentResult:
+def assess(data: object, config: Optional[Dict] = None) -> AssessmentResult:
     """Convenience function for assessment."""
     return {class_name}(config).assess(data)
 '''
@@ -677,7 +677,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -690,17 +690,17 @@ class DiagnosticReport:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     healthy: bool = True
     issues: List[str] = field(default_factory=list)
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Diagnostics engine for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def diagnose(self, target: Any, context: Optional[Dict] = None) -> DiagnosticReport:
+    def diagnose(self, target: object, context: Optional[Dict] = None) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {{}}
@@ -718,7 +718,7 @@ class {class_name}:
         return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
 
 
-def diagnose(target: Any, config: Optional[Dict] = None) -> DiagnosticReport:
+def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
     return {class_name}(config).diagnose(target)
 '''
@@ -734,7 +734,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -747,7 +747,7 @@ class ManagedResource:
     id: str
     type: str
     state: str
-    data: Any = None
+    data: object = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -763,12 +763,12 @@ class ManagementResult:
 class {class_name}:
     """Manager for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.resources: Dict[str, ManagedResource] = {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def create(self, resource_id: str, resource_type: str, data: Any = None) -> ManagementResult:
+    def create(self, resource_id: str, resource_type: str, data: object = None) -> ManagementResult:
         """Create resource."""
         if resource_id in self.resources:
             return ManagementResult(success=False, operation="create", message="Already exists")
@@ -776,7 +776,7 @@ class {class_name}:
         self.resources[resource_id] = resource
         return ManagementResult(success=True, operation="create", resource=resource)
 
-    def update(self, resource_id: str, data: Any) -> ManagementResult:
+    def update(self, resource_id: str, data: object) -> ManagementResult:
         """Update resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation="update", message="Not found")
@@ -819,7 +819,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Callable, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -832,18 +832,18 @@ class OptimizationResult:
     """Result of optimization."""
     items: List[Any]
     method: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Optimizer for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.method = self.config.get("method", "score")
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def optimize(self, items: List[T], key: Optional[Callable[[T], Any]] = None) -> OptimizationResult:
+    def optimize(self, items: List[T], key: Optional[Callable[[T], object]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
             return OptimizationResult(items=[], method=self.method)
@@ -868,7 +868,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
 
@@ -887,7 +887,7 @@ class Metric:
 class {class_name}:
     """Metrics collector for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.metrics: Dict[str, List[Metric]] = defaultdict(list)
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -944,7 +944,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from contextlib import contextmanager
 
@@ -959,7 +959,7 @@ class Span:
     name: str
     start_time: float = field(default_factory=time.time)
     end_time: Optional[float] = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: Dict[str, object] = field(default_factory=dict)
     events: List[Dict] = field(default_factory=list)
     parent_id: Optional[str] = None
 
@@ -973,7 +973,7 @@ class Span:
 class {class_name}:
     """Tracer for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
@@ -1040,7 +1040,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import json
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -1072,7 +1072,7 @@ class StructuredFormatter(logging.Formatter):
 class {class_name}:
     """Logger for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.logger = logging.getLogger(self.config.get("name", "{domain}"))
         self._setup_handlers()
@@ -1127,7 +1127,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
@@ -1147,7 +1147,7 @@ class BaseExporter(ABC):
     """Base class for exporters."""
 
     @abstractmethod
-    def export(self, data: Any) -> ExportResult:
+    def export(self, data: object) -> ExportResult:
         """Export data."""
         ...
 
@@ -1155,12 +1155,12 @@ class BaseExporter(ABC):
 class {class_name}(BaseExporter):
     """Exporter for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def export(self, data: Any) -> ExportResult:
+    def export(self, data: object) -> ExportResult:
         """Export data to destination."""
         try:
             items = data if isinstance(data, list) else [data]
@@ -1178,8 +1178,8 @@ class {class_name}(BaseExporter):
                 items_exported=len(items),
                 destination=self.destination
             )
-        except Exception as e:
-            logger.error(f"Export failed: {{e}}")
+        except (ValueError, TypeError, KeyError) as e:
+            logger.error("Export failed: {%s}", e)
             return ExportResult(
                 success=False,
                 items_exported=0,
@@ -1188,7 +1188,7 @@ class {class_name}(BaseExporter):
             )
 
 
-def export_data(data: Any, config: Optional[Dict] = None) -> ExportResult:
+def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""
     return {class_name}(config).export(data)
 '''
@@ -1204,7 +1204,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -1216,11 +1216,11 @@ class {class_name}:
     HEADER_SPAN_ID = "X-Span-ID"
     HEADER_SAMPLED = "X-Sampled"
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def inject(self, context: Dict[str, Any], carrier: Dict[str, str]) -> None:
+    def inject(self, context: Dict[str, object], carrier: Dict[str, str]) -> None:
         """Inject context into carrier."""
         if "trace_id" in context:
             carrier[self.HEADER_TRACE_ID] = context["trace_id"]
@@ -1229,7 +1229,7 @@ class {class_name}:
         if "sampled" in context:
             carrier[self.HEADER_SAMPLED] = "1" if context["sampled"] else "0"
 
-    def extract(self, carrier: Dict[str, str]) -> Dict[str, Any]:
+    def extract(self, carrier: Dict[str, str]) -> Dict[str, object]:
         """Extract context from carrier."""
         context = {{}}
 
@@ -1243,12 +1243,12 @@ class {class_name}:
         return context
 
 
-def inject_context(context: Dict[str, Any], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
+def inject_context(context: Dict[str, object], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
     """Inject context into carrier."""
     {class_name}(config).inject(context, carrier)
 
 
-def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, Any]:
+def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, object]:
     """Extract context from carrier."""
     return {class_name}(config).extract(carrier)
 '''
@@ -1264,7 +1264,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
 
@@ -1275,20 +1275,20 @@ logger = logging.getLogger(__name__)
 class CollectedItem:
     """A collected item."""
     source: str
-    data: Any
+    data: object
     timestamp: float = field(default_factory=lambda: __import__("time").time())
 
 
 class {class_name}:
     """Collector for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
         self.max_items = self.config.get("max_items", 1000)
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def collect(self, source: str, data: Any) -> None:
+    def collect(self, source: str, data: object) -> None:
         """Collect data from source."""
         item = CollectedItem(source=source, data=data)
         self.items[source].append(item)
@@ -1319,7 +1319,7 @@ class {class_name}:
 _collector = {class_name}()
 
 
-def collect(source: str, data: Any) -> None:
+def collect(source: str, data: object) -> None:
     """Collect data to global collector."""
     _collector.collect(source, data)
 
@@ -1341,7 +1341,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import random
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -1357,7 +1357,7 @@ class SamplingDecision:
 class {class_name}:
     """Sampler for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.rate = self.config.get("rate", 1.0)
         self.always_sample = self.config.get("always_sample", [])
@@ -1403,7 +1403,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import hashlib
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -1415,7 +1415,7 @@ class EmbeddingResult:
     text: str
     vector: List[float]
     model: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -1423,13 +1423,13 @@ class SimilarityResult:
     """Result of similarity search."""
     query: str
     matches: List[Tuple[str, float]]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Embedding engine for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.model = self.config.get("model", "simple_hash")
         self.dimension = self.config.get("dimension", 128)
@@ -1454,7 +1454,7 @@ class {class_name}:
         return SimilarityResult(query=query, matches=scores[:top_k])
 
     def _generate_vector(self, text: str) -> List[float]:
-        """Generate vector from text (simple hash-based)."""
+        """Generate vector from text (basic hash-based)."""
         hash_bytes = hashlib.sha256(text.encode()).digest()
         vector = []
         for i in range(0, min(len(hash_bytes), self.dimension), 1):
@@ -1496,7 +1496,7 @@ Generated: {datetime.now().isoformat()}
 from __future__ import annotations
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -1530,7 +1530,7 @@ class {class_name}:
         "credit_card": r"\\b\\d{{4}}[- ]?\\d{{4}}[- ]?\\d{{4}}[- ]?\\d{{4}}\\b",
     }}
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         self.patterns = {{**self.PATTERNS, **self.config.get("patterns", {{}})}}
         self.redaction_char = self.config.get("redaction_char", "*")
@@ -1591,7 +1591,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -1601,33 +1601,33 @@ logger = logging.getLogger(__name__)
 class OperationResult:
     """Result of operation."""
     success: bool
-    data: Any = None
+    data: object = None
     message: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class {class_name}:
     """Utility class for {domain} domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def execute(self, data: Any, **kwargs) -> OperationResult:
+    def execute(self, data: object, **kwargs) -> OperationResult:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
             return OperationResult(success=True, data=result, metadata={{"input_type": type(data).__name__}})
-        except Exception as e:
-            logger.error(f"Operation failed: {{e}}")
+        except (ValueError, TypeError, KeyError) as e:
+            logger.error("Operation failed: {%s}", e)
             return OperationResult(success=False, message=str(e))
 
-    def _process(self, data: Any, **kwargs) -> Any:
+    def _process(self, data: object, **kwargs) -> object:
         """Process data."""
         return data
 
 
-def execute(data: Any, config: Optional[Dict] = None, **kwargs) -> OperationResult:
+def execute(data: object, config: Optional[Dict] = None, **kwargs) -> OperationResult:
     """Convenience function."""
     return {class_name}(config).execute(data, **kwargs)
 '''
@@ -1692,7 +1692,7 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
                 print(f"  [DRY-RUN] Would write {len(hardened_code)} bytes")
                 results["files_updated"] += 1
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             results["errors"].append({"path": stub_info["path"], "error": str(e)})
             print(f"  [ERROR] {e}")
 

@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -14,7 +14,7 @@ class ScoreResult:
 
     score: float = 0.0
     confidence: float = 0.0
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -22,9 +22,9 @@ class ExecutionResult:
     """Result of an execution operation."""
 
     success: bool = False
-    output: Any = None
+    output: object = None
     error: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -33,17 +33,17 @@ class FormatResult:
 
     formatted: str = ""
     success: bool = True
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class RetrievalResult:
     """Result of a retrieval operation."""
 
-    data: Any = None
+    data: object = None
     found: bool = False
     source: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,15 +53,15 @@ class DiagnosticReport:
     issues: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     passed: bool = True
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class OperationResult:
-    """Generic result of an operation."""
+    """general result of an operation."""
 
     success: bool = False
-    result: Any = None
+    result: object = None
     error: Optional[str] = None
 
 
@@ -69,7 +69,7 @@ class OperationResult:
 class RefinementResult:
     """Result of a refinement operation."""
 
-    refined: Any = None
+    refined: object = None
     changes: List[str] = field(default_factory=list)
     success: bool = True
 
@@ -80,5 +80,5 @@ class RetryResult:
 
     success: bool = False
     attempts: int = 0
-    final_result: Any = None
+    final_result: object = None
     error: Optional[str] = None

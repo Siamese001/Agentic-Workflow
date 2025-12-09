@@ -435,7 +435,7 @@ class TestProgressiveTemperature:
         # Execute (may fail due to mocking, but should track temperature)
         try:
             await generator.execute(sample_mission.mission_id)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
         
         state = state_store.get_state(sample_mission.mission_id)

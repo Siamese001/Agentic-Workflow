@@ -52,8 +52,8 @@ class L4StorageRequest:
     operation: str
     data: Any
     storage_type: StorageType
-    metadata: Optional[Dict[str, Any]] = None
-    constraints: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, object]] = None
+    constraints: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -61,7 +61,7 @@ class L4StorageResult:
     """Output result from L4 storage operations."""
     success: bool
     data: Any
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     errors: Optional[List[str]] = None
 
 
@@ -84,7 +84,7 @@ class L4StateManagerInterface(ABC):
         pass
     
     @abstractmethod
-    async def list_states(self, filters: Dict[str, Any]) -> List[StateSnapshot]:
+    async def list_states(self, filters: Dict[str, object]) -> List[StateSnapshot]:
         """List states matching filters."""
         pass
 
@@ -103,7 +103,7 @@ class L4MemoryManagerInterface(ABC):
         pass
     
     @abstractmethod
-    async def update_memory(self, memory_id: str, updates: Dict[str, Any]) -> bool:
+    async def update_memory(self, memory_id: str, updates: Dict[str, object]) -> bool:
         """Update existing memory."""
         pass
     
@@ -117,17 +117,17 @@ class L4VectorStoreInterface(ABC):
     """Interface for vector storage operations."""
     
     @abstractmethod
-    async def store_vectors(self, vectors: List[Dict[str, Any]], metadata: List[Dict[str, Any]]) -> bool:
+    async def store_vectors(self, vectors: List[Dict[str, object]], metadata: List[Dict[str, object]]) -> bool:
         """Store vectors with metadata."""
         pass
     
     @abstractmethod
-    async def search_vectors(self, query_vector: List[float], limit: int, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def search_vectors(self, query_vector: List[float], limit: int, filters: Dict[str, object]) -> List[Dict[str, object]]:
         """Search for similar vectors."""
         pass
     
     @abstractmethod
-    async def update_vectors(self, vector_ids: List[str], updates: List[Dict[str, Any]]) -> bool:
+    async def update_vectors(self, vector_ids: List[str], updates: List[Dict[str, object]]) -> bool:
         """Update existing vectors."""
         pass
     
@@ -151,7 +151,7 @@ class L4GraphStoreInterface(ABC):
         pass
     
     @abstractmethod
-    async def query_graph(self, query: str, parameters: Dict[str, Any]) -> List[Union[Entity, Triplet]]:
+    async def query_graph(self, query: str, parameters: Dict[str, object]) -> List[Union[Entity, Triplet]]:
         """Query the knowledge graph."""
         pass
     
@@ -170,7 +170,7 @@ class L4TemporalKGInterface(ABC):
         pass
     
     @abstractmethod
-    async def query_temporal_graph(self, query: str, timestamp: datetime, parameters: Dict[str, Any]) -> List[Union[Entity, Triplet]]:
+    async def query_temporal_graph(self, query: str, timestamp: datetime, parameters: Dict[str, object]) -> List[Union[Entity, Triplet]]:
         """Query the temporal knowledge graph at a specific time."""
         pass
     
@@ -180,7 +180,7 @@ class L4TemporalKGInterface(ABC):
         pass
     
     @abstractmethod
-    async def update_temporal_triplet(self, triplet_id: str, updates: Dict[str, Any]) -> bool:
+    async def update_temporal_triplet(self, triplet_id: str, updates: Dict[str, object]) -> bool:
         """Update temporal triplet."""
         pass
 

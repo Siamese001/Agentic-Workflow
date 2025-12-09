@@ -44,7 +44,7 @@ class ValidationRule:
     allowed_types: Optional[List[type]] = None
     forbidden_keys: Optional[List[str]] = None
     required_keys: Optional[List[str]] = None
-    custom_validator: Optional[Callable[..., Any]] = None
+    custom_validator: Optional[Callable[..., object]] = None
 
 
 class StateValidator:

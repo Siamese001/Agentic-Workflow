@@ -8,7 +8,7 @@ freshness, and completeness for improved evidence utilization.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -47,7 +47,7 @@ class EvidenceItem:
     completeness_score: float
     quality_score: float
     final_rank: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -115,9 +115,9 @@ class EvidenceRanker:
     
     def rank_evidence(
         self,
-        evidence_items: List[Dict[str, Any]],
+        evidence_items: List[Dict[str, object]],
         query: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[Dict[str, object]] = None,
         top_k: int = 5
     ) -> RankingResult:
         """
@@ -222,7 +222,7 @@ class EvidenceRanker:
         
         return base_relevance
     
-    def _calculate_authority(self, item: Dict[str, Any]) -> float:
+    def _calculate_authority(self, item: Dict[str, object]) -> float:
         """Calculate authority score based on source."""
         # Check for explicit authority score
         if 'authority_score' in item:
@@ -238,7 +238,7 @@ class EvidenceRanker:
         
         return self.authority_sources.get('unknown', 0.3)
     
-    def _calculate_freshness(self, item: Dict[str, Any]) -> float:
+    def _calculate_freshness(self, item: Dict[str, object]) -> float:
         """Calculate freshness score based on date."""
         # Check for explicit freshness score
         if 'freshness_score' in item:
@@ -351,7 +351,7 @@ class EvidenceRanker:
         """Filter evidence by minimum quality score."""
         return [e for e in ranking_result.ranked_evidence if e.quality_score >= min_quality]
     
-    def get_evidence_summary(self, ranking_result: RankingResult) -> Dict[str, Any]:
+    def get_evidence_summary(self, ranking_result: RankingResult) -> Dict[str, object]:
         """Get summary of evidence ranking."""
         return {
             'total_evidence': len(ranking_result.ranked_evidence),
@@ -375,7 +375,7 @@ def create_evidence_ranker(
 
 
 def rank_evidence(
-    evidence_items: List[Dict[str, Any]],
+    evidence_items: List[Dict[str, object]],
     query: str,
     top_k: int = 5
 ) -> RankingResult:

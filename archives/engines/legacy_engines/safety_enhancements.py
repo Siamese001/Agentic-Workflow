@@ -9,7 +9,7 @@ that integrate with existing safety validation pipeline.
 
 import re
 import logging
-from typing import Dict, List, Any, Tuple, Set, Optional
+from typing import Dict, List, object, Tuple, Set, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -30,7 +30,7 @@ class PIIResult:
     """PII detection and scrubbing result"""
     original_text: str
     scrubbed_text: str
-    detected_pii: List[Dict[str, Any]]
+    detected_pii: List[Dict[str, object]]
     placeholders: Dict[str, str]
     is_compliant: bool
 

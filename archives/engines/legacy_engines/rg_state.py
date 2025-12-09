@@ -259,7 +259,7 @@ class RGStateManager:
         self.workflow_states = {}
         self.logger = logging.getLogger(__name__)
     
-    def create_workflow_state(self, workflow_id: str, input_parameters: Dict[str, Any]) -> Dict[str, Any]:
+    def create_workflow_state(self, workflow_id: str, input_parameters: Dict[str, object]) -> Dict[str, object]:
         """Create a new workflow state"""
         workflow_state = {
             "workflow_id": workflow_id,
@@ -291,7 +291,7 @@ class RGStateManager:
         
         self.logger.info(f"Updated workflow state {workflow_id} for phase: {phase}")
     
-    def complete_workflow(self, workflow_id: str) -> Dict[str, Any]:
+    def complete_workflow(self, workflow_id: str) -> Dict[str, object]:
         """Mark workflow as completed and return final state"""
         if workflow_id not in self.workflow_states:
             raise ValueError(f"Workflow {workflow_id} not found")
@@ -306,11 +306,11 @@ class RGStateManager:
         self.logger.info(f"Completed workflow: {workflow_id}")
         return workflow_state
     
-    def get_workflow_state(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+    def get_workflow_state(self, workflow_id: str) -> Optional[Dict[str, object]]:
         """Get current workflow state"""
         return self.workflow_states.get(workflow_id)
     
-    def get_validation_summary(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+    def get_validation_summary(self, workflow_id: str) -> Optional[Dict[str, object]]:
         """Get validation summary for workflow"""
         if workflow_id in self.workflow_states:
             validation_context = self.workflow_states[workflow_id].get("validation_context")

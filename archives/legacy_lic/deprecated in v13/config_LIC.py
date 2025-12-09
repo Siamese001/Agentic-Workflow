@@ -5,7 +5,7 @@ __version__ = "12.0"
 # Holds all static configs for routes, archetypes, RAG, and reasoning.
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 
 from models_LIC import Route, Archetype
 
@@ -25,7 +25,7 @@ class ConfigRegistry:
     """
     
     # Route-specific base constraints
-    ROUTE_CONSTRAINTS: Dict[Route, Dict[str, Any]] = field(default_factory=lambda: {
+    ROUTE_CONSTRAINTS: Dict[Route, Dict[str, object]] = field(default_factory=lambda: {
         Route.INMAIL: {
             "word_range": (180, 250),
             "char_limit": 1900,
@@ -96,7 +96,7 @@ class ConfigRegistry:
     })
     
     # PRIORITY 1: Archetype-Specific RAG Parameters (v11.6 updated)
-    ARCHETYPE_RAG_PARAMS: Dict[Archetype, Dict[str, Any]] = field(default_factory=lambda: {
+    ARCHETYPE_RAG_PARAMS: Dict[Archetype, Dict[str, object]] = field(default_factory=lambda: {
         Archetype.C_LEVEL: {
             "total_calls": 24,
             "retrievers": ["linkedin", "company_blog", "news", "industry_reports"],
@@ -124,7 +124,7 @@ class ConfigRegistry:
     })
     
     # PRIORITY 1: Archetype-Specific Reasoning Configurations (v11.6 updated)
-    ARCHETYPE_REASONING_PARAMS: Dict[Archetype, Dict[str, Any]] = field(default_factory=lambda: {
+    ARCHETYPE_REASONING_PARAMS: Dict[Archetype, Dict[str, object]] = field(default_factory=lambda: {
         Archetype.C_LEVEL: {
             "max_hops": 6,
             "temperature": 0.45,
@@ -160,7 +160,7 @@ class ConfigRegistry:
     })
     
     # PRIORITY 4: Archetype-Specific Tone Mappings (v11.6 updated)
-    ARCHETYPE_TONE_MAPPINGS: Dict[Archetype, Dict[str, Any]] = field(default_factory=lambda: {
+    ARCHETYPE_TONE_MAPPINGS: Dict[Archetype, Dict[str, object]] = field(default_factory=lambda: {
         Archetype.C_LEVEL: {
             "message_tone": "strategic",
             "verb_preference": ["discuss", "align", "explore", "advance"],
@@ -208,7 +208,7 @@ class ConfigRegistry:
         """Get tone mapping for archetype"""
         return self.ARCHETYPE_TONE_MAPPINGS.get(archetype, {}).get(param_name)
     
-    def get_route_constraints(self, route: Route, archetype: Optional[Archetype] = None) -> Dict[str, Any]:
+    def get_route_constraints(self, route: Route, archetype: Optional[Archetype] = None) -> Dict[str, object]:
         """Get route constraints with optional archetype override"""
         constraints = self.ROUTE_CONSTRAINTS[route].copy()
         

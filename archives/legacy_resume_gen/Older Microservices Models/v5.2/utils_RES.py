@@ -288,7 +288,7 @@ class TextSanitizer:
                         if key in data:
                             text = data[key]
                             break
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass  # Not valid JSON, keep as is
         
         # Remove common LLM prefixes
@@ -410,7 +410,7 @@ class DuplicateDetector:
             logging.warning(f"Duplicate detection failed: {e}")
             return []
     
-    def find_duplicates_in_list(self, texts: List[str]) -> List[Dict[str, Any]]:
+    def find_duplicates_in_list(self, texts: List[str]) -> List[Dict[str, object]]:
         """
         Find duplicates and return detailed information.
         
@@ -563,7 +563,7 @@ class TelemetryLogger:
 def reasoning_config_to_api_params(
     reasoning_config: ReasoningConfig,
     section_id: str
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Converts a ReasoningConfig dataclass into API parameters.
     
@@ -646,7 +646,7 @@ def enhance_system_prompt_with_reasoning(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt: int
 ) -> str:
     """

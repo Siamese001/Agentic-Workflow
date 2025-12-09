@@ -6,7 +6,7 @@
 
 # ==============================================================
 # AUTO-HYDRATED BY PHASE 3H
-# Donor: C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/consolidate_core.py
+# Donor: object, C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/consolidate_core.py
 # Review and refactor as needed. Archive copy preserved.
 # ==============================================================
 

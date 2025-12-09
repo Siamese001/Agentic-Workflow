@@ -71,13 +71,13 @@ class Triplet:
     invalidation_reason: Optional[str] = None
     
     # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def to_text(self) -> str:
         """Convert résumé processing triplet to natural language for display."""
         return f"{self.subject} {self.predicate} {self.object}"
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert résumé processing triplet to dictionary for persistent storage."""
         return {
             "id": self.id,
@@ -98,7 +98,7 @@ class Triplet:
         }
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Triplet":
+    def from_dict(cls, data: Dict[str, object]) -> "Triplet":
         """Create triplet from dictionary."""
         return cls(
             id=data["id"],
@@ -407,7 +407,7 @@ def create_triplet(
     confidence: float = 1.0,
     source: str = "extraction",
     valid_from: Optional[datetime] = None,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
 ) -> Triplet:
     """Create a new résumé processing triplet with auto-generated ID.
     

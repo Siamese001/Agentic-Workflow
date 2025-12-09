@@ -7,11 +7,11 @@ import json
 import sys
 import importlib.util
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, object, List
 import jsonschema
 
 
-def validate_json_schema(schema: Dict[str, Any]) -> List[str]:
+def validate_json_schema(schema: Dict[str, object]) -> List[str]:
     """Validate a JSON schema against Draft 07 specification.
     
     Args:
@@ -45,7 +45,7 @@ def validate_json_schema(schema: Dict[str, Any]) -> List[str]:
     return errors
 
 
-def validate_mcp_catalogs() -> Dict[str, Any]:
+def validate_mcp_catalogs() -> Dict[str, object]:
     """Validate all MCP catalog files."""
     results = {
         "valid": True,
@@ -128,7 +128,7 @@ def validate_mcp_catalogs() -> Dict[str, Any]:
     return results
 
 
-def validate_python_files() -> Dict[str, Any]:
+def validate_python_files() -> Dict[str, object]:
     """Validate all Python files for syntax and imports."""
     results = {
         "valid": True,
@@ -187,7 +187,7 @@ def validate_python_files() -> Dict[str, Any]:
     return results
 
 
-def validate_schemas() -> Dict[str, Any]:
+def validate_schemas() -> Dict[str, object]:
     """Validate all JSON schema files."""
     results = {
         "valid": True,
@@ -237,7 +237,7 @@ def validate_schemas() -> Dict[str, Any]:
     return results
 
 
-def check_environment_variables() -> Dict[str, Any]:
+def check_environment_variables() -> Dict[str, object]:
     """Check for required environment variables."""
     results = {
         "valid": True,

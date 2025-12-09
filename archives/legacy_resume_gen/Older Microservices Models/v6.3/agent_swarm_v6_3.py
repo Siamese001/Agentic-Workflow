@@ -275,7 +275,7 @@ class WorkflowRePlannerAgent:
 
 class JDParserAgent:
     """Parses job description."""
-    def execute(self, raw_jd: str) -> Dict[str, Any]:
+    def execute(self, raw_jd: str) -> Dict[str, object]:
         return {"parsed_jd": raw_jd[:100], "themes": ["AI", "Leadership"]}
 
 class ThemeIdentifierAgent:
@@ -290,7 +290,7 @@ class ThemeRankerAgent:
 
 class GapAnalysisAgent:
     """Analyzes gaps between resume and JD."""
-    def execute(self, themes: List[str], master_resume: Dict) -> Dict[str, Any]:
+    def execute(self, themes: List[str], master_resume: Dict) -> Dict[str, object]:
         return {"gaps": ["Partnership Development", "M&A Experience"]}
 
 class DifferentiatorAgent:
@@ -354,7 +354,7 @@ class RAG_SearchAgent:
         self.max_react_iterations = CONFIG.react_config.max_reasoning_loops
         self.available_tools = CONFIG.react_config.available_tools
     
-    def execute(self, queries: List[str], blackboard: RAG_Blackboard) -> Dict[str, Any]:
+    def execute(self, queries: List[str], blackboard: RAG_Blackboard) -> Dict[str, object]:
         """
         --- v6.2: Full ReAct loop implementation (Spell #1) ---
         Executes searches using Thought-Action-Observation reasoning.
@@ -425,7 +425,7 @@ class RAG_SearchAgent:
         else:
             return f"Found {len(current_results)} results. Let me browse the most relevant one for details using `browse_page`."
     
-    def _select_action(self, thought: str, query: str) -> Dict[str, Any]:
+    def _select_action(self, thought: str, query: str) -> Dict[str, object]:
         """v6.2: Simulate LLM action selection based on thought."""
         thought_low = thought.lower()
         if "browse_page" in thought_low or "browse" in thought_low:
@@ -435,7 +435,7 @@ class RAG_SearchAgent:
         # Default to web_search
         return {"type": "web_search", "input": {"query": query}}
     
-    def _execute_action(self, action: Dict, query: str) -> Tuple[Dict[str, Any], ToolType]:
+    def _execute_action(self, action: Dict, query: str) -> Tuple[Dict[str, object], ToolType]:
         """
         v6.2: Execute the selected action (stubbed - would call actual tools).
         In production, this would call tool-wrapped API calls.
@@ -773,7 +773,7 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     workflow_id: str
 
 # ============================================================================
@@ -1100,13 +1100,13 @@ class Governor:
 
         return validation_results
     
-    def _log_feedback(self, validation_results: Dict[str, Any], blackboard: WorkflowBlackboard):
+    def _log_feedback(self, validation_results: Dict[str, object], blackboard: WorkflowBlackboard):
         # --- v6.1: Un-stub this (Spell: Meta-Loop) ---
         # feedback_logger = FeedbackLoggerAgent()
         # feedback_logger.log(validation_results, blackboard.workflow_id)
         pass
     
-    def process_request(self, context: CrewContext) -> Dict[str, Any]:
+    def process_request(self, context: CrewContext) -> Dict[str, object]:
         """
         V5.8.1 Main orchestration with optional Conductor.
         """
@@ -1238,8 +1238,8 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(__name__)
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any],
-                               workflow_id: str) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object],
+                               workflow_id: str) -> Dict[str, object]:
         """Process complete job application."""
         self.logger.info(f"📋 Orchestrating: {company_name} - {job_title}")
         

@@ -16,7 +16,7 @@ improvements to enhance resume job alignment.
 from __future__ import annotations
 
 import asyncio
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 from core.models.models import (
     ExecutionContext,
@@ -53,13 +53,13 @@ run_rag_retrieval = _retrieval_module.run_rag_retrieval
 
 
 """
-Provides helper functions for reliable resume processing execution.
+Provides utility functions for reliable resume processing execution.
 
 Ensures robust operation for resume job alignment workflows.
 """
 
 
-def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
+def _safe_getattr(obj: object, name: str, default: object = "") -> object:
     """
     Safely accesses object attributes for reliable resume processing.
 
@@ -67,7 +67,7 @@ def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
     """
     try:
         return getattr(obj, name, default)
-    except Exception:  # pragma: no cover - extreme defensive
+    except (ValueError, TypeError, KeyError):  # pragma: no cover - extreme defensive
         return default
 
 
@@ -87,7 +87,7 @@ def _build_base_query(ctx: ExecutionContext) -> str:
         company = _safe_getattr(job, "company", "") or ""
         posting = _safe_getattr(job, "posting_text", "") or ""
         header = "Job:".strip()
-        body = "\n".join(p for p in [title, company, posting] if p)
+        body = "\n".join(p for p in [title, compposting] if p)
         if body:
             parts.append(f"{header}\n{body}".strip())
 
@@ -154,7 +154,7 @@ def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
                 "trace_length": 0,
             },
         )
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return
 
 
@@ -181,7 +181,7 @@ async def _maybe_run_hyde_query(
         text = await agent.run_hyde_query(rag_plan=rag_plan, ctx=ctx)
         text = (text or "").strip()
         return text or None
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.hyde_query_error", exc)
         return None
     finally:
@@ -219,7 +219,7 @@ async def _execute_strategy(
             config=ctx.config,
         )
         return result
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.strategy_error", exc)
 
         # Fallback: deterministic "single branch" strategy.
@@ -272,7 +272,7 @@ async def _execute_retrieval(
         )
 
         return RAGResult(evidence=list(evidence_list or []), used_hyde=hyde_query is not None)
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.retrieval_error", exc)
         # On any failure, downstream layers must still be able to run.
         return RAGResult(evidence=[], used_hyde=False)
@@ -306,7 +306,7 @@ async def _execute_rag_reasoning(
 
         rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
 
-        # Build a simple prompt from the RAG plan (no L1 call)
+        # Build a basic prompt from the RAG plan (no L1 call)
         prompt = "Analyze the following evidence and provide reasoning:"
         if rag_plan:
             prompt = f"RAG strategy: {getattr(rag_plan, 'strategy', 'hybrid')}. {prompt}"
@@ -339,7 +339,7 @@ async def _execute_rag_reasoning(
             evidence=list(evidence_seq) + [synthetic],
             used_hyde=rag_result.used_hyde,
         )
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.rag_reasoning_error", exc)
         return rag_result
     finally:
@@ -381,7 +381,7 @@ async def _execute_drafting(
             config=ctx.config,
         )
         return result
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.drafting_error", exc)
         # Fallback: empty DraftingResult in the configured mode.
         return DraftingResult(sections=[])
@@ -426,7 +426,7 @@ async def _execute_qa(
 
         council_vote = _compute_council_vote_from_qa(qa_result)
         return qa_result, council_vote
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.qa_error", exc)
         empty = QAResult(findings=[])
         return empty, _compute_council_vote_from_qa(empty)
@@ -494,7 +494,7 @@ async def _execute_safety(
                 result.findings.extend(policy_result.blocking_findings)
 
         return result
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.safety_error", exc)
         return SafetyResult(findings=[])
     finally:
@@ -520,7 +520,7 @@ async def run_l2(
     # Validate the input plan bundle schema version before execution.
     try:
         validate_schema_version(plans, model_type=WorkflowPlanBundle)
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.run.schema_validation_input_error", exc)
 
     span = start_span("l2.run", ctx=ctx.span_context())
@@ -575,7 +575,7 @@ async def run_l2(
                         },
                     },
                 )
-        except Exception as exc:  # noqa: BLE001
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
             log_exception("l2.run.ais_logging_error", exc)
 
         result = L2ResultBundle(
@@ -589,11 +589,11 @@ async def run_l2(
         # Validate the output bundle schema version before returning.
         try:
             validate_schema_version(result, model_type=L2ResultBundle)
-        except Exception as exc:  # noqa: BLE001
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
             log_exception("l2.run.schema_validation_output_error", exc)
 
         return result
-    except Exception as exc:  # noqa: BLE001
+    except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
         log_exception("l2.run_error", exc)
         # Provide a deterministic fallback StrategyResult so callers and
         # tests always see at least one branch even on failure.
@@ -634,7 +634,7 @@ async def run_l2(
         )
         try:
             validate_schema_version(result, model_type=L2ResultBundle)
-        except Exception as exc:  # noqa: BLE001
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # noqa: BLE001
             log_exception("l2.run.schema_validation_output_error", exc)
 
         return result
@@ -648,12 +648,12 @@ def execute_workflow_plans(
 ) -> L2ResultBundle:
     """Run the full execution pipeline from synchronous code.
 
-    This helper exists for callers that are not async-aware. It invokes
+    This utility exists for callers that are not async-aware. It invokes
     :func:`run_l2` under the hood and returns the same structured bundle of
     results: updated strategy, retrieved evidence, drafted sections, QA
     findings, and safety findings.
 
-    In business terms, it provides a simple, blocking way for other systems to
+    In business terms, it provides a basic, blocking way for other systems to
     request a fully processed resume without needing to manage asynchronous
     workflows themselves.
     """
@@ -661,7 +661,7 @@ def execute_workflow_plans(
     result = asyncio.run(run_l2(plans, ctx))
     try:
         validate_schema_version(result, model_type=L2ResultBundle)
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         # Legacy callers should not fail solely due to schema validation.
         ...
     return result

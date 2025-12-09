@@ -57,7 +57,7 @@ from main_v10_9 import run_workflow_v10_9
 # ============================================================================
 
 
-def _state_snapshot(state: Dict[str, Any]) -> Dict[str, Any]:
+def _state_snapshot(state: Dict[str, object]) -> Dict[str, object]:
     """
     Trim the full L4 state to a stable subset suitable for deterministic testing.
 
@@ -114,13 +114,13 @@ class Scenarios:
     # STRATEGY
     # ----------------------------------------------------------------------
     @staticmethod
-    async def strategy() -> Dict[str, Any]:
+    async def strategy() -> Dict[str, object]:
         """
         Strategy planning scenario:
             - Exercises L1 strategy planner
             - Ensures L2.StrategyExecutor + L3/L4 integration
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Create a high-level plan for improving my VP-level resume.",
             "messages": [
                 {"role": "user", "content": "Help me plan my resume rewrite for a VP-level job."}
@@ -153,13 +153,13 @@ class Scenarios:
     # RAG
     # ----------------------------------------------------------------------
     @staticmethod
-    async def rag() -> Dict[str, Any]:
+    async def rag() -> Dict[str, object]:
         """
         Retrieval scenario:
             - Exercises L1 RAG planning (multi-query)
             - Exercises L2.RAGExecutor + retrieval/ranking/RAGUtils
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Retrieve evidence for my leadership experience.",
             "messages": [
                 {"role": "user", "content": "What evidence supports my leadership background?"}
@@ -204,13 +204,13 @@ class Scenarios:
     # BULLETS
     # ----------------------------------------------------------------------
     @staticmethod
-    async def bullets() -> Dict[str, Any]:
+    async def bullets() -> Dict[str, object]:
         """
         Bullet-generation scenario:
             - Exercises L1 bullet framework planning
             - Exercises L2.BulletExecutor + RAG interactions (via state)
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Generate high-impact bullets for my last two roles.",
             "messages": [
                 {"role": "user", "content": "Create resume bullets for my past leadership roles."}
@@ -258,13 +258,13 @@ class Scenarios:
     # DRAFTING
     # ----------------------------------------------------------------------
     @staticmethod
-    async def drafting() -> Dict[str, Any]:
+    async def drafting() -> Dict[str, object]:
         """
         Drafting scenario:
             - Exercises L1 drafting planning (sections/tone)
             - Exercises L2.DraftingExecutor + RAG evidence usage
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Draft a professional summary for a VP of Growth.",
             "tone": "professional",
             "audience": "recruiter",
@@ -300,13 +300,13 @@ class Scenarios:
     # QA
     # ----------------------------------------------------------------------
     @staticmethod
-    async def qa() -> Dict[str, Any]:
+    async def qa() -> Dict[str, object]:
         """
         QA scenario:
             - Exercises L1 QA planning (checks, hints)
             - Exercises L2.QAExecutor over a simple content block
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Validate the quality of a drafted summary.",
             "messages": [
                 {"role": "user", "content": "Validate the quality of this content."}
@@ -334,13 +334,13 @@ class Scenarios:
     # SAFETY
     # ----------------------------------------------------------------------
     @staticmethod
-    async def safety() -> Dict[str, Any]:
+    async def safety() -> Dict[str, object]:
         """
         Safety scenario:
             - Exercises L1 safety planning
             - Exercises L2.SafetyExecutor and L5.SafetyEngine
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Safety check content that contains PII.",
             "messages": [
                 {"role": "user", "content": "Please review this for safety issues."}
@@ -368,13 +368,13 @@ class Scenarios:
     # HIL
     # ----------------------------------------------------------------------
     @staticmethod
-    async def hil() -> Dict[str, Any]:
+    async def hil() -> Dict[str, object]:
         """
         HIL scenario:
             - Exercises HIL planning + L2.HILExecutor
             - Ensures HIL prompts and responses are wired correctly
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Perform a human review of critical content.",
             "messages": [
                 {"role": "user", "content": "Please have a human review this before sending."}
@@ -408,13 +408,13 @@ class Scenarios:
     # META-LEARNING
     # ----------------------------------------------------------------------
     @staticmethod
-    async def meta_learning() -> Dict[str, Any]:
+    async def meta_learning() -> Dict[str, object]:
         """
         Meta-learning scenario:
             - Exercises L1 meta-learning planning
             - Exercises L2.MetaLearningExecutor and state snapshot wiring
         """
-        state: Dict[str, Any] = {
+        state: Dict[str, object] = {
             "objective": "Analyze recent QA + Safety outcomes for meta-learning.",
             "messages": [
                 {"role": "system", "content": "Trigger a meta-learning pass over recent runs."}
@@ -452,7 +452,7 @@ class Scenarios:
 # 3. SIMULATION ENGINE
 # ============================================================================
 
-SCENARIOS: Dict[str, Callable[[], Awaitable[Dict[str, Any]]]] = {
+SCENARIOS: Dict[str, Callable[[], Awaitable[Dict[str, object]]]] = {
     "strategy": Scenarios.strategy,
     "rag": Scenarios.rag,
     "bullets": Scenarios.bullets,
@@ -479,7 +479,7 @@ class Engine:
     """
 
     @staticmethod
-    async def run(name: str, overrides: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    async def run(name: str, overrides: Dict[str, object] | None = None) -> Dict[str, object]:
         if name not in SCENARIOS:
             raise ValueError(f"Unknown simulation scenario: {name!r}")
         base = await SCENARIOS[name]()
@@ -491,8 +491,8 @@ class Engine:
         return base
 
     @staticmethod
-    async def run_all() -> Dict[str, Dict[str, Any]]:
-        results: Dict[str, Dict[str, Any]] = {}
+    async def run_all() -> Dict[str, Dict[str, object]]:
+        results: Dict[str, Dict[str, object]] = {}
         for name, fn in SCENARIOS.items():
             results[name] = await fn()
         return results
@@ -503,11 +503,11 @@ class Engine:
         return {name: (fn.__doc__ or "").strip() for name, fn in SCENARIOS.items()}
 
     @staticmethod
-    def run_sync(name: str, overrides: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def run_sync(name: str, overrides: Dict[str, object] | None = None) -> Dict[str, object]:
         return asyncio.run(Engine.run(name, overrides))
 
     @staticmethod
-    def run_all_sync() -> Dict[str, Dict[str, Any]]:
+    def run_all_sync() -> Dict[str, Dict[str, object]]:
         return asyncio.run(Engine.run_all())
 
 

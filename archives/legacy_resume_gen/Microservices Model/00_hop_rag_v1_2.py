@@ -14,7 +14,7 @@ import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, object, Tuple, List
 
 # Imports for new enhancements
 import networkx as nx

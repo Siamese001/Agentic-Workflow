@@ -9,7 +9,7 @@ import re
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 
 from models_LIC import ValidationSeverity, ValidationResult, AgentStatus
 from state_manager_LIC import StateManager
@@ -33,7 +33,7 @@ class HOP6_ValidationAgent:
     
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, object],
         toolkit: ValidationToolkit,
         code_interpreter: CodeInterpreterTool
     ):
@@ -57,7 +57,7 @@ class HOP6_ValidationAgent:
         
         print("  HOP-6: ValidationAgent Initialized")
     
-    def _load_validation_rules(self, rules_file: str) -> Dict[str, Any]:
+    def _load_validation_rules(self, rules_file: str) -> Dict[str, object]:
         """Loads validator_rules_LIC.json."""
         if not os.path.exists(rules_file):
             raise FileNotFoundError(f"CRITICAL: {rules_file} not found.")
@@ -67,7 +67,7 @@ class HOP6_ValidationAgent:
             print(f"  HOP-6: Loaded validation rules from {rules_file}")
             return rules
     
-    def _build_rule_map(self) -> Dict[str, Dict[str, Any]]:
+    def _build_rule_map(self) -> Dict[str, Dict[str, object]]:
         """Creates a simple map of rule_id -> config for fast lookup."""
         rule_map = {}
         for config_group in self.rules.values():
@@ -148,11 +148,11 @@ class HOP6_ValidationAgent:
 
     def _run_validation_engine(
         self,
-        draft: Dict[str, Any],
-        research: Dict[str, Any],
-        grounding: Dict[str, Any],
-        scaffold: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        draft: Dict[str, object],
+        research: Dict[str, object],
+        grounding: Dict[str, object],
+        scaffold: Dict[str, object]
+    ) -> List[Dict[str, object]]:
         """
         Executes all validation rules from the loaded JSON config in priority order.
         This is the new "Rule Engine" implementation for v13.0.
@@ -190,13 +190,13 @@ class HOP6_ValidationAgent:
     def _dispatch_rule(
         self, 
         rule_id: str, 
-        config: Dict[str, Any], 
+        config: Dict[str, object], 
         text: str, 
         research: Dict, 
         grounding: Dict, 
         scaffold: Dict, 
         draft: Dict
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> Tuple[bool, Dict[str, object]]:
         """
         Calls the correct ValidationToolkit or CodeInterpreterTool function
         based on the rule_id from validator_rules_LIC.json.
@@ -291,7 +291,7 @@ class HOP6_ValidationAgent:
             print(f"  ✗ ERROR executing rule {rule_id}: {e}")
             return False, {"error": str(e), "message": f"Rule execution failed."}
 
-    def _format_result(self, passed: bool, config: Dict[str, Any], details: Dict[str, Any]) -> Dict[str, Any]:
+    def _format_result(self, passed: bool, config: Dict[str, object], details: Dict[str, object]) -> Dict[str, object]:
         """Formats a validation result dictionary."""
         rule_id = config["rule_id"]
         severity = config["severity"]
@@ -332,7 +332,7 @@ class HOP8_QAReportAgent:
     Single Responsibility: Generate audit trail report
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         """
         Initialize with externalized config
         
@@ -383,7 +383,7 @@ class HOP8_QAReportAgent:
         self.status = AgentStatus.COMPLETED
         return str(report_path)
     
-    def _generate_markdown_report(self, states: Dict[str, Any], mission_id: str) -> str:
+    def _generate_markdown_report(self, states: Dict[str, object], mission_id: str) -> str:
         """Generate comprehensive markdown report"""
         
         lines = []
@@ -492,7 +492,7 @@ class HOP8_QAReportAgent:
         
         return "\n".join(lines)
     
-    def _calculate_quality_score(self, states: Dict[str, Any]) -> float:
+    def _calculate_quality_score(self, states: Dict[str, object]) -> float:
         """Calculate overall quality score based on config weights."""
         
         research = states.get("HOP-2", {})

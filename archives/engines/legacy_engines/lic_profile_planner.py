@@ -22,7 +22,7 @@ class ProfileSignal:
     signal_type: str                     # e.g. "title_keywords", "company_size", "industry"
     value: str                           # raw signal value
     confidence: float                    # confidence in this signal [0, 1]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -31,12 +31,12 @@ class ProfilePlan:
     inferred_archetype: str              # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
     seniority_level: str                 # "C_LEVEL" | "VP" | "DIRECTOR" | "SR_MANAGER" | "IC"
     confidence_score: float              # overall confidence [0, 1]
-    overrides: Dict[str, Any]            # explicit overrides from outreach_context
+    overrides: Dict[str, object]            # explicit overrides from outreach_context
     signals: List[ProfileSignal]         # individual profile signals
     company_size: str                    # "startup", "small", "medium", "large", "enterprise"
     industry_focus: str                  # primary industry classification
     decision_authority: str              # "high", "medium", "low"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class ProfilePlanner:
@@ -96,8 +96,8 @@ class ProfilePlanner:
     def plan(
         self,
         *,
-        recipient_profile: Dict[str, Any],
-        outreach_context: Dict[str, Any] = None,
+        recipient_profile: Dict[str, object],
+        outreach_context: Dict[str, object] = None,
     ) -> ProfilePlan:
         """Generate a deterministic profile analysis plan.
         
@@ -161,7 +161,7 @@ class ProfilePlanner:
         
         return plan
     
-    def _extract_profile_signals(self, profile: Dict[str, Any]) -> List[ProfileSignal]:
+    def _extract_profile_signals(self, profile: Dict[str, object]) -> List[ProfileSignal]:
         """Extract individual signals from profile data."""
         signals = []
         
@@ -378,7 +378,7 @@ class ProfilePlanner:
         else:
             return "OTHER"
     
-    def _determine_seniority(self, profile: Dict[str, Any], signals: List[ProfileSignal]) -> str:
+    def _determine_seniority(self, profile: Dict[str, object], signals: List[ProfileSignal]) -> str:
         """Determine seniority level from profile and signals."""
         title = profile.get("title", "").lower()
         
@@ -407,7 +407,7 @@ class ProfilePlanner:
         
         return "IC"  # Default
     
-    def _analyze_company_size(self, profile: Dict[str, Any], signals: List[ProfileSignal]) -> str:
+    def _analyze_company_size(self, profile: Dict[str, object], signals: List[ProfileSignal]) -> str:
         """Analyze company size from profile and signals."""
         # Check for explicit company size signal
         size_signal = next((s for s in signals if s.signal_type == "company_size"), None)
@@ -423,7 +423,7 @@ class ProfilePlanner:
         else:
             return "medium"  # Default
     
-    def _classify_industry(self, profile: Dict[str, Any], signals: List[ProfileSignal]) -> str:
+    def _classify_industry(self, profile: Dict[str, object], signals: List[ProfileSignal]) -> str:
         """Classify industry focus."""
         # Check for explicit industry signal
         industry_signal = next((s for s in signals if s.signal_type == "industry"), None)
@@ -465,7 +465,7 @@ class ProfilePlanner:
         confidence = avg_signal_confidence + archetype_boost + seniority_boost
         return round(min(confidence, 1.0), 3)
     
-    def _assess_profile_completeness(self, profile: Dict[str, Any]) -> float:
+    def _assess_profile_completeness(self, profile: Dict[str, object]) -> float:
         """Assess how complete the profile data is."""
         required_fields = ["title", "company", "industry"]
         optional_fields = ["experience", "skills", "education"]
@@ -489,7 +489,7 @@ class ProfilePlanner:
         except Exception as e:
             logger.debug(f"Failed to record telemetry: {e}")
     
-    def get_profile_summary(self, plan: ProfilePlan) -> Dict[str, Any]:
+    def get_profile_summary(self, plan: ProfilePlan) -> Dict[str, object]:
         """Get a summary of the profile plan for debugging/telemetry."""
         return {
             "plan_id": f"profile_{plan.inferred_archetype}_{plan.seniority_level}",

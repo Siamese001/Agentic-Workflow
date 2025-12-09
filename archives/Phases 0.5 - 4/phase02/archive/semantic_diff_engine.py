@@ -19,7 +19,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
+from typing import Dict, List, Optional, Set, Tuple, object, Union
 from dataclasses import dataclass, asdict
 from datetime import datetime
 import yaml
@@ -635,7 +635,7 @@ class SemanticDiffEngine:
         """Get the computed semantic diffs"""
         return self.semantic_diffs
     
-    def get_validation_summary(self) -> Dict[str, Any]:
+    def get_validation_summary(self) -> Dict[str, object]:
         """Get validation summary with all K-keys"""
         passed = sum(1 for r in self.validation_results if r.status == "PASS")
         failed = sum(1 for r in self.validation_results if r.status == "FAIL")

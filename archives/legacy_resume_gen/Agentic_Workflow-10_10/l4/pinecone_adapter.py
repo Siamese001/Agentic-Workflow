@@ -43,7 +43,7 @@ class VectorRecord:
     
     id: str
     values: List[float]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -52,7 +52,7 @@ class VectorQueryResult:
     
     id: str
     score: float
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     text: Optional[str] = None
 
 
@@ -258,7 +258,7 @@ class PineconeAdapter:
         query_vector: List[float],
         namespace: str,
         top_k: int = 10,
-        metadata_filter: Optional[Dict[str, Any]] = None,
+        metadata_filter: Optional[Dict[str, object]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[VectorQueryResult]:
         """Query vectors by similarity.
@@ -276,7 +276,7 @@ class PineconeAdapter:
         self._ensure_client()
         
         # Build query kwargs
-        query_kwargs: Dict[str, Any] = {}
+        query_kwargs: Dict[str, object] = {}
         if metadata_filter:
             query_kwargs["filter"] = metadata_filter
         
@@ -324,7 +324,7 @@ class PineconeAdapter:
         query_text: str,
         namespace: str,
         top_k: int = 10,
-        metadata_filter: Optional[Dict[str, Any]] = None,
+        metadata_filter: Optional[Dict[str, object]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[VectorQueryResult]:
         """Query vectors using text (auto-embeds).
@@ -347,7 +347,7 @@ class PineconeAdapter:
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
         top_k: int = 10,
-        metadata_filter: Optional[Dict[str, Any]] = None,
+        metadata_filter: Optional[Dict[str, object]] = None,
     ) -> List[VectorQueryResult]:
         """Query vectors with temporal constraints.
         
@@ -399,7 +399,7 @@ class PineconeAdapter:
         texts: Sequence[str],
         namespace: str,
         record_type: str = "doc",
-        metadata_list: Optional[Sequence[Dict[str, Any]]] = None,
+        metadata_list: Optional[Sequence[Dict[str, object]]] = None,
     ) -> List[str]:
         """Convenience method to upsert text records with auto-embedding.
         

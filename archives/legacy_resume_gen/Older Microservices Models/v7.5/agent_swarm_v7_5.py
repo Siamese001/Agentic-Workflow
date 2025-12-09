@@ -282,7 +282,7 @@ class RAG_SearchAgent(BaseAgent):
             
         self.max_react_iterations = CONFIG.react_config.max_reasoning_loops
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info("Running Step 2: RAG ReAct Search...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG_SearchAgent.")
@@ -1052,7 +1052,7 @@ class FeedbackLoggerAgent:
         self.log_path = log_path
         self.logger = logging.getLogger("FeedbackLoggerAgent")
     
-    def log(self, validation_results: Dict[str, Any], workflow_id: str):
+    def log(self, validation_results: Dict[str, object], workflow_id: str):
         if not self.log_path:
             self.logger.warning("No feedback_log_path configured. Skipping log.")
             return
@@ -1107,14 +1107,14 @@ def get_blackboard(state: 'GraphState') -> WorkflowBlackboard:
 # --- Node Wrappers ---
 # We wrap agent calls in functions that take 'state' and return a patch.
 
-def run_strategy(state: 'GraphState') -> Dict[str, Any]:
+def run_strategy(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 1: Strategy"""
     blackboard = get_blackboard(state)
     agent = ThemeClassifierAgent(blackboard, debug_mode=True)
     result = agent.run(job_description_text=state["job_input"].get("raw_jd", ""))
     return {"artifacts": {"strategy_brief": result}}
 
-def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_rag_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 2: RAG (Query, Search, Critique)"""
     blackboard = get_blackboard(state)
     
@@ -1140,7 +1140,7 @@ def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
         "rag_critique": critique_result
     }}
 
-def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_drafting_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)"""
     blackboard = get_blackboard(state)
     
@@ -1162,7 +1162,7 @@ def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
         "final_draft": final_draft
     }}
 
-def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
+def run_qa_swarm(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 4: QA (LLM and Logic)"""
     blackboard = get_blackboard(state)
     final_draft = state["artifacts"]["final_draft"]
@@ -1197,7 +1197,7 @@ def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
         "validation_results": validation_summary
     }}
 
-def run_replanner(state: 'GraphState') -> Dict[str, Any]:
+def run_replanner(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3 (SC Paths): Re-Planner"""
     blackboard = get_blackboard(state)
     agent = WorkflowRePlannerAgent(blackboard, debug_mode=True)
@@ -1226,7 +1226,7 @@ def run_replanner(state: 'GraphState') -> Dict[str, Any]:
 
 # --- v7.5 New Nodes ---
 
-def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
+def human_review_pause(state: 'GraphState') -> Dict[str, object]:
     """
     Node: This node saves the final draft to the state for HIL diffing.
     The graph will be configured to *interrupt* before this node,
@@ -1236,7 +1236,7 @@ def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
     # Save the AI draft so we can diff it against the human's version
     return {"original_draft": state["artifacts"]["final_draft"]}
 
-def run_preference_capture(state: 'GraphState') -> Dict[str, Any]:
+def run_preference_capture(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 5: Preference Capture"""
     if not CONFIG.hil_config.enable_preference_learning:
         return {"preference_insight": {"status": "disabled"}}

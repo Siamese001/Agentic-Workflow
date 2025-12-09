@@ -30,7 +30,7 @@ def emit_node_event(node: str, status: str, details: Optional[str] = None) -> No
     )
 
 
-def emit_telemetry_event(name: str, attributes: Dict[str, Any]) -> None:
+def emit_telemetry_event(name: str, attributes: Dict[str, object]) -> None:
     """General-purpose event emission for arbitrary telemetry use cases."""
 
     append_event(
@@ -57,7 +57,7 @@ def log_exception(name: str, exc: Exception) -> None:
     )
 
 
-def record_event(name: str, attributes: Dict[str, Any]) -> None:
+def record_event(name: str, attributes: Dict[str, object]) -> None:
     """Convenience wrapper so infra code can emit generic events."""
 
     emit_telemetry_event(name, attributes)
@@ -100,7 +100,7 @@ def emit_cost_snapshot(snapshot: CostSnapshot) -> None:
     )
 
 
-def emit_resilience_event(name: str, attributes: Dict[str, Any]) -> None:
+def emit_resilience_event(name: str, attributes: Dict[str, object]) -> None:
     """Generic entrypoint for resilience-related telemetry events."""
 
     emit_telemetry_event(name, attributes)
@@ -112,13 +112,13 @@ def emit_golden_eval_event(
     scenario_id: str,
     passed: bool,
     score: float,
-    summary: Dict[str, Any],
-    routing_trace: Optional[List[Dict[str, Any]]] = None,
-    council_summary: Optional[Dict[str, Any]] = None,
-    resilience_summary: Optional[Dict[str, Any]] = None,
+    summary: Dict[str, object],
+    routing_trace: Optional[List[Dict[str, object]]] = None,
+    council_summary: Optional[Dict[str, object]] = None,
+    resilience_summary: Optional[Dict[str, object]] = None,
     cost_snapshot: Optional[CostSnapshot] = None,
 ) -> None:
-    attrs: Dict[str, Any] = {
+    attrs: Dict[str, object] = {
         "event_type": "golden_eval",
         "workflow_id": workflow_id,
         "scenario_id": scenario_id,
@@ -142,11 +142,11 @@ def emit_scenario_simulation_event(
     *,
     workflow_id: Optional[str],
     scenario_id: str,
-    outcome: Dict[str, Any],
-    telemetry: Dict[str, Any],
-    error_taxonomy: Optional[Dict[str, Any]] = None,
+    outcome: Dict[str, object],
+    telemetry: Dict[str, object],
+    error_taxonomy: Optional[Dict[str, object]] = None,
 ) -> None:
-    attrs: Dict[str, Any] = {
+    attrs: Dict[str, object] = {
         "event_type": "scenario_simulation",
         "workflow_id": workflow_id,
         "scenario_id": scenario_id,
@@ -200,9 +200,9 @@ def emit_council_arbitration_event(
     workflow_id: Optional[str],
     scenario_id: Optional[str],
     role: str,
-    arbitration: Dict[str, Any],
+    arbitration: Dict[str, object],
 ) -> None:
-    attrs: Dict[str, Any] = {
+    attrs: Dict[str, object] = {
         "event_type": "council_arbitration",
         "workflow_id": workflow_id,
         "scenario_id": scenario_id,
@@ -217,7 +217,7 @@ def emit_resilience_trace_event(
     workflow_id: Optional[str],
     scenario_id: Optional[str],
     name: str,
-    attributes: Dict[str, Any],
+    attributes: Dict[str, object],
 ) -> None:
     attrs = dict(attributes)
     attrs.setdefault("event_type", "resilience_trace")

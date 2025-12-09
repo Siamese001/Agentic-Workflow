@@ -22,12 +22,12 @@ class DraftPlanningStack(BaseAgent):
         super().__init__(context, debug_mode)
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         plan = self._build_plan(state)
         return {"draft": {"plan": plan.model_dump()}}
 
-    def _build_plan(self, state: Dict[str, Any]) -> DraftPlan:
+    def _build_plan(self, state: Dict[str, object]) -> DraftPlan:
         job_profile = extract_job_profile(state)
         resume_profile = extract_resume_profile(state)
         experiences = resume_profile["experiences"]
@@ -45,7 +45,7 @@ class DraftPlanningStack(BaseAgent):
         )
 
     def _structure(
-        self, state: Dict[str, Any], job_profile: Dict[str, Any]
+        self, state: Dict[str, object], job_profile: Dict[str, object]
     ) -> List[str]:
         sections = collect_sections(state)
         structure = ["Executive Summary"]
@@ -54,7 +54,7 @@ class DraftPlanningStack(BaseAgent):
         structure.extend(section.title() for section in sections if section)
         return structure
 
-    def _tone(self, state: Dict[str, Any]) -> str:
+    def _tone(self, state: Dict[str, object]) -> str:
         strategy_plan = state.get("strategy", {}).get("strategy_plan") or {}
         if hasattr(strategy_plan, "model_dump"):
             strategy_plan = strategy_plan.model_dump()
@@ -62,9 +62,9 @@ class DraftPlanningStack(BaseAgent):
 
     def _key_messages(
         self,
-        job_profile: Dict[str, Any],
-        experiences: List[Dict[str, Any]],
-        resume_profile: Dict[str, Any],
+        job_profile: Dict[str, object],
+        experiences: List[Dict[str, object]],
+        resume_profile: Dict[str, object],
     ) -> List[str]:
         messages: List[str] = []
         if job_profile["title"]:
@@ -81,7 +81,7 @@ class DraftPlanningStack(BaseAgent):
             )
         return messages
 
-    def _review_gates(self, job_profile: Dict[str, Any]) -> List[str]:
+    def _review_gates(self, job_profile: Dict[str, object]) -> List[str]:
         gates = [
             "Narrative continuity review",
             "Quantified impact audit",
@@ -93,8 +93,8 @@ class DraftPlanningStack(BaseAgent):
 
     def _risks(
         self,
-        job_profile: Dict[str, Any],
-        experiences: List[Dict[str, Any]],
+        job_profile: Dict[str, object],
+        experiences: List[Dict[str, object]],
     ) -> List[str]:
         risks = ["Guard against hallucinating responsibilities not in resume"]
         missing = missing_requirements(job_profile["requirements"], experiences)

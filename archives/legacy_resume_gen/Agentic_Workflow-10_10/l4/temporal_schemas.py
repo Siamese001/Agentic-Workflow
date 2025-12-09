@@ -74,7 +74,7 @@ class TemporalRange:
         )
         return start < end
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts career timeline data to storage format for persistence.
 
@@ -98,10 +98,10 @@ class TemporalEntity:
     canonical_id: Optional[str] = None
     aliases: Set[str] = field(default_factory=set)
     confidence: float = 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts career entity data to storage format for database persistence.
 
@@ -133,7 +133,7 @@ class TemporalTriplet:
     confidence: float = 1.0
     source: str = "system"
     status: TemporalFactStatus = TemporalFactStatus.ACTIVE
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def to_text(self) -> str:
         """
@@ -147,7 +147,7 @@ class TemporalTriplet:
         validity += ")"
         return f"{self.subject} {self.predicate} {self.object}{validity}"
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts career fact data to storage format for database persistence.
 
@@ -178,9 +178,9 @@ class TemporalEvent:
     entity_id: Optional[str] = None
     triplet_id: Optional[str] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts career event data to storage format for audit trail persistence.
 
@@ -209,9 +209,9 @@ class ConflictDetection:
     description: str
     severity: str = "medium"
     detected_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Converts conflict detection data to storage format for tracking resolution progress.
 
@@ -238,9 +238,9 @@ class IngestionBatch:
     status: str = "pending"
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     completed_at: Optional[datetime] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for storage."""
         return {
             "batch_id": self.batch_id,
@@ -259,14 +259,14 @@ class FusionSession:
     """Immutable fusion session tracking."""
     session_id: str
     user_query: str
-    temporal_constraints: Optional[Dict[str, Any]] = None
+    temporal_constraints: Optional[Dict[str, object]] = None
     safety_profile: Optional[str] = None
-    retrieval_plan: Optional[Dict[str, Any]] = None
+    retrieval_plan: Optional[Dict[str, object]] = None
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     completed_at: Optional[datetime] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary for storage."""
         return {
             "session_id": self.session_id,
@@ -345,7 +345,7 @@ def create_temporal_triplet(
     invalid_at: Optional[datetime] = None,
     confidence: float = 1.0,
     source: str = "system",
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
 ) -> TemporalTriplet:
     """Create a temporal triplet with generated ID."""
     triplet_hash = hashlib.sha256(
@@ -370,7 +370,7 @@ def create_temporal_entity(
     canonical_id: Optional[str] = None,
     aliases: Optional[Set[str]] = None,
     confidence: float = 1.0,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
 ) -> TemporalEntity:
     """Create a temporal entity."""
     return TemporalEntity(
@@ -388,7 +388,7 @@ def create_conflict_detection(
     affected_triplets: List[str],
     description: str,
     severity: str = "medium",
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
 ) -> ConflictDetection:
     """Create a conflict detection result."""
     conflict_hash = hashlib.sha256(

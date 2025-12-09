@@ -39,15 +39,15 @@ from agentic_core.l2_execution.draft_execution.lic_k7_assembly import K7Assembly
 class OrchestratorOutput:
     """Complete output from the L3 orchestrator."""
     final_message: str
-    execution_trace: List[Dict[str, Any]]
-    l1_plans: Dict[str, Any]
-    k_node_outputs: Dict[str, Any]
+    execution_trace: List[Dict[str, object]]
+    l1_plans: Dict[str, object]
+    k_node_outputs: Dict[str, object]
     success: bool
     error_message: str
     execution_time_ms: int
     pipeline_confidence: float
     delivery_format: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class OutreachOrchestrator:
@@ -58,7 +58,7 @@ class OutreachOrchestrator:
     """
     
     def __init__(self, 
-                 atomic_spec: Optional[Dict[str, Any]] = None,
+                 atomic_spec: Optional[Dict[str, object]] = None,
                  telemetry_bus: Optional[Any] = None) -> None:
         """Initialize outreach orchestrator."""
         self.spec = atomic_spec or {}
@@ -84,9 +84,9 @@ class OutreachOrchestrator:
     def execute_outreach_pipeline(
         self,
         *,
-        recipient_profile: Dict[str, Any],
-        resume_features: Optional[Dict[str, Any]] = None,
-        outreach_context: Optional[Dict[str, Any]] = None
+        recipient_profile: Dict[str, object],
+        resume_features: Optional[Dict[str, object]] = None,
+        outreach_context: Optional[Dict[str, object]] = None
     ) -> OrchestratorOutput:
         """Execute the complete L1→K1-K7 hop-based outreach pipeline.
         
@@ -296,14 +296,14 @@ class OutreachOrchestrator:
                 metadata={"error_phase": "execution"}
             )
     
-    def _execute_l1_profile_planning(self, recipient_profile: Dict[str, Any], context: Dict[str, Any]) -> ProfilePlan:
+    def _execute_l1_profile_planning(self, recipient_profile: Dict[str, object], context: Dict[str, object]) -> ProfilePlan:
         """Execute L1 profile planning."""
         return self.profile_planner.plan(
             recipient_profile=recipient_profile,
             outreach_context=context
         )
     
-    def _execute_l1_research_planning(self, recipient_profile: Dict[str, Any], profile_plan: ProfilePlan, context: Dict[str, Any]) -> ResearchPlan:
+    def _execute_l1_research_planning(self, recipient_profile: Dict[str, object], profile_plan: ProfilePlan, context: Dict[str, object]) -> ResearchPlan:
         """Execute L1 research planning."""
         return self.research_planner.plan(
             role_title=recipient_profile.get("title", ""),
@@ -313,14 +313,14 @@ class OutreachOrchestrator:
             outreach_context=context
         )
     
-    def _execute_l1_grounding_planning(self, resume_features: Optional[Dict[str, Any]], context: Dict[str, Any]) -> GroundingPlan:
+    def _execute_l1_grounding_planning(self, resume_features: Optional[Dict[str, object]], context: Dict[str, object]) -> GroundingPlan:
         """Execute L1 grounding planning."""
         return self.grounding_planner.plan(
             resume_features=resume_features or {},
             outreach_context=context
         )
     
-    def _execute_l1_persona_planning(self, profile_plan: ProfilePlan, grounding_plan: GroundingPlan, context: Dict[str, Any]) -> PersonaPlan:
+    def _execute_l1_persona_planning(self, profile_plan: ProfilePlan, grounding_plan: GroundingPlan, context: Dict[str, object]) -> PersonaPlan:
         """Execute L1 persona planning."""
         recipient_profile = {"archetype": profile_plan.inferred_archetype, "seniority": profile_plan.seniority_level, "industry": profile_plan.industry_focus}
         return self.persona_planner.plan(
@@ -330,7 +330,7 @@ class OutreachOrchestrator:
             outreach_context=context
         )
     
-    def _execute_l1_fusion_planning(self, resume_features: Optional[Dict[str, Any]], research_plan: ResearchPlan, grounding_plan: GroundingPlan, context: Dict[str, Any]) -> FusionPlan:
+    def _execute_l1_fusion_planning(self, resume_features: Optional[Dict[str, object]], research_plan: ResearchPlan, grounding_plan: GroundingPlan, context: Dict[str, object]) -> FusionPlan:
         """Execute L1 fusion planning."""
         return self.fusion_planner.plan(
             role_title=research_plan.target_role,
@@ -341,7 +341,7 @@ class OutreachOrchestrator:
             rag_evidence=[]
         )
     
-    def _execute_l1_message_planning(self, recipient_profile: Dict[str, Any], persona_plan: PersonaPlan, grounding_plan: GroundingPlan, fusion_plan: FusionPlan, context: Dict[str, Any]) -> MessagePlan:
+    def _execute_l1_message_planning(self, recipient_profile: Dict[str, object], persona_plan: PersonaPlan, grounding_plan: GroundingPlan, fusion_plan: FusionPlan, context: Dict[str, object]) -> MessagePlan:
         """Execute L1 message planning."""
         from .message_planner import MessageContent
         
@@ -365,7 +365,7 @@ class OutreachOrchestrator:
             outreach_context=context
         )
     
-    def _execute_k1_research(self, research_plan: ResearchPlan, recipient_profile: Dict[str, Any], context: Dict[str, Any]) -> Optional[ResearchOutput]:
+    def _execute_k1_research(self, research_plan: ResearchPlan, recipient_profile: Dict[str, object], context: Dict[str, object]) -> Optional[ResearchOutput]:
         """Execute K1 research."""
         try:
             return self.k1_research.execute(
@@ -377,7 +377,7 @@ class OutreachOrchestrator:
             logger.error(f"K1 research failed: {e}")
             return None
     
-    def _execute_k2_insights(self, k1_output: Optional[ResearchOutput], context: Dict[str, Any]) -> Optional[InsightOutput]:
+    def _execute_k2_insights(self, k1_output: Optional[ResearchOutput], context: Dict[str, object]) -> Optional[InsightOutput]:
         """Execute K2 insights."""
         try:
             if not k1_output:
@@ -390,7 +390,7 @@ class OutreachOrchestrator:
             logger.error(f"K2 insights failed: {e}")
             return None
     
-    def _execute_k3_draft(self, fusion_plan: FusionPlan, persona_plan: PersonaPlan, grounding_plan: GroundingPlan, profile_plan: ProfilePlan, research_plan: ResearchPlan, message_plan: MessagePlan, k2_output: Optional[InsightOutput], recipient_profile: Dict[str, Any], context: Dict[str, Any]) -> Optional[DraftOutput]:
+    def _execute_k3_draft(self, fusion_plan: FusionPlan, persona_plan: PersonaPlan, grounding_plan: GroundingPlan, profile_plan: ProfilePlan, research_plan: ResearchPlan, message_plan: MessagePlan, k2_output: Optional[InsightOutput], recipient_profile: Dict[str, object], context: Dict[str, object]) -> Optional[DraftOutput]:
         """Execute K3 draft."""
         try:
             return self.k3_draft.execute(
@@ -408,7 +408,7 @@ class OutreachOrchestrator:
             logger.error(f"K3 draft failed: {e}")
             return None
     
-    def _execute_k4_regeneration(self, k3_output: Optional[DraftOutput], k2_output: Optional[InsightOutput], persona_plan: PersonaPlan, message_plan: MessagePlan, context: Dict[str, Any]) -> Optional[RegenOutput]:
+    def _execute_k4_regeneration(self, k3_output: Optional[DraftOutput], k2_output: Optional[InsightOutput], persona_plan: PersonaPlan, message_plan: MessagePlan, context: Dict[str, object]) -> Optional[RegenOutput]:
         """Execute K4 regeneration."""
         try:
             if not k3_output:
@@ -424,7 +424,7 @@ class OutreachOrchestrator:
             logger.error(f"K4 regeneration failed: {e}")
             return None
     
-    def _execute_k5_validation(self, k4_output: Optional[RegenOutput], persona_plan: PersonaPlan, message_plan: MessagePlan, context: Dict[str, Any]) -> Optional[ValidationOutput]:
+    def _execute_k5_validation(self, k4_output: Optional[RegenOutput], persona_plan: PersonaPlan, message_plan: MessagePlan, context: Dict[str, object]) -> Optional[ValidationOutput]:
         """Execute K5 validation."""
         try:
             if not k4_output:
@@ -439,7 +439,7 @@ class OutreachOrchestrator:
             logger.error(f"K5 validation failed: {e}")
             return None
     
-    def _execute_k6_cta(self, k5_output: Optional[ValidationOutput], persona_plan: PersonaPlan, message_plan: MessagePlan, fusion_plan: FusionPlan, recipient_profile: Dict[str, Any], context: Dict[str, Any]) -> Optional[CTAOutput]:
+    def _execute_k6_cta(self, k5_output: Optional[ValidationOutput], persona_plan: PersonaPlan, message_plan: MessagePlan, fusion_plan: FusionPlan, recipient_profile: Dict[str, object], context: Dict[str, object]) -> Optional[CTAOutput]:
         """Execute K6 CTA."""
         try:
             if not k5_output:
@@ -456,7 +456,7 @@ class OutreachOrchestrator:
             logger.error(f"K6 CTA failed: {e}")
             return None
     
-    def _execute_k7_assembly(self, k1_output: Optional[ResearchOutput], k2_output: Optional[InsightOutput], k3_output: Optional[DraftOutput], k4_output: Optional[RegenOutput], k5_output: Optional[ValidationOutput], k6_output: Optional[CTAOutput], l1_plans: Dict[str, Any], context: Dict[str, Any]) -> Optional[AssemblyOutput]:
+    def _execute_k7_assembly(self, k1_output: Optional[ResearchOutput], k2_output: Optional[InsightOutput], k3_output: Optional[DraftOutput], k4_output: Optional[RegenOutput], k5_output: Optional[ValidationOutput], k6_output: Optional[CTAOutput], l1_plans: Dict[str, object], context: Dict[str, object]) -> Optional[AssemblyOutput]:
         """Execute K7 assembly."""
         try:
             if not all([k1_output, k2_output, k3_output, k4_output, k5_output, k6_output]):
@@ -490,7 +490,7 @@ class OutreachOrchestrator:
         except Exception as e:
             logger.debug(f"Failed to record orchestration telemetry: {e}")
     
-    def get_orchestration_summary(self, output: OrchestratorOutput) -> Dict[str, Any]:
+    def get_orchestration_summary(self, output: OrchestratorOutput) -> Dict[str, object]:
         """Get a summary of the orchestration execution."""
         return {
             "success": output.success,

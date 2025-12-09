@@ -7,7 +7,7 @@ import sys
 import json
 import time
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
@@ -22,7 +22,7 @@ except ImportError as e:
     print("Make sure you're running from the data/sdks_mcps/ directory")
 
 
-def test_openai_client() -> Dict[str, Any]:
+def test_openai_client() -> Dict[str, object]:
     """Test OpenAI client functionality."""
     results = {
         "provider": "OpenAI",
@@ -94,7 +94,7 @@ def test_openai_client() -> Dict[str, Any]:
     return results
 
 
-def test_anthropic_client() -> Dict[str, Any]:
+def test_anthropic_client() -> Dict[str, object]:
     """Test Anthropic client functionality."""
     results = {
         "provider": "Anthropic",
@@ -179,7 +179,7 @@ def test_anthropic_client() -> Dict[str, Any]:
     return results
 
 
-def test_vertex_client() -> Dict[str, Any]:
+def test_vertex_client() -> Dict[str, object]:
     """Test Google Vertex client functionality."""
     results = {
         "provider": "Google Vertex",
@@ -242,7 +242,7 @@ def test_vertex_client() -> Dict[str, Any]:
     return results
 
 
-def test_multi_provider_router() -> Dict[str, Any]:
+def test_multi_provider_router() -> Dict[str, object]:
     """Test multi-provider router functionality."""
     results = {
         "provider": "Multi-Provider Router",
@@ -311,7 +311,7 @@ def test_multi_provider_router() -> Dict[str, Any]:
     return results
 
 
-def test_reference_clients() -> Dict[str, Any]:
+def test_reference_clients() -> Dict[str, object]:
     """Test minimal reference clients."""
     results = {
         "provider": "Reference Clients",

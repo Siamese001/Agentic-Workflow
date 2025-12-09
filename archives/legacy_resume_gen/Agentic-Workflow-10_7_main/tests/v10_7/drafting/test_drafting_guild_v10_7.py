@@ -10,7 +10,7 @@ from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
 
 
 @pytest.fixture
-def strategy_payload() -> Dict[str, Any]:
+def strategy_payload() -> Dict[str, object]:
     return {
         "strategy_name": "AI Trailblazer",
         "focus_areas": ["automation", "scalability"],
@@ -71,7 +71,7 @@ def guild_coordinator(workflow_context, monkeypatch):
     )
 
     def simple_merge(self, *layers):
-        merged: Dict[str, Any] = {}
+        merged: Dict[str, object] = {}
         for layer in layers:
             for key, value in layer.items():
                 merged[key] = value

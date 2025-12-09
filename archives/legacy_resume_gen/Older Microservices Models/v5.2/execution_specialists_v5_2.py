@@ -180,7 +180,7 @@ class Library_Specialist:
         thematic_analysis: ThematicAnalysis,
         company_name: str,
         job_title: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, object]] = None
     ) -> None:
         """Store successful RAGMission and analysis for future reference."""
         if not self.enabled:
@@ -219,7 +219,7 @@ class Library_Specialist:
         query: str,
         company_name: Optional[str] = None,
         n_results: int = 3
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Query for similar past missions to inform current extraction."""
         if not self.enabled or self.collection.count() == 0:
             return []
@@ -341,7 +341,7 @@ class Web_Specialist:
         self,
         search_prompt: str,
         phase_name: str
-    ) -> Tuple[Dict[str, Any], int]:
+    ) -> Tuple[Dict[str, object], int]:
         """Execute web search with retry and circuit breaker protection."""
         logger.info(f"Web Specialist executing: {phase_name}")
         
@@ -760,7 +760,7 @@ class Content_Generator:
     def generate_section(
         self,
         section_name: ResumeSection,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         attempt: int = 1,
         reasoning_config: Optional[ReasoningConfig] = None
     ) -> str:
@@ -861,7 +861,7 @@ class FactualConsistency_Validator:
         self.complexity = complexity
         self.validation_engine = ValidationEngine()
     
-    def validate(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate(self, context: ValidationContext) -> Dict[str, object]:
         """Execute all factual consistency validations."""
         results = {
             'bullet_word_count': _validate_bullet_word_count_CRITICAL(context),
@@ -889,7 +889,7 @@ class ToneValidator:
         """Initialize tone validator."""
         self.complexity = complexity
     
-    def validate(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate(self, context: ValidationContext) -> Dict[str, object]:
         """Validate tone across all sections."""
         results = {}
         
@@ -919,7 +919,7 @@ class ThematicAlignment_Validator:
         """Initialize thematic alignment validator."""
         self.complexity = complexity
     
-    def validate(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate(self, context: ValidationContext) -> Dict[str, object]:
         """Validate thematic alignment with JD."""
         results = {}
         
@@ -1106,7 +1106,7 @@ class AppTracker_Assembler:
         job_title: str,
         jd_url: str = "",
         status: str = "Applied"
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Assemble application tracker entry.
         Returns tracker entry dictionary.
@@ -1163,7 +1163,7 @@ class Auditor_Agent:
     def generate_qa_report(
         self,
         staging_buffer: ImmutableStagingBuffer,
-        validation_results: Dict[str, Any],
+        validation_results: Dict[str, object],
         thematic_analysis: ThematicAnalysis
     ) -> str:
         """
@@ -1314,7 +1314,7 @@ class Meta_Planner:
     def __init__(self):
         self.rules_registry = CACHE_DIR / "rules_registry.json"
 
-    def update_rules(self) -> Dict[str, Any]:
+    def update_rules(self) -> Dict[str, object]:
         """Reads logs, finds patterns, outputs updated rules."""
         logger.info("📈 Meta-Planner: Analyzing past performance to update rules...")
         # Stub: In a real system, this would perform statistical analysis on logs

@@ -12,7 +12,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, object, Callable, Dict, List, Mapping, Optional, Tuple
 
 from chromadb.utils import embedding_functions
 from pydantic import BaseModel, ValidationError as PydanticValidationError
@@ -129,7 +129,7 @@ class MetricsCollector:
     """v10.7: In-memory collector for agent/tool observability."""
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.MetricsCollector")
-        self.metrics: List[Dict[str, Any]] = []
+        self.metrics: List[Dict[str, object]] = []
         self.log_path = "./logs/metrics_v10_7.jsonl"
         try:
             os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
@@ -137,7 +137,7 @@ class MetricsCollector:
         except OSError as e:
             self.logger.error(f"Could not create log directory for metrics: {e}")
 
-    def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None):
+    def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: Optional[str] = None, metadata: Optional[Dict[str, object]] = None):
         metric = {
             "timestamp": datetime.now().isoformat(),
             "agent_name": agent_name,
@@ -155,7 +155,7 @@ class MetricsCollector:
         except Exception as e:
             self.logger.error(f"Failed to write metric to log: {e}")
 
-    def get_summary(self) -> List[Dict[str, Any]]:
+    def get_summary(self) -> List[Dict[str, object]]:
         return self.metrics
 
     def get_average_latency(self, agent_name: str, task_name: str) -> Optional[float]:
@@ -284,7 +284,7 @@ class SemanticValidator:
 
 async def _format_prompt_with_defaults(
     template: str,
-    tool_input: Dict[str, Any],
+    tool_input: Dict[str, object],
     budget_manager: ContextBudgetManager,
     goal_state: str,         # v10.7 (Fix #19)
     top_failures: List[str]  # v10.7 (Fix #24)
@@ -296,7 +296,7 @@ async def _format_prompt_with_defaults(
 
     tool_input = dict(tool_input or {})
 
-    def _ensure_mapping(value: Any) -> Dict[str, Any]:
+    def _ensure_mapping(value: Any) -> Dict[str, object]:
         if isinstance(value, Mapping):
             return dict(value)
         if value is None:
@@ -642,8 +642,8 @@ class FeedbackEntry:
     agent_name: str
     task: str
     feedback_type: str # "success", "failure", "warning"
-    details: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object]
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class FeedbackLogReader:
     def __init__(self, feedback_log_path: str):
@@ -691,9 +691,9 @@ class ProposedRule:
     status: str
     rule_type: str
     description: str
-    config_changes: Dict[str, Any]
+    config_changes: Dict[str, object]
     pattern_id: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class ProposedRulesLoader:
     def __init__(self, proposed_rules_path: str):
@@ -734,7 +734,7 @@ class ProposedRulesLoader:
             self.logger.error(f"Failed to load proposed rules: {e}")
             return []
     
-    def get_constitution_rules(self) -> List[Dict[str, Any]]:
+    def get_constitution_rules(self) -> List[Dict[str, object]]:
         rules = self.load_rules(status_filter="APPROVED")
         # v10.7 (Fix #30): Also load rules of type 'moral_constitution'
         return [r.config_changes for r in rules if r.rule_type.lower() in ["constitution", "moral_constitution"]]
@@ -775,7 +775,7 @@ class CacheManager:
         key_str = f"{provider}:{model}:{prompt}:{temperature}"
         return f"llm_cache_v10_7:{hashlib.sha256(key_str.encode()).hexdigest()}"
 
-    def _generate_tool_cache_key(self, tool_name: str, tool_input: Dict[str, Any]) -> str:
+    def _generate_tool_cache_key(self, tool_name: str, tool_input: Dict[str, object]) -> str:
         try:
             input_str = json.dumps(tool_input, sort_keys=True)
             key_str = f"{tool_name}:{input_str}"
@@ -784,7 +784,7 @@ class CacheManager:
             self.logger.warning(f"Could not generate tool cache key for {tool_name}: {e}")
             return ""
 
-    async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, Any]]:
+    async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, object]]:
         # 1. Check Exact Cache (Redis)
         cache_key = self._generate_llm_cache_key(provider, model, prompt, temperature)
         try:
@@ -836,7 +836,7 @@ class CacheManager:
         })
         return None
     
-    async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
+    async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, object]):
         response_str = json.dumps(response)
         
         # 1. Set Exact Cache (Redis)
@@ -861,7 +861,7 @@ class CacheManager:
             except Exception as e:
                 self.logger.error(f"Semantic Cache set error: {e}")
 
-    def get_tool_cache(self, tool_name: str, tool_input: Dict[str, Any]) -> Optional[Any]:
+    def get_tool_cache(self, tool_name: str, tool_input: Dict[str, object]) -> Optional[Any]:
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return None
         try:
@@ -882,7 +882,7 @@ class CacheManager:
             log_event("CacheManager", "tool_cache_error", {"tool": tool_name, "error": str(e)})
             return None
 
-    def set_tool_cache(self, tool_name: str, tool_input: Dict[str, Any], result: Any):
+    def set_tool_cache(self, tool_name: str, tool_input: Dict[str, object], result: Any):
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return
         try:
@@ -891,7 +891,7 @@ class CacheManager:
         except Exception as e:
             self.logger.error(f"Tool Cache set error: {e}")
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         llm_total = self._hits + self._misses + self._semantic_hits
         llm_hit_rate = ((self._hits + self._semantic_hits) / llm_total * 100) if llm_total > 0 else 0.0
         tool_total = self._tool_hits + self._tool_misses
@@ -935,7 +935,7 @@ class CostTracker:
             "provider": provider, "model": model, "input_tokens": input_tokens,
             "output_tokens": output_tokens, "cost": cost, "timestamp": datetime.now().isoformat()
         })
-    def get_cost_summary(self, workflow_id: str) -> Dict[str, Any]:
+    def get_cost_summary(self, workflow_id: str) -> Dict[str, object]:
         calls = self._workflow_costs.get(workflow_id, [])
         total_cost = sum(c["cost"] for c in calls)
         return {"workflow_id": workflow_id, "total_workflow_cost": total_cost, "calls": calls}

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, Any
+from typing import Dict, object
 
 
 class SelfCorrectionSurface(str, Enum):
@@ -13,7 +13,7 @@ def all_surfaces() -> Dict[str, str]:
     return {s.name: s.value for s in SelfCorrectionSurface}
 
 
-def should_retry(surface: SelfCorrectionSurface, state: Dict[str, Any], last_result: Dict[str, Any]) -> bool:
+def should_retry(surface: SelfCorrectionSurface, state: Dict[str, object], last_result: Dict[str, object]) -> bool:
     """
     Deterministic stub to indicate whether a local retry is warranted.
 

@@ -6,7 +6,7 @@
 
 # ==============================================================
 # AUTO-HYDRATED BY PHASE 3H
-# Donor: C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/context.py
+# Donor: object, C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/context.py
 # Review and refactor as needed. Archive copy preserved.
 # ==============================================================
 
@@ -18,7 +18,7 @@ import logging
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from chromadb.utils import embedding_functions
 from mcp import get_tool
@@ -80,11 +80,11 @@ def _resolve_path(path_like: str) -> Path:
     path_obj = Path(str(path_like)).expanduser()
     try:
         return path_obj.resolve()
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return path_obj
 
 
-def _path_is_durable(path_like: str, storage_config: Any) -> bool:
+def _path_is_durable(path_like: str, storage_config: object) -> bool:
     if not storage_config or not path_like:
         return False
 
@@ -95,7 +95,7 @@ def _path_is_durable(path_like: str, storage_config: Any) -> bool:
     try:
         target_path = _resolve_path(path_like)
         durable_path = _resolve_path(durable_root)
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return False
 
     try:
@@ -130,7 +130,7 @@ def _detect_meta_learning_persistence(config: ConfigV10_7) -> str:
     return "NONE"
 
 
-def _describe_redis_mode(redis_client: Any) -> str:
+def _describe_redis_mode(redis_client: object) -> str:
     if isinstance(redis_client, MCPClientStub):
         return "STUB"
 
@@ -139,13 +139,13 @@ def _describe_redis_mode(redis_client: Any) -> str:
         try:
             ping_fn()
             return "REAL"
-        except Exception as exc:  # pragma: no cover - network dependency
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:  # pragma: no cover - network dependency
             logger.warning("Redis ping failed; continuing with degraded cache: %s", exc)
             return "UNREACHABLE"
     return "UNKNOWN"
 
 
-def _describe_chroma_mode(config: ConfigV10_7, storage_config: Any) -> str:
+def _describe_chroma_mode(config: ConfigV10_7, storage_config: object) -> str:
     try:
         chroma_cfg = config.chromadb_config
     except AttributeError:
@@ -187,16 +187,16 @@ def _log_runtime_capabilities(
     )
 
 
-def _mcp_get(config_obj: Any, key: str, default: Any) -> Any:
+def _mcp_get(config_obj: object, key: str, default: object) -> object:
     """
-    Helper to read MCP config fields from either a dict-like structure
+    utility to read MCP config fields from either a dict-like structure
     or an attribute-based config object. This makes context robust to
     both styles of ConfigV10_7.mcp_config.
     """
     # Dict-like
     if isinstance(config_obj, dict):
         return config_obj.get(key, default)
-    # Object-like (dataclass / simple namespace)
+    # Object-like (dataclass / basic namespace)
     return getattr(config_obj, key, default)
 
 
@@ -237,7 +237,7 @@ class WorkflowContext:
         if redis_required:
             try:
                 redis_client.ping()
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 raise RuntimeError(
                     f"Redis is required but not running: {e}"
                 ) from e
@@ -277,14 +277,14 @@ class WorkflowContext:
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
 
-        self._model_clients: Dict[str, Any] = {}
+        self._model_clients: Dict[str, object] = {}
 
         # MCP integration state
-        self.mcp_clients: Dict[str, Any] = {}
+        self.mcp_clients: Dict[str, object] = {}
         self._mcp_initialized: bool = False
         self._mcp_client_specs: List[MCPClientSpec] = []
         self._mcp_fallback_mode: str = "error"
-        self._mcp_fallback_parameters: Dict[str, Any] = {}
+        self._mcp_fallback_parameters: Dict[str, object] = {}
         self._mcp_errors: Dict[str, str] = {}
         self._mcp_enabled: bool = False
         self.wrap_mcp_nodes: bool = False
@@ -363,13 +363,13 @@ class WorkflowContext:
         raw_clients = _mcp_get(mcp_config, "clients", [])
         try:
             self._mcp_client_specs = parse_mcp_client_specs(raw_clients)
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:
             raise MCPClientInitializationError(f"Invalid MCP configuration: {exc}") from exc
 
     def is_mcp_enabled(self) -> bool:
         return self._mcp_enabled
 
-    def ensure_mcp_clients(self) -> Dict[str, Any]:
+    def ensure_mcp_clients(self) -> Dict[str, object]:
         """Initialise MCP clients if required and return the registry."""
 
         if self._mcp_initialized:
@@ -380,13 +380,13 @@ class WorkflowContext:
             self._mcp_initialized = True
             return self.mcp_clients
 
-        clients: Dict[str, Any] = {}
+        clients: Dict[str, object] = {}
         errors: Dict[str, str] = {}
 
         for spec in self._mcp_client_specs:
             try:
                 clients[spec.name] = instantiate_mcp_client(spec)
-            except Exception as exc:
+            except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:
                 errors[spec.name] = str(exc)
                 if spec.optional:
                     logger.warning(
@@ -416,7 +416,7 @@ class WorkflowContext:
         self._mcp_initialized = True
         return self.mcp_clients
 
-    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> Any:
+    def get_mcp_client(self, name: str, default: Optional[Any] = None) -> object:
         clients = self.ensure_mcp_clients()
         if name in clients:
             return clients[name]
@@ -441,7 +441,7 @@ class WorkflowContext:
 
 
 # ============================================================================
-# v10.7 REFACTOR: COMPOSITION ROOT HELPER
+# v10.7 REFACTOR: COMPOSITION ROOT utility
 # ============================================================================
 
 def get_checkpointer(
@@ -491,8 +491,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
             port=config.redis_config.port,
             db=db or config.redis_config.db,
         )
-    else:  # pragma: no cover - defensive stub fallback
-        redis_client = MCPClientStub(
+    else:          redis_client = MCPClientStub(
             "redis",
             {
                 "host": config.redis_config.host,
@@ -508,14 +507,14 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
                 host=config.chromadb_config.host,
                 port=config.chromadb_config.port,
             )
-        else:  # pragma: no cover - defensive stub fallback
+        else:
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     else:
         persistent_ctor = getattr(chromadb_module, "PersistentClient", None)
         if callable(persistent_ctor):
             chromadb_client = persistent_ctor(path=config.chromadb_config.persistent_path)
-        else:  # pragma: no cover - defensive stub fallback
+        else:
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     logger.info("Initialized ChromaDB client")
@@ -523,7 +522,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     embedding_ctor = getattr(embedding_functions, "DefaultEmbeddingFunction", None)
     if callable(embedding_ctor):
         embedding_function = embedding_ctor()
-    else:  # pragma: no cover - stub fallback for local tests
+    else:
         embedding_function = embedding_functions.EmbeddingFunction()
 
     # 2. Initialize Core Services (All 9+ services)
@@ -641,11 +640,11 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         )
         collection.delete(where={"workflow_id": workflow_id})
         logger.info("ChromaDB cleanup complete.")
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
 
 
-def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, Any]:
+def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, object]:
     """Centralized bias detection service shared by agents and tools."""
 
     logger.debug("Running centralized bias detection service.")
@@ -680,8 +679,8 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
 
 @dataclass
 class ResumeContext:
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
+    sanitized_resume: Dict[str, object] = field(default_factory=dict)
     experience_bullets: List[Dict] = field(default_factory=list)
 
 
@@ -690,7 +689,7 @@ class JobContext:
     raw_jd: str = ""
     company: str = ""
     job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+    parsed_requirements: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -712,19 +711,19 @@ class BulletContext:
 
 @dataclass
 class DraftContext:
-    sections: Dict[str, Any] = field(default_factory=dict)
+    sections: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class QAContext:
-    validation_results: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
     qa_passed: bool = False
     constitutional_review: Optional[ConstitutionalReviewResult] = None  # v10.7 (Fix #30)
 
 
 @dataclass
 class ArtifactContext:
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -767,10 +766,10 @@ class A2AMessage:
     sender: str
     recipient: str  # Can be "ALL"
     message_type: str  # e.g., "ERROR", "METRIC", "UI_EVENT"
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "sender": self.sender,
             "recipient": self.recipient,
@@ -779,7 +778,7 @@ class A2AMessage:
             "timestamp": self.timestamp,
         }
 
-    def model_dump(self) -> Dict[str, Any]:
+    def model_dump(self) -> Dict[str, object]:
         return self.to_dict()
 
 
@@ -804,7 +803,7 @@ class A2AContext:
         *,
         sender: str,
         message_type: str,
-        payload: Dict[str, Any],
+        payload: Dict[str, object],
         recipient: str = "ALL",
         timestamp: Optional[str] = None,
     ) -> None:
@@ -829,9 +828,9 @@ class MainGraphState:
     bullets: BulletContext = field(default_factory=BulletContext)
     draft: DraftContext = field(default_factory=DraftContext)
     qa: QAContext = field(default_factory=QAContext)
-    safety_report: Optional[Dict[str, Any]] = None
-    policy_decision: Optional[Dict[str, Any]] = None
-    constitutional_review: Optional[Dict[str, Any]] = None
+    safety_report: Optional[Dict[str, object]] = None
+    policy_decision: Optional[Dict[str, object]] = None
+    constitutional_review: Optional[Dict[str, object]] = None
     artifacts: ArtifactContext = field(default_factory=ArtifactContext)
     metadata: MetadataContext = field(default_factory=MetadataContext)
     safety: SafetyContext = field(default_factory=SafetyContext)
@@ -842,7 +841,7 @@ class MainGraphState:
     ephemeral: EphemeralState = EphemeralState()
     phase: WorkflowPhase = WorkflowPhase.INIT
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """v10.7: Custom serializer to handle nested Pydantic models."""
         data = asdict(self)
 
@@ -864,7 +863,7 @@ class MainGraphState:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MainGraphState":
+    def from_dict(cls, data: Dict[str, object]) -> "MainGraphState":
         """v10.7: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
 
@@ -941,11 +940,11 @@ class MetaGraphState:
     """v10.7: Meta-learning graph state."""
 
     raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
+    log_summary: Dict[str, object] = field(default_factory=dict)
     patterns: List[Dict] = field(default_factory=list)
     hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
+    proposal: Dict[str, object] = field(default_factory=dict)
+    critique: Dict[str, object] = field(default_factory=dict)
     replan_count: int = 0
     workflow_id: str = ""
     generated_tool_code: Optional[str] = None

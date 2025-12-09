@@ -20,7 +20,7 @@ class DAGNode(BaseModel):
     type: str
     inputs: List[str] = Field(default_factory=list)
     outputs: List[str] = Field(default_factory=list)
-    config: Dict[str, Any] = Field(default_factory=dict)
+    config: Dict[str, object] = Field(default_factory=dict)
     agent_type: Optional[str] = None
     required_capabilities: List[str] = Field(default_factory=list)
     preferred_agent_ids: List[str] = Field(default_factory=list)

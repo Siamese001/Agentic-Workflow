@@ -8,7 +8,7 @@ advanced capabilities while maintaining architectural simplicity.
 """
 
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, object
 
 from . import EnhancementFacade, EnhancementConfig, create_enhancement_system
 from ..orchestrator import OutreachOrchestrator

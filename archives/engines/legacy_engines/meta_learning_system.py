@@ -11,7 +11,7 @@ adaptive parameter tuning.
 import logging
 import json
 import time
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, asdict
 from enum import Enum
 from collections import defaultdict, deque
@@ -43,10 +43,10 @@ class FeedbackSignal:
     task_id: str
     feedback_type: FeedbackType
     score: float  # 0.0 to 1.0
-    context: Dict[str, Any]
+    context: Dict[str, object]
     timestamp: float
     source: str  # user, system, automated
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 @dataclass
@@ -65,7 +65,7 @@ class LearningPattern:
 class AdaptationResult:
     """Result of learning adaptation"""
     adaptation_type: str
-    parameters_changed: Dict[str, Any]
+    parameters_changed: Dict[str, object]
     expected_improvement: float
     confidence: float
     applied_at: float
@@ -91,9 +91,9 @@ class FeedbackCollector:
         task_id: str,
         feedback_type: FeedbackType,
         score: float,
-        context: Dict[str, Any] = None,
+        context: Dict[str, object] = None,
         source: str = "system",
-        metadata: Dict[str, Any] = None
+        metadata: Dict[str, object] = None
     ) -> None:
         """
         Add feedback signal to the collection.
@@ -473,7 +473,7 @@ class AdaptiveParameterTuner:
             applied_at=time.time()
         )
     
-    def get_current_parameters(self) -> Dict[str, Any]:
+    def get_current_parameters(self) -> Dict[str, object]:
         """Get current adapted parameters."""
         # Start with defaults
         current_params = {
@@ -520,7 +520,7 @@ class MetaLearningSystem:
         task_id: str,
         feedback_type: FeedbackType,
         score: float,
-        context: Dict[str, Any] = None,
+        context: Dict[str, object] = None,
         source: str = "system"
     ) -> None:
         """
@@ -587,11 +587,11 @@ class MetaLearningSystem:
         
         return adaptations
     
-    def get_adapted_parameters(self) -> Dict[str, Any]:
+    def get_adapted_parameters(self) -> Dict[str, object]:
         """Get current adapted parameters."""
         return self.parameter_tuner.get_current_parameters()
     
-    def get_learning_insights(self) -> Dict[str, Any]:
+    def get_learning_insights(self) -> Dict[str, object]:
         """Get insights about the learning process."""
         feedback_stats = self.feedback_collector.get_feedback_stats()
         

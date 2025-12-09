@@ -165,7 +165,7 @@ class Event:
     event_id: str
     event_type: EventType
     timestamp: datetime
-    payload: Dict[str, Any]
+    payload: Dict[str, object]
     source_agent: Optional[str] = None
     correlation_id: Optional[str] = None
 
@@ -174,9 +174,9 @@ class Event:
 class OutreachMission:
     """Complete mission context"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Optional[Dict[str, Any]] = None
+    sender_profile: Dict[str, object]
+    recipient_profile: Dict[str, object]
+    job_description: Optional[Dict[str, object]] = None
     route: Optional[Route] = None
     archetype: Optional[Archetype] = None
     hyde_queries: List[str] = field(default_factory=list)
@@ -188,9 +188,9 @@ class ResearchContext:
     """Research phase state"""
     iteration: int = 0
     max_iterations: int = 5
-    achievements: List[Dict[str, Any]] = field(default_factory=list)
-    insights: List[Dict[str, Any]] = field(default_factory=list)
-    critique_history: List[Dict[str, Any]] = field(default_factory=list)
+    achievements: List[Dict[str, object]] = field(default_factory=list)
+    insights: List[Dict[str, object]] = field(default_factory=list)
+    critique_history: List[Dict[str, object]] = field(default_factory=list)
     signal_score: float = 0.0
     completed: bool = False
 
@@ -200,28 +200,28 @@ class GenerationContext:
     """Generation phase state - ENHANCED with temperature tracking"""
     iteration: int = 0
     max_iterations: int = 10
-    scaffold: Optional[Dict[str, Any]] = None
-    drafts: List[Dict[str, Any]] = field(default_factory=list)
-    constraint_violations: List[Dict[str, Any]] = field(default_factory=list)
+    scaffold: Optional[Dict[str, object]] = None
+    drafts: List[Dict[str, object]] = field(default_factory=list)
+    constraint_violations: List[Dict[str, object]] = field(default_factory=list)
     completed: bool = False
     # NEW: Temperature tracking
     section_temperatures: Dict[str, float] = field(default_factory=lambda: DEFAULT_TEMPERATURES.copy())
     attempts_per_section: Dict[str, int] = field(default_factory=lambda: {
         "k1_greeting": 0, "k2_subject": 0, "k3_body": 0, "k5_cta": 0, "k6_signature": 0
     })
-    temperature_history: List[Dict[str, Any]] = field(default_factory=list)
+    temperature_history: List[Dict[str, object]] = field(default_factory=list)
 
 
 @dataclass
 class StagingBuffer:
     """Staging buffer for ground truth validation - ENHANCED with checksums"""
-    k1_greeting: Dict[str, Any]
-    k2_subject: Optional[Dict[str, Any]]
-    k3_body: Dict[str, Any]
-    k5_cta: Dict[str, Any]
-    k6_signature: Dict[str, Any]
-    full_message: Dict[str, Any]
-    metadata: Dict[str, Any]
+    k1_greeting: Dict[str, object]
+    k2_subject: Optional[Dict[str, object]]
+    k3_body: Dict[str, object]
+    k5_cta: Dict[str, object]
+    k6_signature: Dict[str, object]
+    full_message: Dict[str, object]
+    metadata: Dict[str, object]
     created_at: datetime = field(default_factory=datetime.now)
     # NEW: Ground truth metrics (recalculated independently)
     ground_truth_word_count: int = 0
@@ -235,7 +235,7 @@ class ValidationResult:
     batch_name: str
     rules_passed: int
     rules_failed: int
-    failures: List[Dict[str, Any]]
+    failures: List[Dict[str, object]]
     severity: ValidationSeverity
     passed: bool
     execution_time: float
@@ -249,7 +249,7 @@ class HopCheckpoint:
     hop_name: str
     timestamp: datetime
     status: AgentStatus
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     checksum: str
     execution_time: float
     validation_results: List[ValidationResult] = field(default_factory=list)
@@ -265,7 +265,7 @@ class OutreachState:
     validation_results: List[ValidationResult] = field(default_factory=list)
     gate_decision: Optional[bool] = None
     workflow_status: AgentStatus = AgentStatus.IDLE
-    error_log: List[Dict[str, Any]] = field(default_factory=list)
+    error_log: List[Dict[str, object]] = field(default_factory=list)
     # NEW: Checkpoints
     hop_checkpoints: List[HopCheckpoint] = field(default_factory=list)
 
@@ -612,7 +612,7 @@ class CheckpointManager:
                          hop_id: str,
                          hop_name: str,
                          state: OutreachState,
-                         metadata: Dict[str, Any],
+                         metadata: Dict[str, object],
                          execution_time: float,
                          validation_results: Optional[List[ValidationResult]] = None) -> HopCheckpoint:
         """Create checkpoint with checksum"""
@@ -695,7 +695,7 @@ class TelemetryService:
             return [m for m in self.metrics if m.metric_name == metric_name]
         return self.metrics
     
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> Dict[str, object]:
         """Get metrics summary"""
         summary = defaultdict(list)
         for metric in self.metrics:
@@ -734,7 +734,7 @@ class LoggingService:
         """Log event"""
         self.logger.info(f"Event: {event.event_type.value} | {event.source_agent}")
     
-    def log_error(self, error: Exception, context: Dict[str, Any]):
+    def log_error(self, error: Exception, context: Dict[str, object]):
         """Log error"""
         self.logger.error(f"Error: {error} | Context: {json.dumps(context)}")
     
@@ -1523,11 +1523,11 @@ class BaseAgent(ABC):
         self.status = AgentStatus.IDLE
     
     @abstractmethod
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Execute agent logic"""
         pass
     
-    async def publish_event(self, event_type: EventType, payload: Dict[str, Any], mission_id: str):
+    async def publish_event(self, event_type: EventType, payload: Dict[str, object], mission_id: str):
         """Publish event to message bus"""
         event = Event(
             event_id=str(uuid4()),
@@ -1540,7 +1540,7 @@ class BaseAgent(ABC):
         await self.message_bus.publish(event)
     
     def create_checkpoint(self, hop_id: str, state: OutreachState, 
-                         metadata: Dict[str, Any], execution_time: float) -> HopCheckpoint:
+                         metadata: Dict[str, object], execution_time: float) -> HopCheckpoint:
         """Create checkpoint for this agent's execution"""
         if not self.checkpoint_manager:
             return None
@@ -1561,7 +1561,7 @@ class BaseAgent(ABC):
 class ProfileAnalysisAgent(BaseAgent):
     """Pre-analysis agent for profile understanding and HYDE query generation"""
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Analyze profiles and generate HYDE queries"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -1664,7 +1664,7 @@ Respond in JSON format:
 class ResearchOrchestrator(BaseAgent):
     """Agentic research loop: Execute-Critique-Replan"""
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Execute research loop with critique and replan"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -1760,7 +1760,7 @@ class ResearchOrchestrator(BaseAgent):
             self.logger.error(f"Research failed: {e}")
             raise AgentExecutionError(f"Research failed: {e}")
     
-    async def _retrieve_achievements(self, state: OutreachState) -> List[Dict[str, Any]]:
+    async def _retrieve_achievements(self, state: OutreachState) -> List[Dict[str, object]]:
         """Retrieve achievements using RAG (mock implementation)"""
         # In production, this would call actual RAG pipeline with 20 retrievers
         achievements = []
@@ -1777,7 +1777,7 @@ class ResearchOrchestrator(BaseAgent):
         
         return achievements
     
-    async def _critique_research(self, state: OutreachState) -> Dict[str, Any]:
+    async def _critique_research(self, state: OutreachState) -> Dict[str, object]:
         """Adversarial critique of research quality"""
         prompt = f"""
 You are an adversarial critic. Evaluate the quality of research for this outreach:
@@ -1804,7 +1804,7 @@ Respond in JSON format.
         response = await self.llm_client.call_claude(prompt, temperature=0.3)
         return json.loads(response)
     
-    async def _replan_queries(self, state: OutreachState, critique: Dict[str, Any]) -> List[str]:
+    async def _replan_queries(self, state: OutreachState, critique: Dict[str, object]) -> List[str]:
         """Generate new HYDE queries based on critique"""
         prompt = f"""
 Based on this critique, generate 2 new search queries to fill gaps:
@@ -1827,7 +1827,7 @@ Respond in JSON format:
 class ScaffoldArchitect(BaseAgent):
     """Build factual scaffold from research"""
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Build scaffold"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -1892,7 +1892,7 @@ Respond in JSON format.
 class GenerationOrchestrator(BaseAgent):
     """Agentic generation loop with progressive temperature optimization"""
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Execute generation loop with constraint enforcement"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -1995,7 +1995,7 @@ class GenerationOrchestrator(BaseAgent):
             self.logger.error(f"Generation failed: {e}")
             raise AgentExecutionError(f"Generation failed: {e}")
     
-    async def _generate_draft(self, state: OutreachState) -> Dict[str, Any]:
+    async def _generate_draft(self, state: OutreachState) -> Dict[str, object]:
         """Generate message draft with section-specific temperatures"""
         constraints = ROUTE_CONSTRAINTS[state.mission.route]
         min_words, max_words = constraints["word_range"]
@@ -2037,7 +2037,7 @@ Respond in JSON format:
         return json.loads(response)
     
     async def _check_constraints(self, state: OutreachState, 
-                                 draft: Dict[str, Any]) -> List[Dict[str, Any]]:
+                                 draft: Dict[str, object]) -> List[Dict[str, object]]:
         """Check draft against constraints"""
         violations = []
         constraints = ROUTE_CONSTRAINTS[state.mission.route]
@@ -2075,7 +2075,7 @@ Respond in JSON format:
         
         return violations
     
-    def _adjust_temperatures(self, state: OutreachState, violations: List[Dict[str, Any]]):
+    def _adjust_temperatures(self, state: OutreachState, violations: List[Dict[str, object]]):
         """Adjust temperatures based on constraint violations"""
         # Simple adjustment strategy: lower temperatures slightly on failure
         for section in state.generation.section_temperatures:
@@ -2088,7 +2088,7 @@ Respond in JSON format:
 class StagingBufferAssembler(BaseAgent):
     """Assemble staging buffer with ground truth recalculation"""
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Create staging buffer with ground truth metrics"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -2104,7 +2104,7 @@ class StagingBufferAssembler(BaseAgent):
             draft = state.generation.drafts[-1]
             
             # Create staging buffer nodes
-            def make_node(text: str) -> Dict[str, Any]:
+            def make_node(text: str) -> Dict[str, object]:
                 return {
                     "raw_text": text,
                     "word_count": len(text.split()),  # LLM-generated (not trusted)
@@ -2198,7 +2198,7 @@ class ValidationAgent(BaseAgent):
         super().__init__(*args, **kwargs)
         self.validation_service = validation_service
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Execute all validation batches"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -2284,7 +2284,7 @@ class GateAgent(BaseAgent):
         super().__init__(*args, **kwargs)
         self.validation_service = validation_service
     
-    async def execute(self, mission_id: str) -> Dict[str, Any]:
+    async def execute(self, mission_id: str) -> Dict[str, object]:
         """Make gate decision"""
         self.status = AgentStatus.RUNNING
         start_time = time.time()
@@ -2406,7 +2406,7 @@ class WorkflowOrchestrator:
         for event_type in EventType:
             self.message_bus.subscribe(event_type, log_event)
     
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """Execute complete workflow with QA report generation"""
         workflow_start = time.time()
         

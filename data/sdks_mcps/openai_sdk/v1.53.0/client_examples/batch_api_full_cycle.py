@@ -5,7 +5,7 @@ Production client for processing large volumes of resume extractions.
 import os
 import time
 import json
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 from openai import OpenAI
 from openai.types.batches import Batch
 
@@ -19,7 +19,7 @@ class BatchProcessor:
     
     def create_batch_file(
         self, 
-        requests: List[Dict[str, Any]], 
+        requests: List[Dict[str, object]], 
         output_path: str
     ) -> str:
         """Create JSONL batch file for submission.
@@ -105,7 +105,7 @@ class BatchProcessor:
         
         raise TimeoutError(f"Batch {batch_id} did not complete within {timeout} seconds")
     
-    def download_results(self, batch: Batch, output_path: str) -> List[Dict[str, Any]]:
+    def download_results(self, batch: Batch, output_path: str) -> List[Dict[str, object]]:
         """Download and parse batch results.
         
         Args:
@@ -134,9 +134,9 @@ class BatchProcessor:
     
     def full_batch_cycle(
         self, 
-        requests: List[Dict[str, Any]],
+        requests: List[Dict[str, object]],
         batch_name: str = "resume_batch"
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute complete batch processing cycle.
         
         Args:
@@ -177,7 +177,7 @@ class BatchProcessor:
         }
 
 
-def create_resume_requests(resumes: List[str]) -> List[Dict[str, Any]]:
+def create_resume_requests(resumes: List[str]) -> List[Dict[str, object]]:
     """Create batch requests for resume extraction.
     
     Args:

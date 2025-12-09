@@ -22,7 +22,7 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, object
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
@@ -45,7 +45,7 @@ class QAReportBuilder:
         self.report_lines = []
         
         # Data loaders
-        self.data: Dict[str, Any] = {
+        self.data: Dict[str, object] = {
             "hop_0": self._load_json(run_dir / "hop_0_thematic_analysis.json"),
             "hop_1": self._load_json(run_dir / "hop_1_clerk_output.json"),
             "hop_3": self._load_json(run_dir / "hop_3_artist_output.json"),

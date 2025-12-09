@@ -11,7 +11,7 @@ import os
 import json
 import logging
 import asyncio
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, object, List, Optional, Tuple
 from datetime import datetime
 
 from core_v10_1 import (
@@ -34,11 +34,11 @@ class BaseTool(BaseAgent):
     """Base interface for tools used by ReAct Conductors"""
     tool_name: str = "base_tool"
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Execute the tool"""
         raise NotImplementedError
     
-    def get_schema(self) -> Dict[str, Any]:
+    def get_schema(self) -> Dict[str, object]:
         """Return the tool's JSON schema"""
         return {
             "name": self.tool_name,
@@ -53,7 +53,7 @@ class BaseTool(BaseAgent):
 class PIISanitizerAgent(BaseAgent):
     """Local PII detection using Presidio (v9.9 security preserved)"""
     
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         """Sanitize PII locally"""
         self.log_info("Sanitizing PII (local processing)...")
         # In a real app, this would use Presidio
@@ -63,7 +63,7 @@ class PIISanitizerAgent(BaseAgent):
 class BiasDetectorAgent(BaseAgent):
     """ROW 7: Local bias detection with dynamic constitution"""
     
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         """Detect bias locally with dynamic rules"""
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         
@@ -110,7 +110,7 @@ class BiasDetectorAgent(BaseAgent):
 class ToTStrategistAgent(BaseAgent):
     """ROW 7: Tree-of-Thought strategist with feedback-aware branch selection"""
     
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Generate strategy with ToT and feedback awareness"""
         self.log_info("Generating ToT strategy with feedback-aware branching...")
         
@@ -177,7 +177,7 @@ Output JSON:
 class PromptEngineerAgent(BaseAgent):
     """ROW 7: LLM-driven prompt engineering with feedback awareness"""
     
-    async def run_async(self, strategy: Dict[str, Any], workflow_id: str) -> Dict[str, str]:
+    async def run_async(self, strategy: Dict[str, object], workflow_id: str) -> Dict[str, str]:
         """Generate prompts with feedback-aware optimization"""
         self.log_info("Engineering prompts with feedback awareness...")
         
@@ -231,7 +231,7 @@ class HyDETool(BaseTool):
     """Generates hypothetical documents for query expansion"""
     tool_name = "generate_hypothetical_documents"
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating HyDE documents...")
         query = tool_input.get("query", "")
         
@@ -255,7 +255,7 @@ class GraphSearchTool(BaseTool):
     """Searches the resume graph/database"""
     tool_name = "search_resume_database"
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         query = tool_input.get("query", "")
         self.log_info(f"Searching resume database for: {query}")
         
@@ -516,7 +516,7 @@ class AsyncBulletCritiqueAgent(BaseAgent):
 class DraftingStrategistTool(BaseTool):
     """(Gemini 2.5 Pro) Reviews the overall strategy and ensures the draft aligns."""
     tool_name = "review_draft_strategy"
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Tool: Reviewing draft strategy (Gemini 2.5 Pro)...")
         client = self.get_model_client("drafting_strategist_model")
         
@@ -535,7 +535,7 @@ Output JSON: {{"status": "success", "feedback": "Your strategic feedback"}}"""
 class DraftingRedTeamTool(BaseTool):
     """(Claude 4.1 Opus) Aggressively critiques the draft for weaknesses."""
     tool_name = "red_team_critique"
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Tool: Red teaming draft (Claude 4.1 Opus)...")
         client = self.get_model_client("drafting_redteam_model")
         
@@ -553,7 +553,7 @@ Output JSON: {{"status": "success", "weaknesses_found": ["weakness 1", "weakness
 class DraftingRefinerTool(BaseTool):
     """(GPT-5) Refines and rewrites specific sections."""
     tool_name = "refine_section"
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Refining section {tool_input.get('section')} (GPT-5)...")
         client = self.get_model_client("drafting_refiner_model")
         
@@ -572,7 +572,7 @@ Output JSON: {{"status": "success", "refined_text": "new refined text..."}}"""
 class DraftingMetricsTool(BaseTool):
     """(Gemini 2.5 Flash) Finds opportunities to add metrics to bullets."""
     tool_name = "add_metrics"
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Tool: Adding metrics (Gemini 2.5 Flash)...")
         client = self.get_model_client("drafting_metrics_model")
         
@@ -603,7 +603,7 @@ class ReActConductorAgent(BaseAgent):
         }
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
 
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct Drafting Conductor...")
         
         feedback_reader = self.context.feedback_reader
@@ -688,7 +688,7 @@ class QABaseValidatorTool(BaseTool):
     """Base class for the 10 T2 validator tools"""
     model_config_name = "qa_validator_model" # Gemini 2.5 Flash
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running {self.tool_name} (Gemini 2.5 Flash)...")
         client = self.get_model_client(self.model_config_name)
         
@@ -701,14 +701,14 @@ class QABaseValidatorTool(BaseTool):
         )
         return response["content"]
         
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         """Subclasses must implement this"""
         raise NotImplementedError
 
 class QAClaimValidatorTool(QABaseValidatorTool):
     """(NLI) Checks if claims in the draft are supported by the master resume."""
     tool_name = "validate_claims"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Perform an NLI check. Are the claims in the draft entailed by the source resume?
 Source: {json.dumps(tool_input.get('master_resume'))}
 Draft: {json.dumps(tool_input.get('draft_text'))}
@@ -717,7 +717,7 @@ Output JSON: {{"status": "success", "unsupported_claims": 0, "feedback": "All cl
 class QAToneValidatorTool(QABaseValidatorTool):
     """Checks if the draft's tone matches the strategy (e.g., 'leadership')."""
     tool_name = "validate_tone"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Check if the draft's tone matches the required tone.
 Required Tone: {json.dumps(tool_input.get('strategy', {}).get('tone'))}
 Draft: {json.dumps(tool_input.get('draft_text'))}
@@ -726,7 +726,7 @@ Output JSON: {{"status": "success", "tone_match": true, "current_tone": "profess
 class QAThematicAlignmentTool(QABaseValidatorTool):
     """Ensures all sections support the central strategy theme."""
     tool_name = "validate_thematic_alignment"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Check if the draft aligns with the strategy's focus areas.
 Strategy: {json.dumps(tool_input.get('strategy'))}
 Draft: {json.dumps(tool_input.get('draft_text'))}
@@ -735,7 +735,7 @@ Output JSON: {{"status": "success", "alignment_score": 0.9, "feedback": "Strongl
 class QASemanticEntailmentTool(QABaseValidatorTool):
     """Checks if bullets are semantically entailed by the job description."""
     tool_name = "validate_semantic_entailment"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Check if the resume draft is semantically entailed by the job description.
 Job Description: {json.dumps(tool_input.get('job_description'))}
 Draft: {json.dumps(tool_input.get('draft_text'))}
@@ -744,7 +744,7 @@ Output JSON: {{"status": "success", "entailment_score": 0.85}}"""
 class QANarrativeThreadTool(QABaseValidatorTool):
     """Checks for a consistent career story/narrative."""
     tool_name = "validate_narrative_thread"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Check this draft for a clear and consistent career narrative.
 Draft: {json.dumps(tool_input.get('draft_text'))}
 Output JSON: {{"status": "success", "narrative_clear": true}}"""
@@ -752,7 +752,7 @@ Output JSON: {{"status": "success", "narrative_clear": true}}"""
 class QAJDSkillsValidatorTool(QABaseValidatorTool):
     """Ensures keywords/skills from the JD are present in the draft."""
     tool_name = "validate_jd_skills"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Check if keywords from the job description are in the draft.
 Job Description: {json.dumps(tool_input.get('job_description'))}
 Draft: {json.dumps(tool_input.get('draft_text'))}
@@ -761,7 +761,7 @@ Output JSON: {{"status": "success", "keyword_coverage": 0.9, "missing_keywords":
 class QASignalScoreValidatorTool(QABaseValidatorTool):
     """Rates the 'signal' (achievement) vs 'noise' (fluff) of each bullet."""
     tool_name = "validate_signal_score"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Rate the 'signal-to-noise' ratio of these bullets (achievements vs. fluff).
 Draft: {json.dumps(tool_input.get('draft_text'))}
 Output JSON: {{"status": "success", "avg_signal_score": 8.5}}"""
@@ -769,7 +769,7 @@ Output JSON: {{"status": "success", "avg_signal_score": 8.5}}"""
 class QATenureValidatorTool(QABaseValidatorTool):
     """Checks for consistency in dates and tenure."""
     tool_name = "validate_tenure"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Check for date/tenure gaps or overlaps in this draft.
 Draft: {json.dumps(tool_input.get('draft_text'))}
 Output JSON: {{"status": "success", "gaps_found": 0, "overlaps_found": 0}}"""
@@ -777,7 +777,7 @@ Output JSON: {{"status": "success", "gaps_found": 0, "overlaps_found": 0}}"""
 class QAMissedOpportunityTool(QABaseValidatorTool):
     """Looks for experience in the master resume that was omitted but is relevant."""
     tool_name = "find_missed_opportunities"
-    def get_prompt(self, tool_input: Dict[str, Any]) -> str:
+    def get_prompt(self, tool_input: Dict[str, object]) -> str:
         return f"""Find relevant experience from the master resume that was missed in the draft.
 Master Resume: {json.dumps(tool_input.get('master_resume'))}
 Draft: {json.dumps(tool_input.get('draft_text'))}
@@ -786,7 +786,7 @@ Output JSON: {{"status": "success", "opportunities_found": ["Add Python project 
 class QAAdversarialReviewerTool(BaseTool):
     """(Claude 4.1 Opus) Acts as a skeptical hiring manager to find flaws."""
     tool_name = "adversarial_review"
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Tool: Running Adversarial Review (Claude 4.1 Opus)...")
         # Design-Aligned: Use qa_adversarial_model
         client = self.get_model_client("qa_adversarial_model")
@@ -805,7 +805,7 @@ Output JSON: {{"status": "success", "red_flags": ["Slight job hop in 2022, but e
 class QABiasDetectorTool(BaseTool):
     """Runs the local bias detector tool on the final draft."""
     tool_name = "validate_bias"
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         bias_agent = BiasDetectorAgent(self.context)
         draft_text = json.dumps(tool_input.get("draft_text", ""))
         return bias_agent.run(draft_text, workflow_id)
@@ -833,7 +833,7 @@ class QAConductorAgent(BaseAgent):
         }
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor with 11 tools...")
         
         feedback_reader = self.context.feedback_reader
@@ -926,7 +926,7 @@ When finished, output:
 class HILAmbiguityDetectorAgent(BaseAgent):
     """Proactively detects ambiguity to trigger HIL"""
     
-    async def run_async(self, strategy: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Detect ambiguity in the strategy"""
         self.log_info("Detecting ambiguity...")
         
@@ -959,7 +959,7 @@ Output JSON:
 class HILFeedbackRouterAgent(BaseAgent):
     """Routes human feedback to the correct next step"""
     
-    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, object]:
         """Routes human feedback"""
         self.log_info(f"Routing human feedback: {human_feedback[:50]}...")
         

@@ -59,7 +59,7 @@ class HotReloadRuleManager:
         self.rules_path = rules_path
         self.auto_approve_threshold = auto_approve_threshold
     
-    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+    def write_proposed_rule(self, rule: Dict[str, object], confidence: float) -> bool:
         try:
             status = "APPROVED" if confidence >= self.auto_approve_threshold else "PROPOSED"
             log_entry = {
@@ -107,7 +107,7 @@ class LogReaderAgent(BaseAgent):
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
     @track_metrics('meta_summarize_logs')
-    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, object]:
         self.log_info("Summarizing logs with LLM (v10.7)...")
         client = self.get_model_client("qa_model")
         
@@ -140,7 +140,7 @@ class AsyncLogSummarizerAgent(BaseAgent):
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
     @track_metrics('meta_find_patterns')
-    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, log_summary: Dict[str, object], workflow_id: str) -> List[Dict]:
         self.log_info("Finding patterns in logs (v10.7)...")
         client = self.get_model_client("strategy_model")
         
@@ -171,7 +171,7 @@ class AsyncPatternFinderAgent(BaseAgent):
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
     @track_metrics('meta_gen_hypotheses')
-    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, object], workflow_id: str) -> List[Dict]:
         self.log_info("Generating hypotheses (v10.7)...")
         client = self.get_model_client("strategy_model")
         
@@ -205,7 +205,7 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
     @track_metrics('meta_draft_proposal')
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Drafting proposal for hypothesis (v10.7)...")
         client = self.get_model_client("prompt_engineer_model")
         
@@ -238,7 +238,7 @@ class AsyncProposalDrafterAgent(BaseAgent):
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
     @track_metrics('meta_critique_proposal')
-    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, proposal: Dict[str, object], patterns: List[Dict], workflow_id: str) -> Dict[str, object]:
         self.log_info("Critiquing proposal (v10.7)...")
         client = self.get_model_client("critique_model")
         
@@ -271,7 +271,7 @@ class AsyncProposalCritiqueAgent(BaseAgent):
 class AsyncToolGeneratorAgent(BaseAgent):
     """Async LLM-based tool code generator."""
     @track_metrics('meta_generate_tool')
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating new tool code from hypothesis (v10.7)...")
         client = self.get_model_client("meta_tool_generator_model")
         
@@ -304,7 +304,7 @@ class AsyncToolGeneratorAgent(BaseAgent):
 class AsyncToolCritiqueAgent(BaseAgent):
     """Async LLM-based tool code critique."""
     @track_metrics('meta_critique_tool')
-    async def run_async(self, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_code: str, workflow_id: str) -> Dict[str, object]:
         self.log_info("Critiquing generated tool code (v10.7)...")
         client = self.get_model_client("meta_tool_critique_model")
         
@@ -334,7 +334,7 @@ class AsyncToolCritiqueAgent(BaseAgent):
 class GeneratedToolWriterAgent(BaseAgent):
     """Local agent to write generated tool code to disk."""
     @track_metrics('meta_write_tool')
-    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Writing generated tool '{tool_name}' to disk...")
         
         try:

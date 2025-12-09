@@ -20,7 +20,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Set, Tuple
+from typing import List, Dict, object, Set, Tuple
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity

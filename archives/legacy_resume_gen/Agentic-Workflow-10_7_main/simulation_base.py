@@ -9,7 +9,7 @@ class SimulationInput(BaseModel):
     """Base class for simulation input payloads."""
 
     simulation_id: str = Field(...)
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: Dict[str, object] = Field(default_factory=dict)
 
 
 class SimulationResult(BaseModel):
@@ -17,8 +17,8 @@ class SimulationResult(BaseModel):
 
     simulation_id: str
     success: bool
-    metrics: Dict[str, Any] = Field(default_factory=dict)
-    details: Dict[str, Any] = Field(default_factory=dict)
+    metrics: Dict[str, object] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
 
 class SimulationBatchResult(BaseModel):

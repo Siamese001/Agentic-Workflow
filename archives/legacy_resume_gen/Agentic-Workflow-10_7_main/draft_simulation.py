@@ -10,7 +10,7 @@ from .simulation_base import SimulationInput, SimulationResult
 class DraftSimRequest(SimulationInput):
     """Input payload for draft simulation."""
 
-    draft_sections: Dict[str, Any]
+    draft_sections: Dict[str, object]
 
 
 class DraftSimMetrics(BaseModel):

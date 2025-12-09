@@ -5,7 +5,7 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Union, Tuple
 
 # Import dependencies from new modules
 from models_RES import (

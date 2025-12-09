@@ -4,7 +4,7 @@
 
 import logging
 import json
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, object, Optional, List, Tuple
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
@@ -197,7 +197,7 @@ class PolicyAgent:
         
         return True
     
-    def get_policy_recommendation(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def get_policy_recommendation(self, context: Dict[str, object]) -> Dict[str, object]:
         """
         Get policy-based recommendations for workflow decisions.
         
@@ -345,7 +345,7 @@ class CostRouter:
         
         return estimated_cost
     
-    def get_cost_report(self) -> Dict[str, Any]:
+    def get_cost_report(self) -> Dict[str, object]:
         """
         Get cost report for current run.
         
@@ -415,7 +415,7 @@ class ContextRelayLayer:
         self.global_context[key] = value
         self.logger.debug(f"Updated global context: {key}")
     
-    def update_phase_context(self, phase: str, context: Dict[str, Any]):
+    def update_phase_context(self, phase: str, context: Dict[str, object]):
         """Update context for a specific phase."""
         self.phase_contexts[phase].update(context)
         self.logger.debug(f"Updated phase context for: {phase}")
@@ -432,7 +432,7 @@ class ContextRelayLayer:
             self.agent_memories[agent] = self.agent_memories[agent][-self.max_memory_items:]
     
     def get_relevant_context(self, agent: str, phase: str, 
-                           task_type: Optional[str] = None) -> Dict[str, Any]:
+                           task_type: Optional[str] = None) -> Dict[str, object]:
         """
         Get relevant context for an agent's current task.
         
@@ -457,7 +457,7 @@ class ContextRelayLayer:
         
         return context
     
-    def _filter_global_context(self, task_type: Optional[str]) -> Dict[str, Any]:
+    def _filter_global_context(self, task_type: Optional[str]) -> Dict[str, object]:
         """Filter global context based on relevance."""
         # If no task type, return essential items only
         if not task_type:
@@ -497,8 +497,8 @@ class ContextRelayLayer:
         
         return hints_map.get(task_type, [])
     
-    def compress_context(self, context: Dict[str, Any], 
-                        max_size: Optional[int] = None) -> Dict[str, Any]:
+    def compress_context(self, context: Dict[str, object], 
+                        max_size: Optional[int] = None) -> Dict[str, object]:
         """
         Compress context to fit size limits.
         
@@ -569,7 +569,7 @@ class CritiqueTool:
             "readability": 0.10
         }
     
-    def critique_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def critique_content(self, content: str, context: Dict[str, object]) -> Dict[str, object]:
         """
         Critique content from multiple perspectives.
         
@@ -610,7 +610,7 @@ class CritiqueTool:
             "pass_threshold": overall_score >= 0.75
         }
     
-    def _evaluate_technical_accuracy(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _evaluate_technical_accuracy(self, content: str, context: Dict[str, object]) -> Dict[str, object]:
         """Evaluate technical accuracy of content."""
         score = 0.85  # Placeholder - would use actual evaluation
         
@@ -625,7 +625,7 @@ class CritiqueTool:
             "feedback": "Technical details are mostly accurate" if score > 0.7 else "Needs more specific technical details"
         }
     
-    def _evaluate_jd_relevance(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _evaluate_jd_relevance(self, content: str, context: Dict[str, object]) -> Dict[str, object]:
         """Evaluate relevance to job description."""
         jd_keywords = context.get("jd_keywords", [])
         if not jd_keywords:
@@ -644,7 +644,7 @@ class CritiqueTool:
             "feedback": f"Matched {matches}/{len(jd_keywords)} key requirements"
         }
     
-    def _evaluate_impact(self, content: str) -> Dict[str, Any]:
+    def _evaluate_impact(self, content: str) -> Dict[str, object]:
         """Evaluate impact and results focus."""
         impact_indicators = ["increased", "improved", "reduced", "saved", "generated", 
                             "delivered", "achieved", "%", "$", "roi"]
@@ -659,7 +659,7 @@ class CritiqueTool:
             "feedback": "Strong results focus" if score > 0.6 else "Add more quantifiable achievements"
         }
     
-    def _evaluate_keywords(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _evaluate_keywords(self, content: str, context: Dict[str, object]) -> Dict[str, object]:
         """Evaluate keyword optimization."""
         target_keywords = context.get("target_keywords", [])
         
@@ -684,7 +684,7 @@ class CritiqueTool:
             "feedback": "Good keyword distribution" if score > 0.7 else "Optimize keyword usage"
         }
     
-    def _evaluate_readability(self, content: str) -> Dict[str, Any]:
+    def _evaluate_readability(self, content: str) -> Dict[str, object]:
         """Evaluate readability of content."""
         sentences = content.split('.')
         words = content.split()
@@ -740,8 +740,8 @@ class HIL_Interface:
         self.intervention_history = []
     
     async def request_human_intervention(self, issue_type: str, 
-                                        context: Dict[str, Any],
-                                        staging_buffer: Optional[Any] = None) -> Dict[str, Any]:
+                                        context: Dict[str, object],
+                                        staging_buffer: Optional[Any] = None) -> Dict[str, object]:
         """
         Request human intervention for critical issues.
         
@@ -779,7 +779,7 @@ class HIL_Interface:
         
         return response
     
-    def _generate_automated_response(self, issue_type: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_automated_response(self, issue_type: str, context: Dict[str, object]) -> Dict[str, object]:
         """
         Generate automated response for common intervention types.
         In production, this would be replaced by actual human input.
@@ -809,11 +809,11 @@ class HIL_Interface:
                 "modifications": {}
             }
     
-    def get_pending_interventions(self) -> List[Dict[str, Any]]:
+    def get_pending_interventions(self) -> List[Dict[str, object]]:
         """Get list of pending interventions."""
         return self.pending_interventions.copy()
     
-    def get_intervention_history(self) -> List[Dict[str, Any]]:
+    def get_intervention_history(self) -> List[Dict[str, object]]:
         """Get history of all interventions."""
         return self.intervention_history.copy()
 
@@ -830,7 +830,7 @@ class TraceRegistry:
         self.traces = []
         self.metrics = defaultdict(list)
     
-    def log(self, level: str, message: str, data: Optional[Dict[str, Any]] = None):
+    def log(self, level: str, message: str, data: Optional[Dict[str, object]] = None):
         """
         Log a trace event.
         
@@ -871,7 +871,7 @@ class TraceRegistry:
         self.metrics[metric_name].append(metric)
     
     def get_traces(self, level: Optional[str] = None, 
-                  start_time: Optional[datetime] = None) -> List[Dict[str, Any]]:
+                  start_time: Optional[datetime] = None) -> List[Dict[str, object]]:
         """
         Get filtered traces.
         
@@ -893,7 +893,7 @@ class TraceRegistry:
         
         return filtered
     
-    def get_metrics_summary(self) -> Dict[str, Any]:
+    def get_metrics_summary(self) -> Dict[str, object]:
         """Get summary of all metrics."""
         summary = {}
         
@@ -910,7 +910,7 @@ class TraceRegistry:
         
         return summary
     
-    def export_audit_trail(self) -> Dict[str, Any]:
+    def export_audit_trail(self) -> Dict[str, object]:
         """Export complete audit trail."""
         return {
             "run_id": self.run_id,

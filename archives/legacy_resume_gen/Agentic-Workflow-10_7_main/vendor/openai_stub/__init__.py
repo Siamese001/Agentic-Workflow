@@ -73,7 +73,7 @@ class AsyncOpenAI:
         self,
         *,
         model: str,
-        messages: List[Dict[str, Any]],
+        messages: List[Dict[str, object]],
         temperature: float = 0.7,
         response_format: Optional[Dict[str, str]] = None,
         **kwargs: Any,

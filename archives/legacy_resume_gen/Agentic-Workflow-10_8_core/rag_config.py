@@ -5,11 +5,11 @@ from typing import Any, Dict, List
 @dataclass
 class RetrievalConfig:
     queries: List[str]
-    filters: Dict[str, Any]
-    ranking: Dict[str, Any]
-    metadata: Dict[str, Any] | None = None
+    filters: Dict[str, object]
+    ranking: Dict[str, object]
+    metadata: Dict[str, object] | None = None
 
-    def to_plan_fragment(self) -> Dict[str, Any]:
+    def to_plan_fragment(self) -> Dict[str, object]:
         return {
             "queries": self.queries,
             "filters": self.filters,

@@ -1069,7 +1069,7 @@ class BaseMoERouter:
             }
         )
     
-    def _aggregate_results(self, expert_results: List[MoEExpertResult]) -> List[Dict[str, Any]]:
+    def _aggregate_results(self, expert_results: List[MoEExpertResult]) -> List[Dict[str, object]]:
         """Aggregate expert results based on aggregation method."""
         # v6.2: Extract the ValidationResult object dict from metadata
         return [er.metadata.get("result_obj") for er in expert_results if "result_obj" in er.metadata]
@@ -1220,7 +1220,7 @@ class ValidationEngine:
         # v6.1: Pass the rules registry to the router
         return router_class(config, self.rules_registry)
     
-    def validate_all(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate_all(self, context: ValidationContext) -> Dict[str, object]:
         """
         Execute all MoE routers and aggregate results.
         REFACTORED: Passes the full ValidationContext or specific parts as needed.

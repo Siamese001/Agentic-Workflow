@@ -52,7 +52,7 @@ class AgentNode:
     """
 
     role: str
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -69,10 +69,10 @@ class AgentGraph:
 
     nodes: Dict[str, AgentNode] = field(default_factory=dict)
     edges: Dict[str, List[str]] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
-def summarize_graph(graph: AgentGraph) -> Dict[str, Any]:
+def summarize_graph(graph: AgentGraph) -> Dict[str, object]:
     """
     Returns lightweight summary of résumé processing agent graph.
 
@@ -207,7 +207,7 @@ def can_delegate(from_role: str, to_role: str) -> bool:
     return False
 
 
-def delegation_metadata(sender: str, recipient: str) -> Dict[str, Any]:
+def delegation_metadata(sender: str, recipient: str) -> Dict[str, object]:
     """Return structured metadata describing permitted/blocked delegation."""
 
     return {
@@ -222,14 +222,14 @@ def delegation_metadata(sender: str, recipient: str) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def deterministic_vote(candidates: List[Dict[str, object]]) -> Dict[str, object]:
     """Simple deterministic vote: highest score, tie-broken by id."""
 
     if not candidates:
         return {"id": None, "score": 0.0, "rationale": "no_candidates"}
 
     # Normalize
-    norm: List[Dict[str, Any]] = []
+    norm: List[Dict[str, object]] = []
     for c in candidates:
         norm.append(
             {
@@ -243,7 +243,7 @@ def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
     return norm[0]
 
 
-def council_vote(graph: AgentGraph, role: str, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def council_vote(graph: AgentGraph, role: str, candidates: List[Dict[str, object]]) -> Dict[str, object]:
     """Deterministic council voting given candidate scores."""
 
     if not candidates:
@@ -263,8 +263,8 @@ def council_vote(graph: AgentGraph, role: str, candidates: List[Dict[str, Any]])
 
 
 def build_council_result(
-    candidates: List[Dict[str, Any]],
-    winner: Dict[str, Any],
+    candidates: List[Dict[str, object]],
+    winner: Dict[str, object],
 ) -> MultiAgentCouncilResult:
     """Build a typed MultiAgentCouncilResult for downstream layers."""
 
@@ -309,10 +309,10 @@ class MultiAgentCoordinator:
 
     graph: AgentGraph
 
-    def summarize(self) -> Dict[str, Any]:
+    def summarize(self) -> Dict[str, object]:
         return summarize_graph(self.graph)
 
-    def route_message(self, message: AgentMessage) -> Dict[str, Any]:
+    def route_message(self, message: AgentMessage) -> Dict[str, object]:
         """Compute routing metadata for conceptual messages."""
 
         sender = str(message.sender)
@@ -331,7 +331,7 @@ class MultiAgentCoordinator:
             "graph_summary": self.summarize(),
         }
 
-    def run_council(self, role: str, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def run_council(self, role: str, candidates: List[Dict[str, object]]) -> Dict[str, object]:
         """Wrapper for council voting returning both raw + typed results."""
 
         result = council_vote(self.graph, role, candidates)
@@ -340,7 +340,7 @@ class MultiAgentCoordinator:
         result["typed"] = typed.dict()
         return result
 
-    def build_patch(self, block_name: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def build_patch(self, block_name: str, payload: Dict[str, object]) -> Dict[str, object]:
         """Return a dict representing an L4-ready patch: {block_name: payload}."""
 
         return {str(block_name): payload}
@@ -357,11 +357,11 @@ class MultiAgentSimulation:
 
     coordinator: MultiAgentCoordinator
 
-    def simulate_routing(self, sender: str, recipient: str, content: Dict[str, Any]) -> Dict[str, Any]:
+    def simulate_routing(self, sender: str, recipient: str, content: Dict[str, object]) -> Dict[str, object]:
         msg = AgentMessage(sender=sender, recipient=recipient, content=content)
         return self.coordinator.route_message(msg)
 
-    def simulate_council(self, role: str) -> Dict[str, Any]:
+    def simulate_council(self, role: str) -> Dict[str, object]:
         dummy_candidates = [
             {"id": 1, "score": 0.72, "rationale": "synthetic"},
             {"id": 2, "score": 0.65, "rationale": "synthetic"},
@@ -371,7 +371,7 @@ class MultiAgentSimulation:
         return result
 
 
-def extract_council_arbitration(result: Dict[str, Any]) -> Dict[str, Any]:
+def extract_council_arbitration(result: Dict[str, object]) -> Dict[str, object]:
     """Return a normalized arbitration summary from a run_council result.
 
     This helper is META-layer only and intended for evaluation/simulation.

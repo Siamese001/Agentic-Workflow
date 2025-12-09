@@ -20,7 +20,7 @@ Usage:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ def _register_vector_tools(mcp):
         collection: str = "default",
         provider: str = "chromadb",
         top_k: int = 5,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Search for similar documents in a vector store.
 
@@ -99,7 +99,7 @@ def _register_vector_tools(mcp):
 
         elif provider == "qdrant":
 
-            # For Qdrant, we need embeddings - use a simple approach
+            # For Qdrant, we need embeddings - use a basic approach
             # In production, you'd use a proper embedding model
             results = client.scroll(collection_name=collection, limit=top_k)
             return [
@@ -118,8 +118,8 @@ def _register_vector_tools(mcp):
         collection: str = "default",
         provider: str = "chromadb",
         ids: Optional[List[str]] = None,
-        metadatas: Optional[List[Dict[str, Any]]] = None,
-    ) -> Dict[str, Any]:
+        metadatas: Optional[List[Dict[str, object]]] = None,
+    ) -> Dict[str, object]:
         """
         Add documents to a vector store collection.
 
@@ -207,7 +207,7 @@ def _register_cache_tools(mcp):
         try:
             client = get_redis_client()
             return client.get(key)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logger.warning(f"Cache get failed: {e}")
             return None
 
@@ -233,7 +233,7 @@ def _register_cache_tools(mcp):
             else:
                 client.set(key, value)
             return True
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logger.warning(f"Cache set failed: {e}")
             return False
 
@@ -253,7 +253,7 @@ def _register_cache_tools(mcp):
         try:
             client = get_redis_client()
             return client.delete(key) > 0
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logger.warning(f"Cache delete failed: {e}")
             return False
 
@@ -273,7 +273,7 @@ def _register_cache_tools(mcp):
         try:
             client = get_redis_client()
             return list(client.scan_iter(match=pattern, count=100))
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logger.warning(f"Cache keys failed: {e}")
             return []
 
@@ -287,7 +287,7 @@ def _register_document_tools(mcp):
     """Register document processing tools."""
 
     @mcp.tool()
-    def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, Any]]:
+    def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, object]]:
         """
         Parse a document and extract structured content.
 
@@ -412,7 +412,7 @@ def _register_resources(mcp):
     """Register MCP resources."""
 
     @mcp.resource("config://sdk-registry")
-    def get_sdk_registry() -> Dict[str, Any]:
+    def get_sdk_registry() -> Dict[str, object]:
         """Get the SDK registry configuration."""
         from .sdk_registry import SDK_REGISTRY
 

@@ -10,7 +10,7 @@ import json
 import re
 
 
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 
 from pydantic import BaseModel, Field
@@ -35,11 +35,11 @@ class PIISanitizerAgent(BaseAgent):
     }
 
     @track_metrics("run_pii_sanitizer")
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
 
-        def sanitize_node(node: Any) -> Any:
+        def sanitize_node(node: object) -> object:
             if isinstance(node, dict):
                 return {k: sanitize_node(v) for k, v in node.items()}
             if isinstance(node, list):
@@ -62,7 +62,7 @@ class BiasDetectorAgent(BaseAgent):
     """Runs local bias detection with dynamic constitution rules."""
 
     @track_metrics("run_bias_detector")
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         result = detect_bias(self.context, text, workflow_id)
 
@@ -86,7 +86,7 @@ class PromptInjectionDetectorAgent(BaseAgent):
         confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the detection")
 
     @track_metrics("run_pi_detector")
-    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting prompt injection...")
 
         if not self.config.agent_stacks.enable_prompt_injection_detection:
@@ -157,7 +157,7 @@ class ConstitutionalReviewerAgent(BaseAgent):
         self,
         final_draft: str,
         workflow_id: str,
-        self_heal_hint: Optional[Dict[str, Any]] = None,
+        self_heal_hint: Optional[Dict[str, object]] = None,
     ) -> ConstitutionalReviewResult:
         self.log_info("Running final constitutional review...")
 

@@ -223,6 +223,28 @@ repos:
         files: \.py$
         pass_filenames: false
 
+      # 14. SOVEREIGN CANON — Max 4 levels total (root + 3) INSIDE the 8 sacred roots
+      - id: sovereign-max-depth
+        name: SOVEREIGN CANON — Max 4 levels deep in sovereign roots
+        entry: >-
+          python -c "
+          import sys, pathlib
+          sovereign = {'agentic_core','apps_lic','apps_rg','apps_shared','schemas','prompt_governance','observability','config'}
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if not any(part in sovereign for part in f.parts): continue
+              root_index = next(i for i, p in enumerate(f.parts) if p in sovereign)
+              depth_inside = len(f.parts) - root_index - 1
+              if depth_inside > 3:
+                  bad.append(f'{f} (depth {depth_inside + 1} inside sovereign root)')
+          if bad:
+              print('EXCESSIVE NESTING IN SOVEREIGN CODE (max 4 levels total):\\n' + '\\n'.join(bad[:40]))
+              sys.exit(1)
+          "
+        language: system
+        files: \.py$
+        pass_filenames: false
+
   # ===================================================================
   # 3. SOVEREIGN-ONLY QUALITY TOOLS
   # ===================================================================

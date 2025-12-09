@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Iterable, Mapping
 
 
-def _as_mapping(obj: Any) -> Mapping[str, Any]:
+def _as_mapping(obj: object) -> Mapping[str, object]:
     if isinstance(obj, Mapping):
         return obj
     if hasattr(obj, "model_dump"):

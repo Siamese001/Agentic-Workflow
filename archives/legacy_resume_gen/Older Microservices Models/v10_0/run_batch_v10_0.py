@@ -14,7 +14,7 @@ import shutil
 import asyncio
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 import redis
 
 from main_v10_0 import setup_logging, load_job_input
@@ -54,7 +54,7 @@ async def process_single_job_async(
     context: WorkflowContext,
     checkpointer: RedisSaver,
     app
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Process single job asynchronously"""
     company, title, status, workflow_id, error_msg = "N/A", "N/A", "FATAL", "N/A", ""
     cost = 0.0

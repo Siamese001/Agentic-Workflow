@@ -6,7 +6,7 @@ __version__ = "13.0"
 
 import re
 import json
-from typing import Dict, List, Any, Tuple, Optional, Callable
+from typing import Dict, List, object, Tuple, Optional, Callable
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -105,7 +105,7 @@ class CodeInterpreterTool:
         candidates: List[str],
         strategic_brief: str,
         criteria: Optional[Dict[str, float]] = None
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Score N candidate messages against strategic brief
         
@@ -210,7 +210,7 @@ class CodeInterpreterTool:
         text: str,
         keyword_set: List[str],
         min_word_length: int = 4
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Calculate keyword overlap between text and keyword set
         
@@ -249,10 +249,10 @@ class CodeInterpreterTool:
     
     def rank_by_metric(
         self,
-        items: List[Dict[str, Any]],
+        items: List[Dict[str, object]],
         metric_key: str,
         descending: bool = True
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Rank items by a metric value
         
@@ -277,7 +277,7 @@ class CodeInterpreterTool:
         text: str,
         expected_sections: List[str],
         section_patterns: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Validate message structure against expected sections
         
@@ -417,7 +417,7 @@ class ValidationToolkit:
         text: str,
         target: int,
         tolerance: float = 0.15
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> Tuple[bool, Dict[str, object]]:
         """
         Check if text is within word count range
         

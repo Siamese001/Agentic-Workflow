@@ -15,7 +15,7 @@ ZERO-LOSS CONSTRAINTS:
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
+from typing import Dict, List, Optional, Set, Tuple, object, Union
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from enum import Enum

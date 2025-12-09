@@ -10,7 +10,7 @@ from mcp import emit_event
 logger = logging.getLogger("telemetry_v10_7")
 
 
-def log_event(agent: str, event: str, data: Optional[Dict[str, Any]] = None) -> None:
+def log_event(agent: str, event: str, data: Optional[Dict[str, object]] = None) -> None:
     """Emit a telemetry event while preserving local logging."""
 
     payload = {

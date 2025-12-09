@@ -239,7 +239,7 @@ class WorkflowRePlannerAgent:
 
 class JDParserAgent:
     """Parses job description."""
-    def execute(self, raw_jd: str) -> Dict[str, Any]:
+    def execute(self, raw_jd: str) -> Dict[str, object]:
         return {"parsed_jd": raw_jd[:100], "themes": ["AI", "Leadership"]}
 
 class ThemeIdentifierAgent:
@@ -254,7 +254,7 @@ class ThemeRankerAgent:
 
 class GapAnalysisAgent:
     """Analyzes gaps between resume and JD."""
-    def execute(self, themes: List[str], master_resume: Dict) -> Dict[str, Any]:
+    def execute(self, themes: List[str], master_resume: Dict) -> Dict[str, object]:
         return {"gaps": ["Partnership Development", "M&A Experience"]}
 
 class DifferentiatorAgent:
@@ -308,7 +308,7 @@ class RAG_QueryGeneratorAgent:
 
 class RAG_SearchAgent:
     """Executes RAG searches (ReAct + MoE)."""
-    def execute(self, queries: List[str], blackboard: RAG_Blackboard) -> Dict[str, Any]:
+    def execute(self, queries: List[str], blackboard: RAG_Blackboard) -> Dict[str, object]:
         return {"results": ["Document 1", "Document 2", "Document 3"]}
 
 class RAG_ChunkingAgent:
@@ -484,7 +484,7 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     workflow_id: str
 
 # ============================================================================
@@ -643,7 +643,7 @@ class Governor:
         blackboard.artifacts["validation_results"] = validation_results
         return validation_results
     
-    def process_request(self, context: CrewContext) -> Dict[str, Any]:
+    def process_request(self, context: CrewContext) -> Dict[str, object]:
         """
         V5.8.1 Main orchestration with optional Conductor.
         """
@@ -770,8 +770,8 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(__name__)
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any],
-                               workflow_id: str) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object],
+                               workflow_id: str) -> Dict[str, object]:
         """Process complete job application."""
         self.logger.info(f"📋 Orchestrating: {company_name} - {job_title}")
         

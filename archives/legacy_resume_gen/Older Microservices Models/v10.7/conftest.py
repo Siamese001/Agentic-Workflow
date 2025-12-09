@@ -23,7 +23,7 @@ import pytest
 <<<<<<< HEAD
 =======
 =======
-from unittest.mock import AsyncMock, MagicMock, ANY, patch
+from unittest.mock import AsyncMock, MagicMock, object, patch
 
 import pytest
 
@@ -209,7 +209,7 @@ class DummyEmbeddingFunction:
 # -------------------------------------------------------------------
 class FakeCollection:
     def __init__(self):
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(self, *, embeddings, documents, metadatas, ids):
         for doc, meta, record_id in zip(documents, metadatas, ids):
@@ -264,14 +264,14 @@ class DummyEmbeddingFunction:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(
         self,
         *,
         embeddings: List[List[float]],
         documents: List[str],
-        metadatas: List[Dict[str, Any]],
+        metadatas: List[Dict[str, object]],
         ids: List[str],
     ) -> None:
         for doc, metadata, record_id in zip(documents, metadatas, ids):
@@ -282,8 +282,8 @@ class FakeCollection:
         *,
         query_embeddings: List[List[float]],
         n_results: int,
-        where: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        where: Dict[str, object],
+    ) -> Dict[str, object]:
         for record in self.records.values():
             metadata = record["metadata"]
             if all(metadata.get(key) == value for key, value in where.items()):
@@ -595,7 +595,7 @@ def mock_context_budget_manager() -> Any:
 
 
 @pytest.fixture()
-def base_state() -> Dict[str, Any]:
+def base_state() -> Dict[str, object]:
 >>>>>>> main
 >>>>>>> main
 >>>>>>> main

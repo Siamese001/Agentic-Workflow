@@ -9,7 +9,7 @@ import re
 import json
 import hashlib
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Union
 from models_RES import JDEnforcementRule, JDEnforcementResult
 from config_RES_v2 import CONFIG
 

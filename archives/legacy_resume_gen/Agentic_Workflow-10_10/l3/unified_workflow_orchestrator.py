@@ -47,7 +47,7 @@ class UnifiedWorkflowOrchestrator:
         self.state_manager = state_manager
         self.safety_validator = safety_validator
     
-    def orchestrate_full_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, Any]:
+    def orchestrate_full_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, object]:
         """Orchestrate complete workflow - pure control flow only."""
         record_event("full_workflow_start", {})
         

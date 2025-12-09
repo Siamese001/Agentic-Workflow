@@ -39,7 +39,7 @@ class SafetyGateway:
         self.injection_detector = injection_detector or InjectionDetector()
         self.safety_mode = safety_mode
 
-    def evaluate(self, payload: Dict[str, Any]) -> StatePatch:
+    def evaluate(self, payload: Dict[str, object]) -> StatePatch:
         """Perform safety checks on the provided payload and return a StatePatch."""
 
         content = str(payload.get("content", ""))

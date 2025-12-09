@@ -8,7 +8,7 @@ import json
 import hashlib
 from unittest.mock import Mock, MagicMock, patch, AsyncMock
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # Import components to test (adjust imports based on actual structure)
 try:

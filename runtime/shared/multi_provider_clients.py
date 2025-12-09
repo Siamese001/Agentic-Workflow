@@ -38,7 +38,7 @@ import os
 import threading
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Dict, List, Optional, Type, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class ProviderConfig:
 # SINGLETON CLIENT STORAGE
 # =============================================================================
 
-_clients: Dict[Provider, Any] = {}
+_clients: Dict[Provider, object] = {}
 _lock = threading.Lock()
 
 
@@ -125,7 +125,7 @@ def get_client(
     provider: Provider,
     config: Optional[ProviderConfig] = None,
     async_client: bool = True,
-) -> Any:
+) -> object:
     """
     Get a singleton client for the specified provider.
 
@@ -166,7 +166,7 @@ def _create_client(
     provider: Provider,
     config: ProviderConfig,
     async_client: bool,
-) -> Any:
+) -> object:
     """Create a new client instance for the provider."""
 
     if provider == Provider.OPENAI:
@@ -242,8 +242,8 @@ async def get_litellm_completion(
     model: str,
     messages: List[Dict[str, str]],
     fallbacks: Optional[List[str]] = None,
-    **kwargs: Any,
-) -> Any:
+    **kwargs: object,
+) -> object:
     """
     Get a completion using LiteLLM with optional fallback routing.
 
@@ -284,8 +284,8 @@ def get_litellm_completion_sync(
     model: str,
     messages: List[Dict[str, str]],
     fallbacks: Optional[List[str]] = None,
-    **kwargs: Any,
-) -> Any:
+    **kwargs: object,
+) -> object:
     """Synchronous version of get_litellm_completion."""
     import litellm
 
@@ -314,7 +314,7 @@ def get_structured_output(
     model: str,
     response_model: Type[T],
     messages: List[Dict[str, str]],
-    **kwargs: Any,
+    **kwargs: object,
 ) -> T:
     """
     Get a structured output using Instructor with any provider.

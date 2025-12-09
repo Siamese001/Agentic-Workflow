@@ -1,11 +1,11 @@
-from typing import Dict, Any
+from typing import Dict, object
 
 from self_correction import SelfCorrectionSurface, should_retry
 
 
 def evaluate_correction(
-    surface: SelfCorrectionSurface, state: Dict[str, Any], last_patch: Dict[str, Any]
-) -> Dict[str, Any]:
+    surface: SelfCorrectionSurface, state: Dict[str, object], last_patch: Dict[str, object]
+) -> Dict[str, object]:
     """
     Deterministic metadata-only correction recommendation generator.
     """

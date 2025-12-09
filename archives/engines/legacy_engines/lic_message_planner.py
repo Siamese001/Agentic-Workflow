@@ -26,7 +26,7 @@ class MessageSection:
     temperature_adjustment: float = 0.0
     content_strategy: str = "standard"
     word_count_target: Optional[int] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -39,7 +39,7 @@ class MessagePlan:
     priority_order: List[str]
     total_target_length: int
     confidence_score: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -52,7 +52,7 @@ class MessageContent:
     key_points: List[str]
     personalization_elements: List[str]
     constraints: List[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class MessagePlanner:
@@ -131,7 +131,7 @@ class MessagePlanner:
         # Section priority order
         self.default_priority = ["subject", "hook", "value", "cta", "signature"]
     
-    def _build_section_templates(self) -> Dict[str, Dict[str, Any]]:
+    def _build_section_templates(self) -> Dict[str, Dict[str, object]]:
         """Build section templates for message planning."""
         return {
             "subject": {
@@ -179,7 +179,7 @@ class MessagePlanner:
         persona_plan: Optional[Any] = None,
         grounding_plan: Optional[Any] = None,
         fusion_plan: Optional[Any] = None,
-        outreach_context: Dict[str, Any] = None,
+        outreach_context: Dict[str, object] = None,
     ) -> MessagePlan:
         """Generate a comprehensive message structure plan.
         
@@ -415,7 +415,7 @@ class MessagePlanner:
         
         return unique_constraints
     
-    def _determine_priority_order(self, archetype: str, context: Dict[str, Any]) -> List[str]:
+    def _determine_priority_order(self, archetype: str, context: Dict[str, object]) -> List[str]:
         """Determine section priority order based on archetype and context."""
         base_order = self.default_priority.copy()
         
@@ -468,7 +468,7 @@ class MessagePlanner:
         except Exception as e:
             logger.debug(f"Failed to record telemetry: {e}")
     
-    def get_message_summary(self, plan: MessagePlan) -> Dict[str, Any]:
+    def get_message_summary(self, plan: MessagePlan) -> Dict[str, object]:
         """Get a summary of the message plan for debugging/telemetry."""
         return {
             "plan_id": f"message_{plan.archetype}_{plan.confidence_score:.2f}",

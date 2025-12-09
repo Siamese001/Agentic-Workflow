@@ -191,7 +191,7 @@ def list_prompt_ids() -> List[str]:
 # ============================================================================
 
 
-def _acl_meta(layers: List[str], agents: List[str], tiers: List[str]) -> Dict[str, Any]:
+def _acl_meta(layers: List[str], agents: List[str], tiers: List[str]) -> Dict[str, object]:
     return {
         "acl": {
             "layers": layers,

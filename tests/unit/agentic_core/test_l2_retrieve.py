@@ -1,6 +1,6 @@
 """Unit tests for L2_execution/P1_retrieve - execution context retrieval."""
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, object
 
 class TestExecutionContextRetrieval:
     """Tests for retrieving execution context."""
@@ -17,7 +17,7 @@ class TestExecutionContextRetrieval:
 
     def test_retrieve_missing_tool(self):
         """Negative: Missing tool returns None."""
-        tools: Dict[str, Any] = {}
+        tools: Dict[str, object] = {}
         retrieved = tools.get("nonexistent")
         assert retrieved is None
 

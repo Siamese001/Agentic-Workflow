@@ -10,7 +10,7 @@ from typing import Any, Dict
 class GenerativeModel:
     name: str
 
-    def generate_content(self, prompt: str, **_: Any) -> Dict[str, Any]:
+    def generate_content(self, prompt: str, **_: Any) -> Dict[str, object]:
         return {
             "model": self.name,
             "prompt": prompt,

@@ -8,7 +8,7 @@ import pytest
 from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
 
 
-async def _id_node(ctx: Dict[str, Any]) -> Dict[str, Any]:
+async def _id_node(ctx: Dict[str, object]) -> Dict[str, object]:
     return dict(ctx)
 
 

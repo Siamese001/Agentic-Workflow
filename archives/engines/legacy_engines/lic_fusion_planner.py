@@ -26,7 +26,7 @@ class ValueProposition:
     angle: str                           # e.g. "strategic", "operational", "technical"
     expected_impact: str                 # short description of why this matters
     relevance_score: float = 0.0         # calculated relevance score
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -38,7 +38,7 @@ class MessageSectionPlan:
     tone_guidance: str                   # e.g. "concise and executive", "signal-aware", etc.
     cta_guidance: Optional[str]          # for "cta" sections, explicit CTA guidance
     word_count_target: Optional[int]     # target word count for this section
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -52,7 +52,7 @@ class FusionPlan:
     primary_cta_style: str               # e.g. "light_touch", "exploratory_call", "direct"
     fallback_cta_style: str              # used if CTA deemed too strong
     confidence_score: float = 0.0        # overall plan confidence
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class FusionPlanner:
@@ -84,8 +84,8 @@ class FusionPlanner:
         role_title: str,
         company_name: str,
         archetype: str,
-        resume_features: Dict[str, Any],
-        research_signals: Dict[str, Any],
+        resume_features: Dict[str, object],
+        research_signals: Dict[str, object],
         rag_evidence: List[Any] = None,
     ) -> FusionPlan:
         """Generate a deterministic fusion plan from resume + signals.
@@ -150,7 +150,7 @@ class FusionPlanner:
         
         return plan
     
-    def _extract_achievements(self, resume_features: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_achievements(self, resume_features: Dict[str, object]) -> List[Dict[str, object]]:
         """Extract achievements from resume features."""
         achievements = []
         
@@ -192,7 +192,7 @@ class FusionPlanner:
         logger.debug(f"Extracted {len(achievements)} achievements from resume")
         return achievements
     
-    def _extract_signals(self, research_signals: Dict[str, Any], rag_evidence: List[Any] = None) -> List[Dict[str, Any]]:
+    def _extract_signals(self, research_signals: Dict[str, object], rag_evidence: List[Any] = None) -> List[Dict[str, object]]:
         """Extract signals from research outputs and RAG evidence."""
         signals = []
         
@@ -233,8 +233,8 @@ class FusionPlanner:
     
     def _pair_achievements_and_signals(
         self, 
-        achievements: List[Dict[str, Any]], 
-        signals: List[Dict[str, Any]], 
+        achievements: List[Dict[str, object]], 
+        signals: List[Dict[str, object]], 
         archetype: str
     ) -> List[ValueProposition]:
         """Generate value propositions by pairing achievements with signals."""
@@ -345,7 +345,7 @@ class FusionPlanner:
         else:
             return "standard", "friendly"
     
-    def _calculate_confidence_score(self, value_props: List[ValueProposition], signals: List[Dict[str, Any]]) -> float:
+    def _calculate_confidence_score(self, value_props: List[ValueProposition], signals: List[Dict[str, object]]) -> float:
         """Calculate overall confidence score for the fusion plan."""
         if not value_props:
             return 0.0
@@ -374,7 +374,7 @@ class FusionPlanner:
         }
         return angle_map.get(archetype, ["general"])
     
-    def _calculate_relevance(self, achievement: Dict[str, Any], signal: Dict[str, Any], archetype: str) -> float:
+    def _calculate_relevance(self, achievement: Dict[str, object], signal: Dict[str, object], archetype: str) -> float:
         """Calculate relevance score between achievement and signal."""
         # Simple relevance calculation - can be enhanced with NLP
         base_score = 0.5
@@ -395,7 +395,7 @@ class FusionPlanner:
         
         return min(base_score, 1.0)
     
-    def _determine_angle(self, achievement: Dict[str, Any], signal: Dict[str, Any], archetype_angles: List[str]) -> str:
+    def _determine_angle(self, achievement: Dict[str, object], signal: Dict[str, object], archetype_angles: List[str]) -> str:
         """Determine the content angle for a value proposition."""
         content = (achievement.get("content", "") + " " + signal.get("content", "")).lower()
         
@@ -405,21 +405,21 @@ class FusionPlanner:
         
         return archetype_angles[0] if archetype_angles else "general"
     
-    def _create_achievement_snippet(self, achievement: Dict[str, Any]) -> str:
+    def _create_achievement_snippet(self, achievement: Dict[str, object]) -> str:
         """Create a concise snippet from achievement."""
         content = achievement.get("content", "")
         if len(content) > 100:
             return content[:97] + "..."
         return content
     
-    def _create_signal_snippet(self, signal: Dict[str, Any]) -> str:
+    def _create_signal_snippet(self, signal: Dict[str, object]) -> str:
         """Create a concise snippet from signal."""
         content = signal.get("content", "")
         if len(content) > 100:
             return content[:97] + "..."
         return content
     
-    def _create_impact_statement(self, achievement: Dict[str, Any], signal: Dict[str, Any], angle: str) -> str:
+    def _create_impact_statement(self, achievement: Dict[str, object], signal: Dict[str, object], angle: str) -> str:
         """Create impact statement for value proposition."""
         impact_templates = {
             "strategic": "Aligns with strategic objectives and market positioning",
@@ -477,7 +477,7 @@ class FusionPlanner:
         }
         return guidance_map.get(archetype, "Suggest follow-up discussion")
     
-    def get_fusion_summary(self, plan: FusionPlan) -> Dict[str, Any]:
+    def get_fusion_summary(self, plan: FusionPlan) -> Dict[str, object]:
         """Get a summary of the fusion plan for debugging/telemetry."""
         return {
             "plan_id": f"fusion_{plan.role_title}_{plan.company_name}",

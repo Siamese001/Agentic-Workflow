@@ -113,7 +113,7 @@ class WorkflowOrchestrator:
         self.master_resume = master_resume
         
         # --- V2 In-Memory State ---
-        self.drafts: Dict[ResumeSection, Any] = {}
+        self.drafts: Dict[ResumeSection, object] = {}
         self.failures: Dict[ResumeSection, int] = defaultdict(int)
         self.thematic_analysis: Optional[ThematicAnalysis] = None
         self.enriched_scaffold: Optional[Dict] = None

@@ -7,7 +7,7 @@ __version__ = "12.0"
 import re
 import json
 import os
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, object, Tuple, Optional
 from pathlib import Path
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -280,7 +280,7 @@ class SignalQualityScorer:
         self,
         rag_results: List[RAGResult],
         message_content: str
-    ) -> Tuple[float, Dict[str, Any]]:
+    ) -> Tuple[float, Dict[str, object]]:
         """
         Calculate aggregate signal quality score
         
@@ -487,7 +487,7 @@ class MessageDiversityValidator:
         self.session_history: List[str] = []
         self.vectorizer = TfidfVectorizer()
         self.ledger_path = Path(self.LEDGER_FILE)
-        self.persistent_history: List[Dict[str, Any]] = []
+        self.persistent_history: List[Dict[str, object]] = []
         
         # Load persistent ledger on init
         self._load_ledger()
@@ -668,7 +668,7 @@ class ValidationAgent:
         
         return grounding
     
-    def _load_voice_profile(self) -> Dict[str, Any]:
+    def _load_voice_profile(self) -> Dict[str, object]:
         """
         v12.0: Load sender voice profile for forbidden phrase validation
         """

@@ -1,7 +1,7 @@
 """E2E tests for admin system management flows."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any
+from typing import Dict, List, object
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime, timedelta
@@ -32,7 +32,7 @@ class AuditEntry:
     user_id: str
     action: str
     resource: str
-    details: Dict[str, Any]
+    details: Dict[str, object]
 
 
 class TestSystemMonitoringE2E:

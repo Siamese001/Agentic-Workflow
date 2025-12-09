@@ -22,8 +22,8 @@ class PromptEngineerAgent(BaseAgent):
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
-        state: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         state_ref = state if isinstance(state, dict) else None
         autonomy = getattr(self.context, "autonomy_engine", None)
         if autonomy and autonomy.enabled():
@@ -68,8 +68,8 @@ class PromptEngineerAgent(BaseAgent):
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
-        self_heal_hint: Optional[Dict[str, Any]] = None,
-    ) -> Tuple[Dict[str, Any], GeneratedPrompts]:
+        self_heal_hint: Optional[Dict[str, object]] = None,
+    ) -> Tuple[Dict[str, object], GeneratedPrompts]:
         self.log_info(f"Engineering prompts (Complexity: {complexity})...")
 
         hint = self_heal_hint or {}
@@ -141,9 +141,9 @@ class PromptEngineerAgent(BaseAgent):
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
-        base_result: Dict[str, Any],
+        base_result: Dict[str, object],
         validated_output: GeneratedPrompts,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         manager = getattr(self, "self_correction_manager", None)
         if not manager:
             return base_result

@@ -8,7 +8,7 @@ Essential for enterprise compliance (GDPR/CCPA).
 
 import re
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -206,7 +206,7 @@ class PIIScrubber:
             text = text.replace(placeholder, original)
         return text
     
-    def get_pii_summary(self, result: PIIResult) -> Dict[str, Any]:
+    def get_pii_summary(self, result: PIIResult) -> Dict[str, object]:
         """Get summary of PII detection results."""
         return {
             "total_pii_found": len(result.detected_pii),
@@ -225,7 +225,7 @@ class PIIScrubber:
         
         Args:
             text: Text to validate
-            strict: If True, any PII detection fails compliance
+            strict: If True, object PII detection fails compliance
             
         Returns:
             True if compliant, False otherwise

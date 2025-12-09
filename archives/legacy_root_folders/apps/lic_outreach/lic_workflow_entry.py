@@ -5,7 +5,7 @@ Functional wiring for LIC vertical slice using real L1-L3 component APIs.
 Implements actual pipeline execution with proper dependency injection.
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, object
 import logging
 import uuid
 from dataclasses import dataclass
@@ -33,10 +33,10 @@ class LICPipelineResult:
     """Result from LIC pipeline execution."""
     success: bool
     message: Optional[str] = None
-    research_data: Optional[List[Dict[str, Any]]] = None
+    research_data: Optional[List[Dict[str, object]]] = None
     archetype_context: Optional[ArchetypeContext] = None
     error: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, object]] = None
 
 
 def run_single_outreach(

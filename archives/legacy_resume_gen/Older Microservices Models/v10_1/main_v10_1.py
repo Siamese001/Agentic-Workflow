@@ -15,7 +15,7 @@ import argparse
 import uuid
 import redis
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 from core_v10_1 import (
     CONFIG, WorkflowContext, MainGraphState,
@@ -46,7 +46,7 @@ def setup_logging(debug_mode: bool = False):
     
     logger.info(f"v10.1 Logging initialized: {CONFIG.logging_config.log_file}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> Dict[str, object]:
     """Load job input JSON"""
     try:
         with open(path, 'r') as f:
@@ -63,7 +63,7 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True  # Changed: HIL enabled by default for single run
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Run workflow asynchronously with feedback-driven adaptation"""
     
     logger.info(f"===== Starting v10.1 Feedback-Driven Workflow ({datetime.now().isoformat()}) =====")

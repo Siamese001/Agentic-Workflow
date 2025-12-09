@@ -102,7 +102,7 @@ class WorkflowTimeoutError(Exception):
 class MetricEvent:
     name: str
     value: float
-    tags: Dict[str, Any]
+    tags: Dict[str, object]
 
 
 @dataclass
@@ -110,7 +110,7 @@ class SpanEvent:
     name: str
     start_time_ms: float
     end_time_ms: float
-    tags: Dict[str, Any] = field(default_factory=dict)
+    tags: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -121,10 +121,10 @@ class TraceContext:
 
 
 # Ephemeral telemetry buffer
-_TELEMETRY_EVENTS: List[Dict[str, Any]] = []
+_TELEMETRY_EVENTS: List[Dict[str, object]] = []
 
 
-def record_event(name: str, payload: Dict[str, Any]) -> None:
+def record_event(name: str, payload: Dict[str, object]) -> None:
     """
     Append a telemetry event to the in-memory list.
 
@@ -143,7 +143,7 @@ def record_event(name: str, payload: Dict[str, Any]) -> None:
         pass
 
 
-def get_events() -> List[Dict[str, Any]]:
+def get_events() -> List[Dict[str, object]]:
     """
     Return a shallow copy of the telemetry event list.
 
@@ -190,13 +190,13 @@ class CostTracker:
         if name in self.spans and self.spans[name]["end"] is None:
             self.spans[name]["end"] = time.perf_counter()
 
-    def snapshot(self) -> Dict[str, Any]:
+    def snapshot(self) -> Dict[str, object]:
         """
         Return a deterministic snapshot of spans:
 
             {"spans": [{"name": str, "duration_ms": float}, ...]}
         """
-        out: List[Dict[str, Any]] = []
+        out: List[Dict[str, object]] = []
         for n in sorted(self.spans.keys()):
             s = self.spans.get(n) or {}
             start = s.get("start") or 0.0
@@ -206,7 +206,7 @@ class CostTracker:
         return {"spans": out}
 
 
-def compute_optimization_hint(spans: List[Dict[str, Any]]) -> Dict[str, Any]:
+def compute_optimization_hint(spans: List[Dict[str, object]]) -> Dict[str, object]:
     """
     Deterministic optimization hint based on planning/execution durations.
 
@@ -233,7 +233,7 @@ class Optimization:
     """
 
     @staticmethod
-    def compute_hint(spans: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def compute_hint(spans: List[Dict[str, object]]) -> Dict[str, object]:
         return compute_optimization_hint(spans)
 
 
@@ -252,7 +252,7 @@ class Retrieval:
     """
 
     @staticmethod
-    def normalize_documents(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def normalize_documents(results: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """
         Normalize retrieval items into canonical:
 
@@ -260,7 +260,7 @@ class Retrieval:
 
         Missing keys are defaulted to safe values.
         """
-        out: List[Dict[str, Any]] = []
+        out: List[Dict[str, object]] = []
         for r in results or []:
             out.append(
                 {
@@ -272,13 +272,13 @@ class Retrieval:
         return out
 
     @staticmethod
-    def dedupe_results(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def dedupe_results(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """
         Remove duplicate (query, evidence) pairs while preserving the
         first occurrence.
         """
         seen = set()
-        out: List[Dict[str, Any]] = []
+        out: List[Dict[str, object]] = []
         for it in items or []:
             key = (it.get("query", ""), it.get("evidence", ""))
             if key not in seen:
@@ -287,7 +287,7 @@ class Retrieval:
         return out
 
     @staticmethod
-    def rerank_results(items: List[Dict[str, Any]], strategy: str) -> List[Dict[str, Any]]:
+    def rerank_results(items: List[Dict[str, object]], strategy: str) -> List[Dict[str, object]]:
         """
         Optional post-ranking pass based on strategy.
 
@@ -302,12 +302,12 @@ class Retrieval:
         return items
 
     @staticmethod
-    def fuse_results(lists: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    def fuse_results(lists: List[List[Dict[str, object]]]) -> List[Dict[str, object]]:
         """
         Merge multiple retrieval lists into a single normalized list,
         sorted by (query, rank).
         """
-        merged: List[Dict[str, Any]] = []
+        merged: List[Dict[str, object]] = []
         for lst in lists or []:
             for item in lst or []:
                 merged.append(dict(item))
@@ -337,11 +337,11 @@ class Ranking:
         return int(digest, 16) % 100000
 
     @staticmethod
-    def bm25_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def bm25_rank(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """
         Heuristic BM25-like ranking based on evidence length.
         """
-        scored: List[Dict[str, Any]] = []
+        scored: List[Dict[str, object]] = []
         for it in items or []:
             ev = str(it.get("evidence", ""))
             score = len(ev)
@@ -350,11 +350,11 @@ class Ranking:
         return scored
 
     @staticmethod
-    def dense_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def dense_rank(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """
         Heuristic dense ranking based on SHA hash of the query.
         """
-        scored: List[Dict[str, Any]] = []
+        scored: List[Dict[str, object]] = []
         for it in items or []:
             q = str(it.get("query", ""))
             score = Ranking._score_dense(q)
@@ -363,13 +363,13 @@ class Ranking:
         return scored
 
     @staticmethod
-    def hybrid_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def hybrid_rank(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """
         Hybrid = average of (bm25_score + dense_score).
 
         This is a simple way of fusing lexical and pseudo-semantic signals.
         """
-        scored: List[Dict[str, Any]] = []
+        scored: List[Dict[str, object]] = []
         for it in items or []:
             ev = str(it.get("evidence", ""))
             q = str(it.get("query", ""))
@@ -414,7 +414,7 @@ class RAGUtils:
         return evidence[:max_len].rstrip()
 
     @staticmethod
-    def build_metadata(query: str, evidence: str, rank: int) -> Dict[str, Any]:
+    def build_metadata(query: str, evidence: str, rank: int) -> Dict[str, object]:
         """Build deterministic metadata for a query/evidence/rank triple."""
         snippet = RAGUtils.extract_snippet(evidence)
         return {
@@ -425,13 +425,13 @@ class RAGUtils:
         }
 
     @staticmethod
-    def normalize_rag_results(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def normalize_rag_results(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """
         Normalize a list of RAG items into the canonical structure:
 
             {"query": str, "evidence": str, "rank": int, "metadata": {...}}
         """
-        out: List[Dict[str, Any]] = []
+        out: List[Dict[str, object]] = []
         for it in items or []:
             q = str(it.get("query", ""))
             ev = RAGUtils.normalize_evidence(it.get("evidence"))
@@ -447,7 +447,7 @@ class RAGUtils:
         return out
 
     @staticmethod
-    def fuse_multi_query_results(sources: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    def fuse_multi_query_results(sources: List[List[Dict[str, object]]]) -> List[Dict[str, object]]:
         """
         Fuse results from multiple queries into a single, deduplicated,
         ranked list.
@@ -459,13 +459,13 @@ class RAGUtils:
             4. Sort by fusion score descending.
             5. Reassign ranks deterministically.
         """
-        merged: List[Dict[str, Any]] = []
+        merged: List[Dict[str, object]] = []
         for source in sources or []:
             if not source:
                 continue
             merged.extend(source)
 
-        deduped: Dict[tuple, Dict[str, Any]] = {}
+        deduped: Dict[tuple, Dict[str, object]] = {}
         for it in merged:
             key = (
                 str(it.get("query", "")).lower(),

@@ -6,7 +6,7 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, object, Dict, Optional
 
 from .constants import legacy_model_alias
 from .services import track_metrics
@@ -39,7 +39,7 @@ class BaseAgent:
     def log_debug(self, message: str):
         if self.debug_mode: self.logger.debug(f"[{self.__class__.__name__}] {message}")
     
-    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, Any]):
+    def log_feedback(self, workflow_id: str, task: str, feedback_type: str, details: Dict[str, object]):
         try:
             feedback_entry = {
                 "timestamp": datetime.now().isoformat(), "workflow_id": workflow_id,
@@ -133,7 +133,7 @@ class BaseTool(BaseAgent):
     tool_name: str = "base_tool"
     
     @track_metrics('base_tool_run')
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """v10.7: Wrapper to implement tool caching."""
         if not self.config.caching_config.enable_tool_caching:
             return await self._run_async_internal(tool_input, workflow_id)
@@ -151,11 +151,11 @@ class BaseTool(BaseAgent):
         cache_manager.set_tool_cache(self.tool_name, tool_input, result)
         return result
 
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Subclasses must implement their logic here"""
         raise NotImplementedError(f"Tool {self.__class__.__name__} must implement _run_async_internal")
     
-    def get_schema(self) -> Dict[str, Any]:
+    def get_schema(self) -> Dict[str, object]:
         return {
             "name": self.tool_name,
             "description": self.__doc__ or "No description",

@@ -80,10 +80,10 @@ class PIISanitizerAgent:
 class StrategyAgent:
     """Produces a deterministic high-level execution plan."""
 
-    def __init__(self, context: Optional[Mapping[str, Any]] = None) -> None:
+    def __init__(self, context: Optional[Mapping[str, object]] = None) -> None:
         self._context = dict(context or {})
 
-    def generate_plan(self, goal: str) -> Dict[str, Any]:
+    def generate_plan(self, goal: str) -> Dict[str, object]:
         steps: List[Dict[str, str]] = [
             {"id": "research", "action": f"Collect domain knowledge for '{goal}'"},
             {"id": "draft", "action": "Produce initial artefact"},
@@ -118,7 +118,7 @@ class DraftingAgent:
     def __init__(self, tone: str = "professional") -> None:
         self._tone = tone
 
-    def draft(self, plan: Mapping[str, Any]) -> str:
+    def draft(self, plan: Mapping[str, object]) -> str:
         goal = plan.get("goal", "deliverable") if isinstance(plan, Mapping) else str(plan)
         return f"[{self._tone}] Draft prepared for {goal}."
 
@@ -126,7 +126,7 @@ class DraftingAgent:
 class QAAgent:
     """Performs a toy evaluation returning a confidence score."""
 
-    def evaluate(self, artefact: Any) -> MutableMapping[str, Any]:
+    def evaluate(self, artefact: Any) -> MutableMapping[str, object]:
         text = str(artefact)
         score = 1.0 if text and text.strip() else 0.2
         return {

@@ -5,7 +5,7 @@ Implements retry logic, caching optimization, and comprehensive error handling.
 import os
 import json
 import time
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
 import anthropic
 from anthropic import Anthropic, APIError, RateLimitError, APITimeoutError
@@ -61,16 +61,16 @@ class AnthropicClient:
     )
     def message(
         self,
-        messages: List[Dict[str, Any]],
-        system: Optional[List[Dict[str, Any]]] = None,
+        messages: List[Dict[str, object]],
+        system: Optional[List[Dict[str, object]]] = None,
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
+        tools: Optional[List[Dict[str, object]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, object]]] = None,
         stream: bool = False,
         **kwargs
-    ) -> Union[Message, Any]:
+    ) -> Union[Message, object]:
         """Execute message with retry logic and caching optimization.
         
         Args:
@@ -129,8 +129,8 @@ class AnthropicClient:
     
     def cached_message(
         self,
-        messages: List[Dict[str, Any]],
-        system: Optional[List[Dict[str, Any]]] = None,
+        messages: List[Dict[str, object]],
+        system: Optional[List[Dict[str, object]]] = None,
         cache_system: bool = True,
         cache_templates: List[int] = None,
         **kwargs
@@ -159,7 +159,7 @@ class AnthropicClient:
     
     def stream_message(
         self,
-        messages: List[Dict[str, Any]],
+        messages: List[Dict[str, object]],
         callback: callable = None,
         **kwargs
     ) -> List[str]:
@@ -188,11 +188,11 @@ class AnthropicClient:
     
     def tool_use_message(
         self,
-        messages: List[Dict[str, Any]],
-        tools: List[Dict[str, Any]],
+        messages: List[Dict[str, object]],
+        tools: List[Dict[str, object]],
         tool_choice: str = "auto",
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute message with tool use and parse tool calls.
         
         Args:
@@ -239,9 +239,9 @@ class AnthropicClient:
     
     def batch_message(
         self,
-        batch_requests: List[Dict[str, Any]],
+        batch_requests: List[Dict[str, object]],
         concurrent_limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Execute multiple messages with controlled concurrency.
         
         Args:
@@ -274,7 +274,7 @@ class AnthropicClient:
         
         return results
     
-    def _apply_caching_to_system(self, system: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _apply_caching_to_system(self, system: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """Apply cache control to system prompt."""
         if not system or not self.cache_control:
             return system
@@ -292,9 +292,9 @@ class AnthropicClient:
     
     def _apply_caching_to_messages(
         self, 
-        messages: List[Dict[str, Any]], 
+        messages: List[Dict[str, object]], 
         cache_indices: List[int] = None
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Apply cache control to specific message indices."""
         if not self.cache_control:
             return messages
@@ -353,7 +353,7 @@ class AnthropicClient:
         else:
             return APIError(f"Unexpected error: {error}")
     
-    def get_usage_stats(self) -> Dict[str, Any]:
+    def get_usage_stats(self) -> Dict[str, object]:
         """Get current usage statistics."""
         stats = self.usage_stats.copy()
         

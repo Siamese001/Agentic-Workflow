@@ -192,7 +192,7 @@ class ClerkExtractor:
         return experience_sections
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 # ============================================================================
 # DATAENRICHER CLASS
@@ -367,7 +367,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         """
         Parse artist_specs.json and convert section names to ResumeSection enums.
         
@@ -3071,7 +3071,7 @@ class WorkflowOrchestrator:
         thematic_analysis = None
         try:
             thematic_analysis = self.state_serializer.load(0)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
         
         coc_ledger = self._build_coc_ledger(

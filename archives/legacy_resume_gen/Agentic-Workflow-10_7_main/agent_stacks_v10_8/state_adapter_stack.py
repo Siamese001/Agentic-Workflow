@@ -65,8 +65,8 @@ class StateAdapterStack:
         return state
 
     def apply_patch(
-        self, state_dict: Dict[str, Any], patch: Dict[str, Any] | StatePatch
-    ) -> Dict[str, Any]:
+        self, state_dict: Dict[str, object], patch: Dict[str, object] | StatePatch
+    ) -> Dict[str, object]:
         """Apply a schema-validated patch to the workflow state."""
 
         if not isinstance(state_dict, MutableMapping):
@@ -132,7 +132,7 @@ class StateAdapterStack:
             return self._normalize_patch(asdict(value))
         return copy.deepcopy(value)
 
-    def _deep_merge(self, base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+    def _deep_merge(self, base: Dict[str, object], patch: Dict[str, object]) -> Dict[str, object]:
         for key, patch_value in patch.items():
             if isinstance(patch_value, Mapping) and patch_value.get("__delete__"):
                 base.pop(key, None)
@@ -152,7 +152,7 @@ class StateAdapterStack:
                 base[key] = patch_value
         return base
 
-    def _enforce_budget(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    def _enforce_budget(self, state: Dict[str, object]) -> Dict[str, object]:
         budget_manager = getattr(self.context, "context_budget_manager", None)
         if not budget_manager or not hasattr(budget_manager, "enforce_all"):
             return state
@@ -241,7 +241,7 @@ def build_a2a_message_patch(
     *,
     sender: str,
     message_type: str,
-    payload: Dict[str, Any],
+    payload: Dict[str, object],
     recipient: str = "ALL",
     timestamp: str | None = None,
 ) -> StatePatch:

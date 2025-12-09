@@ -32,7 +32,7 @@ class SafetyContext(BaseModel):
     execution_profile: Optional[ExecutionProfile] = None
 
     # Arbitrary structured metadata (already-safe fields only).
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, object] = Field(default_factory=dict)
 
 
 class PolicyRule(BaseModel):
@@ -81,7 +81,7 @@ class PolicyDecision(BaseModel):
     max_severity: Optional[str] = None
 
     # Free-form, structured details (e.g., matched snippets, tool flags).
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
 
 

@@ -12,7 +12,7 @@
 import json
 import logging
 import asyncio
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.2: Import from new core
 from core_v10_2 import (
@@ -87,7 +87,7 @@ class ReActConductorAgent(BaseAgent):
         }
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
 
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct Drafting Conductor...")
         
         feedback_reader = self.context.feedback_reader
@@ -185,7 +185,7 @@ class QAConductorAgent(BaseAgent):
         }
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor with 11 tools...")
         
         feedback_reader = self.context.feedback_reader

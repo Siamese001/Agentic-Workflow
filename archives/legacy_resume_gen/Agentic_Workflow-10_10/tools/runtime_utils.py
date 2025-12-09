@@ -321,7 +321,7 @@ class PredictiveCacheManager:
     """
 
     max_entries: int = 1024
-    _store: Dict[str, Tuple[float, Any]] = field(default_factory=dict)
+    _store: Dict[str, Tuple[float, object]] = field(default_factory=dict)
 
     def make_key(self, domain: str, plan: Any, ctx: Any) -> str:
         """
@@ -340,7 +340,7 @@ class PredictiveCacheManager:
         return f"{domain}:{digest}"
 
     @staticmethod
-    def _safe_serialize(obj: Any) -> Any:
+    def _safe_serialize(obj: object) -> Any:
         """
         Convert objects into a JSON-serializable structure where possible.
         """

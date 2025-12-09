@@ -51,7 +51,7 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Set
+from typing import Dict, List, Optional, Union, Tuple, Set
 from uuid import uuid4
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -201,12 +201,12 @@ SIMILARITY_THRESHOLDS = {
 class OutreachMission:
     """Immutable mission parameters"""
     mission_id: str
-    sender_profile: Dict[str, Any]
-    recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    sender_profile: Dict[str, object]
+    recipient_profile: Dict[str, object]
+    job_description: Dict[str, object]
     route: Optional[Route] = None
     archetype: Optional[Archetype] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
 
 
@@ -215,13 +215,13 @@ class ResearchContext:
     """Research findings with reflexion support"""
     mission_id: str
     search_queries: List[str] = field(default_factory=list)
-    research_findings: Dict[str, Any] = field(default_factory=dict)
+    research_findings: Dict[str, object] = field(default_factory=dict)
     signal_strength_score: float = 0.0
     research_gaps: List[str] = field(default_factory=list)
     research_strengths: List[str] = field(default_factory=list)
     
     # NEW v11.3: Reflexion loop support
-    critique_history: List[Dict[str, Any]] = field(default_factory=list)
+    critique_history: List[Dict[str, object]] = field(default_factory=list)
     reflexion_count: int = 0
     max_reflexions: int = 3
     improvement_deltas: List[float] = field(default_factory=list)
@@ -231,31 +231,31 @@ class ResearchContext:
 class GenerationContext:
     """Generation parameters with section locking"""
     mission_id: str
-    scaffold: Dict[str, Any] = field(default_factory=dict)
+    scaffold: Dict[str, object] = field(default_factory=dict)
     temperature_schedule: Dict[str, List[float]] = field(default_factory=dict)
     attempt_count: int = 0
     max_attempts: int = 5
     
     # NEW v11.3: Progressive section locking
-    locked_sections: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    locked_sections: Dict[str, Dict[str, object]] = field(default_factory=dict)
     locked_at_temperature: Dict[str, float] = field(default_factory=dict)
     sections_to_regenerate: List[str] = field(default_factory=list)
     
     # NEW v11.3: Failure classification tracking
-    failure_history: List[Dict[str, Any]] = field(default_factory=list)
+    failure_history: List[Dict[str, object]] = field(default_factory=list)
     adaptive_temperature_adjustments: Dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
 class StagingBuffer:
     """Staging buffer with ground truth recalculation"""
-    k1_greeting: Optional[Dict[str, Any]]
-    k2_subject: Optional[Dict[str, Any]]
-    k3_body: Optional[Dict[str, Any]]
-    k5_cta: Optional[Dict[str, Any]]
-    k6_signature: Optional[Dict[str, Any]]
-    full_message: Optional[Dict[str, Any]]
-    metadata: Dict[str, Any]
+    k1_greeting: Optional[Dict[str, object]]
+    k2_subject: Optional[Dict[str, object]]
+    k3_body: Optional[Dict[str, object]]
+    k5_cta: Optional[Dict[str, object]]
+    k6_signature: Optional[Dict[str, object]]
+    full_message: Optional[Dict[str, object]]
+    metadata: Dict[str, object]
     
     # NEW v11.3: Enhanced ground truth tracking
     ground_truth_word_count: Optional[int] = None
@@ -287,9 +287,9 @@ class ValidationResult:
     """Validation batch result"""
     batch_name: str
     passed: bool
-    failures: List[Dict[str, Any]] = field(default_factory=list)
-    warnings: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    failures: List[Dict[str, object]] = field(default_factory=list)
+    warnings: List[Dict[str, object]] = field(default_factory=list)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     # NEW v11.3: Classified failures
     classified_failures: List[ConstraintFailure] = field(default_factory=list)
@@ -301,11 +301,11 @@ class HopCheckpoint:
     hop_id: str
     hop_name: str
     timestamp: datetime
-    state_snapshot: Dict[str, Any]
+    state_snapshot: Dict[str, object]
     checksum: str
     execution_time: float
     status: AgentStatus
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -320,7 +320,7 @@ class OutreachState:
     status: AgentStatus = AgentStatus.IDLE
     current_hop: str = "HOP-0"
     error_message: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -402,7 +402,7 @@ class SemanticCache:
     """Semantic caching for LLM responses"""
     
     def __init__(self, similarity_threshold: float = 0.95):
-        self.cache: Dict[str, Any] = {}
+        self.cache: Dict[str, object] = {}
         self.threshold = similarity_threshold
     
     def _hash_prompt(self, prompt: str) -> str:
@@ -574,7 +574,7 @@ class ConstraintFailureClassifier:
         constraint_name: str,
         expected: Any,
         actual: Any,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> ConstraintFailure:
         """Classify a constraint failure"""
         
@@ -604,7 +604,7 @@ class ConstraintFailureClassifier:
     def _determine_failure_type(
         self,
         constraint_name: str,
-        context: Dict[str, Any]
+        context: Dict[str, object]
     ) -> ConstraintFailureType:
         """Determine the type of failure"""
         constraint_lower = constraint_name.lower()
@@ -689,7 +689,7 @@ class ConstraintFailureClassifier:
     def aggregate_failures(
         self,
         failures: List[ConstraintFailure]
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Aggregate failures for adaptive strategy"""
         
         type_counts = Counter(f.failure_type for f in failures)
@@ -733,7 +733,7 @@ class SimilarityCrossValidator:
     def validate_no_duplicates(
         self,
         sections: Dict[str, str]
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Check for duplicate content across sections"""
         
         if len(sections) < 2:
@@ -799,7 +799,7 @@ class SimilarityCrossValidator:
         self,
         text: str,
         section_name: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Check for placeholder contamination"""
         
         placeholders_found = []
@@ -823,7 +823,7 @@ class SimilarityCrossValidator:
         self,
         text: str,
         section_name: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Check for prompt leakage"""
         
         leakage_found = []
@@ -845,7 +845,7 @@ class SimilarityCrossValidator:
         self,
         text: str,
         section_name: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Check for forbidden corporate jargon"""
         
         forbidden_found = []
@@ -866,7 +866,7 @@ class SimilarityCrossValidator:
     def cross_validate_staging_buffer(
         self,
         staging_buffer: StagingBuffer
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Comprehensive cross-validation of staging buffer"""
         
         # Extract sections
@@ -927,7 +927,7 @@ class CheckpointManager:
         hop_id: str,
         hop_name: str,
         state: OutreachState,
-        metadata: Dict[str, Any],
+        metadata: Dict[str, object],
         execution_time: float
     ) -> HopCheckpoint:
         """Create checkpoint with cryptographic verification"""
@@ -976,7 +976,7 @@ class TelemetryService:
     """Metrics and telemetry"""
     
     def __init__(self):
-        self.metrics: Dict[str, Any] = defaultdict(list)
+        self.metrics: Dict[str, object] = defaultdict(list)
     
     def record_metric(self, metric_name: str, value: Any, metadata: Dict = None):
         """Record metric"""
@@ -1825,7 +1825,7 @@ Return JSON: {{"queries": ["query1", "query2", ...]}}
         result = json.loads(response) if response.startswith("{") else {"queries": ["default query"]}
         return result.get("queries", [])
     
-    async def _execute_research(self, queries: List[str]) -> Dict[str, Any]:
+    async def _execute_research(self, queries: List[str]) -> Dict[str, object]:
         """Execute research (simulated)"""
         # In production, this would call web search APIs
         return {
@@ -1837,7 +1837,7 @@ Return JSON: {{"queries": ["query1", "query2", ...]}}
         self,
         research_context: ResearchContext,
         mission: OutreachMission
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Critique research quality"""
         
         prompt = f"""
@@ -2157,7 +2157,7 @@ class GenerationOrchestrator:
         state: OutreachState,
         sections_to_generate: List[str],
         attempt: int
-    ) -> Dict[str, Dict[str, Any]]:
+    ) -> Dict[str, Dict[str, object]]:
         """Generate message sections"""
         
         # Use locked sections + generate new ones
@@ -2214,10 +2214,10 @@ class GenerationOrchestrator:
     
     def _validate_generated_sections(
         self,
-        sections: Dict[str, Dict[str, Any]],
-        constraints: Dict[str, Any],
+        sections: Dict[str, Dict[str, object]],
+        constraints: Dict[str, object],
         state: OutreachState
-    ) -> Dict[str, Dict[str, Any]]:
+    ) -> Dict[str, Dict[str, object]]:
         """Validate generated sections against constraints"""
         
         validation_results = {}
@@ -2613,7 +2613,7 @@ class WorkflowOrchestrator:
             message_bus, telemetry, logging
         )
     
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """Execute complete workflow"""
         import time
         workflow_start = time.time()
@@ -2828,7 +2828,7 @@ def create_orchestrator(log_dir: Path = Path("/tmp/lic_logs")) -> WorkflowOrches
 # INTERACTIVE PROFILE COLLECTION
 # ============================================================================
 
-def collect_sender_profile() -> Dict[str, Any]:
+def collect_sender_profile() -> Dict[str, object]:
     """
     Collect sender profile information interactively
     
@@ -2912,7 +2912,7 @@ def collect_sender_profile() -> Dict[str, Any]:
     }
 
 
-def collect_recipient_profile() -> Dict[str, Any]:
+def collect_recipient_profile() -> Dict[str, object]:
     """
     Collect recipient profile information interactively
     
@@ -2946,7 +2946,7 @@ def collect_recipient_profile() -> Dict[str, Any]:
     }
 
 
-def collect_job_description() -> Dict[str, Any]:
+def collect_job_description() -> Dict[str, object]:
     """
     Collect job description information interactively
     

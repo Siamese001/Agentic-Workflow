@@ -27,7 +27,7 @@ import re
 import math
 import uuid
 from collections import Counter, defaultdict
-from typing import Dict, Any, List, Optional
+from typing import Dict, object, List, Optional
 from datetime import datetime
 
 from pydantic import BaseModel, Field
@@ -76,7 +76,7 @@ class SpecialistDraftPacket(BaseModel):
 
     specialist: str = Field(..., description="Name of the drafting specialist")
     focus_area: str = Field(..., description="Primary responsibility of the specialist")
-    sections: Dict[str, Any] = Field(default_factory=dict, description="Section-level draft contributions")
+    sections: Dict[str, object] = Field(default_factory=dict, description="Section-level draft contributions")
     notes: List[str] = Field(default_factory=list, description="Observations or hand-off notes")
     dependencies: List[str] = Field(default_factory=list, description="Dependencies or follow-up actions")
 
@@ -137,7 +137,7 @@ class PIISanitizerAgent(BaseAgent):
     }
     
     @track_metrics('run_pii_sanitizer')
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
         
@@ -160,7 +160,7 @@ class BiasDetectorAgent(BaseAgent):
     """v10.6: Local bias detection with dynamic constitution."""
     
     @track_metrics('run_bias_detector')
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         result = detect_bias(self.context, text, workflow_id)
 
@@ -183,7 +183,7 @@ class PromptInjectionDetectorAgent(BaseAgent):
         confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the detection")
     
     @track_metrics('run_pi_detector')
-    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting prompt injection...")
         
         if not self.config.agent_stacks.enable_prompt_injection_detection:
@@ -314,7 +314,7 @@ class QueryComplexityClassifier(BaseAgent):
 class ToTStrategistAgent(BaseAgent):
     """v10.6: ToT strategist with self-consistency voting."""
     
-    async def _generate_branches(self, job_context: Dict[str, Any], client: Any, branching_factor: int) -> List[Dict]:
+    async def _generate_branches(self, job_context: Dict[str, object], client: Any, branching_factor: int) -> List[Dict]:
         prompt_template = self.prompt_manager.get_template("strategy_tot_branch")
         
         branch_tasks = []
@@ -355,7 +355,7 @@ class ToTStrategistAgent(BaseAgent):
         return branches
     
     @track_metrics('run_tot_strategy')
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating ToT strategy with voting (v10.6)...")
         
         branching_factor = self.config.agent_stacks.strategy_tot_branching_factor
@@ -425,7 +425,7 @@ class PromptEngineerAgent(BaseAgent):
     """v10.6: LLM-driven prompt engineering, complexity-aware."""
     
     @track_metrics('run_prompt_engineer')
-    async def run_async(self, strategy: StrategyPlan, complexity: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: StrategyPlan, complexity: str, workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Engineering prompts (Complexity: {complexity})...")
         
         client = self.get_model_client("prompt_engineer_model")
@@ -559,7 +559,7 @@ class RAG_SearchAgent(BaseAgent):
         return ranked
 
     @track_metrics('run_agentic_rag')
-    async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object]) -> Dict[str, object]:
         self.log_info("Running Agentic RAG Conductor (v10.6)...")
         
         # v10.6 (Fix #10): Get inputs from state
@@ -664,7 +664,7 @@ class StructureLeadAgent(BaseAgent):
     """Produces the structural outline for the draft."""
 
     @track_metrics('run_structure_lead')
-    async def run_async(self, bullets: List[Dict[str, Any]], strategy: StrategyPlan, workflow_id: str) -> SpecialistDraftPacket:
+    async def run_async(self, bullets: List[Dict[str, object]], strategy: StrategyPlan, workflow_id: str) -> SpecialistDraftPacket:
         self.log_info("Drafting Guild >> Structure Lead assembling sections...")
 
         summary_pivots = strategy.key_achievements_to_highlight[:3] if strategy.key_achievements_to_highlight else []
@@ -673,7 +673,7 @@ class StructureLeadAgent(BaseAgent):
         summary_content = "; ".join(summary_pivots) if summary_pivots else " ".join(bullet_texts[:2])
         summary_content = summary_content.strip()
 
-        experience_entries: List[Dict[str, Any]] = []
+        experience_entries: List[Dict[str, object]] = []
         for bullet in bullets:
             experience = bullet.get("experience", {}) or {}
             entry = {
@@ -718,10 +718,10 @@ class NarrativeStylistAgent(BaseAgent):
     """Harmonizes voice and narrative flow across sections."""
 
     @track_metrics('run_narrative_stylist')
-    async def run_async(self, structured_sections: Dict[str, Any], strategy: StrategyPlan, workflow_id: str) -> SpecialistDraftPacket:
+    async def run_async(self, structured_sections: Dict[str, object], strategy: StrategyPlan, workflow_id: str) -> SpecialistDraftPacket:
         self.log_info("Drafting Guild >> Narrative Stylist polishing tone...")
 
-        styled_sections: Dict[str, Any] = {}
+        styled_sections: Dict[str, object] = {}
         for section_name, section_payload in structured_sections.items():
             payload_copy = json.loads(json.dumps(section_payload))
             if section_name == "summary":
@@ -770,7 +770,7 @@ class ComplianceEditorAgent(BaseAgent):
     """Ensures stylistic and policy compliance for the guild."""
 
     @track_metrics('run_compliance_editor')
-    async def run_async(self, narrative_sections: Dict[str, Any], workflow_id: str) -> SpecialistDraftPacket:
+    async def run_async(self, narrative_sections: Dict[str, object], workflow_id: str) -> SpecialistDraftPacket:
         self.log_info("Drafting Guild >> Compliance Editor auditing sections...")
 
         compliant_sections = json.loads(json.dumps(narrative_sections))
@@ -813,7 +813,7 @@ class EvidenceLiaisonAgent(BaseAgent):
         self.brief_tool = EvidenceBriefAssemblerTool(context, debug_mode)
 
     @track_metrics('run_evidence_liaison')
-    async def run_async(self, sections: Dict[str, Any], resume: Dict[str, Any], workflow_id: str) -> EvidenceLiaisonPacket:
+    async def run_async(self, sections: Dict[str, object], resume: Dict[str, object], workflow_id: str) -> EvidenceLiaisonPacket:
         self.log_info("Drafting Guild >> Evidence Liaison orchestrating clarifications...")
 
         clarifications: List[EvidenceClarificationRecord] = []
@@ -846,7 +846,7 @@ class EvidenceLiaisonAgent(BaseAgent):
 
         return EvidenceLiaisonPacket(clarifications=clarifications, briefs=briefs)
 
-    def _harvest_resume_evidence(self, section_name: str, resume: Dict[str, Any]) -> List[str]:
+    def _harvest_resume_evidence(self, section_name: str, resume: Dict[str, object]) -> List[str]:
         evidence: List[str] = []
         if section_name == "experience":
             for experience in resume.get("professional_experience", []):
@@ -864,7 +864,7 @@ class CritiqueRoutingPanel(BaseAgent):
     """Routes specialist critiques (style, fact, policy)."""
 
     @track_metrics('run_critique_routing_panel')
-    async def run_async(self, sections: Dict[str, Any], liaison_packet: EvidenceLiaisonPacket, workflow_id: str) -> CritiquePanelPacket:
+    async def run_async(self, sections: Dict[str, object], liaison_packet: EvidenceLiaisonPacket, workflow_id: str) -> CritiquePanelPacket:
         self.log_info("Drafting Guild >> Critique panel aggregating findings...")
 
         findings = [
@@ -882,7 +882,7 @@ class CritiqueRoutingPanel(BaseAgent):
 
         return CritiquePanelPacket(findings=findings, overall_status=overall_status)
 
-    def _style_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+    def _style_critic(self, sections: Dict[str, object]) -> CritiqueFindingRecord:
         summary = sections.get("summary", {})
         text = ""
         if isinstance(summary, dict):
@@ -935,7 +935,7 @@ class CritiqueRoutingPanel(BaseAgent):
             blockers=[]
         )
 
-    def _policy_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+    def _policy_critic(self, sections: Dict[str, object]) -> CritiqueFindingRecord:
         banned_terms = {"confidential", "classified", "secret"}
         text_blob = json.dumps(sections).lower()
         offenders = [term for term in banned_terms if term in text_blob]
@@ -972,7 +972,7 @@ class DraftingGuildCoordinator(BaseAgent):
         self.critique_panel = CritiqueRoutingPanel(context, debug_mode)
 
     @track_metrics('run_drafting_guild_coordinator')
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Drafting Guild Coordinator orchestrating specialists...")
 
         strategy = task_context.get("strategy")
@@ -1020,8 +1020,8 @@ class DraftingGuildCoordinator(BaseAgent):
             "phases_executed": 5
         }
 
-    def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
-        merged: Dict[str, Any] = {}
+    def _merge_sections(self, *layers: Dict[str, object]) -> Dict[str, object]:
+        merged: Dict[str, object] = {}
         for layer in layers:
             for key, value in layer.items():
                 merged[key] = json.loads(json.dumps(value))
@@ -1036,7 +1036,7 @@ class BulletEntityExtractionAgent(BaseAgent):
 
     class Output(BaseModel):
         bullet_id: str
-        entities: List[Dict[str, Any]] = Field(default_factory=list)
+        entities: List[Dict[str, object]] = Field(default_factory=list)
         raw_text: str
         experience_id: Optional[str] = None
 
@@ -1052,11 +1052,11 @@ class BulletEntityExtractionAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        experience: Dict[str, Any],
+        experience: Dict[str, object],
         workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         text = bullet_text or ""
-        entities: List[Dict[str, Any]] = []
+        entities: List[Dict[str, object]] = []
         seen = set()
 
         for match in self.ENTITY_PATTERN.finditer(text):
@@ -1101,7 +1101,7 @@ class BulletMetricsEnrichmentAgent(BaseAgent):
     CURRENCY_PATTERN = re.compile(r"\$[\d,]+(?:\.\d+)?")
 
     @track_metrics('run_bullet_metrics_enrichment')
-    async def run_async(self, bullet_id: str, bullet_text: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, bullet_id: str, bullet_text: str, workflow_id: str) -> Dict[str, object]:
         text = bullet_text or ""
         metrics: Dict[str, List[str]] = defaultdict(list)
         raw_numbers: List[str] = []
@@ -1146,9 +1146,9 @@ class BulletNarrativeSynthesisAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        metrics_payload: Dict[str, Any],
+        metrics_payload: Dict[str, object],
         workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         text = bullet_text or ""
         fragments = [frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()]
         tone = "impact" if metrics_payload.get('has_metric') else "descriptive"
@@ -1169,7 +1169,7 @@ class BulletEvidenceLinkerAgent(BaseAgent):
 
     class Output(BaseModel):
         bullet_id: str
-        supporting_sources: List[Dict[str, Any]] = Field(default_factory=list)
+        supporting_sources: List[Dict[str, object]] = Field(default_factory=list)
         unresolved_claims: List[str] = Field(default_factory=list)
         retrieval_notes: List[str] = Field(default_factory=list)
 
@@ -1183,11 +1183,11 @@ class BulletEvidenceLinkerAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        retrieval_records: List[Dict[str, Any]],
+        retrieval_records: List[Dict[str, object]],
         workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         bullet_keywords = self._normalize_keywords(bullet_text or "")
-        sources: List[Dict[str, Any]] = []
+        sources: List[Dict[str, object]] = []
         notes: List[str] = []
 
         for record in retrieval_records or []:
@@ -1231,10 +1231,10 @@ class BulletConfidenceScoringAgent(BaseAgent):
         self,
         bullet_id: str,
         bullet_text: str,
-        metrics_payload: Dict[str, Any],
-        evidence_payload: Dict[str, Any],
+        metrics_payload: Dict[str, object],
+        evidence_payload: Dict[str, object],
         workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         score = 0.4
         factors: List[str] = []
 
@@ -1289,14 +1289,14 @@ class BulletCoordinatorAgent(BaseAgent):
     @track_metrics('run_bullet_coordinator')
     async def run_async(
         self,
-        bullets: List[Dict[str, Any]],
-        retrieval_records: List[Dict[str, Any]],
+        bullets: List[Dict[str, object]],
+        retrieval_records: List[Dict[str, object]],
         workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         bundle_id = str(uuid.uuid4())
         timestamp = datetime.utcnow().isoformat()
-        coordinated_items: List[Dict[str, Any]] = []
-        retrieval_requests: List[Dict[str, Any]] = []
+        coordinated_items: List[Dict[str, object]] = []
+        retrieval_requests: List[Dict[str, object]] = []
 
         for bullet in bullets:
             bullet_text = bullet.get('text') if isinstance(bullet, dict) else bullet
@@ -1368,8 +1368,8 @@ class BulletProvenanceAuditorAgent(BaseAgent):
     """Validates provenance metadata and evidence linkages."""
 
     @track_metrics('run_bullet_provenance_audit')
-    async def run_async(self, bundle: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        issues: List[Dict[str, Any]] = []
+    async def run_async(self, bundle: Dict[str, object], workflow_id: str) -> Dict[str, object]:
+        issues: List[Dict[str, object]] = []
         items = bundle.get('items', []) if isinstance(bundle, dict) else []
 
         for item in items:
@@ -1736,7 +1736,7 @@ class HILFeedbackSummarizerAgent(BaseAgent):
     async def run_async(
         self,
         human_feedback: str,
-        state_snapshot: Optional[Dict[str, Any]],
+        state_snapshot: Optional[Dict[str, object]],
         workflow_id: str
     ) -> SummarizerOutput:
         if not human_feedback.strip():
@@ -1788,7 +1788,7 @@ class HILReconciliationAgent(BaseAgent):
     @track_metrics('run_hil_reconciliation')
     async def run_async(
         self,
-        draft_sections: Dict[str, Any],
+        draft_sections: Dict[str, object],
         specialist_feedback: List[str],
         persona_consensus: Optional[PersonaConsensus],
         workflow_id: str
@@ -1866,7 +1866,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
     """v10.6: Proactively detects ambiguity."""
     
     @track_metrics('run_ambiguity_detector')
-    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting ambiguity (v10.6)...")
         client = self.get_model_client("qa_model")
         
@@ -1903,8 +1903,8 @@ class HILFeedbackRouterAgent(BaseAgent):
         self,
         human_feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]] = None
+    ) -> Dict[str, object]:
         self.log_info("Routing human feedback with persona council...")
 
         try:

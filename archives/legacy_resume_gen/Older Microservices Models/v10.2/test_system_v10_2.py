@@ -43,7 +43,7 @@ import re # v10.2: Added for regex matching
 from pathlib import Path
 from unittest.mock import MagicMock, AsyncMock, patch, Mock
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.2: Import from new core
 from core_v10_2 import (

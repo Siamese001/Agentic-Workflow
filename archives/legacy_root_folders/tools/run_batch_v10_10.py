@@ -59,7 +59,7 @@ class BatchJobConfig:
     batch_id: str
     job_index: int
     job_id: str
-    row: Mapping[str, Any]
+    row: Mapping[str, object]
     user_request: Any
     execution_profile_name: str
     routing_policy_name: str
@@ -140,7 +140,7 @@ def _parse_rrf_weights(pairs: Optional[Sequence[str]]) -> Optional[Dict[str, flo
 
 
 def _normalize_rrf_weights(
-    value: Optional[Mapping[str, Any]],
+    value: Optional[Mapping[str, object]],
     default: Optional[Mapping[str, float]],
 ) -> Optional[Dict[str, float]]:
     """
@@ -166,7 +166,7 @@ def _normalize_rrf_weights(
 
 
 def _enum_from_row(
-    row: Mapping[str, Any],
+    row: Mapping[str, object],
     key: str,
     enum_cls: Any,
     default_value: Any,
@@ -187,7 +187,7 @@ def _enum_from_row(
         return default_value
 
 
-def _bool_from_row(row: Mapping[str, Any], key: str, default: bool) -> bool:
+def _bool_from_row(row: Mapping[str, object], key: str, default: bool) -> bool:
     """
     Extracts boolean values from batch processing data rows.
 
@@ -209,7 +209,7 @@ def _bool_from_row(row: Mapping[str, Any], key: str, default: bool) -> bool:
     return default
 
 
-def _extract_user_request(row: Mapping[str, Any]) -> Any:
+def _extract_user_request(row: Mapping[str, object]) -> Any:
     """
     Extracts résumé improvement request from batch data row.
 
@@ -245,7 +245,7 @@ def _clamp_max_workers(requested: int, golden_mode: bool) -> int:
     return max(1, min(requested, auto_cap))
 
 
-def _read_jsonl(path: str) -> List[Mapping[str, Any]]:
+def _read_jsonl(path: str) -> List[Mapping[str, object]]:
     """
     Reads batch job data from JSONL files for résumé processing.
 
@@ -258,7 +258,7 @@ def _read_jsonl(path: str) -> List[Mapping[str, Any]]:
         stream = open(path, "r", encoding="utf-8")
         close_stream = True
 
-    rows: List[Mapping[str, Any]] = []
+    rows: List[Mapping[str, object]] = []
     try:
         for line_number, line in enumerate(stream, start=1):
             stripped = line.strip()
@@ -281,7 +281,7 @@ def _read_jsonl(path: str) -> List[Mapping[str, Any]]:
     return rows
 
 
-def _write_jsonl(path: str, rows: Iterable[Mapping[str, Any]]) -> None:
+def _write_jsonl(path: str, rows: Iterable[Mapping[str, object]]) -> None:
     """
     Writes batch résumé processing results to JSONL format.
 
@@ -304,7 +304,7 @@ def _write_jsonl(path: str, rows: Iterable[Mapping[str, Any]]) -> None:
             out.close()
 
 
-def _write_json(path: Optional[str], obj: Mapping[str, Any]) -> None:
+def _write_json(path: Optional[str], obj: Mapping[str, object]) -> None:
     """
     Writes résumé processing summary data to JSON format.
 
@@ -372,7 +372,7 @@ def _build_job_config(
     *,
     batch_id: str,
     job_index: int,
-    row_raw: Mapping[str, Any],
+    row_raw: Mapping[str, object],
     defaults: _GlobalDefaults,
 ) -> BatchJobConfig:
     """
@@ -381,7 +381,7 @@ def _build_job_config(
     Resolves parameters from global defaults and job-specific overrides for optimal résumé improvement.
     """
     # Ensure we have a plain dict for stable behavior.
-    row: Dict[str, Any] = dict(row_raw)
+    row: Dict[str, object] = dict(row_raw)
 
     job_id = str(row.get("job_id") or row.get("id") or job_index)
 
@@ -551,7 +551,7 @@ def _build_batch_summary(
 
 
 def run_batch(
-    jobs: Sequence[Mapping[str, Any]],
+    jobs: Sequence[Mapping[str, object]],
     *,
     # Profile defaults
     execution_profile_name: str = "default",
@@ -821,9 +821,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     )
 
     # Emit per-job JSONL outputs in deterministic order.
-    output_rows: List[Dict[str, Any]] = []
+    output_rows: List[Dict[str, object]] = []
     for res in results:
-        row_obj: Dict[str, Any] = {
+        row_obj: Dict[str, object] = {
             "batch_id": res.job_config.batch_id,
             "job_index": res.job_config.job_index,
             "job_id": res.job_config.job_id,

@@ -8,7 +8,7 @@ import hashlib
 from collections import defaultdict
 from dataclasses import asdict
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Tuple, Set
+from typing import Dict, List, object, Tuple, Set
 
 # Local module imports
 from models_LIC import (
@@ -498,9 +498,9 @@ class WorkflowOrchestrator:
         self.validation_agent = ValidationAgent(self.circuit_breaker)
         self.qa_agent = QAAgent(self.circuit_breaker)
         
-        self.events: List[Dict[str, Any]] = []
+        self.events: List[Dict[str, object]] = []
     
-    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
+    async def execute_workflow(self, mission: OutreachMission) -> Dict[str, object]:
         """
         Execute complete workflow
         NEW v11.10: Now contains the S6->S2 "Meta-Loop" (Enhancement 4)
@@ -686,7 +686,7 @@ class WorkflowOrchestrator:
         self,
         mission: OutreachMission,
         message: GeneratedMessage,
-        result: Dict[str, Any]
+        result: Dict[str, object]
     ):
         """
         NEW v11.6: Post-send tracking and app tracker generation (GAP 10.1, 10.2)

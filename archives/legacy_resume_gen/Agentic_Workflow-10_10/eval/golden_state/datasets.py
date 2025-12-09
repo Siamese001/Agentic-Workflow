@@ -41,14 +41,14 @@ def load_golden_inputs() -> List[GoldenStateTestCase]:
     ]
 
 
-def load_baseline_scores() -> Dict[str, Any]:
+def load_baseline_scores() -> Dict[str, object]:
     """Load baseline scores used for gating, or an empty dict if missing."""
 
     data = _load_json("baseline_scores.json")
     return data or {}
 
 
-def load_exemplar_prompts() -> Dict[str, Any]:
+def load_exemplar_prompts() -> Dict[str, object]:
     """Load exemplar prompts used as reference, or an empty dict if missing."""
 
     data = _load_json("exemplar_prompts.json")
@@ -70,7 +70,7 @@ def load_golden_cases() -> List[GoldenCase]:
     return cases
 
 
-def load_golden_baseline_scores() -> Dict[str, Any]:
+def load_golden_baseline_scores() -> Dict[str, object]:
     return load_baseline_scores()
 
 

@@ -10,8 +10,8 @@ from self_correction import SelfCorrectionSurface
 
 @dataclass
 class MetaProfile:
-    routing_bias: Dict[str, Any] = field(default_factory=dict)
-    planning_bias: Dict[str, Any] = field(default_factory=dict)
+    routing_bias: Dict[str, object] = field(default_factory=dict)
+    planning_bias: Dict[str, object] = field(default_factory=dict)
 
 
 META_PROFILE = MetaProfile()

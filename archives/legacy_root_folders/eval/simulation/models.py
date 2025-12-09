@@ -8,7 +8,7 @@ from pydantic import BaseModel
 class SimScenario(BaseModel):
     id: str
     description: str
-    initial_context: Dict[str, Any]
+    initial_context: Dict[str, object]
     execution_profile_name: str
     run_count: int
 

@@ -8,7 +8,7 @@ import asyncio
 import json
 import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, object, Optional, Tuple
 from pathlib import Path
 
 # PDF parsing
@@ -71,7 +71,7 @@ class IntelligenceLibrarian:
         include_strategic_brief: bool = True,
         include_news: bool = True,
         include_blog: bool = True
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Deep research on a company - runs offline
         
@@ -127,7 +127,7 @@ class IntelligenceLibrarian:
         include_linkedin: bool = True,
         include_recent_posts: bool = True,
         include_presentations: bool = True
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Deep research on an executive - runs offline
         
@@ -178,7 +178,7 @@ class IntelligenceLibrarian:
         
         return findings
     
-    async def _research_strategic_brief(self, company_name: str) -> List[Dict[str, Any]]:
+    async def _research_strategic_brief(self, company_name: str) -> List[Dict[str, object]]:
         """
         Research company strategic priorities (highest signal)
         """
@@ -224,7 +224,7 @@ class IntelligenceLibrarian:
         print(f"[Librarian] Found {len(results)} strategic brief sources")
         return results
     
-    async def _research_company_news(self, company_name: str) -> List[Dict[str, Any]]:
+    async def _research_company_news(self, company_name: str) -> List[Dict[str, object]]:
         """
         Research recent company news and announcements
         """
@@ -262,7 +262,7 @@ class IntelligenceLibrarian:
         print(f"[Librarian] Found {len(results)} news sources")
         return results
     
-    async def _research_company_blog(self, company_name: str) -> List[Dict[str, Any]]:
+    async def _research_company_blog(self, company_name: str) -> List[Dict[str, object]]:
         """
         Research company blog and announcements
         """
@@ -304,7 +304,7 @@ class IntelligenceLibrarian:
         self,
         executive_name: str,
         company_name: str
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Research executive LinkedIn profile
         """
@@ -341,7 +341,7 @@ class IntelligenceLibrarian:
         self,
         executive_name: str,
         company_name: str
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Research executive recent posts and articles
         """
@@ -383,7 +383,7 @@ class IntelligenceLibrarian:
         self,
         executive_name: str,
         company_name: str
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Research executive conference talks and presentations
         """
@@ -448,7 +448,7 @@ Output ONLY the JSON array, no explanation."""
         
         return []
     
-    def _extract_search_result_content(self, item: Dict[str, Any]) -> str:
+    def _extract_search_result_content(self, item: Dict[str, object]) -> str:
         """
         Extract meaningful content from search result
         """
@@ -476,7 +476,7 @@ Output ONLY the JSON array, no explanation."""
         else:
             return 60  # Default to 60 days if no clear indicator
     
-    async def _embed_and_store(self, findings: Dict[str, Any]):
+    async def _embed_and_store(self, findings: Dict[str, object]):
         """
         Embed findings and store in vector database
         """

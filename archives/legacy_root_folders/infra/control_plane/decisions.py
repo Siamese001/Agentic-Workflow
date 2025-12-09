@@ -24,7 +24,7 @@ class RuleMatch(BaseModel):
     is_pii: bool = False
 
     # Optional small snippet or structured payload.
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, object] = Field(default_factory=dict)
 
 
 class RulesEngineResult(BaseModel):
@@ -48,7 +48,7 @@ class JudgeVerdict(BaseModel):
 
     verdict: Literal["safe", "unsafe", "ambiguous"]
     explanation: str
-    signals: Dict[str, Any] = Field(default_factory=dict)
+    signals: Dict[str, object] = Field(default_factory=dict)
 
 
 class SafetyPipelineTrace(BaseModel):
@@ -58,8 +58,8 @@ class SafetyPipelineTrace(BaseModel):
     Enables observability and troubleshooting for résumé improvement safety workflows.
     """
 
-    rules_engine: Dict[str, Any] = Field(default_factory=dict)
-    judge: Dict[str, Any] = Field(default_factory=dict)
+    rules_engine: Dict[str, object] = Field(default_factory=dict)
+    judge: Dict[str, object] = Field(default_factory=dict)
 
 
 def aggregate_severity(levels: List[str]) -> Optional[str]:

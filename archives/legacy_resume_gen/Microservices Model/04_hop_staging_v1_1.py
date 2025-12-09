@@ -17,7 +17,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Union
+from typing import Dict, object, List, Union
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent

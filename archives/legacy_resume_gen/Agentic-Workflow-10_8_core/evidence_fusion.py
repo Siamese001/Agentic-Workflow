@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List
 
 
-def fuse_results(list_of_sources: Iterable[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
-    merged: List[Dict[str, Any]] = []
+def fuse_results(list_of_sources: Iterable[List[Dict[str, object]]]) -> List[Dict[str, object]]:
+    merged: List[Dict[str, object]] = []
     for source in list_of_sources:
         for item in source:
             merged.append(dict(item))

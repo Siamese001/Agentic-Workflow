@@ -34,7 +34,7 @@ class AtomicWorkflowBridge:
             routing_policy, sandbox, state_manager, safety_validator, meta_profile
         )
     
-    def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, Any]:
+    def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, object]:
         """Orchestrates the resume generation workflow through atomic layers.
         
         Maintains clean separation of concerns while ensuring all resume sections
