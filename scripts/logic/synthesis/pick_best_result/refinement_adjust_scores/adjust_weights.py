@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - adjust_data_weights
 Implements L1 Cognitive Planning Layer for adjust data weights operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

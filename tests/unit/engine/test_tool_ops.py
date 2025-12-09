@@ -3,8 +3,7 @@ Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional, Callable
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 

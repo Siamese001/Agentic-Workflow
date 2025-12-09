@@ -1,6 +1,5 @@
 """Soak tests for long-running stability validation."""
 from __future__ import annotations
-import pytest
 import time
 from typing import Dict, List, Any
 from dataclasses import dataclass
@@ -19,7 +18,6 @@ class TestMemoryStability:
 
     def test_no_memory_leak_simple_operations(self):
         """Soak: Memory remains stable over many iterations."""
-        import sys
         initial_objects = len(gc.get_objects())
 
         for _ in range(1000):
@@ -193,7 +191,6 @@ class TestDegradationDetection:
 
     def test_consistent_memory_usage(self):
         """Soak: Memory usage remains consistent."""
-        import sys
 
         memory_samples: List[int] = []
 
@@ -211,7 +208,7 @@ class TestDegradationDetection:
     def test_gc_pressure_acceptable(self):
         """Soak: GC pressure remains acceptable."""
         gc.collect()
-        initial_collections = gc.get_count()
+        gc.get_count()
 
         for _ in range(100):
             _ = [i for i in range(1000)]

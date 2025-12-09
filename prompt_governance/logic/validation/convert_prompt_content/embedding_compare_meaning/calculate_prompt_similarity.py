@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - calculate_scripts_similarity
 Implements L1 Cognitive Planning Layer for calculate scripts similarity operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

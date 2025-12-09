@@ -1,7 +1,6 @@
 """Integration tests for cross-domain interactions."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
+from typing import Dict
 
 class TestCrossDomainDataFlow:
     """Integration tests for cross-domain data flow."""
@@ -25,11 +24,6 @@ class TestCrossDomainDataFlow:
 
     def test_shared_vector_store_access(self):
         """Integration: Shared vector store is accessed by multiple domains."""
-        vector_store = {
-            "lic_namespace": ["lic_doc_1", "lic_doc_2"],
-            "rg_namespace": ["rg_doc_1", "rg_doc_2"],
-            "shared_namespace": ["shared_doc_1"],
-        }
 
         # Both domains can access shared namespace
         lic_accessible = ["lic_namespace", "shared_namespace"]

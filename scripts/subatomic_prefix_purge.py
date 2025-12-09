@@ -7,11 +7,10 @@ Promotes apps_lic and apps_rg to top-level.
 Updates all imports repo-wide.
 """
 
-import os
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 import json
 
 # =============================================================================
@@ -116,7 +115,7 @@ def promote_apps_to_top_level() -> List[str]:
                     dest = REPO_ROOT / "apps_shared"
                     if not dest.exists():
                         shutil.move(str(item), str(dest))
-                        print(f"  ✓ Moved: 09_apps/shared -> apps_shared")
+                        print("  ✓ Moved: 09_apps/shared -> apps_shared")
                 else:
                     # Move other items to top level
                     dest = REPO_ROOT / item.name

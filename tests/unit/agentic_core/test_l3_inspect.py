@@ -1,7 +1,5 @@
 """Unit tests for L3_orchestration/P2_inspect - workflow state inspection."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
 
 class TestWorkflowStateInspection:
     """Tests for inspecting workflow state."""

@@ -11,7 +11,7 @@ Fixes test structure to comply with unified_structure_subatomic_meta.yaml.
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import List
 import json
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()

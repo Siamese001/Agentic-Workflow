@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from agentic_workflow.runtime.shared.sdk_registry import (
-    SDKCategory, SDKEntry, SDK_REGISTRY, validate_sdk,
-    ChromaConfig, RedisConfig, get_vector_store, get_redis_client, reset_all_clients,
+    SDKEntry, SDK_REGISTRY, validate_sdk,
+    get_vector_store, get_redis_client, reset_all_clients,
 )
 
 class TestSDKRegistry:
@@ -50,5 +50,5 @@ class TestGetRedisClient:
         reset_all_clients()
         with patch("agentic_workflow.runtime.shared.sdk_registry.redis") as m:
             m.Redis.return_value = MagicMock()
-            client = get_redis_client()
+            get_redis_client()
             m.Redis.assert_called_once()

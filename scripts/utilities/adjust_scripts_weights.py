@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.869367
 from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 

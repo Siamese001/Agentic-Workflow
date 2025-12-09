@@ -98,7 +98,7 @@ class ValidateDataEthicsSafetyImpl(ValidateDataEthicsSafetySafety):
 
     def apply_safety(self, data: Dict[str, Any]) -> ValidateDataEthicsSafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info(f"Applying safety checks to data")
+        self.logger.info("Applying safety checks to data")
 
         # L5 Input validation
         self._validate_input(data)

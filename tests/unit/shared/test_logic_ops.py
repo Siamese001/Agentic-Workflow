@@ -4,7 +4,7 @@ Tests logic operations including data access, guardrails, synthesis, and validat
 """
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 

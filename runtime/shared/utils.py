@@ -14,7 +14,6 @@ import logging
 import os
 import re
 import uuid
-from collections import defaultdict
 from dataclasses import asdict
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING

@@ -1,7 +1,6 @@
 """E2E tests for complete outreach campaign lifecycle."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta
@@ -238,7 +237,7 @@ Would you be open to a brief conversation?
 
         # Check for unresolved placeholders
         import re
-        unresolved = re.findall(r'\{[^}]+\}', message)
+        re.findall(r'\{[^}]+\}', message)
 
         # After personalization, should be empty
         personalized = message.format(first_name="John", company="Acme", recent_news="launched")

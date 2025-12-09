@@ -17,14 +17,10 @@ Version: 4.8.0
 Date: October 2025
 """
 
-import json
 import re
-from typing import Dict, List, Tuple, Optional, Any, Set
+from typing import Dict, List
 from enum import Enum
-import random
 from datetime import datetime
-from dataclasses import dataclass
-import hashlib
 
 __version__ = "4.8.0"
 
@@ -780,7 +776,7 @@ class NineHopPipeline:
             bullets = mappings["mappings"]["matched_bullets"].get(company, [])
 
             # Use BaselineResumeMetrics validation
-            validation = self.baseline_metrics.validate_wordcount(
+            self.baseline_metrics.validate_wordcount(
                 f"{company}_bullets", target_words, temperature
             )
 
@@ -1169,7 +1165,7 @@ class NineHopPipeline:
 
         lines.append("-" * 80)
         lines.append(f"WEIGHTED AVERAGE: {weighted:.3f}")
-        lines.append(f"TARGET RANGE: 0.720 - 0.780")
+        lines.append("TARGET RANGE: 0.720 - 0.780")
         lines.append(f"STATUS: {'✓ PASS' if 0.72 <= weighted <= 0.78 else '✗ FAIL'}")
 
         return "\n".join(lines)
