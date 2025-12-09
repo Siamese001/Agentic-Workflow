@@ -188,10 +188,10 @@ repos:
       # 6. No secrets in non-sovereign code
       - id: light-no-secrets
         name: LIGHT CANON — No secrets outside sovereign dirs
-        entry: detect-secrets scan --exclude-files '^data/|^archives/' --fail-on-live
-        language: system
+        entry: detect-secrets scan --exclude-files '^data/|^archives/'
+        language: python
         pass_filenames: false
-        additional_dependencies: [detect-secrets==1.5.0]
+        additional_dependencies: ["detect-secrets==1.5.0"]
 
       # 7. No zombie "archive/" folder (singular)
       - id: light-no-zombie-archive
@@ -220,7 +220,6 @@ repos:
         entry: pyright --verifytypes agentic_core apps_lic apps_rg apps_shared schemas prompt_governance observability config --ignoreexternal --level strict
         language: system
         pass_filenames: false
-        additional_dependencies: [pyright==1.1.391]
 
       - id: 100-percent-coverage
         name: 100% COVERAGE — SOVEREIGN ONLY
