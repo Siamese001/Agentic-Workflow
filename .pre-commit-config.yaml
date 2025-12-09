@@ -97,7 +97,7 @@ repos:
         name: "[Breakout] Auto-update README.md sovereign TOC"
         entry: python scripts/update_readme_toc.py
         language: system
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/.*\.py$
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
         stages: [pre-commit]
 
       # 6. Auto-create companion test file for new sovereign modules
@@ -105,7 +105,7 @@ repos:
         name: "[Breakout] Auto-create missing test_*.py for sovereign modules"
         entry: python scripts/auto_create_test.py
         language: system
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared)/.*\.py$
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
         stages: [pre-commit]
 
   # ===================================================================
@@ -199,6 +199,28 @@ repos:
         entry: bash -c 'test ! -d archive || (echo "ZOMBIE archive/ DETECTED — ONLY archives/ ALLOWED" && exit 1)'
         language: system
         files: ^$
+        pass_filenames: false
+
+      # 8. LIGHT CANON — Max 3 levels deep outside the 8 sacred roots
+      - id: light-no-deep-nesting
+        name: LIGHT CANON — Max 3 levels deep in non-sovereign code
+        entry: >-
+          python -c "
+          import sys, pathlib
+          sovereign = {'agentic_core','apps_lic','apps_rg','apps_shared','schemas','prompt_governance','observability','config'}
+          bad = []
+          for f in pathlib.Path('.').rglob('*.py'):
+              if any(part in sovereign for part in f.parts): continue
+              if any(part in {'data','archives','__pycache__'} for part in f.parts): continue
+              depth = len(f.parts) - 1
+              if depth > 3:
+                  bad.append(f'{f} (depth {depth})')
+          if bad:
+              print('DEEP NESTING FORBIDDEN (max depth 3 outside sovereign roots):\\n' + '\\n'.join(bad[:40]))
+              sys.exit(1)
+          "
+        language: system
+        files: \.py$
         pass_filenames: false
 
   # ===================================================================

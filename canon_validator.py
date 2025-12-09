@@ -37,7 +37,6 @@ DATA_FOLDER = "data"  # v3: IMMORTAL — 06_data is DEAD FOREVER
 # L4_memory AND L5_safety ARE DEAD IN CODE FOREVER
 # Only L1/L2/L3 exist in any sovereign directory
 #
-# NOTE: schemas, prompt_governance, observability, config are INTENDED to be sovereign
 # but currently have legacy violations. They will be added after cleanup.
 # See FUTURE_SOVEREIGN_MIGRATION.md for the migration plan.
 SOVEREIGN_DIRS = {
@@ -45,11 +44,10 @@ SOVEREIGN_DIRS = {
     "apps_lic",
     "apps_rg",
     "apps_shared",
-    # FUTURE (after cleanup):
-    # "schemas",               # contracts with the world
-    # "prompt_governance",     # global safety — sovereign
-    # "observability",         # audit trail — sovereign
-    # "config",                # runtime truth — sovereign
+    "schemas",
+    "prompt_governance",
+    "observability",
+    "config",
 }
 
 # Layered agents have L1/L2/L3 structure (NOT L4/L5 anymore)
@@ -98,7 +96,6 @@ L3_VERBS = {
 }
 
 # BANNED TOKENS — TOTAL NAMING PURGE (v2 Absolute)
-# Note: "service", "handler", "core", "component" removed — legitimate domain terms
 BANNED_TOKENS = {
     "ops", "utils", "manager", "helper", "common", "misc",
     "general", "base", "abstract", "legacy", "shared_engine",
@@ -126,7 +123,6 @@ MAX_DEPTH = 7
 MIN_FILE_BYTES = 350  # RAISED FROM 300 → WEAKNESS HAS NO PLACE
 
 # POISON MARKERS — ANY OF THESE IN CONTENT = INSTANT DEATH
-# Note: These are checked in file CONTENT, not filenames
 POISON_MARKERS = [
     "Auto-generated", "auto-generated", "SSoT", "ssot",
     "placeholder", "Placeholder", "stub file", "stub module",
@@ -349,7 +345,6 @@ def check_file_content_integrity() -> None:
         # 1. SCAN FOR FORBIDDEN CALLS (Global Scan)
         for node in ast.walk(tree):
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-                # BAN PRINT: Debug code is weakness.
                 if node.func.id == 'print':
                     violations.append(f"{f.name}: Found 'print()' call. USE LOGGER OR DIE.")
                 # BAN SLEEP: Synchronous blocking is for small muscles.
@@ -1004,7 +999,6 @@ def run_checks_21_30():
     else:
         fail("22", f"Banned tokens/exceptions: {all_violations[:5]}")
 
-    # 23: No TODO/FIXME/pass/ellipsis in any .py file + NUCLEAR VOCABULARY BAN
     # Only check comments, not string literals (uses regex)
     dirty = []
     vocab_violations = []
@@ -1038,7 +1032,6 @@ def run_checks_21_30():
     else:
         fail("23", f"Comment violations: {all_violations[:5]}")
 
-    # 24: No .py file shorter than MIN_FILE_BYTES (stub detection)
     short = []
     for f in get_sovereign_py_files():
         try:
@@ -1214,7 +1207,6 @@ def run_checks_31_40():
         else:
             fail("34", "pre-commit config missing canon_validator 40-key hook")
 
-    # 35: No scaffold/generate/stub scripts
     scaffold_patterns = [
         "scaffold",
         "generate_stub",
