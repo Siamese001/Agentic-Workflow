@@ -1,7 +1,6 @@
 """Integration tests for API layer."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -30,7 +29,7 @@ class TestAPIEndpointIntegration:
 
     def test_process_endpoint(self):
         """Integration: /process endpoint works correctly."""
-        request = APIRequest(
+        APIRequest(
             method=HTTPMethod.POST,
             path="/api/v1/process",
             headers={"Content-Type": "application/json"},
@@ -49,7 +48,7 @@ class TestAPIEndpointIntegration:
 
     def test_status_endpoint(self):
         """Integration: /status endpoint returns correct status."""
-        request = APIRequest(
+        APIRequest(
             method=HTTPMethod.GET,
             path="/api/v1/status/req_001",
             headers={},

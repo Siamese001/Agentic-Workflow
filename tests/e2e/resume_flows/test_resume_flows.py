@@ -2,7 +2,7 @@
 from __future__ import annotations
 import pytest
 from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 class ResumeSection(Enum):
@@ -108,7 +108,6 @@ class TestResumeOptimization:
 
     def test_bullet_point_optimization(self):
         """E2E: Bullet points are optimized with action verbs."""
-        weak_bullet = "Responsible for managing team"
         strong_bullet = "Led cross-functional team of 8 engineers"
         action_verbs = ["led", "managed", "developed", "implemented"]
         has_action_verb = any(v in strong_bullet.lower() for v in action_verbs)

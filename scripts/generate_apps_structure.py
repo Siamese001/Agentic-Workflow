@@ -918,7 +918,7 @@ def main():
             print(f"  [{module_type.upper()}] {path}")
 
     print(f"\n{'='*60}")
-    print(f"SUMMARY")
+    print("SUMMARY")
     print(f"{'='*60}")
     print(f"Files created: {total_created}")
     print(f"Files skipped (exist): {total_skipped}")

@@ -1,7 +1,5 @@
 """E2E tests for resume optimization flows."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any
 
 class TestResumeOptimizationE2E:
     """E2E tests for resume optimization."""
@@ -87,7 +85,6 @@ class TestResumeExportE2E:
 
     def test_pdf_export(self):
         """E2E: Resume exports to PDF."""
-        resume = {"content": "Resume content"}
         export = {"format": "pdf", "filename": "resume.pdf", "success": True}
 
         assert export["success"]

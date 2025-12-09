@@ -17,8 +17,6 @@ Ensures resume generation system remains properly structured for improved
 code maintainability and easier future enhancements.
 """
 
-import os
-import re
 from pathlib import Path
 
 # Define the root directory

@@ -3,9 +3,8 @@ Unit tests for shared/security_controls/
 Tests security control operations including guardrails.
 """
 from __future__ import annotations
-import pytest
 import re
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 

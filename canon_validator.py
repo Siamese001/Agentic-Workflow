@@ -797,7 +797,7 @@ def run_checks_21_30():
                 if isinstance(node, ast.ExceptHandler) and isinstance(node.type, ast.Name):
                     if node.type.id == 'Exception':
                         exception_violations.append(f"{f.name}: broad 'except Exception' is FORBIDDEN")
-        except (SyntaxError, TypeError, ValueError) as e:
+        except (SyntaxError, TypeError, ValueError):
             # If we cannot parse the file for some reason, skip exception hardening for it
             continue
 
@@ -831,7 +831,7 @@ def run_checks_21_30():
                                     f"{f.name}: docstring contains banned word '{banned}'"
                                 )
                                 break
-        except (SyntaxError, TypeError, ValueError) as e:
+        except (SyntaxError, TypeError, ValueError):
             # If we cannot parse docstrings, skip vocabulary checks for that file
             continue
 

@@ -38,7 +38,7 @@ import os
 import threading
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 logger = logging.getLogger(__name__)
 

@@ -22,14 +22,12 @@ Routing Rules (based on filename patterns and content analysis):
 Execution: Run from repo root inside Docker container.
 """
 
-import os
-import re
 import shutil
 import json
 import hashlib
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 
 # Configuration
@@ -351,7 +349,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
             target_base = TARGETS.get(target_folder, TARGETS["06_data"])
             target_path = target_base / target_subpath
 
-            routing = FileRouting(
+            FileRouting(
                 source_path=filepath,
                 target_folder=target_folder,
                 target_subpath=target_subpath,

@@ -1,7 +1,6 @@
 """Integration tests for workflow state management."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 from dataclasses import dataclass, field
 from enum import Enum
 

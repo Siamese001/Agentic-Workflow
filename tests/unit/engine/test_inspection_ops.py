@@ -4,7 +4,7 @@ Tests inspection operations for content analysis.
 """
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 

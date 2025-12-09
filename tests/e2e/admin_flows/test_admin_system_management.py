@@ -1,8 +1,8 @@
 """E2E tests for admin system management flows."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from typing import Dict, List, Any
+from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime, timedelta
 
@@ -169,11 +169,6 @@ class TestConfigurationManagementE2E:
 
     def test_config_update_with_validation(self):
         """E2E: Config updates are validated."""
-        config = {
-            "max_connections": 100,
-            "timeout_seconds": 30,
-            "log_level": "INFO",
-        }
 
         update = {"max_connections": 200, "timeout_seconds": -5}  # Invalid timeout
 

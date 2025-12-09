@@ -4,7 +4,7 @@ Tests aggregation operations including pick_best_result.
 """
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 @dataclass

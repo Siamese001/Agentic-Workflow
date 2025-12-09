@@ -9,7 +9,7 @@ L5 Agentic Core - Safety Layer - apply_observability_safety
 Implements L5 Safety/Policy Layer for apply observability safety operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
@@ -70,7 +70,7 @@ class ApplyObservabilitySafetySafetyImpl(ApplyObservabilitySafetySafetySafety):
 
     def apply_safety(self, data: Dict[str, Any]) -> ApplyObservabilitySafetySafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info(f"Applying safety checks to data")
+        self.logger.info("Applying safety checks to data")
 
         # L5 Input validation
         self._validate_input(data)

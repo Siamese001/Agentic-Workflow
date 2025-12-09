@@ -144,9 +144,9 @@ def main():
     print("\n" + "=" * 80)
     print("COMPLETE")
     print("=" * 80)
-    print(f"  - Resume Generation Engine preserved in: 09_apps/apps_rg/resume_generation_engine.py")
+    print("  - Resume Generation Engine preserved in: 09_apps/apps_rg/resume_generation_engine.py")
     print(f"  - All files archived to: {archive_path.relative_to(REPO)}")
-    print(f"  - review_pending folder deprecated")
+    print("  - review_pending folder deprecated")
 
 
 if __name__ == '__main__':

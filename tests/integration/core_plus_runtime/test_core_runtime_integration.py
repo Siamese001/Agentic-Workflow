@@ -1,6 +1,5 @@
 """Integration tests for agentic_core + runtime integration."""
 from __future__ import annotations
-import pytest
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
@@ -139,8 +138,8 @@ class TestObservabilityIntegration:
             return span
 
         root = create_span("request")
-        l1 = create_span("L1_cognition", root["id"])
-        l2 = create_span("L2_execution", root["id"])
+        create_span("L1_cognition", root["id"])
+        create_span("L2_execution", root["id"])
 
         assert len(spans) == 3
         assert spans[1]["parent"] == root["id"]
@@ -178,7 +177,6 @@ class TestSecurityIntegration:
 
     def test_safety_check_integration(self):
         """Integration: Safety checks integrate with core."""
-        content = "Normal business content"
 
         safety_result = {
             "passed": True,

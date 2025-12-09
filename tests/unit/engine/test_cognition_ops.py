@@ -3,8 +3,7 @@ Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 
@@ -55,7 +54,6 @@ class TestUnderstandRequest:
 
     def test_extract_entities(self):
         """Named entities are extracted correctly."""
-        text = "Find information about John Smith at Acme Corp"
 
         entities = {
             "person": "John Smith",
@@ -125,7 +123,6 @@ class TestQueryFormulation:
 
     def test_formulate_compound_query(self):
         """Compound query is formulated correctly."""
-        text = "Find revenue and profit for Q4"
 
         queries = [
             {"metric": "revenue", "period": "Q4"},
@@ -140,11 +137,6 @@ class TestContextUnderstanding:
 
     def test_incorporate_conversation_history(self):
         """Conversation history is incorporated."""
-        history = [
-            {"role": "user", "content": "Tell me about Acme Corp"},
-            {"role": "assistant", "content": "Acme Corp is a technology company..."},
-        ]
-        current_query = "What is their revenue?"
 
         # "their" refers to Acme Corp from history
         context = {"referenced_entity": "Acme Corp"}
@@ -163,7 +155,6 @@ class TestContextUnderstanding:
     def test_maintain_topic_continuity(self):
         """Topic continuity is maintained."""
         conversation_topic = "quarterly_earnings"
-        query = "How does it compare to last year?"
 
         # "it" refers to current topic
         context = {"topic": conversation_topic, "comparison": "year_over_year"}

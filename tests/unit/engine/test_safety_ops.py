@@ -3,7 +3,6 @@ Unit tests for shared_engine_ops/safety_ops/
 Tests safety operations including check_rules.
 """
 from __future__ import annotations
-import pytest
 import re
 from typing import Dict, List, Any
 from dataclasses import dataclass
@@ -82,7 +81,6 @@ class TestCheckRules:
 
     def test_safe_content_passes(self):
         """Safe content passes all rules."""
-        text = "The quarterly report shows strong growth in all sectors."
 
         result = SafetyCheckResult(
             is_safe=True,
@@ -162,7 +160,6 @@ class TestPolicyEnforcement:
         """Policy can be overridden for specific cases."""
         risk_score = 0.8
         has_override = True
-        override_reason = "Approved by admin"
 
         should_block = risk_score >= 0.7 and not has_override
         assert should_block is False

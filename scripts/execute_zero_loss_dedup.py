@@ -14,7 +14,7 @@ import json
 import shutil
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS_DIR = REPO_ROOT / "06_data" / "dedup_analysis"

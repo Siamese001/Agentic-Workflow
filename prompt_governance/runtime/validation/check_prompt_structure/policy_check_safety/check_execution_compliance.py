@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - check_data_compliance
 Implements L1 Cognitive Planning Layer for check data compliance operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

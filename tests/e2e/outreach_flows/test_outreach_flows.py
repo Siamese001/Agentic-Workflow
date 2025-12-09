@@ -1,8 +1,7 @@
 """E2E tests for outreach flows - LinkedIn outreach campaign workflows."""
 from __future__ import annotations
-import pytest
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from typing import List, Optional
+from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime
 
@@ -144,7 +143,6 @@ class TestMessageGeneration:
 
     def test_generate_followup_message(self):
         """E2E: Follow-up message is generated."""
-        previous = "Hi John, I reached out last week..."
         followup = "Hi John, following up on my previous message..."
         assert "following up" in followup.lower()
 

@@ -1,6 +1,5 @@
 """Integration tests for LinkedIn outreach + data layer integration."""
 from __future__ import annotations
-import pytest
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 

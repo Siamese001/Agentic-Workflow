@@ -1,10 +1,8 @@
 """Regression tests for cache key collision and edge cases."""
 from __future__ import annotations
-import pytest
 
 from agentic_workflow.runtime.shared.cache import (
     generate_llm_cache_key, generate_llm_cache_key_with_fingerprint,
-    CACHE_KEY_PREFIX,
 )
 
 class TestCacheKeyCollisionRegression:

@@ -9,7 +9,7 @@ L5 Agentic Core - Safety Layer - enforce_data_limits
 Implements L5 Safety/Policy Layer for enforce data limits operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
@@ -70,7 +70,7 @@ class EnforceDataLimitsSafetyImpl(EnforceDataLimitsSafetySafety):
 
     def apply_safety(self, data: Dict[str, Any]) -> EnforceDataLimitsSafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info(f"Applying safety checks to data")
+        self.logger.info("Applying safety checks to data")
 
         # L5 Input validation
         self._validate_input(data)

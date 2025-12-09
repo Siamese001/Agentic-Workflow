@@ -6,10 +6,9 @@ Identifies all stub, placeholder, and empty files in the repository.
 Categorizes them for cleanup or implementation.
 """
 
-import os
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, Tuple
 from collections import defaultdict
 import json
 

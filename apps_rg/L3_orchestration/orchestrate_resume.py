@@ -8,9 +8,8 @@ from typing import Any, Dict, List
 
 from shared.config import ContentConstraintsConfig
 from shared.exceptions import HopExecutionError
-from shared.models import ThematicAnalysis, ValidationResult
-from shared.reasoning_config import ReasoningConfig
-from shared.workflow_types import GateDecision, HopCheckpoint, HopStatus
+from shared.models import ValidationResult
+from shared.workflow_types import HopCheckpoint, HopStatus
 
 from apps_rg.L2_execution.apply_clerk_extraction import ClerkExtractor
 from apps_rg.L2_execution.apply_data_enrichment import DataEnricher

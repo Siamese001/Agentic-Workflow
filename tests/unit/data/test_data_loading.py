@@ -2,8 +2,6 @@
 from __future__ import annotations
 import pytest
 import json
-from typing import Dict, List, Any, Optional
-from pathlib import Path
 
 class TestDataLoading:
     """Tests for data loading operations."""
@@ -84,7 +82,6 @@ class TestDataTransformation:
 
     def test_transform_flatten_dict(self):
         """Nominal: Nested dict is flattened."""
-        nested = {"a": {"b": {"c": 1}}}
         # Simple flatten
         flat = {"a.b.c": 1}
         assert "a.b.c" in flat

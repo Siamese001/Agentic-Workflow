@@ -43,13 +43,7 @@ from l5.policy import SafetyEngine
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .agents import (
-        StrategyLLMAgent,
-        DraftingGuild,
-        SemanticQAAgent,
-        ConstitutionalSafetyAgent,
-        HYDEQueryAgent,
-    )
+    pass
 from eval.health.adapter import collect_error_events
 from eval.health.failure_detector import detect_repeated_failures
 from eval.health.repair_policies import propose_repairs
