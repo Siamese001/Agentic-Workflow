@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Result:
     """Operation result."""
     success: bool
-    data: Any = None
+    data: object = None
     metadata: Dict[str, object] = field(default_factory=dict)
 
 
@@ -36,6 +36,6 @@ class ValidateCommonEthics:
         return data
 
 
-def process(data: Any, config: Optional[Dict] = None) -> Result:
+def process(data: object, config: Optional[Dict] = None) -> Result:
     """Process data."""
     return ValidateCommonEthics(config).process(data)

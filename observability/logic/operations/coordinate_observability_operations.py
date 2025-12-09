@@ -28,7 +28,7 @@ class StepResult:
     """Result of orchestration step."""
     step_name: str
     status: StepStatus
-    output: Any = None
+    output: object = None
     error: Optional[str] = None
     duration_ms: float = 0.0
 
@@ -38,7 +38,7 @@ class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
-    final_output: Any = None
+    final_output: object = None
 
 
 class CoordinateObservabilityOperations:
@@ -54,7 +54,7 @@ class CoordinateObservabilityOperations:
         self.steps.append({"name": name, "handler": handler, "dependencies": dependencies or []})
         return self
 
-    def execute(self, initial_input: Any = None) -> OrchestrationResult:
+    def execute(self, initial_input: object = None) -> OrchestrationResult:
         """Execute the workflow."""
         results = []
         context = {"input": initial_input, "outputs": {}}
@@ -90,7 +90,7 @@ class CoordinateObservabilityOperations:
         )
 
 
-def orchestrate(steps: List[Dict], initial_input: Any = None, config: Optional[Dict] = None) -> OrchestrationResult:
+def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     orch = CoordinateObservabilityOperations(config)
     for step in steps:

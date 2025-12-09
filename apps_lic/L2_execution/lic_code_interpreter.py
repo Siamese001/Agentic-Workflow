@@ -83,7 +83,7 @@ class LICCodeInterpreter:
             "validate_structure": self.validate_structure,
         }
 
-    def execute(self, function_name: str, **kwargs: Any) -> object:
+    def execute(self, function_name: str, **kwargs: object) -> object:
         """
         Execute a registered function safely.
 

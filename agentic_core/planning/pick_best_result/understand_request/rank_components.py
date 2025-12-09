@@ -75,7 +75,7 @@ from orchestration.kg_retrieval_orchestration import (
 class TestTripletStore:
     """Test L4 TripletStore functionality."""
 
-    def test_create_triplet(self):
+    def test_create_triplet(self) -> None:
         """Test triplet creation."""
         triplet = create_triplet(
             subject="user_123",
@@ -90,7 +90,7 @@ class TestTripletStore:
         assert triplet.confidence == 0.9
         assert triplet.status == TripletStatus.ACTIVE
 
-    def test_triplet_store_add_and_query(self):
+    def test_triplet_store_add_and_query(self) -> None:
         """Test adding and querying triplets."""
         store = TripletStore()
 
@@ -107,7 +107,7 @@ class TestTripletStore:
 
         assert len(results) == 3
 
-    def test_triplet_store_predicate_filter(self):
+    def test_triplet_store_predicate_filter(self) -> None:
         """Test querying with predicate filter."""
         store = TripletStore()
 
@@ -120,7 +120,7 @@ class TestTripletStore:
         assert len(results) == 1
         assert results[0].object == "Python"
 
-    def test_triplet_invalidation(self):
+    def test_triplet_invalidation(self) -> None:
         """Test triplet invalidation."""
         store = TripletStore()
 
@@ -144,7 +144,7 @@ class TestTripletStore:
 class TestEntityResolution:
     """Test L4 EntityRegistry functionality."""
 
-    def test_entity_creation(self):
+    def test_entity_creation(self) -> None:
         """Test entity creation."""
         entity = create_entity(
             name="Python",
@@ -156,7 +156,7 @@ class TestEntityResolution:
         assert entity.entity_type == EntityType.SKILL
         assert "python" in entity.aliases
 
-    def test_entity_resolution(self):
+    def test_entity_resolution(self) -> None:
         """Test resolving entity mentions."""
         registry = EntityRegistry()
 
@@ -173,7 +173,7 @@ class TestEntityResolution:
         assert result.resolved_entity.canonical_name == "Python"
         assert result.confidence > 0.9
 
-    def test_entity_fuzzy_matching(self):
+    def test_entity_fuzzy_matching(self) -> None:
         """Test fuzzy entity matching."""
         registry = EntityRegistry()
 
@@ -196,7 +196,7 @@ class TestEntityResolution:
 class TestKGRetrievalPlanning:
     """Test L1 KG Retrieval Planner."""
 
-    def test_plan_entity_retrieval(self):
+    def test_plan_entity_retrieval(self) -> None:
         """Test planning entity fact retrieval."""
         plan = plan_entity_retrieval("user_123", predicates=["has_skill"])
 
@@ -204,7 +204,7 @@ class TestKGRetrievalPlanning:
         assert "user_123" in plan.start_entities
         assert len(plan.hops) == 1
 
-    def test_plan_neighborhood_query(self):
+    def test_plan_neighborhood_query(self) -> None:
         """Test planning multi-hop neighborhood query."""
         planner = KGRetrievalPlanner()
 
@@ -218,7 +218,7 @@ class TestKGRetrievalPlanning:
         assert plan.max_hops == 2
         assert len(plan.hops) == 2
 
-    def test_plan_with_template(self):
+    def test_plan_with_template(self) -> None:
         """Test planning with predefined template."""
         planner = KGRetrievalPlanner()
 
@@ -236,7 +236,7 @@ class TestKGRetrievalPlanning:
 class TestKGRetrievalExecutor:
     """Test L2 KG Retrieval Executor."""
 
-    def test_execute_entity_query(self):
+    def test_execute_entity_query(self) -> None:
         """Test executing entity fact query."""
         store = TripletStore()
 
@@ -252,7 +252,7 @@ class TestKGRetrievalExecutor:
         assert result.total_triplets == 3
         assert "user_1" in result.entities
 
-    def test_execute_multi_hop(self):
+    def test_execute_multi_hop(self) -> None:
         """Test multi-hop neighborhood query."""
         store = TripletStore()
 
@@ -274,7 +274,7 @@ class TestKGRetrievalExecutor:
 class TestTripletExtraction:
     """Test L2 Triplet Extraction Executor."""
 
-    def test_extract_skills(self):
+    def test_extract_skills(self) -> None:
         """Test skill extraction from text."""
         executor = TripletExtractionExecutor()
 
@@ -291,7 +291,7 @@ class TestTripletExtraction:
         skills = [t.object for t in result.triplets if t.predicate == "has_skill"]
         assert len(skills) >= 1
 
-    def test_extract_experience(self):
+    def test_extract_experience(self) -> None:
         """Test experience extraction from text."""
         executor = TripletExtractionExecutor()
 
@@ -312,7 +312,7 @@ class TestTripletExtraction:
 class TestInvalidationExecutor:
     """Test L2 Invalidation Executor."""
 
-    def test_invalidation_by_age(self):
+    def test_invalidation_by_age(self) -> None:
         """Test invalidation of old facts."""
         store = TripletStore()
 
@@ -337,7 +337,7 @@ class TestInvalidationExecutor:
 class TestKGOrchestration:
     """Test L3 KG-First Retrieval Orchestration."""
 
-    def test_build_retrieval_dag(self):
+    def test_build_retrieval_dag(self) -> None:
         """Test building a retrieval DAG."""
         orchestrator = KGFirstRetrievalOrchestrator()
 
@@ -355,7 +355,7 @@ class TestKGOrchestration:
         assert "fusion" in dag.nodes
         assert "filtering" in dag.nodes
 
-    def test_dag_execution_order(self):
+    def test_dag_execution_order(self) -> None:
         """Test DAG topological sort."""
         orchestrator = KGFirstRetrievalOrchestrator()
 
@@ -376,7 +376,7 @@ class TestKGOrchestration:
 class TestLayerBoundaries:
     """Test that components respect layer boundaries."""
 
-    def test_l4_no_execution_logic(self):
+    def test_l4_no_execution_logic(self) -> None:
         """Verify L4 components don't contain execution logic."""
         # TripletStore should only store/retrieve, not execute
         store = TripletStore()
@@ -388,7 +388,7 @@ class TestLayerBoundaries:
 
         assert len(results) == 1
 
-    def test_l1_pure_planning(self):
+    def test_l1_pure_planning(self) -> None:
         """Verify L1 planner produces plans without execution."""
         planner = KGRetrievalPlanner()
 
@@ -401,7 +401,7 @@ class TestLayerBoundaries:
         assert isinstance(plan, KGQueryPlan)
         assert plan.start_entities == ["entity_1"]
 
-    def test_l2_executes_plans(self):
+    def test_l2_executes_plans(self) -> None:
         """Verify L2 executor uses plans from L1."""
         store = TripletStore()
         store.add_triplet(create_triplet("e1", "rel", "e2"))

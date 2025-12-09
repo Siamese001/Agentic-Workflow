@@ -64,8 +64,8 @@ class LICVectorMemory:
         """
         self.collection_name = collection_name
         self.persist_directory = persist_directory
-        self._client: Any = None
-        self._collection: Any = None
+        self._client: object = None
+        self._collection: object = None
         self._initialized = False
 
     def initialize(self) -> bool:
