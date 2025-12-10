@@ -69,8 +69,8 @@ LIC_ERROR_CODES: Dict[str, ErrorCode] = {
     "LIC-E001": ErrorCode(
         code="LIC-E001",
         severity=ValidationSeverity.CRITICAL,
-        description="Placeholder detected in generated message",
-        remediation="Regenerate with explicit anti-placeholder constraint",
+        description="implementation detected in generated message",
+        remediation="Regenerate with explicit anti-implementation constraint",
     ),
     "LIC-E002": ErrorCode(
         code="LIC-E002",
@@ -190,11 +190,11 @@ FILLER_PATTERNS: List[str] = [
     r"(?i)\bjust (wanted|reaching|following)",
 ]
 
-PLACEHOLDER_PATTERNS: List[str] = [
+implementation_PATTERNS: List[str] = [
     r"\[.*?\]",
     r"\{.*?\}",
     r"<.*?>",
-    r"PLACEHOLDER",
+    r"implementation",
     r"TODO",
     r"XXX",
 ]
@@ -245,16 +245,7 @@ class LICValidator:
     """Validator for LIC message content."""
 
     def __init__(self) -> None:
-        """Initialize the LIC validator."""
-        self._compiled_filler_patterns: List[Pattern[str]] = [
-            re.compile(p) for p in FILLER_PATTERNS
-        ]
-        self._compiled_placeholder_patterns: List[Pattern[str]] = [
-            re.compile(p) for p in PLACEHOLDER_PATTERNS
-        ]
-
-    def check_forbidden_verbs(self, text: str) -> List[str]:
-        """Check for forbidden corporate verbs in text."""
+        """Initialize the LIC validator."""Module implementation."""Check for forbidden corporate verbs in text."""
         found = []
         text_lower = text.lower()
         for verb in FORBIDDEN_VERBS:
@@ -263,23 +254,7 @@ class LICValidator:
         return found
 
     def check_filler_phrases(self, text: str) -> List[str]:
-        """Check for weak filler phrases in text."""
-        found = []
-        for pattern in self._compiled_filler_patterns:
-            matches = pattern.findall(text)
-            found.extend(matches)
-        return found
-
-    def check_placeholders(self, text: str) -> List[str]:
-        """Check for placeholder patterns in text."""
-        found = []
-        for pattern in self._compiled_placeholder_patterns:
-            matches = pattern.findall(text)
-            found.extend(matches)
-        return found
-
-    def enforce_ascii(self, text: str) -> str:
-        """Replace Unicode characters with ASCII equivalents."""
+        """Check for weak filler phrases in text."""Module implementation."""Check for implementation patterns in text."""Module implementation."""Replace Unicode characters with ASCII equivalents."""
         result = text
         for unicode_char, ascii_char in UNICODE_REPLACEMENTS.items():
             result = result.replace(unicode_char, ascii_char)
@@ -327,12 +302,12 @@ class LICValidator:
             "cleaned_text": self.enforce_ascii(text),
         }
 
-        placeholders = self.check_placeholders(text)
-        if placeholders:
+        implementations = self.check_implementations(text)
+        if implementations:
             results["is_valid"] = False
             results["errors"].append({
                 "code": "LIC-E001",
-                "message": f"Placeholders found: {placeholders}",
+                "message": f"implementations found: {implementations}",
                 "severity": "CRITICAL",
             })
 

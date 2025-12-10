@@ -4,7 +4,6 @@ Auto-hardened by WINDSURF v2
 """
 
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
-# Source: SSoT taxonomy + golden fallback
 # ======================================================================
 
 {
