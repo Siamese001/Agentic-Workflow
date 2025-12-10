@@ -517,7 +517,6 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
             port=config.redis_config.port,
             db=db or config.redis_config.db,
         )
-    else:  # pragma: no cover - defensive stub fallback
         redis_client = MCPClientStub(
             "redis",
             {
@@ -534,14 +533,12 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
                 host=config.chromadb_config.host,
                 port=config.chromadb_config.port,
             )
-        else:  # pragma: no cover - defensive stub fallback
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     else:
         persistent_ctor = getattr(chromadb_module, "PersistentClient", None)
         if callable(persistent_ctor):
             chromadb_client = persistent_ctor(path=config.chromadb_config.persistent_path)
-        else:  # pragma: no cover - defensive stub fallback
             client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     logger.info("Initialized ChromaDB client")
@@ -549,7 +546,6 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     embedding_ctor = getattr(embedding_functions, "DefaultEmbeddingFunction", None)
     if callable(embedding_ctor):
         embedding_function = embedding_ctor()
-    else:  # pragma: no cover - stub fallback for local tests
         embedding_function = embedding_functions.EmbeddingFunction()
 
     # 2. Initialize Core Services (All 9+ services)

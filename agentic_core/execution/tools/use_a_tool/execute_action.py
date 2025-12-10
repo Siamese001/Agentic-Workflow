@@ -76,7 +76,7 @@ run_rag_retrieval = _retrieval_module.run_rag_retrieval
 
 
 """
-Provides helper functions for reliable resume processing execution.
+Provides support functions for reliable resume processing execution.
 
 Ensures robust operation for resume job alignment workflows.
 """
@@ -671,7 +671,7 @@ def execute_workflow_plans(
 ) -> L2ResultBundle:
     """Run the full execution pipeline from synchronous code.
 
-    This helper exists for callers that are not async-aware. It invokes
+    This support exists for callers that are not async-aware. It invokes
     :func:`run_l2` under the hood and returns the same structured bundle of
     results: updated strategy, retrieved evidence, drafted sections, QA
     findings, and safety findings.
