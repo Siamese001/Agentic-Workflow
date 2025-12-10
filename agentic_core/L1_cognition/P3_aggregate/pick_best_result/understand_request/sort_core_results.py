@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Sort Core Results - atomic wrapper."""
+"""Sort Core Results - atomic execution layer."""
 
 
 from typing import Dict

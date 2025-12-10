@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Fetch Understand Data - atomic wrapper."""
+"""Fetch Understand Data - atomic execution layer."""
 
 
 from typing import Dict

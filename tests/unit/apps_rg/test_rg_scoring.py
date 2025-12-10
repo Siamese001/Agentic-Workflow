@@ -1,6 +1,6 @@
 # Ownership: apps_rg / unknown
 # -*- coding: utf-8 -*-
-"""Test Rg Scoring - atomic wrapper."""
+"""Test Rg Scoring - atomic execution layer."""
 
 from __future__ import annotations
 

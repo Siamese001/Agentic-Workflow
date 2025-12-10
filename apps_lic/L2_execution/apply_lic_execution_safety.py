@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L2_execution
 # -*- coding: utf-8 -*-
-"""Apply Lic Execution Safety - atomic wrapper."""
+"""Apply Lic Execution Safety - atomic execution layer."""
 
 
 from typing import Dict

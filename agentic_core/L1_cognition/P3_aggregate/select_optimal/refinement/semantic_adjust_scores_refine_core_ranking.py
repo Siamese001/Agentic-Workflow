@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Refine Core Ranking - atomic wrapper."""
+"""Refine Core Ranking - atomic execution layer."""
 
 
 from typing import Dict

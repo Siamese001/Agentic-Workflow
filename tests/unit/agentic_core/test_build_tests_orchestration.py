@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Build Tests Orchestration - atomic wrapper."""
+"""Test Build Tests Orchestration - atomic execution layer."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Format execution output - atomic wrapper for shared types."""
+"""Format execution output - atomic execution layer for shared types."""
 
 
 from typing import Dict, List

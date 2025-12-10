@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Memory Operations - atomic wrapper."""
+"""Test Memory Operations - atomic execution layer."""
 
 from __future__ import annotations
 

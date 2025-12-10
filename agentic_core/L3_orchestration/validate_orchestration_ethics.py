@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Validate Orchestration Ethics - atomic wrapper."""
+"""Validate Orchestration Ethics - atomic execution layer."""
 
 
 from typing import Dict

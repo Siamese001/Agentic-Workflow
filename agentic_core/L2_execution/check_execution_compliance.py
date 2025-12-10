@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Check Execution Compliance - atomic wrapper."""
+"""Check Execution Compliance - atomic execution layer."""
 
 
 from typing import Dict

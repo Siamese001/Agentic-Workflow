@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Enforce Execution Contracts - atomic wrapper."""
+"""Enforce Execution Contracts - atomic execution layer."""
 
 
 from typing import Dict

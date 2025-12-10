@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Orchestrate Workflow Pipeline - atomic wrapper."""
+"""Orchestrate Workflow Pipeline - atomic execution layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Update Core Budget - atomic wrapper."""
+"""Update Core Budget - atomic execution layer."""
 
 
 from typing import Dict

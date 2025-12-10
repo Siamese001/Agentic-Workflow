@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Message Contracts - atomic wrapper."""
+"""Enforce Message Contracts - atomic execution layer."""
 
 
 from typing import Dict

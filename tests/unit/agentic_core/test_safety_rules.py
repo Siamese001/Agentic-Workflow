@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Safety Rules - atomic wrapper."""
+"""Test Safety Rules - atomic execution layer."""
 
 from __future__ import annotations
 

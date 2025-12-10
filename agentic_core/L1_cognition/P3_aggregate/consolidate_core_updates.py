@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Consolidate Core Updates - atomic wrapper."""
+"""Consolidate Core Updates - atomic execution layer."""
 
 
 from typing import Dict

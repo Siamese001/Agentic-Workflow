@@ -358,14 +358,14 @@ class BulletSelector:
 
 
 def create_provenance_tracker() -> ProvenanceTracker:
-    """Factory function to create a provenance tracker."""
+    """Create a provenance tracker instance."""
     return ProvenanceTracker()
 
 
 def create_bullet_selector(
     tracker: Optional[ProvenanceTracker] = None,
 ) -> BulletSelector:
-    """Factory function to create a bullet selector."""
+    """Create a bullet selector instance."""
     if tracker is None:
         tracker = ProvenanceTracker()
     return BulletSelector(tracker)
@@ -377,7 +377,7 @@ def create_provenance_source(
     source_id: Optional[str] = None,
     confidence: float = 1.0,
 ) -> ProvenanceSource:
-    """Factory function to create a provenance source."""
+    """Create a provenance source instance."""
     if source_id is None:
         source_id = hashlib.md5(source_text.encode()).hexdigest()[:8]
 

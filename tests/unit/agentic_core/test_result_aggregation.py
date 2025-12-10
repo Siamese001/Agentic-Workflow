@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Result Aggregation - atomic wrapper."""
+"""Test Result Aggregation - atomic execution layer."""
 
 from __future__ import annotations
 

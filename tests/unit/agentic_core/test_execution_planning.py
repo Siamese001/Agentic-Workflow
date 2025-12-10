@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Execution Planning - atomic wrapper."""
+"""Test Execution Planning - atomic execution layer."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Check Tests Policy - atomic wrapper."""
+"""Test Check Tests Policy - atomic execution layer."""
 
 from __future__ import annotations
 

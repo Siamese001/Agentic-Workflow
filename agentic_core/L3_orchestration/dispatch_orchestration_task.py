@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Dispatch Orchestration Task - atomic wrapper."""
+"""Dispatch Orchestration Task - atomic execution layer."""
 
 
 from typing import Dict

@@ -627,8 +627,11 @@ def run_checks_01_10():
                 continue
             try:
                 content = read_file(f)
+                content_lower = content.lower()
                 for word in BANNED_VOCABULARY:
-                    if word in content.lower():
+                    # Use word boundary check to avoid false positives like "threshold" matching "old"
+                    pattern = re.compile(r'\b' + re.escape(word) + r'\b')
+                    if pattern.search(content_lower):
                         violations.append(f"{f.name}: {word}")
                         break
             except Exception:

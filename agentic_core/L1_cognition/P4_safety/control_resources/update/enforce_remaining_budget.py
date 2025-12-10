@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Remaining Budget - atomic wrapper."""
+"""Enforce Remaining Budget - atomic execution layer."""
 
 
 from typing import Dict

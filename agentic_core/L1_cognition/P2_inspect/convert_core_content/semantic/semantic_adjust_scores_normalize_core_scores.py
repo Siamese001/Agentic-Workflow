@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Normalize Core Scores - atomic wrapper."""
+"""Normalize Core Scores - atomic execution layer."""
 
 
 from typing import Dict

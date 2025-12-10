@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Constitutional Review - atomic wrapper."""
+"""Test Constitutional Review - atomic execution layer."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Inspect - atomic wrapper."""
+"""Inspect - atomic execution layer."""
 
 
 from typing import Dict

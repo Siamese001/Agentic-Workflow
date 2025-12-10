@@ -1,6 +1,6 @@
 # Ownership: apps_rg / unknown
 # -*- coding: utf-8 -*-
-"""Test Rg Resume Builder - atomic wrapper."""
+"""Test Rg Resume Builder - atomic execution layer."""
 
 from __future__ import annotations
 

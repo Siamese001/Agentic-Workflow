@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Optimize Order - atomic wrapper."""
+"""Optimize Order - atomic execution layer."""
 
 
 from typing import Dict

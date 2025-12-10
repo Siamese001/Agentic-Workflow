@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Search Core Vectors - atomic wrapper."""
+"""Search Core Vectors - atomic execution layer."""
 
 
 from typing import Dict

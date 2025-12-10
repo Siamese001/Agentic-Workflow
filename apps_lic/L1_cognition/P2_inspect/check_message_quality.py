@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Check Message Quality - atomic wrapper."""
+"""Check Message Quality - atomic execution layer."""
 
 
 from typing import Dict

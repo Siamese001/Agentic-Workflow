@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Tone Guidelines - atomic wrapper."""
+"""Enforce Tone Guidelines - atomic execution layer."""
 
 
 from typing import Dict

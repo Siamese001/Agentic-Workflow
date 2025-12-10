@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Format Candidate Payload - atomic wrapper."""
+"""Format Candidate Payload - atomic execution layer."""
 
 
 from typing import Dict

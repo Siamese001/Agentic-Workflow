@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Prepare Tests Payload - atomic wrapper."""
+"""Test Prepare Tests Payload - atomic execution layer."""
 
 from __future__ import annotations
 
