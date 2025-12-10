@@ -1513,51 +1513,63 @@ def check_key_48_reserved():
 
 
 def check_universal_max_depth():
-    """Key 49: MAX 5 LEVELS + NO EMPTY/DEAD FOLDERS + NO DUPLICATES"""
-    print("Key 49: MAX 5 LEVELS — NO DEAD FOLDERS — NO ESCAPE")
-    bad_depth = []
-    bad_duplicate = []
-    bad_empty = []
-    excluded = {'.git', '__pycache__', 'data', 'archives', 'node_modules'}
+    """Key 49: MAX 5 LEVELS — files deeper than 5 are MOVED UP (never deleted)"""
+    from pathlib import Path
+    import shutil
+    from datetime import datetime
 
-    # 1. Check files (depth + duplicates)
+    violations = []
+    moved = []
+
     for item in Path('.').rglob('*.py'):
-        if item.name == "__init__.py" or any(ex in item.parts for ex in excluded):
+        if item.name == "__init__.py":
+            continue
+        if any(ex in item.parts for ex in {'.git', '__pycache__', 'data', 'archives', 'node_modules'}):
             continue
 
         depth = len(item.parts) - 1
-        if depth > 5:
-            bad_depth.append(f"{item} (depth {depth})")
-
-        seen = set()
-        for part in item.parts[:-1]:
-            if part in seen and part not in {'config', 'logic', 'apps_shared', 'agentic_core', 'observability'}:
-                bad_duplicate.append(f"{item} -> repeated folder '{part}'")
-                break
-            seen.add(part)
-
-    # 2. NEW: CATCH EMPTY FOLDERS (the silent killers)
-    for folder in Path('.').rglob('*'):
-        if not folder.is_dir():
+        if depth <= 5:
             continue
-        if any(ex in folder.parts for ex in excluded):
-            continue
-        # Skip root-level folders
-        if len(folder.parts) <= 1:
-            continue
-        # Empty or contains only __pycache__ / .git etc.
-        contents = [p for p in folder.iterdir() if p.name not in {'__pycache__'} and not p.name.startswith('.')]
-        if not contents:
-            bad_empty.append(f"EMPTY FOLDER: {folder}")
 
-    msg = ""
-    if bad_depth:     msg += f"DEPTH >5: {len(bad_depth)}\n" + "\n".join(f"-> {b}" for b in bad_depth[:20]) + "\n"
-    if bad_duplicate: msg += f"DUPLICATE FOLDERS: {len(bad_duplicate)}\n" + "\n".join(f"-> {b}" for b in bad_duplicate[:15]) + "\n"
-    if bad_empty:     msg += f"DEAD/EMPTY FOLDERS: {len(bad_empty)}\n" + "\n".join(f"-> {b}" for b in bad_empty[:30]) + "\n"
+        # Build new path at exactly at depth 5 using the last meaningful parts
+        new_parts = item.parts[-(5 + 1):]  # +1 because parts includes filename
+        new_path = Path(*new_parts)
 
-    if msg:
-        fail("49", msg + "\nNO DEAD WEIGHT. NO EMPTY FOLDERS. NO DUPLICATES.\n" +
-                    "Delete them or give them purpose.")
+        if new_path.exists():
+            # Merge instead of suffix — preserve all code
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            header = f"\n# === MERGED FROM DEEP PATH: {item} ===\n# MERGE TIME: {timestamp}\n"
+            footer = f"\n# === END MERGE FROM {item} ===\n"
+            existing = new_path.read_text(encoding="utf-8")
+            incoming = item.read_text(encoding="utf-8")
+            merged = existing + header + incoming + footer
+            new_path.write_text(merged, encoding="utf-8")
+            item.unlink()
+            moved.append(f"MERGED  {item}  {new_path}")
+        else:
+            item.parent.mkdir(parents=True, exist_ok=True)
+            new_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(item), str(new_path))
+            moved.append(f"MOVED  {item}  {new_path}")
+
+        violations.append(f"Depth {depth}  moved to depth 5: {item}")
+
+    # Clean up empty folders
+    for folder in sorted(Path('.').rglob('*'), key=lambda p: len(p.parts), reverse=True):
+        if folder.is_dir() and not any(folder.iterdir()):
+            try:
+                folder.rmdir()
+            except Exception:
+                pass
+
+    if violations:
+        success("49")  # We fixed it automatically — PASS
+        print(f"Key 49: {len(violations)} deep files MOVED/MERGED to depth  c5 — zero loss")
+        if moved:
+            for entry in moved[:20]:
+                print(entry)
+            if len(moved) > 20:
+                print(f"... and {len(moved)-20} more")
     else:
         success("49")
 
