@@ -1,5 +1,5 @@
 """
-LIC State Manager - HOP-based state management with atomic writes.
+LIC State coordinator - HOP-based state management with atomic writes.
 
 Ported from: archives/legacy_lic/Agentic LIC/state_manager_LIC.py
 """
@@ -53,11 +53,11 @@ class LICStateManager:
         create_if_missing: bool = True,
     ) -> None:
         """
-        Initialize state manager for a mission.
+        Initialize state coordinator for a mission.
 
         Args:
             mission_id: Unique mission identifier
-            state_directory: Base directory for state files
+            state_directory: foundation directory for state files
             create_if_missing: Create directory if it doesn't exist
         """
         self.mission_id = mission_id
@@ -80,7 +80,7 @@ class LICStateManager:
         Args:
             hop_id: HOP identifier (e.g., "HOP-1", "1_profile_analysis")
             data: State data to write
-            atomic: Use atomic write (write to temp file, then rename)
+            atomic: Use atomic write (write to staging file, then rename)
 
         Returns:
             Path to written file
@@ -101,8 +101,8 @@ class LICStateManager:
         }
 
         if atomic:
-            # Atomic write: write to temp file, then rename
-            staging_path = filepath.with_suffix(".tmp")
+            # Atomic write: write to staging file, then rename
+            staging_path = filepath.with_suffix(".staging")
 
             with open(staging_path, "w", encoding="utf-8") as f:
                 json.dump(data_with_metadata, f, indent=2, default=str)
@@ -291,7 +291,7 @@ class StateValidator:
     """Validator for state consistency across HOPs."""
 
     def __init__(self, state_manager: LICStateManager) -> None:
-        """Initialize with a state manager."""
+        """Initialize with a state coordinator."""
         self.state_manager = state_manager
 
     def validate_hop_chain(self, hop_ids: List[str]) -> StateValidationResult:
@@ -329,10 +329,10 @@ def create_state_manager(
     mission_id: str,
     state_directory: str = "state",
 ) -> LICStateManager:
-    """Factory function to create a state manager."""
+    """builder function to create a state coordinator."""
     return LICStateManager(mission_id, state_directory)
 
 
 def create_state_validator(state_manager: LICStateManager) -> StateValidator:
-    """Factory function to create a state validator."""
+    """builder function to create a state validator."""
     return StateValidator(state_manager)

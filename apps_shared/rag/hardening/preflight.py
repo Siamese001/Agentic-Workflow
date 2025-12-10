@@ -2,7 +2,7 @@
 runtime/shared/preflight.py
 Pre-Flight Engine Validation Module
 
-Ported from legacy resume gen Job_Workflow_v61.27.json
+Ported from historical resume gen Job_Workflow_v61.27.json
 Implements pre-flight validation tests to verify engine capabilities:
   - VALIDATE_ITERATION: Verify correct array iteration
   - VALIDATE_STRUCTURAL_PARSE: Verify structural rule enforcement
@@ -740,7 +740,7 @@ class CapabilityTest:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# builder FUNCTIONS
 # =============================================================================
 
 def create_default_validator() -> PreflightValidator:

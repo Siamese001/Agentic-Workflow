@@ -118,7 +118,7 @@ def analyze_content(filepath: Path) -> Dict[str, str]:
     if any(x in content for x in ["CONFIG", "settings", "registry", "environment"]):
         hints.append("config")
 
-    # Script/utility indicators
+    # Script/function indicators
     if any(x in content for x in ["if __name__", "argparse", "click", "main()"]):
         hints.append("script")
 
@@ -148,8 +148,8 @@ def route_file(filepath: Path, filename: str, parent_folder: str = "") -> Tuple[
         # Content/formatting patterns → apps_lic (content generation)
         if any(x in name_lower for x in ["content", "format", "generate", "build", "create"]):
             return "09_apps", f"apps_lic/generation/{filename}", "apps_lic_generation_pattern"
-        # API/service patterns → apps shared
-        if any(x in name_lower for x in ["api", "call", "fetch", "service"]):
+        # API/provider patterns → apps shared
+        if any(x in name_lower for x in ["api", "call", "fetch", "provider"]):
             return "09_apps", f"shared/api/{filename}", "apps_shared_api_pattern"
         # Safety/compliance patterns within apps
         if any(x in name_lower for x in ["safety", "compliance", "risk", "assess"]):
@@ -191,7 +191,7 @@ def route_file(filepath: Path, filename: str, parent_folder: str = "") -> Tuple[
             return "scripts", f"utilities/{filename}", "support_scripts_pattern"
         # Observability patterns (explicit)
         if "_observability_" in name_lower:
-            return "observability", f"logic/general/{filename}", "support_observability_pattern"
+            return "observability", f"logic/standard/{filename}", "support_observability_pattern"
         # Runtime/execution patterns
         if any(x in name_lower for x in ["runtime", "execution", "snapshot"]):
             return "runtime", f"runtime_ops/support/{filename}", "support_runtime_pattern"
@@ -208,7 +208,7 @@ def route_file(filepath: Path, filename: str, parent_folder: str = "") -> Tuple[
             return "observability", f"logic/tracing/{filename}", "observability_tracing_pattern"
         if "sampler" in name_lower or "collector" in name_lower:
             return "observability", f"logic/sampling/{filename}", "observability_sampling_pattern"
-        return "observability", f"logic/general/{filename}", "observability_general_pattern"
+        return "observability", f"logic/standard/{filename}", "observability_general_pattern"
 
     # Rule 2: Scripts patterns
     if "_scripts_" in name_lower or "script" in hints:

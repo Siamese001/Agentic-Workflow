@@ -60,7 +60,7 @@ class PerformDataOperationsOrchestratorResult:
 
 
 class PerformDataOperationsOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> PerformDataOperationsOrchestratorResult:
@@ -149,8 +149,8 @@ class SecurityError(Exception):
 class PerformDataOperationsOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: PerformDataOperationsOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: PerformDataOperationsOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -168,14 +168,14 @@ class PerformDataOperationsOrchestratorInterface:
 
 
 class PerformDataOperationsOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> PerformDataOperationsOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = PerformDataOperationsOrchestratorConstraints(safety_level=safety_level)
-        processor = PerformDataOperationsOrchestratorImpl(constraints)
-        return PerformDataOperationsOrchestratorInterface(processor)
+        engine = PerformDataOperationsOrchestratorImpl(constraints)
+        return PerformDataOperationsOrchestratorInterface(engine)
 
 
 def perform_data_operations(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -191,9 +191,9 @@ def perform_data_operations(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = PerformDataOperationsOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = PerformDataOperationsOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

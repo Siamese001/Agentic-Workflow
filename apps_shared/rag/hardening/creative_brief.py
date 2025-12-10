@@ -2,7 +2,7 @@
 runtime/shared/creative_brief.py
 Creative Brief Constraints for Content Generation
 
-Ported from legacy resume gen Job_Workflow_v61.27.json
+Ported from historical resume gen Job_Workflow_v61.27.json
 Implements structured constraints for creative content generation:
   - Word count limits (min/max)
   - Character count limits
@@ -280,7 +280,7 @@ class ExperienceBulletsBrief:
         "default": "10V-0A-0S",  # 10 Verbatim, 0 Adapted, 0 Synthetic
     })
     selection_logic: str = "Multi-factor scoring: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)"
-    guidance: str = "Must use generic technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+    guidance: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
     
     def validate(self, text: str, is_overview: bool = False) -> Dict[str, object]:
         """Validate bullet against constraints."""
@@ -574,7 +574,7 @@ class CreativeBrief:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# builder FUNCTIONS
 # =============================================================================
 
 def create_default_brief() -> CreativeBrief:

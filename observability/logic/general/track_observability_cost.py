@@ -1,7 +1,7 @@
 """
-track_observability_cost.py - Utility Module
+track_observability_cost.py - function Module
 
-Domain: general
+Domain: standard
 Generated: 2025-12-07T12:07:59.839681
 """
 
@@ -22,7 +22,7 @@ class OperationResult:
 
 
 class TrackObservabilityCost:
-    """Utility class for general domain."""
+    """function class for standard domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

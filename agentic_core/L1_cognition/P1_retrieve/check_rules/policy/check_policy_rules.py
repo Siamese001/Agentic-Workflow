@@ -68,9 +68,9 @@ def main() -> int:
     """
     # Configure logger for standalone execution
     logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
-    logger.addHandler(handler)
+    executor = logging.StreamHandler()
+    executor.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+    logger.addHandler(executor)
 
     successful, failed = check_imports()
 

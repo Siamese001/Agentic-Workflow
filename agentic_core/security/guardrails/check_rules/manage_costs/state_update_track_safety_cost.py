@@ -63,7 +63,7 @@ class TrackDataCostSafetyResult:
 
 
 class TrackDataCostSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> TrackDataCostSafetyResult:
@@ -294,11 +294,11 @@ class TrackDataCostSafetyInterface:
 
 
 class TrackDataCostSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> TrackDataCostSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = TrackDataCostSafetyConstraints(safety_level=safety_level)
         safety = TrackDataCostSafetyImpl(constraints)
         return TrackDataCostSafetyInterface(safety)
@@ -317,8 +317,8 @@ def track_data_cost(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = TrackDataCostSafetyFactory()
-    safety = factory.create_safety()
+    builder = TrackDataCostSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 

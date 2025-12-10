@@ -63,7 +63,7 @@ class EnforceObservabilityLimitsSafetyResult:
 
 
 class EnforceObservabilityLimitsSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> EnforceObservabilityLimitsSafetyResult:
@@ -294,11 +294,11 @@ class EnforceObservabilityLimitsSafetyInterface:
 
 
 class EnforceObservabilityLimitsSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> EnforceObservabilityLimitsSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = EnforceObservabilityLimitsSafetyConstraints(safety_level=safety_level)
         safety = EnforceObservabilityLimitsSafetyImpl(constraints)
         return EnforceObservabilityLimitsSafetyInterface(safety)
@@ -317,8 +317,8 @@ def enforce_observability_limits(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = EnforceObservabilityLimitsSafetyFactory()
-    safety = factory.create_safety()
+    builder = EnforceObservabilityLimitsSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 

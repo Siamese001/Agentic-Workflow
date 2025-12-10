@@ -38,7 +38,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
         }
     
     def cached_template_message(self, template_type: str) -> Dict[str, object]:
-        """Cached message templates for common scenarios."""
+        """Cached message templates for shared scenarios."""
         templates = {
             "resume_review": {
                 "type": "text",
@@ -140,7 +140,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
             },
             {
                 "name": "Different Template (Partial Hit)",
-                "user_input": "Mike Johnson - Product Manager with 3 years experience",
+                "user_input": "Mike Johnson - Product coordinator with 3 years experience",
                 "template": "interview_prep", 
                 "expect_cache_hit": True
             },
@@ -232,7 +232,7 @@ def production_optimization_tips() -> Dict[str, object]:
     return {
         "cache_strategy": {
             "system_prompts": "Always cache - reused across all messages",
-            "templates": "Cache common templates (resume review, interview prep)",
+            "templates": "Cache shared templates (resume review, interview prep)",
             "user_data": "Never cache - unique per request",
             "context": "Cache industry-specific context, not personal data"
         },

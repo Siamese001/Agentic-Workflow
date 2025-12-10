@@ -282,7 +282,7 @@ class GoalStateInjector:
         return breakdown
 
 
-# Factory functions
+# builder functions
 def create_goal_injector(default_goals: Optional[List[StrategicGoal]] = None) -> GoalStateInjector:
     """Create goal state injector instance."""
     return GoalStateInjector(default_goals)

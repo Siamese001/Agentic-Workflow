@@ -474,13 +474,13 @@ class MasterResume:
             "location": "Edgewater, NJ",
             "title": "Lead Client Partner",
             "dates": {"start": "April 2017", "end": "October 2022"},
-            "overview": "Directed global digital transformation programs across financial institutions, modernizing legacy risk systems and reducing regulatory reporting cycles by 50% through cloud analytics migrations.",
+            "overview": "Directed global digital transformation programs across financial institutions, modernizing historical risk systems and reducing regulatory reporting cycles by 50% through cloud analytics migrations.",
             "bullets": [
                 "Integrated AI decision engines into risk platforms enabling real-time CCAR and Basel III regulatory reporting, raising client renewal rates by 24% across Fortune 500 financial accounts.",
                 "Launched machine learning risk analytics platform on cloud infrastructure serving global markets, improving predictive accuracy by 17% while ensuring compliance with international regulatory frameworks including MiFID II.",
                 "Led multi-region regulatory modernization projects across EMEA and APAC, deploying NLP fraud analytics on cloud platforms that reduced false positives by 29% and improved audit transparency for global clients.",
                 "Introduced AI-infused reporting and compliance automation frameworks, improving regulatory response times by 53% and supporting scalable client transformation programs across financial services portfolios globally.",
-                "Delivered $34M transformation by migrating legacy risk systems to AWS analytics platforms, cutting regulatory response times by 48% for Fortune 500 banking clients.",
+                "Delivered $34M transformation by migrating historical risk systems to AWS analytics platforms, cutting regulatory response times by 48% for Fortune 500 banking clients.",
                 "Migrated large-scale Monte Carlo risk models to cloud HPC infrastructure, accelerating execution cycles by 43% and reducing annual compute costs by $4.2M for global financial institutions.",
                 "Oversaw global migrations of on-premise risk models to cloud infrastructure, enabling real-time analytics capabilities and saving $3.8M in annual infrastructure costs for Fortune 500 financial institutions.",
                 "Established strategic alliances with leading cloud and data platform providers and systems integrators to co-deliver enterprise solutions, generating $16M in incremental partnership revenue across 32 global markets.",
@@ -640,10 +640,10 @@ class NineHopPipeline:
             warnings.append("JD very long, will focus on key requirements")
 
         valid_roles = ["vp_presales", "vp_product", "vp_ai", "cao", "cto",
-                      "vp_engineering", "chief_ai_officer", "general"]
+                      "vp_engineering", "chief_ai_officer", "standard"]
         if target_role not in valid_roles:
-            warnings.append(f"Unknown role '{target_role}', using general profile")
-            target_role = "general"
+            warnings.append(f"Unknown role '{target_role}', using standard profile")
+            target_role = "standard"
 
         if not isinstance(temperature, TemperatureMode):
             errors.append("Invalid temperature mode")
@@ -1020,7 +1020,7 @@ class NineHopPipeline:
         }
 
     # ========================================================================
-    # utility METHODS (unchanged)
+    # function METHODS (unchanged)
     # ========================================================================
 
     def _customize_headline(self, jd_parsed: Dict) -> str:
@@ -1054,7 +1054,7 @@ class NineHopPipeline:
         """Generate K.11 skills list."""
         return self.skills_pool.select_skills_for_jd(
             " ".join(jd_parsed["technical_keywords"]),
-            "general"
+            "standard"
         )
 
     def _format_resume_output(self, sections: Dict, all_hops: Dict) -> str:

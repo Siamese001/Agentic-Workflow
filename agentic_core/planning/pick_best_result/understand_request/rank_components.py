@@ -312,7 +312,7 @@ class TestInvalidationExecutor:
     """Test L2 Invalidation Executor."""
 
     def test_invalidation_by_age(self) -> None:
-        """Test invalidation of old facts."""
+        """Test invalidation of previous facts."""
         store = TripletStore()
 
         # Add a triplet

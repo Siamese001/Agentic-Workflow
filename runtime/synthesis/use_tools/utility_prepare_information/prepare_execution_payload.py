@@ -60,7 +60,7 @@ class PrepareDataPayloadPlanResult:
 
 
 class PrepareDataPayloadPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> PrepareDataPayloadPlanResult:
@@ -149,8 +149,8 @@ class SecurityError(Exception):
 class PrepareDataPayloadPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: PrepareDataPayloadPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: PrepareDataPayloadPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -168,14 +168,14 @@ class PrepareDataPayloadPlanInterface:
 
 
 class PrepareDataPayloadPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> PrepareDataPayloadPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = PrepareDataPayloadPlanConstraints(safety_level=safety_level)
-        processor = PrepareDataPayloadPlanImpl(constraints)
-        return PrepareDataPayloadPlanInterface(processor)
+        engine = PrepareDataPayloadPlanImpl(constraints)
+        return PrepareDataPayloadPlanInterface(engine)
 
 
 def prepare_data_payload(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -191,9 +191,9 @@ def prepare_data_payload(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = PrepareDataPayloadPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = PrepareDataPayloadPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

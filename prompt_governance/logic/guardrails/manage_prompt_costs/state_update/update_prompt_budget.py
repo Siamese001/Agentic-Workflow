@@ -45,7 +45,7 @@ class UpdateScriptsBudgetSafetyResult:
     timestamp: str = ""
 
 class UpdateScriptsBudgetSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> UpdateScriptsBudgetSafetyResult:
@@ -272,13 +272,13 @@ class UpdateScriptsBudgetSafetyInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Safety application failed: {e}")
 
-# L5 Factory
+# L5 builder
 class UpdateScriptsBudgetSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> UpdateScriptsBudgetSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = UpdateScriptsBudgetSafetyConstraints(safety_level=safety_level)
         safety = UpdateScriptsBudgetSafetyImpl(constraints)
         return UpdateScriptsBudgetSafetyInterface(safety)
@@ -297,8 +297,8 @@ def update_scripts_budget(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = UpdateScriptsBudgetSafetyFactory()
-    safety = factory.create_safety()
+    builder = UpdateScriptsBudgetSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 if __name__ == "__main__":

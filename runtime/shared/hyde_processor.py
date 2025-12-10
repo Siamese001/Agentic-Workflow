@@ -1,5 +1,5 @@
 """
-HyDE Processor - Hypothetical Document Embeddings
+HyDE engine - Hypothetical Document Embeddings
 Ported from legacy_engines/retrieval_enhancements.py and lic_rag.py
 
 Generates hypothetical documents based on queries to improve
@@ -54,7 +54,7 @@ class ValidationResult:
 
 class HyDEProcessor:
     """
-    Hypothetical Document Embeddings Processor
+    Hypothetical Document Embeddings engine
     
     Generates hypothetical documents based on queries to improve
     retrieval by query expansion. Essential for sparse profile enhancement.
@@ -67,7 +67,7 @@ class HyDEProcessor:
         forbidden_patterns: Optional[List[str]] = None
     ):
         """
-        Initialize HyDE processor.
+        Initialize HyDE engine.
         
         Args:
             min_profile_length: Minimum profile length to skip HyDE
@@ -365,12 +365,12 @@ and emerging trends."""
         return f"{query} {expansion}".strip()
 
 
-# Factory functions
+# builder functions
 def create_hyde_processor(
     min_profile_length: int = 50,
     max_hypothetical_length: int = 500
 ) -> HyDEProcessor:
-    """Create HyDE processor instance."""
+    """Create HyDE engine instance."""
     return HyDEProcessor(min_profile_length, max_hypothetical_length)
 
 
@@ -380,8 +380,8 @@ def expand_query_with_hyde(
     context: Optional[Dict[str, object]] = None
 ) -> HyDEResult:
     """Convenience function to expand query with HyDE."""
-    processor = HyDEProcessor()
-    return processor.expand_query(query, profile, context)
+    engine = HyDEProcessor()
+    return engine.expand_query(query, profile, context)
 
 
 def generate_hypothetical_profile(
@@ -390,5 +390,5 @@ def generate_hypothetical_profile(
     domain: Optional[str] = None
 ) -> HyDEDocument:
     """Convenience function to generate hypothetical profile."""
-    processor = HyDEProcessor()
-    return processor.generate_hypothetical_profile(title, compdomain)
+    engine = HyDEProcessor()
+    return engine.generate_hypothetical_profile(title, compdomain)

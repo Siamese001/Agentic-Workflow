@@ -395,7 +395,7 @@ class HybridScorer:
         return scoring_result.results[:top_k]
 
 
-# Factory functions
+# builder functions
 def create_hybrid_scorer(config: Optional[ScoringConfig] = None) -> HybridScorer:
     """Create hybrid scorer instance."""
     return HybridScorer(config)

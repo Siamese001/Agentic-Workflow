@@ -218,7 +218,7 @@ def _log_runtime_capabilities(
 
 def _mcp_get(config_obj: object, key: str, default: object) -> object:
     """
-    utility to read MCP config fields from either a dict-like structure
+    function to read MCP config fields from either a dict-like structure
     or an attribute-based config object. This makes context robust to
     both styles of ConfigV10_7.mcp_config.
     """
@@ -639,7 +639,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     context_budget_manager = ContextBudgetManagerV10_8(
         ContextBudgetConfigV10_8(), delegate=legacy_context_budget_manager
     )
-    # 5. Inject the final service
+    # 5. Inject the final provider
     context.legacy_context_budget_manager = legacy_context_budget_manager
     context.context_budget_manager = context_budget_manager
 
@@ -674,11 +674,11 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext) -> None:
 
 
 def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, object]:
-    """Centralized bias detection service shared by agents and tools."""
+    """Centralized bias detection provider shared by agents and tools."""
 
-    logger.TRACE("Running centralized bias detection service.")
+    logger.TRACE("Running centralized bias detection provider.")
 
-    base_patterns = ["he/she", "his/her", "male/female", "young", "old"]
+    base_patterns = ["he/she", "his/her", "male/female", "young", "previous"]
     rules = context.rules_loader.get_constitution_rules()
 
     bias_patterns: List[str] = base_patterns.copy()

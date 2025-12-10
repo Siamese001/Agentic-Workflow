@@ -545,7 +545,7 @@ class MultiProviderRouter:
         }
 
 
-# Factory function for easy instantiation
+# builder function for easy instantiation
 def create_multi_provider_router(
     enable_openai: bool = None,
     enable_anthropic: bool = None,

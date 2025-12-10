@@ -6,7 +6,7 @@
 
 # File: gemini_service.py
 # Version: 2.0.2 (Patched) - Production Ready (Config-Managed Constants)
-# Unified Gemini API Service - Hardened for Production
+# Unified Gemini API provider - Hardened for Production
 # Centralizes all Gemini API call logic for the Resume Generation Engine
 
 import json
@@ -46,7 +46,7 @@ from config_RES_v2 import (
 logger = logging.getLogger(__name__)
 
 
-# Configuration constants (no magic numbers)
+# Configuration constants (no hardcoded numbers)
 # --- FIX: Removed duplicated constants ---
 # DEFAULT_MAX_RETRIES = 3 (REMOVED)
 # DEFAULT_RETRY_DELAY = 2.0 (REMOVED)
@@ -79,7 +79,7 @@ class APICallMetrics:
 
 class GeminiService:
     """
-    Production-ready Gemini API service with comprehensive error handling.
+    Production-ready Gemini API provider with comprehensive error handling.
 
     Features:
     - Automatic retry with exponential backoff
@@ -95,12 +95,12 @@ class GeminiService:
                  max_retries: Optional[int] = None,
                  retry_delay: Optional[float] = None):
         """
-        Initialize the Gemini service with production configurations.
+        Initialize the Gemini provider with production configurations.
 
         Args:
             default_model: Default model to use if not specified in call
             max_retries: Maximum number of retry attempts
-            retry_delay: Base delay between retries (exponential backoff)
+            retry_delay: foundation delay between retries (exponential backoff)
         """
         self.default_model = default_model
         # --- FIX: (Triplicated Constants) Use imported global constants ---
@@ -112,7 +112,7 @@ class GeminiService:
         self._validate_environment()
 
         logger.info(f"✓ GeminiService initialized with model: {default_model}")
-        logger.info(f"  Max retries: {max_retries}, Base retry delay: {retry_delay}s")
+        logger.info(f"  Max retries: {max_retries}, foundation retry delay: {retry_delay}s")
 
     def _validate_environment(self) -> None:
         """
@@ -193,14 +193,14 @@ class GeminiService:
         # Configure parameters
         model_name = model or self.default_model
         # --- FIX: Use imported DEFAULT_GENERATION_TEMPERATURE ---
-        temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
+        staging = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
         max_tok = max_tokens or DEFAULT_MAX_TOKENS
 
         # Validate temperature range
-        if not 0.0 <= temp <= 1.0:
-            logger.warning(f"{section_id}: Temperature {temp} out of range, using default")
+        if not 0.0 <= staging <= 1.0:
+            logger.warning(f"{section_id}: Temperature {staging} out of range, using default")
             # --- FIX: Use imported DEFAULT_GENERATION_TEMPERATURE ---
-            temp = DEFAULT_GENERATION_TEMPERATURE
+            staging = DEFAULT_GENERATION_TEMPERATURE
 
         # Apply reasoning configuration
         if reasoning_config:
@@ -220,7 +220,7 @@ class GeminiService:
                     prompt=prompt,
                     model_name=model_name,
                     system_prompt=system_prompt,
-                    temperature=temp,
+                    temperature=staging,
                     max_tokens=max_tok,
                     section_id=section_id,
                     api_params=api_params
@@ -340,7 +340,7 @@ class GeminiService:
                     model=model,
                     system_prompt=system_prompt,
                     reasoning_config=reasoning_config,
-                    temperature=temperature or 1.0,  # Higher temp (1.0) for diversity
+                    temperature=temperature or 1.0,  # Higher staging (1.0) for diversity
                     max_tokens=max_tokens
                 )
                 responses.append(response)
@@ -570,7 +570,7 @@ SYNTHESIZED RESPONSE:"""
 
     def get_metrics(self) -> Dict[str, object]:
         """
-        Get current metrics for the service.
+        Get current metrics for the provider.
 
         Returns:
             Dictionary of metrics
@@ -619,14 +619,14 @@ SYNTHESIZED RESPONSE:"""
         total_calls = 0
         for attempt in range(retry_count):
             try:
-                # --- FIX: Use imported default temp ---
-                temp = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
+                # --- FIX: Use imported default staging ---
+                staging = temperature if temperature is not None else DEFAULT_GENERATION_TEMPERATURE
 
                 # Make the API call
                 raw_response, calls, full_resp = self.call_api( # <-- FIX: Unpack 3 values
                     prompt=prompt,
                     section_id=section_id,
-                    temperature=temp,
+                    temperature=staging,
                     max_tokens=max_tokens,
                     validate_response=False
                 )

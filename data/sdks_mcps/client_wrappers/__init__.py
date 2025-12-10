@@ -1,6 +1,6 @@
 """Client Wrappers - Production SDK Wrappers for OpenAI, Anthropic, and Google Vertex AI
 
-This module provides factory functions for creating production-ready client instances
+This module provides builder functions for creating production-ready client instances
 with comprehensive error handling, retry logic, and optimization features.
 
 Usage:
@@ -32,7 +32,7 @@ from .multi_provider_router import (
 )
 
 __all__ = [
-    # Factory functions
+    # builder functions
     "create_openai_client",
     "create_anthropic_client", 
     "create_vertex_client",

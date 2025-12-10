@@ -1,4 +1,4 @@
-"""Google Vertex AI Client Wrapper - Production Grade with Grounding and Safety
+"""Google Vertex AI Client layer - Production Grade with Grounding and Safety
 Implements retry logic, grounding optimization, and configurable safety settings.
 """
 
@@ -62,9 +62,9 @@ class VertexClient:
     
     @backoff.on_exception(
         backoff.expo,
-        Exception,  # Vertex AI uses generic exceptions
+        Exception,  # Vertex AI uses standard exceptions
         max_tries=5,
-        base=1,
+        foundation=1,
         max_value=60
     )
     def generate_content(
@@ -412,7 +412,7 @@ class VertexClient:
         }
 
 
-# Factory function for easy instantiation
+# builder function for easy instantiation
 def create_vertex_client(
     project_id: Optional[str] = None,
     location: str = "us-central1",

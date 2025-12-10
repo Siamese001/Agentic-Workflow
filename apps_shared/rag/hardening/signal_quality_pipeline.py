@@ -2,7 +2,7 @@
 runtime/shared/signal_quality_pipeline.py
 Multi-Stage Signal Quality Pipeline for RAG Hardening
 
-Ported from legacy resume gen Job_Workflow_v61.27.json
+Ported from historical resume gen Job_Workflow_v61.27.json
 Implements 5-stage RAG quality assurance pipeline:
   1. Relevance Filtering (cross-encoder reranker)
   2. Source Authority Tiering
@@ -88,7 +88,7 @@ class EmbeddingProtocol(Protocol):
 
 
 class FactCheckerProtocol(Protocol):
-    """Protocol for external fact-checking service."""
+    """Protocol for external fact-checking provider."""
     
     def verify_claim(self, claim: str, context: str) -> Tuple[bool, float, str]:
         """
@@ -209,7 +209,7 @@ class SignalQualityConfig:
     enable_source_tiering: bool = True
     enable_query_enhancement: bool = True
     enable_self_critique: bool = True
-    enable_fact_checking: bool = False  # Requires external service
+    enable_fact_checking: bool = False  # Requires external provider
     
     # Thresholds
     min_relevance_score: float = 0.5
@@ -255,7 +255,7 @@ class SignalQualityPipeline:
     """
     Multi-Stage Signal Quality Pipeline for RAG Hardening.
     
-    Implements the 5-stage pipeline from legacy resume gen:
+    Implements the 5-stage pipeline from historical resume gen:
     1. Relevance Filtering - Cross-encoder reranking
     2. Source Authority Tiering - Prioritize authoritative sources
     3. Query Enhancement - HyDE for sparse queries
@@ -278,7 +278,7 @@ class SignalQualityPipeline:
             config: Pipeline configuration
             reranker: Cross-encoder reranker for relevance filtering
             embedder: Embedding model for HyDE
-            fact_checker: External fact-checking service
+            fact_checker: External fact-checking provider
             llm_generate: LLM generation function for HyDE and self-critique
         """
         self.config = config or SignalQualityConfig()
@@ -605,7 +605,7 @@ Focus on specific details, metrics, and concrete information."""
         claims: List[str],
         documents: List[RetrievedDocument],
     ) -> StageResult:
-        """Stage 5: Verify key claims against external fact-checking service."""
+        """Stage 5: Verify key claims against external fact-checking provider."""
         if not self.fact_checker:
             return StageResult(
                 stage=SignalQualityStage.EXTERNAL_FACT_CHECKING,
@@ -735,7 +735,7 @@ class HopRefinementStrategy:
     """
     Failure recovery strategy for RAG hops.
     
-    From legacy: "On search failure, first increase search breadth.
+    From historical: "On search failure, first increase search breadth.
     If still fails, switch to a HyDE-guided query. Max 2 refinements."
     """
     
@@ -766,7 +766,7 @@ class HopRefinementStrategy:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# builder FUNCTIONS
 # =============================================================================
 
 def create_default_pipeline() -> SignalQualityPipeline:

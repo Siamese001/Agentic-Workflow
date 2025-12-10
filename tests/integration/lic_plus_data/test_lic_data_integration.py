@@ -132,7 +132,7 @@ class TestCompanyDataIntegration:
         from datetime import datetime, timedelta
 
         news_items = [
-            {"title": "Old news", "date": datetime.now() - timedelta(days=60)},
+            {"title": "previous news", "date": datetime.now() - timedelta(days=60)},
             {"title": "Recent news", "date": datetime.now() - timedelta(days=5)},
         ]
 

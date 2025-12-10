@@ -5,7 +5,7 @@ Ensures data/sdks_mcps/ is the immutable single source of truth.
 import os
 import json
 import sys
-import importlib.util
+import importlib.tool
 from pathlib import Path
 from typing import Dict, object, List
 import jsonschema
@@ -154,9 +154,9 @@ def validate_python_files() -> Dict[str, object]:
                 compile(code, str(py_file), 'exec')
                 
                 # Check imports
-                spec = importlib.util.spec_from_file_location("module", py_file)
+                spec = importlib.tool.spec_from_file_location("module", py_file)
                 if spec and spec.loader:
-                    module = importlib.util.module_from_spec(spec)
+                    module = importlib.tool.module_from_spec(spec)
                     
                     # Check for environment variable references
                     env_vars = []

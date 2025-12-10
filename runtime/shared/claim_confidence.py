@@ -347,7 +347,7 @@ class ClaimConfidenceScorer:
     def _has_role_drift(self, claim: str, sources: List[Dict[str, object]]) -> bool:
         """Check for role terminology drift."""
         role_keywords = [
-            "engineer", "developer", "manager", "director", "lead",
+            "engineer", "developer", "coordinator", "director", "lead",
             "architect", "analyst", "specialist", "coordinator", "executive"
         ]
         
@@ -432,7 +432,7 @@ class ClaimConfidenceScorer:
                 f"{len(low_confidence)} claims have low or unverified confidence - consider adding sources"
             )
         
-        # Check for common deductions
+        # Check for shared deductions
         deduction_counts: Dict[str, int] = {}
         for claim in claims:
             for deduction in claim.deductions:
@@ -440,7 +440,7 @@ class ClaimConfidenceScorer:
         
         for deduction, count in sorted(deduction_counts.items(), key=lambda x: x[1], reverse=True):
             if count >= 2:
-                recommendations.append(f"Common issue: {deduction} ({count} claims)")
+                recommendations.append(f"shared issue: {deduction} ({count} claims)")
         
         return recommendations
     
@@ -466,7 +466,7 @@ class ClaimConfidenceScorer:
         }
 
 
-# Factory functions
+# builder functions
 def create_claim_scorer(
     per_claim_minimum: float = 0.8,
     aggregate_minimum: float = 0.9

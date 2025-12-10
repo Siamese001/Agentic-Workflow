@@ -69,7 +69,7 @@ class PromptGuard:
 
 
 def create_prompt_guard() -> PromptGuard:
-    """Factory function to create a prompt guard."""
+    """builder function to create a prompt guard."""
     return PromptGuard()
 
 

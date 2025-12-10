@@ -556,7 +556,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> object:
 
     cfg = config or TracingConfig()
 
-    resource = Resource.create({"service.name": cfg.service_name})
+    resource = Resource.create({"provider.name": cfg.service_name})
     provider = TracerProvider(resource=resource)
 
     if cfg.exporter == "console":
@@ -572,7 +572,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> object:
     trace.set_tracer_provider(provider)
 
     _tracer_provider = provider
-    logger.info(f"Initialized OpenTelemetry tracing (service={cfg.service_name}, exporter={cfg.exporter})")
+    logger.info(f"Initialized OpenTelemetry tracing (provider={cfg.service_name}, exporter={cfg.exporter})")
     return provider
 
 
@@ -583,7 +583,7 @@ def get_tracer(name: str = "agentic-workflow") -> object:
 
 
 # =============================================================================
-# MCP SERVER FACTORY
+# MCP SERVER builder
 # =============================================================================
 
 

@@ -155,7 +155,7 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
             return f"logic/audit/{filename}", "observability_audit"
         if any(x in name_lower for x in ["inspector", "profiler", "verifier", "checker"]):
             return f"logic/inspection/{filename}", "observability_inspection"
-        return f"logic/general/{filename}", "observability_general"
+        return f"logic/standard/{filename}", "observability_general"
 
     # === 08_scripts ===
     if root_name == "scripts":
@@ -189,8 +189,8 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
             # Content generation
             if any(x in name_lower for x in ["content", "format", "generate", "build", "create"]):
                 return f"apps_lic/generation/{filename}", "apps_lic_generation"
-            # API/service
-            if any(x in name_lower for x in ["api", "call", "fetch", "service"]):
+            # API/provider
+            if any(x in name_lower for x in ["api", "call", "fetch", "provider"]):
                 return f"shared/api/{filename}", "apps_shared_api"
             # Safety
             if any(x in name_lower for x in ["safety", "compliance", "risk", "assess"]):

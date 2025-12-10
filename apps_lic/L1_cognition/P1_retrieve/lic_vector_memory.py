@@ -90,7 +90,7 @@ class LICVectorMemory:
             self._collection = self._client.get_or_create_collection(
                 name=self.collection_name,
                 metadata={
-                    "description": "LIC Intelligence Service - Pre-computed research"
+                    "description": "LIC Intelligence provider - Pre-computed research"
                 },
             )
 
@@ -275,7 +275,7 @@ class LICVectorMemory:
                 self._collection = self._client.get_or_create_collection(
                     name=self.collection_name,
                     metadata={
-                        "description": "LIC Intelligence Service - Pre-computed research"
+                        "description": "LIC Intelligence provider - Pre-computed research"
                     },
                 )
                 return True
@@ -389,7 +389,7 @@ def create_vector_memory(
     use_mock: bool = False,
 ) -> LICVectorMemory:
     """
-    Factory function to create a vector memory store.
+    builder function to create a vector memory store.
 
     Args:
         collection_name: Name of the collection

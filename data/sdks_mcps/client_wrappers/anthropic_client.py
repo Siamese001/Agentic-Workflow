@@ -1,4 +1,4 @@
-"""Anthropic Client Wrapper - Production Grade with Prompt Caching and Tool Use
+"""Anthropic Client layer - Production Grade with Prompt Caching and Tool Use
 Implements retry logic, caching optimization, and comprehensive error handling.
 """
 
@@ -56,7 +56,7 @@ class AnthropicClient:
         backoff.expo,
         (RateLimitError, APIError, APITimeoutError),
         max_tries=7,
-        base=1,
+        foundation=1,
         max_value=60
     )
     def message(
@@ -383,7 +383,7 @@ class AnthropicClient:
         }
 
 
-# Factory function for easy instantiation
+# builder function for easy instantiation
 def create_anthropic_client(
     api_key: Optional[str] = None,
     model: str = "claude-3-5-sonnet-20241022",

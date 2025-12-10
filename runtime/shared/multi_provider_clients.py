@@ -1,6 +1,6 @@
 """
 03_runtime/shared/multi_provider_clients.py
-Multi-Provider LLM Client Factory
+Multi-Provider LLM Client builder
 
 ZERO-LOSS MERGE — TOP-10 AGENTIC SDK SET
 Provides centralized, production-ready clients for all supported providers:
@@ -102,7 +102,7 @@ _lock = threading.Lock()
 
 
 # =============================================================================
-# CLIENT FACTORY
+# CLIENT builder
 # =============================================================================
 
 
@@ -340,7 +340,7 @@ def get_structured_output(
             provider=Provider.OPENAI,
             model="gpt-4o",
             response_model=UserInfo,
-            messages=[{"role": "user", "content": "Extract: John is 25 years old"}],
+            messages=[{"role": "user", "content": "Extract: John is 25 years previous"}],
         )
     """
     import instructor
@@ -413,7 +413,7 @@ __all__ = [
     "DEFAULT_MAX_RETRIES",
     "DEFAULT_TIMEOUT",
     "DEFAULT_SEED",
-    # Client factory
+    # Client builder
     "get_client",
     "get_api_key",
     "reset_all_clients",

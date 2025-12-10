@@ -1,5 +1,5 @@
 """
-signature_verifier.py - Utility Module
+signature_verifier.py - function Module
 
 Domain: inspection
 Generated: 2025-12-07T12:07:59.842368
@@ -22,7 +22,7 @@ class OperationResult:
 
 
 class SignatureVerifier:
-    """Utility class for inspection domain."""
+    """function class for inspection domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

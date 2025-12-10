@@ -63,7 +63,7 @@ class UpdateObservabilityUsageSafetyResult:
 
 
 class UpdateObservabilityUsageSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
@@ -294,11 +294,11 @@ class UpdateObservabilityUsageSafetyInterface:
 
 
 class UpdateObservabilityUsageSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> UpdateObservabilityUsageSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = UpdateObservabilityUsageSafetyConstraints(safety_level=safety_level)
         safety = UpdateObservabilityUsageSafetyImpl(constraints)
         return UpdateObservabilityUsageSafetyInterface(safety)
@@ -317,8 +317,8 @@ def update_observability_usage(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = UpdateObservabilityUsageSafetyFactory()
-    safety = factory.create_safety()
+    builder = UpdateObservabilityUsageSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 

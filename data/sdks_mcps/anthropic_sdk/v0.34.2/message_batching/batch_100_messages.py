@@ -176,7 +176,7 @@ def create_outreach_batch_requests(leads_data: List[Dict[str, object]]) -> List[
     Returns:
         List of formatted batch requests
     """
-    processor = BatchMessageProcessor()
+    engine = BatchMessageProcessor()
     
     system_prompt = """You are an expert outreach strategist. Generate personalized, compelling messages that:
     1. Reference specific company news or achievements
@@ -196,7 +196,7 @@ def create_outreach_batch_requests(leads_data: List[Dict[str, object]]) -> List[
         
         Campaign type: {lead.get('campaign_type', 'cold_outreach')}"""
         
-        request = processor.create_batch_request(
+        request = engine.create_batch_request(
             messages=[{"role": "user", "content": user_content, "cache": False}],
             system_prompt=system_prompt,
             max_tokens=500,
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     for i in range(100):
         sample_leads.append({
             "name": f"Lead {i}",
-            "title": ["Software Engineer", "Product Manager", "Data Scientist"][i % 3],
+            "title": ["Software Engineer", "Product coordinator", "Data Scientist"][i % 3],
             "company": f"TechCorp {i}",
             "industry": "Technology",
             "context": f"Recently launched new product line",
@@ -221,18 +221,18 @@ if __name__ == "__main__":
         })
     
     # Create batch requests
-    processor = BatchMessageProcessor()
+    engine = BatchMessageProcessor()
     batch_requests = create_outreach_batch_requests(sample_leads)
     
     print(f"Created {len(batch_requests)} batch requests")
     
     # Process batch with caching
     start_time = time.time()
-    results = processor.process_batch_async(batch_requests, concurrent_limit=10)
+    results = engine.process_batch_async(batch_requests, concurrent_limit=10)
     end_time = time.time()
     
     # Calculate and display savings
-    savings = processor.calculate_cache_savings(results)
+    savings = engine.calculate_cache_savings(results)
     
     print(f"\nBatch Processing Results:")
     print(f"Processing time: {end_time - start_time:.2f} seconds")

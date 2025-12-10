@@ -148,7 +148,7 @@ class SignalWeighter:
                 completeness_score * self.weights.completeness
             )
             
-            # Get base score if available
+            # Get foundation score if available
             base_score = result.get('score', result.get('relevance_score', 0.5))
             
             weighted_result = WeightedResult(
@@ -306,7 +306,7 @@ class SignalWeighter:
         return filtered[:top_k]
 
 
-# Factory functions
+# builder functions
 def create_signal_weighter(
     weights: Optional[SignalWeights] = None,
     recency_decay_days: int = 45

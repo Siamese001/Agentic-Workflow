@@ -520,14 +520,14 @@ class ContentValidator:
         }
     
     def _get_most_common_violations(self, validations: List[ConstitutionalReviewResult]) -> List[str]:
-        """Get most common violation types."""
+        """Get most shared violation types."""
         violation_counts: Dict[str, int] = defaultdict(int)
         
         for validation in validations:
             for violation in validation.violations:
                 violation_counts[violation.rule_id] += 1
         
-        # Return top 5 most common violations
+        # Return top 5 most shared violations
         sorted_violations = sorted(violation_counts.items(), key=lambda x: x[1], reverse=True)
         return [f"{rule_id}: {count}" for rule_id, count in sorted_violations[:5]]
 
@@ -650,7 +650,7 @@ class ConstitutionalAISystem:
         return result.is_compliant
 
 
-# Factory functions
+# builder functions
 def create_constitutional_ai_system(auto_load_rules: bool = True) -> ConstitutionalAISystem:
     """Create constitutional AI system instance."""
     return ConstitutionalAISystem(auto_load_rules)

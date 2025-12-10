@@ -1,6 +1,6 @@
 # Ownership: shared
 # -*- coding: utf-8 -*-
-"""Common result types for workflow operations."""
+"""shared result types for workflow operations."""
 
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ class DiagnosticReport:
 
 @dataclass
 class OperationResult:
-    """general result of an operation."""
+    """standard result of an operation."""
 
     success: bool = False
     result: object = None

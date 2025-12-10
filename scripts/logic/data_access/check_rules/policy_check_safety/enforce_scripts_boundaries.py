@@ -43,7 +43,7 @@ class EnforceDataBoundariesPlanResult:
     timestamp: str = ""
 
 class EnforceDataBoundariesPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> EnforceDataBoundariesPlanResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class EnforceDataBoundariesPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: EnforceDataBoundariesPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: EnforceDataBoundariesPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class EnforceDataBoundariesPlanInterface:
         except (ValueError, TypeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class EnforceDataBoundariesPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> EnforceDataBoundariesPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = EnforceDataBoundariesPlanConstraints(safety_level=safety_level)
-        processor = EnforceDataBoundariesPlanImpl(constraints)
-        return EnforceDataBoundariesPlanInterface(processor)
+        engine = EnforceDataBoundariesPlanImpl(constraints)
+        return EnforceDataBoundariesPlanInterface(engine)
 
 # L5 Main execution point
 def enforce_data_boundaries(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def enforce_data_boundaries(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = EnforceDataBoundariesPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = EnforceDataBoundariesPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

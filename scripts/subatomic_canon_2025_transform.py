@@ -10,7 +10,7 @@ Executes the complete subatomic canon transformation with zero-loss guarantee.
 3. L2_execution, L3_orchestration, L5_safety → completely flat
 4. L4_memory → only P1_retrieve
 5. Every .py file → imperative verb + concrete object
-6. Banned forever: ops, utils, manager, service, utility, common, core, various, stuff, business, general
+6. Banned forever: ops, utils, coordinator, provider, function, shared, core, various, stuff, business, standard
 7. Depth emerges naturally — no fake nesting
 8. Every name teaches its purpose on sight
 """
@@ -45,15 +45,15 @@ L4_ALLOWED_PHASES = ["P1_retrieve"]
 BANNED_PATTERNS = [
     r".*_ops$",           # scoring_ops, business_ops, tool_ops, etc.
     r"^utils$",
-    r"^manager$",
-    r"^service$",
-    r"^utility$",
-    r"^common$",
+    r"^coordinator$",
+    r"^provider$",
+    r"^function$",
+    r"^shared$",
     r"^core$",
     r"^various$",
     r"^stuff$",
     r"^business$",
-    r"^general$",
+    r"^standard$",
 ]
 
 # Many-shot rename mappings (current → target)
@@ -94,7 +94,7 @@ QUARANTINE_L4 = "__QUARANTINE_L4_NON_RETRIEVE__"
 
 
 # =============================================================================
-# UTILITY FUNCTIONS
+# function FUNCTIONS
 # =============================================================================
 
 def is_banned_name(name: str) -> bool:
@@ -412,7 +412,7 @@ def main():
             print(f"  ✓ Quarantined {key}: {len(log['quarantined'])} phases")
 
     # Step 3: Delete banned folders
-    print("\n[STEP 3] Deleting banned folders (ops, utils, manager, etc.)...")
+    print("\n[STEP 3] Deleting banned folders (ops, utils, coordinator, etc.)...")
     for root in COGNITIVE_ROOTS:
         deleted = delete_banned_folders(root)
         all_logs["deleted_banned"].extend(deleted)

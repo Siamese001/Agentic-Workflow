@@ -53,7 +53,7 @@ def classify_module(path: str) -> str:
     elif "refinement" in path_lower or "adjust" in name or "optimize" in name or "refine" in name:
         return "refinement"
     else:
-        return "general"
+        return "standard"
 
 
 def get_domain_context(path: str, app_type: str) -> dict:
@@ -388,7 +388,7 @@ class StateResult:
 
 
 class {class_name}:
-    """State manager for {ctx['domain']} domain."""
+    """State coordinator for {ctx['domain']} domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
@@ -560,7 +560,7 @@ class RetryResult:
 
 
 class {class_name}:
-    """Retry handler for {ctx['domain']} domain."""
+    """Retry executor for {ctx['domain']} domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
@@ -761,9 +761,9 @@ class {class_name}:
             refined = {{**data}}
             for key, adj in adjustments.items():
                 if key in refined and isinstance(refined[key], (int, float)):
-                    old = refined[key]
-                    refined[key] = old * adj
-                    changes.append(f"{{key}}: {{old}} -> {{refined[key]}}")
+                    previous = refined[key]
+                    refined[key] = previous * adj
+                    changes.append(f"{{key}}: {{previous}} -> {{refined[key]}}")
 
         return RefinementResult(original=data, refined=refined, changes=changes)
 
@@ -775,7 +775,7 @@ def refine(data: object, adjustments: Optional[Dict] = None, config: Optional[Di
 
 
 def generate_generic_module(name: str, ctx: dict) -> str:
-    """Generate general module."""
+    """Generate standard module."""
     class_name = ''.join(word.capitalize() for word in name.replace('-', '_').split('_'))
     return f'''"""
 {name}.py - {ctx['domain'].title()} Operations Module
@@ -801,7 +801,7 @@ class OperationResult:
 
 
 class {class_name}:
-    """Operations handler for {ctx['domain']} domain."""
+    """Operations executor for {ctx['domain']} domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
@@ -838,7 +838,7 @@ GENERATORS = {
     "execution": generate_execution_module,
     "diagnostics": generate_diagnostics_module,
     "refinement": generate_refinement_module,
-    "general": generate_generic_module,
+    "standard": generate_generic_module,
 }
 
 

@@ -59,7 +59,7 @@ class ValidateDataConstraintsPlanResult:
 
 
 class ValidateDataConstraintsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> ValidateDataConstraintsPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class ValidateDataConstraintsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: ValidateDataConstraintsPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: ValidateDataConstraintsPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class ValidateDataConstraintsPlanInterface:
 
 
 class ValidateDataConstraintsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> ValidateDataConstraintsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = ValidateDataConstraintsPlanConstraints(safety_level=safety_level)
-        processor = ValidateDataConstraintsPlanImpl(constraints)
-        return ValidateDataConstraintsPlanInterface(processor)
+        engine = ValidateDataConstraintsPlanImpl(constraints)
+        return ValidateDataConstraintsPlanInterface(engine)
 
 
 def validate_data_constraints(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def validate_data_constraints(input_data: Dict[str, object]) -> Dict[str, object
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = ValidateDataConstraintsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = ValidateDataConstraintsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

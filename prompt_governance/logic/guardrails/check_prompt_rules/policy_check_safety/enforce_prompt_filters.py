@@ -45,7 +45,7 @@ class EnforceScriptsFiltersSafetyResult:
     timestamp: str = ""
 
 class EnforceScriptsFiltersSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> EnforceScriptsFiltersSafetyResult:
@@ -272,13 +272,13 @@ class EnforceScriptsFiltersSafetyInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Safety application failed: {e}")
 
-# L5 Factory
+# L5 builder
 class EnforceScriptsFiltersSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> EnforceScriptsFiltersSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = EnforceScriptsFiltersSafetyConstraints(safety_level=safety_level)
         safety = EnforceScriptsFiltersSafetyImpl(constraints)
         return EnforceScriptsFiltersSafetyInterface(safety)
@@ -297,8 +297,8 @@ def enforce_scripts_filters(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = EnforceScriptsFiltersSafetyFactory()
-    safety = factory.create_safety()
+    builder = EnforceScriptsFiltersSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 if __name__ == "__main__":

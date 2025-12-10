@@ -395,7 +395,7 @@ async def main():
     objectives = [
         "Find senior software engineers with Python and AWS experience in San Francisco",
         "Analyze the competitive landscape for machine learning talent",
-        "Identify candidates for a product manager position with SaaS experience"
+        "Identify candidates for a product coordinator position with SaaS experience"
     ]
     
     orchestrator = WorkflowOrchestrator()

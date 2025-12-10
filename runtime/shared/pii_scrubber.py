@@ -244,7 +244,7 @@ class PIIScrubber:
         return True
 
 
-# Factory functions
+# builder functions
 def create_pii_scrubber(custom_patterns: Optional[Dict[str, str]] = None) -> PIIScrubber:
     """Create PII scrubber instance."""
     return PIIScrubber(custom_patterns)

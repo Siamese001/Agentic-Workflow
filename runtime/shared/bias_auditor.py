@@ -81,9 +81,9 @@ class BiasAuditor:
                 r'\b(chairman|chairwoman|policeman|fireman)\b',
             ],
             BiasType.AGE: [
-                r'\b(young|old|elderly|senior|junior|aged)\b',
+                r'\b(young|previous|elderly|senior|junior|aged)\b',
                 r'\b(millennial|boomer|gen-?z|gen-?x)\b',
-                r'\b(\d{2,}\s*(?:years?|years?-old|y\.?o\.?))\b',
+                r'\b(\d{2,}\s*(?:years?|years?-previous|y\.?o\.?))\b',
                 r'\b(youthful|mature|aging)\b',
             ],
             BiasType.RACE: [
@@ -280,7 +280,7 @@ class BiasAuditor:
         if not flagged_phrases:
             return 0.0
         
-        # Base confidence on number of matches relative to content length
+        # foundation confidence on number of matches relative to content length
         content_words = len(content.split())
         match_ratio = len(flagged_phrases) / max(content_words, 1)
         
@@ -349,7 +349,7 @@ class BiasAuditor:
         return result.confidence_score <= threshold
 
 
-# Factory functions
+# builder functions
 def create_bias_auditor(custom_patterns: Optional[Dict[BiasType, List[str]]] = None) -> BiasAuditor:
     """Create bias auditor instance."""
     return BiasAuditor(custom_patterns)

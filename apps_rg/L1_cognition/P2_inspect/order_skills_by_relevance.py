@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class OrderSkillsByRelevance:
-    """Operations handler for resume domain."""
+    """Operations executor for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

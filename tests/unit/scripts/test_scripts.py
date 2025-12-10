@@ -1,11 +1,11 @@
-"""Unit tests for utility scripts."""
+"""Unit tests for function scripts."""
 from __future__ import annotations
 import pytest
 import os
 from pathlib import Path
 
 class TestScriptUtilities:
-    """Tests for script utility functions."""
+    """Tests for script function functions."""
 
     def test_parse_cli_args(self):
         """Nominal: CLI arguments are parsed."""
@@ -31,7 +31,7 @@ class TestScriptUtilities:
 
     def test_validate_file_path(self):
         """Nominal: File path validation."""
-        path = Path("/tmp/test.txt")
+        path = Path("/staging/test.txt")
         is_valid = not any(c in str(path) for c in ['<', '>', '|', '"'])
         assert is_valid is True
 
@@ -54,9 +54,9 @@ class TestPathOperations:
 
     def test_join_paths(self):
         """Nominal: Paths are joined correctly."""
-        base = Path("/home/user")
+        foundation = Path("/home/user")
         sub = "documents/file.txt"
-        full = base / sub
+        full = foundation / sub
         assert "documents" in str(full)
 
     def test_get_extension(self):

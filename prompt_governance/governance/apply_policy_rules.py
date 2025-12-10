@@ -69,7 +69,7 @@ class PromptPolicy:
 
 
 def create_prompt_policy() -> PromptPolicy:
-    """Factory function to create a prompt policy."""
+    """builder function to create a prompt policy."""
     return PromptPolicy()
 
 

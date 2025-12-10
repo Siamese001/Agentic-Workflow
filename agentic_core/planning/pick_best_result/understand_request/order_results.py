@@ -59,7 +59,7 @@ class SortDataResultsPlanResult:
 
 
 class SortDataResultsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object][str, object]) -> SortDataResultsPlanResult:
@@ -149,9 +149,9 @@ class SecurityError(Exception):
 class SortDataResultsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: SortDataResultsPlanProcessor):
+    def __init__(self, engine: SortDataResultsPlanProcessor):
         """  Init   implementation."""
-        self._processor = processor
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object][str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -169,14 +169,14 @@ class SortDataResultsPlanInterface:
 
 
 class SortDataResultsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> SortDataResultsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = SortDataResultsPlanConstraints(safety_level=safety_level)
-        processor = SortDataResultsPlanImpl(constraints)
-        return SortDataResultsPlanInterface(processor)
+        engine = SortDataResultsPlanImpl(constraints)
+        return SortDataResultsPlanInterface(engine)
 
 
 def sort_data_results(input_data: Dict[str, object][str, object]) -> Dict[str, object]:
@@ -192,9 +192,9 @@ def sort_data_results(input_data: Dict[str, object][str, object]) -> Dict[str, o
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = SortDataResultsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = SortDataResultsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

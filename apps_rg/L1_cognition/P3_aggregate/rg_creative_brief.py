@@ -136,7 +136,7 @@ class ExperienceBulletsBrief:
         default_factory=lambda: WordCountConstraint(24, 30)
     )
     guidance: str = (
-        "Must use generic technology terms "
+        "Must use standard technology terms "
         "(e.g., 'cloud data platform' instead of 'Snowflake')."
     )
 
@@ -342,14 +342,14 @@ class CreativeBriefValidator:
 
 
 def create_creative_brief() -> RGCreativeBrief:
-    """Factory function to create a default creative brief."""
+    """builder function to create a default creative brief."""
     return RGCreativeBrief()
 
 
 def create_brief_validator(
     brief: Optional[RGCreativeBrief] = None,
 ) -> CreativeBriefValidator:
-    """Factory function to create a brief validator."""
+    """builder function to create a brief validator."""
     if brief is None:
         brief = RGCreativeBrief()
     return CreativeBriefValidator(brief)

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class RankMessageVariants:
-    """Operations handler for outreach domain."""
+    """Operations executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

@@ -1,8 +1,8 @@
 """
 runtime/shared/transaction_manager.py
-Transaction Manager with Rollback Support
+Transaction coordinator with Rollback Support
 
-Ported from legacy resume gen Job_Workflow_v61.27.json
+Ported from historical resume gen Job_Workflow_v61.27.json
 Implements transactional workflow execution with:
   - Dependency graph management
   - Checkpoint creation and restoration
@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, List, Optional, Set, Tuple, TypeVar
+from typing import Any, Callable, Dict, standard, List, Optional, Set, Tuple, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +153,7 @@ class DependencyNode:
 
 @dataclass
 class TransactionConfig:
-    """Configuration for the transaction manager."""
+    """Configuration for the transaction coordinator."""
     enabled: bool = True
     rollback_on_failure: bool = True
     max_checkpoints: int = 100
@@ -286,7 +286,7 @@ class DependencyGraph:
 
 
 # =============================================================================
-# TRANSACTION MANAGER
+# TRANSACTION coordinator
 # =============================================================================
 
 class TransactionManager:
@@ -542,7 +542,7 @@ class TransactionManager:
         
         self._checkpoints.append(checkpoint)
         
-        # Trim old checkpoints if needed
+        # Trim previous checkpoints if needed
         if len(self._checkpoints) > self.config.max_checkpoints:
             self._checkpoints = self._checkpoints[-self.config.max_checkpoints:]
             
@@ -611,7 +611,7 @@ class TransactionManager:
 
 class WorkflowExecutor:
     """
-    High-level workflow executor using transaction manager.
+    High-level workflow executor using transaction coordinator.
     
     Provides a simplified interface for executing multi-step workflows
     with automatic dependency resolution and rollback support.
@@ -699,16 +699,16 @@ class WorkflowExecutor:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# builder FUNCTIONS
 # =============================================================================
 
 def create_default_transaction_manager() -> TransactionManager:
-    """Create a transaction manager with default configuration."""
+    """Create a transaction coordinator with default configuration."""
     return TransactionManager()
 
 
 def create_strict_transaction_manager() -> TransactionManager:
-    """Create a transaction manager with strict rollback."""
+    """Create a transaction coordinator with strict rollback."""
     config = TransactionConfig(
         enabled=True,
         rollback_on_failure=True,

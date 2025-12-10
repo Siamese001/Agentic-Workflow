@@ -2,7 +2,7 @@
 runtime/shared/validation_gates.py
 Validation Gate Registry for Agentic Workflow
 
-Ported from legacy resume gen Job_Workflow_v61.27.json
+Ported from historical resume gen Job_Workflow_v61.27.json
 Implements 12+ validation gates for output quality assurance:
   - VG_SUMMARY_GROUNDING_CHECK
   - VG_BULLET_HALLUCINATION_CHECK
@@ -175,11 +175,11 @@ class ValidationGateConfig:
 
 
 # =============================================================================
-# ABSTRACT BASE GATE
+# interface foundation GATE
 # =============================================================================
 
 class ValidationGate(ABC):
-    """Abstract base class for validation gates."""
+    """interface foundation class for validation gates."""
     
     gate_id: str
     policy: GatePolicy
@@ -960,7 +960,7 @@ def generate_validation_report(results: List[GateResult]) -> ValidationReport:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# builder FUNCTIONS
 # =============================================================================
 
 def create_default_registry() -> ValidationGateRegistry:

@@ -167,10 +167,10 @@ class TextSanitizer:
             ('\u201D', '"'),  # Right double quote
         ]
         
-        for old, new in quote_replacements:
-            if old in normalized:
-                normalized = normalized.replace(old, new)
-                changes.append(f"Replaced smart quote {repr(old)}")
+        for previous, new in quote_replacements:
+            if previous in normalized:
+                normalized = normalized.replace(previous, new)
+                changes.append(f"Replaced smart quote {repr(previous)}")
         
         return normalized, changes
     
@@ -274,7 +274,7 @@ class ValidationContextResult:
 
 class ValidationContext:
     """
-    Validation Context Manager
+    Validation Context coordinator
     
     Manages validation results and provides aggregated
     validation context for workflow decisions.
@@ -421,7 +421,7 @@ class ValidationContext:
 
 
 # ============================================================================
-# Workflow State Manager
+# Workflow State coordinator
 # ============================================================================
 
 class WorkflowPhase(Enum):
@@ -467,7 +467,7 @@ class WorkflowStateManager:
     
     def __init__(self, workflow_id: Optional[str] = None):
         """
-        Initialize workflow state manager.
+        Initialize workflow state coordinator.
         
         Args:
             workflow_id: Optional workflow identifier
@@ -764,7 +764,7 @@ class ImmutableStagingBuffer:
 
 
 # ============================================================================
-# Factory Functions
+# builder Functions
 # ============================================================================
 
 def create_text_sanitizer(
@@ -782,7 +782,7 @@ def create_validation_context() -> ValidationContext:
 def create_workflow_state_manager(
     workflow_id: Optional[str] = None
 ) -> WorkflowStateManager:
-    """Create workflow state manager instance."""
+    """Create workflow state coordinator instance."""
     return WorkflowStateManager(workflow_id)
 
 
