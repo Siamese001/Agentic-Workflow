@@ -33,6 +33,8 @@ ROOT: Path = Path(__file__).resolve().parent  # project root (canonical)
 DATA_FOLDER_NAME = "data"                     # data/ is the new truth
 
 # Sovereign domains – full canon applies
+# NOTE: "scripts" removed – scripts are tooling/CLI utilities, not core domain logic
+# This allows Key 41's print() exception to work for scripts/
 SOVEREIGN_DIRS: Set[str] = {
     "agentic_core",
     "apps_lic",
@@ -44,7 +46,6 @@ SOVEREIGN_DIRS: Set[str] = {
     "config",
     "data",
     "archives",
-    "scripts",
 }
 
 # "Layered" sovereign domains that must obey L1/L2/L3 structure
@@ -423,6 +424,7 @@ def check_key_05_layered_structure_sane() -> None:
     Key 05 – Layered sovereign structure:
     - For layered domains: depth-2 directories must be L1/L2/L3 only.
     - No L4/L5 folders allowed under layered sovereign roots.
+    - No orphan files at depth 2 (files must be inside layer directories).
     """
     violations: List[str] = []
 
@@ -432,8 +434,6 @@ def check_key_05_layered_structure_sane() -> None:
             continue
 
         for path in root.rglob("*"):
-            if not path.is_dir():
-                continue
             rel = path.relative_to(ROOT)
             parts = rel.parts
             depth = len(parts)
@@ -442,13 +442,20 @@ def check_key_05_layered_structure_sane() -> None:
             if depth == 1:
                 continue
 
-            # Depth 2: must be a layer
+            # Depth 2: check for orphan files AND invalid layer directories
             if depth == 2:
-                layer_name = parts[1]
-                if layer_name in FORBIDDEN_LAYERS:
-                    violations.append(f"{rel} – forbidden layer (L4/L5)")
-                elif layer_name not in ALLOWED_LAYERS:
-                    violations.append(f"{rel} – invalid layer (must be one of {ALLOWED_LAYERS})")
+                if path.is_file():
+                    # FIX: Ban orphan files at depth 2 (except __init__.py)
+                    if path.name != "__init__.py":
+                        violations.append(
+                            f"{rel} – orphan file at layer root (must be inside L1/L2/L3 directory)"
+                        )
+                elif path.is_dir():
+                    layer_name = parts[1]
+                    if layer_name in FORBIDDEN_LAYERS:
+                        violations.append(f"{rel} – forbidden layer (L4/L5)")
+                    elif layer_name not in ALLOWED_LAYERS:
+                        violations.append(f"{rel} – invalid layer (must be one of {ALLOWED_LAYERS})")
                 continue
 
             # No L4/L5 anywhere
@@ -463,7 +470,7 @@ def check_key_05_layered_structure_sane() -> None:
             + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
         )
     else:
-        success("05", "Layered sovereign structure is compliant (L1–L3 only)")
+        success("05", "Layered sovereign structure is compliant (L1–L3 only, no orphan files)")
 
 
 def check_key_06_no_forbidden_folder_names() -> None:
@@ -625,23 +632,59 @@ def check_key_13_hardcoded_paths() -> None:
         success("13", "No hardcoded OS paths in sovereign code")
 
 
+# Operational constants allowlist for Key 14 (magic numbers)
+ALLOWED_MAGIC_NUMBERS: Set[int] = {
+    # Standard loop/index controls
+    0, 1, 2, -1,
+    # Common powers of 2 / byte sizes
+    256, 512, 1024, 2048, 4096, 8192,
+    # HTTP Success codes
+    200, 201, 204,
+    # HTTP Client Error codes
+    400, 401, 403, 404, 405, 408, 409, 422, 429,
+    # HTTP Server Error codes
+    500, 502, 503, 504,
+    # Common ports
+    80, 443, 3000, 5000, 8000, 8080, 8443,
+    # Common timeouts (seconds)
+    10, 30, 60, 120, 300, 600, 3600,
+    # Common limits
+    100, 1000, 10000,
+}
+
+
 def check_key_14_magic_numbers() -> None:
-    """Key 14 – Magic number heuristic (flags large inline numeric constants)."""
-    magic_pattern = re.compile(r"\b(?!0|1|2|10|100|1000)\d{3,}\b")
+    """
+    Key 14 – Magic number heuristic with operational allowlist.
+    
+    Flags large inline numeric constants except:
+    - HTTP status codes (200, 404, 500, etc.)
+    - Common ports (80, 443, 8080, etc.)
+    - Standard byte sizes (1024, 4096, etc.)
+    - Common timeouts and limits
+    """
+    # Match 3+ digit numbers not in allowlist
+    magic_pattern = re.compile(r"\b(\d{3,})\b")
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
         text = read_file(f)
-        if magic_pattern.search(text):
-            violations.append(str(f.relative_to(ROOT)))
+        matches = magic_pattern.findall(text)
+        bad_numbers = [m for m in matches if int(m) not in ALLOWED_MAGIC_NUMBERS]
+        if bad_numbers:
+            # Dedupe and limit
+            unique_bad = sorted(set(bad_numbers), key=int)[:5]
+            violations.append(f"{f.relative_to(ROOT)} – {', '.join(unique_bad)}")
+    
     if violations:
         fail(
             "14",
-            "Potential magic numbers found in sovereign code (3+ digit constants):\n"
+            "Potential magic numbers found in sovereign code (extract to named constants):\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
     else:
-        success("14", "No large inline magic numbers detected in sovereign code")
+        success("14", "No unallowed magic numbers detected in sovereign code")
 
 
 def check_key_15_bare_except() -> None:
@@ -1347,17 +1390,32 @@ def check_key_39_docstring_requirements() -> None:
 
 
 def check_key_40_validator_self_sanity() -> None:
-    """Key 40 – canon_validator.py must parse and live at project root."""
-    path = ROOT / "canon_validator.py"
-    if not path.is_file():
-        fail("40", "canon_validator.py must live at the project root")
+    """
+    Key 40 – Validator self-integrity check.
+    
+    Uses dynamic __file__ resolution instead of hardcoded filename,
+    allowing the validator to survive renaming/refactoring.
+    """
+    # FIX: Use dynamic path resolution instead of hardcoded "canon_validator.py"
+    current_script = Path(__file__).resolve()
+    script_name = current_script.name
+    
+    if not current_script.is_file():
+        fail("40", f"Validator cannot resolve its own path: {current_script}")
         return
+    
+    # Ensure validator lives at project root
+    if current_script.parent != ROOT:
+        fail("40", f"Validator must live at project root, found at: {current_script.parent}")
+        return
+    
     try:
-        ast.parse(read_file(path))
+        ast.parse(read_file(current_script))
     except SyntaxError as e:
-        fail("40", f"canon_validator.py has syntax error: {e.msg}")
+        fail("40", f"{script_name} has syntax error: {e.msg}")
         return
-    success("40", "canon_validator.py present and syntactically valid")
+    
+    success("40", f"{script_name} present at root and syntactically valid")
 
 
 # ---------------------------------------------------------------------
