@@ -429,6 +429,8 @@ def check_key_05_layered_structure_sane() -> None:
     - No orphan files at depth 2 (files must be inside layer directories).
     """
     violations: List[str] = []
+    # Skip infrastructure directories
+    skip_dirs = {"__pycache__", ".git", "node_modules", ".idea", ".vscode"}
 
     for agent in LAYERED_SOVEREIGN_DIRS:
         root = ROOT / agent
@@ -436,6 +438,10 @@ def check_key_05_layered_structure_sane() -> None:
             continue
 
         for path in root.rglob("*"):
+            # Skip infrastructure directories
+            if path.name in skip_dirs:
+                continue
+            
             rel = path.relative_to(ROOT)
             parts = rel.parts
             depth = len(parts)
