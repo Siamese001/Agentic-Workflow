@@ -955,18 +955,14 @@ def check_key_21_circular_imports() -> None:
         success("21", "No circular imports among sovereign modules")
 
 
-def check_key_22_unused_imports() -> None:
+def check_key_22_import_hygiene() -> None:
     """
-    Key 22 – No obviously unused imports in sovereign code (heuristic).
-
-    NOTE: This is a best-effort heuristic. It checks:
-    - ast.Name usage (direct references like `json.loads`)
-    - ast.Attribute usage (e.g., `pd.DataFrame`)
-    - String literals (for forward reference type hints like `"my_type.Thing"`)
-
-    False positives are possible with complex metaprogramming or dynamic usage.
+    Key 22 – Import Hygiene:
+    1. No unused imports (heuristic).
+    2. No wildcard imports (from module import *).
     """
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
         tree = parse_ast(f)
         if tree is None:
@@ -975,6 +971,7 @@ def check_key_22_unused_imports() -> None:
         text = read_file(f)
         imported: Set[str] = set()
         used: Set[str] = set()
+        wildcards: List[str] = []
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -983,17 +980,24 @@ def check_key_22_unused_imports() -> None:
             elif isinstance(node, ast.ImportFrom):
                 if node.module == "__future__":
                     continue
+                # Check for wildcard
                 for alias in node.names:
-                    imported.add(alias.asname or alias.name)
+                    if alias.name == '*':
+                        wildcards.append(f"from {node.module} import *")
+                    else:
+                        imported.add(alias.asname or alias.name)
             elif isinstance(node, ast.Name):
                 used.add(node.id)
             elif isinstance(node, ast.Attribute):
-                # Check for module.attr usage (e.g., pd.DataFrame)
                 if isinstance(node.value, ast.Name):
                     used.add(node.value.id)
 
-        # Also check string literals for forward reference type hints
-        # e.g., def func(x: "my_module.MyType") -> "OtherType":
+        # Check for wildcards first (immediate fail)
+        if wildcards:
+            violations.append(f"{f.relative_to(ROOT)} – Wildcards: {', '.join(wildcards)}")
+            continue
+
+        # Check for unused imports
         for imp in list(imported):
             if imp in text:
                 used.add(imp)
@@ -1007,12 +1011,12 @@ def check_key_22_unused_imports() -> None:
     if violations:
         fail(
             "22",
-            "Unused imports in sovereign code:\n"
+            "Import Hygiene violations (Wildcards or Unused):\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
     else:
-        success("22", "No unused imports detected in sovereign code (heuristic)")
+        success("22", "Import Hygiene OK (No wildcards, no unused imports)")
 
 
 def check_key_23_hardcoded_credentials() -> None:
@@ -1081,23 +1085,62 @@ def check_key_25_hardcoded_urls() -> None:
         success("25", "No hardcoded HTTP(S) URLs in sovereign code")
 
 
-def check_key_26_syntax_parses_clean() -> None:
-    """Key 26 – All sovereign Python files must parse without SyntaxError."""
+def check_key_26_syntax_and_strict_typing() -> None:
+    """
+    Key 26 – Syntax & Strict Typing:
+    1. Must parse clean (no SyntaxError).
+    2. No 'Any' type hints.
+    3. Mandatory return type hints on functions.
+    4. Mandatory argument type hints.
+    """
     violations: List[str] = []
+
+    class StrictTypeVisitor(ast.NodeVisitor):
+        def __init__(self, filename: str):
+            self.filename = filename
+            self.errors = []
+
+        def visit_FunctionDef(self, node: ast.FunctionDef):
+            # Check return type
+            if node.returns is None and node.name != "__init__":
+                self.errors.append(f"Missing return hint for '{node.name}'")
+            
+            # Check args
+            for arg in node.args.args:
+                if arg.arg in ['self', 'cls']:
+                    continue
+                if arg.annotation is None:
+                    self.errors.append(f"Missing type hint for arg '{arg.arg}' in '{node.name}'")
+                elif isinstance(arg.annotation, ast.Name) and arg.annotation.id == 'Any':
+                    self.errors.append(f"'Any' forbidden for arg '{arg.arg}' in '{node.name}'")
+            
+            self.generic_visit(node)
+
     for f in iter_sovereign_py_files():
+        # 1. Syntax Check
         try:
-            ast.parse(read_file(f))
+            tree = ast.parse(read_file(f))
         except SyntaxError as e:
-            violations.append(f"{f.relative_to(ROOT)} – {e.msg}")
+            violations.append(f"{f.relative_to(ROOT)} – SyntaxError: {e.msg}")
+            continue
+
+        # 2. Strict Typing Check
+        visitor = StrictTypeVisitor(str(f.relative_to(ROOT)))
+        visitor.visit(tree)
+        if visitor.errors:
+            # Limit to 3 errors per file to avoid wall of text
+            issues = "; ".join(visitor.errors[:3])
+            violations.append(f"{f.relative_to(ROOT)} – {issues}")
+
     if violations:
         fail(
             "26",
-            "Syntax errors in sovereign Python files:\n"
+            "Syntax or Strict Typing violations:\n"
             + "\n".join(f"  - {v}" for v in violations[:30])
             + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
         )
     else:
-        success("26", "All sovereign Python files parse cleanly")
+        success("26", "Syntax & Strict Typing verified")
 
 
 # ---------------------------------------------------------------------
