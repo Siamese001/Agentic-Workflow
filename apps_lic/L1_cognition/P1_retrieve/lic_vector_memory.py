@@ -7,7 +7,7 @@ Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 @dataclass

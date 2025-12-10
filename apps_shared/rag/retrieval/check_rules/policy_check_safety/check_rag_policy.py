@@ -14,10 +14,9 @@ Defines policy interface and implements safety engine for resume enhancement.
 """
 
 
-from __future__ import annotations
 
 
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Dict, List, Optional, TypeVar
 
 
 from dataclasses import field

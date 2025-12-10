@@ -9,7 +9,7 @@ L5 Agentic Core - Safety Layer - enforce_scripts_limits
 Implements L5 Safety/Policy Layer for enforce scripts limits operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

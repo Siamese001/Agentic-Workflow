@@ -8,9 +8,8 @@ within the P4_safety control pipeline. Updates are processed immutably
 and return status information for audit trails.
 """
 
-from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 
 def update(data: Dict[str, object]) -> Dict[str, object]:

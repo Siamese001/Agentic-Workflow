@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Format execution output - atomic wrapper for shared types."""
 
-from __future__ import annotations
 
 from typing import Dict, List
 

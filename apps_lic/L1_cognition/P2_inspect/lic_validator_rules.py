@@ -6,7 +6,7 @@ Ported from: archives/legacy_lic/Agentic LIC/validator_rules_LIC.json
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Pattern
+from typing import Dict, List, Optional, Pattern
 import re
 
 

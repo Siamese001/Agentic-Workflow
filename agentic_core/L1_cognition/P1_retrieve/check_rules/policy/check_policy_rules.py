@@ -6,7 +6,6 @@ MERKLE-INTENDED: c238ebf6d2a9adac511fe76e5ae83560ae219101deb01787f647cf4aa5ab5e6
 """
 
 
-from __future__ import annotations
 
 import logging
 import pkgutil

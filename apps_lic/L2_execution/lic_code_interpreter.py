@@ -226,7 +226,7 @@ class LICCodeInterpreter:
         Returns:
             KeywordExtractionResult with keywords
         """
-        # Remove common stop words and short words
+        
         words = [
             w.lower()
             for w in re.findall(r"\b\w+\b", text)

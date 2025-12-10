@@ -5,7 +5,6 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.124458
 """
 
-from __future__ import annotations
 import logging
 from typing import Dict, Optional, Union
 from shared.result_types import FormatResult

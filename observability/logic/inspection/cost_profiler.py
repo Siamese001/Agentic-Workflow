@@ -3,7 +3,6 @@ _unassigned\support_nomatch\cost_profiler.py
 Auto-hardened by WINDSURF v2
 """
 
-from __future__ import annotations
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # Source: SSoT taxonomy + golden fallback
 # ======================================================================

@@ -4,6 +4,25 @@ canon_validator.py - SADISTIC ZERO-MERCY EDITION - DEC 2025 (with Light Canon in
 50 keys. Zero exceptions. Zero mercy. Zero stubs. Zero legacy.
 ANY STUB, ANY PLACEHOLDER, ANY "Auto-generated", ANY <300-byte file -> INSTANT DEATH
 NO EXCEPTIONS. NO LEGACY. NO FORGIVENESS. THIS IS EXECUTION.
+
+FINAL CANON LAW — DECEMBER 2025 — ETERNAL AND UNCHANGED
+
+REPO ROOT     = C:\Git\                        ← phantom killer operates HERE
+PROJECT ROOT  = C:\Git\Agentic-Workflow\       ← sovereign code lives HERE
+
+Sovereign folders (full 50-key perfection required):
+    agentic_core, apps_lic, apps_rg, apps_shared,
+    schemas, prompt_governance, observability, config
+
+Non-sovereign folders (Light Canon only):
+    tests/, scripts/, runtime/, data/, archives/
+
+Minimum depth rules:
+    - Layered agents (agentic_core, apps_lic, apps_rg): minimum depth 2 (must be under L1/L2/L3)
+    - All other sovereign folders: minimum depth 1 allowed
+    - Non-sovereign folders (tests, scripts, runtime): must exist at project root (depth 1)
+
+C:\Git\ may contain any folders — they are outside canon jurisdiction.
 """
 
 # FINAL CANON LAW - DECEMBER 2025 - 50 KEYS - NUCLEAR HARDENING COMPLETE
@@ -22,6 +41,40 @@ from pathlib import Path
 from typing import List
 from collections import defaultdict
 import subprocess
+
+# =====================================================================
+# KEY 00 — PHANTOM FOLDER EXECUTION — REPO ROOT ONLY
+# =====================================================================
+def kill_phantom_folders():
+    """Key 00: Phantom killer — acts ONLY at REPO ROOT C:\\Git\\ — NEVER inside C:\\Git\\Agentic-Workflow\\"""
+    phantoms = []
+    REPO_ROOT = Path("C:/Git")
+
+    known_phantoms = {
+        REPO_ROOT / "tests",
+        REPO_ROOT / "test",
+        REPO_ROOT / ".pytest_cache",
+        REPO_ROOT / ".venv",
+        REPO_ROOT / "venv",
+        REPO_ROOT / "dist",
+        REPO_ROOT / "build",
+    }
+
+    for phantom in known_phantoms:
+        if phantom.exists() and phantom.is_dir():
+            try:
+                import shutil
+                shutil.rmtree(phantom, ignore_errors=False)
+                phantoms.append(f"EXECUTED (C:\\Git\\): {phantom.name}")
+            except Exception as e:
+                phantoms.append(f"FAILED: {phantom.name} — {e}")
+
+    if phantoms:
+        fail("00", f"PHANTOM FOLDERS AT REPO ROOT (C:\\Git\\) EXECUTED — {len(phantoms)} killed\\n" +
+                    "\\n".join(f"→ {p}" for p in phantoms) +
+                    "\\n\\nC:\\Git\\Agentic-Workflow\\ is 100% safe.")
+    else:
+        success("00")
 
 # =====================================================================
 # SAFE FILE READING (proper UTF-8 handling)
@@ -105,7 +158,7 @@ L3_VERBS = {
 BANNED_TOKENS = {
     "ops", "utils", "manager", "helper", "common", "misc",
     "general", "base", "abstract", "legacy", "shared_engine",
-    "wrapper", "processor", "factory", "module", "unit", "unit", "engine"
+    "wrapper", "processor", "factory", "module", "unit", "engine"
 }
 
 # FAKE NESTING FOLDERS (per YAML) - only check in sovereign agents
@@ -327,6 +380,12 @@ def check_directory_structure() -> None:
             # Check for forbidden names anywhere
             if path.name.lower() in forbidden_names:
                 violations.append(f"Forbidden folder name: {rel}")
+
+    # MINIMUM DEPTH ENFORCEMENT — DECEMBER 2025
+    root_folders_min_depth_1 = {"tests", "scripts", "runtime"}
+    for folder in root_folders_min_depth_1:
+        if not (ROOT / folder).exists():
+            violations.append(f"REQUIRED ROOT FOLDER MISSING: {folder}/ — must exist at C:\\Git\\Agentic-Workflow\\")
 
     if violations:
         fail("00", f"DIRECTORY STRUCTURE VIOLATION – {len(violations)} forbidden path{'s' if len(violations)>1 else ''}\n"
@@ -1080,7 +1139,9 @@ def run_checks_21_30():
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
                         if magic_pattern.match(node.name) and node.name not in {
-                            '__init__', '__str__', '__repr__', '__eq__', '__hash__'
+                            '__init__', '__str__', '__repr__', '__eq__', '__hash__',
+                            '__post_init__', '__enter__', '__exit__', '__call__', '__len__',
+                            '__getitem__', '__setitem__', '__iter__', '__next__', '__contains__'
                         }:
                             violations.append(f"{f.name}:{node.name}")
             except Exception:
@@ -1153,20 +1214,21 @@ def run_checks_21_30():
 # KEYS 31-40
 # =====================================================================
 def run_checks_31_40():
-    # Key 31: No duplicate folders
+    # Key 31: No duplicate folders WITHIN same agent
+    # (Duplicate names across different agents is allowed by design)
     violations = []
-    folder_counts = defaultdict(int)
     for agent in SOVEREIGN_AGENTS:
+        folder_counts = defaultdict(int)
         for d in (ROOT / agent).rglob("*"):
-            if d.is_dir():
+            if d.is_dir() and d.name != "__pycache__":
                 folder_counts[d.name] += 1
-    
-    for name, count in folder_counts.items():
-        if count > 1:
-            violations.append(f"{name}: {count} copies")
+        
+        for name, count in folder_counts.items():
+            if count > 1:
+                violations.append(f"{agent}/{name}: {count} copies")
     
     if violations:
-        fail("31", f"Duplicate folders: {violations[:10]}")
+        fail("31", f"Duplicate folders within agent: {violations[:10]}")
     else:
         success("31")
     

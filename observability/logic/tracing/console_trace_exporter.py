@@ -5,11 +5,10 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.855290
 """
 
-from __future__ import annotations
 import logging
 import time
 import uuid
-from typing import Generator, Any, Dict, List, Optional
+from typing import Generator, Dict, List, Optional
 from dataclasses import dataclass, field
 from contextlib import contextmanager
 

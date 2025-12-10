@@ -5,7 +5,6 @@ Domain: general
 Generated: 2025-12-07T12:07:59.838335
 """
 
-from __future__ import annotations
 import logging
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field

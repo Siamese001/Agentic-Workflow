@@ -1,7 +1,6 @@
 """
 apply_safety_policy.py - shared Module
 """
-from __future__ import annotations
 import logging
 from typing import Dict, Optional, Union
 from dataclasses import dataclass, field

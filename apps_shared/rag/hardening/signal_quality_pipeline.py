@@ -11,14 +11,13 @@ Implements 5-stage RAG quality assurance pipeline:
   5. External Fact-Checking
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple
+from typing import Callable, Dict, List, Optional, Protocol, Tuple
 
 logger = logging.getLogger(__name__)
 

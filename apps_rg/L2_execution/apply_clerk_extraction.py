@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Clerk extraction for resume generation HOP-1."""
 
-from __future__ import annotations
 
 import re
 from typing import Dict, List, Tuple

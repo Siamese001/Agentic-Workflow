@@ -8,7 +8,6 @@ Data enrichment for resume generation HOP-2.
 Enriches bullet pool with canonical verbs and deduplication.
 """
 
-from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 

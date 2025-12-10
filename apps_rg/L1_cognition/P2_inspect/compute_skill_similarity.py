@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """Compute Skill Similarity - atomic implementation."""
 
-from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 
 

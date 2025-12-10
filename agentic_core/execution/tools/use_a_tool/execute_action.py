@@ -15,13 +15,12 @@ improvements to enhance resume job alignment.
 """
 
 
-from __future__ import annotations
 
 
 import asyncio
 
 
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 
 from core.models.models import (

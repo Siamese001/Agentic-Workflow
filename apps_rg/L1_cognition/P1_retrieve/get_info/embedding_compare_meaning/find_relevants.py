@@ -1,15 +1,14 @@
-# Ownership: apps_lic / L1_cognition
+# Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Embed Message Template - atomic implementation."""
-
-from __future__ import annotations
-
-from typing import Any, Dict
+"""Find Relevant Templates - atomic implementation."""
 
 
+from typing import Dict
 
-class EmbedMessageTemplate:
-    """EmbedMessageTemplate implementation."""
+
+
+class FindRelevantTemplates:
+    """FindRelevantTemplates implementation."""
 
     def __init__(self) -> None:
         """Initialize the component with default configuration."""
