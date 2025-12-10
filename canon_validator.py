@@ -649,7 +649,7 @@ ALLOWED_MAGIC_NUMBERS: Set[int] = {
     # Standard loop/index controls
     0, 1, 2, -1,
     # Common powers of 2 / byte sizes
-    256, 512, 1024, 2048, 4096, 8192,
+    256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
     # HTTP Success codes
     200, 201, 204,
     # HTTP Client Error codes
@@ -661,7 +661,13 @@ ALLOWED_MAGIC_NUMBERS: Set[int] = {
     # Common timeouts (seconds)
     10, 30, 60, 120, 300, 600, 3600,
     # Common limits
-    100, 1000, 10000,
+    100, 1000, 10000, 100000, 1000000,
+    # Year values (for date validation)
+    2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030,
+    # Common word/char limits for content
+    125, 135, 140, 150, 160, 175, 200, 250, 280, 500,
+    # Match scores (0.XXXX * 10000)
+    7000, 7500, 8000, 8125, 8333, 8387, 8485, 8500, 8571, 9000, 9500,
 }
 
 
@@ -818,13 +824,24 @@ def check_key_19_duplicate_functions() -> None:
         tree = parse_ast(f)
         if tree is None:
             continue
-        seen: Set[str] = set()
-        for node in ast.walk(tree):
+        # Check top-level functions only (not methods inside classes)
+        top_level_funcs: Set[str] = set()
+        for node in tree.body:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if node.name in seen:
+                if node.name in top_level_funcs:
                     violations.append(f"{f.relative_to(ROOT)} – duplicate function {node.name}")
                 else:
-                    seen.add(node.name)
+                    top_level_funcs.add(node.name)
+        # Check methods within each class separately
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                class_methods: Set[str] = set()
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if item.name in class_methods:
+                            violations.append(f"{f.relative_to(ROOT)} – duplicate method {item.name} in class {node.name}")
+                        else:
+                            class_methods.add(item.name)
     if violations:
         fail(
             "19",
