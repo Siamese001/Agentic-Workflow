@@ -360,7 +360,7 @@ class LICValidator:
 
 
 def create_lic_validator() -> LICValidator:
-    """Factory function to create an LIC validator."""
+    """builder function to create an LIC validator."""
     return LICValidator()
 
 

@@ -160,7 +160,7 @@ from .sdk_registry import (
 )
 
 # =============================================================================
-# LEGACY ENGINE PORTS — Constitutional AI, Retrieval, Quality, etc.
+# historical ENGINE PORTS — Constitutional AI, Retrieval, Quality, etc.
 # =============================================================================
 
 from .pii_scrubber import (
@@ -405,7 +405,7 @@ from .state_management import (
 )
 
 # =============================================================================
-# LEGACY RESUME GEN PORT — NOW IN apps_shared/rag/hardening/
+# historical RESUME GEN PORT — NOW IN apps_shared/rag/hardening/
 # Import from there directly:
 #   from apps_shared.rag.hardening import SignalQualityPipeline, ...
 # =============================================================================
@@ -540,7 +540,7 @@ __all__ = [
     "parse_document",
     "extract_pdf_text",
     # ==========================================================================
-    # LEGACY ENGINE PORTS
+    # historical ENGINE PORTS
     # ==========================================================================
     # PII Scrubber
     "PIIType",
@@ -583,7 +583,7 @@ __all__ = [
     "inject_goals",
     "create_business_goal",
     "create_quality_goal",
-    # HyDE Processor
+    # HyDE engine
     "ExpansionStrategy",
     "HyDEDocument",
     "HyDEResult",

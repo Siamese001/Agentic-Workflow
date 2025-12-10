@@ -59,7 +59,7 @@ class AdjustDataWeightsPlanResult:
 
 
 class AdjustDataWeightsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> AdjustDataWeightsPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class AdjustDataWeightsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: AdjustDataWeightsPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: AdjustDataWeightsPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class AdjustDataWeightsPlanInterface:
 
 
 class AdjustDataWeightsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> AdjustDataWeightsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = AdjustDataWeightsPlanConstraints(safety_level=safety_level)
-        processor = AdjustDataWeightsPlanImpl(constraints)
-        return AdjustDataWeightsPlanInterface(processor)
+        engine = AdjustDataWeightsPlanImpl(constraints)
+        return AdjustDataWeightsPlanInterface(engine)
 
 
 def adjust_data_weights(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def adjust_data_weights(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = AdjustDataWeightsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = AdjustDataWeightsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

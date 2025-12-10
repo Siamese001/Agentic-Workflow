@@ -59,7 +59,7 @@ class OrchestrateObservabilityPlanningOrchestratorResult:
 
 
 class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class OrchestrateObservabilityPlanningOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: OrchestrateObservabilityPlanningOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: OrchestrateObservabilityPlanningOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class OrchestrateObservabilityPlanningOrchestratorInterface:
 
 
 class OrchestrateObservabilityPlanningOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> OrchestrateObservabilityPlanningOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(safety_level=safety_level)
-        processor = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
-        return OrchestrateObservabilityPlanningOrchestratorInterface(processor)
+        engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
+        return OrchestrateObservabilityPlanningOrchestratorInterface(engine)
 
 
 def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[st
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = OrchestrateObservabilityPlanningOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = OrchestrateObservabilityPlanningOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

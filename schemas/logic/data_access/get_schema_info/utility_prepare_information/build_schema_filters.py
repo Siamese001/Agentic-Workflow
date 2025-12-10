@@ -43,7 +43,7 @@ class BuildDataFiltersPlanResult:
     timestamp: str = ""
 
 class BuildDataFiltersPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> BuildDataFiltersPlanResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class BuildDataFiltersPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: BuildDataFiltersPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: BuildDataFiltersPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class BuildDataFiltersPlanInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class BuildDataFiltersPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> BuildDataFiltersPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = BuildDataFiltersPlanConstraints(safety_level=safety_level)
-        processor = BuildDataFiltersPlanImpl(constraints)
-        return BuildDataFiltersPlanInterface(processor)
+        engine = BuildDataFiltersPlanImpl(constraints)
+        return BuildDataFiltersPlanInterface(engine)
 
 # L5 Main execution point
 def build_data_filters(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def build_data_filters(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = BuildDataFiltersPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = BuildDataFiltersPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

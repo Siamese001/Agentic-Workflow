@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class ImplementFallbackStrategy:
-    """Retry handler for resume domain."""
+    """Retry executor for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

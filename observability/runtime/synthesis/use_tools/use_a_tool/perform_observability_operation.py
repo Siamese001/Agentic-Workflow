@@ -59,7 +59,7 @@ class PerformObservabilityOperationsOrchestratorResult:
 
 
 class PerformObservabilityOperationsOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> PerformObservabilityOperationsOrchestratorResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class PerformObservabilityOperationsOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: PerformObservabilityOperationsOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: PerformObservabilityOperationsOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class PerformObservabilityOperationsOrchestratorInterface:
 
 
 class PerformObservabilityOperationsOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> PerformObservabilityOperationsOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = PerformObservabilityOperationsOrchestratorConstraints(safety_level=safety_level)
-        processor = PerformObservabilityOperationsOrchestratorImpl(constraints)
-        return PerformObservabilityOperationsOrchestratorInterface(processor)
+        engine = PerformObservabilityOperationsOrchestratorImpl(constraints)
+        return PerformObservabilityOperationsOrchestratorInterface(engine)
 
 
 def perform_observability_operations(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def perform_observability_operations(input_data: Dict[str, object]) -> Dict[str,
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = PerformObservabilityOperationsOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = PerformObservabilityOperationsOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

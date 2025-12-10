@@ -661,7 +661,7 @@ class RGValidationGates:
 
 
 def create_validation_gates() -> RGValidationGates:
-    """Factory function to create validation gates."""
+    """builder function to create validation gates."""
     return RGValidationGates()
 
 

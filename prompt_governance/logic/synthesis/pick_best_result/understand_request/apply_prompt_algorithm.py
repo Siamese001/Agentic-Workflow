@@ -43,7 +43,7 @@ class ApplyScriptsAlgorithmPlanResult:
     timestamp: str = ""
 
 class ApplyScriptsAlgorithmPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> ApplyScriptsAlgorithmPlanResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class ApplyScriptsAlgorithmPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: ApplyScriptsAlgorithmPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: ApplyScriptsAlgorithmPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class ApplyScriptsAlgorithmPlanInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class ApplyScriptsAlgorithmPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> ApplyScriptsAlgorithmPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = ApplyScriptsAlgorithmPlanConstraints(safety_level=safety_level)
-        processor = ApplyScriptsAlgorithmPlanImpl(constraints)
-        return ApplyScriptsAlgorithmPlanInterface(processor)
+        engine = ApplyScriptsAlgorithmPlanImpl(constraints)
+        return ApplyScriptsAlgorithmPlanInterface(engine)
 
 # L5 Main execution point
 def apply_scripts_algorithm(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def apply_scripts_algorithm(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = ApplyScriptsAlgorithmPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = ApplyScriptsAlgorithmPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

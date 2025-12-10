@@ -259,7 +259,7 @@ class SemanticCache:
 
 
 # ============================================================================
-# Self-RAG Processor
+# Self-RAG engine
 # ============================================================================
 
 class GapType(Enum):
@@ -305,7 +305,7 @@ class SelfRAGProcessor:
         relevance_threshold: float = 0.6
     ):
         """
-        Initialize Self-RAG processor.
+        Initialize Self-RAG engine.
         
         Args:
             max_iterations: Maximum refinement iterations
@@ -805,7 +805,7 @@ class FewShotInjector:
 
 
 # ============================================================================
-# Factory Functions
+# builder Functions
 # ============================================================================
 
 def create_semantic_cache(
@@ -817,7 +817,7 @@ def create_semantic_cache(
 
 
 def create_self_rag_processor(max_iterations: int = 3) -> SelfRAGProcessor:
-    """Create Self-RAG processor instance."""
+    """Create Self-RAG engine instance."""
     return SelfRAGProcessor(max_iterations=max_iterations)
 
 

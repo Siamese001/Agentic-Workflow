@@ -22,7 +22,7 @@ def get_injection_prompt(injection_type: str, context: dict):
     pass
 
 def apply_injection(base_prompt: str, injection: str):
-    """Apply injection to base prompt"""
+    """Apply injection to foundation prompt"""
     pass
 
 def list_injection_types():

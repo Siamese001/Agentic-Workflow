@@ -21,7 +21,7 @@ SOVEREIGN_ROOTS = {
     "config",
 }
 
-# Files that ALWAYS promote regardless of score (legacy resume-gen port)
+# Files that ALWAYS promote regardless of score (historical resume-gen port)
 FORCE_PROMOTE_PATTERN = re.compile(
     r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_transform",
     re.I,
@@ -30,7 +30,7 @@ FORCE_PROMOTE_PATTERN = re.compile(
 # Destination map — highest priority first
 DESTINATION_RULES = [
     # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-    # LEGACY RESUME-GEN PORT — THESE BELONG TO THE CANON FOREVER
+    # historical RESUME-GEN PORT — THESE BELONG TO THE CANON FOREVER
     # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
     (
         r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_transform",
@@ -120,9 +120,9 @@ def main() -> None:
 
         content = src.read_text(errors="ignore")
         
-        # Force-promote legacy resume-gen files regardless of score
+        # Force-promote historical resume-gen files regardless of score
         if FORCE_PROMOTE_PATTERN.search(src.name):
-            sovereign, reason = True, "force-promote:legacy-resume-gen"
+            sovereign, reason = True, "force-promote:historical-resume-gen"
         else:
             sovereign, reason = is_sovereign_grade(content)
         

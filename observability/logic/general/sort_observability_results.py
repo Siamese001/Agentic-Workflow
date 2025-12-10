@@ -1,7 +1,7 @@
 """
 sort_observability_results.py - Optimization Module
 
-Domain: general
+Domain: standard
 Generated: 2025-12-07T12:07:59.838335
 """
 
@@ -23,7 +23,7 @@ class OptimizationResult:
 
 
 class SortObservabilityResults:
-    """Optimizer for general domain."""
+    """Optimizer for standard domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

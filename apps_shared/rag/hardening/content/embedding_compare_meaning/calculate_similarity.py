@@ -59,7 +59,7 @@ class CalculateDataSimilarityPlanResult:
 
 
 class CalculateDataSimilarityPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> CalculateDataSimilarityPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class CalculateDataSimilarityPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: CalculateDataSimilarityPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: CalculateDataSimilarityPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class CalculateDataSimilarityPlanInterface:
 
 
 class CalculateDataSimilarityPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> CalculateDataSimilarityPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = CalculateDataSimilarityPlanConstraints(safety_level=safety_level)
-        processor = CalculateDataSimilarityPlanImpl(constraints)
-        return CalculateDataSimilarityPlanInterface(processor)
+        engine = CalculateDataSimilarityPlanImpl(constraints)
+        return CalculateDataSimilarityPlanInterface(engine)
 
 
 def calculate_data_similarity(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def calculate_data_similarity(input_data: Dict[str, object]) -> Dict[str, object
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = CalculateDataSimilarityPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = CalculateDataSimilarityPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

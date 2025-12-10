@@ -102,7 +102,7 @@ class TemplateRenderer:
 
 
 def create_template_renderer() -> TemplateRenderer:
-    """Factory function to create a template renderer."""
+    """builder function to create a template renderer."""
     return TemplateRenderer()
 
 

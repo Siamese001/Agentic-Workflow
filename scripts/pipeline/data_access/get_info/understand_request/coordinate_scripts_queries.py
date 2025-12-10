@@ -43,7 +43,7 @@ class CoordinateScriptsOperationsOrchestratorResult:
     timestamp: str = ""
 
 class CoordinateScriptsOperationsOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> CoordinateScriptsOperationsOrchestratorResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class CoordinateScriptsOperationsOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: CoordinateScriptsOperationsOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: CoordinateScriptsOperationsOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class CoordinateScriptsOperationsOrchestratorInterface:
         except (ValueError, TypeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class CoordinateScriptsOperationsOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> CoordinateScriptsOperationsOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = CoordinateScriptsOperationsOrchestratorConstraints(safety_level=safety_level)
-        processor = CoordinateScriptsOperationsOrchestratorImpl(constraints)
-        return CoordinateScriptsOperationsOrchestratorInterface(processor)
+        engine = CoordinateScriptsOperationsOrchestratorImpl(constraints)
+        return CoordinateScriptsOperationsOrchestratorInterface(engine)
 
 # L5 Main execution point
 def coordinate_scripts_operations(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def coordinate_scripts_operations(input_data: Dict[str, object]) -> Dict[str, ob
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = CoordinateScriptsOperationsOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = CoordinateScriptsOperationsOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

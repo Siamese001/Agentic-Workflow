@@ -97,7 +97,7 @@ def get_openai_client() -> AsyncOpenAI:
 
         if base_url:
             client_kwargs["base_url"] = base_url
-            logger.info(f"Using custom OpenAI base URL: {base_url}")
+            logger.info(f"Using custom OpenAI foundation URL: {base_url}")
 
         if organization:
             client_kwargs["organization"] = organization

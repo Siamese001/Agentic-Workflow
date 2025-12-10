@@ -59,7 +59,7 @@ class ValidateScriptsConstraintsPlanResult:
 
 
 class ValidateScriptsConstraintsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> ValidateScriptsConstraintsPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class ValidateScriptsConstraintsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: ValidateScriptsConstraintsPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: ValidateScriptsConstraintsPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class ValidateScriptsConstraintsPlanInterface:
 
 
 class ValidateScriptsConstraintsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> ValidateScriptsConstraintsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = ValidateScriptsConstraintsPlanConstraints(safety_level=safety_level)
-        processor = ValidateScriptsConstraintsPlanImpl(constraints)
-        return ValidateScriptsConstraintsPlanInterface(processor)
+        engine = ValidateScriptsConstraintsPlanImpl(constraints)
+        return ValidateScriptsConstraintsPlanInterface(engine)
 
 
 def validate_scripts_constraints(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def validate_scripts_constraints(input_data: Dict[str, object]) -> Dict[str, obj
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = ValidateScriptsConstraintsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = ValidateScriptsConstraintsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

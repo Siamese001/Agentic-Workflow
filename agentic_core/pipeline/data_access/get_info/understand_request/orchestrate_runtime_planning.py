@@ -59,7 +59,7 @@ class OrchestrateDataPlanningOrchestratorResult:
 
 
 class OrchestrateDataPlanningOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> OrchestrateDataPlanningOrchestratorResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class OrchestrateDataPlanningOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: OrchestrateDataPlanningOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: OrchestrateDataPlanningOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class OrchestrateDataPlanningOrchestratorInterface:
 
 
 class OrchestrateDataPlanningOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> OrchestrateDataPlanningOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = OrchestrateDataPlanningOrchestratorConstraints(safety_level=safety_level)
-        processor = OrchestrateDataPlanningOrchestratorImpl(constraints)
-        return OrchestrateDataPlanningOrchestratorInterface(processor)
+        engine = OrchestrateDataPlanningOrchestratorImpl(constraints)
+        return OrchestrateDataPlanningOrchestratorInterface(engine)
 
 
 def orchestrate_data_planning(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def orchestrate_data_planning(input_data: Dict[str, object]) -> Dict[str, object
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = OrchestrateDataPlanningOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = OrchestrateDataPlanningOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

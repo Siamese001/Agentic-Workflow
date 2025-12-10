@@ -222,14 +222,14 @@ if __name__ == "__main__":
         "John Doe\nData Scientist at XYZ Inc\nPhD Statistics, Stanford"
     ]
     
-    processor = BatchProcessor()
+    engine = BatchProcessor()
     
     # Create batch requests
     requests = create_resume_requests(sample_resumes)
     
     # Execute full batch cycle
     try:
-        results = processor.full_batch_cycle(requests, "test_resume_batch")
+        results = engine.full_batch_cycle(requests, "test_resume_batch")
         print(f"Batch completed: {results['status']}")
         print(f"Processed {results['requests_count']} requests")
         print(f"Generated {results['results_count']} results")

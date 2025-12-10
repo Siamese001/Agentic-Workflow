@@ -59,7 +59,7 @@ class ExtractScriptsParametersPlanResult:
 
 
 class ExtractScriptsParametersPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> ExtractScriptsParametersPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class ExtractScriptsParametersPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: ExtractScriptsParametersPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: ExtractScriptsParametersPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class ExtractScriptsParametersPlanInterface:
 
 
 class ExtractScriptsParametersPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> ExtractScriptsParametersPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = ExtractScriptsParametersPlanConstraints(safety_level=safety_level)
-        processor = ExtractScriptsParametersPlanImpl(constraints)
-        return ExtractScriptsParametersPlanInterface(processor)
+        engine = ExtractScriptsParametersPlanImpl(constraints)
+        return ExtractScriptsParametersPlanInterface(engine)
 
 
 def extract_scripts_parameters(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def extract_scripts_parameters(input_data: Dict[str, object]) -> Dict[str, objec
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = ExtractScriptsParametersPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = ExtractScriptsParametersPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

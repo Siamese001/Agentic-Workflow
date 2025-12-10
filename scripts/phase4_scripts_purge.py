@@ -1,5 +1,5 @@
 """
-phase_4_1_08_scripts_purge.py - Utility Module
+phase_4_1_08_scripts_purge.py - function Module
 
 Domain: 08_scripts
 Generated: 2025-12-07T12:07:59.862730
@@ -23,7 +23,7 @@ class OperationResult:
 
 
 class Phase4108ScriptsPurge:
-    """Utility class for 08_scripts domain."""
+    """function class for 08_scripts domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

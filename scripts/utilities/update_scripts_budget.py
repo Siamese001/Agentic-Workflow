@@ -34,7 +34,7 @@ class ManagementResult:
 
 
 class UpdateScriptsBudget:
-    """Manager for utilities domain."""
+    """coordinator for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
@@ -71,11 +71,11 @@ class UpdateScriptsBudget:
 
 def manage(operation: str, resource_id: str, **kwargs) -> ManagementResult:
     """Convenience function for management."""
-    manager = UpdateScriptsBudget(kwargs.get("config"))
+    coordinator = UpdateScriptsBudget(kwargs.get("config"))
     if operation == "create":
-        return manager.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
+        return coordinator.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
     elif operation == "update":
-        return manager.update(resource_id, kwargs.get("data"))
+        return coordinator.update(resource_id, kwargs.get("data"))
     elif operation == "delete":
-        return manager.delete(resource_id)
+        return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")

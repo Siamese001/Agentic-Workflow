@@ -43,7 +43,7 @@ class FetchDataHistoryMemoryResult:
     timestamp: str = ""
 
 class FetchDataHistoryMemoryProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object][str, Any]) -> FetchDataHistoryMemoryResult:
@@ -131,9 +131,9 @@ class SecurityError(Exception):
 class FetchDataHistoryMemoryInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: FetchDataHistoryMemoryProcessor):
+    def __init__(self, engine: FetchDataHistoryMemoryProcessor):
         """  Init   implementation."""
-        self._processor = processor
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object][str, Any]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -149,16 +149,16 @@ class FetchDataHistoryMemoryInterface:
         except (ValueError, TypeError, RuntimeError, OSError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class FetchDataHistoryMemoryFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> FetchDataHistoryMemoryInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = FetchDataHistoryMemoryConstraints(safety_level=safety_level)
-        processor = FetchDataHistoryMemoryImpl(constraints)
-        return FetchDataHistoryMemoryInterface(processor)
+        engine = FetchDataHistoryMemoryImpl(constraints)
+        return FetchDataHistoryMemoryInterface(engine)
 
 # L5 Main execution point
 def fetch_data_history(input_data: Dict[str, object][str, Any]) -> Dict[str, object]:
@@ -174,9 +174,9 @@ def fetch_data_history(input_data: Dict[str, object][str, Any]) -> Dict[str, obj
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = FetchDataHistoryMemoryFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = FetchDataHistoryMemoryFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

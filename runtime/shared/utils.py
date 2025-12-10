@@ -255,7 +255,7 @@ class TextUtils:
     def extract_keywords(text: str, min_length: int = 3) -> List[str]:
         """
         Extracts significant keywords from text.
-        Filters out common stop words and short words.
+        Filters out shared stop words and short words.
         """
         stop_words = {
             'the', 'and', 'for', 'with', 'from', 'this', 'that', 'have',
@@ -298,7 +298,7 @@ class TextUtils:
 
     @staticmethod
     def remove_conversational_fillers(text: str) -> str:
-        """Removes common conversational filler phrases from the start of text."""
+        """Removes shared conversational filler phrases from the start of text."""
         fillers = [
             r"Here is the generated content:",
             r"Here is the requested resume section:",
@@ -536,7 +536,7 @@ def enhance_system_prompt_with_reasoning(
     Enhances a system prompt with reasoning directives based on the config.
 
     Args:
-        system_prompt: The base system prompt
+        system_prompt: The foundation system prompt
         reasoning_config: Configuration for reasoning strategies
 
     Returns:
@@ -590,7 +590,7 @@ def build_generation_prompt_with_reinforced_constraints(
     attempt: int,
 ) -> str:
     """
-    Enhances a base prompt with reinforced constraints for retries.
+    Enhances a foundation prompt with reinforced constraints for retries.
 
     Args:
         base_prompt: The original prompt

@@ -244,7 +244,7 @@ class RGWorkflowOrchestrator:
 
         Args:
             workflow_spec: Workflow specification
-            run_base_dir: Base directory for run outputs
+            run_base_dir: foundation directory for run outputs
         """
         self.workflow_id = str(uuid.uuid4())[:8]
         self.logger = logging.getLogger(__name__)
@@ -290,10 +290,10 @@ class RGWorkflowOrchestrator:
     def register_hop_handler(
         self,
         hop_id: str,
-        handler: Callable[..., Any],
+        executor: Callable[..., Any],
     ) -> None:
-        """Register a handler function for a hop."""
-        self._hop_handlers[hop_id] = handler
+        """Register a executor function for a hop."""
+        self._hop_handlers[hop_id] = executor
 
     def setup_run_directory(
         self,
@@ -367,12 +367,12 @@ class RGWorkflowOrchestrator:
         )
 
         try:
-            handler = self._hop_handlers.get(hop_id)
-            if handler is None:
-                raise HopExecutionError(f"No handler registered for hop: {hop_id}")
+            executor = self._hop_handlers.get(hop_id)
+            if executor is None:
+                raise HopExecutionError(f"No executor registered for hop: {hop_id}")
 
-            # Execute the handler
-            result = handler(context, self.artifacts)
+            # Execute the executor
+            result = executor(context, self.artifacts)
 
             # Update checkpoint
             checkpoint.status = HopStatus.COMPLETED
@@ -497,7 +497,7 @@ def create_orchestrator(
     workflow_spec: Optional[WorkflowSpec] = None,
     run_base_dir: str = "./pipeline_runs",
 ) -> RGWorkflowOrchestrator:
-    """Factory function to create an orchestrator."""
+    """builder function to create an orchestrator."""
     return RGWorkflowOrchestrator(workflow_spec, run_base_dir)
 
 

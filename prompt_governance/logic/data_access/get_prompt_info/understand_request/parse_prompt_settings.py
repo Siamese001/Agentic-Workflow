@@ -59,7 +59,7 @@ class ParseScriptsSettingsPlanResult:
 
 
 class ParseScriptsSettingsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> ParseScriptsSettingsPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class ParseScriptsSettingsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: ParseScriptsSettingsPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: ParseScriptsSettingsPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class ParseScriptsSettingsPlanInterface:
 
 
 class ParseScriptsSettingsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> ParseScriptsSettingsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = ParseScriptsSettingsPlanConstraints(safety_level=safety_level)
-        processor = ParseScriptsSettingsPlanImpl(constraints)
-        return ParseScriptsSettingsPlanInterface(processor)
+        engine = ParseScriptsSettingsPlanImpl(constraints)
+        return ParseScriptsSettingsPlanInterface(engine)
 
 
 def parse_scripts_settings(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def parse_scripts_settings(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = ParseScriptsSettingsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = ParseScriptsSettingsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

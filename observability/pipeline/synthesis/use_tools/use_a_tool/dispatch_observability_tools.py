@@ -43,7 +43,7 @@ class AdjustObservabilityWeightsPlanResult:
     timestamp: str = ""
 
 class AdjustObservabilityWeightsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> AdjustObservabilityWeightsPlanResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class AdjustObservabilityWeightsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: AdjustObservabilityWeightsPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: AdjustObservabilityWeightsPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class AdjustObservabilityWeightsPlanInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class AdjustObservabilityWeightsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> AdjustObservabilityWeightsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = AdjustObservabilityWeightsPlanConstraints(safety_level=safety_level)
-        processor = AdjustObservabilityWeightsPlanImpl(constraints)
-        return AdjustObservabilityWeightsPlanInterface(processor)
+        engine = AdjustObservabilityWeightsPlanImpl(constraints)
+        return AdjustObservabilityWeightsPlanInterface(engine)
 
 # L5 Main execution point
 def adjust_observability_weights(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def adjust_observability_weights(input_data: Dict[str, object]) -> Dict[str, obj
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = AdjustObservabilityWeightsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = AdjustObservabilityWeightsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

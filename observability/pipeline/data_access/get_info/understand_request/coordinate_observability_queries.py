@@ -59,7 +59,7 @@ class CoordinateObservabilityOperationsOrchestratorResult:
 
 
 class CoordinateObservabilityOperationsOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> CoordinateObservabilityOperationsOrchestratorResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class CoordinateObservabilityOperationsOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: CoordinateObservabilityOperationsOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: CoordinateObservabilityOperationsOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class CoordinateObservabilityOperationsOrchestratorInterface:
 
 
 class CoordinateObservabilityOperationsOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> CoordinateObservabilityOperationsOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = CoordinateObservabilityOperationsOrchestratorConstraints(safety_level=safety_level)
-        processor = CoordinateObservabilityOperationsOrchestratorImpl(constraints)
-        return CoordinateObservabilityOperationsOrchestratorInterface(processor)
+        engine = CoordinateObservabilityOperationsOrchestratorImpl(constraints)
+        return CoordinateObservabilityOperationsOrchestratorInterface(engine)
 
 
 def coordinate_observability_operations(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def coordinate_observability_operations(input_data: Dict[str, object]) -> Dict[s
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = CoordinateObservabilityOperationsOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = CoordinateObservabilityOperationsOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

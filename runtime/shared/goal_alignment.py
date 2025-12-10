@@ -325,7 +325,7 @@ class GoalAlignmentEngine:
         if not goals:
             return 0.5
         
-        # Base score from goal coverage
+        # foundation score from goal coverage
         goal_coverage = min(len(goals) / 5.0, 1.0)
         
         # Improvement score from changes made
@@ -407,7 +407,7 @@ class GoalAlignmentEngine:
         }
 
 
-# Factory functions
+# builder functions
 def create_goal_alignment_engine(
     default_goals: Optional[List[StrategicGoal]] = None,
     strategy: AlignmentStrategy = AlignmentStrategy.INJECT

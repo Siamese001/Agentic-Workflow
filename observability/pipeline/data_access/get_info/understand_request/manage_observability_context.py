@@ -59,7 +59,7 @@ class FormatObservabilityContextPlanResult:
 
 
 class FormatObservabilityContextPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> FormatObservabilityContextPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class FormatObservabilityContextPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: FormatObservabilityContextPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: FormatObservabilityContextPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class FormatObservabilityContextPlanInterface:
 
 
 class FormatObservabilityContextPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> FormatObservabilityContextPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = FormatObservabilityContextPlanConstraints(safety_level=safety_level)
-        processor = FormatObservabilityContextPlanImpl(constraints)
-        return FormatObservabilityContextPlanInterface(processor)
+        engine = FormatObservabilityContextPlanImpl(constraints)
+        return FormatObservabilityContextPlanInterface(engine)
 
 
 def format_observability_context(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def format_observability_context(input_data: Dict[str, object]) -> Dict[str, obj
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = FormatObservabilityContextPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = FormatObservabilityContextPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

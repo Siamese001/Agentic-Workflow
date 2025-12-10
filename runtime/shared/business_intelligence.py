@@ -473,7 +473,7 @@ class ProductIntelligenceBundle:
         if industry:
             segments.append(industry)
         
-        return ", ".join(segments) if segments else "General market"
+        return ", ".join(segments) if segments else "standard market"
     
     def _extract_differentiators(self, data: Dict[str, object]) -> List[str]:
         """Extract competitive differentiators."""
@@ -545,7 +545,7 @@ class ProductIntelligenceBundle:
             opportunities.append("Multi-cloud expansion")
             opportunities.append("Edge computing integration")
         
-        # General opportunities
+        # standard opportunities
         if data.get('international_potential', False):
             opportunities.append("International market expansion")
         
@@ -710,7 +710,7 @@ class IntelligenceBundleSystem:
         return summary
 
 
-# Factory functions
+# builder functions
 def create_intelligence_system() -> IntelligenceBundleSystem:
     """Create intelligence bundle system instance."""
     return IntelligenceBundleSystem()

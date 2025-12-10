@@ -312,7 +312,7 @@ class LICRouter:
         )
 
     def get_temperature(self, archetype: RecipientArchetype) -> float:
-        """Get base temperature for an archetype."""
+        """Get foundation temperature for an archetype."""
         return self._archetype_temps.get(archetype, 0.55)
 
     def get_tool_budget(self, route: MessageRoute) -> str:
@@ -369,7 +369,7 @@ class LICRouter:
 
 
 def create_router() -> LICRouter:
-    """Factory function to create a router."""
+    """builder function to create a router."""
     return LICRouter()
 
 

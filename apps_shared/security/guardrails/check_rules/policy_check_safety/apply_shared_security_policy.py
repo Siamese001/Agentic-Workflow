@@ -19,10 +19,10 @@ class Result:
 
 
 class ApplySafetyPolicy:
-    """Handler for shared operations."""
+    """executor for shared operations."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        """Initialize the safety policy handler."""
+        """Initialize the safety policy executor."""
         self.config = config or {}
 
     def process(self, data: DataType, context: Optional[Dict[str, object]] = None) -> Result:

@@ -19,7 +19,7 @@ import json
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 
-# Folder rename mappings (old -> new)
+# Folder rename mappings (previous -> new)
 FOLDER_RENAMES: Dict[str, str] = {
     "agentic_core": "agentic_core",
     "schemas": "schemas",

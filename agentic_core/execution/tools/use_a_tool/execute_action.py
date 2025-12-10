@@ -685,6 +685,6 @@ def execute_workflow_plans(
     try:
         validate_schema_version(result, model_type=L2ResultBundle)
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Legacy callers should not fail solely due to schema validation.
+        # historical callers should not fail solely due to schema validation.
         ...
     return result

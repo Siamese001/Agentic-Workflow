@@ -43,7 +43,7 @@ class MatchDataContextMemoryResult:
     timestamp: str = ""
 
 class MatchDataContextMemoryProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> MatchDataContextMemoryResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class MatchDataContextMemoryInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: MatchDataContextMemoryProcessor):
-        self._processor = processor
+    def __init__(self, engine: MatchDataContextMemoryProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class MatchDataContextMemoryInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class MatchDataContextMemoryFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> MatchDataContextMemoryInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = MatchDataContextMemoryConstraints(safety_level=safety_level)
-        processor = MatchDataContextMemoryImpl(constraints)
-        return MatchDataContextMemoryInterface(processor)
+        engine = MatchDataContextMemoryImpl(constraints)
+        return MatchDataContextMemoryInterface(engine)
 
 # L5 Main execution point
 def match_data_context(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def match_data_context(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = MatchDataContextMemoryFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = MatchDataContextMemoryFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

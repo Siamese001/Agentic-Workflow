@@ -63,7 +63,7 @@ class ValidateDataEthicsSafetyResult:
 
 
 class ValidateDataEthicsSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> ValidateDataEthicsSafetyResult:
@@ -294,11 +294,11 @@ class ValidateDataEthicsSafetyInterface:
 
 
 class ValidateDataEthicsSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> ValidateDataEthicsSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = ValidateDataEthicsSafetyConstraints(safety_level=safety_level)
         safety = ValidateDataEthicsSafetyImpl(constraints)
         return ValidateDataEthicsSafetyInterface(safety)
@@ -317,8 +317,8 @@ def validate_data_ethics(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = ValidateDataEthicsSafetyFactory()
-    safety = factory.create_safety()
+    builder = ValidateDataEthicsSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 

@@ -1,5 +1,5 @@
 """
-zero_loss_merge_engine.py - Utility Module
+zero_loss_merge_engine.py - function Module
 
 Domain: 08_scripts
 Generated: 2025-12-07T12:07:59.865380
@@ -23,7 +23,7 @@ class OperationResult:
 
 
 class ZeroLossMergeEngine:
-    """Utility class for 08_scripts domain."""
+    """function class for 08_scripts domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

@@ -1,4 +1,4 @@
-"""OpenAI Client Wrapper - Production Grade with Retry, Timeout, and Structured Output
+"""OpenAI Client layer - Production Grade with Retry, Timeout, and Structured Output
 Implements robust error handling, retry logic, and structured output parsing.
 """
 
@@ -51,7 +51,7 @@ class OpenAIClient:
         backoff.expo,
         (RateLimitError, APIError, APITimeoutError),
         max_tries=5,
-        base=1,
+        foundation=1,
         max_value=60
     )
     def chat_completion(
@@ -306,7 +306,7 @@ class OpenAIClient:
         }
 
 
-# Factory function for easy instantiation
+# builder function for easy instantiation
 def create_openai_client(
     api_key: Optional[str] = None,
     model: str = "gpt-4o-2024-08-06",

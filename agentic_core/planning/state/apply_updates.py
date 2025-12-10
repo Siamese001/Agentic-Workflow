@@ -47,7 +47,7 @@ WHITELIST_PREFIXES = [
 ]
 
 STACK_DIR_WHITELIST = {"stacks_v10_8", "stacks_v10_7", "stacks_common"}
-EXCLUDED_DIRS = {".git", "tests", "tests_flat", "notebooks", "examples", "tmp", "old", "backup", "venv", "__pycache__"}
+EXCLUDED_DIRS = {".git", "tests", "tests_flat", "notebooks", "examples", "staging", "previous", "backup", "venv", "__pycache__"}
 
 VERSION_PRIORITY = {"10_8": 2, "10_7": 1, None: 0}
 

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class HandleServiceErrors:
-    """Retry handler for outreach domain."""
+    """Retry executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

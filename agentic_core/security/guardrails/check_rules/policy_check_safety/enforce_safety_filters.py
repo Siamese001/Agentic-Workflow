@@ -63,7 +63,7 @@ class EnforceDataFiltersSafetyResult:
 
 
 class EnforceDataFiltersSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> EnforceDataFiltersSafetyResult:
@@ -294,11 +294,11 @@ class EnforceDataFiltersSafetyInterface:
 
 
 class EnforceDataFiltersSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> EnforceDataFiltersSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = EnforceDataFiltersSafetyConstraints(safety_level=safety_level)
         safety = EnforceDataFiltersSafetyImpl(constraints)
         return EnforceDataFiltersSafetyInterface(safety)
@@ -317,8 +317,8 @@ def enforce_data_filters(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = EnforceDataFiltersSafetyFactory()
-    safety = factory.create_safety()
+    builder = EnforceDataFiltersSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 
