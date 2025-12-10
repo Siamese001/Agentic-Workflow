@@ -35,7 +35,7 @@ class ImplementFallbackTemplates:
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error = str(e)
                 logger.warning(f"Attempt {attempt + 1} failed: {e}")
-                # DISABLED: time.sleep(self.backoff * (attempt + 1))
+                pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs) -> object:
