@@ -478,9 +478,13 @@ def check_key_05_layered_structure_sane() -> None:
 def check_key_06_no_forbidden_folder_names() -> None:
     """Key 06 – No forbidden folder names under sovereign roots."""
     violations: List[str] = []
+    # Skip infrastructure directories that are auto-generated
+    skip_dirs = {"__pycache__", ".git", "node_modules", ".idea", ".vscode"}
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
+                continue
+            if d.name in skip_dirs:
                 continue
             if d.name.lower() in FORBIDDEN_FOLDER_NAMES:
                 violations.append(str(d.relative_to(ROOT)))
