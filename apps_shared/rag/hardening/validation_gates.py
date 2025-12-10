@@ -41,7 +41,7 @@ class GatePolicy(Enum):
     VALIDATE_GENERATED_BULLETS_AGAINST_SOURCE_POOL = auto()
     ENSURE_PRIMARY_THEME_APPEARS_ONCE = auto()
     ENFORCE_ALL_CREATIVE_BRIEF_CONSTRAINTS = auto()
-    STRICT_COMPARE_HEADER_TO_SCAFFOLD = auto()
+    STRICT_COMPARE_HEADER_TO_framework = auto()
     VALIDATE_BULLET_ORIGIN_AND_METRICS = auto()
     ENFORCE_GLOBAL_DEDUPLICATION_MATRIX = auto()
     ENFORCE_HYPHENATION_RULES_JSON = auto()
@@ -141,7 +141,7 @@ class GateContext:
     # Source data
     source_pool: List[Dict[str, object]] = field(default_factory=list)
     bullet_pool: List[str] = field(default_factory=list)
-    scaffold_data: Dict[str, object] = field(default_factory=dict)
+    framework_data: Dict[str, object] = field(default_factory=dict)
     
     # Generated content
     generated_content: Dict[str, object] = field(default_factory=dict)
@@ -472,40 +472,40 @@ class CreativeBriefAdherenceGate(ValidationGate):
 
 
 class HeaderIntegrityCheckGate(ValidationGate):
-    """VG_HEADER_INTEGRITY_CHECK: Strict compare header to scaffold."""
+    """VG_HEADER_INTEGRITY_CHECK: Strict compare header to framework."""
     
     gate_id = "VG_HEADER_INTEGRITY_CHECK"
-    policy = GatePolicy.STRICT_COMPARE_HEADER_TO_SCAFFOLD
-    description = "Ensures header data matches the factual scaffold exactly"
+    policy = GatePolicy.STRICT_COMPARE_HEADER_TO_framework
+    description = "Ensures header data matches the factual framework exactly"
     severity = GateSeverity.CRITICAL
     
     def validate(self, context: GateContext) -> GateResult:
         """Execute validate operation."""
         violations = []
         
-        scaffold = context.scaffold_data
+        framework = context.framework_data
         content = context.generated_content
         
         # Check name
-        if "name" in scaffold and "name" in content:
-            if scaffold["name"] != content["name"]:
+        if "name" in framework and "name" in content:
+            if framework["name"] != content["name"]:
                 violations.append(GateViolation(
                     violation_id=f"{self.gate_id}_NAME",
-                    message="Name mismatch between scaffold and output",
+                    message="Name mismatch between framework and output",
                     severity=GateSeverity.CRITICAL,
-                    expected=scaffold["name"],
+                    expected=framework["name"],
                     actual=content["name"],
                 ))
                 
         # Check contact info
         for field in ["email", "phone", "location", "linkedin"]:
-            if field in scaffold and field in content:
-                if scaffold[field] != content[field]:
+            if field in framework and field in content:
+                if framework[field] != content[field]:
                     violations.append(GateViolation(
                         violation_id=f"{self.gate_id}_{field.upper()}",
                         message=f"{field.title()} mismatch",
                         severity=GateSeverity.CRITICAL,
-                        expected=scaffold[field],
+                        expected=framework[field],
                         actual=content[field],
                     ))
                     
