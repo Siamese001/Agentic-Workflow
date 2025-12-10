@@ -5,9 +5,8 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.858910
 """
 
-from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)

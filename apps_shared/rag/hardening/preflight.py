@@ -10,7 +10,6 @@ Implements pre-flight validation tests to verify engine capabilities:
   - Dependency validation
 """
 
-from __future__ import annotations
 
 import hashlib
 import importlib
@@ -21,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type
+from typing import Callable, Dict, List, Optional, Set, Tuple, Type
 
 logger = logging.getLogger(__name__)
 

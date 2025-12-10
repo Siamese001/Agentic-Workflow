@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - sort_data_results
 Implements L1 Cognitive Planning Layer for sort data results operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

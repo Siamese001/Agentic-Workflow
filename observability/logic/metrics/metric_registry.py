@@ -5,10 +5,9 @@ Domain: metrics
 Generated: 2025-12-07T12:07:59.848796
 """
 
-from __future__ import annotations
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
 

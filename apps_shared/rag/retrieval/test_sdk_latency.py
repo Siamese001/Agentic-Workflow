@@ -1,5 +1,4 @@
 """Performance tests for SDK latency budgets."""
-from __future__ import annotations
 import time
 from unittest.mock import MagicMock, patch
 

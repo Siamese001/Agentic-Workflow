@@ -27,10 +27,9 @@ This file wraps those behaviors and exposes a stable API.
 """
 
 
-from __future__ import annotations
 
 
-from typing import Any, Dict, List
+from typing import Dict, List
 
 
 from runtime_utils import Ranking as _Ranking

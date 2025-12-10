@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""
 
-from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from shared.config import ContentConstraintsConfig
 from shared.exceptions import HopExecutionError

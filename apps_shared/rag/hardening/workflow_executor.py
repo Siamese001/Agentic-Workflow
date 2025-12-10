@@ -10,7 +10,6 @@ Implements transactional workflow execution with:
   - Execution trace logging
 """
 
-from __future__ import annotations
 
 import copy
 import hashlib

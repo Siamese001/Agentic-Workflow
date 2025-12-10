@@ -5,7 +5,6 @@ AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
 L5 CANONICAL — WINDSURF Ω — 2025-12-07
 MERKLE-INTENDED: 38f122acf1a89d782e4d4f8e8565bd72a45fac286d7b4859906f5d76cadff651
 """
-from __future__ import annotations
 # Query store operations for understanding context
 
 try:

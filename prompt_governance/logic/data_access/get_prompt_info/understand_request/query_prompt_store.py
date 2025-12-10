@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - query_data_store
 Implements L1 Cognitive Planning Layer for query data store operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

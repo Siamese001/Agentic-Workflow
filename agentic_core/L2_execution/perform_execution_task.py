@@ -6,7 +6,6 @@ MERKLE-INTENDED: c8c7f5b24884dce9c43f63a7eaf21627614dac8719a897037c4b2c9e644a6be
 """
 
 
-from __future__ import annotations
 # Execution task performance operations
 
 

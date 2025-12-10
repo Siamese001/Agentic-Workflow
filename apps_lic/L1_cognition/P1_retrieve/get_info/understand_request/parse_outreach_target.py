@@ -5,9 +5,8 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.034168
 """
 
-from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from shared.result_types import RetrievalResult
 
 logger = logging.getLogger(__name__)

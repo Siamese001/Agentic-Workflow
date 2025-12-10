@@ -5,10 +5,9 @@ Domain: support
 Generated: 2025-12-07T12:07:59.852534
 """
 
-from __future__ import annotations
 import logging
 import random
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 

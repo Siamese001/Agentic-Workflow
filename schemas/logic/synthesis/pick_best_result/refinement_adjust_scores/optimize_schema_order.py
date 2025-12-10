@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - optimize_data_order
 Implements L1 Cognitive Planning Layer for optimize data order operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

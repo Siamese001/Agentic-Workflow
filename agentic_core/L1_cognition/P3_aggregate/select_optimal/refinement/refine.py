@@ -6,7 +6,6 @@ MERKLE-INTENDED: 692af9b07045aba57eb8f1a97fae327746951bfca2a858bf51dbd14c69b66c2
 """
 
 
-from __future__ import annotations
 # Refinement operations for aggregation phase
 
 from meta.metacognition.models import Hypothesis

@@ -9,7 +9,7 @@ L5 Agentic Core - Plan Layer - compute_data_embeddings
 Implements L1 Cognitive Planning Layer for compute data embeddings operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
