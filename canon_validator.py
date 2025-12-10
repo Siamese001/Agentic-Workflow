@@ -1124,7 +1124,11 @@ def check_no_stub_files():
                    "\n".join(f"  • {v}" for v in violations[:30]))
     else:
         success("24")
-    
+
+
+def run_checks_21_30():
+    """Run checks 21-30."""
+    # Key 21-23 already run in run_checks_21_30 original
     # Key 25: No long functions
     violations = []
     for agent in SOVEREIGN_AGENTS:
