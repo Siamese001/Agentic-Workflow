@@ -46,9 +46,8 @@ def run_e2e_tests():
     results['E2E-09'] = all(len(json.load(open(f)).get('files', {})) > 0 for f in freeze_reports)
 
     # Print results
-    print('=' * 60)
-    print('E2E REGRESSION TEST RESULTS')
-    print('=' * 60)
+
+
 
     descriptions = {
         'E2E-01': '10 canonical roots exist',
@@ -62,22 +61,7 @@ def run_e2e_tests():
         'E2E-09': 'Deterministic freeze',
     }
 
-    for key, passed in results.items():
-        status = 'PASS' if passed else 'FAIL'
-        desc = descriptions.get(key, key)
-        print(f'{key} = {status}  ({desc})')
-
-    print('=' * 60)
-
     all_pass = all(results.values())
-    if all_pass:
-        print()
-        print('>>> E2E MIGRATION SUCCESSFUL <<<')
-        print()
-    else:
-        failed = [k for k, v in results.items() if not v]
-        print(f'FAILED: {failed}')
-
     return 0 if all_pass else 1
 
 
