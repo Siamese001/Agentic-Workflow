@@ -1,0 +1,66 @@
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:247: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:244: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+================================================================
+SUBATOMIC CANON 2026 ù 50-KEY VALIDATION (NON-DESTRUCTIVE)
+Project root: C:\Git\Agentic-Workflow
+================================================================
+
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\canon_validator.py", line 1907, in <module>
+    main()
+    ~~~~^^
+  File "C:\Git\Agentic-Workflow\canon_validator.py", line 1890, in main
+    print(f"{icon} Key {k}: {msg}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u26a0' in position 21: character maps to <undefined>
