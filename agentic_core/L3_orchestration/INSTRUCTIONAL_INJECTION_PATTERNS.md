@@ -1,99 +1,127 @@
-# L3 Orchestration — Instructional Injection Patterns
+# Security Controls — Instructional Injection Patterns
 
 > **Source:** `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
-> **Layer Focus:** Cross-agent coordination and workflow patterns
+> **Layer Focus:** ALL security-related patterns — this is the enforcement point
 
 ---
 
-## Applicable Patterns for L3 Orchestration
+## Critical Patterns for Security Controls
 
-L3 Orchestration handles **workflow coordination** — these patterns are critical:
+### Safety Layer (Patterns 21-25) — MANDATORY
 
-### Framing Layer (Patterns 1-5)
-
-| # | Instruction Type | L3 Application |
+| # | Instruction Type | Implementation |
 |---|------------------|----------------|
-| **1** | Global Goal-State Injection | Propagate overarching objective to all agents |
-| **2** | Success Criteria Injection | Define workflow completion thresholds |
-| **3** | Task Mode Declaration | Coordinate cognitive modes across agents |
-| **4** | Scope & Boundaries Injection | Enforce workflow boundaries and constraints |
-| **5** | Cost/Latency Targets | Manage resource budgets across workflow |
+| **21** | Prompt-Injection Shielding Layer | Anti-jailbreak safeguards |
+| **22** | Data vs Instruction Separation | Content type tagging |
+| **23** | Constitutional Guardrails | Ethics/safety enforcement |
+| **24** | Delegation Guardrails | Upstream authority preservation |
+| **25** | Expanded Adversarial Mode | Manipulation detection |
 
-### Safety Layer (Patterns 21-25) — **CRITICAL FOR L3**
+### Context Layer (Patterns 6-7) — Input Processing
 
-| # | Instruction Type | L3 Application |
+| # | Instruction Type | Implementation |
 |---|------------------|----------------|
-| **21** | Prompt-Injection Shielding | Protect system instructions across agent handoffs |
-| **22** | Data vs Instruction Separation | Clearly distinguish data from directives in handoffs |
-| **23** | Constitutional Guardrails | Enforce ethics/safety across all orchestrated agents |
-| **24** | Delegation Guardrails | **Prevent downstream agents from overriding upstream** |
-| **25** | Expanded Adversarial Mode | Detect manipulation across agent boundaries |
+| **6** | Untrusted Block Wrapping | Mark all external content |
+| **7** | Canonicalization | Normalize to detect obfuscation |
 
 ---
 
-## L3-Specific Implementation Guidelines
-
-### For P1_retrieve (Workflow State)
-```
-Apply patterns: 1, 22
-- Retrieve workflow state with clear data/instruction separation
-- Anchor all state to global goal
-```
-
-### For P2_inspect (Agent Coordination)
-```
-Apply patterns: 24, 25
-- Enforce delegation guardrails between agents
-- Detect adversarial patterns in agent outputs
-```
-
-### For P3_aggregate (Workflow Synthesis)
-```
-Apply patterns: 2, 3, 5
-- Aggregate results against success criteria
-- Coordinate task modes across agents
-- Respect cost/latency budgets
-```
-
-### For P4_safety (Workflow Guardrails)
-```
-Apply patterns: 4, 21, 23
-- Enforce scope boundaries
-- Shield against prompt injection in handoffs
-- Apply constitutional guardrails
-```
-
----
-
-## Cross-Agent Injection Defense
+## Adversarial Attack Defense Matrix
 
 From `Dependency & Prompt Injection Patterns.md`:
 
-### Critical Risk: Cross-Model Injection
-> One model injects adversarial prompts into another (multi-agent chains).
-> An LLM passes poisoned context to another.
-
-### L3 Mitigations
-
-| Defense | Implementation |
-|---------|----------------|
-| **Per-Agent Sandboxing** | Isolate each agent's context |
-| **Content Tracing** | Track provenance of all data across agents |
-| **Trust Boundaries** | Define explicit trust levels between agents |
-| **Delegation Guardrails** | Downstream cannot override upstream decisions |
+| Attack Type | Detection Method | Mitigation |
+|-------------|------------------|------------|
+| **Direct Injection** | Pattern matching | Input sanitization, instruction priority |
+| **Indirect Injection** | Content analysis | Trusted content filtering, isolation |
+| **Data Poisoning** | Anomaly detection | Provenance verification, hashing |
+| **Prompt Leaking** | Output monitoring | Role separation, masking |
+| **Jailbreak** | Behavioral analysis | Sandboxing, decoupled planning |
+| **Semantic Injection** | Semantic analysis | Symbolic validators |
+| **Cross-Model Injection** | Trust boundaries | Per-agent sandboxing, tracing |
 
 ---
 
-## Dependency Injection Principles for L3
+## Implementation Checklist
 
-| Pattern | L3 Application |
-|---------|----------------|
-| **Constructor Injection** | Inject agent dependencies at workflow creation |
-| **DI Container (IoC)** | Framework manages agent lifecycle and wiring |
-| **Ambient Context** | Share workflow-wide context (config, tracing) |
+### Pattern 21: Prompt-Injection Shielding
 
-### Key Principle
-> **Multi-Agent Sandboxing:** Contain reasoning agents; enforce context boundaries.
+- [ ] Input sanitization removes command-like sequences
+- [ ] All user content wrapped as untrusted
+- [ ] Instruction priority: system > user > retrieved
+- [ ] Output validation checks for leaked instructions
+- [ ] Behavioral monitoring detects anomalies
+
+### Pattern 22: Data vs Instruction Separation
+
+- [ ] All content tagged with type (data/instruction)
+- [ ] Data blocks cannot execute as instructions
+- [ ] Clear visual/structural separation in prompts
+- [ ] Validation rejects mixed content
+
+### Pattern 23: Constitutional Guardrails
+
+- [ ] Ethics rules loaded and enforced
+- [ ] Safety rules block harmful outputs
+- [ ] Neutrality rules prevent bias
+- [ ] Style rules maintain professionalism
+
+### Pattern 24: Delegation Guardrails
+
+- [ ] Upstream decisions tagged with authority
+- [ ] Downstream outputs validated against upstream
+- [ ] Violations rejected and logged
+- [ ] Audit trail maintained
+
+### Pattern 25: Expanded Adversarial Mode
+
+- [ ] Manipulation patterns detected
+- [ ] Anomalous requests flagged
+- [ ] Suspicious sequences blocked
+- [ ] Threat intelligence updated
+
+---
+
+## Guardrails Implementation
+
+### guardrails/check_rules/
+
+```text
+RULE CATEGORIES:
+1. policy_check_safety - Safety policy enforcement
+2. policy_check_ethics - Ethics policy enforcement
+3. policy_check_content - Content policy enforcement
+4. policy_check_injection - Injection detection
+```
+
+### Input Validation Flow
+
+```text
+INPUT → Canonicalize → Detect Patterns → Wrap Untrusted → Validate → PROCESS
+         ↓              ↓                 ↓               ↓
+      Normalize      Flag threats      Tag as data    Check rules
+```
+
+### Output Validation Flow
+
+```text
+OUTPUT → Schema Check → Leak Detection → Size Limit → Normalize → RETURN
+          ↓              ↓                ↓            ↓
+       Validate       Check for        Enforce      Standardize
+       structure      instructions     minimality   errors
+```
+
+---
+
+## Best Practices
+
+From `Dependency & Prompt Injection Patterns.md`:
+
+1. **Input Sanitization:** Treat all user input as untrusted
+2. **Prompt Segmentation:** Isolate system vs user vs retrieved
+3. **Guardrail Models:** Deploy lightweight classifiers before execution
+4. **Content Provenance:** Track where every text chunk came from
+5. **Multi-Agent Sandboxing:** Contain agents; enforce context boundaries
 
 ---
 
@@ -101,4 +129,5 @@ From `Dependency & Prompt Injection Patterns.md`:
 
 - Full patterns: `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
 - DI patterns: `06_data/prompt_libraries/injections/Dependency & Prompt Injection Patterns.md`
-- Safety rules: `01_agentic_core/L5_safety/`
+- Known vectors: `06_data/openai_best_practices/prompt_injection_catalog/`
+- L5 Safety: `01_agentic_core/L5_safety/`
