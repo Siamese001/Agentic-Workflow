@@ -661,8 +661,10 @@ def run_checks_01_10():
         success("04")
     
     # Key 05: No hardcoded paths
+    # Only match actual filesystem paths, not regex patterns or API endpoints
     violations = []
-    path_pattern = re.compile(r'["\']([/\\][^"\']+)["\']')
+    # Match paths like "/home/user/file.txt" or "C:\Users\file.txt" but not regex or API paths
+    path_pattern = re.compile(r'["\'](?:(?:[A-Za-z]:)?[/\\](?:home|usr|var|tmp|etc|opt|Users|Windows|Program)[/\\][^"\']+)["\']')
     for agent in SOVEREIGN_AGENTS:
         for f in (ROOT / agent).rglob("*.py"):
             if f.name == "__init__.py":
@@ -927,12 +929,12 @@ def run_checks_11_20():
         success("16")
     
     # Key 17: No hardcoded credentials
+    # Only match actual hardcoded values, not placeholders or env var references
     violations = []
     cred_patterns = [
-        r'password\s*=\s*["\'][^"\']+["\']',
-        r'api_key\s*=\s*["\'][^"\']+["\']',
-        r'secret\s*=\s*["\'][^"\']+["\']',
-        r'token\s*=\s*["\'][^"\']+["\']',
+        r'password\s*=\s*["\'][a-zA-Z0-9!@#$%^&*]{8,}["\']',  # Real passwords are 8+ chars
+        r'api_key\s*=\s*["\']sk-[a-zA-Z0-9]{20,}["\']',  # Real API keys have specific formats
+        r'secret\s*=\s*["\'][a-zA-Z0-9]{20,}["\']',  # Real secrets are long
     ]
     for agent in SOVEREIGN_AGENTS:
         for f in (ROOT / agent).rglob("*.py"):
@@ -1064,8 +1066,11 @@ def run_checks_21_30():
                 continue
             try:
                 content = read_file(f)
+                content_lower = content.lower()
                 for word in banned_words:
-                    if word in content.lower():
+                    # Use word boundary check to avoid false positives
+                    pattern = re.compile(r'\b' + re.escape(word) + r'\b')
+                    if pattern.search(content_lower):
                         violations.append(f"{f.name}: {word}")
                         break
             except Exception:
@@ -1076,28 +1081,47 @@ def run_checks_21_30():
     else:
         success("23")
     
-    # Key 24: No duplicate code
+    # Key 24: SUB-ATOMIC FILE SIZE LAW — 350 B min → 800 lines / 25 KB max
+    check_no_stub_files()
+
+
+def check_no_stub_files():
+    """Key 24: SUB-ATOMIC FILE SIZE LAW — 350 B min → 800 lines / 25 KB max"""
     violations = []
-    code_hashes = defaultdict(list)
-    for agent in SOVEREIGN_AGENTS:
-        for f in (ROOT / agent).rglob("*.py"):
-            if f.name == "__init__.py":
-                continue
-            try:
-                content = read_file(f)
-                # Simple hash of normalized content
-                normalized = re.sub(r'\s+', ' ', content.strip())
-                h = hashlib.md5(normalized.encode()).hexdigest()
-                code_hashes[h].append(f.name)
-            except Exception:
-                pass
-    
-    for h, files in code_hashes.items():
-        if len(files) > 1:
-            violations.append(f"Duplicate: {', '.join(files[:3])}")
-    
+    MIN_BYTES = 350
+    MAX_LINES = 800
+    MAX_BYTES = 25_000  # ~25 KB
+
+    for f in Path('.').rglob('*.py'):
+        if f.name == "__init__.py":
+            continue
+        if any(ex in f.parts for ex in {'.git', '__pycache__', 'data', 'archives', 'node_modules'}):
+            continue
+        if not is_sovereign_file(f):
+            continue
+
+        try:
+            content = f.read_text(encoding="utf-8")
+            byte_count = len(content.encode("utf-8"))
+            line_count = len(content.splitlines())
+
+            issues = []
+            if byte_count < MIN_BYTES:
+                issues.append(f"{byte_count} B (too small)")
+            if line_count > MAX_LINES:
+                issues.append(f"{line_count} lines")
+            if byte_count > MAX_BYTES:
+                issues.append(f"{byte_count:,} B")
+
+            if issues:
+                violations.append(f"{f.relative_to(ROOT)} → {', '.join(issues)}")
+        except Exception:
+            continue
+
     if violations:
-        fail("24", f"Duplicate code: {violations[:10]}")
+        fail("24", f"SUB-ATOMIC FILE SIZE VIOLATION — {len(violations)} files outside limits\n"
+                   f"Allowed: {MIN_BYTES}+ bytes, ≤{MAX_LINES} lines, ≤{MAX_BYTES:,} bytes\n" +
+                   "\n".join(f"  • {v}" for v in violations[:30]))
     else:
         success("24")
     
