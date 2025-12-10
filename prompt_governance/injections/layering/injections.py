@@ -17,15 +17,15 @@ __all__ = [
     'list_injection_types'
 ]
 
-def get_injection_prompt(injection_type: str, context: dict):
+def get_injection_prompt(injection_type: str, context: dict) -> str:
     """Get injection prompt by type and context"""
     pass
 
-def apply_injection(base_prompt: str, injection: str):
+def apply_injection(base_prompt: str, injection: str) -> str:
     """Apply injection to foundation prompt"""
     pass
 
-def list_injection_types():
+def list_injection_types() -> list:
     """List available injection types"""
     pass
 
