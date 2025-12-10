@@ -48,9 +48,9 @@ class CoordinateScriptsOperations:
         self.steps: List[Dict] = []
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def add_step(self, name: str, handler: Callable, dependencies: Optional[List[str]] = None) -> "CoordinateScriptsOperations":
+    def add_step(self, name: str, executor: Callable, dependencies: Optional[List[str]] = None) -> "CoordinateScriptsOperations":
         """Add a step to orchestration."""
-        self.steps.append({"name": name, "handler": handler, "dependencies": dependencies or []})
+        self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
         return self
 
     def execute(self, initial_input: object = None) -> OrchestrationResult:
@@ -64,7 +64,7 @@ class CoordinateScriptsOperations:
             try:
                 inputs = {dep: context["outputs"].get(dep) for dep in step["dependencies"]}
                 inputs["initial"] = context["input"]
-                output = step["handler"](inputs)
+                output = step["executor"](inputs)
                 context["outputs"][step["name"]] = output
                 results.append(StepResult(
                     step_name=step["name"],
@@ -93,5 +93,5 @@ def orchestrate(steps: List[Dict], initial_input: object = None, config: Optiona
     """Convenience function for orchestration."""
     orch = CoordinateScriptsOperations(config)
     for step in steps:
-        orch.add_step(step["name"], step["handler"], step.get("dependencies"))
+        orch.add_step(step["name"], step["executor"], step.get("dependencies"))
     return orch.execute(initial_input)

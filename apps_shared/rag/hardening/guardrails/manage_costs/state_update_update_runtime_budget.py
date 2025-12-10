@@ -63,7 +63,7 @@ class UpdateDataBudgetSafetyResult:
 
 
 class UpdateDataBudgetSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> UpdateDataBudgetSafetyResult:
@@ -294,11 +294,11 @@ class UpdateDataBudgetSafetyInterface:
 
 
 class UpdateDataBudgetSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> UpdateDataBudgetSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = UpdateDataBudgetSafetyConstraints(safety_level=safety_level)
         safety = UpdateDataBudgetSafetyImpl(constraints)
         return UpdateDataBudgetSafetyInterface(safety)
@@ -317,8 +317,8 @@ def update_data_budget(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = UpdateDataBudgetSafetyFactory()
-    safety = factory.create_safety()
+    builder = UpdateDataBudgetSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 

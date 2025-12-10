@@ -17,7 +17,7 @@ class Result:
 
 
 class SearchVectors:
-    """Handler for shared operations."""
+    """executor for shared operations."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

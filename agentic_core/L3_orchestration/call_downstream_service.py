@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Call Downstream Service - atomic execution layer."""
+"""Call Downstream provider - atomic execution layer."""
 
 
 from typing import Dict
@@ -8,7 +8,7 @@ from typing import Dict
 
 
 def call_downstream_service(data: Dict[str, object]) -> Dict[str, object]:
-    """Process call downstream service data."""
+    """Process call downstream provider data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 

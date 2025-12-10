@@ -203,7 +203,7 @@ class TestResumeExport:
 
     def test_export_multiple_versions(self):
         """E2E: Multiple resume versions can be exported."""
-        versions = ["general", "tech_focused", "management_focused"]
+        versions = ["standard", "tech_focused", "management_focused"]
         exports = {v: f"resume_{v}.pdf" for v in versions}
         assert len(exports) == 3
 

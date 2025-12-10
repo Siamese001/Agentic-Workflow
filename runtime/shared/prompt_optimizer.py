@@ -176,7 +176,7 @@ class PromptOptimizer:
         if len(optimized) < original_len:
             improvements.append("Removed redundant whitespace")
         
-        # Fix common clarity issues
+        # Fix shared clarity issues
         clarity_fixes = [
             (r'\bplease\s+please\b', 'please'),
             (r'\bvery\s+very\b', 'very'),
@@ -364,7 +364,7 @@ class PromptOptimizer:
         if original == optimized:
             return 0.5 if not improvements else 0.6
         
-        # Base score
+        # foundation score
         score = 0.6
         
         # Improvement count bonus
@@ -400,7 +400,7 @@ class PromptOptimizer:
         }
 
 
-# Factory functions
+# builder functions
 def create_prompt_optimizer(config: Optional[OptimizationConfig] = None) -> PromptOptimizer:
     """Create prompt optimizer instance."""
     return PromptOptimizer(config)

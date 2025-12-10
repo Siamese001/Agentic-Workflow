@@ -363,7 +363,7 @@ class EvidenceRanker:
         }
 
 
-# Factory functions
+# builder functions
 def create_evidence_ranker(
     relevance_weight: float = 0.35,
     authority_weight: float = 0.25,

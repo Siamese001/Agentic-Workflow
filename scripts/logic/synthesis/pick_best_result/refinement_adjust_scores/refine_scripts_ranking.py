@@ -136,7 +136,7 @@ def rank_documents(
     strategy: str = "hybrid",
 ) -> List[Dict[str, object]]:
     """
-    Top-level ranking utility used by RAGExecutor:
+    Top-level ranking function used by RAGExecutor:
 
         items:
             list[{ query, evidence, ... }]

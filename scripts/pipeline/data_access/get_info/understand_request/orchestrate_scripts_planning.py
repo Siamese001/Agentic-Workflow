@@ -43,7 +43,7 @@ class OrchestrateScriptsPlanningOrchestratorResult:
     timestamp: str = ""
 
 class OrchestrateScriptsPlanningOrchestratorProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> OrchestrateScriptsPlanningOrchestratorResult:
@@ -130,8 +130,8 @@ class SecurityError(Exception):
 class OrchestrateScriptsPlanningOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: OrchestrateScriptsPlanningOrchestratorProcessor):
-        self._processor = processor
+    def __init__(self, engine: OrchestrateScriptsPlanningOrchestratorProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -147,16 +147,16 @@ class OrchestrateScriptsPlanningOrchestratorInterface:
         except (ValueError, TypeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-# L5 Factory
+# L5 builder
 class OrchestrateScriptsPlanningOrchestratorFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> OrchestrateScriptsPlanningOrchestratorInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = OrchestrateScriptsPlanningOrchestratorConstraints(safety_level=safety_level)
-        processor = OrchestrateScriptsPlanningOrchestratorImpl(constraints)
-        return OrchestrateScriptsPlanningOrchestratorInterface(processor)
+        engine = OrchestrateScriptsPlanningOrchestratorImpl(constraints)
+        return OrchestrateScriptsPlanningOrchestratorInterface(engine)
 
 # L5 Main execution point
 def orchestrate_scripts_planning(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -172,9 +172,9 @@ def orchestrate_scripts_planning(input_data: Dict[str, object]) -> Dict[str, obj
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = OrchestrateScriptsPlanningOrchestratorFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = OrchestrateScriptsPlanningOrchestratorFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 if __name__ == "__main__":
     # L5 Test execution

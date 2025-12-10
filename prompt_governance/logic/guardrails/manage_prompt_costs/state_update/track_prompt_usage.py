@@ -45,7 +45,7 @@ class TrackScriptsUsageSafetyResult:
     timestamp: str = ""
 
 class TrackScriptsUsageSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> TrackScriptsUsageSafetyResult:
@@ -272,13 +272,13 @@ class TrackScriptsUsageSafetyInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Safety application failed: {e}")
 
-# L5 Factory
+# L5 builder
 class TrackScriptsUsageSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> TrackScriptsUsageSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = TrackScriptsUsageSafetyConstraints(safety_level=safety_level)
         safety = TrackScriptsUsageSafetyImpl(constraints)
         return TrackScriptsUsageSafetyInterface(safety)
@@ -297,8 +297,8 @@ def track_scripts_usage(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = TrackScriptsUsageSafetyFactory()
-    safety = factory.create_safety()
+    builder = TrackScriptsUsageSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 if __name__ == "__main__":

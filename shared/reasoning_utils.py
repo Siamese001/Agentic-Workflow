@@ -5,7 +5,7 @@
 """
 Reasoning configuration utilities.
 
-utility functions for converting ReasoningConfig to API parameters.
+function functions for converting ReasoningConfig to API parameters.
 
 EXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py
 CANON COMPLIANCE: Sub-atomic split for line limit enforcement

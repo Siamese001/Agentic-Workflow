@@ -69,7 +69,7 @@ def get_module_type(filepath: Path) -> str:
     elif "pii" in name or "redact" in name:
         return "pii"
     else:
-        return "general"
+        return "standard"
 
 
 def generate_hardened_code(filepath: Path, module_type: str) -> str:
@@ -98,7 +98,7 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
         "sampling": generate_sampling_module,
         "embedding": generate_embedding_module,
         "pii": generate_pii_module,
-        "general": generate_generic_module,
+        "standard": generate_generic_module,
     }
 
     generator = generators.get(module_type, generate_generic_module)
@@ -465,9 +465,9 @@ class {class_name}:
         self.steps: List[Dict] = []
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def add_step(self, name: str, handler: Callable, dependencies: Optional[List[str]] = None) -> "{class_name}":
+    def add_step(self, name: str, executor: Callable, dependencies: Optional[List[str]] = None) -> "{class_name}":
         """Add a step to orchestration."""
-        self.steps.append({{"name": name, "handler": handler, "dependencies": dependencies or []}})
+        self.steps.append({{"name": name, "executor": executor, "dependencies": dependencies or []}})
         return self
 
     def execute(self, initial_input: object = None) -> OrchestrationResult:
@@ -481,7 +481,7 @@ class {class_name}:
             try:
                 inputs = {{dep: context["outputs"].get(dep) for dep in step["dependencies"]}}
                 inputs["initial"] = context["input"]
-                output = step["handler"](inputs)
+                output = step["executor"](inputs)
                 context["outputs"][step["name"]] = output
                 results.append(StepResult(
                     step_name=step["name"],
@@ -510,7 +510,7 @@ def orchestrate(steps: List[Dict], initial_input: object = None, config: Optiona
     """Convenience function for orchestration."""
     orch = {class_name}(config)
     for step in steps:
-        orch.add_step(step["name"], step["handler"], step.get("dependencies"))
+        orch.add_step(step["name"], step["executor"], step.get("dependencies"))
     return orch.execute(initial_input)
 '''
 
@@ -761,7 +761,7 @@ class ManagementResult:
 
 
 class {class_name}:
-    """Manager for {domain} domain."""
+    """coordinator for {domain} domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}
@@ -798,13 +798,13 @@ class {class_name}:
 
 def manage(operation: str, resource_id: str, **kwargs) -> ManagementResult:
     """Convenience function for management."""
-    manager = {class_name}(kwargs.get("config"))
+    coordinator = {class_name}(kwargs.get("config"))
     if operation == "create":
-        return manager.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
+        return coordinator.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
     elif operation == "update":
-        return manager.update(resource_id, kwargs.get("data"))
+        return coordinator.update(resource_id, kwargs.get("data"))
     elif operation == "delete":
-        return manager.delete(resource_id)
+        return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")
 '''
 
@@ -1080,14 +1080,14 @@ class {class_name}:
     def _setup_handlers(self) -> None:
         """Setup log handlers."""
         if not self.logger.handlers:
-            handler = logging.StreamHandler()
+            executor = logging.StreamHandler()
             if self.config.get("structured", False):
-                handler.setFormatter(StructuredFormatter())
+                executor.setFormatter(StructuredFormatter())
             else:
-                handler.setFormatter(logging.Formatter(
+                executor.setFormatter(logging.Formatter(
                     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
                 ))
-            self.logger.addHandler(handler)
+            self.logger.addHandler(executor)
             self.logger.setLevel(self.config.get("level", logging.INFO))
 
     def info(self, message: str, **kwargs) -> None:
@@ -1144,7 +1144,7 @@ class ExportResult:
 
 
 class BaseExporter(ABC):
-    """Base class for exporters."""
+    """foundation class for exporters."""
 
     @abstractmethod
     def export(self, data: object) -> ExportResult:
@@ -1583,7 +1583,7 @@ def redact_pii(text: str, config: Optional[Dict] = None) -> RedactionResult:
 
 def generate_generic_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
-{name}.py - Utility Module
+{name}.py - function Module
 
 Domain: {domain}
 Generated: {datetime.now().isoformat()}
@@ -1607,7 +1607,7 @@ class OperationResult:
 
 
 class {class_name}:
-    """Utility class for {domain} domain."""
+    """function class for {domain} domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {{}}

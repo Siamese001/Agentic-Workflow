@@ -59,7 +59,7 @@ class ParseDataSettingsPlanResult:
 
 
 class ParseDataSettingsPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object][str, object]) -> ParseDataSettingsPlanResult:
@@ -149,9 +149,9 @@ class SecurityError(Exception):
 class ParseDataSettingsPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: ParseDataSettingsPlanProcessor):
+    def __init__(self, engine: ParseDataSettingsPlanProcessor):
         """  Init   implementation."""
-        self._processor = processor
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object][str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -169,14 +169,14 @@ class ParseDataSettingsPlanInterface:
 
 
 class ParseDataSettingsPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> ParseDataSettingsPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = ParseDataSettingsPlanConstraints(safety_level=safety_level)
-        processor = ParseDataSettingsPlanImpl(constraints)
-        return ParseDataSettingsPlanInterface(processor)
+        engine = ParseDataSettingsPlanImpl(constraints)
+        return ParseDataSettingsPlanInterface(engine)
 
 
 def parse_data_settings(input_data: Dict[str, object][str, object]) -> Dict[str, object]:
@@ -192,9 +192,9 @@ def parse_data_settings(input_data: Dict[str, object][str, object]) -> Dict[str,
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = ParseDataSettingsPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = ParseDataSettingsPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

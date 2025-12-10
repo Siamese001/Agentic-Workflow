@@ -63,7 +63,7 @@ class TrackDataUsageSafetyResult:
 
 
 class TrackDataUsageSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> TrackDataUsageSafetyResult:
@@ -294,11 +294,11 @@ class TrackDataUsageSafetyInterface:
 
 
 class TrackDataUsageSafetyFactory:
-    """L5 Factory for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety handlers with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> TrackDataUsageSafetyInterface:
-        """Create configured safety handler"""
+        """Create configured safety executor"""
         constraints = TrackDataUsageSafetyConstraints(safety_level=safety_level)
         safety = TrackDataUsageSafetyImpl(constraints)
         return TrackDataUsageSafetyInterface(safety)
@@ -317,8 +317,8 @@ def track_data_usage(data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If safety check fails any validation
     """
-    factory = TrackDataUsageSafetyFactory()
-    safety = factory.create_safety()
+    builder = TrackDataUsageSafetyFactory()
+    safety = builder.create_safety()
     return safety.apply_safety(data)
 
 

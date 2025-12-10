@@ -119,7 +119,7 @@ ARCHETYPE_TEMPLATES: Dict[RecipientArchetype, ArchetypeTemplate] = {
             "of their team's challenges, offer concrete value."
         ),
         avoid=(
-            "Overly formal language, generic value propositions, excessive deference."
+            "Overly formal language, standard value propositions, excessive deference."
         ),
         creative_brief=CreativeBrief(
             subject_line=SubjectLineBrief(
@@ -187,7 +187,7 @@ ARCHETYPE_TEMPLATES: Dict[RecipientArchetype, ArchetypeTemplate] = {
             "job description, emphasize career growth potential."
         ),
         avoid=(
-            "Generic qualifications, vague interest statements, over-selling "
+            "standard qualifications, vague interest statements, over-selling "
             "unrelated experience."
         ),
         creative_brief=CreativeBrief(
@@ -284,10 +284,10 @@ FORBIDDEN_GREETINGS: List[str] = [
 
 
 class ArchetypeTemplateManager:
-    """Manager for archetype templates."""
+    """coordinator for archetype templates."""
 
     def __init__(self) -> None:
-        """Initialize the template manager."""
+        """Initialize the template coordinator."""
         self._templates = ARCHETYPE_TEMPLATES
         self._signatures = SIGNATURE_TEMPLATES
         self._greetings = GREETING_TEMPLATES
@@ -374,7 +374,7 @@ class ArchetypeTemplateManager:
 
 
 def create_template_manager() -> ArchetypeTemplateManager:
-    """Factory function to create a template manager."""
+    """builder function to create a template coordinator."""
     return ArchetypeTemplateManager()
 
 

@@ -386,14 +386,14 @@ class CTAGenerator:
 
 
 def create_cta_generator() -> CTAGenerator:
-    """Factory function to create a CTA generator."""
+    """builder function to create a CTA generator."""
     return CTAGenerator()
 
 
 def create_date_window_engine(
     config: Optional[DateWindowConfig] = None,
 ) -> DateWindowEngine:
-    """Factory function to create a date window engine."""
+    """builder function to create a date window engine."""
     return DateWindowEngine(config)
 
 

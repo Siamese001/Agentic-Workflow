@@ -47,7 +47,7 @@ class KeywordExtractionResult:
     top_n: int
 
 
-# Common English stop words
+# shared English stop words
 STOP_WORDS = frozenset([
     "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
     "has", "he", "in", "is", "it", "its", "of", "on", "that", "the",
@@ -456,5 +456,5 @@ class LICCodeInterpreter:
 
 
 def create_code_interpreter() -> LICCodeInterpreter:
-    """Factory function to create a code interpreter."""
+    """builder function to create a code interpreter."""
     return LICCodeInterpreter()

@@ -32,9 +32,9 @@ class OptimizeMessageStructure:
             refined = {**data}
             for key, adj in adjustments.items():
                 if key in refined and isinstance(refined[key], (int, float)):
-                    old = refined[key]
-                    refined[key] = old * adj
-                    changes.append(f"{key}: {old} -> {refined[key]}")
+                    previous = refined[key]
+                    refined[key] = previous * adj
+                    changes.append(f"{key}: {previous} -> {refined[key]}")
 
         return RefinementResult(original=data, refined=refined, changes=changes)
 

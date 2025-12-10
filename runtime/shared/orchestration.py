@@ -142,7 +142,7 @@ class CircuitBreaker:
 
 class ErrorRecoveryManager:
     """
-    Error Recovery Manager
+    Error Recovery coordinator
     
     Manages error recovery with retry, fallback, and circuit breaker patterns.
     """
@@ -153,7 +153,7 @@ class ErrorRecoveryManager:
         circuit_config: Optional[CircuitBreakerConfig] = None
     ):
         """
-        Initialize error recovery manager.
+        Initialize error recovery coordinator.
         
         Args:
             retry_config: Retry configuration
@@ -168,9 +168,9 @@ class ErrorRecoveryManager:
             'failed_recoveries': 0
         }
     
-    def register_fallback(self, operation_name: str, handler: Callable) -> None:
-        """Register a fallback handler for an operation."""
-        self.fallback_handlers[operation_name] = handler
+    def register_fallback(self, operation_name: str, executor: Callable) -> None:
+        """Register a fallback executor for an operation."""
+        self.fallback_handlers[operation_name] = executor
     
     def execute_with_recovery(
         self,
@@ -234,7 +234,7 @@ class ErrorRecoveryManager:
         kwargs: dict,
         error: Optional[str]
     ) -> RecoveryResult:
-        """Try fallback handler."""
+        """Try fallback executor."""
         if operation_name in self.fallback_handlers:
             try:
                 result = self.fallback_handlers[operation_name](*args, **kwargs)
@@ -819,14 +819,14 @@ class FusionPlanner:
 
 
 # ============================================================================
-# Factory Functions
+# builder Functions
 # ============================================================================
 
 def create_error_recovery_manager(
     max_retries: int = 3,
     failure_threshold: int = 5
 ) -> ErrorRecoveryManager:
-    """Create error recovery manager instance."""
+    """Create error recovery coordinator instance."""
     retry_config = RetryConfig(max_attempts=max_retries)
     circuit_config = CircuitBreakerConfig(failure_threshold=failure_threshold)
     return ErrorRecoveryManager(retry_config, circuit_config)

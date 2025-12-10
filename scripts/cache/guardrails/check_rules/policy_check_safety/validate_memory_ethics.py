@@ -72,7 +72,7 @@ class ValidateDataEthicsSafetyResult:
 
 
 class ValidateDataEthicsSafetySafety(ABC):
-    """L5 Abstract base - ensures L5 pure safety behavior"""
+    """L5 interface foundation - ensures L5 pure safety behavior"""
 
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> ValidateDataEthicsSafetyResult:
@@ -353,7 +353,7 @@ class ValidateDataEthicsSafetyInterface:
 
 class ValidateDataEthicsSafetyFactory:
     """
-    Factory for creating safety validators with proper configuration.
+    builder for creating safety validators with proper configuration.
 
     Provides a clean interface for creating configured validator instances.
     """

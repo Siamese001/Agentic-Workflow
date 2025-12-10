@@ -390,7 +390,7 @@ class AdvancedToneModel:
         if original == adapted:
             return 1.0 if not changes else 0.5
         
-        # Base confidence
+        # foundation confidence
         confidence = 0.8
         
         # Adjust based on number of changes
@@ -506,7 +506,7 @@ class AdvancedToneModel:
         }
 
 
-# Factory functions
+# builder functions
 def create_tone_model() -> AdvancedToneModel:
     """Create tone model instance."""
     return AdvancedToneModel()

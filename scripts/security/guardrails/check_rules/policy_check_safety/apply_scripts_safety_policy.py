@@ -228,15 +228,15 @@ class ConstitutionalReviewerAgent(BaseAgent):
         workflow_id: str,
         base_result: ConstitutionalReviewResult,
     ) -> ConstitutionalReviewResult:
-        manager = getattr(self, "self_correction_manager", None)
-        if not manager:
+        coordinator = getattr(self, "self_correction_manager", None)
+        if not coordinator:
             return base_result
-        if not manager.can_retry(workflow_id, "safety"):
+        if not coordinator.can_retry(workflow_id, "safety"):
             return base_result
         if base_result.review_passed:
             return base_result
 
-        report = manager.start_retry(
+        report = coordinator.start_retry(
             workflow_id,
             "safety",
             issue="constitutional_violation",
@@ -257,7 +257,7 @@ class ConstitutionalReviewerAgent(BaseAgent):
         )
 
         resolved = corrected_result.review_passed
-        manager.finalize_retry(report, resolved)
+        coordinator.finalize_retry(report, resolved)
         if resolved:
             corrected_result.self_correction = {"safety": report.model_dump()}
             return corrected_result

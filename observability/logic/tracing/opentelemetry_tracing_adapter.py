@@ -1,5 +1,5 @@
 """
-opentelemetry_tracing_adapter.py - Utility Module
+opentelemetry_tracing_adapter.py - function Module
 
 Domain: tracing
 Generated: 2025-12-07T12:07:59.858910
@@ -22,7 +22,7 @@ class OperationResult:
 
 
 class OpentelemetryTracingAdapter:
-    """Utility class for tracing domain."""
+    """function class for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}

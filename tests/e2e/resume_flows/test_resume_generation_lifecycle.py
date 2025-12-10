@@ -253,7 +253,7 @@ class TestResumeQualityE2E:
         """E2E: Grammar is checked in resume content."""
         content = "Led team of engineers to delivered project on time"  # Grammar error
 
-        # basic check for common issues
+        # basic check for shared issues
         issues = []
         if " to delivered " in content:
             issues.append("verb_tense_error")

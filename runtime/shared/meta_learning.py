@@ -77,7 +77,7 @@ class LearningPattern:
 class AdaptationResult:
     """Result of parameter adaptation"""
     adaptation_type: str
-    parameters_changed: Dict[str, Tuple[object]]  # param: (old, new)
+    parameters_changed: Dict[str, Tuple[object]]  # param: (previous, new)
     expected_improvement: float
     confidence: float
     applied_at: datetime
@@ -652,7 +652,7 @@ class MetaLearningSystem:
         logger.info("Meta-learning state loaded")
 
 
-# Factory functions
+# builder functions
 def create_meta_learning_system(
     mode: LearningMode = LearningMode.ACTIVE,
     learning_rate: float = 0.1

@@ -55,7 +55,7 @@ def has_real_code(path: Path) -> bool:
             return False
         if 'AUTO-GENERATED ZERO-LOSS' in content and 'Phase 3 hydration' in content:
             return False
-        if 'PENDING[HUMAN_OWNER]' in content and 'Unmapped legacy' in content:
+        if 'PENDING[HUMAN_OWNER]' in content and 'Unmapped historical' in content:
             return False
         # Check for actual class/function definitions with bodies
         lines = content.split('\n')

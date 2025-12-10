@@ -24,7 +24,7 @@ class ExportResult:
 
 
 class BaseExporter(ABC):
-    """Base class for exporters."""
+    """foundation class for exporters."""
 
     @abstractmethod
     def export(self, data: object) -> ExportResult:

@@ -59,7 +59,7 @@ class QueryDataStoreMemoryResult:
 
 
 class QueryDataStoreMemoryProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> QueryDataStoreMemoryResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class QueryDataStoreMemoryInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: QueryDataStoreMemoryProcessor):
-        self._processor = processor
+    def __init__(self, engine: QueryDataStoreMemoryProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class QueryDataStoreMemoryInterface:
 
 
 class QueryDataStoreMemoryFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> QueryDataStoreMemoryInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = QueryDataStoreMemoryConstraints(safety_level=safety_level)
-        processor = QueryDataStoreMemoryImpl(constraints)
-        return QueryDataStoreMemoryInterface(processor)
+        engine = QueryDataStoreMemoryImpl(constraints)
+        return QueryDataStoreMemoryInterface(engine)
 
 
 def query_data_store(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def query_data_store(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = QueryDataStoreMemoryFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = QueryDataStoreMemoryFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

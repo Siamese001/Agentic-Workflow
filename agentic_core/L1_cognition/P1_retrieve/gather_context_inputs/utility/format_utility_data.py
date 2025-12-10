@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Format utility data - atomic execution layer for shared types."""
+"""Format function data - atomic execution layer for shared types."""
 
 
 from typing import Dict
@@ -8,7 +8,7 @@ from typing import Dict
 
 
 def format_utility_data(data: Dict[str, object]) -> str:
-    """Format utility data for output."""
+    """Format function data for output."""
     return str(data)
 
 

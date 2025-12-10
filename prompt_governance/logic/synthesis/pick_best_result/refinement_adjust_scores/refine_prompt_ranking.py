@@ -59,7 +59,7 @@ class RefineScriptsRankingPlanResult:
 
 
 class RefineScriptsRankingPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> RefineScriptsRankingPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class RefineScriptsRankingPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: RefineScriptsRankingPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: RefineScriptsRankingPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class RefineScriptsRankingPlanInterface:
 
 
 class RefineScriptsRankingPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> RefineScriptsRankingPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = RefineScriptsRankingPlanConstraints(safety_level=safety_level)
-        processor = RefineScriptsRankingPlanImpl(constraints)
-        return RefineScriptsRankingPlanInterface(processor)
+        engine = RefineScriptsRankingPlanImpl(constraints)
+        return RefineScriptsRankingPlanInterface(engine)
 
 
 def refine_scripts_ranking(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def refine_scripts_ranking(input_data: Dict[str, object]) -> Dict[str, object]:
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = RefineScriptsRankingPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = RefineScriptsRankingPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":

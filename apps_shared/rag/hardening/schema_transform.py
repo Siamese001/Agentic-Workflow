@@ -2,7 +2,7 @@
 runtime/shared/schema_transform.py
 Schema Transformation Gate
 
-Ported from legacy resume gen Job_Workflow_v61.27.json
+Ported from historical resume gen Job_Workflow_v61.27.json
 Implements schema transformation and validation:
   - Key mapping between internal and external schemas
   - Controlled vocabulary validation
@@ -623,7 +623,7 @@ class SchemaTransformationGate:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# builder FUNCTIONS
 # =============================================================================
 
 def create_default_transformer() -> SchemaTransformer:
@@ -665,10 +665,10 @@ def create_transformation_gate(
 
 
 # =============================================================================
-# COMMON KEY MAPS
+# shared KEY MAPS
 # =============================================================================
 
-# Example key map from legacy resume gen
+# Example key map from historical resume gen
 RESUME_TRACKER_KEY_MAP = {
     "versioned_resume_filename": "Versioned Resume",
     "company_name": "Company",

@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 
 def _get_schema_version(obj: object) -> str | None:
-    """Best-effort utility to read a schema_version attribute from a model.
+    """Best-effort function to read a schema_version attribute from a model.
 
     The validator is intentionally defensive and never raises on basic
     attribute access issues; it only raises when the value is present but
@@ -47,7 +47,7 @@ def validate_schema_version(
         return
 
     if model_type is None and not isinstance(obj, BaseModel):
-        # Non-Pydantic payloads are ignored by this utility.
+        # Non-Pydantic payloads are ignored by this function.
         return
 
     version = _get_schema_version(obj)

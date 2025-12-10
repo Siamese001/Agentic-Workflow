@@ -59,7 +59,7 @@ class OptimizeObservabilityOrderPlanResult:
 
 
 class OptimizeObservabilityOrderPlanProcessor(ABC):
-    """L5 Abstract base - ensures L1 pure planning behavior"""
+    """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
     def process(self, input_data: Dict[str, object]) -> OptimizeObservabilityOrderPlanResult:
@@ -148,8 +148,8 @@ class SecurityError(Exception):
 class OptimizeObservabilityOrderPlanInterface:
     """L5 Interface - ensures contract compliance"""
 
-    def __init__(self, processor: OptimizeObservabilityOrderPlanProcessor):
-        self._processor = processor
+    def __init__(self, engine: OptimizeObservabilityOrderPlanProcessor):
+        self._processor = engine
 
     def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """L5 Interface method - executes safely"""
@@ -167,14 +167,14 @@ class OptimizeObservabilityOrderPlanInterface:
 
 
 class OptimizeObservabilityOrderPlanFactory:
-    """L5 Factory for creating processors with proper configuration"""
+    """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
     def create_processor(safety_level: str = "strict") -> OptimizeObservabilityOrderPlanInterface:
-        """Create configured processor"""
+        """Create configured engine"""
         constraints = OptimizeObservabilityOrderPlanConstraints(safety_level=safety_level)
-        processor = OptimizeObservabilityOrderPlanImpl(constraints)
-        return OptimizeObservabilityOrderPlanInterface(processor)
+        engine = OptimizeObservabilityOrderPlanImpl(constraints)
+        return OptimizeObservabilityOrderPlanInterface(engine)
 
 
 def optimize_observability_order(input_data: Dict[str, object]) -> Dict[str, object]:
@@ -190,9 +190,9 @@ def optimize_observability_order(input_data: Dict[str, object]) -> Dict[str, obj
     Raises:
         SecurityError: If execution fails any safety check
     """
-    factory = OptimizeObservabilityOrderPlanFactory()
-    processor = factory.create_processor()
-    return processor.execute(input_data)
+    builder = OptimizeObservabilityOrderPlanFactory()
+    engine = builder.create_processor()
+    return engine.execute(input_data)
 
 
 if __name__ == "__main__":
