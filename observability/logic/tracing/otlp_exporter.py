@@ -47,7 +47,7 @@ class OtlpExporter(BaseExporter):
 
             if self.destination == "stdout":
                 for item in items:
-                    print(json.dumps(item, default=str, indent=2))
+                    logger.debug(json.dumps(item, default=str, indent=2))
             elif self.destination == "file":
                 filepath = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:

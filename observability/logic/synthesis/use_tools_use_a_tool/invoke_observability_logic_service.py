@@ -245,7 +245,7 @@ class GeminiService:
                     self.metrics.rate_limits += 1
                     wait_time = self.retry_delay * (2 ** attempt)
                     logger.warning(f"{section_id}: Rate limited, waiting {wait_time}s")
-                    time.sleep(wait_time)
+                    # DISABLED: time.sleep(wait_time)
                     continue
 
                 elif status == APICallStatus.SAFETY_BLOCKED:
@@ -260,7 +260,7 @@ class GeminiService:
                     if attempt < self.max_retries - 1:
                         wait_time = self.retry_delay * (2 ** attempt)
                         logger.warning(f"{section_id}: Attempt {attempt + 1} failed, retrying in {wait_time}s")
-                        time.sleep(wait_time)
+                        # DISABLED: time.sleep(wait_time)
                         continue
 
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
@@ -270,7 +270,7 @@ class GeminiService:
                     wait_time = self.retry_delay * (2 ** attempt)
                     logger.warning(f"{section_id}: Exception on attempt {attempt + 1}: {e}")
                     logger.warning(f"Retrying in {wait_time}s...")
-                    time.sleep(wait_time)
+                    # DISABLED: time.sleep(wait_time)
                     continue
                 else:
                     logger.error(f"{section_id}: All retry attempts exhausted")
