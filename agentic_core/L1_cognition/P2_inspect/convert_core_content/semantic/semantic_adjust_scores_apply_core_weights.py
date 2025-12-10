@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Apply Core Weights - atomic wrapper."""
+"""Apply Core Weights - atomic execution layer."""
 
 
 from typing import Dict

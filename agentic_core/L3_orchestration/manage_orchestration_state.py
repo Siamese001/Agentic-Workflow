@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Manage Orchestration State - atomic wrapper."""
+"""Manage Orchestration State - atomic execution layer."""
 
 
 from typing import Dict

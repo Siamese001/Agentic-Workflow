@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Compute Tests Score - atomic wrapper."""
+"""Test Compute Tests Score - atomic execution layer."""
 
 from __future__ import annotations
 

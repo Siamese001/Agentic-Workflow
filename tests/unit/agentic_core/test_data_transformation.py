@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Data Transformation - atomic wrapper."""
+"""Test Data Transformation - atomic execution layer."""
 
 from __future__ import annotations
 

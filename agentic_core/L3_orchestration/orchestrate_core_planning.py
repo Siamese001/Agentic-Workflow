@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Orchestrate Core Planning - atomic wrapper."""
+"""Orchestrate Core Planning - atomic execution layer."""
 
 
 from typing import Dict

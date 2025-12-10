@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Retrieve Core Similarity - atomic wrapper."""
+"""Retrieve Core Similarity - atomic execution layer."""
 
 
 from typing import Dict

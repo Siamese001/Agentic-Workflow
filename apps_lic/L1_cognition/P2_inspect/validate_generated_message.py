@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Generated Message - atomic wrapper."""
+"""Validate Generated Message - atomic execution layer."""
 
 
 from typing import Dict

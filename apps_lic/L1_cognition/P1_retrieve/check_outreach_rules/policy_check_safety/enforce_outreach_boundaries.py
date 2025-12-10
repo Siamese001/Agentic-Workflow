@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Outreach Boundaries - atomic wrapper."""
+"""Enforce Outreach Boundaries - atomic execution layer."""
 
 
 from typing import Dict

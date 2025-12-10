@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Implement Orchestration Logic - atomic wrapper."""
+"""Implement Orchestration Logic - atomic execution layer."""
 
 
 from typing import Dict

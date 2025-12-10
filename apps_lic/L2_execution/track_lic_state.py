@@ -102,13 +102,13 @@ class LICStateManager:
 
         if atomic:
             # Atomic write: write to temp file, then rename
-            temp_filepath = filepath.with_suffix(".tmp")
+            staging_path = filepath.with_suffix(".tmp")
 
-            with open(temp_filepath, "w", encoding="utf-8") as f:
+            with open(staging_path, "w", encoding="utf-8") as f:
                 json.dump(data_with_metadata, f, indent=2, default=str)
 
             # Atomic rename
-            temp_filepath.replace(filepath)
+            staging_path.replace(filepath)
         else:
             # Direct write
             with open(filepath, "w", encoding="utf-8") as f:

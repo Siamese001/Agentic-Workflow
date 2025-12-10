@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Core Ethics - atomic wrapper."""
+"""Validate Core Ethics - atomic execution layer."""
 
 
 from typing import Dict

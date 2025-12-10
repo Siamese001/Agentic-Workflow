@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Check Resume Compliance - atomic wrapper."""
+"""Check Resume Compliance - atomic execution layer."""
 
 
 from typing import Dict

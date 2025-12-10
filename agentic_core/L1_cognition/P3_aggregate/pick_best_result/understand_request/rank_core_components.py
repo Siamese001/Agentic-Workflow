@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Rank Core Components - atomic wrapper."""
+"""Rank Core Components - atomic execution layer."""
 
 
 from typing import Dict

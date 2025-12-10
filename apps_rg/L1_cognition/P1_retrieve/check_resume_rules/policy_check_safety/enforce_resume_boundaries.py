@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Resume Boundaries - atomic wrapper."""
+"""Enforce Resume Boundaries - atomic execution layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Manage Tests Parameters - atomic wrapper."""
+"""Test Manage Tests Parameters - atomic execution layer."""
 
 from __future__ import annotations
 

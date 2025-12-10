@@ -202,24 +202,24 @@ class DependencyGraph:
             ValueError: If circular dependency detected
         """
         visited: Set[str] = set()
-        temp_visited: Set[str] = set()
+        pending_nodes: Set[str] = set()
         order: List[str] = []
         
         def visit(node_id: str) -> None:
             """Execute visit operation."""
-            if node_id in temp_visited:
+            if node_id in pending_nodes:
                 raise ValueError(f"Circular dependency detected involving {node_id}")
             if node_id in visited:
                 return
                 
-            temp_visited.add(node_id)
+            pending_nodes.add(node_id)
             
             node = self._nodes.get(node_id)
             if node:
                 for dep_id in node.dependencies:
                     visit(dep_id)
                     
-            temp_visited.remove(node_id)
+            pending_nodes.remove(node_id)
             visited.add(node_id)
             order.append(node_id)
             

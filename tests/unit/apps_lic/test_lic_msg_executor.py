@@ -1,6 +1,6 @@
 # Ownership: apps_lic / unknown
 # -*- coding: utf-8 -*-
-"""Test Lic Message Generation Executor - atomic wrapper."""
+"""Test Lic Message Generation Executor - atomic execution layer."""
 
 from __future__ import annotations
 

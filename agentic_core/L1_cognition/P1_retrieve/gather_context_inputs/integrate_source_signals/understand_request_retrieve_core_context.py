@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Retrieve Core Context - atomic wrapper."""
+"""Retrieve Core Context - atomic execution layer."""
 
 
 from typing import Dict

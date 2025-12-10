@@ -1,6 +1,6 @@
 # Ownership: apps_lic / unknown
 # -*- coding: utf-8 -*-
-"""Test Lic Research Planner - atomic wrapper."""
+"""Test Lic Research Planner - atomic execution layer."""
 
 from __future__ import annotations
 

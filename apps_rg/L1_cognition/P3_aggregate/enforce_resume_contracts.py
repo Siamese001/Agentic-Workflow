@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Resume Contracts - atomic wrapper."""
+"""Enforce Resume Contracts - atomic execution layer."""
 
 
 from typing import Dict

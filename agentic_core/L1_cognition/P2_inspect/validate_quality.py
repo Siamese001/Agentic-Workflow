@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Quality - atomic wrapper."""
+"""Validate Quality - atomic execution layer."""
 
 
 from typing import Dict

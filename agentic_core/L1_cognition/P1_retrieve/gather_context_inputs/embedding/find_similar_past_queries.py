@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Find Similar Past Queries - atomic wrapper."""
+"""Find Similar Past Queries - atomic execution layer."""
 
 
 from typing import Dict

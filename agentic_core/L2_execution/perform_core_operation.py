@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Perform Core Operation - atomic wrapper."""
+"""Perform Core Operation - atomic execution layer."""
 
 
 from typing import Dict

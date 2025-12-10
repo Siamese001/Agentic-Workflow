@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Block Jailbreak Attempt - atomic wrapper."""
+"""Block Jailbreak Attempt - atomic execution layer."""
 
 
 from typing import Dict

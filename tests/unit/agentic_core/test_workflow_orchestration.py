@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Workflow Orchestration - atomic wrapper."""
+"""Test Workflow Orchestration - atomic execution layer."""
 
 from __future__ import annotations
 
