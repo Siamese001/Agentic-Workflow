@@ -322,7 +322,7 @@ class WorkflowContext:
 
         logger.info("WorkflowContext initialized with v10.7 injected dependencies")
 
-    def get_model_client(self, provider: str, model_name: str):
+    def get_model_client(self, provider: str, model_name: str) -> object:
         """Execute get_model_client operation."""
         canonical_name = canonical_model_name(model_name)
         key = f"{provider}:{canonical_name}"
@@ -477,7 +477,7 @@ def get_checkpointer(
     *,
     db: Optional[int] = None,
     allow_memory_fallback: bool = False,
-):
+) -> object:
     """
     DESTRUCTIVE OVERWRITE — v10.7 Colab / Local Runtime Patch
 
@@ -576,7 +576,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         cache_manager=cache_manager,
         metrics=metrics_collector,
     )
-    precompute_engine = PrecomputeEngine(context=None)      semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    precompute_engine = PrecomputeEngine(context=None)
+    semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     metrics_collector.predictive_cache_manager = predictive_cache_manager
 
@@ -649,7 +650,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     return context
 
 
-def cleanup_workflow_chroma_collection(context: WorkflowContext):
+def cleanup_workflow_chroma_collection(context: WorkflowContext) -> None:
     """v10.7 REFACTOR: Centralized ChromaDB cleanup logic."""
     workflow_id = context.workflow_id
     if not workflow_id:

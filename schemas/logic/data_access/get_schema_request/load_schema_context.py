@@ -555,7 +555,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         cache_manager=cache_manager,
         metrics=metrics_collector,
     )
-    precompute_engine = PrecomputeEngine(context=None)      semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    precompute_engine = PrecomputeEngine(context=None)
+    semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     metrics_collector.predictive_cache_manager = predictive_cache_manager
 
