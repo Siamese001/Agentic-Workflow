@@ -205,7 +205,7 @@ class ValidationGate(ABC):
         violations: Optional[List[GateViolation]] = None,
         metadata: Optional[Dict[str, object]] = None,
     ) -> GateResult:
-        """Helper to create a gate result."""
+        """support to create a gate result."""
         return GateResult(
             gate_id=self.gate_id,
             policy=self.policy,
