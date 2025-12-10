@@ -71,7 +71,7 @@ class Checkpoint:
     hash: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.hash is None:
             self.hash = self._compute_hash()
             

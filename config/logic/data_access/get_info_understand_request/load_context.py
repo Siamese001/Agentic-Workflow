@@ -537,13 +537,15 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
                 host=config.chromadb_config.host,
                 port=config.chromadb_config.port,
             )
-        else:              client_ctor = getattr(chromadb_module, "Client", None)
+        else:
+            client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     else:
         persistent_ctor = getattr(chromadb_module, "PersistentClient", None)
         if callable(persistent_ctor):
             chromadb_client = persistent_ctor(path=config.chromadb_config.persistent_path)
-        else:              client_ctor = getattr(chromadb_module, "Client", None)
+        else:
+            client_ctor = getattr(chromadb_module, "Client", None)
             chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     logger.info("Initialized ChromaDB client")
 
@@ -578,7 +580,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         cache_manager=cache_manager,
         metrics=metrics_collector,
     )
-    precompute_engine = PrecomputeEngine(context=None)      semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    precompute_engine = PrecomputeEngine(context=None)
+    semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     metrics_collector.predictive_cache_manager = predictive_cache_manager
 
