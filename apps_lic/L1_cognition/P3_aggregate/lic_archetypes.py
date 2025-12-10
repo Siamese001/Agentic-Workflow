@@ -360,7 +360,6 @@ class ArchetypeTemplateManager:
         }
 
         for forbidden in FORBIDDEN_GREETINGS:
-            # Check if the pattern (without placeholder) is in the greeting
             pattern_base = forbidden.replace("{first_name}", "")
             if pattern_base.strip() in greeting:
                 result["is_valid"] = False
