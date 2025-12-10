@@ -22,7 +22,7 @@ Minimum depth rules:
     - All other sovereign folders: minimum depth 1 allowed
     - Non-sovereign folders (tests, scripts, runtime): must exist at project root (depth 1)
 
-C:\Git\ may contain any folders — they are outside canon jurisdiction.
+C:/Git/ may contain any folders — they are outside canon jurisdiction.
 """
 
 # FINAL CANON LAW - DECEMBER 2025 - 50 KEYS - NUCLEAR HARDENING COMPLETE
