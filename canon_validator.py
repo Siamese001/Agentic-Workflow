@@ -7,8 +7,8 @@ NO EXCEPTIONS. NO LEGACY. NO FORGIVENESS. THIS IS EXECUTION.
 
 FINAL CANON LAW — DECEMBER 2025 — ETERNAL AND UNCHANGED
 
-REPO ROOT     = C:\Git\                        ← phantom killer operates HERE
-PROJECT ROOT  = C:\Git\Agentic-Workflow\       ← sovereign code lives HERE
+REPO ROOT     = C:/Git/                        ← phantom killer operates HERE
+PROJECT ROOT  = C:/Git/Agentic-Workflow/       ← sovereign code lives HERE
 
 Sovereign folders (full 50-key perfection required):
     agentic_core, apps_lic, apps_rg, apps_shared,
@@ -1564,7 +1564,7 @@ def check_universal_max_depth():
 
     if violations:
         success("49")  # We fixed it automatically — PASS
-        print(f"Key 49: {len(violations)} deep files MOVED/MERGED to depth  c5 — zero loss")
+        print(f"Key 49: {len(violations)} deep files MOVED/MERGED to depth ≤5 — zero loss")
         if moved:
             for entry in moved[:20]:
                 print(entry)
