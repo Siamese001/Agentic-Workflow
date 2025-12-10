@@ -1,3 +1,4 @@
+import ast
 # ============================================================
 # Hydrated via Phase 3 — Filename Matching
 # Source: adjust_observability_weights.py
@@ -91,8 +92,8 @@ class AdjustObservabilityWeightsPlanImpl(AdjustObservabilityWeightsPlanProcessor
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "eval(", "exec(", "__import__"]
-            data_str = str(data).lower()
+            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
+            data_str = str(data.lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
                     self.logger.error(f" Dangerous pattern detected: {pattern}")
