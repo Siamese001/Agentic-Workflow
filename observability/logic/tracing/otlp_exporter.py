@@ -5,10 +5,9 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.860156
 """
 
-from __future__ import annotations
 import logging
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 

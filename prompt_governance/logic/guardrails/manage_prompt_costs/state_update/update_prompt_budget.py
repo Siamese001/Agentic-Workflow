@@ -9,7 +9,7 @@ L5 Agentic Core - Safety Layer - update_scripts_budget
 Implements L5 Safety/Policy Layer for update scripts budget operations
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

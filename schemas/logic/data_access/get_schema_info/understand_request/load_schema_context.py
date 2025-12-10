@@ -12,7 +12,6 @@
 
 """Workflow context, states, and utilitys for v10.7."""
 
-from __future__ import annotations
 
 import logging
 from dataclasses import asdict, dataclass, field

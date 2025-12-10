@@ -8,7 +8,6 @@ Verb canonicalization for resume bullet points.
 Canonicalizes action verbs to approved list and detects forbidden verbs.
 """
 
-from __future__ import annotations
 
 import re
 from typing import Dict, List

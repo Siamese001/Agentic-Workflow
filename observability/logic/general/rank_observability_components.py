@@ -9,7 +9,6 @@ Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
 
-from __future__ import annotations
 
 from typing import List, Optional
 from datetime import datetime

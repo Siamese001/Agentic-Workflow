@@ -18,7 +18,6 @@ Implements 12+ validation gates for output quality assurance:
   - VG_AGENTIC_OUTPUT_VALIDATION
 """
 
-from __future__ import annotations
 
 import hashlib
 import logging
@@ -27,7 +26,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type
+from typing import Callable, Dict, List, Optional, Set, Tuple, Type
 
 logger = logging.getLogger(__name__)
 
@@ -342,7 +341,7 @@ class BulletHallucinationCheckGate(ValidationGate):
     
     def _extract_key_terms(self, text: str) -> List[str]:
         """Extract key terms from text."""
-        # Remove common words
+        
         stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
         words = re.findall(r'\b[A-Za-z][a-z]*(?:[A-Z][a-z]*)*\b|\b\d+%?\b', text)
         return [w for w in words if w.lower() not in stop_words and len(w) > 2]

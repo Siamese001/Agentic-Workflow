@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """Update User Profile - atomic implementation."""
 
-from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 
 

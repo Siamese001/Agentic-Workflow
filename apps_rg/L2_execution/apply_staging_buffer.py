@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Immutable staging buffer for HOP-4."""
 
-from __future__ import annotations
 
 import copy
 from datetime import datetime

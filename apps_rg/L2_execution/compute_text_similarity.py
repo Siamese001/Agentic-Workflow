@@ -8,7 +8,6 @@ Text similarity computation using TF-IDF cosine similarity.
 Provides core similarity calculation with sklearn fallback.
 """
 
-from __future__ import annotations
 
 import math
 from typing import List, Tuple

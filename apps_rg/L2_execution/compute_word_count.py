@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 """Text utility functions for resume generation."""
 
-from __future__ import annotations
 
 import re
-from typing import Any, List
+from typing import List
 
 
 def count_words_ms_word_style(text: str) -> int:

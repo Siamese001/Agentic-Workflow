@@ -5,10 +5,9 @@ Domain: operations
 Generated: 2025-12-07T12:07:59.851272
 """
 
-from __future__ import annotations
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 

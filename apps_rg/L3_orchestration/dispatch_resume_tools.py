@@ -5,10 +5,9 @@ Domain: resume
 Generated: 2025-12-07T13:29:00.528748
 """
 
-from __future__ import annotations
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from shared.result_types import ExecutionResult
 
 logger = logging.getLogger(__name__)

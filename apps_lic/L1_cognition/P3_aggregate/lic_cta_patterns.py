@@ -7,7 +7,7 @@ Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 class RecipientArchetype(Enum):

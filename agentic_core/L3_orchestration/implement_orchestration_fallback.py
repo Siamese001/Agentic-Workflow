@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """Implement Orchestration Fallback - atomic wrapper."""
 
-from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 
 

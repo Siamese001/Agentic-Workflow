@@ -12,12 +12,11 @@ Implements structured constraints for creative content generation:
   - Provenance strategies
 """
 
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 
 # =============================================================================

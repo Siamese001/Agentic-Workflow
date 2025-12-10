@@ -9,7 +9,7 @@ to ensure consistent resume improvement and job alignment.
 """
 
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 
