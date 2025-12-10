@@ -1383,7 +1383,7 @@ def _iter_light_py_files() -> Iterable[Path]:
 
 
 def check_key_41_light_no_debug() -> None:
-    """Key 41 – Light Canon: no debug statements in non-sovereign code."""
+    """Key 41 – Light Canon: no debug statements in non-sovereign code (except scripts)."""
     debug_patterns = [
         r"\bprint\s*\(",
         r"\bpdb\.",
@@ -1393,10 +1393,19 @@ def check_key_41_light_no_debug() -> None:
     ]
     compiled = [re.compile(p) for p in debug_patterns]
     violations: List[str] = []
+    
     for f in _iter_light_py_files():
+        # FIX: Allow print() in scripts/ folder (CLI tools need output)
+        if "scripts" in f.parts:
+            # Check for non-print debuggers only in scripts/
+            relevant_patterns = compiled[1:]  # Skip print pattern
+        else:
+            relevant_patterns = compiled
+        
         text = read_file(f)
-        if any(p.search(text) for p in compiled):
+        if any(p.search(text) for p in relevant_patterns):
             violations.append(str(f.relative_to(ROOT)))
+    
     if violations:
         fail(
             "41",
@@ -1534,17 +1543,18 @@ def check_key_48_final_depth_canon() -> None:
     """
     Key 48 – The One True Depth Law (2026-12-10 Final)
 
-    - No CODE file in NON-SOVEREIGN dirs may exceed depth 5
+    - No CODE file in ANY directory (Sovereign or Light) may exceed depth 5
     - No .py file at root except whitelisted scripts
-    - Sovereign dirs are exempt from depth limits (they have their own rules)
+    - Only infrastructure dirs are exempt (.git, __pycache__, etc.)
     """
     violations: List[str] = []
     
     # Code file extensions to check (not all files)
     CODE_EXTENSIONS = {".py", ".yaml", ".yml", ".json", ".toml", ".cfg", ".ini"}
     
-    # Directories exempt from depth check
-    EXEMPT_DIRS = {".git", "__pycache__", "node_modules"} | SOVEREIGN_DIRS
+    # FIX: Only infrastructure dirs exempt - NOT sovereign dirs
+    # Sovereign code must also obey the universal depth law
+    EXEMPT_DIRS = {".git", "__pycache__", "node_modules", "venv", ".idea", ".vscode"}
 
     for f in ROOT.rglob("*"):
         if not f.is_file():
