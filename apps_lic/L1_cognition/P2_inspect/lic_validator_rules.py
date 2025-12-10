@@ -190,7 +190,6 @@ FILLER_PATTERNS: List[str] = [
     r"(?i)\bjust (wanted|reaching|following)",
 ]
 
-# Placeholder patterns
 PLACEHOLDER_PATTERNS: List[str] = [
     r"\[.*?\]",
     r"\{.*?\}",
@@ -328,7 +327,6 @@ class LICValidator:
             "cleaned_text": self.enforce_ascii(text),
         }
 
-        # Check placeholders (CRITICAL)
         placeholders = self.check_placeholders(text)
         if placeholders:
             results["is_valid"] = False
