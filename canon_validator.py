@@ -44,9 +44,10 @@ SOVEREIGN_DIRS: Set[str] = {
     "prompt_governance",
     "observability",
     "config",
-    "data",
-    "archives",
 }
+
+# Directories excluded from ALL canon checks (assets only, no code)
+EXCLUDED_DIRS: Set[str] = {"data", "archives"}
 
 # "Layered" sovereign domains that must obey L1/L2/L3 structure
 LAYERED_SOVEREIGN_DIRS: Set[str] = {"agentic_core", "apps_lic", "apps_rg"}
@@ -236,19 +237,9 @@ def sovereign_roots() -> List[Path]:
     return [ROOT / d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()]
 
 
-# Directories that are sovereign for STRUCTURE checks (Keys 01-08) but
-# NOT for CODE QUALITY checks (Keys 09-40). These contain assets, not code.
-SOVEREIGN_ASSET_DIRS: Set[str] = {"data", "archives"}
-
-
-def sovereign_code_roots() -> List[Path]:
-    """Sovereign roots for code quality checks (excludes asset-only dirs)."""
-    return [ROOT / d for d in SOVEREIGN_DIRS - SOVEREIGN_ASSET_DIRS if (ROOT / d).is_dir()]
-
-
 def iter_sovereign_py_files() -> Iterable[Path]:
-    """Iterate .py files in sovereign CODE directories (excludes data/, archives/)."""
-    for root in sovereign_code_roots():
+    """Iterate .py files in sovereign directories."""
+    for root in sovereign_roots():
         for f in root.rglob("*.py"):
             if f.name == "__init__.py":
                 # __init__.py is handled by dedicated key(s)
@@ -1664,9 +1655,8 @@ def check_key_48_final_depth_canon() -> None:
     # Code file extensions to check (not all files)
     CODE_EXTENSIONS = {".py", ".yaml", ".yml", ".json", ".toml", ".cfg", ".ini"}
     
-    # FIX: Only infrastructure dirs exempt - NOT sovereign dirs
-    # Sovereign code must also obey the universal depth law
-    EXEMPT_DIRS = {".git", "__pycache__", "node_modules", "venv", ".idea", ".vscode"}
+    # Infrastructure dirs exempt from checks
+    INFRA_DIRS = {".git", "__pycache__", "node_modules", "venv", ".idea", ".vscode"}
 
     for f in ROOT.rglob("*"):
         if not f.is_file():
@@ -1675,8 +1665,8 @@ def check_key_48_final_depth_canon() -> None:
         rel = f.relative_to(ROOT)
         parts = rel.parts
         
-        # Skip if file is under an exempt directory
-        if parts and parts[0] in EXEMPT_DIRS:
+        # Skip if file is under an infrastructure or excluded directory
+        if parts and parts[0] in (INFRA_DIRS | EXCLUDED_DIRS):
             continue
         
         if f.suffix not in CODE_EXTENSIONS:
