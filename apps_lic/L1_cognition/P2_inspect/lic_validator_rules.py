@@ -240,12 +240,15 @@ RECENCY_FACTORS: Dict[str, float] = {
     "180+_days": 0.5,
 }
 
-
 class LICValidator:
     """Validator for LIC message content."""
 
     def __init__(self) -> None:
-        """Initialize the LIC validator."""Module implementation."""Check for forbidden corporate verbs in text."""
+        """Initialize the LIC validator."""
+        pass
+
+    def check_forbidden_verbs(self, text: str) -> list:
+        """Check for forbidden corporate verbs in text."""
         found = []
         text_lower = text.lower()
         for verb in FORBIDDEN_VERBS:
@@ -254,7 +257,25 @@ class LICValidator:
         return found
 
     def check_filler_phrases(self, text: str) -> List[str]:
-        """Check for weak filler phrases in text."""Module implementation."""Check for implementation patterns in text."""Module implementation."""Replace Unicode characters with ASCII equivalents."""
+        """Check for weak filler phrases in text."""
+        import re
+        found = []
+        for pattern in FILLER_PATTERNS:
+            if re.search(pattern, text):
+                found.append(pattern)
+        return found
+
+    def check_implementations(self, text: str) -> List[str]:
+        """Check for implementation patterns in text."""
+        import re
+        found = []
+        for pattern in implementation_PATTERNS:
+            if re.search(pattern, text):
+                found.append(pattern)
+        return found
+
+    def enforce_ascii(self, text: str) -> str:
+        """Replace Unicode characters with ASCII equivalents."""
         result = text
         for unicode_char, ascii_char in UNICODE_REPLACEMENTS.items():
             result = result.replace(unicode_char, ascii_char)
