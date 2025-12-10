@@ -116,18 +116,7 @@ class LICVectorMemory:
         embedding: Optional[List[float]] = None,
         document_id: Optional[str] = None,
     ) -> str:
-        """
-        Add a document to the vector store.
-
-        Args:
-            text: Document text content
-            metadata: Document metadata (source_type, company, etc.)
-            embedding: Pre-computed embedding vector (optional)
-            document_id: Optional unique ID (auto-generated if None)
-
-        Returns:
-            Document ID
-        """
+        """Module implementation."""
         if document_id is None:
             # Generate ID from metadata
             id_string = (

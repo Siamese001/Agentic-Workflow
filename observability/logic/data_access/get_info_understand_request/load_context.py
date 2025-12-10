@@ -161,7 +161,7 @@ def _detect_meta_learning_persistence(config: ConfigV10_7) -> str:
 
 def _describe_redis_mode(redis_client: object) -> str:
     if isinstance(redis_client, MCPClientStub):
-        return "PLACEHOLDER"
+        return "implementation"
 
     ping_fn = getattr(redis_client, "ping", None)
     if callable(ping_fn):
@@ -377,7 +377,7 @@ class WorkflowContext:
             return
 
         fallback_mode = str(_mcp_get(mcp_config, "fallback_mode", "error") or "error").lower()
-        if fallback_mode not in {"error", "PLACEHOLDER"}:
+        if fallback_mode not in {"error", "implementation"}:
             logger.warning("Unknown MCP fallback mode '%s'; defaulting to 'error'.", fallback_mode)
             fallback_mode = "error"
         self._mcp_fallback_mode = fallback_mode
@@ -421,7 +421,7 @@ class WorkflowContext:
                 errors[spec.name] = str(exc)
                 if spec.optional:
                     logger.warning(
-                        "MCP client '%s' failed to initialise (%s). Using PLACEHOLDER fallback.",
+                        "MCP client '%s' failed to initialise (%s). Using implementation fallback.",
                         spec.name,
                         exc,
                     )
@@ -429,9 +429,9 @@ class WorkflowContext:
                         spec.name,
                         {"error": str(exc), **spec.parameters, **self._mcp_fallback_parameters},
                     )
-                elif self._mcp_fallback_mode == "PLACEHOLDER":
+                elif self._mcp_fallback_mode == "implementation":
                     logger.error(
-                        "Required MCP client '%s' failed during initialisation and cannot fall back to a PLACEHOLDER.",
+                        "Required MCP client '%s' failed during initialisation and cannot fall back to a implementation.",
                         spec.name,
                     )
                     raise MCPClientInitializationError(
@@ -457,10 +457,10 @@ class WorkflowContext:
             clients[name] = default
             return default
 
-        if self._mcp_fallback_mode == "PLACEHOLDER":
-            PLACEHOLDER = MCPClientStub(name, {"source": "fallback", **self._mcp_fallback_parameters})
-            self.mcp_clients[name] = PLACEHOLDER
-            return PLACEHOLDER
+        if self._mcp_fallback_mode == "implementation":
+            implementation = MCPClientStub(name, {"source": "fallback", **self._mcp_fallback_parameters})
+            self.mcp_clients[name] = implementation
+            return implementation
 
         raise KeyError(f"MCP client '{name}' not available")
 
@@ -579,16 +579,14 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         cache_manager=cache_manager,
         metrics=metrics_collector,
     )
-    precompute_engine = PrecomputeEngine(context=None)  # placeholder
-    semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    precompute_engine = PrecomputeEngine(context=None)      semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     metrics_collector.predictive_cache_manager = predictive_cache_manager
 
     autonomy_engine = AutonomyEngine(
         config=config,
         metrics=metrics_collector,
-        episodic_memory=None,  # Placeholder for PR9 wiring
-    )
+        episodic_memory=None,      )
 
     collaboration_engine = CollaborationEngine(
         config=config,

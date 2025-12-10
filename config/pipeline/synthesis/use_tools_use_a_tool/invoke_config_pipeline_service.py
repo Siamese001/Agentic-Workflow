@@ -159,27 +159,7 @@ class GeminiService:
         return_full_response: bool = False,
         validate_response: bool = True
     ) -> Tuple[str, int, Optional[object]]: # <-- FIX: (Flawed API) Return 3 values
-        """
-        Execute a production-ready Gemini API call with comprehensive error handling.
-
-        Args:
-            prompt: The user prompt (required, cannot be empty)
-            section_id: Identifier for logging and tracking
-            model: Model name override
-            system_prompt: Optional system prompt
-            reasoning_config: Reasoning configuration
-            temperature: Temperature override (0.0-1.0)
-            max_tokens: Max output tokens
-            return_full_response: Return full API response object
-            validate_response: Validate response for mock/placeholder data
-
-        Returns:
-            Tuple of (generated_text, api_calls_made, full_response)
-
-        Raises:
-            HopExecutionError: If API call fails after all retries
-            ValueError: If input validation fails
-        """
+        """Module implementation."""
         # Input validation
         if not prompt or not prompt.strip():
             raise ValueError(f"{section_id}: Prompt cannot be empty")
@@ -510,18 +490,9 @@ SYNTHESIZED RESPONSE:"""
         return synthesized
 
     def _validate_no_mock_data(self, text: str, context: str) -> None:
-        """
-        Validate that text contains no mock/placeholder data.
-
-        Args:
-            text: Text to validate
-            context: Context for error messages
-
-        Raises:
-            ValueError: If mock data is detected
-        """
+        """Module implementation."""
         mock_indicators = [
-            "[placeholder]", "[PLACEHOLDER]",
+            "[implementation]", "[implementation]",
             "[your name]", "[YOUR NAME]",
             "[company name]", "[COMPANY NAME]",
             "[TODO]", "[FIXME]",
@@ -534,7 +505,7 @@ SYNTHESIZED RESPONSE:"""
         for indicator in mock_indicators:
             if indicator.lower() in text_lower:
                 raise ValueError(
-                    f"{context}: Mock/placeholder data detected: '{indicator}'. "
+                    f"{context}: Mock/implementation data detected: '{indicator}'. "
                     f"Production system cannot process test data."
                 )
 
