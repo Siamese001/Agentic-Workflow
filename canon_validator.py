@@ -1786,11 +1786,11 @@ def run_all_checks() -> None:
     check_key_19_duplicate_functions()
     check_key_20_duplicate_classes()
     check_key_21_circular_imports()
-    check_key_22_unused_imports()
+    check_key_22_import_hygiene()          # <--- FIXED (was unused_imports)
     check_key_23_hardcoded_credentials()
     check_key_24_sql_injection_patterns()
     check_key_25_hardcoded_urls()
-    check_key_26_syntax_parses_clean()
+    check_key_26_syntax_and_strict_typing() # <--- FIXED (was syntax_parses_clean)
 
     # Sovereign size, nesting, packages
     check_key_27_no_empty_sov_files()
