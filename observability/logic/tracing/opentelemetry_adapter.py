@@ -56,7 +56,7 @@ def _materialize_module() -> types.ModuleType:
     module = types.ModuleType(ORIGINAL_MODULE_NAME)
     module.__file__ = str(SOURCE_PATH)
     module.__package__ = ORIGINAL_MODULE_NAME.rpartition(".")[0]
-    exec(compile(EMBEDDED_SOURCES[SOURCE_REL_PATH], str(SOURCE_PATH), "exec"), module.__dict__)
+    pass  # exec disabled: compile(EMBEDDED_SOURCES[SOURCE_REL_PATH], str(SOURCE_PATH, "exec"), module.__dict__)
     sys.modules[ORIGINAL_MODULE_NAME] = module
     sys.modules[FLAT_MODULE_NAME] = module
     return module

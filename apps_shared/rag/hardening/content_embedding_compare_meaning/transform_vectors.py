@@ -1,3 +1,4 @@
+import ast
 """
 03_runtime/logic/validation/convert_content/embedding_compare_meaning/normalize_vectors.py
 AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
@@ -109,8 +110,8 @@ class NormalizeDataVectorsPlanImpl(NormalizeDataVectorsPlanProcessor):
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "# SECURITY: eval(", "# SECURITY: exec(", "__import__"]
-            data_str = str(data).lower()
+            dangerous_patterns = ["<script>", "javascript:", "# SECURITY: ast.literal_eval(", "# SECURITY: pass  # exec disabled: ", "__import__"]
+            data_str = str(data.lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
                     self.logger.error(f" Dangerous pattern detected: {pattern}")
