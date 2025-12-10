@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L2_execution
 # -*- coding: utf-8 -*-
-"""Lic Company Research Executor - atomic wrapper."""
+"""Lic Company Research Executor - atomic execution layer."""
 
 
 from typing import Dict

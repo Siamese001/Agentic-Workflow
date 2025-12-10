@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Functional Behavior - atomic wrapper."""
+"""Test Functional Behavior - atomic execution layer."""
 
 from __future__ import annotations
 

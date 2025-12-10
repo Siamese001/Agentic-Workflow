@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Compute Cognition Score - atomic wrapper."""
+"""Compute Cognition Score - atomic execution layer."""
 
 
 from typing import Dict

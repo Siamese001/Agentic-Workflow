@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
-"""Text utility functions for resume generation."""
+"""Text counting functions for resume generation."""
 
 
 import re

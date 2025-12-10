@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Apply Resume Safety Policy - atomic wrapper."""
+"""Apply Resume Safety Policy - atomic execution layer."""
 
 
 from typing import Dict

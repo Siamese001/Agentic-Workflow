@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Compute Core Confidence - atomic wrapper."""
+"""Compute Core Confidence - atomic execution layer."""
 
 
 from typing import Dict

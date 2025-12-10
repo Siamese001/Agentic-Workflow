@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Build Tool Call Payload - atomic wrapper."""
+"""Build Tool Call Payload - atomic execution layer."""
 
 
 from typing import Dict

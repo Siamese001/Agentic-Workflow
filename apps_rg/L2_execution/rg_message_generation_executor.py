@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
-"""Rg Message Generation Executor - atomic wrapper."""
+"""Rg Message Generation Executor - atomic execution layer."""
 
 
 from typing import Dict

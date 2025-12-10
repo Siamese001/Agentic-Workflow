@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Search Embedding Index - atomic wrapper."""
+"""Search Embedding Index - atomic execution layer."""
 
 
 from typing import Dict

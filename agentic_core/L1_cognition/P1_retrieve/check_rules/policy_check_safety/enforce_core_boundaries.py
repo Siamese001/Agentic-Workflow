@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Core Boundaries - atomic wrapper."""
+"""Enforce Core Boundaries - atomic execution layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Diagnose Tests Issues - atomic wrapper."""
+"""Test Diagnose Tests Issues - atomic execution layer."""
 
 from __future__ import annotations
 

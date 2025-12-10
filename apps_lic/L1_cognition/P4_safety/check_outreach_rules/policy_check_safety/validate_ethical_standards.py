@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Ethical Standards - atomic wrapper."""
+"""Validate Ethical Standards - atomic execution layer."""
 
 
 from typing import Dict

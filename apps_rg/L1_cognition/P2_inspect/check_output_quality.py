@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Check Output Quality - atomic wrapper."""
+"""Check Output Quality - atomic execution layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Format utility data - atomic wrapper for shared types."""
+"""Format utility data - atomic execution layer for shared types."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Call Downstream Service - atomic wrapper."""
+"""Call Downstream Service - atomic execution layer."""
 
 
 from typing import Dict

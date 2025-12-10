@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Check Outreach Policy - atomic wrapper."""
+"""Check Outreach Policy - atomic execution layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Build Utility Output - atomic wrapper."""
+"""Build Utility Output - atomic execution layer."""
 
 
 from typing import Dict

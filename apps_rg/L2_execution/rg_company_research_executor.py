@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
-"""Rg Company Research Executor - atomic wrapper."""
+"""Rg Company Research Executor - atomic execution layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Validate Execution Schema - atomic wrapper."""
+"""Validate Execution Schema - atomic execution layer."""
 
 
 from typing import Dict

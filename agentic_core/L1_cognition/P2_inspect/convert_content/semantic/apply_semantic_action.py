@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Apply Semantic Action - atomic wrapper."""
+"""Apply Semantic Action - atomic execution layer."""
 
 
 from typing import Dict

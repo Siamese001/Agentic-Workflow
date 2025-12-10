@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Track Core Usage - atomic wrapper."""
+"""Track Core Usage - atomic execution layer."""
 
 
 from typing import Dict

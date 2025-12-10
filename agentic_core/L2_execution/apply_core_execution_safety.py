@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L2_execution
 # -*- coding: utf-8 -*-
-"""Apply Core Execution Safety - atomic wrapper."""
+"""Apply Core Execution Safety - atomic execution layer."""
 
 
 from typing import Dict

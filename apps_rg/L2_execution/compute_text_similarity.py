@@ -5,7 +5,7 @@
 """
 Text similarity computation using TF-IDF cosine similarity.
 
-Provides core similarity calculation with sklearn fallback.
+Provides core similarity calculation with sklearn alternative path.
 """
 
 

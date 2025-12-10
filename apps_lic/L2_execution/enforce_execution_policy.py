@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L2_execution
 # -*- coding: utf-8 -*-
-"""Enforce Execution Policy - atomic wrapper."""
+"""Enforce Execution Policy - atomic execution layer."""
 
 
 from typing import Dict

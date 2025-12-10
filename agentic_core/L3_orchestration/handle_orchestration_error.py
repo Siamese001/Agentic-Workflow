@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Handle Orchestration Error - atomic wrapper."""
+"""Handle Orchestration Error - atomic execution layer."""
 
 
 from typing import Dict

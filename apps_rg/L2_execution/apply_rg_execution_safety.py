@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
-"""Apply Rg Execution Safety - atomic wrapper."""
+"""Apply Rg Execution Safety - atomic enforcement layer."""
 
 
 from typing import Dict

@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Prepare Cognition Data - atomic wrapper."""
+"""Prepare Cognition Data - atomic execution layer."""
 
 
 from typing import Dict

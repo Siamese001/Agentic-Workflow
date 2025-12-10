@@ -1,6 +1,6 @@
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
-"""Test Orchestrate Tests Planning - atomic wrapper."""
+"""Test Orchestrate Tests Planning - atomic execution layer."""
 
 from __future__ import annotations
 

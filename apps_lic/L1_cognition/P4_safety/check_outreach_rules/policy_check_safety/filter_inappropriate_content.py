@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Filter Inappropriate Content - atomic wrapper."""
+"""Filter Inappropriate Content - atomic execution layer."""
 
 
 from typing import Dict

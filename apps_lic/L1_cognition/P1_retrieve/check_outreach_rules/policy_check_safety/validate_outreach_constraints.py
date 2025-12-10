@@ -1,6 +1,6 @@
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Outreach Constraints - atomic wrapper."""
+"""Validate Outreach Constraints - atomic execution layer."""
 
 
 from typing import Dict

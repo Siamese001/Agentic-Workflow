@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Resume Schema - atomic wrapper."""
+"""Validate Resume Schema - atomic execution layer."""
 
 
 from typing import Dict

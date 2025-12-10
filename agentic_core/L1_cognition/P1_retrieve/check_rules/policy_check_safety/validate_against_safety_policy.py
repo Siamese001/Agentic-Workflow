@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Validate Against Safety Policy - atomic wrapper."""
+"""Validate Against Safety Policy - atomic execution layer."""
 
 
 from typing import Dict

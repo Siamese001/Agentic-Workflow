@@ -1,6 +1,6 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Enforce Update Rules - atomic wrapper."""
+"""Enforce Update Rules - atomic execution layer."""
 
 
 from typing import Dict
