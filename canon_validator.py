@@ -236,8 +236,19 @@ def sovereign_roots() -> List[Path]:
     return [ROOT / d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()]
 
 
+# Directories that are sovereign for STRUCTURE checks (Keys 01-08) but
+# NOT for CODE QUALITY checks (Keys 09-40). These contain assets, not code.
+SOVEREIGN_ASSET_DIRS: Set[str] = {"data", "archives"}
+
+
+def sovereign_code_roots() -> List[Path]:
+    """Sovereign roots for code quality checks (excludes asset-only dirs)."""
+    return [ROOT / d for d in SOVEREIGN_DIRS - SOVEREIGN_ASSET_DIRS if (ROOT / d).is_dir()]
+
+
 def iter_sovereign_py_files() -> Iterable[Path]:
-    for root in sovereign_roots():
+    """Iterate .py files in sovereign CODE directories (excludes data/, archives/)."""
+    for root in sovereign_code_roots():
         for f in root.rglob("*.py"):
             if f.name == "__init__.py":
                 # __init__.py is handled by dedicated key(s)
