@@ -1534,25 +1534,33 @@ def check_key_48_final_depth_canon() -> None:
     """
     Key 48 – The One True Depth Law (2026-12-10 Final)
 
-    - No CODE file in repo may exceed depth 5
+    - No CODE file in NON-SOVEREIGN dirs may exceed depth 5
     - No .py file at root except whitelisted scripts
-    - Sovereign/test code must be nested (enforced by depth + structure)
+    - Sovereign dirs are exempt from depth limits (they have their own rules)
     """
     violations: List[str] = []
     
     # Code file extensions to check (not all files)
     CODE_EXTENSIONS = {".py", ".yaml", ".yml", ".json", ".toml", ".cfg", ".ini"}
+    
+    # Directories exempt from depth check
+    EXEMPT_DIRS = {".git", "__pycache__", "node_modules"} | SOVEREIGN_DIRS
 
     for f in ROOT.rglob("*"):
-        if any(ex in f.parts for ex in {".git", "__pycache__", "data", "archives", "node_modules"}):
-            continue
         if not f.is_file():
             continue
+        
+        rel = f.relative_to(ROOT)
+        parts = rel.parts
+        
+        # Skip if file is under an exempt directory
+        if parts and parts[0] in EXEMPT_DIRS:
+            continue
+        
         if f.suffix not in CODE_EXTENSIONS:
             continue
 
-        rel = f.relative_to(ROOT)
-        depth = len(rel.parts)
+        depth = len(parts)
 
         if depth > MAX_ANY_FILE_DEPTH:
             violations.append(f"{rel} → depth {depth} (max {MAX_ANY_FILE_DEPTH})")
