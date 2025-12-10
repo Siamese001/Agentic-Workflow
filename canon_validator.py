@@ -1214,21 +1214,26 @@ def run_checks_21_30():
 # KEYS 31-40
 # =====================================================================
 def run_checks_31_40():
-    # Key 31: No duplicate folders WITHIN same agent
-    # (Duplicate names across different agents is allowed by design)
-    violations = []
-    for agent in SOVEREIGN_AGENTS:
-        folder_counts = defaultdict(int)
-        for d in (ROOT / agent).rglob("*"):
-            if d.is_dir() and d.name != "__pycache__":
-                folder_counts[d.name] += 1
-        
-        for name, count in folder_counts.items():
-            if count > 1:
-                violations.append(f"{agent}/{name}: {count} copies")
-    
-    if violations:
-        fail("31", f"Duplicate folders within agent: {violations[:10]}")
+    # Key 31 — Duplicate folders WITHIN the same sovereign root ONLY (by design across agents)
+    duplicate_folders = []
+    folder_counts = defaultdict(int)
+    for folder in Path('.').rglob('*'):
+        if not folder.is_dir():
+            continue
+        if any(excluded in folder.parts for excluded in {'.git', '__pycache__', 'data', 'archives', 'node_modules'}):
+            continue
+        # Count only within each sovereign root
+        sovereign_parent = next((p for p in folder.parts if p in SOVEREIGN_DIRS), None)
+        if sovereign_parent:
+            key = (sovereign_parent, folder.name)
+            folder_counts[key] += 1
+
+    for (agent, name), count in folder_counts.items():
+        if count > 1:
+            duplicate_folders.append(f"{name}: {count} copies in {agent}/")
+
+    if duplicate_folders:
+        fail("31", f"Duplicate folder names WITHIN same sovereign root: {duplicate_folders}")
     else:
         success("31")
     
