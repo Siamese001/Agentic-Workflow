@@ -25,7 +25,7 @@ from enum import Enum
 import logging
 
 
-import re
+import scripts.check_canonical_structure
 
 
 from abc import ABC, abstractmethod

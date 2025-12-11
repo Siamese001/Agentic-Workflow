@@ -462,7 +462,7 @@ def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = 
             return _redis_client
 
     with _lock:
-        import redis
+        import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 
         cfg = config or RedisConfig()
         url = cfg.url or os.environ.get("REDIS_URL")
@@ -562,7 +562,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> object:
     if cfg.exporter == "console":
         exporter = ConsoleSpanExporter()
     elif cfg.exporter == "otlp":
-        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+        from observability.logic.tracing.console_trace_exporter import OTLPSpanExporter
         endpoint = cfg.otlp_endpoint or os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT")
         exporter = OTLPSpanExporter(endpoint=endpoint)
     else:
@@ -645,7 +645,7 @@ def create_mcp_tool_from_function(
     Returns:
         MCP tool definition dict
     """
-    import inspect
+    import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
     from typing import get_type_hints
 
     tool_name = name or func.__name__

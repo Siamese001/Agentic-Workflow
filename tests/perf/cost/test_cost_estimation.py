@@ -1,7 +1,7 @@
 """Performance tests for cost estimation consistency."""
 from __future__ import annotations
 
-from agentic_workflow.runtime.shared.multi_provider_clients import Provider
+from runtime.shared.multi_provider_clients import Provider
 
 class TestCostEstimationConsistency:
     """Tests for token and cost calculation determinism."""

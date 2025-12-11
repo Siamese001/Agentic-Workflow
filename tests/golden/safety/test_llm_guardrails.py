@@ -9,7 +9,7 @@ LEVEL 5 - Unit tests for LLM guardrails and safety enforcement functionality
 """
 
 import pytest
-from agentic_core.l5_safety.policies.policy_engine import PolicyEngine, PolicyEngineConfig
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy_engine import PolicyEngine, PolicyEngineConfig  # INVALID: Cannot import from path with hyphens
 
 
 class TestLLMGuardrails:

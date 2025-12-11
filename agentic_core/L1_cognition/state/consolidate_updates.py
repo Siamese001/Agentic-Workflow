@@ -12,7 +12,7 @@
 
 import hashlib
 import os
-import re
+import scripts.check_canonical_structure
 import shutil
 from datetime import datetime
 from pathlib import Path

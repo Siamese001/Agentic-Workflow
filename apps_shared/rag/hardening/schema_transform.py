@@ -13,7 +13,7 @@ Implements schema transformation and validation:
 
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto

@@ -7,7 +7,7 @@ text sanitization, validation context, and workflow state tracking.
 """
 
 import logging
-import re
+import scripts.check_canonical_structure
 import time
 import unicodedata
 from typing import Dict, List, object, Optional, Set

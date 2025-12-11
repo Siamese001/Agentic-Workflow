@@ -6,7 +6,7 @@ basic pattern-based bias detection for risk mitigation
 and content quality assurance.
 """
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, object, Optional, Set
 from dataclasses import dataclass, field

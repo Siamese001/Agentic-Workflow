@@ -8,10 +8,10 @@ MERKLE-INTENDED: 692af9b07045aba57eb8f1a97fae327746951bfca2a858bf51dbd14c69b66c2
 
 # Refinement operations for aggregation phase
 
-from meta.metacognition.models import Hypothesis
+from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
 
 
-from meta.metacognition.refinement import refine_low_confidence
+from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence
 
 
 def test_refine_marks_very_low_confidence_as_discarded() -> None:

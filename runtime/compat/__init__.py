@@ -12,4 +12,4 @@ from __future__ import annotations
 from ..shared.exceptions import *  # Implementation pending# noqa: F401, F403
 from ..shared.models import *  # Implementation pending# noqa: F401, F403
 from ..shared.config import *  # Implementation pending# noqa: F401, F403
-from ..shared.utils import *  # Implementation pending# noqa: F401, F403
+from runtime.shared.utils import *

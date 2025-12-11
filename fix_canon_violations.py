@@ -5,7 +5,7 @@ This script renames directories and files to comply with the canon.
 """
 
 import os
-import re
+import scripts.check_canonical_structure
 import shutil
 from pathlib import Path
 

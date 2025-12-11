@@ -29,7 +29,7 @@ import hashlib
 import logging
 from typing import Dict, Optional
 
-from .clients import OPENAI_DEFAULT_SEED
+from runtime.shared.clients import OPENAI_DEFAULT_SEED
 
 logger = logging.getLogger(__name__)
 

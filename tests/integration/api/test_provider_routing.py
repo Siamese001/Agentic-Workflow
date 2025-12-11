@@ -4,9 +4,6 @@ import os
 from unittest.mock import MagicMock, patch
 import pytest
 
-from agentic_workflow.runtime.shared.multi_provider_clients import (
-    Provider, get_client, get_available_providers, reset_all_clients,
-)
 
 class TestProviderRouting:
     @pytest.fixture(autouse=True)

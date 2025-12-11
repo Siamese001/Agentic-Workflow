@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
-import re
+import scripts.check_canonical_structure
 from abc import ABC, abstractmethod
 
 # Configure logging for L5 observability

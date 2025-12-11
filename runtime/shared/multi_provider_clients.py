@@ -170,7 +170,7 @@ def _create_client(
     """Create a new client instance for the provider."""
 
     if provider == Provider.OPENAI:
-        from openai import AsyncOpenAI, OpenAI
+        from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
         api_key = get_api_key(provider)
         ClientClass = AsyncOpenAI if async_client else OpenAI
         return ClientClass(
@@ -180,7 +180,7 @@ def _create_client(
         )
 
     elif provider == Provider.ANTHROPIC:
-        from anthropic import Anthropic, AsyncAnthropic
+        from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic, AsyncAnthropic
         api_key = get_api_key(provider)
         ClientClass = AsyncAnthropic if async_client else Anthropic
         return ClientClass(
@@ -220,7 +220,7 @@ def _create_client(
         return ClientClass(api_key=api_key)
 
     elif provider == Provider.FIREWORKS:
-        from fireworks.client import Fireworks, AsyncFireworks
+        from data.sdks_mcps.client_wrappers.vertex_client import Fireworks, AsyncFireworks
         api_key = get_api_key(provider)
         ClientClass = AsyncFireworks if async_client else Fireworks
         return ClientClass(api_key=api_key)

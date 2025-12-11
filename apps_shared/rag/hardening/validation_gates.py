@@ -21,7 +21,7 @@ Implements 12+ validation gates for output quality assurance:
 
 import hashlib
 import logging
-import re
+import scripts.check_canonical_structure
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime

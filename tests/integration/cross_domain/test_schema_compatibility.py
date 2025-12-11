@@ -1,13 +1,7 @@
 """Integration tests for cross-domain schema compatibility."""
 from __future__ import annotations
 
-from agentic_workflow.runtime.shared.config import SAFETY_THRESHOLD
-from agentic_workflow.runtime.shared.models import (
-    GateDecision, ValidationSeverity, ValidationResult,
-)
-from agentic_workflow.runtime.shared.sdk_registry import (
-    SDKCategory, SDK_REGISTRY,
-)
+from shared.reasoning_config import SAFETY_THRESHOLD
 
 class TestConfigSchemaCompatibility:
     def test_config_safety_threshold_matches_models(self):

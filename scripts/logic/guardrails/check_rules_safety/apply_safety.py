@@ -7,22 +7,15 @@
 import json
 
 
-import re
+import scripts.check_canonical_structure
 
 
 from typing import Dict, Optional
 
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
 
-from core_v10_7 import (
-    BaseAgent,
-    ConstitutionalReviewResult,
-    track_metrics,
-    _format_prompt_with_defaults,
-    detect_bias,
-)
 
 
 class PIISanitizerAgent(BaseAgent):

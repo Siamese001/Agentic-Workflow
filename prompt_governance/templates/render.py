@@ -5,7 +5,7 @@ This module provides template rendering functionality for generating
 prompts from templates with variable substitution.
 """
 
-import re
+import scripts.check_canonical_structure
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 

@@ -1,5 +1,5 @@
 # scripts/enforce_verb_noun.py
-import re
+import scripts.check_canonical_structure
 import shutil
 import sys
 from pathlib import Path

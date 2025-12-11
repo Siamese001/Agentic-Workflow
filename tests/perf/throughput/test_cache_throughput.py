@@ -2,9 +2,6 @@
 from __future__ import annotations
 import time
 
-from agentic_workflow.runtime.shared.cache import (
-    generate_llm_cache_key, generate_llm_cache_key_with_fingerprint,
-)
 
 class TestCacheKeyThroughput:
     def test_cache_key_throughput_10k_per_second(self):

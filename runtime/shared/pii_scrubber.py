@@ -6,7 +6,7 @@ Detects and redacts PII while preserving placeholders for context.
 Essential for enterprise compliance (GDPR/CCPA).
 """
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field

@@ -8,22 +8,8 @@ MERKLE-INTENDED: 7d5b6ed86f6afb9d2ba4e4ca60be5e450370b4d2e95a94d3e9603409c08e4e1
 
 from __future__ import annotations
 
-from .exceptions import (
-    AgenticWorkflowError,
-    HopExecutionError,
-    StagingBufferError,
-    CircuitBreakerOpenError,
-    PhaseTimeoutError,
-    FactualFailureException,
-    ValidationError,
-    ConfigurationError,
-    APIError,
-    MCPClientInitializationError,
-    SemanticCacheError,
-    PipelineError,
-)
 
-from .models import (
+from shared.models import GateDecision, ValidationSeverity, ResumeSection, JDEnforcementRule, BulletProvenance, CircuitState, HopStatus, APICallStatus, ReasoningConfig, ValidationResult, ThematicAnalysis, JDEnforcementResult, CompetitiveAnalysisConfig, RAGMission, SkillRequirement, SkillCluster, MasterResumeIndex, RAGEvidence, RAGCritique, RAGState, CompetitiveIntelligence, RetrievalSource, PartialRAGResult, RAGTelemetry, HopCheckpoint, APICallMetrics, ImmutableStagingBuffer
     # Enums
     GateDecision,
     ValidationSeverity,
@@ -56,7 +42,7 @@ from .models import (
     ImmutableStagingBuffer,
 )
 
-from .config import (
+from shared.config import DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY, DEFAULT_API_TIMEOUT, DEFAULT_GENERATION_TEMPERATURE, DEFAULT_SYNTHESIS_TEMPERATURE, DEFAULT_MAX_OUTPUT_TOKENS, SAFETY_THRESHOLD, ModelProvider, ModelConfig, RAGConfig, GovernorConfig, WorkflowConfig, ContentConstraintsConfig, Config, CONFIG, PROJECT_ROOT, DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR
     # Constants
     DEFAULT_MAX_RETRIES,
     DEFAULT_RETRY_DELAY,
@@ -82,53 +68,11 @@ from .config import (
     LOGS_DIR,
 )
 
-from .utils import (
-    TextUtils,
-    text_utils,
-    DuplicateDetector,
-    TelemetryLogger,
-    WorkflowLogFilter,
-    setup_workflow_logging,
-    create_directory_if_missing,
-    sanitize_filename,
-    calculate_signal_score,
-    reasoning_config_to_api_params,
-    enhance_system_prompt_with_reasoning,
-    build_generation_prompt_with_reinforced_constraints,
-)
 
-from .clients import (
-    get_openai_client,
-    get_openai_sync_client,
-    reset_clients,
-    get_default_seed,
-    OPENAI_MAX_RETRIES,
-    OPENAI_TIMEOUT,
-    OPENAI_DEFAULT_SEED,
-)
 
-from .cache import (
-    generate_llm_cache_key,
-    generate_llm_cache_key_with_fingerprint,
-    extract_cache_metadata,
-    should_invalidate_cache,
-    CACHE_KEY_PREFIX,
-    CACHE_KEY_VERSION,
-)
 
-from .multi_provider_clients import (
-    Provider,
-    ProviderConfig,
-    get_client,
-    get_api_key,
-    reset_all_clients,
-    get_available_providers,
-    get_litellm_completion,
-    get_litellm_completion_sync,
-    get_structured_output,
-)
 
-from .sdk_registry import (
+from runtime.shared.sdk_registry import SDKCategory, SDKEntry, SDK_REGISTRY, validate_sdk, validate_all_sdks, get_available_sdks, ChromaConfig, QdrantConfig, PineconeConfig, get_vector_store, RedisConfig, get_redis_client, TracingConfig, setup_tracing, get_tracer, MCPServerConfig, create_mcp_server, create_mcp_tool_from_function, parse_document, extract_pdf_text
     # Enums
     SDKCategory,
     # Registry
@@ -163,174 +107,21 @@ from .sdk_registry import (
 # historical ENGINE PORTS — Constitutional AI, Retrieval, Quality, etc.
 # =============================================================================
 
-from .pii_scrubber import (
-    PIIType,
-    PIIMatch,
-    PIIResult,
-    PIIScrubber,
-    create_pii_scrubber,
-    scrub_pii,
-)
 
-from .bias_auditor import (
-    BiasType,
-    BiasSeverity,
-    BiasMatch,
-    BiasResult,
-    BiasAuditor,
-    create_bias_auditor,
-    audit_bias,
-)
 
-from .constitutional_ai import (
-    RuleType,
-    RuleSeverity,
-    ViolationType,
-    RuleAction,
-    ConstitutionalRule,
-    ViolationReport,
-    ConstitutionalReviewResult,
-    RuleEngine,
-    ContentValidator,
-    ConstitutionalAISystem,
-    create_constitutional_ai_system,
-    create_rule_engine,
-    create_content_validator,
-    review_content,
-)
 
-from .goal_injection import (
-    GoalType,
-    GoalPriority,
-    StrategicGoal,
-    GoalState,
-    InjectionResult,
-    GoalStateInjector,
-    create_goal_injector,
-    inject_goals,
-    create_business_goal,
-    create_quality_goal,
-)
 
-from .hyde_processor import (
-    ExpansionStrategy,
-    HyDEDocument,
-    HyDEResult,
-    HyDEProcessor,
-    create_hyde_processor,
-    expand_query_with_hyde,
-    generate_hypothetical_profile,
-)
 
-from .signal_weighter import (
-    SignalType,
-    SignalWeights,
-    WeightedResult,
-    WeightingResult,
-    SignalWeighter,
-    create_signal_weighter,
-    weight_results,
-    create_weights,
-)
 
-from .hybrid_scorer import (
-    ScoringConfig,
-    ScoringResult,
-    HybridScoringResult,
-    BM25Scorer,
-    SemanticScorer,
-    HybridScorer,
-    create_hybrid_scorer,
-    create_bm25_scorer,
-    score_documents,
-)
 
-from .evidence_ranker import (
-    EvidenceType,
-    EvidenceQuality,
-    EvidenceItem,
-    RankingResult,
-    EvidenceRanker,
-    create_evidence_ranker,
-    rank_evidence,
-)
 
-from .tone_model import (
-    ToneType,
-    FormalityLevel,
-    ToneProfile,
-    ToneAdaptation,
-    AdvancedToneModel,
-    create_tone_model,
-    adapt_tone,
-)
 
-from .claim_confidence import (
-    ClaimType,
-    ConfidenceLevel,
-    Claim,
-    ClaimAnalysisResult,
-    ClaimConfidenceScorer,
-    create_claim_scorer,
-    analyze_claims,
-)
 
-from .goal_alignment import (
-    GoalCategory,
-    AlignmentStrategy,
-    AlignmentResult,
-    GoalAlignmentEngine,
-    create_goal_alignment_engine,
-    align_prompt_with_goals,
-    create_strategic_goal,
-)
 
-from .prompt_optimizer import (
-    OptimizationStrategy,
-    OptimizationLevel,
-    OptimizationConfig,
-    OptimizationResult,
-    PromptOptimizer,
-    create_prompt_optimizer,
-    optimize_prompt,
-    create_optimization_config,
-)
 
-from .meta_learning import (
-    FeedbackType,
-    PatternType,
-    LearningMode,
-    FeedbackSignal,
-    LearningPattern,
-    AdaptationResult,
-    FeedbackCollector,
-    PatternRecognizer,
-    AdaptiveParameterTuner,
-    MetaLearningSystem,
-    create_meta_learning_system,
-    create_feedback_collector,
-    create_pattern_recognizer,
-    record_feedback,
-)
 
-from .business_intelligence import (
-    BusinessStage,
-    MarketPosition,
-    ProductCategory,
-    CompanyInsights,
-    ProductInsights,
-    IntelligenceResult,
-    CompanyIntelligenceBundle,
-    ProductIntelligenceBundle,
-    IntelligenceBundleSystem,
-    create_intelligence_system,
-    create_company_bundle,
-    create_product_bundle,
-    analyze_company,
-    analyze_product,
-)
 
-from .rag_components import (
+from runtime.shared.rag_components import CacheEntry, CacheSufficiencyResult, SemanticCache, create_semantic_cache, GapType, KnowledgeGap, SelfRAGResult, SelfRAGProcessor, create_self_rag_processor, Episode, EpisodicMemoryResult, EpisodicMemory, create_episodic_memory, KGRelationship, KGContext, KnowledgeGraphInjector, create_kg_injector, FewShotExample, FewShotInjectionResult, FewShotInjector, create_few_shot_injector
     # Semantic Cache
     CacheEntry,
     CacheSufficiencyResult,
@@ -359,7 +150,7 @@ from .rag_components import (
     create_few_shot_injector,
 )
 
-from .orchestration import (
+from runtime.shared.orchestration import RecoveryStrategy, CircuitBreakerConfig, RetryConfig, RecoveryResult, CircuitBreaker, ErrorRecoveryManager, create_error_recovery_manager, create_circuit_breaker, TraceLevel, TraceStep, ExecutionTrace, ExecutionTracer, create_execution_tracer, ValueProposition, MessageSectionPlan, FusionPlan, FusionPlanner, create_fusion_planner
     # Error Recovery
     RecoveryStrategy,
     CircuitBreakerConfig,
@@ -383,7 +174,7 @@ from .orchestration import (
     create_fusion_planner,
 )
 
-from .state_management import (
+from runtime.shared.state_management import SanitizationLevel, SanitizationResult, TextSanitizer, create_text_sanitizer, sanitize_text, ValidationIssue, ValidationContextResult, ValidationContext, create_validation_context, WorkflowPhase, WorkflowCheckpoint, WorkflowState, WorkflowStateManager, create_workflow_state_manager, create_staging_buffer
     # Text Sanitizer
     SanitizationLevel,
     SanitizationResult,
