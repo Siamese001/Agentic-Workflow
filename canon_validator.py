@@ -2239,6 +2239,9 @@ def main() -> None:
     load_change_tracker_from_env()
 
     if not args.silent and not args.json:
+        print("=" * 80)
+        print("SUBATOMIC CANON VALIDATOR — 50/50 KEYS")
+        print("=" * 80)
 
     # 1. Hydrate (Always required)
     hydrate_repo_data()
@@ -2344,11 +2347,15 @@ def main() -> None:
         fails = [k for k in keys_to_run if not results.get(k, (False, ""))[0]]
         passed = [k for k in keys_to_run if results.get(k, (False, ""))[0]]
         if not args.silent:
-
+            print(f"\n{'=' * 80}")
+            print(f"VALIDATION COMPLETE: {len(passed)}/{len(keys_to_run)} KEYS PASSED")
+            print(f"{'=' * 80}\n")
+            
             for k in keys_to_run:
                 if k in results:
                     p, m = results[k]
                     icon = "[PASS]" if p else "[FAIL]"
+                    print(f"{icon} Key {k}: {m}")
 
         sys.exit(1 if fails else 0)
 
