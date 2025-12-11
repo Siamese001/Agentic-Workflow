@@ -2,6 +2,7 @@
 from __future__ import annotations
 from unittest.mock import MagicMock, patch
 import pytest
+from runtime.shared.multi_provider_clients import reset_all_clients
 
 
 class TestAgenticLoopIntegration:

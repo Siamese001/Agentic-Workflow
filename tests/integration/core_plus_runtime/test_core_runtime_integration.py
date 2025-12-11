@@ -1,5 +1,6 @@
 """Integration tests for agentic_core + runtime integration."""
 from __future__ import annotations
+import re
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
