@@ -65,5 +65,5 @@ __all__ = ["check_imports"]
 if __name__ == "__main__":
     # Configure logger for standalone execution
     logger.setLevel(logging.INFO)
-    logger.addHandler(logging.StreamHandler())
+    logger.addExecutor(logging.StreamExecutor())
     check_imports()
