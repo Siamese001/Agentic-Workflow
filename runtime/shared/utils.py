@@ -19,7 +19,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import ThematicAnalysis, ReasoningConfig
+    from shared.models import ThematicAnalysis
+    from shared.reasoning_config import ReasoningConfig
 
 
 # Optional imports with fallbacks
@@ -58,8 +59,8 @@ def sanitize_filename(filename: str) -> str:
     Returns:
         Sanitized filename safe for filesystem use
     """
-        sanitized = re.sub(r'[<>:"/\\|?*]', '_', filename)
-        sanitized = sanitized.strip(' .')
+    sanitized = re.sub(r'[<>:"/\\|?*]', '_', filename)
+    sanitized = sanitized.strip(' .')
     # Limit length
     if len(sanitized) > 200:
         sanitized = sanitized[:200]

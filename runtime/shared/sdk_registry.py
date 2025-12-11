@@ -462,7 +462,7 @@ def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = 
             return _redis_client
 
     with _lock:
-        import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+        # import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis  # Commented out due to invalid syntax
 
         cfg = config or RedisConfig()
         url = cfg.url or os.environ.get("REDIS_URL")
