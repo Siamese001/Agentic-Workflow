@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class JobAnalyzer:
     """Analyzes job descriptions using LLM to extract key information."""
     
-    def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None):
+    def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None, workflow_config: Optional[Any] = None):
         """
         Initialize JobAnalyzer.
         
@@ -26,6 +26,7 @@ class JobAnalyzer:
         """
         self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
         self.provider = provider or Provider.GOOGLE
+        self.workflow_config = workflow_config  # Store K-node configuration
         
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
@@ -49,12 +50,17 @@ class JobAnalyzer:
         prompt = self._build_analysis_prompt(job_description)
         
         try:
+            # Use workflow configuration for temperature if available
+            temperature = 0.7
+            if self.workflow_config and hasattr(self.workflow_config, 'temp'):
+                temperature = self.workflow_config.temp
+            
             # Generate analysis using Gemini
             if self.provider == Provider.GOOGLE:
-                response = self._generate_with_gemini(prompt)
+                response = self._generate_with_gemini(prompt, temperature)
             else:
                 # Fallback for other providers
-                response = self._generate_with_generic_client(prompt)
+                response = self._generate_with_generic_client(prompt, temperature)
             
             # Parse and return structured results
             return self._parse_analysis_response(response)
@@ -92,26 +98,27 @@ Please extract and return a JSON object with the following structure:
 Focus on the most important skills and requirements. Be specific and concise.
 Return ONLY the JSON object, no additional text."""
     
-    def _generate_with_gemini(self, prompt: str) -> str:
+    def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using Google Gemini."""
         import google.generativeai as genai
         
         # Configure model
         model = genai.GenerativeModel('gemini-1.5-flash')
         
-        # Generate response
-        response = model.generate_content(prompt)
+        # Generate response with temperature from workflow
+        generation_config = genai.types.GenerationConfig(temperature=temperature)
+        response = model.generate_content(prompt, generation_config=generation_config)
         return response.text
     
-    def _generate_with_generic_client(self, prompt: str) -> str:
+    def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""
         # Fallback for other providers
         if hasattr(self.llm_client, 'generate'):
-            response = self.llm_client.generate(prompt)
+            response = self.llm_client.generate(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
         else:
             # Try completion interface
-            response = self.llm_client.complete(prompt)
+            response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
     
     def _parse_analysis_response(self, response: str) -> Dict[str, Any]:

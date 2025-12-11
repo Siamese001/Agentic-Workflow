@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class ResumeGenerator:
     """Generates tailored resumes using LLM based on job analysis."""
     
-    def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None):
+    def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None, creative_brief: Optional[Any] = None, validation_rules: Optional[Dict[str, Any]] = None):
         """
         Initialize ResumeGenerator.
         
@@ -26,6 +26,8 @@ class ResumeGenerator:
         """
         self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
         self.provider = provider or Provider.GOOGLE
+        self.creative_brief = creative_brief  # Store creative brief configuration
+        self.validation_rules = validation_rules or {}  # Store validation rules
         
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
@@ -82,6 +84,11 @@ class ResumeGenerator:
     
     def _tailor_summary(self, original_summary: str, analysis: Dict[str, Any]) -> str:
         """Tailor the professional summary to match job requirements."""
+        # Use creative brief word count constraints if available
+        word_count_range = "120-140"
+        if self.creative_brief and hasattr(self.creative_brief, 'executive_summary_word_count'):
+            word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.creative_brief.executive_summary_word_count.max_words}"
+        
         prompt = f"""Rewrite the following professional summary to align with the target job requirements.
 
 ORIGINAL SUMMARY:
@@ -96,7 +103,7 @@ Please rewrite the summary to:
 1. Highlight relevant hard skills from the target requirements
 2. Demonstrate the soft skills they're looking for
 3. Align with their key success metric
-4. Keep it under 150 words
+4. Keep it within {word_count_range} words
 5. Use active, confident language
 
 Return ONLY the rewritten summary, no additional text."""
@@ -184,6 +191,11 @@ Return ONLY the rewritten summary, no additional text."""
         """Tailor bullet points to emphasize target skills."""
         tailored_bullets = []
         
+        # Use creative brief word count constraints if available
+        word_count_max = 25
+        if self.creative_brief and hasattr(self.creative_brief, 'unify_bullet_word_count'):
+            word_count_max = self.creative_brief.unify_bullet_word_count.max_words
+        
         for bullet in bullets:
             prompt = f"""Rewrite the following resume bullet point to emphasize the target skills and responsibilities.
 
@@ -199,7 +211,7 @@ Please rewrite the bullet to:
 3. Align with job responsibilities
 4. Start with a strong action verb
 5. Include quantifiable metrics if possible
-6. Keep it under 25 words
+6. Keep it under {word_count_max} words
 
 Return ONLY the rewritten bullet, no additional text."""
             
@@ -243,21 +255,22 @@ Return ONLY the rewritten description, no additional text."""
         else:
             return self._generate_with_generic_client(prompt)
     
-    def _generate_with_gemini(self, prompt: str) -> str:
+    def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using Google Gemini."""
         import google.generativeai as genai
         
         model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
+        generation_config = genai.types.GenerationConfig(temperature=temperature)
+        response = model.generate_content(prompt, generation_config=generation_config)
         return response.text
     
-    def _generate_with_generic_client(self, prompt: str) -> str:
+    def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""
         if hasattr(self.llm_client, 'generate'):
-            response = self.llm_client.generate(prompt)
+            response = self.llm_client.generate(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
         else:
-            response = self.llm_client.complete(prompt)
+            response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
     
     def optimize_for_ats(self, resume_data: Dict[str, Any], analysis: Dict[str, Any]) -> Dict[str, Any]:
