@@ -2287,10 +2287,14 @@ def parse_args() -> argparse.Namespace:
         help="Run all 50 canonical keys (default)",
     )
     parser.add_argument(
-        "--check-40",
+        "--only",
+        type=str,
+        help="Run a specific key only (e.g., --only 49) or comma-separated (e.g., --only 48,49)",
+    )
+    parser.add_argument(
+        "--json",
         action="store_true",
-        dest="check_40",
-        help="Run the first 40 keys only (sovereign-focused subset)",
+        help="Output results in JSON format (context-efficient for AI parsing)",
     )
     parser.add_argument(
         "--silent",
@@ -2300,54 +2304,138 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "extra",
         nargs="*",
-        help="Extra positional arguments (ignored, for pre-commit compatibility)",
+        help="Extra positional arguments (ignored)",
     )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    import json
 
     # Load pre-commit change tracker if available
     load_change_tracker_from_env()
 
-    if not args.silent:
+    if not args.silent and not args.json:
         print("=" * 64)
-        print("SUBATOMIC CANON 2026 — 50-KEY VALIDATION (NON-DESTRUCTIVE)")
+        print("SUBATOMIC CANON 2026 — 50-KEY VALIDATION")
         print(f"Project root: {ROOT}")
         print("=" * 64)
 
-    # Run checks
-    run_all_checks()
+    # 1. Hydrate (Always required)
+    hydrate_repo_data()
 
-    # Optionally restrict to first 40 keys for --check-40
-    effective_results = dict(results)
-    if args.check_40 and not args.check_50:
-        effective_results = {k: v for k, v in results.items() if int(k) <= 40}
+    # 2. Map keys to functions
+    key_map = {
+        "01": check_key_01_no_sovereign_deletions,
+        "02": check_key_02_no_sovereign_renames,
+        "03": check_key_03_data_folder_exists,
+        "04": check_key_04_no_zombie_archive_singular_root,
+        "05": check_key_05_layered_structure_sane,
+        "06": check_key_06_no_forbidden_folder_names,
+        "07": check_key_07_required_root_folders,
+        "08": check_key_08_no_empty_sov_roots,
+        "09": check_key_09_banned_tokens_in_filenames,
+        "10": check_key_10_banned_symbol_prefixes,
+        "11": check_key_11_banned_vocabulary,
+        "12": check_key_12_todo_fixme_comments,
+        "13": check_key_13_hardcoded_paths,
+        "14": check_key_14_magic_numbers,
+        "15": check_key_15_bare_except,
+        "16": check_key_16_eval_exec_usage,
+        "17": check_key_17_poison_markers_and_stubs,
+        "18": check_key_18_sovereign_debug_statements,
+        "19": check_key_19_duplicate_functions,
+        "20": check_key_20_duplicate_classes,
+        "21": check_key_21_circular_imports,
+        "22": check_key_22_import_hygiene,
+        "23": check_key_23_hardcoded_credentials,
+        "24": check_key_24_sql_injection_patterns,
+        "25": check_key_25_hardcoded_urls,
+        "26": check_key_26_syntax_and_strict_typing,
+        "27": check_key_27_no_empty_sov_files,
+        "28": check_key_28_subatomic_file_size_law,
+        "29": check_key_29_function_length_limits,
+        "30": check_key_30_nesting_depth_limits,
+        "31": check_key_31_max_path_depth_sov,
+        "32": check_key_32_fake_nesting_names,
+        "33": check_key_33_missing_init_files,
+        "34": check_key_34_empty_sov_directories,
+        "35": check_key_35_gitignore_exists_and_patterns,
+        "36": check_key_36_no_git_submodules,
+        "37": check_key_37_large_binaries_in_sov,
+        "38": check_key_38_readme_canon_badge,
+        "39": check_key_39_docstring_requirements,
+        "40": check_key_40_validator_self_sanity,
+        "41": check_key_41_light_no_debug,
+        "42": check_key_42_light_todo_fixme,
+        "43": check_key_43_light_no_tiny_files,
+        "44": check_key_44_light_no_pass_only_defs,
+        "45": check_key_45_light_no_bare_except,
+        "46": check_key_46_light_no_secrets,
+        "47": check_key_47_no_zombie_archive_anywhere,
+        "48": check_key_48_final_depth_canon,
+        "49": check_key_49_no_smashed_filenames,
+        "50": check_key_50_canon_meta_integrity,
+    }
 
-    fails = [k for k, v in effective_results.items() if not v[0]]
-    passed = [k for k, v in effective_results.items() if v[0]]
-    total_keys = len(effective_results)
-
-    if not args.silent:
-        print()
-        for k in sorted(effective_results.keys(), key=lambda x: int(x)):
-            passed_flag, msg = effective_results[k]
-            icon = "[PASS]" if passed_flag else "[FAIL]"
-            print(f"{icon} Key {k}: {msg}")
-        print()
-        print("=" * 64)
-        print(f"RESULT: {len(passed)}/{total_keys} keys passed")
-
-    if fails:
-        if not args.silent:
-            print(f"FAILED KEYS: {', '.join(sorted(fails, key=lambda x: int(x)))}")
-            print("COMMIT BLOCKED / PIPELINE FAILED — FIX THE FAILS")
-        sys.exit(1)
+    # 3. Determine Execution Scope
+    keys_to_run = []
+    if args.only:
+        targets = [k.strip() for k in args.only.split(",")]
+        keys_to_run = [k if len(k) == 2 else f"0{k}" for k in targets]
+        for k in keys_to_run:
+            if k not in key_map:
+                if not args.json: print(f"Unknown key: {k}")
     else:
+        keys_to_run = sorted(key_map.keys())
+
+    # 4. Execute
+    for k in keys_to_run:
+        if k in key_map:
+            key_map[k]()
+
+    # 5. Output Handling
+    if args.json:
+        output = {
+            "summary": {"total": len(keys_to_run), "passed": 0, "failed": 0},
+            "failures": {}
+        }
+        for k in keys_to_run:
+            passed, msg = results.get(k, (False, "Not Run"))
+            if passed:
+                output["summary"]["passed"] += 1
+            else:
+                output["summary"]["failed"] += 1
+                lines = msg.split('\n')
+                header = lines[0]
+                # Extract file paths from bullet points
+                files = [l.strip().replace("- ", "").replace("• ", "") for l in lines[1:] if l.strip()]
+                # If bullet points are complex (contain reason), split them
+                clean_files = []
+                for f in files:
+                    if " – " in f: clean_files.append(f.split(" – ")[0])
+                    elif " -> " in f: clean_files.append(f.split(" -> ")[0])
+                    else: clean_files.append(f)
+                
+                output["failures"][k] = {"error": header, "files": clean_files}
+        
+        print(json.dumps(output, indent=2))
+        sys.exit(1 if output["summary"]["failed"] > 0 else 0)
+
+    else:
+        fails = [k for k in keys_to_run if not results.get(k, (False, ""))[0]]
+        passed = [k for k in keys_to_run if results.get(k, (False, ""))[0]]
         if not args.silent:
-            print(f"{len(passed)}/{total_keys} — SUBATOMIC COMPLIANCE ACHIEVED")
-        sys.exit(0)
+            print()
+            for k in keys_to_run:
+                if k in results:
+                    p, m = results[k]
+                    icon = "[PASS]" if p else "[FAIL]"
+                    print(f"{icon} Key {k}: {m}")
+            print("=" * 64)
+            print(f"RESULT: {len(passed)}/{len(keys_to_run)} keys passed")
+        sys.exit(1 if fails else 0)
 
 
 if __name__ == "__main__":

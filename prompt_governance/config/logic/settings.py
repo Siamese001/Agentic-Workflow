@@ -7,7 +7,7 @@ within the shared application layer.
 """
 
 import logging
-from typing import Dict, Optional, Any
+from typing import Union, Dict, Optional, Any
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class Settings:
         self.config = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def process(self, payload: Any, context: Optional[Dict] = None) -> ExecutionResult:
+    def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
         
@@ -54,11 +54,11 @@ class Settings:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
-    def _execute_logic(self, data: Any, context: Optional[Dict]) -> Any:
+    def _execute_logic(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict]) -> Union[str, int, float, bool, List, Dict]:
         """Internal execution executor to be implemented or extended."""
         return data
 
-def run_process(data: Any) -> ExecutionResult:
+def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResult:
     """Module-level entry point."""
     executor = Settings()
     return executor.process(data)

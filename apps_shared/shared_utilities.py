@@ -7,7 +7,7 @@ within the shared application layer.
 """
 
 import logging
-from typing import Dict, Optional, Any
+from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 class ExecutionResult:
     """Standardized operation result container."""
     success: bool
-    data: Optional[Any] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    data: Optional[Union[str, int, float, bool, List, Dict]] = None
+    metadata: Dict[str, Union[str, int, float, bool, List, Dict]] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 class SharedUtilities:
@@ -28,11 +28,11 @@ class SharedUtilities:
     across the sovereign domain.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, Union[str, int, float, bool, List, Dict]]] = None):
         self.config = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def process(self, payload: Any, context: Optional[Dict] = None) -> ExecutionResult:
+    def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
         
@@ -54,11 +54,11 @@ class SharedUtilities:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
-    def _execute_logic(self, data: Any, context: Optional[Dict]) -> Any:
+    def _execute_logic(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict]) -> Union[str, int, float, bool, List, Dict]:
         """Internal execution executor to be implemented or extended."""
         return data
 
-def run_process(data: Any) -> ExecutionResult:
+def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResult:
     """Module-level entry point."""
     executor = SharedUtilities()
     return executor.process(data)
