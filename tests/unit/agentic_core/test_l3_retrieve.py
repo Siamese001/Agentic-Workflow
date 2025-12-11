@@ -1,6 +1,6 @@
 """Unit tests for L3_orchestration/P1_retrieve - workflow context retrieval."""
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict
 
 class TestWorkflowContextRetrieval:
     """Tests for retrieving workflow context."""
@@ -36,6 +36,6 @@ class TestWorkflowContextRetrieval:
 
     def test_retrieve_missing_checkpoint(self):
         """Edge case: Missing checkpoint returns None."""
-        checkpoints: Dict[str, Any] = {}
+        checkpoints: Dict[str, object] = {}
         checkpoint = checkpoints.get("nonexistent")
         assert checkpoint is None

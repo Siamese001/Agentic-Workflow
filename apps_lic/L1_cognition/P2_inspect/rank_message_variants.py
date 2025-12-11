@@ -5,7 +5,6 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.052103
 """
 
-from __future__ import annotations
 import logging
 from typing import Union, Dict, Optional
 from shared.result_types import OperationResult
@@ -17,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class RankMessageVariants:
-    """Operations handler for outreach domain."""
+    """Operations executor for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
@@ -32,7 +31,7 @@ class RankMessageVariants:
             logger.error(f"Processing failed: {e}")
             return OperationResult(success=False, metadata={"error": str(e)})
 
-    def _execute(self, data: Union[str, Dict], context: Optional[Dict]) -> Any:
+    def _execute(self, data: Union[str, Dict], context: Optional[Dict]) -> object:
         """Execute processing."""
         return data
 

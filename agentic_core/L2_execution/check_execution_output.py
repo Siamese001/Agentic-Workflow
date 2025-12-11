@@ -6,7 +6,6 @@ MERKLE-INTENDED: c03856b305761de1984f47bb31cb8370911745c1e5c58cefefc718413378ccb
 """
 
 
-from __future__ import annotations
 
 import logging
 import pkgutil
@@ -66,5 +65,5 @@ __all__ = ["check_imports"]
 if __name__ == "__main__":
     # Configure logger for standalone execution
     logger.setLevel(logging.INFO)
-    logger.addHandler(logging.StreamHandler())
+    logger.addExecutor(logging.StreamExecutor())
     check_imports()

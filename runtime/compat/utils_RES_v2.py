@@ -18,7 +18,7 @@ warnings.warn(
 )
 
 # Re-export all utils from the canonical location
-from ..shared.utils import (
+from runtime.shared.utils import TextUtils, text_utils, DuplicateDetector, TelemetryLogger, WorkflowLogFilter, setup_workflow_logging, create_directory_if_missing, sanitize_filename, calculate_signal_score, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning, build_generation_prompt_with_reinforced_constraints
     # Classes
     TextUtils,
     text_utils,
@@ -36,19 +36,8 @@ from ..shared.utils import (
 )
 
 # Re-export config items that were historically accessed via utils
-from ..shared.config import (
-    CACHE_DIR,
-    DATA_DIR,
-    PROMPT_ADDENDUM_CONFIG,
-)
 
 # Re-export models that were historically accessed via utils
-from ..shared.models import (
-    ThematicAnalysis,
-    ValidationResult,
-    ValidationSeverity,
-    ReasoningConfig,
-)
 
 __all__ = [
     # Classes

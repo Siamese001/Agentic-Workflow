@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """RAG configuration for resume generation."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Dict
@@ -28,10 +27,10 @@ class RAGConfig:
     phase_timeout_seconds: int = 60
     circuit_breaker_threshold: int = 5
     circuit_breaker_timeout: int = 60
-    cache_dir: str = "/tmp/jd_cache"
+    cache_dir: str = "/staging/jd_cache"
     cache_ttl_days: int = 30
     telemetry_enabled: bool = True
-    telemetry_log_dir: str = "/tmp/rag_telemetry"
+    telemetry_log_dir: str = "/staging/rag_telemetry"
     source_weights: Dict[str, float] = field(default_factory=lambda: {
         "SOURCE_JD": 1.8, "SOURCE_COMPANY_BLOG": 1.5, "SOURCE_TARGET_EMPLOYEE": 1.4,
         "SOURCE_GARTNER_MQ": 1.2, "SOURCE_PEER_JD": 0.8, "SOURCE_GENERIC_PROFILE": 0.5,

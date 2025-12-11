@@ -1,18 +1,17 @@
 # Ownership: agentic_core / L1_cognition
 # -*- coding: utf-8 -*-
-"""Build Filters - atomic wrapper."""
-
-from __future__ import annotations
-
-from typing import Any, Dict
+"""Build Filters - atomic execution layer."""
 
 
+from typing import Dict
 
-def build_filters(data: Dict[str, Any]) -> Dict[str, Any]:
+
+
+def build_filters(data: Dict[str, object]) -> Dict[str, object]:
     """Process build filters data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_build_filters_config() -> Dict[str, Any]:
+def get_build_filters_config() -> Dict[str, object]:
     """Get configuration for build_filters."""
     return {"enabled": True, "version": "1.0"}

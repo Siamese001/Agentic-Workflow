@@ -5,7 +5,6 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.059373
 """
 
-from __future__ import annotations
 import logging
 from typing import Union, Dict, Optional
 from shared.result_types import DiagnosticReport
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 class DiagnosePersonalizationIssues:
     """Diagnostics for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 

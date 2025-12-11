@@ -1,16 +1,17 @@
 """Logic/property tests for safety escalation and thresholds."""
 from __future__ import annotations
 
-from agentic_workflow.runtime.shared.config import SAFETY_THRESHOLD
-from agentic_workflow.runtime.shared.models import GateDecision, ValidationSeverity
+from shared.reasoning_config import SAFETY_THRESHOLD
+from shared.models import GateDecision, ValidationSeverity
 
 class TestSafetyThresholdProperties:
     def test_threshold_in_valid_range(self):
         assert 0.0 <= SAFETY_THRESHOLD <= 1.0
 
     def test_threshold_determinism(self):
-        from agentic_workflow.runtime.shared.config import SAFETY_THRESHOLD as T2
-        assert SAFETY_THRESHOLD == T2
+        from shared.reasoning_config import SAFETY_THRESHOLD
+        # SAFETY_THRESHOLD should be deterministic
+        assert SAFETY_THRESHOLD == 0.95
 
 class TestGateDecisionProperties:
     def test_gate_decision_has_values(self):

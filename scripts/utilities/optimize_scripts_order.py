@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.890043
 
 from __future__ import annotations
 import logging
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Callable, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -20,18 +20,18 @@ class OptimizationResult:
     """Result of optimization."""
     items: List[Any]
     method: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class OptimizeScriptsOrder:
     """Optimizer for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.method = self.config.get("method", "score")
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def optimize(self, items: List[T], key: Optional[Callable[[T], Any]] = None) -> OptimizationResult:
+    def optimize(self, items: List[T], key: Optional[Callable[[T], object]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
             return OptimizationResult(items=[], method=self.method)

@@ -13,7 +13,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, Any
+from datetime import datetime
 
 # Re-exports for backwards compatibility
 from shared.reasoning_config import ReasoningConfig
@@ -28,6 +29,10 @@ __all__ = [
     "HopStatus",
     "GateDecision",
     "HopCheckpoint",
+    "Provider",
+    "APICallStatus",
+    "RAGState",
+    "ImmutableStagingBuffer",
 ]
 
 
@@ -49,21 +54,84 @@ class ValidationResult:
     passed: bool
     severity: ValidationSeverity
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class ThematicAnalysis:
     """Thematic analysis results from content inspection."""
 
-    primary_theme: Dict[str, Any] = field(default_factory=dict)
-    secondary_themes: List[Dict[str, Any]] = field(default_factory=list)
-    role_classification: Dict[str, Any] = field(default_factory=dict)
-    positioning_directives: Dict[str, Any] = field(default_factory=dict)
-    authenticity_patterns: Dict[str, Any] = field(default_factory=dict)
-    competitive_intelligence: Any = None
-    problem_solution_narratives: Optional[Dict[str, Any]] = None
+    primary_theme: Dict[str, object] = field(default_factory=dict)
+    secondary_themes: List[Dict[str, object]] = field(default_factory=list)
+    role_classification: Dict[str, object] = field(default_factory=dict)
+    positioning_directives: Dict[str, object] = field(default_factory=dict)
+    authenticity_patterns: Dict[str, object] = field(default_factory=dict)
+    competitive_intelligence: object = None
+    problem_solution_narratives: Optional[Dict[str, object]] = None
     signal_quality_score: float = 0.0
     retrieval_method: str = "UNKNOWN"
     retrieval_sources: List[Any] = field(default_factory=list)
-    weighting_formula: Optional[Dict[str, Any]] = None
+    weighting_formula: Optional[Dict[str, object]] = None
+
+
+class Provider(str, Enum):
+    """Available LLM providers."""
+    
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    MISTRAL = "mistral"
+    COHERE = "cohere"
+    GROQ = "groq"
+    TOGETHER = "together"
+    FIREWORKS = "fireworks"
+
+
+class APICallStatus(Enum):
+    """Status of API calls."""
+    
+    PENDING = auto()
+    IN_PROGRESS = auto()
+    COMPLETED = auto()
+    FAILED = auto()
+    TIMEOUT = auto()
+    RATE_LIMITED = auto()
+
+
+@dataclass
+class RAGState:
+    """State of RAG (Retrieval-Augmented Generation) process."""
+    
+    query: str = ""
+    retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
+    context: str = ""
+    response: str = ""
+    retrieval_score: float = 0.0
+    generation_confidence: float = 0.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ImmutableStagingBuffer:
+    """Immutable buffer for staging data transformations."""
+    
+    data: Dict[str, Any] = field(default_factory=dict)
+    version: int = 1
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    checksum: Optional[str] = None
+    
+    def with_data(self, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
+        """Return a new buffer with updated data."""
+        return ImmutableStagingBuffer(
+            data={**self.data, **new_data},
+            version=self.version + 1,
+            timestamp=datetime.utcnow(),
+            checksum=None
+        )
+    
+    def clear(self) -> ImmutableStagingBuffer:
+        """Return a new empty buffer."""
+        return ImmutableStagingBuffer(
+            version=self.version + 1,
+            timestamp=datetime.utcnow()
+        )

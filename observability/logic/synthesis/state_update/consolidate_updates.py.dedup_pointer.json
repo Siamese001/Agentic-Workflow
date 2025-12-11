@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\logic\\synthesis\\state_update_ops\\consolidate_updates.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "111ab4d9e1b81ea9",
-  "original_path": "C:\\Git\\Agentic-Workflow\\07_observability\\logic\\synthesis\\state_update_ops\\consolidate_updates.py",
-  "created": "2025-12-07T11:54:50.662107"
-}

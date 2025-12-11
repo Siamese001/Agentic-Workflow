@@ -4,18 +4,11 @@ AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
 L5 CANONICAL — WINDSURF Ω — 2025-12-07
 MERKLE-INTENDED: ed54bc2a5b1899525e3ab9d8ee09a0bc8b5569eae38526b2970b2fb2587448c4
 """
-from __future__ import annotations
 # Retry operations for failed orchestration tasks
 
 """Simulation registry to look up simulator instances."""
 
 
-from simulations.engines import (
-    DraftSimulator,
-    RAGSimulator,
-    SafetySimulator,
-    StrategySimulator,
-)
 
 
 SIMULATION_REGISTRY = {

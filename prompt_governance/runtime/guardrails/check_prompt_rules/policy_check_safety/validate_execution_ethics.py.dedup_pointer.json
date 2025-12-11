@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\pipeline_ops\\guardrails\\check_rules\\policy_check_safety\\validate_orchestration_ethics.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "2df08d359eefb29c",
-  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\runtime_ops\\guardrails\\check_prompt_rules\\policy_check_safety\\validate_execution_ethics.py",
-  "created": "2025-12-07T11:54:46.685511"
-}

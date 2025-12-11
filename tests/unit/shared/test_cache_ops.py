@@ -3,7 +3,7 @@ Unit tests for shared/cache_ops/
 Tests cache operations including data access and guardrails.
 """
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict
 from datetime import datetime, timedelta
 import hashlib
 import json
@@ -28,20 +28,20 @@ class TestCacheDataAccess:
 
     def test_cache_get_hit(self):
         """Cache returns stored value on hit."""
-        cache: Dict[str, Any] = {"key_123": {"data": "cached_value"}}
+        cache: Dict[str, object] = {"key_123": {"data": "cached_value"}}
         result = cache.get("key_123")
         assert result is not None
         assert result["data"] == "cached_value"
 
     def test_cache_get_miss(self):
         """Cache returns None on miss."""
-        cache: Dict[str, Any] = {}
+        cache: Dict[str, object] = {}
         result = cache.get("nonexistent_key")
         assert result is None
 
     def test_cache_set_and_retrieve(self):
         """Cache stores and retrieves values correctly."""
-        cache: Dict[str, Any] = {}
+        cache: Dict[str, object] = {}
         cache["test_key"] = {"value": 42, "timestamp": datetime.now().isoformat()}
         retrieved = cache.get("test_key")
         assert retrieved["value"] == 42

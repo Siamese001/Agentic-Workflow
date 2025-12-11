@@ -1,13 +1,12 @@
 # Ownership: agentic_core / L3_orchestration
 # -*- coding: utf-8 -*-
-"""Apply Orchestration Action - atomic wrapper."""
-
-from __future__ import annotations
-
-from typing import Any, Dict
+"""Apply Orchestration Action - atomic execution layer."""
 
 
+from typing import Dict
 
-def apply_orchestration_action(data: Dict[str, Any]) -> Dict[str, Any]:
+
+
+def apply_orchestration_action(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply orchestration action data."""
     return {"status": "processed", "input_keys": list(data.keys())}

@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\logic\\synthesis\\pick_best_result\\refinement_adjust_scores\\optimize_order.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "51808e15b8ee7ff4",
-  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\logic\\synthesis\\pick_best_result\\refinement_adjust_scores\\optimize_schema_order.py",
-  "created": "2025-12-07T11:54:50.681229"
-}

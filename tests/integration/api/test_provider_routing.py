@@ -3,11 +3,17 @@ from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 import pytest
+from runtime.shared.multi_provider_clients import reset_all_clients
 
-from agentic_workflow.runtime.shared.multi_provider_clients import (
-    Provider, get_client, get_available_providers, reset_all_clients,
-)
+# Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
+# skip_if_no_keys = pytest.mark.skipif(
+#     not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
+#     reason="No API keys configured for integration tests"
+# )
+skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validation")
 
+
+@skip_if_no_keys
 class TestProviderRouting:
     @pytest.fixture(autouse=True)
     def reset_state(self):

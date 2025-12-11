@@ -1,0 +1,7 @@
+
+ERROR tests/unit/agentic_core/test_fallback_paths.py
+ERROR tests/unit/agentic_core/test_tool_request_builder.py
+ERROR tests/unit/schemas/test_memory_schema_validation.py
+ERROR tests/unit/schemas/test_planning_schema_validation.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!
+

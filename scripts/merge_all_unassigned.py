@@ -65,7 +65,7 @@ def analyze_content(filepath: Path) -> Dict:
     try:
         with open(filepath, "r", encoding="utf-8", errors="replace") as f:
             content = f.read(5000)
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return {"type": "binary", "hints": []}
 
     hints = []
@@ -155,7 +155,7 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
             return f"logic/audit/{filename}", "observability_audit"
         if any(x in name_lower for x in ["inspector", "profiler", "verifier", "checker"]):
             return f"logic/inspection/{filename}", "observability_inspection"
-        return f"logic/general/{filename}", "observability_general"
+        return f"logic/standard/{filename}", "observability_general"
 
     # === 08_scripts ===
     if root_name == "scripts":
@@ -189,8 +189,8 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
             # Content generation
             if any(x in name_lower for x in ["content", "format", "generate", "build", "create"]):
                 return f"apps_lic/generation/{filename}", "apps_lic_generation"
-            # API/service
-            if any(x in name_lower for x in ["api", "call", "fetch", "service"]):
+            # API/provider
+            if any(x in name_lower for x in ["api", "call", "fetch", "provider"]):
                 return f"shared/api/{filename}", "apps_shared_api"
             # Safety
             if any(x in name_lower for x in ["safety", "compliance", "risk", "assess"]):
@@ -281,7 +281,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                     manifest.routed_files += 1
                     print(f"  [DRY-RUN] {filename} -> {target_subpath}")
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 manifest.errors.append({
                     "source": str(filepath),
                     "error": str(e),
@@ -291,16 +291,14 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
     if not dry_run:
         for unassigned_path, _ in unassigned_folders:
             try:
-                # Remove empty directories recursively
-                for dirpath in sorted(unassigned_path.rglob("*"), key=lambda p: len(str(p)), reverse=True):
+                                for dirpath in sorted(unassigned_path.rglob("*"), key=lambda p: len(str(p)), reverse=True):
                     if dirpath.is_dir() and not any(dirpath.iterdir()):
                         dirpath.rmdir()
 
-                # Remove the _unassigned folder itself if empty
-                if unassigned_path.exists() and not any(unassigned_path.iterdir()):
+                                if unassigned_path.exists() and not any(unassigned_path.iterdir()):
                     unassigned_path.rmdir()
                     print(f"  Removed empty: {unassigned_path.relative_to(REPO_ROOT)}")
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 manifest.errors.append({
                     "source": str(unassigned_path),
                     "error": f"Cleanup failed: {e}",

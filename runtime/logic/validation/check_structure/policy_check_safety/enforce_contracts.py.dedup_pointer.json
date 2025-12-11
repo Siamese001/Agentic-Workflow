@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\runtime_ops\\validation\\check_structure\\policy_check_safety\\enforce_execution_contracts.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "d32c0c36392c2229",
-  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\logic\\validation\\check_structure\\policy_check_safety\\enforce_contracts.py",
-  "created": "2025-12-07T11:54:50.577083"
-}

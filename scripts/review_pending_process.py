@@ -20,7 +20,7 @@ def get_file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
     try:
         return hashlib.md5(path.read_bytes()).hexdigest()
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return ""
 
 
@@ -40,7 +40,7 @@ def has_real_code(path: Path) -> bool:
             if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and not stripped.startswith("'''"):
                 code_lines += 1
         return code_lines > 20
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return False
 
 
@@ -126,16 +126,14 @@ def main():
 
     print(f"  Moved {files_moved} files to archive")
 
-    # Remove empty directories
-    for d in sorted(REVIEW_PENDING.rglob('*'), reverse=True):
+        for d in sorted(REVIEW_PENDING.rglob('*'), reverse=True):
         if d.is_dir():
             try:
                 d.rmdir()
             except OSError:
                 ...
 
-    # Remove review_pending if empty
-    try:
+        try:
         REVIEW_PENDING.rmdir()
         print("  Removed empty review_pending directory")
     except OSError:

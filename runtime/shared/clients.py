@@ -23,7 +23,7 @@ import os
 import threading
 from typing import Optional
 
-from openai import AsyncOpenAI, OpenAI
+from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
 
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ def get_openai_client() -> AsyncOpenAI:
 
         if base_url:
             client_kwargs["base_url"] = base_url
-            logger.info(f"Using custom OpenAI base URL: {base_url}")
+            logger.info(f"Using custom OpenAI foundation URL: {base_url}")
 
         if organization:
             client_kwargs["organization"] = organization

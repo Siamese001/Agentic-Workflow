@@ -3,11 +3,8 @@ from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 import pytest
+from runtime.shared.multi_provider_clients import Provider, get_api_key, get_client, reset_all_clients, ProviderConfig, DEFAULT_MAX_RETRIES
 
-from agentic_workflow.runtime.shared.multi_provider_clients import (
-    Provider, ProviderConfig, get_api_key, get_client,
-    reset_all_clients, DEFAULT_MAX_RETRIES,
-)
 
 class TestProviderEnum:
     def test_provider_values(self):
@@ -37,8 +34,9 @@ class TestGetClient:
     def test_singleton(self):
         reset_all_clients()
         with patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"}):
-            with patch("agentic_workflow.runtime.shared.multi_provider_clients.AsyncOpenAI") as m:
-                m.return_value = MagicMock()
+            with patch("runtime.shared.multi_provider_clients._create_client") as m:
+                mock_client = MagicMock()
+                m.return_value = mock_client
                 c1, c2 = get_client(Provider.OPENAI), get_client(Provider.OPENAI)
                 assert c1 is c2
                 assert m.call_count == 1

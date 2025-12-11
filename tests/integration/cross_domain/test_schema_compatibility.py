@@ -1,13 +1,9 @@
 """Integration tests for cross-domain schema compatibility."""
 from __future__ import annotations
 
-from agentic_workflow.runtime.shared.config import SAFETY_THRESHOLD
-from agentic_workflow.runtime.shared.models import (
-    GateDecision, ValidationSeverity, ValidationResult,
-)
-from agentic_workflow.runtime.shared.sdk_registry import (
-    SDKCategory, SDK_REGISTRY,
-)
+from shared.reasoning_config import SAFETY_THRESHOLD
+from shared.models import ValidationResult, ValidationSeverity, GateDecision
+from runtime.shared.sdk_registry import SDK_REGISTRY, SDKCategory
 
 class TestConfigSchemaCompatibility:
     def test_config_safety_threshold_matches_models(self):
@@ -15,11 +11,12 @@ class TestConfigSchemaCompatibility:
         assert 0 <= SAFETY_THRESHOLD <= 1
         # Can create validation result using threshold
         result = ValidationResult(
-            is_valid=SAFETY_THRESHOLD > 0.5,
+            rule_id="threshold_check",
+            passed=SAFETY_THRESHOLD > 0.5,
             severity=list(ValidationSeverity)[0],
             message=f"Threshold: {SAFETY_THRESHOLD}",
         )
-        assert isinstance(result.is_valid, bool)
+        assert isinstance(result.passed, bool)
 
     def test_sdk_registry_categories_are_valid(self):
         """All SDK entries have valid categories."""

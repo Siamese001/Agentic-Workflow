@@ -18,7 +18,7 @@ class TestScoreCalculation:
     """Tests for score calculation."""
 
     def test_simple_score_calculation(self):
-        """Simple score is calculated correctly."""
+        """basic score is calculated correctly."""
         relevance = 0.8
         recency = 0.9
         quality = 0.7
@@ -185,10 +185,10 @@ class TestScoreThresholds:
         """Dynamic threshold based on score distribution."""
         scores = [0.9, 0.85, 0.7, 0.5, 0.3]
 
-        # Dynamic threshold: top 40%
+        # Dynamic threshold: top 40% (2 out of 5)
         sorted_scores = sorted(scores, reverse=True)
-        top_40_percent_idx = int(len(sorted_scores) * 0.4)
-        dynamic_threshold = sorted_scores[top_40_percent_idx]
+        top_40_percent_count = int(len(sorted_scores) * 0.4)
+        dynamic_threshold = sorted_scores[top_40_percent_count - 1]  # -1 because index is 0-based
 
         above_threshold = [s for s in scores if s >= dynamic_threshold]
         assert len(above_threshold) == 2

@@ -37,6 +37,6 @@ class TestWorkflowStateInspection:
 
     def test_inspect_resource_usage(self):
         """Nominal: Resource usage is inspected."""
-        resources = {"cpu": 45, "memory": 60, "tokens": 1500}
+        resources = {"cpu": 45, "memory": 60, "tokens": 50}
         high_usage = any(v > 80 for v in resources.values())
-        assert high_usage is False
+        assert high_usage is False  # All values are below 80

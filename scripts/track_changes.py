@@ -17,7 +17,7 @@ def main():
     root = Path(".").resolve()
 
     # Tracker file location - in .git directory
-    tracker_path = root / ".git" / "CANON_CHANGE.tmp"
+    tracker_path = root / ".git" / "CANON_CHANGE.staging"
 
     # Get staged changes from git (deletions and renames)
     result = subprocess.run(

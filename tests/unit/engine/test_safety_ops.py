@@ -4,7 +4,8 @@ Tests safety operations including check_rules.
 """
 from __future__ import annotations
 import re
-from typing import Dict, List, Any
+import scripts.check_canonical_structure
+from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 
@@ -18,7 +19,7 @@ class SafetyViolationType(Enum):
 class SafetyCheckResult:
     is_safe: bool
     violations: List[SafetyViolationType]
-    details: Dict[str, Any]
+    details: Dict[str, object]
     risk_score: float
 
 class TestCheckRules:

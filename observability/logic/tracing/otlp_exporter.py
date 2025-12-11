@@ -5,10 +5,9 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.860156
 """
 
-from __future__ import annotations
 import logging
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
@@ -25,10 +24,10 @@ class ExportResult:
 
 
 class BaseExporter(ABC):
-    """Base class for exporters."""
+    """foundation class for exporters."""
 
     @abstractmethod
-    def export(self, data: Any) -> ExportResult:
+    def export(self, data: object) -> ExportResult:
         """Export data."""
         ...
 
@@ -36,19 +35,19 @@ class BaseExporter(ABC):
 class OtlpExporter(BaseExporter):
     """Exporter for tracing domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.destination = self.config.get("destination", "stdout")
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def export(self, data: Any) -> ExportResult:
+    def export(self, data: object) -> ExportResult:
         """Export data to destination."""
         try:
             items = data if isinstance(data, list) else [data]
 
             if self.destination == "stdout":
                 for item in items:
-                    print(json.dumps(item, default=str, indent=2))
+                    logger.debug(json.dumps(item, default=str, indent=2))
             elif self.destination == "file":
                 filepath = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
@@ -59,7 +58,7 @@ class OtlpExporter(BaseExporter):
                 items_exported=len(items),
                 destination=self.destination
             )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
                 success=False,
@@ -69,6 +68,6 @@ class OtlpExporter(BaseExporter):
             )
 
 
-def export_data(data: Any, config: Optional[Dict] = None) -> ExportResult:
+def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""
     return OtlpExporter(config).export(data)

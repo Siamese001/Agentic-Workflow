@@ -1,5 +1,6 @@
 """E2E tests for complete outreach campaign lifecycle."""
 from __future__ import annotations
+import re
 from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
@@ -236,7 +237,7 @@ Would you be open to a brief conversation?
         message = "Hi {first_name}, I noticed {company} recently {recent_news}."
 
         # Check for unresolved placeholders
-        import re
+        import scripts.check_canonical_structure
         re.findall(r'\{[^}]+\}', message)
 
         # After personalization, should be empty

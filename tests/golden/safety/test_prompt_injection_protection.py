@@ -4,8 +4,8 @@
 # ================================================================================
 
 """Prompt injection detection tests."""
-from src.lic_agentic.safety import prompt_injection
-from src.lic_agentic.safety.prompt_injection import detect_injection
+import apps_lic.safety.prompt_injection as prompt_injection
+from apps_lic.safety.prompt_injection import detect_injection
 
 
 def test_detect_injection_high_severity():

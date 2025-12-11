@@ -9,7 +9,7 @@ from unittest.mock import Mock
 try:
     from agentic_core.l4_memory.providers.rag_provider import RAGProvider
     from agentic_core.l4_memory.providers.provider_registry import ProviderRegistry
-    from agentic_core.l2_execution.executors.company_research_executor import CompanyResearchExecutor
+    from apps_rg.L2_execution.rg_company_research_executor import CompanyResearchExecutor
 except ImportError:
     RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
 

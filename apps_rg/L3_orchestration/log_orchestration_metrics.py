@@ -5,9 +5,8 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.216679
 """
 
-from __future__ import annotations
 import logging
-from typing import Union, Dict, Optional, Any
+from typing import Union, Dict, Optional
 from shared.result_types import DiagnosticReport
 
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 class LogOrchestrationMetrics:
     """Diagnostics for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 

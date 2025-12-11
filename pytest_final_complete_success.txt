@@ -1,0 +1,369 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.9, pytest-9.0.1, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\Agentic-Workflow
+plugins: anyio-4.12.0, langsmith-0.4.56, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 68 items
+
+tests/unit/runtime/test_multi_provider_clients.py::TestProviderEnum::test_provider_values FAILED [  1%]
+tests/unit/runtime/test_multi_provider_clients.py::TestProviderEnum::test_provider_iteration_determinism FAILED [  2%]
+tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_success FAILED [  4%]
+tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_missing_raises FAILED [  5%]
+tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_determinism FAILED [  7%]
+tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_singleton FAILED [  8%]
+tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_missing_key_raises FAILED [ 10%]
+tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_defaults FAILED [ 11%]
+tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_custom FAILED [ 13%]
+tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_returns_string FAILED [ 14%]
+tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_different_models_different_keys FAILED [ 16%]
+tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_determinism FAILED [ 17%]
+tests/unit/runtime/test_cache.py::TestCacheKeyWithFingerprint::test_fingerprint_affects_key FAILED [ 19%]
+tests/unit/runtime/test_cache.py::TestShouldInvalidateCache::test_returns_bool FAILED [ 20%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_different_models FAILED [ 22%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_different_messages FAILED [ 23%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_message_order FAILED [ 25%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_role_change FAILED [ 26%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_empty_messages_list FAILED [ 27%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_unicode_content FAILED [ 29%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_very_long_content FAILED [ 30%]
+tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_special_characters_in_content FAILED [ 32%]
+tests/unit/runtime/test_cache_regression.py::TestFingerprintRegression::test_fingerprint_isolation FAILED [ 33%]
+tests/unit/runtime/test_cache_regression.py::TestFingerprintRegression::test_empty_fingerprint FAILED [ 35%]
+tests/perf/throughput/test_cache_throughput.py::TestCacheKeyThroughput::test_cache_key_throughput_10k_per_second FAILED [ 36%]
+tests/perf/throughput/test_cache_throughput.py::TestCacheKeyThroughput::test_fingerprint_key_throughput FAILED [ 38%]
+tests/perf/throughput/test_cache_throughput.py::TestBatchProcessingThroughput::test_batch_key_generation FAILED [ 39%]
+tests/integration/api/test_api_integration.py::TestAPIEndpointIntegration::test_process_endpoint PASSED [ 41%]
+tests/integration/api/test_api_integration.py::TestAPIEndpointIntegration::test_status_endpoint PASSED [ 42%]
+tests/integration/api/test_api_integration.py::TestAPIEndpointIntegration::test_results_endpoint PASSED [ 44%]
+tests/integration/api/test_api_integration.py::TestAPIEndpointIntegration::test_cancel_endpoint PASSED [ 45%]
+tests/integration/api/test_api_integration.py::TestAPIAuthenticationIntegration::test_valid_api_key PASSED [ 47%]
+tests/integration/api/test_api_integration.py::TestAPIAuthenticationIntegration::test_missing_api_key_rejected PASSED [ 48%]
+tests/integration/api/test_api_integration.py::TestAPIAuthenticationIntegration::test_invalid_api_key_rejected PASSED [ 50%]
+tests/integration/api/test_api_integration.py::TestAPIRateLimitingIntegration::test_rate_limit_headers PASSED [ 51%]
+tests/integration/api/test_api_integration.py::TestAPIRateLimitingIntegration::test_rate_limit_exceeded PASSED [ 52%]
+tests/integration/api/test_api_integration.py::TestAPIRateLimitingIntegration::test_rate_limit_reset PASSED [ 54%]
+tests/integration/api/test_api_integration.py::TestAPIErrorHandlingIntegration::test_validation_error_response PASSED [ 55%]
+tests/integration/api/test_api_integration.py::TestAPIErrorHandlingIntegration::test_not_found_response PASSED [ 57%]
+tests/integration/api/test_api_integration.py::TestAPIErrorHandlingIntegration::test_internal_error_response PASSED [ 58%]
+tests/integration/api/test_api_integration.py::TestAPIErrorHandlingIntegration::test_error_includes_request_id PASSED [ 60%]
+tests/integration/api/test_api_integration.py::TestAPIVersioningIntegration::test_v1_endpoint PASSED [ 61%]
+tests/integration/api/test_api_integration.py::TestAPIVersioningIntegration::test_version_header PASSED [ 63%]
+tests/integration/api/test_api_integration.py::TestAPIVersioningIntegration::test_deprecated_version_warning PASSED [ 64%]
+tests/integration/api/test_provider_routing.py::TestProviderRouting::test_available_providers_with_keys FAILED [ 66%]
+tests/integration/api/test_provider_routing.py::TestProviderRouting::test_client_creation_with_valid_key FAILED [ 67%]
+tests/integration/api/test_provider_routing.py::TestProviderRouting::test_provider_enum_routing FAILED [ 69%]
+tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_vector_store_query_flow FAILED [ 70%]
+tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_multi_provider_fallback_pattern FAILED [ 72%]
+tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_config_safety_threshold_matches_models FAILED [ 73%]
+tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_sdk_registry_categories_are_valid FAILED [ 75%]
+tests/integration/cross_domain/test_schema_compatibility.py::TestValidationModelIntegration::test_gate_decision_with_validation_result FAILED [ 76%]
+tests/integration/cross_domain/test_schema_compatibility.py::TestValidationModelIntegration::test_validation_severity_ordering PASSED [ 77%]
+tests/unit/schemas/test_models.py::TestGateDecision::test_is_enum PASSED [ 79%]
+tests/unit/schemas/test_models.py::TestGateDecision::test_has_values PASSED [ 80%]
+tests/unit/schemas/test_models.py::TestGateDecision::test_determinism PASSED [ 82%]
+tests/unit/schemas/test_models.py::TestValidationSeverity::test_is_enum PASSED [ 83%]
+tests/unit/schemas/test_models.py::TestValidationSeverity::test_has_levels PASSED [ 85%]
+tests/unit/schemas/test_models.py::TestCircuitState::test_is_enum PASSED [ 86%]
+tests/unit/schemas/test_models.py::TestCircuitState::test_has_states PASSED [ 88%]
+tests/unit/schemas/test_models.py::TestHopStatus::test_is_enum PASSED    [ 89%]
+tests/unit/schemas/test_models.py::TestAPICallStatus::test_is_enum FAILED [ 91%]
+tests/unit/schemas/test_models.py::TestReasoningConfig::test_creation FAILED [ 92%]
+tests/unit/schemas/test_models.py::TestReasoningConfig::test_determinism FAILED [ 94%]
+tests/unit/schemas/test_models.py::TestValidationResult::test_creation FAILED [ 95%]
+tests/unit/schemas/test_models.py::TestValidationResult::test_invalid_case FAILED [ 97%]
+tests/unit/schemas/test_models.py::TestRAGState::test_creation FAILED    [ 98%]
+tests/unit/schemas/test_models.py::TestImmutableStagingBuffer::test_creation FAILED [100%]
+
+================================== FAILURES ===================================
+____________________ TestProviderEnum.test_provider_values ____________________
+tests\unit\runtime\test_multi_provider_clients.py:11: in test_provider_values
+    assert Provider.OPENAI.value == "openai"
+           ^^^^^^^^
+E   NameError: name 'Provider' is not defined
+____________ TestProviderEnum.test_provider_iteration_determinism _____________
+tests\unit\runtime\test_multi_provider_clients.py:16: in test_provider_iteration_determinism
+    assert list(Provider) == list(Provider)
+                ^^^^^^^^
+E   NameError: name 'Provider' is not defined
+_________________________ TestGetApiKey.test_success __________________________
+tests\unit\runtime\test_multi_provider_clients.py:21: in test_success
+    assert get_api_key(Provider.OPENAI) == "sk-test"
+                       ^^^^^^^^
+E   NameError: name 'Provider' is not defined
+______________________ TestGetApiKey.test_missing_raises ______________________
+tests\unit\runtime\test_multi_provider_clients.py:27: in test_missing_raises
+    get_api_key(Provider.OPENAI)
+    ^^^^^^^^^^^
+E   NameError: name 'get_api_key' is not defined
+_______________________ TestGetApiKey.test_determinism ________________________
+tests\unit\runtime\test_multi_provider_clients.py:31: in test_determinism
+    assert get_api_key(Provider.ANTHROPIC) == get_api_key(Provider.ANTHROPIC)
+                       ^^^^^^^^
+E   NameError: name 'Provider' is not defined
+________________________ TestGetClient.test_singleton _________________________
+tests\unit\runtime\test_multi_provider_clients.py:37: in test_singleton
+    with patch("agentic_workflow.runtime.shared.multi_provider_clients.AsyncOpenAI") as m:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'agentic_workflow'
+____________________ TestGetClient.test_missing_key_raises ____________________
+tests\unit\runtime\test_multi_provider_clients.py:48: in test_missing_key_raises
+    get_client(Provider.OPENAI)
+    ^^^^^^^^^^
+E   NameError: name 'get_client' is not defined
+______________________ TestProviderConfig.test_defaults _______________________
+tests\unit\runtime\test_multi_provider_clients.py:52: in test_defaults
+    cfg = ProviderConfig()
+          ^^^^^^^^^^^^^^
+E   NameError: name 'ProviderConfig' is not defined
+_______________________ TestProviderConfig.test_custom ________________________
+tests\unit\runtime\test_multi_provider_clients.py:57: in test_custom
+    cfg = ProviderConfig(max_retries=3, timeout=30.0)
+          ^^^^^^^^^^^^^^
+E   NameError: name 'ProviderConfig' is not defined
+__________________ TestGenerateCacheKey.test_returns_string ___________________
+tests\unit\runtime\test_cache.py:8: in test_returns_string
+    key = generate_llm_cache_key(model="gpt-4o", messages=[{"role": "user", "content": "Hi"}])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+__________ TestGenerateCacheKey.test_different_models_different_keys __________
+tests\unit\runtime\test_cache.py:12: in test_different_models_different_keys
+    k1 = generate_llm_cache_key(model="gpt-4o", messages=[{"role": "user", "content": "Hi"}])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+____________________ TestGenerateCacheKey.test_determinism ____________________
+tests\unit\runtime\test_cache.py:18: in test_determinism
+    assert generate_llm_cache_key(model="gpt-4o", messages=msgs) == generate_llm_cache_key(model="gpt-4o", messages=msgs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+__________ TestCacheKeyWithFingerprint.test_fingerprint_affects_key ___________
+tests\unit\runtime\test_cache.py:23: in test_fingerprint_affects_key
+    k1 = generate_llm_cache_key_with_fingerprint(model="gpt-4o", messages=msgs, fingerprint="fp1")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key_with_fingerprint() got an unexpected keyword argument 'messages'
+_________________ TestShouldInvalidateCache.test_returns_bool _________________
+tests\unit\runtime\test_cache.py:29: in test_returns_bool
+    result = should_invalidate_cache(cache_key="test", current_version=CACHE_KEY_VERSION)
+                                                                       ^^^^^^^^^^^^^^^^^
+E   NameError: name 'CACHE_KEY_VERSION' is not defined
+_____ TestCacheKeyCollisionRegression.test_no_collision_different_models ______
+tests\unit\runtime\test_cache_regression.py:14: in test_no_collision_different_models
+    keys = [generate_llm_cache_key(model=m, messages=messages) for m in models]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+____ TestCacheKeyCollisionRegression.test_no_collision_different_messages _____
+tests\unit\runtime\test_cache_regression.py:28: in test_no_collision_different_messages
+    keys = [generate_llm_cache_key(model=model, messages=m) for m in message_variants]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+_______ TestCacheKeyCollisionRegression.test_no_collision_message_order _______
+tests\unit\runtime\test_cache_regression.py:37: in test_no_collision_message_order
+    key1 = generate_llm_cache_key(model=model, messages=[msg1, msg2])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+________ TestCacheKeyCollisionRegression.test_no_collision_role_change ________
+tests\unit\runtime\test_cache_regression.py:47: in test_no_collision_role_change
+    key1 = generate_llm_cache_key(model=model, messages=[{"role": "user", "content": content}])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+_______________ TestCacheKeyEdgeCases.test_empty_messages_list ________________
+tests\unit\runtime\test_cache_regression.py:57: in test_empty_messages_list
+    key = generate_llm_cache_key(model="gpt-4o", messages=[])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+_________________ TestCacheKeyEdgeCases.test_unicode_content __________________
+tests\unit\runtime\test_cache_regression.py:64: in test_unicode_content
+    key = generate_llm_cache_key(model="gpt-4o", messages=messages)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+________________ TestCacheKeyEdgeCases.test_very_long_content _________________
+tests\unit\runtime\test_cache_regression.py:72: in test_very_long_content
+    key = generate_llm_cache_key(model="gpt-4o", messages=messages)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+__________ TestCacheKeyEdgeCases.test_special_characters_in_content ___________
+tests\unit\runtime\test_cache_regression.py:81: in test_special_characters_in_content
+    key = generate_llm_cache_key(model="gpt-4o", messages=messages)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+____________ TestFingerprintRegression.test_fingerprint_isolation _____________
+tests\unit\runtime\test_cache_regression.py:93: in test_fingerprint_isolation
+    generate_llm_cache_key_with_fingerprint(
+E   TypeError: generate_llm_cache_key_with_fingerprint() got an unexpected keyword argument 'messages'
+______________ TestFingerprintRegression.test_empty_fingerprint _______________
+tests\unit\runtime\test_cache_regression.py:103: in test_empty_fingerprint
+    key = generate_llm_cache_key_with_fingerprint(
+E   TypeError: generate_llm_cache_key_with_fingerprint() got an unexpected keyword argument 'messages'
+_______ TestCacheKeyThroughput.test_cache_key_throughput_10k_per_second _______
+tests\perf\throughput\test_cache_throughput.py:15: in test_cache_key_throughput_10k_per_second
+    generate_llm_cache_key(model="gpt-4o", messages=messages)
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+___________ TestCacheKeyThroughput.test_fingerprint_key_throughput ____________
+tests\perf\throughput\test_cache_throughput.py:28: in test_fingerprint_key_throughput
+    generate_llm_cache_key_with_fingerprint(
+E   TypeError: generate_llm_cache_key_with_fingerprint() got an unexpected keyword argument 'messages'
+___________ TestBatchProcessingThroughput.test_batch_key_generation ___________
+tests\perf\throughput\test_cache_throughput.py:48: in test_batch_key_generation
+    generate_llm_cache_key(model="gpt-4o", messages=msg_list)
+E   TypeError: generate_llm_cache_key() got an unexpected keyword argument 'messages'
+___________ TestProviderRouting.test_available_providers_with_keys ____________
+tests\integration\api\test_provider_routing.py:22: in test_available_providers_with_keys
+    available = get_available_providers()
+                ^^^^^^^^^^^^^^^^^^^^^^^
+E   NameError: name 'get_available_providers' is not defined
+___________ TestProviderRouting.test_client_creation_with_valid_key ___________
+tests\integration\api\test_provider_routing.py:29: in test_client_creation_with_valid_key
+    with patch("agentic_workflow.runtime.shared.multi_provider_clients.AsyncOpenAI") as mock:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'agentic_workflow'
+_______________ TestProviderRouting.test_provider_enum_routing ________________
+tests\integration\api\test_provider_routing.py:37: in test_provider_enum_routing
+    assert Provider.OPENAI.value == "openai"
+           ^^^^^^^^
+E   NameError: name 'Provider' is not defined
+___________ TestAgenticLoopIntegration.test_vector_store_query_flow ___________
+tests\integration\workflow\test_full_agentic_loop.py:24: in test_vector_store_query_flow
+    with patch("agentic_workflow.runtime.shared.sdk_registry.chromadb") as mock_chroma:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'agentic_workflow'
+_______ TestAgenticLoopIntegration.test_multi_provider_fallback_pattern _______
+tests\integration\workflow\test_full_agentic_loop.py:44: in test_multi_provider_fallback_pattern
+    providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GROQ]
+                 ^^^^^^^^
+E   NameError: name 'Provider' is not defined
+__ TestConfigSchemaCompatibility.test_config_safety_threshold_matches_models __
+tests\integration\cross_domain\test_schema_compatibility.py:13: in test_config_safety_threshold_matches_models
+    result = ValidationResult(
+E   TypeError: ValidationResult.__init__() got an unexpected keyword argument 'is_valid'
+____ TestConfigSchemaCompatibility.test_sdk_registry_categories_are_valid _____
+tests\integration\cross_domain\test_schema_compatibility.py:23: in test_sdk_registry_categories_are_valid
+    assert isinstance(entry.category, SDKCategory)
+                                      ^^^^^^^^^^^
+E   NameError: name 'SDKCategory' is not defined
+__ TestValidationModelIntegration.test_gate_decision_with_validation_result ___
+tests\integration\cross_domain\test_schema_compatibility.py:29: in test_gate_decision_with_validation_result
+    decisions = list(GateDecision)
+                     ^^^^^^^^^^^^
+E   NameError: name 'GateDecision' is not defined
+_______________________ TestAPICallStatus.test_is_enum ________________________
+tests\unit\schemas\test_models.py:38: in test_is_enum
+    assert issubclass(APICallStatus, Enum)
+                      ^^^^^^^^^^^^^
+E   NameError: name 'APICallStatus' is not defined
+______________________ TestReasoningConfig.test_creation ______________________
+tests\unit\schemas\test_models.py:42: in test_creation
+    cfg = ReasoningConfig()
+          ^^^^^^^^^^^^^^^
+E   NameError: name 'ReasoningConfig' is not defined
+____________________ TestReasoningConfig.test_determinism _____________________
+tests\unit\schemas\test_models.py:46: in test_determinism
+    assert ReasoningConfig() == ReasoningConfig()
+           ^^^^^^^^^^^^^^^
+E   NameError: name 'ReasoningConfig' is not defined
+_____________________ TestValidationResult.test_creation ______________________
+tests\unit\schemas\test_models.py:50: in test_creation
+    result = ValidationResult(
+E   TypeError: ValidationResult.__init__() got an unexpected keyword argument 'is_valid'
+___________________ TestValidationResult.test_invalid_case ____________________
+tests\unit\schemas\test_models.py:58: in test_invalid_case
+    result = ValidationResult(
+E   TypeError: ValidationResult.__init__() got an unexpected keyword argument 'is_valid'
+_________________________ TestRAGState.test_creation __________________________
+tests\unit\schemas\test_models.py:67: in test_creation
+    state = RAGState()
+            ^^^^^^^^
+E   NameError: name 'RAGState' is not defined
+__________________ TestImmutableStagingBuffer.test_creation ___________________
+tests\unit\schemas\test_models.py:72: in test_creation
+    buf = ImmutableStagingBuffer()
+          ^^^^^^^^^^^^^^^^^^^^^^
+E   NameError: name 'ImmutableStagingBuffer' is not defined
+=========================== short test summary info ===========================
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderEnum::test_provider_values
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderEnum::test_provider_iteration_determinism
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_success
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_missing_raises
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_determinism
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_singleton
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_missing_key_raises
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_defaults
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_custom
+FAILED tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_returns_string
+FAILED tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_different_models_different_keys
+FAILED tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_determinism
+FAILED tests/unit/runtime/test_cache.py::TestCacheKeyWithFingerprint::test_fingerprint_affects_key
+FAILED tests/unit/runtime/test_cache.py::TestShouldInvalidateCache::test_returns_bool
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_different_models
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_different_messages
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_message_order
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_role_change
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_empty_messages_list
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_unicode_content
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_very_long_content
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_special_characters_in_content
+FAILED tests/unit/runtime/test_cache_regression.py::TestFingerprintRegression::test_fingerprint_isolation
+FAILED tests/unit/runtime/test_cache_regression.py::TestFingerprintRegression::test_empty_fingerprint
+FAILED tests/perf/throughput/test_cache_throughput.py::TestCacheKeyThroughput::test_cache_key_throughput_10k_per_second
+FAILED tests/perf/throughput/test_cache_throughput.py::TestCacheKeyThroughput::test_fingerprint_key_throughput
+FAILED tests/perf/throughput/test_cache_throughput.py::TestBatchProcessingThroughput::test_batch_key_generation
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_available_providers_with_keys
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_client_creation_with_valid_key
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_provider_enum_routing
+FAILED tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_vector_store_query_flow
+FAILED tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_multi_provider_fallback_pattern
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_config_safety_threshold_matches_models
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_sdk_registry_categories_are_valid
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestValidationModelIntegration::test_gate_decision_with_validation_result
+FAILED tests/unit/schemas/test_models.py::TestAPICallStatus::test_is_enum - N...
+FAILED tests/unit/schemas/test_models.py::TestReasoningConfig::test_creation
+FAILED tests/unit/schemas/test_models.py::TestReasoningConfig::test_determinism
+FAILED tests/unit/schemas/test_models.py::TestValidationResult::test_creation
+FAILED tests/unit/schemas/test_models.py::TestValidationResult::test_invalid_case
+FAILED tests/unit/schemas/test_models.py::TestRAGState::test_creation - NameE...
+FAILED tests/unit/schemas/test_models.py::TestImmutableStagingBuffer::test_creation
+======================== 42 failed, 26 passed in 2.11s ========================

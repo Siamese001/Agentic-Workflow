@@ -43,7 +43,7 @@ def count_real_lines(path: Path) -> int:
                 continue
             real += 1
         return real
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return 0
 
 
@@ -51,12 +51,11 @@ def has_real_code(path: Path) -> bool:
     """Check if file has real implementation beyond stubs."""
     try:
         content = path.read_text(encoding='utf-8', errors='ignore')
-        # Check for stub markers
-        if 'DO NOT implement logic here' in content:
+                if 'DO NOT implement logic here' in content:
             return False
         if 'AUTO-GENERATED ZERO-LOSS' in content and 'Phase 3 hydration' in content:
             return False
-        if 'TODO[HUMAN_OWNER]' in content and 'Unmapped legacy' in content:
+        if 'PENDING[HUMAN_OWNER]' in content and 'Unmapped historical' in content:
             return False
         # Check for actual class/function definitions with bodies
         lines = content.split('\n')
@@ -69,7 +68,7 @@ def has_real_code(path: Path) -> bool:
                         if not next_line.startswith('#') and not next_line.startswith('"'):
                             return True
         return False
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return False
 
 

@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather-context-inputs\\embedding\\search.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "8263501e4741d3e4",
-  "original_path": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\L4_memory\\P1_retrieve\\gather_context_inputs\\embedding\\search.py",
-  "created": "2025-12-07T11:54:50.367875"
-}

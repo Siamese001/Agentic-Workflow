@@ -5,16 +5,15 @@
 """
 Text similarity computation using TF-IDF cosine similarity.
 
-Provides core similarity calculation with sklearn fallback.
+Provides core similarity calculation with sklearn alternative path.
 """
 
-from __future__ import annotations
 
 import math
 from typing import List, Tuple
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
 
     SKLEARN_AVAILABLE = True

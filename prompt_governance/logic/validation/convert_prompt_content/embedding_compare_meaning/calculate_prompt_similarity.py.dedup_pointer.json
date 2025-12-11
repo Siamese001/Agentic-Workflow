@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L1_cognition\\P2_inspect\\convert_core_content\\embedding\\embedding_compare_meaning\\calculate_core_similarity.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "24c0d10dbb53fe92",
-  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\validation\\convert_prompt_content\\embedding_compare_meaning\\calculate_prompt_similarity.py",
-  "created": "2025-12-07T11:54:50.735532"
-}

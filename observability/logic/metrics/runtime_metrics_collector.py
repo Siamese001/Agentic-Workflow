@@ -5,10 +5,9 @@ Domain: metrics
 Generated: 2025-12-07T12:07:59.850014
 """
 
-from __future__ import annotations
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
 
@@ -27,7 +26,7 @@ class Metric:
 class RuntimeMetricsCollector:
     """Metrics collector for metrics domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.metrics: Dict[str, List[Metric]] = defaultdict(list)
         logger.info(f"Initialized {self.__class__.__name__}")
