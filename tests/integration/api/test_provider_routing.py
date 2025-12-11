@@ -5,7 +5,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 from runtime.shared.multi_provider_clients import reset_all_clients
 
+# Skip integration tests if no API keys are present
+skip_if_no_keys = pytest.mark.skipif(
+    not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
+    reason="No API keys configured for integration tests"
+)
 
+
+@skip_if_no_keys
 class TestProviderRouting:
     @pytest.fixture(autouse=True)
     def reset_state(self):

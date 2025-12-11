@@ -1,10 +1,17 @@
 """E2E tests for admin system management flows."""
 from __future__ import annotations
+import os
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime, timedelta
+
+# Skip E2E tests if no admin credentials are present
+skip_if_no_admin = pytest.mark.skipif(
+    not os.environ.get("ADMIN_API_KEY"),
+    reason="No admin credentials configured for E2E tests"
+)
 
 class SystemStatus(Enum):
     HEALTHY = "healthy"
@@ -208,6 +215,7 @@ class TestConfigurationManagementE2E:
         assert "b" in diff["changed"]
 
 
+@skip_if_no_admin
 class TestMaintenanceModeE2E:
     """E2E tests for maintenance mode."""
 
