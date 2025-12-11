@@ -7,11 +7,12 @@ from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime, timedelta
 
-# Skip E2E tests if no admin credentials are present
-skip_if_no_admin = pytest.mark.skipif(
-    not os.environ.get("ADMIN_API_KEY"),
-    reason="No admin credentials configured for E2E tests"
-)
+# Skip E2E tests if no admin credentials are present - DISABLED FOR FINAL VALIDATION
+# skip_if_no_admin = pytest.mark.skipif(
+#     not os.environ.get("ADMIN_API_KEY"),
+#     reason="No admin credentials configured for E2E tests"
+# )
+skip_if_no_admin = pytest.mark.skipif(False, reason="Disabled for final validation")
 
 class SystemStatus(Enum):
     HEALTHY = "healthy"
