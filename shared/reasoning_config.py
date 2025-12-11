@@ -66,3 +66,6 @@ for _name, _cfg in _REASONING_CONFIGS:
         setattr(ReasoningConfig, _name, ReasoningConfig.DEFAULT)
     else:
         setattr(ReasoningConfig, _name, ReasoningConfig(**_cfg))
+
+# Safety threshold for guardrail validation
+SAFETY_THRESHOLD = 0.95
