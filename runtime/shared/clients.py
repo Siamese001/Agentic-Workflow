@@ -21,7 +21,7 @@ from __future__ import annotations
 import logging
 import os
 import threading
-from typing import Optional
+from typing import Any, Optional
 
 from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
 

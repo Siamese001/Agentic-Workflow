@@ -32,7 +32,7 @@ import os
 import threading
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -620,7 +620,7 @@ def create_mcp_tool_from_function(
         MCP tool definition dict
     """
     import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
-    from typing import get_type_hints
+    from typing import Any, get_type_hints
 
     tool_name = name or func.__name__
     tool_desc = description or (func.__doc__ or "").strip().split("\n")[0]
