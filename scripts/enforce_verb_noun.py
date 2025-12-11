@@ -13,4 +13,3 @@ for f in sys.argv[1:]:
     else:
         new = p.parent / f"retrieve_{p.stem}.py"
     shutil.move(p, new)
-    print(f"Renamed {p.name} → {new.name}")

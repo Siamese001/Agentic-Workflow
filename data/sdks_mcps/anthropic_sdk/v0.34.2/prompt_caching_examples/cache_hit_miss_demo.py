@@ -7,7 +7,6 @@ import time
 from typing import List, Dict, object
 from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
 
-
 class PromptCachingDemo:
     """Demonstrates prompt caching effectiveness with real metrics."""
     
@@ -161,14 +160,9 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
         results = []
         total_input_tokens = 0
         total_cache_tokens = 0
-        
-        print("Running Prompt Caching Demonstration...")
-        print("=" * 60)
-        
+
         for scenario in scenarios:
-            print(f"\n{scenario['name']}:")
-            print(f"Input: {scenario['user_input'][:50]}...")
-            
+
             start_time = time.time()
             response = self.send_cached_message(
                 scenario['user_input'],
@@ -194,13 +188,7 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
             results.append(result)
             total_input_tokens += response['usage']['input_tokens']
             total_cache_tokens += response['usage']['cache_read_tokens']
-            
-            print(f"  Cache Hit: {cache_hit} (Expected: {scenario['expect_cache_hit']})")
-            print(f"  Input Tokens: {response['usage']['input_tokens']}")
-            print(f"  Cache Tokens: {response['usage']['cache_read_tokens']}")
-            print(f"  Cache Efficiency: {cache_efficiency:.1f}%")
-            print(f"  Processing Time: {end_time - start_time:.2f}s")
-        
+
         # Calculate overall savings
         overall_cache_hit_rate = (total_cache_tokens / max(total_input_tokens, 1)) * 100
         estimated_savings = overall_cache_hit_rate * 0.87  # 87% savings on cached content
@@ -216,16 +204,8 @@ Maintain professional yet encouraging tone. Focus on practical outcomes.""",
             "average_processing_time": sum(r['processing_time'] for r in results) / len(results),
             "results": results
         }
-        
-        print(f"\n{'='*60}")
-        print("SUMMARY:")
-        print(f"Cache Hit Rate: {summary['cache_hit_rate_percent']}%")
-        print(f"Token Savings: {summary['estimated_token_savings_percent']}%")
-        print(f"Cost Savings: {summary['estimated_cost_savings_percent']}%")
-        print(f"Avg Processing Time: {summary['average_processing_time']:.2f}s")
-        
-        return summary
 
+        return summary
 
 def production_optimization_tips() -> Dict[str, object]:
     """Return production optimization tips for prompt caching."""
@@ -256,7 +236,6 @@ def production_optimization_tips() -> Dict[str, object]:
         }
     }
 
-
 if __name__ == "__main__":
     # Run the demonstration
     demo = PromptCachingDemo()
@@ -264,15 +243,12 @@ if __name__ == "__main__":
     
     # Show optimization tips
     tips = production_optimization_tips()
-    print(f"\n{'='*60}")
-    print("PRODUCTION OPTIMIZATION TIPS:")
+
     for category, items in tips.items():
-        print(f"\n{category.upper()}:")
+
         for key, value in items.items():
-            print(f"  {key}: {value}")
-    
+
     # Export results for analysis
     import json
     with open("cache_performance_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    print(f"\nDetailed results saved to: cache_performance_results.json")

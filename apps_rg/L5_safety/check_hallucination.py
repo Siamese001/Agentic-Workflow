@@ -1,0 +1,46 @@
+"""
+Hallucination checking module for apps_rg.
+
+Provides basic hallucination detection for resume generation.
+"""
+
+from typing import Dict, Any, List
+
+class HallucinationDetector:
+    """Stub implementation of hallucination detector."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+    
+    def check(self, text: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Check text for potential hallucinations.
+        
+        Args:
+            text: Text to check
+            context: Additional context for checking
+            
+        Returns:
+            Dictionary with check results
+        """
+        return {
+            "is_hallucination": False,
+            "confidence": 0.95,
+            "issues": []
+        }
+    
+    def validate_resume_content(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Validate resume content for hallucinations.
+        
+        Args:
+            resume_data: Resume data to validate
+            
+        Returns:
+            Validation results
+        """
+        return {
+            "valid": True,
+            "warnings": [],
+            "score": 0.95
+        }

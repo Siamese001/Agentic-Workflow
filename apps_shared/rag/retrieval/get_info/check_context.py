@@ -39,7 +39,7 @@ except ImportError:  # pragma: no cover - fallback types
     ChromaClientType = Any
 
 
-from runtime.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
+from agentic_core.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 
 
 from shared.config import ConfigV10_7

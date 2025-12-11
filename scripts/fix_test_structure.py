@@ -37,7 +37,6 @@ LOGIC_REMAP = {
     "test_safety_properties.py": ("golden", "safety"),
 }
 
-
 def flatten_unit_tests() -> List[str]:
     """
     Flatten unit tests by removing L/P folder nesting.
@@ -80,7 +79,6 @@ def flatten_unit_tests() -> List[str]:
 
     return moved
 
-
 def remove_empty_lp_dirs() -> List[str]:
     """Remove empty L/P directories after flattening."""
     removed = []
@@ -102,7 +100,6 @@ def remove_empty_lp_dirs() -> List[str]:
                             shutil.rmtree(lp_dir)
                             removed.append(str(lp_dir.relative_to(TESTS_ROOT)))
                     except (ValueError, TypeError, KeyError) as e:
-                        print(f"  ⚠ Could not remove {lp_dir}: {e}")
 
         for dirpath, dirnames, filenames in os.walk(unit_dir, topdown=False):
         current = Path(dirpath)
@@ -124,7 +121,6 @@ def remove_empty_lp_dirs() -> List[str]:
                     ...
 
     return removed
-
 
 def move_logic_tests() -> List[str]:
     """Move tests from logic/ to appropriate categories."""
@@ -162,7 +158,6 @@ def move_logic_tests() -> List[str]:
 
     return moved
 
-
 def ensure_init_files() -> int:
     """Ensure all test directories have __init__.py."""
     created = 0
@@ -177,11 +172,7 @@ def ensure_init_files() -> int:
 
     return created
 
-
 def main():
-    print("=" * 70)
-    print("FIX TEST STRUCTURE — YAML COMPLIANCE")
-    print("=" * 70)
 
     log = {
         "flattened": [],
@@ -191,41 +182,29 @@ def main():
     }
 
     # Step 1: Flatten unit tests
-    print("\n[STEP 1] Flattening unit tests (removing L/P nesting)...")
-    log["flattened"] = flatten_unit_tests()
-    print(f"  ✓ Moved {len(log['flattened'])} test files")
-    for item in log["flattened"][:5]:
-        print(f"    {item}")
-    if len(log["flattened"]) > 5:
-        print(f"    ... and {len(log['flattened']) - 5} more")
 
-        print("\n[STEP 2] Removing empty L/P directories...")
+    log["flattened"] = flatten_unit_tests()
+
+    for item in log["flattened"][:5]:
+
+    if len(log["flattened"]) > 5:
+
     log["removed_dirs"] = remove_empty_lp_dirs()
-    print(f"  ✓ Removed {len(log['removed_dirs'])} directories")
 
     # Step 3: Move logic/ tests
-    print("\n[STEP 3] Moving logic/ tests to proper categories...")
+
     log["moved_logic"] = move_logic_tests()
-    print(f"  ✓ Moved {len(log['moved_logic'])} items")
+
     for item in log["moved_logic"]:
-        print(f"    {item}")
 
     # Step 4: Ensure __init__.py files
-    print("\n[STEP 4] Ensuring __init__.py files...")
+
     log["init_files_created"] = ensure_init_files()
-    print(f"  ✓ Created {log['init_files_created']} __init__.py files")
 
     # Save log
     log_path = REPO_ROOT / "fix_test_structure_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(log, f, indent=2)
-
-    print("\n" + "=" * 70)
-    print("TEST STRUCTURE FIX COMPLETE")
-    print("=" * 70)
-    print(f"\nLog saved to: {log_path}")
-    print("\nRun test_structure_audit.py again to verify compliance.")
-
 
 if __name__ == "__main__":
     main()

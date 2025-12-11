@@ -7,7 +7,6 @@ Ensures required canonical directories exist.
 import sys
 import os
 
-
 def main():
     """Check if all required canonical directories exist."""
     required_dirs = [
@@ -29,13 +28,10 @@ def main():
             missing_dirs.append(dir_name)
     
     if missing_dirs:
-        print(f"ERROR: Missing canonical directories: {', '.join(missing_dirs)}")
-        print("Canonical project structure must be maintained")
-        sys.exit(1)
-    
-    print("Canonical structure OK - all required directories present")
-    sys.exit(0)
 
+        sys.exit(1)
+
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

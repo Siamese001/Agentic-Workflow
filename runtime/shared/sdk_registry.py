@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
 # SDK CATEGORIES
 # =============================================================================
 
-
 class SDKCategory(str, Enum):
     """SDK category classification."""
     LLM_PROVIDER = "llm_provider"
@@ -51,11 +50,9 @@ class SDKCategory(str, Enum):
     DOCUMENT = "document"
     MCP = "mcp"
 
-
 # =============================================================================
 # SDK REGISTRY ENTRIES
 # =============================================================================
-
 
 @dataclass
 class SDKEntry:
@@ -68,7 +65,6 @@ class SDKEntry:
     description: str = ""
     async_support: bool = True
     mcp_compatible: bool = False
-
 
 # Complete SDK registry
 SDK_REGISTRY: Dict[str, SDKEntry] = {
@@ -263,11 +259,9 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
     ),
 }
 
-
 # =============================================================================
 # VALIDATION
 # =============================================================================
-
 
 def validate_sdk(name: str) -> tuple[bool, Optional[str]]:
     """
@@ -286,7 +280,6 @@ def validate_sdk(name: str) -> tuple[bool, Optional[str]]:
     except ImportError as e:
         return False, str(e)
 
-
 def validate_all_sdks() -> Dict[str, tuple[bool, Optional[str]]]:
     """
     Validate all registered SDKs.
@@ -302,13 +295,11 @@ def validate_all_sdks() -> Dict[str, tuple[bool, Optional[str]]]:
         results[name] = (success, error)
         if success:
             success_count += 1
-            print(f"✓ {name}")
+
         else:
-            print(f"✗ {name}: {error}")
+            error_count += 1
 
-    print(f"\nValidated: {success_count}/{len(SDK_REGISTRY)} SDKs")
     return results
-
 
 def get_available_sdks(category: Optional[SDKCategory] = None) -> List[str]:
     """Get list of available (installed) SDKs, optionally filtered by category."""
@@ -321,7 +312,6 @@ def get_available_sdks(category: Optional[SDKCategory] = None) -> List[str]:
             available.append(name)
     return available
 
-
 # =============================================================================
 # VECTOR STORE CLIENTS
 # =============================================================================
@@ -329,14 +319,12 @@ def get_available_sdks(category: Optional[SDKCategory] = None) -> List[str]:
 _vector_clients: Dict[str, object] = {}
 _lock = threading.Lock()
 
-
 @dataclass
 class ChromaConfig:
     """ChromaDB configuration."""
     persist_directory: Optional[str] = None
     collection_name: str = "default"
     embedding_function: Optional[Any] = None
-
 
 @dataclass
 class QdrantConfig:
@@ -347,14 +335,12 @@ class QdrantConfig:
     port: int = 6333
     prefer_grpc: bool = True
 
-
 @dataclass
 class PineconeConfig:
     """Pinecone configuration."""
     api_key: Optional[str] = None
     environment: Optional[str] = None
     index_name: str = "default"
-
 
 def get_vector_store(
     provider: str,
@@ -419,14 +405,12 @@ def get_vector_store(
         else:
             raise ValueError(f"Unknown vector store provider: {provider}")
 
-
 # =============================================================================
 # REDIS CLIENT
 # =============================================================================
 
 _redis_client: Optional[Any] = None
 _redis_async_client: Optional[Any] = None
-
 
 @dataclass
 class RedisConfig:
@@ -439,7 +423,6 @@ class RedisConfig:
     decode_responses: bool = True
     socket_timeout: float = 5.0
     retry_on_timeout: bool = True
-
 
 def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = False) -> object:
     """
@@ -516,11 +499,9 @@ def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = 
             logger.info(f"Initialized Redis client (url={url or f'{cfg.host}:{cfg.port}'})")
             return client
 
-
 # =============================================================================
 # OPENTELEMETRY TRACING
 # =============================================================================
-
 
 @dataclass
 class TracingConfig:
@@ -530,9 +511,7 @@ class TracingConfig:
     otlp_endpoint: Optional[str] = None
     sample_rate: float = 1.0
 
-
 _tracer_provider: Optional[Any] = None
-
 
 def setup_tracing(config: Optional[TracingConfig] = None) -> object:
     """
@@ -575,17 +554,14 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> object:
     logger.info(f"Initialized OpenTelemetry tracing (provider={cfg.service_name}, exporter={cfg.exporter})")
     return provider
 
-
 def get_tracer(name: str = "agentic-workflow") -> object:
     """Get a tracer instance."""
     from opentelemetry import trace
     return trace.get_tracer(name)
 
-
 # =============================================================================
 # MCP SERVER builder
 # =============================================================================
-
 
 @dataclass
 class MCPServerConfig:
@@ -594,7 +570,6 @@ class MCPServerConfig:
     version: str = "1.0.0"
     host: str = "0.0.0.0"
     port: int = 8000
-
 
 def create_mcp_server(config: Optional[MCPServerConfig] = None) -> object:
     """
@@ -627,7 +602,6 @@ def create_mcp_server(config: Optional[MCPServerConfig] = None) -> object:
 
     logger.info(f"Created MCP server (name={cfg.name}, version={cfg.version})")
     return server
-
 
 def create_mcp_tool_from_function(
     func: Callable,
@@ -689,11 +663,9 @@ def create_mcp_tool_from_function(
         },
     }
 
-
 # =============================================================================
 # DOCUMENT PROCESSING
 # =============================================================================
-
 
 def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, object]]:
     """
@@ -719,7 +691,6 @@ def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, obj
         for el in elements
     ]
 
-
 def extract_pdf_text(file_path: str) -> str:
     """
     Extract text from a PDF using pypdf.
@@ -742,11 +713,9 @@ def extract_pdf_text(file_path: str) -> str:
 
     return "\n\n".join(text_parts)
 
-
 # =============================================================================
 # RESET UTILITIES
 # =============================================================================
-
 
 def reset_all_clients() -> None:
     """Reset all singleton clients. Useful for testing."""
@@ -758,7 +727,6 @@ def reset_all_clients() -> None:
         _redis_async_client = None
         _tracer_provider = None
         logger.debug("Reset all SDK clients")
-
 
 # =============================================================================
 # EXPORTS

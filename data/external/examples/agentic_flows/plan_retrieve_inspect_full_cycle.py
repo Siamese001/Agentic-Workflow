@@ -394,30 +394,18 @@ async def main():
     orchestrator = WorkflowOrchestrator()
     
     for objective in objectives:
-        print(f"\n{'='*60}")
-        print(f"EXECUTING: {objective}")
-        print(f"{'='*60}")
-        
+
         context = await orchestrator.execute_full_cycle(objective)
         
         # Print results summary
-        print(f"\nRESULTS SUMMARY:")
-        print(f"Session ID: {context.session_id}")
-        print(f"Final Stage: {context.stage.value}")
-        print(f"Insights Generated: {len(context.insights)}")
-        print(f"Actions Taken: {len(context.actions_taken)}")
-        print(f"Errors: {len(context.errors)}")
-        print(f"Duration: {context.metadata.get('duration', 0):.2f} seconds")
-        
+
         if context.insights:
-            print(f"\nKey Insights:")
+
             for insight in context.insights[:3]:  # Show top 3
-                print(f"  • {insight}")
-        
+
         if context.actions_taken:
-            print(f"\nActions Taken:")
+
             for action in context.actions_taken[:3]:  # Show top 3
-                print(f"  • {action}")
 
 if __name__ == "__main__":
     # Run the complete agentic workflow

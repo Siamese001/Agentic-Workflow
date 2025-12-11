@@ -22,18 +22,15 @@ SOVEREIGN_DIRS = {
     "config",
 }
 
-
 def sovereign_roots():
     return [ROOT / d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()]
-
 
 def fix_smashed_directories():
     """
     Rename directories with >=3 underscores to use nested subfolders.
     Example: check_rules_policy_check_safety -> check_rules/policy_check_safety
     """
-    print("=== Fixing smashed directories ===")
-    
+
     smashed = []
     for root in sovereign_roots():
         for d in root.rglob("*"):
@@ -46,9 +43,7 @@ def fix_smashed_directories():
     
     # Sort by depth (deepest first to avoid parent conflicts)
     smashed.sort(key=lambda p: len(p.parts), reverse=True)
-    
-    print(f"Found {len(smashed)} smashed directories")
-    
+
     for d in smashed:
         name = d.name
         parts = name.split("_")
@@ -67,7 +62,7 @@ def fix_smashed_directories():
         
         # Skip if already exists or would create conflict
         if new_path.exists():
-            print(f"  SKIP (exists): {d.relative_to(ROOT)}")
+
             continue
         
         try:
@@ -76,17 +71,14 @@ def fix_smashed_directories():
             
             # Move the directory
             shutil.move(str(d), str(new_path))
-            print(f"  MOVED: {d.relative_to(ROOT)} -> {new_path.relative_to(ROOT)}")
-        except Exception as e:
-            print(f"  ERROR: {d.relative_to(ROOT)} - {e}")
 
+        except Exception as e:
 
 def fix_repeated_concept_filenames():
     """
     Rename files with repeated concepts like state_update_update_safety_usage.py
     """
-    print("\n=== Fixing repeated concept filenames ===")
-    
+
     pattern = re.compile(
         r"(update.*update|check.*check|state.*state|cost.*cost|policy.*policy|rule.*rule|safety.*safety)",
         re.IGNORECASE,
@@ -118,17 +110,14 @@ def fix_repeated_concept_filenames():
                 if not new_path.exists():
                     try:
                         f.rename(new_path)
-                        print(f"  RENAMED: {f.name} -> {new_path.name}")
-                    except Exception as e:
-                        print(f"  ERROR: {f} - {e}")
-                else:
-                    print(f"  SKIP (exists): {f.name}")
 
+                    except Exception as e:
+
+                else:
 
 def create_init_files():
     """Ensure all directories with .py files have __init__.py"""
-    print("\n=== Creating missing __init__.py files ===")
-    
+
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
@@ -141,16 +130,10 @@ def create_init_files():
             
             if has_py and not init_file.exists():
                 init_file.write_text('"""Package initialization."""\n')
-                print(f"  CREATED: {init_file.relative_to(ROOT)}")
-
 
 if __name__ == "__main__":
-    print("Canon Violation Fixer")
-    print("=" * 60)
-    
+
     fix_smashed_directories()
     fix_repeated_concept_filenames()
     create_init_files()
-    
-    print("\n" + "=" * 60)
-    print("Done! Run canon_validator.py to check results.")
+

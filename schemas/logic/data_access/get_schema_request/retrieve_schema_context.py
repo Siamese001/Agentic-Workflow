@@ -29,7 +29,7 @@ except ImportError:  # pragma: no cover - fallback types
     RedisType = Any
     ChromaClientType = Any
 
-from runtime.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
+from agentic_core.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 
 # SDK Hardening: Import centralized OpenAI client for direct SDK access
 from shared.config import ConfigV10_7

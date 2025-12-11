@@ -224,7 +224,6 @@ results: Dict[str, Tuple[bool, str]] = {}
 DELETED_SOVEREIGN_FILES: Set[Path] = set()
 RENAMED_SOVEREIGN_FILES: Set[Tuple[Path, Path]] = set()
 
-
 # =====================================================================
 # SINGLE-PASS REPOSITORY CONTEXT (Performance Optimization)
 # =====================================================================
@@ -242,7 +241,6 @@ class FileData:
     semantic_depth: int                 # Depth ignoring virtual namespaces
     is_generated: bool = False          # Auto-generated file flag
 
-
 # Global caches (populated once by hydrate_repo_data)
 SOV_FILES: List[FileData] = []          # Sovereign .py files (excl __init__.py)
 SOV_INIT_FILES: List[FileData] = []     # Sovereign __init__.py files
@@ -250,7 +248,6 @@ LIGHT_FILES: List[FileData] = []        # Non-sovereign .py files
 ALL_PY_FILES: List[FileData] = []       # All .py files in repo
 ALL_DIRS: List[Path] = []               # All directories in repo
 _REPO_HYDRATED: bool = False            # Flag to prevent re-hydration
-
 
 def _is_generated_content(content: str) -> bool:
     """Check if content indicates auto-generated file."""
@@ -266,7 +263,6 @@ def _is_generated_content(content: str) -> bool:
         "performance tests", "orchestration safety",
     ]
     return any(m in lower for m in markers)
-
 
 def hydrate_repo_data() -> None:
     """
@@ -345,14 +341,12 @@ def hydrate_repo_data() -> None:
     
     _REPO_HYDRATED = True
 
-
 def get_file_data(path: Path) -> Optional[FileData]:
     """Lookup FileData from cache by path."""
     for fd in ALL_PY_FILES:
         if fd.path == path:
             return fd
     return None
-
 
 # =====================================================================
 # GENERIC HELPERS
@@ -361,10 +355,8 @@ def get_file_data(path: Path) -> Optional[FileData]:
 def success(key: str, msg: str = "PASS") -> None:
     results[key] = (True, msg)
 
-
 def fail(key: str, msg: str) -> None:
     results[key] = (False, msg)
-
 
 def read_file(path: Path) -> str:
     """Safe UTF-8 reading - uses cache if available, else reads from disk."""
@@ -373,10 +365,8 @@ def read_file(path: Path) -> str:
         return fd.content
     return path.read_bytes().decode("utf-8", errors="replace")
 
-
 def is_under_any(path: Path, dir_names: Iterable[str]) -> bool:
     return any(part in dir_names for part in path.parts)
-
 
 def is_globally_excluded(path: Path) -> bool:
     """
@@ -394,10 +384,8 @@ def is_globally_excluded(path: Path) -> bool:
     # (Checking all parts ensures we catch nested 'archives' too)
     return any(part in all_excluded for part in path.parts)
 
-
 # Pattern for "Virtual Namespace" directories (L1_cognition, P2_inspect, etc.)
 VIRTUAL_NAMESPACE_PATTERN = re.compile(r"^[LP]\d+_")
-
 
 def semantic_depth(parts: Tuple[str, ...]) -> int:
     """
@@ -407,7 +395,6 @@ def semantic_depth(parts: Tuple[str, ...]) -> int:
     not physical nesting complexity. They don't count toward depth limits.
     """
     return sum(1 for p in parts if not VIRTUAL_NAMESPACE_PATTERN.match(p))
-
 
 def is_generated_file(path: Path) -> bool:
     """Check if a file is auto-generated (exempt from size/length limits)."""
@@ -421,14 +408,11 @@ def is_generated_file(path: Path) -> bool:
     except Exception:
         return False
 
-
 def is_sovereign_path(path: Path) -> bool:
     return is_under_any(path, SOVEREIGN_DIRS)
 
-
 def sovereign_roots() -> List[Path]:
     return [ROOT / d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()]
-
 
 def iter_sovereign_py_files() -> Iterable[Path]:
     """Iterate .py files in sovereign directories (uses cache)."""
@@ -442,11 +426,9 @@ def iter_sovereign_py_files() -> Iterable[Path]:
                     continue
                 yield f
 
-
 def iter_sovereign_file_data() -> Iterable[FileData]:
     """Iterate FileData for sovereign .py files (cache-only, fast)."""
     return iter(SOV_FILES)
-
 
 def iter_project_py_files() -> Iterable[Path]:
     """Iterate all .py files in project, respecting global exclusions."""
@@ -459,7 +441,6 @@ def iter_project_py_files() -> Iterable[Path]:
                 continue
             yield f
 
-
 def parse_ast(path: Path) -> Optional[ast.AST]:
     """Parse AST - uses cache if available, else parses from disk."""
     fd = get_file_data(path)
@@ -469,7 +450,6 @@ def parse_ast(path: Path) -> Optional[ast.AST]:
         return ast.parse(read_file(path))
     except SyntaxError:
         return None
-
 
 def compute_function_nesting_depth(node: ast.AST) -> int:
     """Approximate nesting depth from a function body."""
@@ -494,7 +474,6 @@ def compute_function_nesting_depth(node: ast.AST) -> int:
     max_depth = visitor.max_depth
     return max_depth
 
-
 # =====================================================================
 # PRE-COMMIT CHANGE TRACKER HELPERS (BEST-EFFORT)
 # =====================================================================
@@ -504,13 +483,11 @@ def register_deleted_sovereign_file(path: Path) -> None:
     if is_sovereign_path(resolved):
         DELETED_SOVEREIGN_FILES.add(resolved)
 
-
 def register_renamed_sovereign_file(old_path: Path, new_path: Path) -> None:
     old_resolved = old_path.resolve()
     new_resolved = new_path.resolve()
     if is_sovereign_path(old_resolved) or is_sovereign_path(new_resolved):
         RENAMED_SOVEREIGN_FILES.add((old_resolved, new_resolved))
-
 
 def load_change_tracker_from_env() -> None:
     """
@@ -543,7 +520,6 @@ def load_change_tracker_from_env() -> None:
         temp_file.unlink()
     except OSError:
         pass
-
 
 # =====================================================================
 # KEY IMPLEMENTATIONS
@@ -581,7 +557,6 @@ def check_key_01_no_sovereign_deletions() -> None:
         msg_lines.append(f"  ... and {len(deleted_list) - 20} more")
     fail("01", "\n".join(msg_lines))
 
-
 def check_key_02_no_sovereign_renames() -> None:
     """
     Key 02 – No sovereign renames/moves to evade canon.
@@ -616,7 +591,6 @@ def check_key_02_no_sovereign_renames() -> None:
     )
     fail("02", msg)
 
-
 def check_key_03_data_folder_exists() -> None:
     """Key 03 – data/ folder must exist at project root."""
     data_dir = ROOT / DATA_FOLDER_NAME
@@ -625,7 +599,6 @@ def check_key_03_data_folder_exists() -> None:
     else:
         fail("03", f"{DATA_FOLDER_NAME}/ folder missing at project root ({ROOT})")
 
-
 def check_key_04_no_zombie_archive_singular_root() -> None:
     """Key 04 – No root-level archive/ folder (archives/ preferred)."""
     zombie = ROOT / "archive"
@@ -633,7 +606,6 @@ def check_key_04_no_zombie_archive_singular_root() -> None:
         fail("04", "archive/ (singular) exists at project root; use archives/ instead")
     else:
         success("04", "No zombie archive/ folder at project root")
-
 
 def check_key_05_layered_structure_sane() -> None:
     """
@@ -694,7 +666,6 @@ def check_key_05_layered_structure_sane() -> None:
     else:
         success("05", "Layered sovereign structure is compliant (L1–L3 only, no orphan files)")
 
-
 def check_key_06_no_forbidden_folder_names() -> None:
     """Key 06 – No forbidden folder names under sovereign roots."""
     violations: List[str] = []
@@ -719,7 +690,6 @@ def check_key_06_no_forbidden_folder_names() -> None:
     else:
         success("06", "No forbidden folder names under sovereign roots")
 
-
 def check_key_07_required_root_folders() -> None:
     """Key 07 – tests/, scripts/, runtime/ must exist at project root."""
     required = ["tests", "scripts", "runtime"]
@@ -728,7 +698,6 @@ def check_key_07_required_root_folders() -> None:
         fail("07", f"Missing required root folders: {', '.join(missing)}")
     else:
         success("07", "Required root folders present: tests/, scripts/, runtime/")
-
 
 def check_key_08_no_empty_sov_roots() -> None:
     """Key 08 – Sovereign dirs that exist must not be completely empty."""
@@ -745,7 +714,6 @@ def check_key_08_no_empty_sov_roots() -> None:
         fail("08", f"Sovereign roots exist but are empty: {', '.join(violations)}")
     else:
         success("08", "All existing sovereign roots contain content")
-
 
 # ---------------------------------------------------------------------
 # KEYS 09–18 : SOVEREIGN NAMING, VOCABULARY & COMMENT HYGIENE
@@ -780,7 +748,6 @@ def check_key_09_banned_tokens_in_filenames() -> None:
     else:
         success("09", "No banned tokens in sovereign filenames")
 
-
 def check_key_10_banned_symbol_prefixes() -> None:
     """Key 10 – Banned prefixes in symbol names (sovereign)."""
     violations: List[str] = []
@@ -804,7 +771,6 @@ def check_key_10_banned_symbol_prefixes() -> None:
     else:
         success("10", "No banned symbol prefixes in sovereign code")
 
-
 def check_key_11_banned_vocabulary() -> None:
     """Key 11 – Banned vocabulary in comments/strings (excluding validator itself)."""
     violations: List[str] = []
@@ -827,7 +793,6 @@ def check_key_11_banned_vocabulary() -> None:
     else:
         success("11", "No banned vocabulary found in sovereign files")
 
-
 def check_key_12_todo_fixme_comments() -> None:
     """Key 12 – No TODO/FIXME/HACK annotations in sovereign code."""
     violations: List[str] = []
@@ -844,7 +809,6 @@ def check_key_12_todo_fixme_comments() -> None:
         )
     else:
         success("12", "No TODO/FIXME/HACK annotations in sovereign code")
-
 
 def check_key_13_hardcoded_paths() -> None:
     """Key 13 – No hardcoded OS paths in sovereign code."""
@@ -867,7 +831,6 @@ def check_key_13_hardcoded_paths() -> None:
     else:
         success("13", "No hardcoded OS paths in sovereign code")
 
-
 # STRICT Operational constants allowlist for Key 14 (magic numbers)
 # ZERO RELAXATION - only truly universal constants allowed
 ALLOWED_MAGIC_NUMBERS: Set[int] = {
@@ -876,7 +839,6 @@ ALLOWED_MAGIC_NUMBERS: Set[int] = {
     200, 400, 404, 500,  # HTTP codes (minimal)
     1024,         # Bytes
 }
-
 
 def check_key_14_magic_numbers() -> None:
     """
@@ -927,7 +889,6 @@ def check_key_14_magic_numbers() -> None:
     else:
         success("14", "No unallowed magic numbers detected in sovereign code")
 
-
 def check_key_15_bare_except() -> None:
     """Key 15 – No bare 'except:' in sovereign code."""
     violations: List[str] = []
@@ -953,7 +914,6 @@ def check_key_15_bare_except() -> None:
     else:
         success("15", "No bare 'except:' in sovereign code")
 
-
 def check_key_16_eval_exec_usage() -> None:
     """Key 16 – No eval/exec usage in sovereign code."""
     pattern = re.compile(r"\b(eval|exec)\s*\(")
@@ -971,7 +931,6 @@ def check_key_16_eval_exec_usage() -> None:
         )
     else:
         success("16", "No eval/exec usage in sovereign code")
-
 
 def check_key_17_poison_markers_and_stubs() -> None:
     """
@@ -1015,7 +974,6 @@ def check_key_17_poison_markers_and_stubs() -> None:
     else:
         success("17", "No poison markers or stub functions in sovereign code")
 
-
 def check_key_18_sovereign_debug_statements() -> None:
     """Key 18 – No debug prints, sleep, or debuggers in sovereign code."""
     debug_patterns = [
@@ -1041,7 +999,6 @@ def check_key_18_sovereign_debug_statements() -> None:
         )
     else:
         success("18", "No debug statements in sovereign code")
-
 
 # ---------------------------------------------------------------------
 # KEYS 19–26 : SOVEREIGN AST / IMPORT HYGIENE
@@ -1082,7 +1039,6 @@ def check_key_19_duplicate_functions() -> None:
     else:
         success("19", "No duplicate function names within sovereign modules")
 
-
 def check_key_20_duplicate_classes() -> None:
     """Key 20 – No duplicate class names within a single sovereign module."""
     violations: List[str] = []
@@ -1106,7 +1062,6 @@ def check_key_20_duplicate_classes() -> None:
         )
     else:
         success("20", "No duplicate class names within sovereign modules")
-
 
 def _build_import_graph() -> Dict[str, Set[str]]:
     """
@@ -1171,7 +1126,6 @@ def _build_import_graph() -> Dict[str, Set[str]]:
 
     return graph
 
-
 def check_key_21_circular_imports() -> None:
     """Key 21 – No circular imports among sovereign modules."""
     graph = _build_import_graph()
@@ -1212,7 +1166,6 @@ def check_key_21_circular_imports() -> None:
         )
     else:
         success("21", "No circular imports among sovereign modules")
-
 
 def check_key_22_import_hygiene() -> None:
     """
@@ -1279,7 +1232,6 @@ def check_key_22_import_hygiene() -> None:
     else:
         success("22", "Import Hygiene OK (No wildcards, no unused imports)")
 
-
 def check_key_23_hardcoded_credentials() -> None:
     """Key 23 – No obvious hardcoded credentials in sovereign code."""
     cred_patterns = [
@@ -1303,7 +1255,6 @@ def check_key_23_hardcoded_credentials() -> None:
     else:
         success("23", "No obvious hardcoded credentials in sovereign code")
 
-
 def check_key_24_sql_injection_patterns() -> None:
     """Key 24 – Obvious string-format SQL execution patterns in sovereign code."""
     patterns = [
@@ -1326,7 +1277,6 @@ def check_key_24_sql_injection_patterns() -> None:
     else:
         success("24", "No obvious SQL-injection patterns in sovereign code")
 
-
 def check_key_25_hardcoded_urls() -> None:
     """Key 25 – No hardcoded HTTP(S) URLs in sovereign code."""
     url_pattern = re.compile(r"https?://[^\s\"'`]+")
@@ -1344,7 +1294,6 @@ def check_key_25_hardcoded_urls() -> None:
         )
     else:
         success("25", "No hardcoded HTTP(S) URLs in sovereign code")
-
 
 def check_key_26_syntax_and_strict_typing() -> None:
     """
@@ -1444,7 +1393,6 @@ def check_key_26_syntax_and_strict_typing() -> None:
     else:
         success("26", "Syntax & Strict Typing verified")
 
-
 # ---------------------------------------------------------------------
 # KEYS 27–34 : SOVEREIGN SIZE, NESTING, AND PACKAGE STRUCTURE
 # ---------------------------------------------------------------------
@@ -1467,7 +1415,6 @@ def check_key_27_no_empty_sov_files() -> None:
         )
     else:
         success("27", "No empty sovereign Python files")
-
 
 def check_key_28_subatomic_file_size_law() -> None:
     """Key 28 – Sovereign file size bounds (MIN bytes, MAX bytes)."""
@@ -1501,7 +1448,6 @@ def check_key_28_subatomic_file_size_law() -> None:
     else:
         success("28", "All sovereign files within subatomic size bounds")
 
-
 def check_key_29_function_length_limits() -> None:
     """Key 29 – Sovereign functions must be <= MAX_FUNCTION_LINES."""
     violations: List[str] = []
@@ -1530,7 +1476,6 @@ def check_key_29_function_length_limits() -> None:
     else:
         success("29", "All sovereign functions within length limits")
 
-
 def check_key_30_nesting_depth_limits() -> None:
     """Key 30 – Sovereign functions must not exceed MAX_NESTING_DEPTH."""
     violations: List[str] = []
@@ -1558,12 +1503,10 @@ def check_key_30_nesting_depth_limits() -> None:
     else:
         success("30", "All sovereign functions within nesting depth limits")
 
-
 def check_key_31_max_path_depth_sov() -> None:
     """Key 31 – DEPRECATED: Now handled by Key 48 (Final Depth Canon)."""
     # Keeping this as a pass-through to maintain the 50-key sequence
     success("31", "Depth checking consolidated into Key 48 (Final Depth Canon)")
-
 
 def check_key_32_fake_nesting_names() -> None:
     """
@@ -1654,7 +1597,6 @@ def check_key_32_fake_nesting_names() -> None:
     else:
         success("32", "No fake nesting directory names under sovereign roots")
 
-
 def check_key_33_missing_init_files() -> None:
     """
     Key 33 – Every sovereign directory that contains any .py file
@@ -1678,7 +1620,6 @@ def check_key_33_missing_init_files() -> None:
         )
     else:
         success("33", "All sovereign directories with .py files have __init__.py")
-
 
 def check_key_34_empty_sov_directories() -> None:
     """
@@ -1721,7 +1662,6 @@ def check_key_34_empty_sov_directories() -> None:
     else:
         success("34", "No empty directories or single-file packages")
 
-
 # ---------------------------------------------------------------------
 # KEYS 35–40 : REPO-LEVEL INVARIANTS & DOCSTRINGS
 # ---------------------------------------------------------------------
@@ -1740,14 +1680,12 @@ def check_key_35_gitignore_exists_and_patterns() -> None:
     else:
         success("35", ".gitignore present with minimal patterns")
 
-
 def check_key_36_no_git_submodules() -> None:
     """Key 36 – No git submodules (.gitmodules must not exist)."""
     if (ROOT / ".gitmodules").is_file():
         fail("36", ".gitmodules present – git submodules are forbidden")
     else:
         success("36", "No git submodules detected")
-
 
 def check_key_37_large_binaries_in_sov() -> None:
     """Key 37 – No large binary blobs in sovereign directories."""
@@ -1772,7 +1710,6 @@ def check_key_37_large_binaries_in_sov() -> None:
     else:
         success("37", "No large binary files in sovereign directories")
 
-
 def check_key_38_readme_canon_badge() -> None:
     """Key 38 – README.md must exist and advertise 50/50 Canon."""
     readme = ROOT / "README.md"
@@ -1784,7 +1721,6 @@ def check_key_38_readme_canon_badge() -> None:
         success("38", "README.md present with 50-key canon badge/reference")
     else:
         fail("38", "README.md present but missing 50-key canon badge/reference")
-
 
 def check_key_39_docstring_requirements() -> None:
     """
@@ -1829,7 +1765,6 @@ def check_key_39_docstring_requirements() -> None:
     else:
         success("39", "Docstring requirements satisfied for sovereign code")
 
-
 def check_key_40_validator_self_sanity() -> None:
     """
     Key 40 – Validator self-integrity check.
@@ -1858,7 +1793,6 @@ def check_key_40_validator_self_sanity() -> None:
     
     success("40", f"{script_name} syntactically valid and run from project root")
 
-
 # ---------------------------------------------------------------------
 # KEYS 41–50 : LIGHT CANON (NON-SOVEREIGN PYTHON)
 # ---------------------------------------------------------------------
@@ -1883,11 +1817,9 @@ def _iter_light_py_files() -> Iterable[Path]:
                 continue
             yield f
 
-
 def _iter_light_file_data() -> Iterable[FileData]:
     """Iterate FileData for light (non-sovereign) .py files (cache-only, fast)."""
     return iter(LIGHT_FILES)
-
 
 def check_key_41_light_no_debug() -> None:
     """Key 41 – Light Canon: STRICT no debug statements in non-sovereign code."""
@@ -1923,7 +1855,6 @@ def check_key_41_light_no_debug() -> None:
     else:
         success("41", "No debug statements in non-sovereign Python code")
 
-
 def check_key_42_light_todo_fixme() -> None:
     """Key 42 – Light Canon: no TODO/FIXME/HACK in non-sovereign code."""
     violations: List[str] = []
@@ -1945,7 +1876,6 @@ def check_key_42_light_todo_fixme() -> None:
     else:
         success("42", "No TODO/FIXME/HACK annotations in non-sovereign code")
 
-
 def check_key_43_light_no_tiny_files() -> None:
     """Key 43 – Light Canon: no micro-files (<150 bytes) except __init__.py."""
     violations: List[str] = []
@@ -1964,7 +1894,6 @@ def check_key_43_light_no_tiny_files() -> None:
         )
     else:
         success("43", "No micro-files in non-sovereign Python code")
-
 
 def check_key_44_light_no_pass_only_defs() -> None:
     """Key 44 – Light Canon: no pass-only functions/classes in non-sovereign code."""
@@ -1989,7 +1918,6 @@ def check_key_44_light_no_pass_only_defs() -> None:
     else:
         success("44", "No pass-only definitions in non-sovereign Python code")
 
-
 def check_key_45_light_no_bare_except() -> None:
     """Key 45 – Light Canon: no bare 'except:' in non-sovereign code."""
     violations: List[str] = []
@@ -2012,7 +1940,6 @@ def check_key_45_light_no_bare_except() -> None:
         )
     else:
         success("45", "No bare 'except:' in non-sovereign Python code")
-
 
 def check_key_46_light_no_secrets() -> None:
     """Key 46 – Light Canon: no obvious secrets in non-sovereign code."""
@@ -2037,7 +1964,6 @@ def check_key_46_light_no_secrets() -> None:
     else:
         success("46", "No obvious secrets in non-sovereign Python code")
 
-
 def check_key_47_no_zombie_archive_anywhere() -> None:
     """Key 47 – No stray archive/ directories (use archives/ instead)."""
     violations: List[str] = []
@@ -2053,7 +1979,6 @@ def check_key_47_no_zombie_archive_anywhere() -> None:
         )
     else:
         success("47", "No archive/ directories present (archives/ only)")
-
 
 def check_key_48_final_depth_canon() -> None:
     """
@@ -2104,7 +2029,6 @@ def check_key_48_final_depth_canon() -> None:
         fail("48", "FINAL DEPTH CANON VIOLATIONS:\n" + "\n".join(f" • {v}" for v in violations[:50]))
     else:
         success("48", f"Final Depth Canon enforced: max depth {MAX_ANY_FILE_DEPTH}, no rogue root scripts")
-
 
 def check_key_49_no_smashed_filenames() -> None:
     """
@@ -2176,7 +2100,6 @@ def check_key_49_no_smashed_filenames() -> None:
     else:
         success("49", "No smashed filenames – signal-to-noise ratio OK")
 
-
 def check_key_50_canon_meta_integrity() -> None:
     """
     Key 50 – Meta: exactly 50 keys executed and reported.
@@ -2196,7 +2119,6 @@ def check_key_50_canon_meta_integrity() -> None:
         )
     else:
         success("50", "Canon meta-integrity OK — all 49 prerequisite keys executed")
-
 
 # =====================================================================
 # TOP-LEVEL CHECK RUNNER
@@ -2273,7 +2195,6 @@ def run_all_checks() -> None:
     # Meta key (must be last, checks keys present in results)
     check_key_50_canon_meta_integrity()
 
-
 # =====================================================================
 # CLI
 # =====================================================================
@@ -2310,7 +2231,6 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
-
 def main() -> None:
     args = parse_args()
     import json
@@ -2319,10 +2239,6 @@ def main() -> None:
     load_change_tracker_from_env()
 
     if not args.silent and not args.json:
-        print("=" * 64)
-        print("SUBATOMIC CANON 2026 — 50-KEY VALIDATION")
-        print(f"Project root: {ROOT}")
-        print("=" * 64)
 
     # 1. Hydrate (Always required)
     hydrate_repo_data()
@@ -2421,24 +2337,20 @@ def main() -> None:
                     else: clean_files.append(f)
                 
                 output["failures"][k] = {"error": header, "files": clean_files}
-        
-        print(json.dumps(output, indent=2))
+
         sys.exit(1 if output["summary"]["failed"] > 0 else 0)
 
     else:
         fails = [k for k in keys_to_run if not results.get(k, (False, ""))[0]]
         passed = [k for k in keys_to_run if results.get(k, (False, ""))[0]]
         if not args.silent:
-            print()
+
             for k in keys_to_run:
                 if k in results:
                     p, m = results[k]
                     icon = "[PASS]" if p else "[FAIL]"
-                    print(f"{icon} Key {k}: {m}")
-            print("=" * 64)
-            print(f"RESULT: {len(passed)}/{len(keys_to_run)} keys passed")
-        sys.exit(1 if fails else 0)
 
+        sys.exit(1 if fails else 0)
 
 if __name__ == "__main__":
     main()

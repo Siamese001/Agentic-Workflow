@@ -9,7 +9,6 @@ from typing import List, Dict, object, Optional
 from data.sdks_mcps.reference_clients.minimal_openai import OpenAI
 from openai.types.batches import Batch
 
-
 class BatchProcessor:
     """Handles OpenAI Batch API operations for resume processing."""
     
@@ -99,8 +98,7 @@ class BatchProcessor:
             
             if batch.status in ["completed", "failed", "cancelled", "expired"]:
                 return batch
-            
-            print(f"Batch {batch_id} status: {batch.status} - {batch.request_counts.completed}/{batch.request_counts.total} completed")
+
             time.sleep(poll_interval)
         
         raise TimeoutError(f"Batch {batch_id} did not complete within {timeout} seconds")
@@ -152,16 +150,13 @@ class BatchProcessor:
         
         # Upload file
         file_id = self.upload_batch_file(batch_file)
-        print(f"Uploaded batch file: {file_id}")
-        
+
         # Submit batch
         batch = self.submit_batch(file_id, f"Resume processing batch - {batch_name}")
-        print(f"Submitted batch: {batch.id}")
-        
+
         # Wait for completion
         completed_batch = self.wait_for_completion(batch.id)
-        print(f"Batch completed with status: {completed_batch.status}")
-        
+
         # Download results
         results_file = f"{batch_name}_results.json"
         results = self.download_results(completed_batch, results_file)
@@ -175,7 +170,6 @@ class BatchProcessor:
             "file_id": file_id,
             "output_file_id": completed_batch.output_file_id
         }
-
 
 def create_resume_requests(resumes: List[str]) -> List[Dict[str, object]]:
     """Create batch requests for resume extraction.
@@ -214,7 +208,6 @@ def create_resume_requests(resumes: List[str]) -> List[Dict[str, object]]:
     
     return requests
 
-
 if __name__ == "__main__":
     # Example usage
     sample_resumes = [
@@ -230,8 +223,5 @@ if __name__ == "__main__":
     # Execute full batch cycle
     try:
         results = engine.full_batch_cycle(requests, "test_resume_batch")
-        print(f"Batch completed: {results['status']}")
-        print(f"Processed {results['requests_count']} requests")
-        print(f"Generated {results['results_count']} results")
+
     except Exception as e:
-        print(f"Batch processing failed: {e}")

@@ -9,13 +9,11 @@ from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import
 from data.sdks_mcps.reference_clients.minimal_openai import OpenAI
 from openai.types.chat import ChatCompletionChunk
 
-
 class ResumeSection(BaseModel):
     """Resume section with confidence scoring."""
     title: str = Field(..., description="Section title (e.g., 'Experience', 'Education')")
     content: str = Field(..., description="Section content")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score 0-1")
-
 
 class ResumeExtract(BaseModel):
     """Complete resume extraction with metadata."""
@@ -24,7 +22,6 @@ class ResumeExtract(BaseModel):
     phone: Optional[str] = Field(None, description="Phone number")
     sections: List[ResumeSection] = Field(default_factory=list, description="Resume sections")
     summary: Optional[str] = Field(None, description="Professional summary")
-
 
 def stream_structured_resume(
     resume_text: str,
@@ -95,7 +92,6 @@ def stream_structured_resume(
             "raw_response": full_response
         }
 
-
 if __name__ == "__main__":
     # Example usage
     sample_resume = """
@@ -112,4 +108,3 @@ if __name__ == "__main__":
     """
     
     result = stream_structured_resume(sample_resume)
-    print(json.dumps(result, indent=2))

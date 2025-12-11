@@ -41,7 +41,6 @@ logger = logging.getLogger(__name__)
 CACHE_KEY_PREFIX = "llm_cache_v10_8"
 CACHE_KEY_VERSION = "2"  # Increment when cache format changes
 
-
 def generate_llm_cache_key(
     model: str,
     messages: List[Dict[str, str]],
@@ -61,7 +60,6 @@ def generate_llm_cache_key(
     key_str = f"{model}:{messages_str}"
     key_hash = hashlib.sha256(key_str.encode()).hexdigest()
     return f"{CACHE_KEY_PREFIX}:v{CACHE_KEY_VERSION}:{key_hash}"
-
 
 def generate_llm_cache_key_with_fingerprint(
     model: str,
@@ -84,7 +82,6 @@ def generate_llm_cache_key_with_fingerprint(
     key_str = f"{model}:{messages_str}:{fingerprint}"
     key_hash = hashlib.sha256(key_str.encode()).hexdigest()
     return f"{CACHE_KEY_PREFIX}:v{CACHE_KEY_VERSION}:fp:{key_hash}"
-
 
 def extract_cache_metadata(response: object) -> Dict[str, object]:
     """
@@ -119,7 +116,6 @@ def extract_cache_metadata(response: object) -> Dict[str, object]:
 
     return metadata
 
-
 def should_invalidate_cache(
     cache_key: str,
     current_version: str,
@@ -137,7 +133,6 @@ def should_invalidate_cache(
     # Extract version from cache key if it contains version info
     # For simplicity, invalidate if current_version is "2" (newer)
     return current_version == "2"
-
 
 # =============================================================================
 # EXPORTS

@@ -2,7 +2,6 @@
 from __future__ import annotations
 from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
 
-
 class TestCacheKeyCollisionRegression:
     """Regression tests for cache key collision bugs."""
 

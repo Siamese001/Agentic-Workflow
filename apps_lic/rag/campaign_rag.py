@@ -22,7 +22,6 @@ try:
     PDF_SUPPORT = True
 except ImportError:
     PDF_SUPPORT = False
-    print("WARNING: PyMuPDF not installed. PDF support disabled. Install with: pip install pymupdf")
 
 # from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker  # TODO: Replace with sovereign equivalent
 
@@ -55,7 +54,6 @@ class BaseAgent:
         self.debug_mode = debug_mode
     
     def log_info(self, msg):
-        print(f"INFO: {msg}")
 
 def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
@@ -313,8 +311,7 @@ class RecipientAgent:
         """
         NEW v12.0: Validate a specific entity (person, initiative) from strategic brief.
         """
-        print(f"     S2.RecipientAgent: Validating entity: '{entity_name}'...")
-        
+
         # Build targeted validation query
         company = mission.recipient_profile.get('company', '')
         query = f'"{entity_name}" "{company}" {entity_context}'
@@ -339,8 +336,7 @@ class RecipientAgent:
     
     async def get_profile(self, mission: OutreachMission) -> Dict[str, object]:
         """Legacy method - minimal search for basic profile validation."""
-        print("     S2.RecipientAgent: Basic profile validation...")
-        
+
         name = mission.recipient_profile.get('name', '')
         company = mission.recipient_profile.get('company', '')
         query = f'"{name}" "{company}" LinkedIn'
@@ -356,8 +352,7 @@ class RecipientAgent:
     
     async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Perform targeted refinement RAG."""
-        print(f"     S2.RecipientAgent: Running refinement task: '{task[:50]}...'")
-        
+
         loop = asyncio.get_event_loop()
         search_results = await loop.run_in_executor(
             None, self.search_client.search, task, 2
@@ -399,7 +394,6 @@ class RecipientAgent:
         
         return rag_results
 
-
 class OrganizationAgent:
     """
     v12.0: DEMOTED to secondary fact-checker role.
@@ -413,8 +407,7 @@ class OrganizationAgent:
         """
         NEW v12.0: Validate a specific initiative from strategic brief.
         """
-        print(f"     S2.OrganizationAgent: Validating initiative: '{initiative_name}'...")
-        
+
         company = mission.job_description.get('company', '')
         query = f'"{company}" "{initiative_name}"'
         
@@ -436,8 +429,7 @@ class OrganizationAgent:
 
     async def get_organization_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Legacy method - minimal search for basic org validation."""
-        print("     S2.OrganizationAgent: Basic org validation...")
-        
+
         company = mission.job_description.get('company', '')
         query = f'"{company}" news'
         
@@ -452,8 +444,7 @@ class OrganizationAgent:
 
     async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
         """Perform targeted refinement RAG."""
-        print(f"     S2.OrganizationAgent: Running refinement task: '{task[:50]}...'")
-        
+
         loop = asyncio.get_event_loop()
         search_results = await loop.run_in_executor(
             None, self.search_client.search, task, 2
@@ -497,7 +488,6 @@ class OrganizationAgent:
         
         return rag_results
 
-
 class InternalAgent:
     """
     v12.0: UPGRADED to primary intelligence-gathering unit.
@@ -514,8 +504,7 @@ class InternalAgent:
         """
         v12.0: Load sender grounding + strategic brief.
         """
-        print("     S2.InternalAgent: Loading grounding files + strategic brief...")
-        
+
         rag_results = []
         
         # Load master_resume.json (sender grounding)
@@ -532,11 +521,9 @@ class InternalAgent:
         
         # Check job tracker for prior applications
         prior_applications = self._search_job_tracker(mission)
-        
-        print(f"     S2.InternalAgent: Loaded {len(rag_results)} grounding RAG results.")
+
         if brief_entities:
-            print(f"     S2.InternalAgent: Extracted {len(brief_entities)} entities from strategic brief for validation.")
-        
+
         return {
             "prior_applications": prior_applications,
             "rag_results": rag_results,
@@ -549,7 +536,7 @@ class InternalAgent:
         Returns: (rag_results, extracted_entities)
         """
         if not PDF_SUPPORT:
-            print("     WARNING: PDF support not available. Install PyMuPDF to enable strategic briefs.")
+
             return [], []
         
         # Find PDF file (priority: target_brief.pdf, then any *.pdf)
@@ -560,10 +547,9 @@ class InternalAgent:
             pdf_files = glob.glob("*.pdf")
             if pdf_files:
                 pdf_path = pdf_files[0]
-                print(f"     INFO: Using {pdf_path} as strategic brief.")
-        
+
         if not pdf_path:
-            print("     WARNING: No strategic brief PDF found (target_brief.pdf or *.pdf). Strategic alignment will be limited.")
+
             return [], []
         
         try:
@@ -573,9 +559,7 @@ class InternalAgent:
             for page in doc:
                 full_text += page.get_text()
             doc.close()
-            
-            print(f"     S2.InternalAgent: Parsed {len(full_text)} chars from {pdf_path}.")
-            
+
             # Split into paragraphs
             paragraphs = [p.strip() for p in full_text.split('\n\n') if len(p.strip()) > 50]
             
@@ -601,7 +585,7 @@ class InternalAgent:
             return rag_results, entities
             
         except Exception as e:
-            print(f"     ERROR loading strategic brief {pdf_path}: {e}")
+
             return [], []
     
     def _extract_entities_from_text(self, text: str) -> List[Dict[str, str]]:
@@ -643,14 +627,14 @@ class InternalAgent:
         """Load master_resume.json and convert to RAG results."""
         filepath = "master_resume.json"
         if not os.path.exists(filepath):
-            print(f"     WARNING: {filepath} not found. Skipping.")
+
             return []
         
         try:
             with open(filepath, 'r') as f:
                 resume_data = json.load(f)
         except Exception as e:
-            print(f"     ERROR loading {filepath}: {e}")
+
             return []
         
         rag_results = []
@@ -679,14 +663,14 @@ class InternalAgent:
         """Load sender_knowledge_base.json and convert to RAG results."""
         filepath = "sender_knowledge_base.json"
         if not os.path.exists(filepath):
-            print(f"     WARNING: {filepath} not found. Skipping.")
+
             return []
         
         try:
             with open(filepath, 'r') as f:
                 kb_data = json.load(f)
         except Exception as e:
-            print(f"     ERROR loading {filepath}: {e}")
+
             return []
         
         rag_results = []
@@ -752,7 +736,6 @@ class InternalAgent:
         # This would integrate with actual job tracking system
         return []
 
-
 # ============================================================================
 # MODIFIED v12.0: S2 SUPERVISOR AGENT
 # ============================================================================
@@ -789,8 +772,7 @@ class S2_SupervisorAgent:
         4. Run reflexion loop if needed
         """
         self.status = AgentStatus.RUNNING
-        print("  S2.Supervisor: Orchestrating v12.0 Strategic Alignment research...")
-        
+
         # Phase 1: Internal grounding (strategic brief + sender data)
         internal_report = self.internal_agent.get_internal_context(mission)
         rag_results = internal_report['rag_results']
@@ -799,7 +781,7 @@ class S2_SupervisorAgent:
         
         # Phase 2: Entity validation
         if brief_entities:
-            print(f"  S2.Supervisor: Validating {len(brief_entities)} entities from strategic brief...")
+
             for entity in brief_entities[:5]:  # Validate up to 5 entities
                 if entity['type'] == 'person':
                     validation = await self.recipient_agent.validate_entity(
@@ -807,20 +789,18 @@ class S2_SupervisorAgent:
                     )
                     rag_results.extend(validation['rag_results'])
                     if validation.get('staleness_warning'):
-                        print(f"     WARNING: {validation['staleness_warning']}")
-                
+
                 elif entity['type'] == 'initiative':
                     validation = await self.organization_agent.validate_initiative(
                         entity['name'], mission
                     )
                     rag_results.extend(validation['rag_results'])
                     if validation.get('staleness_warning'):
-                        print(f"     WARNING: {validation['staleness_warning']}")
-        
+
         # Phase 3: Light supplemental RAG (minimal - strategic brief is primary)
         # Only run if no strategic brief found
         if not any(r.source_type == "STRATEGIC_BRIEF" for r in rag_results):
-            print("  S2.Supervisor: No strategic brief found - running fallback RAG...")
+
             recipient_report = await self.recipient_agent.get_profile(mission)
             org_report = await self.organization_agent.get_organization_context(mission)
             rag_results.extend(recipient_report['rag_results'])
@@ -837,7 +817,7 @@ class S2_SupervisorAgent:
             )
             
             if refinement_context and reflexion_iterations == 0:
-                print("     S2.Supervisor: Received S6 failure context. Forcing refinement task.")
+
                 failure_rule = refinement_context[0].rule_id
                 failure_msg = refinement_context[0].message
                 task = f"S6 Validation Failed ({failure_rule}): {failure_msg}. Find new evidence to resolve this."
@@ -845,13 +825,12 @@ class S2_SupervisorAgent:
                 critique.refinement_tasks = [task]
 
             if critique.is_sufficient:
-                print(f"     S2.Supervisor: Internal critique PASSED (Iteration {reflexion_iterations + 1}).")
+
                 break
             
             reflexion_iterations += 1
             task = critique.refinement_tasks[0]
-            print(f"     S2.Supervisor: Internal critique FAILED. Refining task: '{task[:50]}...'")
-            
+
             refinement_report = None
             if any(kw in task.lower() for kw in ["recipient", "github", "linkedin"]):
                 refinement_report = await self.recipient_agent.run_refinement_task(task, mission)
@@ -897,16 +876,14 @@ class S2_SupervisorAgent:
         adversarial_findings = await self._run_adversarial_check(context)
         context.adversarial_findings = adversarial_findings
         if adversarial_findings:
-            print(f"     S2.Supervisor: Adversarial check flagged {len(adversarial_findings)} weak claims.")
-        
+
         self.status = AgentStatus.COMPLETED
         
         return context, corrected_profile_analysis
     
     async def _run_adversarial_check(self, context: ResearchContext) -> List[str]:
         """Adversarial self-verification using LLM."""
-        print("     S2.Supervisor: Running Adversarial Self-Verification (Red Team)...")
-        
+
         rag_summary = "\n".join([
             f"- {r.source_type}: {r.text[:100]}..." 
             for r in context.rag_results[:10]
@@ -939,7 +916,7 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
             return findings[:3]
             
         except Exception as e:
-            print(f"     WARNING: Adversarial check LLM call failed: {e}")
+
             return []
 
     def _extract_sender_grounding(

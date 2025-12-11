@@ -13,14 +13,12 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class ScriptExecutionPriority(Enum):
     """Priority levels for script execution."""
     CRITICAL = "critical"
     HIGH = "high"
     NORMAL = "normal"
     LOW = "low"
-
 
 @dataclass
 class ScriptTask:
@@ -34,7 +32,6 @@ class ScriptTask:
     retry_count: int = 0
     max_retries: int = 3
 
-
 @dataclass
 class ScriptsPlanningConfig:
     """Configuration for scripts planning orchestrator."""
@@ -44,7 +41,6 @@ class ScriptsPlanningConfig:
     enable_resource_monitoring: bool = True
     retry_failed_tasks: bool = True
     log_level: str = "INFO"
-
 
 @dataclass
 class ScriptsPlanningResult:
@@ -56,7 +52,6 @@ class ScriptsPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class ScriptsPlanningOrchestrator:
     """Orchestrator for planning script execution operations."""
@@ -200,7 +195,6 @@ class ScriptsPlanningOrchestrator:
         
         return total
 
-
 # Factory function for easy instantiation
 def create_scripts_planning_orchestrator(
     max_concurrent_tasks: int = 5,
@@ -214,7 +208,6 @@ def create_scripts_planning_orchestrator(
         **kwargs
     )
     return ScriptsPlanningOrchestrator(config)
-
 
 # Convenience function for direct usage
 def plan_script_execution(
@@ -271,7 +264,6 @@ def plan_script_execution(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     example_tasks = [
@@ -297,4 +289,3 @@ if __name__ == "__main__":
     ]
     
     result = plan_script_execution(example_tasks)
-    print(f"Planning result: {result}")

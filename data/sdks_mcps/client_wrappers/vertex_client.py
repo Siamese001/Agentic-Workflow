@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from vertexai import init as vertex_init
 import backoff
 
-
 @dataclass
 class VertexConfig:
     """Configuration for Vertex AI client."""
@@ -22,7 +21,6 @@ class VertexConfig:
     timeout: int = 60
     enable_grounding: bool = True
     default_safety_threshold: HarmBlockThreshold = HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE
-
 
 class VertexClient:
     """Production-ready Vertex AI client with grounding and safety support."""
@@ -400,7 +398,6 @@ class VertexClient:
             "errors": 0
         }
 
-
 # builder function for easy instantiation
 def create_vertex_client(
     project_id: Optional[str] = None,
@@ -430,7 +427,6 @@ def create_vertex_client(
     )
     return VertexClient(config)
 
-
 # Example usage
 if __name__ == "__main__":
     # Create client with grounding
@@ -439,29 +435,19 @@ if __name__ == "__main__":
     # Simple generation
     try:
         response = client.generate_content("Explain quantum computing in 100 words.")
-        print("Response:", response.text)
-        
+
         # Grounded response
         grounded = client.grounded_response(
             "What are the latest developments in AI large language models?",
             grounding_threshold=0.7
         )
-        print("\nGrounded Response:")
-        print(f"Grounding Score: {grounded['grounding_metadata']['grounding_score'] if grounded['grounding_metadata'] else 'N/A'}")
-        print(f"Citations: {len(grounded['citations'])}")
-        print(f"Content: {grounded['content'][:200]}...")
-        
+
         # Safe response with custom safety
         safe = client.safe_response(
             "Write a professional email template",
             safety_threshold=HarmBlockThreshold.BLOCK_NONE
         )
-        print("\nSafe Response:")
-        print(f"Safety Ratings: {len(safe['safety_ratings'])}")
-        print(f"Content: {safe['content'][:200]}...")
-        
+
         # Usage stats
-        print("\nUsage Stats:", client.get_usage_stats())
-        
+
     except Exception as e:
-        print("Error:", e)

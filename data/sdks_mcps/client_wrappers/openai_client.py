@@ -12,7 +12,6 @@ from data.sdks_mcps.reference_clients.minimal_openai import OpenAI, APIError, Ra
 from openai.types.chat import ChatCompletion
 import backoff
 
-
 @dataclass
 class OpenAIConfig:
     """Configuration for OpenAI client."""
@@ -24,7 +23,6 @@ class OpenAIConfig:
     default_model: str = "gpt-4o-2024-08-06"
     default_temperature: float = 0.7
     default_max_tokens: int = 4096
-
 
 class OpenAIClient:
     """Production-ready OpenAI client with comprehensive error handling."""
@@ -305,7 +303,6 @@ class OpenAIClient:
             "errors": 0
         }
 
-
 # builder function for easy instantiation
 def create_openai_client(
     api_key: Optional[str] = None,
@@ -325,7 +322,6 @@ def create_openai_client(
     config = OpenAIConfig(api_key=api_key, default_model=model, **kwargs)
     return OpenAIClient(config)
 
-
 # Example usage
 if __name__ == "__main__":
     # Create client
@@ -339,8 +335,7 @@ if __name__ == "__main__":
     
     try:
         response = client.chat_completion(messages)
-        print("Response:", response.choices[0].message.content)
-        
+
         # Structured output
         schema = {
             "type": "object",
@@ -355,10 +350,7 @@ if __name__ == "__main__":
             messages=messages,
             schema=schema
         )
-        print("Structured:", json.dumps(structured, indent=2))
-        
+
         # Usage stats
-        print("Usage:", client.get_usage_stats())
-        
+
     except Exception as e:
-        print("Error:", e)

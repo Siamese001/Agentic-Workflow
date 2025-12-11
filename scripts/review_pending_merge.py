@@ -22,7 +22,6 @@ APPROVED_FOLDERS = [
     'shared_engine_ops',
 ]
 
-
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""
     try:
@@ -45,7 +44,6 @@ def count_real_lines(path: Path) -> int:
         return real
     except (ValueError, TypeError, KeyError):
         return 0
-
 
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation beyond stubs."""
@@ -71,10 +69,9 @@ def has_real_code(path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-
 def main():
     # Build index of approved files
-    print("Building index of approved files...")
+
     approved_by_name = {}
 
     for folder in APPROVED_FOLDERS:
@@ -87,7 +84,6 @@ def main():
             approved_by_name.setdefault(f.name, []).append(f)
 
     # Scan review_pending
-    print(f"Scanning {REVIEW_PENDING}...")
 
     pending_files = [f for f in REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
 
@@ -119,42 +115,20 @@ def main():
                 pending_unique_stub.append(f)
 
     # Report
-    print("\n" + "=" * 80)
-    print("DEEP ANALYSIS RESULTS")
-    print("=" * 80)
 
-    print(f"\nPENDING HAS MORE CODE THAN APPROVED: {len(pending_has_more_code)}")
     for f, pending_lines, approved_lines in pending_has_more_code[:20]:
-        print(f"  {f.name}: pending={pending_lines} vs approved={approved_lines}")
 
-    print(f"\nPENDING IS STUB (name match exists): {len(pending_is_stub)}")
-
-    print(f"\nPENDING SAME OR LESS CODE: {len(pending_same_or_less)}")
-
-    print(f"\nUNIQUE WITH REAL CODE: {len(pending_unique_with_code)}")
     for f, lines in pending_unique_with_code[:20]:
-        print(f"  {f.relative_to(REVIEW_PENDING)}: {lines} real lines")
-
-    print(f"\nUNIQUE STUBS: {len(pending_unique_stub)}")
 
     # Final recommendation
-    print("\n" + "=" * 80)
-    print("FINAL RECOMMENDATION")
-    print("=" * 80)
 
     total_files = len(pending_files)
     safe_to_archive = len(pending_is_stub) + len(pending_same_or_less) + len(pending_unique_stub)
     needs_review = len(pending_has_more_code) + len(pending_unique_with_code)
 
-    print(f"  Total files: {total_files}")
-    print(f"  Safe to archive (stubs/duplicates): {safe_to_archive}")
-    print(f"  Needs manual review: {needs_review}")
-
     if needs_review == 0:
-        print("\n  ✓ ALL FILES ARE STUBS OR DUPLICATES - SAFE TO MOVE TO 06_data/deprecated/")
-    else:
-        print(f"\n  ⚠ {needs_review} files need content review before archival")
 
+    else:
 
 if __name__ == '__main__':
     main()

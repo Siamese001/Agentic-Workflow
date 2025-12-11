@@ -3,7 +3,6 @@ from __future__ import annotations
 import time
 from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
 
-
 class TestCacheKeyThroughput:
     def test_cache_key_throughput_10k_per_second(self):
         """Can generate at least 10k cache keys per second."""

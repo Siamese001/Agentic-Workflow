@@ -64,19 +64,13 @@ def extract_net_incremental():
             dest_path = staging_dir / filename
             shutil.copy2(py_file, dest_path)
             extracted_files.append(filename)
-            print(f"Extracted: {filename}")
-    
+
     return extracted_files
 
 if __name__ == "__main__":
-    print("=== Phase 1: Surgical Extraction from legacy_lic ===")
+
     extracted = extract_net_incremental()
-    
-    print(f"\nExtraction Summary:")
-    print(f"- Total Files Extracted: {len(extracted)}")
-    print(f"- Staging Directory: archive_code/")
-    
+
     if extracted:
-        print("\nExtracted Files:")
+
         for f in sorted(extracted):
-            print(f"  - {f}")

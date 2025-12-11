@@ -8,7 +8,6 @@ from typing import List, Dict, object, Optional
 from vertexai.generative_models import GenerativeModel, Part, Tool
 from vertexai.generative_models import grounding as vertex_grounding
 
-
 class GroundedResponseGenerator:
     """Generates responses with Google Search grounding and citation tracking."""
     
@@ -180,7 +179,6 @@ class GroundedResponseGenerator:
         
         return formatted
 
-
 def research_company_with_grounding(
     company_name: str,
     research_aspects: List[str] = None
@@ -229,7 +227,6 @@ def research_company_with_grounding(
         "raw_response": result
     }
 
-
 if __name__ == "__main__":
     # Example usage
     test_companies = [
@@ -237,28 +234,16 @@ if __name__ == "__main__":
         "OpenAI", 
         "Google DeepMind"
     ]
-    
-    print("Google Vertex AI - Grounded Response Demo")
-    print("=" * 50)
-    
+
     for company in test_companies:
-        print(f"\nResearching: {company}")
-        print("-" * 30)
-        
+
         try:
             research = research_company_with_grounding(company)
-            
-            print(f"Grounding Score: {research['grounding_score']}")
-            print(f"Citations: {research['citation_count']}")
-            print(f"\n{research['grounded_response'][:500]}...")
-            
+
         except Exception as e:
-            print(f"Error researching {company}: {e}")
-    
+
     # Test citation formatting
-    print(f"\n{'='*50}")
-    print("Testing Citation Formats:")
-    
+
     generator = GroundedResponseGenerator()
     test_response = generator.generate_grounded_response(
         "What are the latest developments in AI large language models?",
@@ -267,6 +252,5 @@ if __name__ == "__main__":
     
     formats = ["footnote", "parenthetical", "markdown"]
     for fmt in formats:
-        print(f"\n--- {fmt.upper()} FORMAT ---")
+
         formatted = generator.format_response_with_citations(test_response, fmt)
-        print(formatted[:300] + "..." if len(formatted) > 300 else formatted)

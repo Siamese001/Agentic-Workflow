@@ -19,8 +19,11 @@ try:
     from data.sdks_mcps.client_wrappers.multi_provider_router import create_multi_provider_router
 except ImportError as e:
     print(f"Import error: {e}")
-    print("Make sure you're running from the data/sdks_mcps/ directory")
-
+    # Define dummy functions if imports fail
+    def create_openai_client(): return None
+    def create_anthropic_client(): return None
+    def create_vertex_client(): return None
+    def create_multi_provider_router(): return None
 
 def test_openai_client() -> Dict[str, object]:
     """Test OpenAI client functionality."""
@@ -92,7 +95,6 @@ def test_openai_client() -> Dict[str, object]:
         results["overall"] = False
     
     return results
-
 
 def test_anthropic_client() -> Dict[str, object]:
     """Test Anthropic client functionality."""
@@ -178,7 +180,6 @@ def test_anthropic_client() -> Dict[str, object]:
     
     return results
 
-
 def test_vertex_client() -> Dict[str, object]:
     """Test Google Vertex client functionality."""
     results = {
@@ -240,7 +241,6 @@ def test_vertex_client() -> Dict[str, object]:
         results["overall"] = False
     
     return results
-
 
 def test_multi_provider_router() -> Dict[str, object]:
     """Test multi-provider router functionality."""
@@ -310,7 +310,6 @@ def test_multi_provider_router() -> Dict[str, object]:
     
     return results
 
-
 def test_reference_clients() -> Dict[str, object]:
     """Test minimal reference clients."""
     results = {
@@ -375,25 +374,18 @@ def test_reference_clients() -> Dict[str, object]:
     
     return results
 
-
 def main():
     """Run all integration tests."""
-    print("🧪 Running SDK Integration Tests...")
-    print("=" * 60)
-    
+
     # Check environment
-    print("🔧 Environment Check:")
+
     env_vars = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_CLOUD_PROJECT"]
     for var in env_vars:
         status = "✅" if os.getenv(var) else "❌"
-        print(f"   {status} {var}")
-    print()
-    
+
     # Run tests
     test_results = []
-    
-    print("📊 Testing Clients:")
-    
+
     # Test individual clients
     for test_func in [test_openai_client, test_anthropic_client, test_vertex_client]:
         try:
@@ -401,58 +393,53 @@ def main():
             test_results.append(result)
             
             status = "✅" if result["overall"] else "❌"
-            print(f"   {status} {result['provider']}")
-            
+
             for test_name, test_result in result["tests"].items():
                 if "error" in test_result and not test_result.get("passed", True):
-                    print(f"      ❌ {test_name}: {test_result.get('error', 'Failed')}")
-                    
+                    print(f"    Failed: {test_name} - {test_result.get('error', 'Unknown error')}")
+        
         except Exception as e:
-            print(f"   ❌ Test failed: {e}")
-    
+            print(f"Error processing results: {e}")
+
     # Test router
     try:
         router_result = test_multi_provider_router()
         test_results.append(router_result)
         status = "✅" if router_result["overall"] else "❌"
-        print(f"   {status} {router_result['provider']}")
+
     except Exception as e:
-        print(f"   ❌ Router test failed: {e}")
-    
+            print(f"Error testing router: {e}")
+
     # Test reference clients
     try:
         ref_result = test_reference_clients()
         test_results.append(ref_result)
         status = "✅" if ref_result["overall"] else "❌"
-        print(f"   {status} {ref_result['provider']}")
+
     except Exception as e:
-        print(f"   ❌ Reference clients test failed: {e}")
-    
+        print(f"Error testing reference clients: {e}")
+
     # Summary
-    print("\n" + "=" * 60)
+
     total_tests = len(test_results)
     passed_tests = sum(1 for result in test_results if result["overall"])
-    
-    print(f"📈 Test Summary: {passed_tests}/{total_tests} test suites passed")
-    
+
     if passed_tests == total_tests:
-        print("🎉 ALL INTEGRATION TESTS PASSED!")
-        print("   SDKs are ready for production use.")
-        print("   data/sdks_mcps/ confirmed as single source of truth.")
+        print(f"✅ All {total_tests} tests passed!")
+        return 0
     else:
-        print("⚠️  SOME TESTS FAILED - Check configuration and try again.")
-        print("   Missing API keys will cause test failures.")
-    
+        print(f"❌ {total_tests - passed_tests} of {total_tests} tests failed")
+        return 1
+
     # Performance summary
-    print(f"\n⏱️  Performance Summary:")
+
     for result in test_results:
         if result["overall"]:
-            print(f"   ✅ {result['provider']}: Functional")
+            print(f"  ✅ {result.get('provider', 'Unknown')}")
         else:
-            print(f"   ❌ {result['provider']}: Issues detected")
-    
-    return 0 if passed_tests == total_tests else 1
+            print(f"  ❌ {result.get('provider', 'Unknown')}")
 
+    return 0 if passed_tests == total_tests else 1
 
 if __name__ == "__main__":
     sys.exit(main())

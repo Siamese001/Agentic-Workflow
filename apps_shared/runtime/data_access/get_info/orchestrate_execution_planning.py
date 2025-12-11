@@ -13,7 +13,6 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class ExecutionType(Enum):
     """Types of execution workflows."""
     SEQUENTIAL = "sequential"
@@ -21,7 +20,6 @@ class ExecutionType(Enum):
     CONDITIONAL = "conditional"
     PIPELINE = "pipeline"
     WORKFLOW = "workflow"
-
 
 class ExecutionStatus(Enum):
     """Status of execution steps."""
@@ -32,7 +30,6 @@ class ExecutionStatus(Enum):
     SKIPPED = "skipped"
     CANCELLED = "cancelled"
 
-
 class RetryPolicy(Enum):
     """Retry policies for failed executions."""
     NONE = "none"
@@ -40,7 +37,6 @@ class RetryPolicy(Enum):
     EXPONENTIAL = "exponential"
     LINEAR = "linear"
     CUSTOM = "custom"
-
 
 @dataclass
 class ExecutionStep:
@@ -56,7 +52,6 @@ class ExecutionStep:
     retry_delay: int = 0
     on_failure: str = "stop"  # stop, continue, retry
 
-
 @dataclass
 class ExecutionCondition:
     """Condition for conditional execution."""
@@ -64,14 +59,12 @@ class ExecutionCondition:
     expected_value: Any
     operator: str = "eq"  # eq, ne, gt, lt, gte, lte, in, not_in
 
-
 @dataclass
 class ExecutionBranch:
     """Branch in conditional execution."""
     condition: ExecutionCondition
     steps: List[ExecutionStep]
     else_steps: Optional[List[ExecutionStep]] = None
-
 
 @dataclass
 class ExecutionPlan:
@@ -84,7 +77,6 @@ class ExecutionPlan:
     error_handling: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class ExecutionPlanningConfig:
     """Configuration for execution planning orchestrator."""
@@ -94,7 +86,6 @@ class ExecutionPlanningConfig:
     max_concurrent_steps: int = 5
     default_timeout: int = 300
     log_level: str = "INFO"
-
 
 @dataclass
 class ExecutionPlanningResult:
@@ -107,7 +98,6 @@ class ExecutionPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class ExecutionPlanningOrchestrator:
     """Orchestrator for planning execution operations."""
@@ -414,7 +404,6 @@ class ExecutionPlanningOrchestrator:
         
         return requirements
 
-
 # Factory function for easy instantiation
 def create_execution_planning_orchestrator(
     enable_parallel_execution: bool = True,
@@ -428,7 +417,6 @@ def create_execution_planning_orchestrator(
         **kwargs
     )
     return ExecutionPlanningOrchestrator(config)
-
 
 # Convenience function for direct usage
 def plan_execution_workflow(
@@ -496,7 +484,6 @@ def plan_execution_workflow(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     example_steps = [
@@ -520,4 +507,3 @@ if __name__ == "__main__":
         execution_type="sequential",
         steps=example_steps
     )
-    print(f"Execution planning result: {result}")

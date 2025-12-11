@@ -6,7 +6,6 @@ import os
 import json
 from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
 
-
 def simple_message(prompt: str, model: str = "claude-3-5-sonnet-20241022") -> str:
     """Simple message completion with Anthropic.
     
@@ -29,7 +28,6 @@ def simple_message(prompt: str, model: str = "claude-3-5-sonnet-20241022") -> st
     )
     
     return response.content[0].text
-
 
 def cached_message(prompt: str, system_prompt: str = None) -> str:
     """Message with prompt caching for cost optimization.
@@ -63,7 +61,6 @@ def cached_message(prompt: str, system_prompt: str = None) -> str:
     )
     
     return response.content[0].text
-
 
 def tool_use_message(prompt: str, tools: list) -> dict:
     """Message with tool use capabilities.
@@ -105,19 +102,16 @@ def tool_use_message(prompt: str, tools: list) -> dict:
         "tool_calls": tool_calls
     }
 
-
 if __name__ == "__main__":
     # Test simple message
     result = simple_message("Explain AI in one sentence")
-    print("Simple:", result)
-    
+
     # Test cached message
     cached = cached_message(
         "Summarize quantum computing",
         system_prompt="You are an expert physics educator."
     )
-    print("Cached:", cached)
-    
+
     # Test tool use
     tools = [{
         "name": "get_weather",
@@ -131,4 +125,3 @@ if __name__ == "__main__":
     }]
     
     tool_result = tool_use_message("What's the weather in San Francisco?", tools)
-    print("Tool Use:", json.dumps(tool_result, indent=2))

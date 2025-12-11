@@ -15,7 +15,6 @@ class BaseAgent:
         self.debug_mode = debug_mode
     
     def log_info(self, msg):
-        print(f"INFO: {msg}")
 
 class BaseModel:
     """Stub for BaseModel - TODO: Replace with sovereign equivalent"""
@@ -64,8 +63,6 @@ def detect_bias(context, text, workflow_id=""):
     """Stub for detect_bias - TODO: Replace with sovereign equivalent"""
     return {"bias_detected": False, "score": 0.0}
 
-
-
 class PIISanitizerAgent(BaseAgent):
     """Performs local PII detection using regex heuristics."""
 
@@ -98,7 +95,6 @@ class PIISanitizerAgent(BaseAgent):
             text = pattern.sub(f"[{pii_type}_REDACTED]", text)
         return text
 
-
 class BiasDetectorAgent(BaseAgent):
     """Runs local bias detection with dynamic constitution rules."""
 
@@ -116,7 +112,6 @@ class BiasDetectorAgent(BaseAgent):
             )
 
         return result
-
 
 class PromptInjectionDetectorAgent(BaseAgent):
     """Detects prompt-injection attacks."""
@@ -173,7 +168,6 @@ class PromptInjectionDetectorAgent(BaseAgent):
             )
 
         return validated_output.model_dump()
-
 
 class ConstitutionalReviewerAgent(BaseAgent):
     """Performs final constitutional review of the output."""

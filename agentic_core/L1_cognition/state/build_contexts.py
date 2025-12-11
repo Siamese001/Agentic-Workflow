@@ -29,7 +29,7 @@ except ImportError:  # pragma: no cover - fallback types
     RedisType = Any
     ChromaClientType = Any
 
-from runtime.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
+from agentic_core.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 from shared.config import ConfigV10_7
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import canonical_model_name  # INVALID: Cannot import from path with hyphens
 from shared.exceptions import MCPClientInitializationError
