@@ -7,6 +7,7 @@ import os
 from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
+from runtime.shared.models import HopCheckpoint, ThematicAnalysis, ValidationResult, ValidationSeverity
 
 
 class StateSerializer:
