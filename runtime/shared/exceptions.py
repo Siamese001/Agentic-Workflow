@@ -1,27 +1,17 @@
 """
-Runtime shared exceptions.
+Runtime shared exceptions - Re-export from canonical location.
+
+All exceptions are defined in shared/exceptions.py as the single source of truth.
+This module re-exports them for backward compatibility.
 """
 
-class AgenticWorkflowError(Exception):
-    """Base exception for agentic workflow."""
-    pass
-
-class HopExecutionError(AgenticWorkflowError):
-    """Error during hop execution."""
-    pass
-
-class ValidationError(AgenticWorkflowError):
-    """Error during validation."""
-    pass
-
-class APIError(AgenticWorkflowError):
-    """Error during API calls."""
-    pass
-
-class CircuitBreakerOpenError(AgenticWorkflowError):
-    """Error when circuit breaker is open."""
-    pass
-
-class StagingBufferError(AgenticWorkflowError):
-    """Error in staging buffer operations."""
-    pass
+# Re-export all exceptions from the canonical location
+from shared.exceptions import (
+    AgenticWorkflowError,
+    HopExecutionError,
+    StagingBufferError,
+    CircuitBreakerOpenError,
+    PhaseTimeoutError,
+    ValidationError,
+    APIError,
+)

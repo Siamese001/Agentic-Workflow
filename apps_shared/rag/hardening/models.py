@@ -10,24 +10,18 @@ from typing import Any, ClassVar, Dict, List, Optional, Set
 import copy
 
 # ============================================================================
-# CUSTOM EXCEPTIONS
+# CUSTOM EXCEPTIONS - Re-exported from canonical location
 # ============================================================================
 
-class HopExecutionError(Exception):
-    """Raised when a hop fails to execute successfully."""
-    pass
-
-class StagingBufferError(Exception):
-    """Raised when staging buffer encounters data integrity issues."""
-    pass
-
-class CircuitBreakerOpenError(Exception):
-    """Raised when circuit breaker is open and rejects requests."""
-    pass
-
-class PhaseTimeoutError(Exception):
-    """Raised when a RAG phase execution exceeds timeout."""
-    pass
+# Import all exceptions from the canonical single source of truth
+from shared.exceptions import (
+    HopExecutionError,
+    StagingBufferError,
+    CircuitBreakerOpenError,
+    PhaseTimeoutError,
+    ValidationError,
+    APIError,
+)
 
 class FactualFailureException(Exception):
     """Raised by Validator when a high-signal factual or strategic check fails, triggering a Slow Loop."""
