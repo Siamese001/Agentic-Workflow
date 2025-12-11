@@ -21,7 +21,12 @@ class AgenticWorkflowError(Exception):
 
 
 class HopExecutionError(AgenticWorkflowError):
-    """Error during workflow hop execution."""
+    """
+    Raised when a step in the Agentic Pipeline fails.
+    
+    NOTE: 'Hop' is legacy terminology referring to the linear data pipeline model.
+    This exception now governs failures in the Subatomic Agentic Workflow.
+    """
 
     pass
 
