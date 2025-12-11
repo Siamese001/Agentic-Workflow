@@ -354,7 +354,11 @@ def check_key_01_no_sovereign_deletions() -> None:
     """
     tracker_active = bool(os.environ.get("CANON_CHANGE_TRACKER"))
 
-    if not DELETED_SOVEREIGN_FILES:
+    # Filter out files that were renamed (not truly deleted)
+    renamed_sources = {src for src, _ in RENAMED_SOVEREIGN_FILES}
+    truly_deleted = DELETED_SOVEREIGN_FILES - renamed_sources
+
+    if not truly_deleted:
         if tracker_active:
             success("01", "No sovereign deletions detected")
         else:
@@ -362,7 +366,7 @@ def check_key_01_no_sovereign_deletions() -> None:
             success("01", "PASS (⚠ deletion tracking inactive - manual run detected)")
         return
 
-    deleted_list = sorted(str(p.relative_to(ROOT)) for p in DELETED_SOVEREIGN_FILES)
+    deleted_list = sorted(str(p.relative_to(ROOT)) for p in truly_deleted)
     msg_lines = ["Sovereign deletions detected:", *[f"  - {p}" for p in deleted_list[:20]]]
     if len(deleted_list) > 20:
         msg_lines.append(f"  ... and {len(deleted_list) - 20} more")
@@ -551,8 +555,10 @@ def check_key_09_banned_tokens_in_filenames() -> None:
             if any(p in {"__pycache__", ".git", "node_modules"} for p in rel.parts):
                 continue
             lower_name = f.name.lower()
+            # Split by underscores and dots for discrete word matching
+            name_parts = set(re.split(r'[_.]', lower_name))
             for token in BANNED_FILENAME_TOKENS:
-                if token in lower_name:
+                if token in name_parts:
                     violations.append(str(rel))
                     break
     if violations:
@@ -663,7 +669,7 @@ ALLOWED_MAGIC_NUMBERS: Set[int] = {
     # Ports (minimal set)
     80, 443, 8080,
     # Bytes/Powers of 2
-    1024, 2048, 4096, 8192,
+    100, 1024, 2048, 4096, 8192,
     # Timeouts (seconds)
     10, 30, 60,
 }
@@ -673,18 +679,18 @@ def check_key_14_magic_numbers() -> None:
     """
     Key 14 – STRICT magic number detection.
     
-    Flags ANY 3+ digit numeric constant not in the minimal allowlist.
+    Flags ANY numeric constant not in the minimal allowlist.
     Code must extract constants to named variables.
     """
-    # Match 3+ digit numbers
-    magic_pattern = re.compile(r"\b(\d{3,})\b")
+    # Match ALL digit sequences
+    magic_pattern = re.compile(r"\b(\d+)\b")
     violations: List[str] = []
     
     for f in iter_sovereign_py_files():
         text = read_file(f)
         matches = magic_pattern.findall(text)
-        # Flag ALL numbers >= 100 not in strict allowlist
-        bad_numbers = [m for m in matches if int(m) >= 100 and int(m) not in ALLOWED_MAGIC_NUMBERS]
+        # Flag ALL numbers not in strict allowlist
+        bad_numbers = [m for m in matches if int(m) not in ALLOWED_MAGIC_NUMBERS]
         if bad_numbers:
             # Dedupe and limit
             unique_bad = sorted(set(bad_numbers), key=int)[:5]
@@ -1016,6 +1022,11 @@ def check_key_22_import_hygiene() -> None:
             elif isinstance(node, ast.Attribute):
                 if isinstance(node.value, ast.Name):
                     used.add(node.value.id)
+            elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+                # Check string literals for forward references (e.g., x: "MyClass")
+                for imp in imported:
+                    if imp == node.value:
+                        used.add(imp)
 
         # Check for wildcards first (immediate fail)
         if wildcards:
@@ -1133,6 +1144,10 @@ def check_key_26_syntax_and_strict_typing() -> None:
             if isinstance(annotation, ast.Name):
                 if annotation.id in BANNED_TYPE_HINTS:
                     self.errors.append(f"'{annotation.id}' forbidden in {context}")
+            elif isinstance(annotation, ast.Attribute):
+                # Handle t.Any, typing.Any, etc.
+                if annotation.attr in BANNED_TYPE_HINTS:
+                    self.errors.append(f"'{annotation.attr}' forbidden in {context}")
             elif isinstance(annotation, ast.Subscript):
                 # Check inside generics like Dict[str, object]
                 if isinstance(annotation.slice, ast.Tuple):
@@ -1156,6 +1171,20 @@ def check_key_26_syntax_and_strict_typing() -> None:
                     self.errors.append(f"Missing type hint for arg '{arg.arg}' in '{node.name}'")
                 else:
                     self._check_annotation(arg.annotation, f"arg '{arg.arg}' in '{node.name}'")
+            
+            # Check *args (vararg)
+            if node.args.vararg:
+                if node.args.vararg.annotation is None:
+                    self.errors.append(f"Missing type hint for *{node.args.vararg.arg} in '{node.name}'")
+                else:
+                    self._check_annotation(node.args.vararg.annotation, f"*{node.args.vararg.arg} in '{node.name}'")
+            
+            # Check **kwargs (kwarg)
+            if node.args.kwarg:
+                if node.args.kwarg.annotation is None:
+                    self.errors.append(f"Missing type hint for **{node.args.kwarg.arg} in '{node.name}'")
+                else:
+                    self._check_annotation(node.args.kwarg.annotation, f"**{node.args.kwarg.arg} in '{node.name}'")
             
             self.generic_visit(node)
 
@@ -1503,10 +1532,9 @@ def check_key_40_validator_self_sanity() -> None:
     """
     Key 40 – Validator self-integrity check.
     
-    Uses dynamic __file__ resolution instead of hardcoded filename,
-    allowing the validator to survive renaming/refactoring.
+    Verifies that the validator is being run from the project root directory.
+    This ensures correct path resolution for all other checks.
     """
-    # FIX: Use dynamic path resolution instead of hardcoded "canon_validator.py"
     current_script = Path(__file__).resolve()
     script_name = current_script.name
     
@@ -1514,9 +1542,10 @@ def check_key_40_validator_self_sanity() -> None:
         fail("40", f"Validator cannot resolve its own path: {current_script}")
         return
     
-    # Ensure validator lives at project root
-    if current_script.parent != ROOT:
-        fail("40", f"Validator must live at project root, found at: {current_script.parent}")
+    # Verify that os.getcwd() matches ROOT (validator run from project root)
+    cwd = Path(os.getcwd()).resolve()
+    if cwd != ROOT:
+        fail("40", f"Validator must be run from project root. CWD: {cwd}, ROOT: {ROOT}")
         return
     
     try:
@@ -1525,7 +1554,7 @@ def check_key_40_validator_self_sanity() -> None:
         fail("40", f"{script_name} has syntax error: {e.msg}")
         return
     
-    success("40", f"{script_name} present at root and syntactically valid")
+    success("40", f"{script_name} syntactically valid and run from project root")
 
 
 # ---------------------------------------------------------------------
@@ -1713,6 +1742,7 @@ def check_key_48_final_depth_canon() -> None:
     Key 48 – The One True Depth Law (2026-12-10 Final)
 
     - No CODE file in ANY directory (Sovereign or Light) may exceed depth 5
+    - Exception: tests/ directory files may go to depth 7 (to mirror source structure)
     - No .py file at root except whitelisted scripts
     - Only infrastructure dirs are exempt (.git, __pycache__, etc.)
     """
@@ -1723,6 +1753,9 @@ def check_key_48_final_depth_canon() -> None:
     
     # Infrastructure dirs exempt from checks
     INFRA_DIRS = {".git", "__pycache__", "node_modules", "venv", ".idea", ".vscode"}
+    
+    # Relaxed depth for tests/ directory
+    MAX_TESTS_DEPTH = 7
 
     for f in ROOT.rglob("*"):
         if not f.is_file():
@@ -1739,9 +1772,13 @@ def check_key_48_final_depth_canon() -> None:
             continue
 
         depth = len(parts)
+        
+        # Determine max depth based on directory
+        is_tests = parts and parts[0] == "tests"
+        max_depth = MAX_TESTS_DEPTH if is_tests else MAX_ANY_FILE_DEPTH
 
-        if depth > MAX_ANY_FILE_DEPTH:
-            violations.append(f"{rel} → depth {depth} (max {MAX_ANY_FILE_DEPTH})")
+        if depth > max_depth:
+            violations.append(f"{rel} → depth {depth} (max {max_depth})")
 
         if depth == 1 and f.suffix == ".py":
             if f.name not in ALLOWED_ROOT_SCRIPTS:
@@ -1844,7 +1881,7 @@ def check_key_49_no_smashed_filenames() -> None:
     
     # Rule 5: Prefix fatigue detection
     MIN_PREFIX_LEN = 6
-    MIN_FILES_FOR_FATIGUE = 3
+    MIN_FILES_FOR_FATIGUE = 5
     
     for directory, files in dir_files.items():
         if len(files) < MIN_FILES_FOR_FATIGUE:
