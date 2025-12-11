@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from collections import defaultdict
@@ -20,23 +20,8 @@ from functools import partial
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from modular components
-from models import (
-    BulletProvenance, CircuitState, GateDecision, HopCheckpoint, HopStatus,
-    ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule,
-    RAGState, RAGTelemetry, ResumeSection, ThematicAnalysis,
-    ValidationResult, ValidationSeverity, HopExecutionError, StagingBufferError,
-    CompetitiveIntelligence, RAGMission
-)
-from config import (
-    CONFIG, AppConfig, ArtistConfig, EnricherConfig, ContentConstraintsConfig,
-    ReasoningConfig, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
-)
-from utils import (
-    TextUtils, calculate_signal_score, setup_workflow_logging,
-    create_directory_if_missing, sanitize_filename
-)
-from validation import PreFlightValidator, JDEnforcementValidator, QAReportGenerator
-from rag import EnhancedJobDescriptionAnalyzer, WebSearchRAG
+from runtime.validation import PreFlightValidator, JDEnforcementValidator, QAReportGenerator
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import EnhancedJobDescriptionAnalyzer, WebSearchRAG  # INVALID: Cannot import from path with hyphens
 
 try:
     import google.generativeai as genai
@@ -53,7 +38,7 @@ except ImportError:
     logging.warning("Warning: google-generativeai package not installed")
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -143,7 +128,7 @@ class ClerkExtractor:
 
         return experience_sections
 
-import re
+import scripts.check_canonical_structure
 from typing import List, Dict, object, Optional
 
 

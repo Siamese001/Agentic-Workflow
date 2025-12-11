@@ -2,9 +2,9 @@
 
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
-from .simulation_base import SimulationInput, SimulationResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.simulation_base import SimulationInput, SimulationResult  # INVALID: Cannot import from path with hyphens
 
 
 class StrategySimRequest(SimulationInput):

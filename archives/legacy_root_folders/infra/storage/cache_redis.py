@@ -32,7 +32,7 @@ def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
 
     Improves résumé processing performance by using provider client instead of direct SDK imports.
     """
-    from providers.redis_client import init_redis_client as provider_init_redis_client
+    from archives.legacy_root_folders.providers.redis_client import init_redis_client
     return provider_init_redis_client(url, timeout_s=timeout_s)
 
 

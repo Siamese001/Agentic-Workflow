@@ -9,7 +9,7 @@ and content compliance checking.
 """
 
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, object, Optional, Tuple, Set
 from dataclasses import dataclass
 from enum import Enum

@@ -1,8 +1,8 @@
 # FILE: tests/golden_state/test_runner.py
 
-from core.models.models import ExecutionProfile, RetrievalConfig
+from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig
 
-from eval.golden_state.runner import run_all_golden_tests
+from archives.legacy_root_folders.eval.golden_state.runner import run_all_golden_tests
 
 
 def test_run_all_golden_tests_returns_results():

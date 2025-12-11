@@ -2,13 +2,6 @@
 from __future__ import annotations
 from pathlib import Path
 
-from agentic_workflow.runtime.shared.config import (
-    DEFAULT_MAX_RETRIES, DEFAULT_API_TIMEOUT,
-    DEFAULT_GENERATION_TEMPERATURE, DEFAULT_SYNTHESIS_TEMPERATURE,
-    SAFETY_THRESHOLD, ModelProvider,
-    ModelConfig, RAGConfig, GovernorConfig, Config, CONFIG, PROJECT_ROOT,
-    DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR,
-)
 
 class TestConstants:
     def test_max_retries_positive(self):
@@ -51,7 +44,7 @@ class TestConfigSingleton:
         assert isinstance(CONFIG, Config)
 
     def test_config_singleton_identity(self):
-        from agentic_workflow.runtime.shared.config import CONFIG as C2
+        from shared.reasoning_config import CONFIG
         assert CONFIG is C2
 
 class TestModelConfig:

@@ -10,17 +10,13 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 from collections import Counter
 from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # GAP 4 FIX: Removed global CONFIG import
-from core_v10_1 import (
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError
-)
 
 logger = logging.getLogger("agent_stacks_v10_1")
 

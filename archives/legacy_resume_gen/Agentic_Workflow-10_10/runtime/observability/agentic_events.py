@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
 
 class SafetyEvent(BaseModel):

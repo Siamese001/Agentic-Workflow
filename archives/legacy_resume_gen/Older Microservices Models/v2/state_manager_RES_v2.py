@@ -20,12 +20,6 @@ from typing import Any, Dict, List, Optional
 import hashlib
 from datetime import datetime
 
-from models_RES import (
-    ValidationResult,
-    ValidationSeverity,
-    HopCheckpoint,
-    HopStatus
-)
 
 
 class ManifestManager:

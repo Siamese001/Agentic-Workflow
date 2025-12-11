@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, object
 from dataclasses import dataclass, field
 from enum import Enum
-from models_RES import ReasoningConfig
+from runtime.compat.models_RES import ReasoningConfig
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

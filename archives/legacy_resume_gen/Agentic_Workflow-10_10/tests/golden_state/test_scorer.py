@@ -1,5 +1,5 @@
-from eval.golden_state.models import JudgeVerdict
-from eval.golden_state.scorer import aggregate_scores
+from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict
+from archives.legacy_root_folders.eval.golden_state.scorer import aggregate_scores
 
 
 def test_aggregate_scores_basic():

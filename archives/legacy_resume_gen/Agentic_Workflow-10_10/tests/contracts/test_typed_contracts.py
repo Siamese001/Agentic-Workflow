@@ -2,23 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
-from meta.schema_validation import validate_schema_version
-from core.models.models import (
-    StrategyPlan,
-    StrategyResult,
-    DraftingPlan,
-    DraftingResult,
-    QAPlan,
-    QAResult,
-    SafetyPlan,
-    SafetyResult,
-    WorkflowPlanBundle,
-    RAGPlan,
-    RAGResult,
-    L2ResultBundle,
-)
+from archives.legacy_root_folders.meta.schema_validation import validate_schema_version
 
 
 def test_core_models_have_v1_schema_version_defaults():

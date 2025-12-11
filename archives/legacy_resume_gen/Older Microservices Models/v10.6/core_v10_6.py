@@ -33,17 +33,17 @@ import os
 import json
 import logging
 import hashlib
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import asyncio
 import chromadb
 import time 
 import random # v10.6: Added for Fix #29
 from functools import wraps 
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
-from chromadb.utils import embedding_functions
-from openai import AsyncOpenAI
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, ValidationError
+from shared.reasoning_utils import embedding_functions
+from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI
 try:
-    import anthropic
+    import data.sdks_mcps.reference_clients.minimal_anthropic
     import google.generativeai as genai
 except ImportError:
     logging.warning("LLM provider libraries (anthropic, google-generativeai) not found. Install them if needed.")
@@ -1556,7 +1556,7 @@ def get_checkpointer(
     fallback_errors: List[str] = []
 
     try:
-        from langgraph.checkpoint.redis import RedisSaver  # type: ignore
+        from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import RedisSaver
 
         try:
             saver = RedisSaver(
@@ -1604,7 +1604,7 @@ def get_checkpointer(
 
     if allow_memory_fallback:
         try:
-            from langgraph.checkpoint.memory import MemorySaver  # type: ignore
+            from tests.golden.semantics.test_regression_temporal_memory import MemorySaver
 
             logger.info("Using in-memory MemorySaver for LangGraph checkpoints.")
             return MemorySaver()

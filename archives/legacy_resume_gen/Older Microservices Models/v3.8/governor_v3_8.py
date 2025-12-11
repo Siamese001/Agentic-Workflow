@@ -11,7 +11,7 @@ from enum import Enum
 
 # Import models for type hints
 try:
-    from models_RES import ResumeSection, ValidationResult, ThematicAnalysis, GateDecision
+    from runtime.compat.models_RES import ResumeSection, ValidationResult, ThematicAnalysis, GateDecision
 except ImportError:
     # Fallback for standalone testing
     ResumeSection = Any
@@ -25,7 +25,7 @@ except ImportError:
 
 # Import temperature default from config (single source of truth)
 try:
-    from config_RES_v3_8 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v3.8.config_RES_v3_8 import CONFIG, DATA_DIR, OUTPUT_DIR, DEFAULT_GENERATION_TEMPERATURE, GEMINI_PREMIUM_MODEL, CLAUDE_PREMIUM_MODEL, OPENAI_SYNTHESIS_MODEL, DEFAULT_MAX_RETRIES
         CONFIG, DATA_DIR, OUTPUT_DIR, 
         DEFAULT_GENERATION_TEMPERATURE,
         GEMINI_PREMIUM_MODEL, CLAUDE_PREMIUM_MODEL, OPENAI_SYNTHESIS_MODEL,

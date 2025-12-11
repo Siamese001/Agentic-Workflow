@@ -31,43 +31,9 @@ from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 
-from core_v10_7 import (
-    BaseAgent,
-    BaseTool,
-    CacheManager,
-    CircuitBreaker,
-    CircuitBreakerOpenError,
-    ConfigV10_7,
-    ModelAPIError,
-    PydanticSchemaError,
-    ResponseValidator,
-    StrategyPlan,
-    WorkflowTimeoutError,
-    _format_prompt_with_defaults,
-    exponential_backoff_retry,
-)
-from agent_orchestration_v10_7 import (
-    check_constitution,
-    get_graph_app,
-    load_dynamic_tools,
-    run_classify_complexity,
-    run_constitutional_review,
-)
-from agent_tools_v10_7 import DraftingStrategistTool
-from agent_stacks_v10_7 import (
-    DraftingGuildCoordinator,
-    SpecialistDraftPacket,
-    EvidenceLiaisonPacket,
-    EvidenceClarificationRecord,
-    EvidenceBriefRecord,
-    CritiquePanelPacket,
-    CritiqueFindingRecord,
-    BiasDetectorAgent,
-    RAG_SearchAgent,
-    ToTStrategistAgent,
-)
-from langgraph.errors import NodeExecutionError
-from run_batch_v10_7 import run_batch_async
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import DraftingStrategistTool  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import NodeExecutionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.run_batch_v10_7 import run_batch_async  # INVALID: Cannot import from path with hyphens
 
 
 # ---------------------------------------------------------------------------
@@ -490,7 +456,7 @@ async def test_fix_6_node_timeout(mock_workflow_context, base_state):
 async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
     with patch('agent_stacks_v10_7.PIISanitizerAgent.run', return_value={}), \
          patch('agent_stacks_v10_7.BiasDetectorAgent.run', return_value={"bias_detected": False}):
-        from agent_orchestration_v10_7 import run_sanitize_pii
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import run_sanitize_pii  # INVALID: Cannot import from path with hyphens
         await run_sanitize_pii(base_state, mock_workflow_context)
     mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", object, success=True, error=None, metadata=ANY)
     mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", object, success=True, error=None, metadata=ANY)
@@ -934,8 +900,8 @@ def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
     tool_dir.mkdir()
     tool_file = tool_dir / "my_new_tool.py"
     tool_code = """
-from core_v10_7 import BaseTool, BaseToolOutput, track_metrics
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseTool, BaseToolOutput, track_metrics
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 class MyDynamicTool(BaseTool):
     tool_name = "my_dynamic_tool"
     output_model = BaseToolOutput

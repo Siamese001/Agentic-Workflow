@@ -22,40 +22,6 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from LIC_AGENTIC_v11_6 import (
-    ConfigRegistry,
-    Route,
-    Archetype,
-    OutreachMission,
-    ProfileAnalysis,
-    ResearchContext,
-    MessageScaffold,
-    ValidationResult,
-    ValidationSeverity,
-    ConstraintFailureType,
-    CircuitBreaker,
-    CircuitState,
-    SignalQualityScorer,
-    ClaimConfidenceScorer,
-    RAGReflexionSystem,
-    AdaptiveTemperatureController,
-    ConstraintFeasibilityChecker,
-    ContentCleanlinessValidator,
-    PlaceholderDetector,
-    MessageDiversityValidator,
-    ASCIIEnforcer,
-    ProfileAnalysisAgent,
-    ResearchOrchestrator,
-    RoutingAgent,
-    ScaffoldAgent,
-    GenerationOrchestrator,
-    ValidationAgent,
-    QAAgent,
-    RAGResult,
-    MessageClaim,
-    RAGCritique,
-    GeneratedMessage
-)
 
 
 # ============================================================================
@@ -691,7 +657,7 @@ class TestCircuitBreaker:
         assert cb.state == CircuitState.OPEN
         
         # Next call should raise CircuitBreakerOpenError
-        from LIC_AGENTIC_v11_6 import CircuitBreakerOpenError
+        from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_6 import CircuitBreakerOpenError
         with pytest.raises(CircuitBreakerOpenError):
             cb.call(failing_function)
 

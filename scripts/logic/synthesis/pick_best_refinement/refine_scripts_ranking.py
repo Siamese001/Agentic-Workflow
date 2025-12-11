@@ -33,7 +33,7 @@ from __future__ import annotations
 from typing import Dict, List
 
 
-from runtime_utils import Ranking as _Ranking
+from archives.legacy_root_folders.runtime.runtime_utils import Ranking
 
 
 def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:

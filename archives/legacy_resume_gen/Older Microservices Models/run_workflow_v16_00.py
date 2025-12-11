@@ -8,7 +8,7 @@ from datetime import datetime
 
 # Import the main components from your stable script name
 try:
-    from resume_workflow import (
+    from archives.legacy_resume_gen.Older Microservices Models.resume_workflow import WorkflowOrchestrator, MASTER_RESUME_DATA, CONFIG, __version__
         WorkflowOrchestrator, 
         MASTER_RESUME_DATA, 
         CONFIG, 

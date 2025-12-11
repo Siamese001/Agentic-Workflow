@@ -20,13 +20,13 @@ def verify_reorganization():
     
     # Check 1: New structure imports
     try:
-        import agents
-        import orchestration
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents  # INVALID: Cannot import from path with hyphens
+        import runtime.shared.orchestration
         import infrastructure
-        import prompts
-        import tools
-        import safety
-        import state
+        import archives.legacy_lic.LIC - Python.prompts
+        import runtime.shared.mcp_tools
+        import apps_shared.safety
+        import observability.cache.data_access.get_info.query_observability_state
         # Use imports to avoid unused warnings
         _ = [agents, orchestration, infrastructure, prompts, tools, safety, state]
         checks.append(("New Structure", True, "All capability directories available"))
@@ -35,7 +35,7 @@ def verify_reorganization():
     
     # Check 2: Agents subdirectories
     try:
-        from agents import planning, execution
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import planning, execution  # INVALID: Cannot import from path with hyphens
         # Use imports to avoid unused warnings
         _ = [planning, execution]
         checks.append(("Agents Structure", True, "Planning and execution subdirectories available"))
@@ -44,7 +44,7 @@ def verify_reorganization():
     
     # Check 3: Core models available
     try:
-        from core.models.models import (
+        from archives.legacy_root_folders.core.models.models import AgentCard, DraftingResult, QAResult, SafetyResult
             AgentCard,
             DraftingResult,
             QAResult,
@@ -58,8 +58,8 @@ def verify_reorganization():
     
     # Check 4: No circular dependencies
     try:
-        from l2.agents import StrategyLLMAgent
-        from l1.strategy_planning import plan_strategy
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.agents import StrategyLLMAgent
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import plan_strategy
         # Use imports to avoid unused warnings
         _ = [StrategyLLMAgent, plan_strategy]
         checks.append(("No Circular Dependencies", True, "Import order verified"))
@@ -68,7 +68,7 @@ def verify_reorganization():
     
     # Check 5: Execution agents available
     try:
-        from l2.agents import (
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.agents import StrategyLLMAgent, DraftingGuild, SemanticQAAgent, ConstitutionalSafetyAgent
             StrategyLLMAgent,
             DraftingGuild,
             SemanticQAAgent,
@@ -82,7 +82,7 @@ def verify_reorganization():
     
     # Check 6: Planning agents available
     try:
-        from l1.strategy_planning import plan_strategy
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import plan_strategy
         from l1.drafting_planning import plan_drafting
         # Use imports to avoid unused warnings
         _ = [plan_strategy, plan_drafting]

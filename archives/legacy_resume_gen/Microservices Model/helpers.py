@@ -19,7 +19,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import sys
 import uuid
 from dataclasses import asdict, dataclass, field, is_dataclass

@@ -27,7 +27,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -45,7 +45,7 @@ except ImportError:
 
 # Import from core
 # v6.2: Imports updated to core_v6_2
-from core_v6_3 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.3.core_v6_3 import HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException, ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy, ThematicAnalysis, RAG_Blackboard, RAGMission, RAGPhase, StrategyBrief, StrategyBlackboard, ReflectionIteration, ReflectionResult, ReflectionStatus, ToolCall, ToolType, ReActTrace, MoEExpertResult, MoEDecision, ConductorBranch, ConductorDecision, WorkflowBlackboard, WorkflowPlan, WorkflowStep, CONFIG, DEFAULT_GENERATION_TEMPERATURE, text_utils, fence_data, enhance_system_prompt_with_reasoning, reasoning_config_to_api_params
     # Models
     HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException,
     ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy,
@@ -64,7 +64,7 @@ from core_v6_3 import (
 
 # Import from validation_stack
 # v6.3: Imports updated to validation_stack_v6_3
-from validation_stack_v6_3 import ValidationEngine, ValidationContext, calculate_signal_score
+from archives.legacy_resume_gen.Older Microservices Models.v6.3.validation_stack_v6_3 import ValidationEngine, ValidationContext, calculate_signal_score
 
 logger = logging.getLogger(__name__)
 

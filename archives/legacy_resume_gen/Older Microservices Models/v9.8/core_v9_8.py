@@ -16,7 +16,7 @@
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -695,7 +695,7 @@ class AnthropicClient(BaseModelClient):
             raise ValueError("ANTHROPIC_API_KEY environment variable not set")
         
         try:
-            import anthropic
+            import data.sdks_mcps.reference_clients.minimal_anthropic
             self.client = anthropic.Anthropic(api_key=self.api_key)
         except ImportError:
             raise ImportError("anthropic package not installed")

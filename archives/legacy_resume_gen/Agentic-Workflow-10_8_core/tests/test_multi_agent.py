@@ -1,6 +1,6 @@
 """Grouped multi-agent tests."""
-from multi_agent import AgentMessage, route_to_specialist
-from multi_agent import AgentRole, LINEAR_PIPELINE
+from archives.legacy_root_folders.meta.multi_agent import AgentMessage, route_to_specialist
+from archives.legacy_root_folders.meta.multi_agent import AgentRole, LINEAR_PIPELINE
 
 
 def test_agent_message_stores_fields():
@@ -53,13 +53,6 @@ def test_route_to_specialist_is_deterministic():
     second_result = route_to_specialist(LINEAR_PIPELINE, message)
 
     assert first_result == second_result
-from multi_agent import (
-    AgentGraph,
-    AgentNode,
-    AgentRole,
-    COUNCIL_OF_QA,
-    LINEAR_PIPELINE,
-)
 
 
 def test_agent_role_member_count():
@@ -99,10 +92,10 @@ def test_council_of_qa_contains_three_nodes():
     assert len(COUNCIL_OF_QA.nodes) == 3
     assert all(node.role == AgentRole.QA for node in COUNCIL_OF_QA.nodes)
     assert [node.config.get("id") for node in COUNCIL_OF_QA.nodes] == [1, 2, 3]
-from multi_agent import AgentMessage
-from multi_agent import AgentGraph, AgentNode, AgentRole
-from l4_state import StateAdapter
-from multi_agent import MultiAgentOrchestrator
+from archives.legacy_root_folders.meta.multi_agent import AgentMessage
+from archives.legacy_root_folders.meta.multi_agent import AgentGraph, AgentNode, AgentRole
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.multi_agent import MultiAgentOrchestrator
 
 
 def _build_graph():
@@ -191,20 +184,12 @@ def test_dispatch_does_not_mutate_existing_keys():
         assert state[key] == initial_state[key]
 import pytest
 
-from multi_agent import AgentMessage, route_to_specialist
-from multi_agent import (
-    AgentGraph,
-    AgentNode,
-    AgentRole,
-    COUNCIL_OF_QA,
-    LINEAR_PIPELINE,
-    summarize_graph,
-)
-from multi_agent import deterministic_vote
-from multi_agent import can_delegate, delegation_metadata
-from l3_orchestration import GraphOrchestrator
-from l4_state import StateAdapter
-from multi_agent import MultiAgentOrchestrator
+from archives.legacy_root_folders.meta.multi_agent import AgentMessage, route_to_specialist
+from archives.legacy_root_folders.meta.multi_agent import deterministic_vote
+from archives.legacy_root_folders.meta.multi_agent import can_delegate, delegation_metadata
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.multi_agent import MultiAgentOrchestrator
 
 
 def _graph_with_different_roles():
@@ -343,7 +328,7 @@ def test_graph_orchestrator_runs_multi_agent_block():
     }
 import pytest
 
-from self_correction import ArbitrationEngine
+from archives.legacy_root_folders.meta.self_correction import ArbitrationEngine
 
 
 def test_arbitration_escalate_on_safety_blocked():
@@ -390,7 +375,7 @@ def test_arbitration_accept_default():
     assert result["action"] == "accept"
 from copy import deepcopy
 
-from hil_interface import apply_hil_feedback
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.hil_interface import apply_hil_feedback  # INVALID: Cannot import from path with hyphens
 
 
 def test_apply_hil_feedback_does_not_mutate():

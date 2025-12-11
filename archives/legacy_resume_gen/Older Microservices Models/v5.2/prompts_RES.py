@@ -5,7 +5,7 @@
 # V3.8 UPDATE: All V1 prompt logic from ArtistGenerator has been migrated
 # here. This module is now the single source of truth for all prompt context.
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 import os
@@ -13,15 +13,15 @@ from typing import Dict, List, Tuple, Optional, object
 from collections import defaultdict
 
 # --- REFACTOR: Import global CONFIG ---
-from config_RES import CONFIG
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
 # --- END REFACTOR ---
 
 # Import models needed for type hinting
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from models_RES import RAGMission, MasterResumeIndex, ThematicAnalysis, ValidationResult, ResumeSection
-from utils_RES import text_utils, fence_data
-    from config_RES import ContentConstraintsConfig, CompetitiveAnalysisConfig
+    from runtime.compat.models_RES import RAGMission, MasterResumeIndex, ThematicAnalysis, ValidationResult, ResumeSection
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import text_utils, fence_data
+    from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import ContentConstraintsConfig, CompetitiveAnalysisConfig
 
 # --- REFACTOR: Load 'Recipe Book' (prompts.json) from global CONFIG ---
 try:
@@ -318,7 +318,7 @@ def _build_narrative_context_dict(
     Build context dictionary for narrative generation.
     LOGIC MIGRATED FROM artist_RES_v2.py
     """
-    from models_RES import HopExecutionError, ResumeSection
+    from runtime.compat.models_RES import HopExecutionError, ResumeSection
     
     # --- REFACTOR: Source dependencies from kwargs/CONFIG ---
     master_resume = kwargs.get('master_resume', {})
@@ -415,7 +415,7 @@ def _build_bullets_context_dict(
     This replaces the complex V1 logic with a single, robust prompt context.
     LOGIC MIGRATED FROM artist_RES_v2.py
     """
-    from models_RES import HopExecutionError, ResumeSection
+    from runtime.compat.models_RES import HopExecutionError, ResumeSection
     
     master_resume = kwargs.get('master_resume', {})
     spec = kwargs.get('spec', {})
@@ -502,7 +502,7 @@ def _build_overview_context_dict(
     Build context dictionary for V2 overview generation.
     LOGIC MIGRATED FROM artist_RES_v2.py
     """
-    from models_RES import HopExecutionError, ResumeSection
+    from runtime.compat.models_RES import HopExecutionError, ResumeSection
     
     constraints = CONFIG.constraints
     spec = kwargs.get('spec', {})
@@ -1077,7 +1077,7 @@ def build_generation_prompt_with_reinforced_constraints(
     
     # --- TECHNIQUE 4: NEGATIVE CONSTRAINT INJECTION (VIA NEGATIVA) ---
     # Dynamically load forbidden terms from global config if not explicitly passed
-    from config_RES import CONFIG
+    from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
     forbidden_verbs = constraints.get('forbidden_verbs', CONFIG.validator.forbidden_verbs)
     negative_constraints = [
         "- DO NOT start with 'At [Company]', 'As [Title]', or 'In this role'",

@@ -6,13 +6,13 @@ import copy
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
-from core_v10_7 import BaseAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent
 
-from .bullet_execution import BulletExecutionStack
-from .bullet_planning import BulletPlanningStack
-from .draft_planning import DraftPlanningStack
-from .drafting_execution import DraftingExecutionStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.bullet_execution import BulletExecutionStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.bullet_planning import BulletPlanningStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_planning import DraftPlanningStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.drafting_execution import DraftingExecutionStack  # INVALID: Cannot import from path with hyphens
 
 
 class DraftOrchestratorStack(BaseAgent):

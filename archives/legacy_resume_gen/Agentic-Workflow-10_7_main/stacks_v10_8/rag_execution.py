@@ -6,9 +6,9 @@ import asyncio
 import json
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from agent_tools_v10_7 import BM25SearchTool, ChromaDBSearchTool, HyDETool
-from core_v10_7 import BaseAgent, PydanticSchemaError, RAGPlan, _format_prompt_with_defaults
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import BM25SearchTool, ChromaDBSearchTool, HyDETool  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, PydanticSchemaError, RAGPlan, _format_prompt_with_defaults
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 class RAGExecutionStack(BaseAgent):

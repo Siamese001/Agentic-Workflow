@@ -12,7 +12,7 @@ document expansion.
 import logging
 from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
-import re
+import scripts.check_canonical_structure
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)

@@ -3,12 +3,7 @@
 import random
 from typing import List
 
-from simulations.models.rag_simulation import (
-    RAGSimMetrics,
-    RAGSimRequest,
-    RAGSimResult,
-)
-from simulations.utils import model_to_payload
+from shared.reasoning_utils import model_to_payload
 
 
 class RAGSimulator:

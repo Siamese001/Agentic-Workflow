@@ -23,49 +23,18 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 import uuid
 from collections import Counter, defaultdict
 from typing import Dict, object, List, Optional
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
 # v10.6: Import from new core
-from core_v10_6 import (
-    _format_prompt_with_defaults, # v10.6: Now an async function
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError, PydanticSchemaError,
-    # Import Pydantic models
-    StrategyPlan,
-    GeneratedPrompts,
-    BulletList,
-    CritiqueResult,
-    HILAmbiguityReport,
-    HILFeedbackRoute,
-    HILFeedbackIntent,
-    HILReconciliationResult,
-    PersonaConsensus,
-    PersonaReviewDecision,
-    BaseToolOutput,
-    ConstitutionalReviewResult, # v10.6 (Fix #30)
-    A2AMessage, # v10.6 (Fix #10)
-    # v10.6: Import new decorators and services
-    track_metrics,
-    MetricsCollector,
-    BaseTool,
-    detect_bias
-)
 
 # v10.6: Import from new tools file
-from agent_tools_v10_6 import (
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool,
-    EvidenceClarificationTool,
-    EvidenceBriefAssemblerTool
-)
 
 # v10.6: Logger name updated
 logger = logging.getLogger("agent_stacks_v10_6")

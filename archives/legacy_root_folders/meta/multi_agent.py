@@ -27,11 +27,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List
 
-from core.models.models import (  # type: ignore[attr-defined]
-    AgentMessage,
-    MultiAgentVote,
-    MultiAgentCouncilResult,
-)
 
 
 # NOTE: v10_10 does not carry the full AgentGraph/AgentNode definitions

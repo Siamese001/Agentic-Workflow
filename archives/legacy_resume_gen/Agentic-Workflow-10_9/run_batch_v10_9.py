@@ -34,7 +34,7 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from main_v10_9 import run_workflow_v10_9
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.main_v10_9 import run_workflow_v10_9  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================

@@ -1,10 +1,10 @@
 from typing import Dict, object
 
-from multi_agent import AgentGraph, summarize_graph, COUNCIL_OF_QA
-from multi_agent import AgentMessage, route_to_specialist
-from multi_agent import deterministic_vote
-from multi_agent import delegation_metadata
-from utils_types import StatePatch
+from archives.legacy_root_folders.meta.multi_agent import AgentGraph, summarize_graph, COUNCIL_OF_QA
+from archives.legacy_root_folders.meta.multi_agent import AgentMessage, route_to_specialist
+from archives.legacy_root_folders.meta.multi_agent import deterministic_vote
+from archives.legacy_root_folders.meta.multi_agent import delegation_metadata
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class MultiAgentOrchestrator:

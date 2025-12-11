@@ -10,7 +10,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import signal
 import time
 from collections import defaultdict
@@ -29,7 +29,7 @@ except ImportError:
     genai = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -40,7 +40,7 @@ except ImportError:
 # ChromaDB for Librarian Agent (NEW - Phase 3)
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -48,21 +48,10 @@ except ImportError:
     logging.warning("ChromaDB not available - Librarian Agent will be disabled")
 
 # Local module imports
-from config_RES import (
-    RAGConfig, WebRagConfig, AppConfig, CACHE_DIR
-)
-from models_RES import (
-    CircuitState, RAGState, RAGEvidence, RAGCritique,
-    PartialRAGResult, RAGTelemetry, CompetitiveIntelligence,
-    MasterResumeIndex, RAGMission, ThematicAnalysis, HopStatus,
-    RetrievalSource, SkillRequirement, SkillCluster,
-    HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError,
-    CompetitiveAnalysisConfig
-)
-from utils_RES import TelemetryLogger
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import TelemetryLogger
 
 # Import prompts module
-import prompts_RES
+import archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES
 
 # Type variable for phase execution
 T = TypeVar('T')
@@ -553,7 +542,7 @@ class WebSearchTool:
         Handles markdown code blocks and other formatting.
         """
         import json
-        import re
+        import scripts.check_canonical_structure
         
         # Try to find JSON in markdown code blocks
         json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text_content, re.DOTALL)

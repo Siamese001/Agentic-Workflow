@@ -23,25 +23,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, object, List, Dict
 
-from core.models.models import (  # type: ignore[attr-defined]
-    ComplexityLevel,
-    SkillClassifierResult,
-    DomainClassifierResult,
-    MultiAgentCouncilResult,
-    RoutingDecisionEvent,
-)
-from config.meta_profile import MetaProfileSnapshot
-from meta.multi_agent import (
-    MultiAgentCoordinator,
-    build_council,
-    AgentRole,
-    extract_council_arbitration,
-)
-from runtime.observability import (
-    get_all_events,
-    record_event,
-    emit_council_arbitration_event,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
 
 
 # =============================================================================

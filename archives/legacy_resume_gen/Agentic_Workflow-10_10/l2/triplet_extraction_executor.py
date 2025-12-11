@@ -23,15 +23,9 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime, UTC
 import json
-import re
+import scripts.check_canonical_structure
 
-from l4.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES
-from l4.entity_resolution import (
-    EntityRegistry,
-    EntityType,
-    EntityMention,
-    create_mention,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES
 
 
 @dataclass

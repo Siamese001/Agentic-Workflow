@@ -10,12 +10,12 @@ from datetime import datetime
 # Import the main components from the refactored modules
 try:
     # Import from the new refactored modules
-    from workflow import (
+    from archives.legacy_resume_gen.Older Microservices Models.workflow import WorkflowOrchestrator, MASTER_RESUME_DATA, __version__
         WorkflowOrchestrator, 
         MASTER_RESUME_DATA, 
         __version__
     )
-    from config import CONFIG
+    from shared.config import CONFIG
 except ImportError as e:
     print(f"Error: Could not import from refactored modules (workflow.py, config.py)")
     print(f"Details: {e}")

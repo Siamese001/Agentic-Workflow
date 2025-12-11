@@ -26,8 +26,8 @@ import hashlib
 import json
 import logging
 import os
-import redis
-import re
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -35,9 +35,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import (
-    Any, Callable, ClassVar, Dict, List, Optional, Set, Tuple, Union, TypedDict
-)
 
 # v9.5: Add OpenTelemetry Imports (Item #5)
 from opentelemetry import trace
@@ -53,7 +50,7 @@ except ImportError:
     genai = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:

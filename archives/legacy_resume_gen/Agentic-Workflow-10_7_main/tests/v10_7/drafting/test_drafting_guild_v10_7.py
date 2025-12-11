@@ -1,11 +1,11 @@
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 from typing import Any, Dict
 
 from typing import Any, Dict
 
 import pytest
 import agent_stacks_v10_8.components.drafting as drafting_module
-from agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool  # INVALID: Cannot import from path with hyphens
 from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
 
 

@@ -3,12 +3,12 @@
 
 __version__ = "11.10"
 
-import re
+import scripts.check_canonical_structure
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Union, Callable, Tuple
 from collections import defaultdict
 
-from models import CircuitState, Archetype, CircuitBreakerOpenError
+from shared.models import CircuitState, Archetype, CircuitBreakerOpenError
 
 # ============================================================================
 # NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)

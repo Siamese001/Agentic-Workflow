@@ -1,21 +1,21 @@
 """L3 Unified Workflow Orchestrator - Pure orchestration only."""
 
 from typing import Any, Dict, Protocol
-from l1.strategy_planning import plan_strategy
-from l1.draft_planning import plan_drafting
-from l1.qa_planning import plan_qa
-from l1.safety_planning import plan_safety
-from l1.result_parser import ResultParser
-from l2.llm_caller import LLMCaller
-from l2.strategy_executor import StrategyExecutor
-from l2.draft_executor import DraftExecutor
-from l2.qa_executor import QAExecutor
-from l2.safety_executor import SafetyExecutor
-from l3.strategy_orchestrator import StrategyOrchestrator
-from l3.draft_orchestrator import DraftOrchestrator
-from l3.qa_orchestrator import QAOrchestrator
-from l3.safety_orchestrator import SafetyOrchestrator
-from runtime.observability import record_event
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import plan_strategy
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.draft_planning import plan_drafting
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import plan_qa
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import plan_safety
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.result_parser import ResultParser
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.llm_caller import LLMCaller
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.strategy_executor import StrategyExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.draft_executor import DraftExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.qa_executor import QAExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.safety_executor import SafetyExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l3.strategy_orchestrator import StrategyOrchestrator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l3.draft_orchestrator import DraftOrchestrator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l3.qa_orchestrator import QAOrchestrator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l3.safety_orchestrator import SafetyOrchestrator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event
 
 # Protocol interfaces for L4/L5 dependency injection
 class StateManagerInterface(Protocol):

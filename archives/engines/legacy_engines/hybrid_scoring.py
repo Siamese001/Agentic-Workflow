@@ -11,7 +11,7 @@ import math
 from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 from collections import defaultdict, Counter
-import re
+import scripts.check_canonical_structure
 
 logger = logging.getLogger(__name__)
 

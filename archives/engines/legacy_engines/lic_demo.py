@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from typing import Dict, object, List
 
-from outreach_engine import (
+from archives.legacy_resume_gen.Older Microservices Models.v2.engine import ValidationSeverity, RoutingEngine, RAGPipelineV75, InsightsEngine, ToneEngine, ConstraintEngine, TemplateEngine, KNodeAssemblyEngine, SeniorityEngine, FusionPlanner
     # Core models
     ValidationSeverity,
     
@@ -27,7 +27,7 @@ def load_lic_capabilities() -> Dict[str, object]:
     """Load LIC capabilities from reconstructed_capabilities.py"""
     try:
         sys.path.append(os.path.join(os.path.dirname(__file__), 'LIC_capabilities'))
-        from reconstructed_capabilities import LIC_CAPABILITIES
+        from archives.LIC_capabilities.reconstructed_capabilities import LIC_CAPABILITIES
         print("✅ Loaded real LIC capabilities from reconstructed_capabilities.py")
         return LIC_CAPABILITIES
     except ImportError as e:
@@ -642,7 +642,7 @@ def demo_complete_workflow():
         # Step 4: Insights Analysis
         print_subsection("4. Insights Quality Analysis")
         # Create mock RAG evidence for insights
-        from outreach_engine.models import RAGEvidence
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import RAGEvidence
         mock_evidence = [
             RAGEvidence(
                 source_type=ev.source_type,

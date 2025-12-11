@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core_v10_7 import BaseAgent, RAGPlan
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, RAGPlan
 
-from .planning_utils import describe_experience, extract_job_profile, extract_resume_profile
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.planning_utils import describe_experience, extract_job_profile, extract_resume_profile  # INVALID: Cannot import from path with hyphens
 
 
 class RAGPlanningStack(BaseAgent):

@@ -1,7 +1,7 @@
 import pytest
 
-import stacks_v10_8.draft_orchestration as orchestrator_module
-from agent_stacks_v10_8.drafting_execution_stack import DraftingExecutionStack
+# import archives.legacy_resume_gen.Agentic-Workflow-10_7_main.stacks_v10_8.draft_orchestration  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.drafting_execution_stack import DraftingExecutionStack  # INVALID: Cannot import from path with hyphens
 
 
 class _DummyDraftOrchestrator:

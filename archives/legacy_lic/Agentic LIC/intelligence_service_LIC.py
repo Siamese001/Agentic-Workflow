@@ -22,11 +22,11 @@ except ImportError:
 # Embedding and vector store
 import google.generativeai as genai
 
-from models_LIC import RAGResult
-from retrieval_clients import GoogleSearchClient
-from llm_clients import GeminiLLMClient
-from utils_LIC import CircuitBreaker
-from memory_LIC import VectorMemoryStore
+from archives.legacy_lic.Agentic LIC.models_LIC import RAGResult
+from archives.legacy_lic.Agentic LIC.retrieval_clients import GoogleSearchClient
+from archives.legacy_lic.Agentic LIC.llm_clients import GeminiLLMClient
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker
+from archives.legacy_lic.Agentic LIC.memory_LIC import VectorMemoryStore
 
 
 class IntelligenceLibrarian:
@@ -437,7 +437,7 @@ Output ONLY the JSON array, no explanation."""
             response = self.llm_client.generate(prompt)
             
             # Parse JSON response
-            import re
+            import scripts.check_canonical_structure
             json_match = re.search(r'\[.*?\]', response, re.DOTALL)
             if json_match:
                 priorities = json.loads(json_match.group(0))

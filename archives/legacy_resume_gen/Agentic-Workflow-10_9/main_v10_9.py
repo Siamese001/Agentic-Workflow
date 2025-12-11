@@ -33,29 +33,21 @@ import asyncio
 from typing import Any, Dict, Optional, Callable
 
 # L1
-from core.l1 import plan as l1_plan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l1 import plan  # INVALID: Cannot import from path with hyphens
 
 # L3
-from core.l3 import DAGExecutor
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l3 import DAGExecutor  # INVALID: Cannot import from path with hyphens
 
 # L4
-from core.l4 import StateAdapter
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l4 import StateAdapter  # INVALID: Cannot import from path with hyphens
 
 # L5
-from core.l5 import SafetyEngine, PolicyEngine, ArbitrationEngine, SafetyMode
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l5 import SafetyEngine, PolicyEngine, ArbitrationEngine, SafetyMode  # INVALID: Cannot import from path with hyphens
 
 # MODELS
-from models import (
-    PlanObject,
-    FramingProfile,
-    ContextProfile,
-    ToolingProfile,
-    SafetyOutputProfile,
-    AccessPolicy,
-)
 
 # OBSERVABILITY
-from runtime.observability.utils import summarize_run
+from shared.reasoning_utils import summarize_run
 
 # RUNTIME UTILS
 from runtime.runtime_utils_v10_9 import CostTracker

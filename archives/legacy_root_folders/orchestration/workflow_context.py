@@ -6,19 +6,12 @@ from dataclasses import dataclass
 from datetime import datetime, UTC
 from typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar, Generic
 
-from l4.manager import StateManager
-from l4.types import StateSnapshot
-from l5 import SafetySystem
-from l5.types import PolicyDecision, SafetyContext, Verdict
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.manager import StateManager
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import StateSnapshot
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l5 import SafetySystem  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import PolicyDecision, SafetyContext, Verdict
 
-from .errors import (
-    ErrorSeverity,
-    NodeExecutionError,
-    SafetyViolationError,
-    StateTransitionError,
-    WorkflowError,
-)
-from .models.dag_models import DAGResult, NodeExecutionResult, NodeStatus
+from archives.legacy_root_folders.orchestration.models.dag_models import DAGResult, NodeExecutionResult, NodeStatus
 
 
 TState = TypeVar("TState")

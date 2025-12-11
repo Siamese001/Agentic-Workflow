@@ -23,74 +23,29 @@
 import pytest
 import pytest_asyncio
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import json
 import time
 import tempfile
 import os
-import re # v10.3: Added for regex matching
+import scripts.check_canonical_structure
 from pathlib import Path
 from unittest.mock import MagicMock, AsyncMock, patch, Mock
 from datetime import datetime
 from typing import Dict, object, List
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    WorkflowContext, ConfigV10_4, CacheManager, CostTracker, 
-    FeedbackLogReader, ProposedRulesLoader, MainGraphState, BaseAgent,
-    CostCeilingExceededError, CircuitBreakerOpenError, PydanticSchemaError, ModelAPIError,
-    # v10.3: Import new services and models
-    PromptTemplateManager, ResponseValidator, ContextBudgetManager,
-    exponential_backoff_retry,
-    StrategyPlan, CritiqueResult, BulletList, QAClaimOutput, DraftStrategyOutput,
-    RefineSectionOutput
-)
 
 # v10.4: Import from new stacks
-from agent_stacks_v10_4 import (
-    BaseTool,
-    ToTStrategistAgent,
-    BiasDetectorAgent,
-    PIISanitizerAgent,
-    RAG_SearchAgent, # v10.3: This is now the Hybrid RAG agent
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ChromaDBSearchTool,
-    BM25SearchTool # v10.3: Added
-)
 # v10.4: Import from new tools
-from agent_tools_v10_4 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAAdversarialReviewerTool,
-    QABiasDetectorTool
-)
 # v10.4: Import from new orchestration
-from agent_orchestration_v10_4 import (
-    ReActConductorAgent,
-    QAConductorAgent,
-    get_graph_app
-)
 # v10.4: Import from new batch runner
-from core_v10_4 import CircuitBreaker
-from run_batch_v10_4 import BatchFeedbackAggregator
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.core_v10_4 import CircuitBreaker
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.run_batch_v10_4 import BatchFeedbackAggregator
 
 try:
     # v10.4: Import from new main
-    from main_v10_4 import run_workflow_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10.4.main_v10_4 import run_workflow_async
     MAIN_AVAILABLE = True
 except ImportError:
     MAIN_AVAILABLE = False
@@ -657,19 +612,19 @@ def test_architecture_dependency_injection_v10_4(mock_workflow_context):
 # v10.4: FIX - Removed @pytest.mark.asyncio
 def test_main_removes_global_config():
     """(Cat 3) Test that main_v10_4.py does not have a global CONFIG."""
-    import main_v10_4
+    import archives.legacy_resume_gen.Older Microservices Models.v10.4.main_v10_4
     assert not hasattr(main_v10_4, 'CONFIG')
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
 def test_batch_removes_global_config():
     """(Cat 3) Test that run_batch_v10_4.py does not have a global CONFIG."""
-    import run_batch_v10_4
+    import archives.legacy_resume_gen.Older Microservices Models.v10.4.run_batch_v10_4
     assert not hasattr(run_batch_v10_4, 'CONFIG')
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
 def test_architecture_all_tools_inherit_base_tool(mock_workflow_context):
     """(Cat 3) Test Interface compliance: all tools inherit BaseTool."""
-    import agent_tools_v10_4
+    import archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_tools_v10_4
     
     # Find all tool classes in the module
     tool_classes = [
@@ -1295,7 +1250,7 @@ async def test_orchestration_qa_retry_logic(mock_workflow_context, base_state):
 def test_design_validation_bullet_critique_edge(mock_workflow_context):
     """(Cat 4) Test conditional edge logic for 'check_bullets_passed'."""
     # This is a unit test of the conditional function itself
-    from agent_orchestration_v10_4 import check_bullets_passed
+    from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_orchestration_v10_4 import check_bullets_passed
     
     # 1. Test: Bullets passed
     state = {"bullets": {"critiqued_bullets": [{"critique": {"score": 8.0}}]}}
@@ -1333,7 +1288,7 @@ def test_design_validation_bullet_critique_edge(mock_workflow_context):
 # v10.4: FIX - Removed @pytest.mark.asyncio
 def test_integration_hil_ambiguity_edge(mock_workflow_context):
     """(Cat 5) Test conditional edge logic for 'check_ambiguity'."""
-    from agent_orchestration_v10_4 import check_ambiguity
+    from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_orchestration_v10_4 import check_ambiguity
     
     # 1. Test: Ambiguity detected
     state = {"hil": {"ambiguity_report": {"ambiguity_detected": True}}}

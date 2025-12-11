@@ -5,12 +5,9 @@ Outreach Engine RAG Pipeline v75 - Lift & Shift + Enhanced from LIC
 """
 
 from typing import Dict, List, Optional, Union, Tuple, Union
-import re
+import scripts.check_canonical_structure
 from datetime import datetime, timedelta
 
-from .models import (
-    RAGEvidence, RAGResult, ValidationResult, ValidationSeverity, RAGEngineError
-)
 
 
 class HyDEProcessor:

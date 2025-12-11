@@ -13,17 +13,17 @@ from dataclasses import dataclass
 from l1.outreach_archetype_planning import RecipientProfile, OutreachArchetypePlanner
 from l1.outreach_dataclasses import OutreachMission, ArchetypeContext
 from l1.message_planning import MessagePlanner
-from apps.lic_outreach.pipeline_config import get_lic_pipeline_config  # Kept for future extensibility
-from l2.company_research_executor import CompanyResearchExecutor
-from l2.contact_research_executor import ContactResearchExecutor
-from l2.message_generation_executor import MessageGenerationExecutor, GenerationContext
-from l4.hybrid_search import HybridSearchExecutor
-from l4.pinecone_adapter import PineconeAdapter
-from l4.triplet_store import TripletStore
+from archives.legacy_root_folders.apps.lic_outreach.pipeline_config import get_lic_pipeline_config
+from apps_rg.L2_execution.rg_company_research_executor import CompanyResearchExecutor
+from apps_rg.L2_execution.rg_contact_research_executor import ContactResearchExecutor
+from apps_rg.L2_execution.rg_message_generation_executor import MessageGenerationExecutor, GenerationContext
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.hybrid_search import HybridSearchExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.triplet_store import TripletStore
 from l4.schema.outreach_schema import OutreachRAGResult
-from l5.safety_validator import SafetyValidator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.safety_validator import SafetyValidator
 from l3.outreach_factory import create_message_executor_with_routing
-from runtime.execution_budget_manager import get_budget_manager
+from archives.legacy_root_folders.runtime.execution_budget_manager import get_budget_manager
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def run_single_outreach(
         # MessagePlanner kept for future integration when needed
         
         # Initialize L4 components for research
-        from l4.pinecone_adapter import PineconeConfig
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeConfig
         pinecone_config = PineconeConfig(
             api_key="test-key",
             index_name="test-index"

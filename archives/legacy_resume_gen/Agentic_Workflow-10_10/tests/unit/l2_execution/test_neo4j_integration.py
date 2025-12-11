@@ -14,12 +14,6 @@ import os
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from l4.temporal_schemas import (
-    TemporalEntity,
-    TemporalTriplet,
-    TemporalEvent,
-    TemporalRange,
-)
 
 
 class TestNeo4jIntegration:
@@ -27,12 +21,12 @@ class TestNeo4jIntegration:
 
     def test_graph_query_imports(self):
         """Test that graph_query module imports correctly."""
-        from graph_query import graph_query
+        from archives.legacy_root_folders.database.graph_query import graph_query
         assert callable(graph_query)
 
     def test_graph_query_without_neo4j(self):
         """Test graph_query gracefully handles missing Neo4j."""
-        from graph_query import graph_query
+        from archives.legacy_root_folders.database.graph_query import graph_query
         
         with patch('graph_query._NEO4J_AVAILABLE', False):
             with pytest.raises(ImportError, match="Neo4j driver not installed"):
@@ -40,13 +34,13 @@ class TestNeo4jIntegration:
 
     def test_factual_qa_imports(self):
         """Test that factual_qa module imports correctly."""
-        from l2.factual_qa import factual_qa, trend_analysis
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa, trend_analysis
         assert callable(factual_qa)
         assert callable(trend_analysis)
 
     def test_factual_qa_without_neo4j(self):
         """Test factual_qa gracefully handles missing Neo4j."""
-        from l2.factual_qa import factual_qa
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa
         
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = factual_qa(
@@ -59,7 +53,7 @@ class TestNeo4jIntegration:
 
     def test_trend_analysis_without_neo4j(self):
         """Test trend_analysis gracefully handles missing Neo4j."""
-        from l2.factual_qa import trend_analysis
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import trend_analysis
         
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = trend_analysis(
@@ -72,7 +66,7 @@ class TestNeo4jIntegration:
 
     def test_kg_writer_imports(self):
         """Test that kg_writer module imports correctly."""
-        from l2.kg_writer import (
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entity, insert_triplet, insert_event, batch_process_invalidation, ingest_transcript
             insert_entity,
             insert_triplet,
             insert_event,
@@ -88,7 +82,7 @@ class TestNeo4jIntegration:
     @pytest.mark.asyncio
     async def test_kg_writer_without_neo4j(self):
         """Test kg_writer gracefully handles missing Neo4j."""
-        from l2.kg_writer import insert_entity, insert_triplet, insert_event
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entity, insert_triplet, insert_event
         
         # Create test data
         entity = TemporalEntity(
@@ -121,7 +115,7 @@ class TestNeo4jIntegration:
     def test_neo4j_graph_store_imports(self):
         """Test that Neo4jGraphStore imports correctly."""
         try:
-            from graph_store_neo4j import Neo4jGraphStore
+            from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore
             assert Neo4jGraphStore is not None
         except ImportError:
             # Expected if neo4j driver not installed
@@ -130,7 +124,7 @@ class TestNeo4jIntegration:
     def test_neo4j_graph_store_without_driver(self):
         """Test Neo4jGraphStore gracefully handles missing driver."""
         with patch('graph_store_neo4j.GraphDatabase', None):
-            from graph_store_neo4j import Neo4jGraphStore
+            from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore
             
             with pytest.raises(ImportError, match="Neo4j driver not installed"):
                 Neo4jGraphStore()
@@ -138,7 +132,7 @@ class TestNeo4jIntegration:
     def test_ingestion_dag_imports(self):
         """Test that kg_ingestion_dag imports with Neo4j components."""
         try:
-            from orchestration.kg_ingestion_dag import (
+            from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIngestionDAG, IngestionStage, ingest_documents
                 UnifiedKGIngestionDAG,
                 IngestionStage,
                 ingest_documents
@@ -152,7 +146,7 @@ class TestNeo4jIntegration:
     @pytest.mark.asyncio
     async def test_ingestion_dag_mirroring_methods(self):
         """Test that ingestion DAG mirroring methods exist and are callable."""
-        from orchestration.kg_ingestion_dag import (
+        from archives.legacy_root_folders.orchestration.kg_ingestion_dag import _mirror_entities_to_neo4j, _mirror_triplets_to_neo4j, _mirror_invalidations_to_neo4j, _mirror_complete_transcript_to_neo4j
             _mirror_entities_to_neo4j,
             _mirror_triplets_to_neo4j,
             _mirror_invalidations_to_neo4j,

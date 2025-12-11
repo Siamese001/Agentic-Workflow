@@ -1,5 +1,5 @@
 from typing import Dict, object
-from multi_agent import AgentRole
+from archives.legacy_root_folders.meta.multi_agent import AgentRole
 
 
 def can_delegate(from_role: AgentRole, to_role: AgentRole) -> bool:

@@ -21,7 +21,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -39,7 +39,7 @@ except ImportError:
 
 # Import from core
 # v6.4: Imports updated to core_v6_4
-from core_v6_4 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.4.core_v6_4 import (
     # Models
     HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException,
     ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy,
@@ -60,12 +60,6 @@ from core_v6_4 import (
 
 # Import from validation_stack
 # v6.4: Imports updated to validation_stack_v6_4
-from validation_stack_v6_4 import (
-    ValidationEngine, ValidationContext, calculate_signal_score,
-    # v6.4: Import specific agents for dynamic validation
-    JDSkillsValidatorAgent, SignalScoreValidatorAgent,
-    MetricValidatorAgent, ClaimValidatorAgent
-)
 
 
 logger = logging.getLogger(__name__)

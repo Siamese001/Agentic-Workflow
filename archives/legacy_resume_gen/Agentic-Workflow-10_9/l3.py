@@ -43,21 +43,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Set, Tuple
 
-from models import (
-    PlanObject,
-    ExecutionResult,
-    WorkflowState,
-    WorkflowPhase,
-    NodeResult,
-    NodeStatus,
-    StatePatch,
-    RouteTraceEntry,
-    CorrectionJournalEntry,
-)
-from exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
-from core.l4 import StateAdapter
-from core.l2 import route_executor
-from meta_profile import get_routing_bias, get_safety_bias, get_meta_profile_snapshot
+from shared.exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l4 import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import route_executor  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import get_routing_bias, get_safety_bias, get_meta_profile_snapshot  # INVALID: Cannot import from path with hyphens
 
 
 # =============================================================================

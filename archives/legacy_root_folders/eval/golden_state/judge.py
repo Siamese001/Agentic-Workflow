@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from eval.golden_state.models import GoldenStateTestCase, JudgeVerdict
+from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, JudgeVerdict
 
 
 def evaluate_output(test_case: GoldenStateTestCase, agent_output: str) -> JudgeVerdict:

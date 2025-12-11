@@ -1,4 +1,4 @@
-import asyncio, sys, types, pytest
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -67,11 +67,6 @@ class DummyEmbeddingFunction:
         return [[float(len(p))] for p in prompts]
 
 # ---- Core fixtures pulled together like your v10_7 tests ----
-from core_v10_7 import (
-    CacheManager, ConfigV10_7, CostTracker, FeedbackLogReader, ProposedRulesLoader,
-    PromptTemplateManager, ResponseValidator, MetricsCollector, SemanticValidator,
-    ContextBudgetManager, WorkflowContext
-)
 
 @pytest.fixture(scope="session")
 def config() -> ConfigV10_7:

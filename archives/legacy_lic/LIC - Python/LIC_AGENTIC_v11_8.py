@@ -83,7 +83,7 @@ __author__ = "Amit (Chief AI Officer)"
 import asyncio
 import hashlib
 import json
-import re
+import scripts.check_canonical_structure
 from collections import defaultdict, Counter
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
@@ -92,7 +92,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union, Tuple, Set, Callable
 from uuid import uuid4
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 

@@ -5,7 +5,7 @@
 __version__ = "12.0"
 
 import asyncio
-import re
+import scripts.check_canonical_structure
 import json
 import os
 import glob
@@ -13,7 +13,7 @@ from collections import defaultdict
 from typing import Dict, List, object, Tuple, Optional
 
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # PDF parsing library
@@ -24,15 +24,11 @@ except ImportError:
     PDF_SUPPORT = False
     print("WARNING: PyMuPDF not installed. PDF support disabled. Install with: pip install pymupdf")
 
-from models_LIC import (
-    RAGResult, ResearchContext, ProfileAnalysis, Archetype, RAGCritique, 
-    MessageClaim, OutreachMission, SenderGroundingWhitelists, AgentStatus
-)
-from utils_LIC import CircuitBreaker
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker
 
 # NEW: Import live API clients
-from retrieval_clients import GoogleSearchClient
-from llm_clients import GeminiLLMClient
+from archives.legacy_lic.Agentic LIC.retrieval_clients import GoogleSearchClient
+from archives.legacy_lic.Agentic LIC.llm_clients import GeminiLLMClient
 
 # ============================================================================
 # NEW v11.6: SIGNAL QUALITY SCORER (FEATURE 1.1)

@@ -1,26 +1,6 @@
 """Pydantic models for simulation subsystem."""
 
-from .simulation_base import SimulationInput, SimulationResult, SimulationBatchResult
-from .strategy_simulation import (
-    StrategySimRequest,
-    StrategySimResult,
-    StrategySimMetrics,
-)
-from .rag_simulation import (
-    RAGSimRequest,
-    RAGSimResult,
-    RAGSimMetrics,
-)
-from .draft_simulation import (
-    DraftSimRequest,
-    DraftSimResult,
-    DraftSimMetrics,
-)
-from .safety_simulation import (
-    SafetySimRequest,
-    SafetySimResult,
-    SafetySimMetrics,
-)
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.simulation_base import SimulationInput, SimulationResult, SimulationBatchResult  # INVALID: Cannot import from path with hyphens
 
 __all__ = [
     "SimulationInput",

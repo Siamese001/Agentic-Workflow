@@ -1,13 +1,6 @@
 import pytest
-from types import MethodType
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import MethodType
 
-from core_v10_7 import (
-    AdvancedMetaLearner,
-    ConfigV10_7,
-    GeneratedPrompts,
-    MetricsCollector,
-    StrategyPlan,
-)
 from agent_stacks_v10_8.components.prompting import PromptEngineerAgent
 
 

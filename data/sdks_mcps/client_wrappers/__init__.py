@@ -20,16 +20,9 @@ Usage:
     result = router.chat_completion([{"role": "user", "content": "Hi"}])
 """
 
-from .openai_client import create_openai_client, OpenAIClient, OpenAIConfig
-from .anthropic_client import create_anthropic_client, AnthropicClient, AnthropicConfig
-from .vertex_client import create_vertex_client, VertexClient, VertexConfig
-from .multi_provider_router import (
-    create_multi_provider_router, 
-    MultiProviderRouter, 
-    RouterConfig,
-    Provider,
-    ProviderConfig
-)
+from data.sdks_mcps.client_wrappers.openai_client import create_openai_client, OpenAIClient, OpenAIConfig
+from data.sdks_mcps.client_wrappers.anthropic_client import create_anthropic_client, AnthropicClient, AnthropicConfig
+from data.sdks_mcps.client_wrappers.vertex_client import create_vertex_client, VertexClient, VertexConfig
 
 __all__ = [
     # builder functions

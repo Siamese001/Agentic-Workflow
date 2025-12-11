@@ -34,13 +34,13 @@ Integration points:
 
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from models import ArbitrationDecision
-from meta_profile import get_safety_bias, get_planning_bias
+from shared.models import ArbitrationDecision
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import get_safety_bias, get_planning_bias  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================

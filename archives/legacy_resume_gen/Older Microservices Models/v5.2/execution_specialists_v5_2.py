@@ -9,7 +9,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import signal
 import time
 from collections import defaultdict
@@ -22,14 +22,14 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union, T
 # Third-party imports - RESTORED FROM v3.8
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
     chromadb = None
     
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -38,36 +38,17 @@ except ImportError:
     cosine_similarity = None
 
 # Import models and utilities from v3.8
-from models_RES import (
-    CircuitState, RAGState, RAGEvidence, RAGCritique,
-    PartialRAGResult, RAGTelemetry, CompetitiveIntelligence,
-    MasterResumeIndex, RAGMission, ThematicAnalysis, HopStatus,
-    RetrievalSource, SkillRequirement, SkillCluster,
-    HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError,
-    CompetitiveAnalysisConfig, ResumeSection, ImmutableStagingBuffer, 
-    ValidationResult, ValidationSeverity, BulletProvenance, ReasoningConfig
-)
 
 # Import validation modules from v3.8
-from validation_context import ValidationContext
-from validation_engine import ValidationEngine
-from validation_rules import (
-    _validate_bullet_word_count_CRITICAL,
-    _validate_cross_section_similarity,
-    _validate_no_placeholders,
-    _validate_forbidden_verbs,
-    _validate_headline_format_no_titles,
-    _validate_narrative_vs_master_similarity,
-    _validate_section_presence,
-    _validate_cover_letter_full_structure
-)
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_engine import ValidationEngine
 
 # Import utilities and config
-from config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
-from config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
-from utils_RES import TelemetryLogger, text_utils, sanitize_filename, calculate_signal_score
-from gemini_service import GeminiService, get_gemini_service
-from prompts_RES import get_prompt_template, build_crl_context_for_section, PROMPT_TEMPLATES
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import TelemetryLogger, text_utils, sanitize_filename, calculate_signal_score
+from archives.legacy_resume_gen.Older Microservices Models.v2.gemini_service import GeminiService, get_gemini_service
+from archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES import get_prompt_template, build_crl_context_for_section, PROMPT_TEMPLATES
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
@@ -1353,7 +1334,7 @@ class ChiefStrategistAgent:
         logger.info("🧑‍🔬 Chief Strategist: Developing execution strategy...")
         # Stub: returns a default high-complexity strategy
         # Imports handled inside method to avoid top-level circular dependency during load
-        from models_RES import ExecutionStrategy, ResumeSection
+        from runtime.compat.models_RES import ExecutionStrategy, ResumeSection
         return ExecutionStrategy(
             name="Aggressive Differentiator Focus",
             focus_areas=[ResumeSection.K1_EXECUTIVE_SUMMARY, ResumeSection.K9_COMPETENCIES],

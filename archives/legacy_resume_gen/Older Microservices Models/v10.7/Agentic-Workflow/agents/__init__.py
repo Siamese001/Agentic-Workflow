@@ -55,7 +55,7 @@ class PIISanitizerAgent:
     }
 
     def __init__(self) -> None:
-        import re
+        import scripts.check_canonical_structure
 
         self._compiled = {label: re.compile(pattern) for label, pattern in self._PII_PATTERNS.items()}
 

@@ -1495,7 +1495,7 @@ Generated: {datetime.now().isoformat()}
 
 from __future__ import annotations
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 

@@ -6,14 +6,14 @@ tool injection, and state injection attacks.
 
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 import base64
 from typing import List, Optional
 from dataclasses import dataclass
 from enum import Enum
 import logging
 
-from .types import SafetyContext, SafetyFinding, PolicyDecision, Verdict, Severity
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SafetyContext, SafetyFinding, PolicyDecision, Verdict, Severity
 
 logger = logging.getLogger(__name__)
 

@@ -10,8 +10,8 @@ def test_no_global_config_usage():
 
 @pytest.mark.architecture
 def test_dependency_injection_exists():
-    from inspect import signature
-    from agents import StrategyAgent
+    from agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect import signature
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import StrategyAgent  # INVALID: Cannot import from path with hyphens
 
     assert "context" in signature(StrategyAgent.__init__).parameters
 

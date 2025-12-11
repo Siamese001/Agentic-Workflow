@@ -2,20 +2,12 @@
 
 import asyncio
 import json
-import re
+import scripts.check_canonical_structure
 from collections import Counter, defaultdict
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
-from core_v10_7 import (
-    BaseAgent,
-    BulletList,
-    CritiqueResult,
-    StrategyPlan,
-    track_metrics,
-    _format_prompt_with_defaults,
-)
 
 
 class BulletEntityExtractionAgent(BaseAgent):

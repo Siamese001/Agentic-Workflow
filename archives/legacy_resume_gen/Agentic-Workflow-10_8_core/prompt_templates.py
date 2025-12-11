@@ -13,8 +13,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict
 
-from prompt_envelope import PromptEnvelope
-from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_envelope import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 DEFAULT_TEMPLATE = {

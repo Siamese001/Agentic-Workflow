@@ -1,10 +1,10 @@
 import asyncio
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from core_v10_7 import PromptEnvelope
-from stacks_v10_8.prompt_renderer_stack import PromptRendererStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import PromptEnvelope
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.stacks_v10_8.prompt_renderer_stack import PromptRendererStack  # INVALID: Cannot import from path with hyphens
 
 
 class _StubDecision:

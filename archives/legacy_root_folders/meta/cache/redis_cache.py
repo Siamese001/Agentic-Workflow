@@ -26,7 +26,7 @@ def _import_redis():
 
     This helper ensures the module uses the provider layer instead of direct SDK imports.
     """
-    from providers.redis_client import RedisClient
+    from archives.legacy_root_folders.providers.redis_client import RedisClient
     return RedisClient
 
 

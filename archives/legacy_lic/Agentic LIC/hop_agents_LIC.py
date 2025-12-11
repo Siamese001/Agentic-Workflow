@@ -9,17 +9,12 @@ import os
 from typing import Dict, List, object, Optional
 from datetime import datetime
 
-from models_LIC import (
-    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,
-    Route, Archetype, ValidationResult, ValidationSeverity, RAGResult,
-    SenderGroundingWhitelists, FactualGapError, FailureClassifier
-)
-from state_manager_LIC import StateManager
-from memory_LIC import VectorMemoryStore
-from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
-from utils_LIC import CircuitBreaker
-from tools_LIC import CodeInterpreterTool, ValidationToolkit
+from archives.legacy_lic.Agentic LIC.state_manager_LIC import StateManager
+from archives.legacy_lic.Agentic LIC.memory_LIC import VectorMemoryStore
+from archives.legacy_lic.Agentic LIC.llm_clients import GeminiLLMClient
+from archives.legacy_lic.Agentic LIC.retrieval_clients import GoogleSearchClient
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker
+from archives.legacy_lic.Agentic LIC.tools_LIC import CodeInterpreterTool, ValidationToolkit
 
 
 # ============================================================================

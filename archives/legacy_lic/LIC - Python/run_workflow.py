@@ -12,8 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, object
 
-from workflow import WorkflowOrchestrator
-from models import OutreachMission
+from archives.legacy_resume_gen.Older Microservices Models.workflow import WorkflowOrchestrator
+from shared.models import OutreachMission
 
 __version__ = "11.10"
 

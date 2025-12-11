@@ -4,67 +4,22 @@
 """Stack-specific agent implementations for v10.7."""
 
 
-from .models import (
-    SpecialistDraftPacket,
-    EvidenceClarificationRecord,
-    EvidenceBriefRecord,
-    EvidenceLiaisonPacket,
-    CritiqueFindingRecord,
-    CritiquePanelPacket,
-)
 
 
-from .safety import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
-    ConstitutionalReviewerAgent,
-)
 
 
-from .strategy import (
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-)
 
 
-from .prompting import PromptEngineerAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.prompting import PromptEngineerAgent  # INVALID: Cannot import from path with hyphens
 
 
-from .rag import RAG_SearchAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import RAG_SearchAgent  # INVALID: Cannot import from path with hyphens
 
 
-from .drafting import (
-    StructureLeadAgent,
-    NarrativeStylistAgent,
-    ComplianceEditorAgent,
-    EvidenceLiaisonAgent,
-    CritiqueRoutingPanel,
-    DraftingGuildCoordinator,
-)
 
 
-from .bullet import (
-    BulletEntityExtractionAgent,
-    BulletMetricsEnrichmentAgent,
-    BulletNarrativeSynthesisAgent,
-    BulletEvidenceLinkerAgent,
-    BulletConfidenceScoringAgent,
-    BulletCoordinatorAgent,
-    BulletProvenanceAuditorAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-)
 
 
-from .hil import (
-    VirtualReviewerPersonaAgent,
-    VirtualReviewerCouncilAgent,
-    HILFeedbackSummarizerAgent,
-    HILReconciliationAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-)
 
 
 __all__ = [

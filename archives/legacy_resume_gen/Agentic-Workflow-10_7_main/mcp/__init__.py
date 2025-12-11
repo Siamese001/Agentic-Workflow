@@ -6,7 +6,7 @@ import importlib
 import json
 import logging
 from pathlib import Path
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 from typing import Any, Callable, Dict, Tuple
 
 logger = logging.getLogger("mcp")

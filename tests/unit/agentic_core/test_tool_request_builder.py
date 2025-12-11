@@ -23,12 +23,12 @@ from shared.models import PlanObject
 from shared.exceptions import OrchestrationError
 
 # L2 executors
-from l2.strategy_execution import execute_strategy
-from l2.rag_execution import execute_rag
-from l2.bullet_execution import execute_bullets
-from l2.drafting_execution import execute_drafting
-from l2.qa_execution import execute_qa
-from l2.safety_execution import execute_safety
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_strategy
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_rag_execution import execute_rag  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_bullet_execution import execute_bullets  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_drafting_execution import execute_drafting  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_qa
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_safety
 
 
 _EXECUTOR_MAP: Dict[str, Callable[[PlanObject, Dict[str, object]], Awaitable[Any]]] = {

@@ -1,4 +1,4 @@
-from core_v10_7 import MetricsCollector, SemanticValidator
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import MetricsCollector, SemanticValidator
 
 
 def _validator() -> SemanticValidator:

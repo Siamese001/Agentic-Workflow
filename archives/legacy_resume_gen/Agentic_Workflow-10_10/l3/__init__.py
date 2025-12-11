@@ -8,8 +8,8 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callable
 from enum import Enum
 from dataclasses import dataclass, field
-from orchestration.workflow_graph import run_workflow_graph  # Added import
-from infra.di_container import inject_dependencies
+from archives.legacy_root_folders.orchestration.workflow_graph import run_workflow_graph
+from archives.legacy_root_folders.infra.di_container import inject_dependencies
 
 T = TypeVar('T')
 
@@ -312,7 +312,7 @@ def orchestrate_execution(plans, ctx):
     This function bridges L3 orchestration to L2 execution,
     following the layer separation principle.
     """
-    from l2.execution import execute_workflow_plans
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_workflow_plans
     return execute_workflow_plans(plans, ctx)
 
 def collect_error_events():

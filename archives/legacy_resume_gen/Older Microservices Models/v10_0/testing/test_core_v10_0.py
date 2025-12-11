@@ -3,7 +3,7 @@
 # Tests: WorkflowContext, State Management, CacheManager, Cost Tracking
 
 import pytest
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import json
 import hashlib
 from unittest.mock import Mock, MagicMock, patch, AsyncMock
@@ -12,7 +12,7 @@ from typing import Dict, object
 
 # Import components to test (adjust imports based on actual structure)
 try:
-    from core_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext, MainGraphState, CacheManager, CostTracker, ResumeContext, JobContext, MetadataContext, CostCeilingExceededError, ModelAPIError, JSONParsingError, FileIOError
         WorkflowContext, MainGraphState, CacheManager, CostTracker,
         ResumeContext, JobContext, MetadataContext,
         CostCeilingExceededError, ModelAPIError, JSONParsingError, FileIOError

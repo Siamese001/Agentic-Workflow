@@ -6,11 +6,11 @@ Coordinates policy evaluation and caching for optimal résumé improvement perfo
 
 from typing import Optional
 
-from core.models.models import ExecutionProfile
+from archives.legacy_root_folders.core.models.models import ExecutionProfile
 
-from .cache import get_cached_choice, set_cached_choice
-from .models import ModelChoice, RoutingContext
-from .policies import choose_provider_and_model, enforce_budget
+from runtime.shared.cache import get_cached_choice, set_cached_choice
+from shared.models import ModelChoice, RoutingContext
+from archives.legacy_root_folders.infra.model_routing.policies import choose_provider_and_model, enforce_budget
 
 
 def select_model(

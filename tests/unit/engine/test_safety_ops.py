@@ -3,7 +3,7 @@ Unit tests for shared_engine_ops/safety_ops/
 Tests safety operations including check_rules.
 """
 from __future__ import annotations
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, object
 from dataclasses import dataclass
 from enum import Enum

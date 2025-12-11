@@ -6,7 +6,7 @@
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Tuple

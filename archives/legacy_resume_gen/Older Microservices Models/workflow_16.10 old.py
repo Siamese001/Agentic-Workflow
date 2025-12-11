@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import shutil
 import signal
 import time
@@ -20,26 +20,14 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import functools
 from functools import partial
-from typing import (
-    Any, Callable, ClassVar, Dict, List, 
-    Optional, Set, Tuple, TypeVar, Union
-)
 
 from dataclasses import asdict, dataclass, field, is_dataclass
 
 # Import all refactored modules
-from config import (
-    CONFIG, AppConfig, ReasoningConfig, ContentConstraintsConfig,
-    FilePathsConfig, ArtistConfig, PROMPT_ADDENDUM_CONFIG, DEFAULT_GENERATION_TEMPERATURE
-)
-from models import *
-from utils import *
-import prompts
-from validation import (
-    ValidationEngine, JDEnforcementValidator, AppTrackerQAValidator,
-    PreFlightValidator, ValidationContext, ConstraintFailureClassifier, ValidationRule
-)
-from rag import EnhancedJobDescriptionAnalyzer
+from shared.models import *
+from runtime.shared.utils import *
+import archives.legacy_lic.LIC - Python.prompts
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import EnhancedJobDescriptionAnalyzer  # INVALID: Cannot import from path with hyphens
 
 # Import Gemini if available
 try:
@@ -1645,7 +1633,7 @@ class ImmutableStagingBuffer:
     def data(self) -> Dict:
         return copy.deepcopy(self._data)
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 from typing import Dict, List, Optional, Union, Tuple
@@ -3635,14 +3623,14 @@ class HopCheckpoint:
 # NOTE: HopExecutionError and StagingBufferError are imported from models.py
 # Duplicate declarations removed to avoid confusion
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime

@@ -4,7 +4,7 @@ Production-ready minimal client for quick integration with prompt caching.
 
 import os
 import json
-from anthropic import Anthropic
+from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
 
 
 def simple_message(prompt: str, model: str = "claude-3-5-sonnet-20241022") -> str:

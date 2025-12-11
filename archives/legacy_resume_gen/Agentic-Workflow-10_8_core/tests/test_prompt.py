@@ -9,9 +9,9 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from prompt_system import PromptEnvelope
-from prompt_system import PromptRenderer
-from prompt_system import envelope_from_template
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import envelope_from_template  # INVALID: Cannot import from path with hyphens
 
 
 def test_prompt_envelope_serialization():
@@ -40,8 +40,8 @@ def test_prompt_renderer_renders_sections_in_order():
     assert prompt.strip().split("\n\n")[0].startswith("[Framing]")
 import pytest
 
-from prompt_system import PromptRenderer
-from prompt_system import INSTRUCTIONAL_INJECTION_ALL, PromptSection, SECTION_ORDER
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import INSTRUCTIONAL_INJECTION_ALL, PromptSection, SECTION_ORDER  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.fixture
@@ -86,17 +86,12 @@ def test_renderer_section_order_matches_taxonomy(renderer):
     assert renderer.SECTION_ORDER == expected_order
 import copy
 
-from prompt_system import PromptRenderer
-from prompt_utils import validate_sections
-from prompt_system import (
-    DEFAULT_TEMPLATE_METADATA,
-    DEFAULT_TEMPLATE_OUTPUT_INJECTION,
-    envelope_from_template,
-)
-from prompt_system import PromptSection
-from prompt_utils import build_prompt_from_plan_and_state
-from core.routing import run_model_for_plan
-from l3_orchestration import GraphOrchestrator
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_utils import validate_sections  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptSection  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_utils import build_prompt_from_plan_and_state  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.core.routing import run_model_for_plan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
 def test_validate_sections_detects_order_and_missing():
@@ -190,14 +185,6 @@ def test_orchestrator_state_contains_model_output():
 
     assert "model_output" in outcome.state
     assert outcome.plan.get("routing", {}).get("selected_model")
-from prompt_system import (
-    DEFAULT_INJECTION_PATTERNS,
-    INSTRUCTIONAL_INJECTION_ALL,
-    InjectionType,
-    InstructionalInjection,
-    PromptSection,
-    SECTION_ORDER,
-)
 
 
 def test_prompt_section_taxonomy_count():
@@ -237,14 +224,8 @@ def test_instructional_injection_all_contains_all_values():
     assert set(INSTRUCTIONAL_INJECTION_ALL) == {member.value for member in InstructionalInjection}
 import copy
 
-from prompt_system import PromptRenderer
-from prompt_system import INSTRUCTIONAL_INJECTION_ALL, PromptSection
-from prompt_utils import (
-    get_instructional_injection_types,
-    get_prompt_taxonomy,
-    get_section_names,
-    get_section_types,
-)
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import INSTRUCTIONAL_INJECTION_ALL, PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 def test_get_section_names_reports_all_sections():

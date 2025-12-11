@@ -4,9 +4,9 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict, List, Set
 
-from l3_orchestration import DAG
-from errors_controlflow import NodeExecutionError
-from node_result import NodeResult, NodeStatus
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DAG  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.errors_controlflow import NodeExecutionError  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
 
 
 class DAGExecutor:

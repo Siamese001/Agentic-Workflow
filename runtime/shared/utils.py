@@ -12,23 +12,19 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import uuid
 from dataclasses import asdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .models import ThematicAnalysis, ReasoningConfig
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import ThematicAnalysis, ReasoningConfig
 
-from .config import (
-    CACHE_DIR,
-    PROMPT_ADDENDUM_CONFIG,
-)
 
 # Optional imports with fallbacks
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:

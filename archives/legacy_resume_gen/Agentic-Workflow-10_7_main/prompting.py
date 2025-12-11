@@ -3,14 +3,6 @@
 import json
 from typing import Any, Dict, Optional, Tuple
 
-from core_v10_7 import (
-    BaseAgent,
-    GeneratedPrompts,
-    StrategyPlan,
-    ValidationError,
-    track_metrics,
-    _format_prompt_with_defaults,
-)
 
 
 class PromptEngineerAgent(BaseAgent):

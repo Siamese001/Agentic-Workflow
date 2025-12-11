@@ -11,8 +11,8 @@ import logging
 from typing import Dict, object
 
 # GAP 4 FIX: Removed global CONFIG import
-from core_v10_1 import WorkflowContext, BaseAgent
-from agent_stacks_v10_1 import BaseTool, BiasDetectorAgent # Import from stacks
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.core_v10_1 import WorkflowContext, BaseAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_stacks_v10_1 import BaseTool, BiasDetectorAgent
 
 logger = logging.getLogger("agent_tools_v10_1")
 

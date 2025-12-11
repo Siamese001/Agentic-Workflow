@@ -7,7 +7,7 @@ Promotes apps_lic and apps_rg to top-level.
 Updates all imports repo-wide.
 """
 
-import re
+import scripts.check_canonical_structure
 import shutil
 from pathlib import Path
 from typing import Dict, List

@@ -8,12 +8,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Union, Tuple
 
 # Import dependencies from new modules
-from models_RES import (
-    ValidationResult, ValidationSeverity, 
-    ThematicAnalysis, ImmutableStagingBuffer
-)
 # --- FIX: (Role Confusion) Import Validator ---
-from validator_RES_v2 import AppTrackerQAValidator
+from archives.legacy_resume_gen.Older Microservices Models.v2.validator_RES_v2 import AppTrackerQAValidator
 import json
 # --- END FIX ---
 

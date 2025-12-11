@@ -16,7 +16,7 @@ import pytest
 import asyncio
 import json
 from pathlib import Path
-from LIC_AGENTIC_v11_8 import *
+from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_8 import *
 
 
 # ============================================================================

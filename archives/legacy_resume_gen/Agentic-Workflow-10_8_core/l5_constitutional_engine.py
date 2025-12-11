@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from typing import Dict, List
 
-from utils_types import StatePatch
-from l5_safety import detect_bias, detect_pii
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import detect_bias, detect_pii  # INVALID: Cannot import from path with hyphens
 
 
 class ConstitutionalEngine:

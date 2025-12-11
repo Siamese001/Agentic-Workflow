@@ -19,7 +19,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from mcp import emit_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import emit_event  # INVALID: Cannot import from path with hyphens
 
 logger = logging.getLogger("telemetry_v10_7")
 
@@ -28,7 +28,7 @@ def check_langgraph() -> Dict[str, object]:
     """Capability-based LangGraph health check used by diagnostics."""
 
     try:
-        from langgraph.graph import StateGraph  # noqa: F401
+        from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph
 
         return {"ok": True, "info": "StateGraph import succeeded"}
     except Exception as exc:  # pragma: no cover - best-effort diagnostic

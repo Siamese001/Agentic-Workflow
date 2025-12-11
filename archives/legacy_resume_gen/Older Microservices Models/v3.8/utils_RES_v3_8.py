@@ -14,7 +14,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -30,7 +30,7 @@ except ImportError:
     genai = None  # Add a placeholder for type hints
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -39,13 +39,9 @@ except ImportError:
     cosine_similarity = None  # Placeholder
 
 # Import required classes from other modules
-from models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
+from runtime.compat.models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
 
 # V3.8 Migration: Import from config_RES_v3_8
-from config_RES_v3_8 import (
-    ReasoningConfig, RAGConfig, PROMPT_ADDENDUM_CONFIG, 
-    DEFAULT_GENERATION_TEMPERATURE, DATA_DIR, CACHE_DIR
-)
 
 # ============================================================================
 # FILE SYSTEM UTILITIES

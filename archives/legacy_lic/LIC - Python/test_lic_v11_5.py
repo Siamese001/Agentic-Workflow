@@ -18,29 +18,6 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from LIC_AGENTIC_v11_5 import (
-    ConfigRegistry,
-    ARCHETYPE_REASONING_PARAMS,
-    Route,
-    Archetype,
-    OutreachMission,
-    ProfileAnalysis,
-    ResearchContext,
-    MessageScaffold,
-    ImmutableStagingBuffer,
-    ValidationResult,
-    ValidationSeverity,
-    ConstraintFailureType,
-    ConstraintFailureClassifier,
-    SimilarityCrossValidator,
-    EventBus,
-    EventType,
-    ProfileAnalysisAgent,
-    ResearchOrchestrator,
-    RoutingAgent,
-    ScaffoldAgent,
-    ValidationAgent
-)
 
 
 # ============================================================================

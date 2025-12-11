@@ -11,41 +11,25 @@ from __future__ import annotations
 import asyncio
 from typing import Any, List, Optional, Sequence, Tuple
 
-from core.models.models import (
-    ExecutionContext,
-    WorkflowPlanBundle,
-    StrategyResult,
-    StrategyBranch,
-    Evidence,
-    RAGResult,
-    DraftingResult,
-    DraftSection,
-    QAResult,
-    SafetyResult,
-    L2ResultBundle,
-    RAGPlan,
-    RetrievalConfig,
-    CouncilVote,
-)
 
-from runtime.observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
-from meta.schema_validation import validate_schema_version
-import meta.retrieval as _retrieval_module
-from infra.di_container import inject_dependencies, get_service
-from l5.policy import SafetyEngine
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
+from archives.legacy_root_folders.meta.schema_validation import validate_schema_version
+# import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.infra.di_container import inject_dependencies, get_service
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .agents import (
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import StrategyLLMAgent, DraftingGuild, SemanticQAAgent, ConstitutionalSafetyAgent, HYDEQueryAgent  # INVALID: Cannot import from path with hyphens
         StrategyLLMAgent,
         DraftingGuild,
         SemanticQAAgent,
         ConstitutionalSafetyAgent,
         HYDEQueryAgent,
     )
-from eval.health.adapter import collect_error_events
-from eval.health.failure_detector import detect_repeated_failures
-from eval.health.repair_policies import propose_repairs
+from archives.legacy_root_folders.eval.health.adapter import collect_error_events
+from archives.legacy_root_folders.eval.health.failure_detector import detect_repeated_failures
+from archives.legacy_root_folders.eval.health.repair_policies import propose_repairs
 
 # Module-level reference for test patching compatibility
 run_rag_retrieval = _retrieval_module.run_rag_retrieval
@@ -171,7 +155,7 @@ async def _maybe_run_hyde_query(
 
     span = start_span("l2.hyde_query", ctx=ctx.span_context())
     try:
-        from .agents import HYDEQueryAgent
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import HYDEQueryAgent  # INVALID: Cannot import from path with hyphens
         agent = HYDEQueryAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
@@ -205,7 +189,7 @@ async def _execute_strategy(
     """
     span = start_span("l2.strategy", ctx=ctx.span_context())
     try:
-        from .agents import StrategyLLMAgent
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import StrategyLLMAgent  # INVALID: Cannot import from path with hyphens
         agent = StrategyLLMAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
@@ -310,7 +294,7 @@ async def _execute_rag_reasoning(
         if rag_plan:
             prompt = f"RAG strategy: {getattr(rag_plan, 'strategy', 'hybrid')}. {prompt}"
 
-        from .agents import SemanticQAAgent
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import SemanticQAAgent  # INVALID: Cannot import from path with hyphens
         agent = SemanticQAAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
@@ -365,7 +349,7 @@ async def _execute_drafting(
     """
     span = start_span("l2.drafting", ctx=ctx.span_context())
     try:
-        from .agents import DraftingGuild
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import DraftingGuild  # INVALID: Cannot import from path with hyphens
         agent = DraftingGuild(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
@@ -408,7 +392,7 @@ async def _execute_qa(
     """
     span = start_span("l2.qa", ctx=ctx.span_context())
     try:
-        from .agents import SemanticQAAgent
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import SemanticQAAgent  # INVALID: Cannot import from path with hyphens
         agent = SemanticQAAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
@@ -457,7 +441,7 @@ async def _execute_safety(
         # Ensure dependencies are injected via DI container
         ctx = inject_dependencies(ctx)
         
-        from .agents import ConstitutionalSafetyAgent
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import ConstitutionalSafetyAgent  # INVALID: Cannot import from path with hyphens
         agent = ConstitutionalSafetyAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
@@ -476,7 +460,7 @@ async def _execute_safety(
         # Apply additional safety validation via injected SafetyEngine if available
         safety_engine = ctx.safety_engine or get_service(SafetyEngine)
         if safety_engine and result:
-            from l5.types import SafetyContext
+            from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext
             safety_context = SafetyContext(
                 content_type="draft",
                 source="l2_execution",

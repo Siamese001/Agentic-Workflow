@@ -14,7 +14,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -31,7 +31,7 @@ except ImportError:
     genai = None
 
 # Import from core
-from core_v5_8 import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.8.core_v5_8 import HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException, ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy, ThematicAnalysis, RAG_Blackboard, RAGMission, RAGPhase, StrategyBrief, StrategyBlackboard, ReflectionIteration, ReflectionResult, ReflectionStatus, ToolCall, ToolType, ReActTrace, MoEExpertResult, MoEDecision, ConductorBranch, ConductorDecision, WorkflowBlackboard, WorkflowPlan, WorkflowStep, CONFIG, DEFAULT_GENERATION_TEMPERATURE, text_utils, fence_data
     # Models
     HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException,
     ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy,
@@ -48,7 +48,7 @@ from core_v5_8 import (
 )
 
 # Import from validation_stack
-from validation_stack_v5_8 import ValidationEngine, ValidationContext, calculate_signal_score
+from archives.legacy_resume_gen.Older Microservices Models.v5.8.validation_stack_v5_8 import ValidationEngine, ValidationContext, calculate_signal_score
 
 logger = logging.getLogger(__name__)
 

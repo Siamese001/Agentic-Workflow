@@ -1,7 +1,7 @@
 import asyncio
 import json
 import sys
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from pathlib import Path
 from typing import Any, Dict, List
 <<<<<<< HEAD
@@ -27,21 +27,6 @@ from unittest.mock import AsyncMock, MagicMock, object, patch
 
 import pytest
 
-from core_v10_6 import (
-    BaseAgent,
-    CacheManager,
-    ConfigV10_6,
-    ContextBudgetManager,
-    CostTracker,
-    FeedbackLogReader,
-    MetricsCollector,
-    PromptTemplateManager,
-    ProposedRulesLoader,
-    ResponseValidator,
-    SemanticValidator,
-    StrategyPlan,
-    WorkflowContext,
-)
 >>>>>>> main
 >>>>>>> main
 >>>>>>> main
@@ -180,20 +165,6 @@ if "langgraph" not in sys.modules:
 # -------------------------------------------------------------------
 # IMPORT v10.7 MODULES (this is the corrected section)
 # -------------------------------------------------------------------
-from core_v10_7 import (
-    CacheManager,
-    ConfigV10_7,
-    ContextBudgetManager,
-    CostTracker,
-    FeedbackLogReader,
-    MetricsCollector,
-    PromptTemplateManager,
-    ProposedRulesLoader,
-    ResponseValidator,
-    SemanticValidator,
-    WorkflowContext,
-    WorkflowTimeoutError,
-)
 
 # -------------------------------------------------------------------
 # DUMMY EMBEDDING FUNCTION (simple, deterministic)
@@ -246,15 +217,7 @@ def pytest_pyfunc_call(pyfuncitem):
 <<<<<<< HEAD
 =======
 =======
-from agent_orchestration_v10_6 import (
-    check_constitution,
-    get_graph_app,
-    load_dynamic_tools,
-    run_classify_complexity,
-    run_constitutional_review,
-    run_sanitize_pii,
-)
-from agent_stacks_v10_6 import BiasDetectorAgent, RAG_SearchAgent, ToTStrategistAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_stacks_v10_6 import BiasDetectorAgent, RAG_SearchAgent, ToTStrategistAgent
 
 
 class DummyEmbeddingFunction:

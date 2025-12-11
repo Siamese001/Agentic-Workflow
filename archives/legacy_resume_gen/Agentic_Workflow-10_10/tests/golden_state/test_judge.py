@@ -1,5 +1,5 @@
-from eval.golden_state.models import GoldenStateTestCase
-from eval.golden_state.judge import evaluate_output
+from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase
+from archives.legacy_root_folders.eval.golden_state.judge import evaluate_output
 
 
 def test_judge_empty_output_fails():

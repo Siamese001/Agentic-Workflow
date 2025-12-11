@@ -6,8 +6,8 @@ Provides deterministic safety evaluation for comprehensive résumé improvement 
 
 from typing import Any, Dict
 
-from .decisions import JudgeVerdict, RulesEngineResult
-from .models import SafetyContext
+from archives.legacy_root_folders.infra.control_plane.decisions import JudgeVerdict, RulesEngineResult
+from shared.models import SafetyContext
 
 
 def evaluate_with_guard_model(

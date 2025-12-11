@@ -10,13 +10,6 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 from enum import Enum
 
-from .kg_retrieval_planning import (
-    QueryType,
-    KGQueryPlan,
-    KGRetrievalPlanner,
-    HopSpec,
-    HopDirection,
-)
 
 
 class RetrievalStepType(str, Enum):

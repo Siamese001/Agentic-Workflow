@@ -1,4 +1,4 @@
-from context_budget_v10_8 import ContextBudgetConfig, ContextBudgetManager
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context_budget_v10_8 import ContextBudgetConfig, ContextBudgetManager  # INVALID: Cannot import from path with hyphens
 
 
 def test_strict_pruning_applies_at_thresholds():

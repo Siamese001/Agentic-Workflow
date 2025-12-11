@@ -8,7 +8,7 @@
 
 import asyncio
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Dict, object, List, Optional
 from datetime import datetime
 
@@ -20,11 +20,7 @@ try:
 except ImportError:
     PRESIDIO_AVAILABLE = False
 
-from core_v10_0 import (
-    BaseAgent, WorkflowContext, MainGraphState,
-    ModelAPIError, JSONParsingError, CONFIG
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 
 logger = logging.getLogger("agent_swarm_v10_0")
 

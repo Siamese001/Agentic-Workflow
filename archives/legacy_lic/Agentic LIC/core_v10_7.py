@@ -42,13 +42,13 @@ import random # v10.7: Added for Fix #29
 from functools import wraps
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
-from chromadb.utils import embedding_functions
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, ValidationError
+from shared.reasoning_utils import embedding_functions
 
-from mcp import get_tool, get_schema, sync_context
-from telemetry_v10_7 import log_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_tool, get_schema, sync_context  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.telemetry_v10_7 import log_event  # INVALID: Cannot import from path with hyphens
 try:
-    import anthropic
+    import data.sdks_mcps.reference_clients.minimal_anthropic
     import google.generativeai as genai
 except ImportError:
     logging.warning("LLM provider libraries (anthropic, google-generativeai) not found. Install them if needed.")
@@ -70,7 +70,7 @@ openai_module = get_tool("openai")
 AsyncOpenAI = getattr(openai_module, "AsyncOpenAI", None)
 
 if TYPE_CHECKING:  # pragma: no cover - typing aids
-    from redis import Redis as RedisType
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import Redis
     from chromadb import Client as ChromaClientType
 else:
     RedisType = Any
@@ -1880,7 +1880,7 @@ def get_checkpointer(
     fallback_errors: List[str] = []
 
     try:
-        from langgraph.checkpoint.redis import RedisSaver  # type: ignore
+        from archives.legacy_lic.Agentic LIC.redis import RedisSaver
 
         try:
             saver = RedisSaver(
@@ -1928,7 +1928,7 @@ def get_checkpointer(
 
     if allow_memory_fallback:
         try:
-            from langgraph.checkpoint.memory import MemorySaver  # type: ignore
+            from tests.golden.semantics.test_regression_temporal_memory import MemorySaver
 
             logger.info("Using in-memory MemorySaver for LangGraph checkpoints.")
             return MemorySaver()

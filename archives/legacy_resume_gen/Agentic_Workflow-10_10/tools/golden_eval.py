@@ -53,9 +53,9 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 import json
 import sys
 
-from core.models.models import CostSnapshot
-from observability import emit_golden_eval_event, get_all_events
-from runtime.trace.trace_reconstruction import get_routing_trace
+from archives.legacy_root_folders.core.models.models import CostSnapshot
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import emit_golden_eval_event, get_all_events  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.runtime.trace.trace_reconstruction import get_routing_trace
 
 
 # =============================================================================
@@ -1549,7 +1549,7 @@ def _cli(argv: Optional[Sequence[str]] = None) -> None:
     If --expectation is omitted or set to the literal string "builtin",
     the built‑in GOLDEN_SCENARIOS registry is used.
     """
-    import argparse
+    import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 
     parser = argparse.ArgumentParser(description="Golden State Evaluator (v10_10)")
     parser.add_argument("--patch", required=True, help="Path to state_patch JSON.")

@@ -6,9 +6,9 @@ Provides rule evaluation and verdict aggregation for comprehensive résumé impr
 
 from typing import Any, Dict, List, Optional, Literal
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
-from .models import PolicyRule
+from shared.models import PolicyRule
 
 
 class RuleMatch(BaseModel):

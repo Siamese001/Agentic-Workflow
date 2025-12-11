@@ -28,7 +28,7 @@ from uuid import uuid4
 import sys
 sys.path.insert(0, '/home/claude')
 
-from LIC_AGENTIC_v11_2 import (
+from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_2 import Route, Archetype, EventType, AgentStatus, ValidationSeverity, OutreachMission, ResearchContext, GenerationContext, StagingBuffer, ValidationResult, HopCheckpoint, OutreachState, QAReportSummary, MessageBus, StateStore, SemanticCache, CircuitBreaker, LLMClient, CheckpointManager, TelemetryService, LoggingService, ValidationService, QAReportGenerator, ProfileAnalysisAgent, ResearchOrchestrator, ScaffoldArchitect, GenerationOrchestrator, StagingBufferAssembler, ValidationAgent, GateAgent, WorkflowOrchestrator, create_orchestrator, ROUTE_CONSTRAINTS, DEFAULT_TEMPERATURES, __version__
     # Enums
     Route, Archetype, EventType, AgentStatus, ValidationSeverity,
     # Data structures

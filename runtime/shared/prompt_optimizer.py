@@ -7,7 +7,7 @@ and constraint application to improve output quality.
 """
 
 import logging
-import re
+import scripts.check_canonical_structure
 import time
 from typing import Dict, List, object, Optional
 from dataclasses import dataclass, field

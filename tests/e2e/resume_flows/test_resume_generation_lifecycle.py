@@ -293,7 +293,7 @@ class TestResumeQualityE2E:
             "Managed projects",  # Not quantified
         ]
 
-        import re
+        import scripts.check_canonical_structure
         quantified = [a for a in achievements if re.search(r'\d+', a)]
         quantification_rate = len(quantified) / len(achievements)
 

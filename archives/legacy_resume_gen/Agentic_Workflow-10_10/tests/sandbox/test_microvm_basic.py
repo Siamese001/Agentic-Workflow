@@ -1,6 +1,6 @@
-from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
-from infra.sandbox.models import ToolCallRequest
-from observability import clear_events, get_all_events
+from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
+from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, get_all_events  # INVALID: Cannot import from path with hyphens
 
 
 def test_microvm_create_exec_teardown_emits_events():

@@ -31,22 +31,16 @@ import sys
 import json
 import logging
 import asyncio
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import uuid
 from datetime import datetime
 from typing import Dict, object, Optional
 
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, MainGraphState,
-    FileIOError, CostCeilingExceededError, WorkflowError,
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
-)
 # v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app, unwrap_node_result
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import get_graph_app, unwrap_node_result  # INVALID: Cannot import from path with hyphens
 
 # v10.7: Logger name updated
 logger = logging.getLogger("main_v10_7")
@@ -283,7 +277,7 @@ def main():
     setup_logging(config, debug_mode=args.debug)
 
     if args.sim:
-        from simulations.runner import run_simulation
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.golden_state.test_runner import run_simulation
 
         payload = load_job_input(args.job)
         payload = dict(payload)

@@ -19,16 +19,16 @@ from datetime import datetime
 from typing import Dict, object
 
 # Imports from its *own* versioned files (v7.0)
-from main_v7_0 import setup_logging, load_job_input # Import helpers from main
-from core_v7_0 import CONFIG, CircuitBreakerOpenError
+from archives.legacy_resume_gen.Older Microservices Models.v7.0.main_v7_0 import setup_logging, load_job_input
+from archives.legacy_resume_gen.Older Microservices Models.v7.0.core_v7_0 import CONFIG, CircuitBreakerOpenError
 
 # v7.0: Import the graph builder and checkpointer
-from agent_swarm_v7_0 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v7.0.agent_swarm_v7_0 import get_graph_app
 from langgraph.checkpoint.redis import RedisSaver
 
 # v7.0: Import the meta-learner
 try:
-    from run_learning_v7_0 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v7.0.run_learning_v7_0 import run_meta_learning
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False

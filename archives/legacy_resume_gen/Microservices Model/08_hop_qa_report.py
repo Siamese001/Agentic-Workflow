@@ -16,7 +16,7 @@ This is a comprehensive diagnostic report generator.
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import sys
@@ -29,10 +29,6 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ValidationResult, ThematicAnalysis, HopCheckpoint, HopStatus
-)
 
 class QAReportBuilder:
     """Generates a comprehensive markdown QA report."""

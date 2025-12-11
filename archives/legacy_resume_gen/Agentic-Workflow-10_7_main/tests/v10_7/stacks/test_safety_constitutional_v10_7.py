@@ -1,7 +1,7 @@
 import pytest
 
-from agent_stacks_v10_8.safety_stack import SafetyStackV10_8
-from core_v10_7 import ConstitutionalReviewResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.safety_stack import SafetyStackV10_8  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import ConstitutionalReviewResult
 
 
 @pytest.mark.asyncio

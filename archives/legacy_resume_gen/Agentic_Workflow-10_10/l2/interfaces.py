@@ -23,16 +23,6 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
-from core.models.models import (
-    StrategyResult,
-    DraftingResult,
-    QAResult,
-    SafetyResult,
-    RAGResult,
-    Evidence,
-    LLMRequest,
-    LLMResponse,
-)
 
 
 @dataclass

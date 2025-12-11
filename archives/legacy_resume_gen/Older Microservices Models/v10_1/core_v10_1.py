@@ -16,9 +16,9 @@ import os
 import json
 import logging
 import hashlib
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import asyncio  # GAP 4 FIX: Added missing import for Gemini client
-from openai import AsyncOpenAI  # Added
+from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI
 from dataclasses import dataclass, field, asdict
 from typing import Dict, object, List, Optional, Tuple
 from datetime import datetime
@@ -623,7 +623,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, object]:
         """Async chat completion with caching"""
-        import anthropic
+        import data.sdks_mcps.reference_clients.minimal_anthropic
         
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()

@@ -1,10 +1,10 @@
 import asyncio
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from core_v10_7 import PromptTemplateManager
-from core_v10_7.services import _format_prompt_with_defaults
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import PromptTemplateManager
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.services import _format_prompt_with_defaults
 
 
 class NoopBudgetManager:

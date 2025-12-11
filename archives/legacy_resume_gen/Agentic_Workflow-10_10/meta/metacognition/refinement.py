@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from meta.metacognition.models import Hypothesis
+from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
 
 
 def refine_low_confidence(hypotheses: List[Hypothesis], threshold: float = 0.4) -> List[Hypothesis]:

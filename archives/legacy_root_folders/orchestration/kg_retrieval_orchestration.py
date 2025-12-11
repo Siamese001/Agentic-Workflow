@@ -348,7 +348,7 @@ class KGFirstRetrievalOrchestrator:
             return []
         
         # Use the L1 planner to create a query plan
-        from l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
         
         planner = self.kg_planner or KGRetrievalPlanner()
         plan = planner.plan_query(

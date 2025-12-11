@@ -43,12 +43,6 @@ from runtime.runtime_utils_v10_9 import Retrieval as _Retrieval
 from runtime.runtime_utils_v10_9 import Ranking as _Ranking
 from runtime.runtime_utils_v10_9 import RAGUtils as _RAGUtils
 
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_qa_bias,
-    get_safety_bias,
-)
 
 
 # =============================================================================

@@ -6,7 +6,7 @@ from the project root directly. All retrieval logic is centralized in
 """
 from __future__ import annotations
 
-from meta.retrieval.retrieval import orchestrate_retrieval  # noqa: F401
-from meta.retrieval.retrieval import run_rag_retrieval  # noqa: F401
+from archives.legacy_root_folders.meta.retrieval.retrieval import orchestrate_retrieval
+from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
 
 __all__ = ["orchestrate_retrieval", "run_rag_retrieval"]

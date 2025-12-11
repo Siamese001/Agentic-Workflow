@@ -7,17 +7,6 @@ import json
 import time
 from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
-from vertexai.generative_models import (
-    GenerativeModel,
-    Content,
-    Part,
-    Tool,
-    GenerationConfig,
-    SafetySetting,
-    HarmCategory,
-    HarmBlockThreshold,
-    grounding as vertex_grounding
-)
 from vertexai import init as vertex_init
 import backoff
 

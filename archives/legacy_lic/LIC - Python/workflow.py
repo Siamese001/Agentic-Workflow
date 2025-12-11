@@ -11,15 +11,10 @@ from datetime import datetime, timedelta
 from typing import Dict, List, object, Tuple, Set
 
 # Local module imports
-from models import (
-    OutreachMission, ProfileAnalysis, Archetype, AgentStatus, ResearchContext,
-    Route, MessageScaffold, GeneratedMessage, ValidationResult, QAReport,
-    ValidationSeverity, FactualGapError, FailureClassifier
-)
-from config import CONFIG_REGISTRY
-from utils import CircuitBreaker, AdaptiveTemperatureController
-from rag import S2_SupervisorAgent
-from validation import ValidationAgent, ConstraintFeasibilityChecker
+from shared.config import CONFIG_REGISTRY
+from runtime.shared.utils import CircuitBreaker, AdaptiveTemperatureController
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import S2_SupervisorAgent  # INVALID: Cannot import from path with hyphens
+from runtime.validation import ValidationAgent, ConstraintFeasibilityChecker
 
 # ============================================================================
 # S1: PROFILE ANALYSIS AGENT

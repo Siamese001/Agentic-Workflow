@@ -1,6 +1,6 @@
 import pytest
 
-from core_v10_7 import ConfigV10_7
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import ConfigV10_7
 
 
 def test_config_provides_nested_sections(config: ConfigV10_7) -> None:

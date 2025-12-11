@@ -101,7 +101,7 @@ def inject_dependencies(context: Any) -> Any:
     
     # Inject common services if they don't already exist
     if not hasattr(context, 'pinecone_adapter'):
-        from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig
         adapter = container.get(PineconeAdapter)
         if adapter is None:
             config = PineconeConfig(
@@ -114,7 +114,7 @@ def inject_dependencies(context: Any) -> Any:
         context.pinecone_adapter = adapter
     
     if not hasattr(context, 'safety_engine'):
-        from l5.policy import SafetyEngine
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
         engine = container.get(SafetyEngine)
         if engine is None:
             engine = SafetyEngine()
@@ -158,7 +158,7 @@ def initialize_default_services() -> None:
     container.clear()
     
     # Register PineconeAdapter with default config
-    from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig
     config = PineconeConfig(
         api_key="test_key",
         index_name="test_index"
@@ -168,7 +168,7 @@ def initialize_default_services() -> None:
     register_service(PineconeAdapter, adapter)
     
     # Register SafetyEngine
-    from l5.policy import SafetyEngine
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
     engine = SafetyEngine()
     register_service("safety_engine", engine)
     register_service(SafetyEngine, engine)

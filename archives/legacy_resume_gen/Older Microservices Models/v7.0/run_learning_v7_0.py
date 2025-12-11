@@ -20,7 +20,7 @@ from collections import defaultdict
 
 # Imports from its *own* versioned files (v7.0)
 # We need core_v7_0 for config and logging
-from core_v7_0 import CONFIG, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v7.0.core_v7_0 import CONFIG, setup_logging
 
 logger = logging.getLogger("meta_learner_v7_0")
 

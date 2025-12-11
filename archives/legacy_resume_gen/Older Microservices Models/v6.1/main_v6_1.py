@@ -9,20 +9,20 @@
 # ============================================================================
 # EXTERNAL IMPORTS (Consolidated)
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import logging.handlers
 import os
 import sys
 import uuid
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules
-from core_v6_1 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.1.core_v6_1 import CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, HopResult, ValidationSeverity, ResumeSection, WorkflowBlackboard, ConductorDecision
     # Config
     CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR,
     # Models
@@ -32,14 +32,7 @@ from core_v6_1 import (
     WorkflowBlackboard, ConductorDecision
 )
 
-from validation_stack_v6_1 import (
-    ValidationContext, ValidationEngine, calculate_signal_score
-)
 
-from agent_swarm_v6_1 import (
-    CrewOrchestrator, CrewConfiguration, Governor,
-    ConductorAgent
-)
 
 # ============================================================================
 # STRUCTURED LOGGING

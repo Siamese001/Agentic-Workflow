@@ -20,29 +20,8 @@ import logging
 from typing import Dict, object, List
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    WorkflowContext, 
-    PydanticSchemaError,
-    # Import all 15 Pydantic output models
-    BaseToolOutput,
-    DraftStrategyOutput,
-    RedTeamOutput,
-    RefineSectionOutput,
-    AddMetricsOutput,
-    QAClaimOutput,
-    QAToneOutput,
-    QAThematicAlignmentOutput,
-    QASemanticEntailmentOutput,
-    QANarrativeThreadOutput,
-    QAJDSkillsOutput,
-    QASignalScoreOutput,
-    QATenureOutput,
-    QAMissedOpportunitiesOutput,
-    QAAdversarialOutput,
-    QABiasOutput
-)
 # v10.4: Import from new stacks
-from agent_stacks_v10_4 import BaseTool, BiasDetectorAgent # Import from stacks
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_stacks_v10_4 import BaseTool, BiasDetectorAgent
 
 # v10.4: Logger name updated
 logger = logging.getLogger("agent_tools_v10_4")

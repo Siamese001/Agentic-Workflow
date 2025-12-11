@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from core.models.models import RetrievalConfig
-from meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache
+from archives.legacy_root_folders.core.models.models import RetrievalConfig
+from archives.legacy_root_folders.meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache
 
 
 def read_semantic_cache(key: str, cfg: RetrievalConfig) -> Optional[Any]:

@@ -5,7 +5,7 @@ Deterministic stub evaluators for PII and bias detection.
 """
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List
 
 

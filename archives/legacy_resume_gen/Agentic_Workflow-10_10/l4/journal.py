@@ -11,7 +11,7 @@ import uuid
 import logging
 from enum import Enum
 
-from .types import StateTransition, StateSnapshot, StatePath, StateOperation
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import StateTransition, StateSnapshot, StatePath, StateOperation
 
 logger = logging.getLogger(__name__)
 

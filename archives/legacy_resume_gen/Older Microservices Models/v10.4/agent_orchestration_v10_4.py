@@ -25,19 +25,12 @@ import asyncio
 from typing import Dict, object, List
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    # v10.4: Import CircuitBreaker from core
-    CircuitBreaker,
-    ConfigV10_4 # Import config for context typing
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
     from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
-from langgraph.errors import GraphRecursionError
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 
 # v10.4: DELETED import from run_batch
 # from run_batch_v10_3 import CircuitBreaker # GONE
@@ -54,36 +47,8 @@ except ImportError:
     )
 
 # v10.4: Import from new stacks
-from agent_stacks_v10_4 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent
-)
 
 # v10.4: Import from new tools file
-from agent_tools_v10_4 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool
-)
 
 # v10.4: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_4")

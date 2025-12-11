@@ -26,12 +26,12 @@ from unittest.mock import MagicMock, AsyncMock, patch, call
 from datetime import datetime
 
 # Import from modular structure
-from models import *
-from workflow import *
-from validation import *
-from rag import *
-from utils import *
-from config import CONFIG_REGISTRY
+from shared.models import *
+from archives.legacy_resume_gen.Older Microservices Models.workflow import *
+from runtime.validation import *
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import *  # INVALID: Cannot import from path with hyphens
+from runtime.shared.utils import *
+from shared.config import CONFIG_REGISTRY
 
 # ============================================================================
 # FIXTURES

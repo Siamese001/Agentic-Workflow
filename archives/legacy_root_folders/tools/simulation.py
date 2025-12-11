@@ -32,29 +32,7 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
-from agentic_core.l2_execution.tools.main_v10_10 import (
-    run_workflow,
-    RRFStrategy,
-    TelemetryRoutingMode,
-)
-from agentic_core.l2_execution.tools.golden_eval import (
-    GOLDEN_SCENARIOS,
-    GoldenScenario,
-    ScenarioKnobs,
-    EvalReport,
-    evaluate_patch,
-)
-from observability import (
-    emit_scenario_start_event,
-    emit_scenario_end_event,
-    emit_scenario_simulation_event,
-)
 
-from agentic_core.l2_execution.tools.run_batch_v10_10 import (
-    run_batch,
-    BatchJobResult,
-    BatchTelemetrySummary,
-)
 
 
 # ============================================================================
@@ -684,7 +662,7 @@ def run_batch_simulation(
 
 
 def _cli() -> None:
-    import argparse
+    import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
     import json as _json
 
     parser = argparse.ArgumentParser(

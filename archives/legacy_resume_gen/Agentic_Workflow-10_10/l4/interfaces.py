@@ -26,15 +26,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from core.models.models import (
-    ExecutionContext,
-    Entity,
-    Triplet,
-    TemporalKG,
-    StateSnapshot,
-    MemoryFragment,
-    Provenance,
-)
 
 
 class StorageType(Enum):

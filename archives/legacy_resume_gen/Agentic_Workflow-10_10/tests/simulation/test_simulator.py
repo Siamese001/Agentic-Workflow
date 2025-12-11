@@ -1,7 +1,7 @@
-from agentic_core.l2_execution.tools.simulation import Engine
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_simulation import Engine  # INVALID: Cannot import from path with hyphens
 
-from eval.simulation.models import SimScenario
-from eval.simulation.simulator import run_scenario
+from archives.legacy_root_folders.eval.simulation.models import SimScenario
+from archives.legacy_root_folders.eval.simulation.simulator import run_scenario
 
 
 def test_run_scenario_uses_existing_engine():

@@ -11,15 +11,10 @@ from datetime import datetime, timedelta
 from typing import Dict, List, object, Tuple, Set
 
 # Local module imports
-from models_LIC import (
-    OutreachMission, ProfileAnalysis, Archetype, AgentStatus, ResearchContext,
-    Route, MessageScaffold, GeneratedMessage, ValidationResult, QAReport,
-    ValidationSeverity, FactualGapError, FailureClassifier
-)
-from config_LIC import CONFIG_REGISTRY
-from utils_LIC import CircuitBreaker, AdaptiveTemperatureController
-from rag_LIC import S2_SupervisorAgent
-from validation_LIC import ValidationAgent, ConstraintFeasibilityChecker
+from archives.legacy_lic.deprecated in v13.config_LIC import CONFIG_REGISTRY
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker, AdaptiveTemperatureController
+from archives.legacy_lic.LIC - Python.rag_LIC import S2_SupervisorAgent
+from archives.legacy_lic.deprecated in v13.validation_LIC import ValidationAgent, ConstraintFeasibilityChecker
 
 # ============================================================================
 # S1: PROFILE ANALYSIS AGENT

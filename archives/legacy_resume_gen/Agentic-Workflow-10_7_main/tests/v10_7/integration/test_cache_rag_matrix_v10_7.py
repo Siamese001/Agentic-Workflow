@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from core_v10_7 import CacheManager
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import CacheManager
 
 @pytest.mark.parametrize(
     "provider,model,temps",

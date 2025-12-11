@@ -13,12 +13,9 @@ import asyncio
 from typing import Dict, object, List
 
 # GAP 4 FIX: Removed global CONFIG import
-from core_v10_1 import (
-    WorkflowContext, BaseAgent
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
-from langgraph.errors import GraphRecursionError
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -33,36 +30,8 @@ except ImportError:
     )
 
 # Import all agent stacks (nodes)
-from agent_stacks_v10_1 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    ToTStrategistAgent,
-    PromptEngineerAgent, # META-PROMPT GAP FIX: Import PromptEngineer
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent
-)
 
 # Import all expert tools
-from agent_tools_v10_1 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool
-)
 
 logger = logging.getLogger("agent_orchestration_v10_1")
 

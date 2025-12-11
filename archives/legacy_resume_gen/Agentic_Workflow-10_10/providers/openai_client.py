@@ -26,7 +26,7 @@ def run_llm_openai(
     """
 
     try:
-        import openai  # type: ignore
+        import data.sdks_mcps.reference_clients.minimal_openai
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("openai package not installed") from exc
 

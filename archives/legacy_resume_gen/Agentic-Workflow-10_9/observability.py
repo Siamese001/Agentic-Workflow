@@ -46,11 +46,6 @@ from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Callable, Awaitable
 
 from runtime.runtime_utils_v10_9 import CostTracker, record_event
-from meta_profile import (
-    update_from_spans,
-    update_from_run_summary,
-    get_meta_profile_snapshot,
-)
 
 
 # ============================================================================

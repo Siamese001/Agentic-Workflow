@@ -16,10 +16,10 @@ from pathlib import Path
 pytest_plugins = ('pytest_asyncio',)
 
 try:
-    from main_v10_0 import run_workflow_async
-    from run_batch_v10_0 import run_batch_async, process_single_job_async
-    from run_learning_v10_0 import run_meta_learning
-    from core_v10_0 import WorkflowContext, MainGraphState
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.main_v10_0 import run_workflow_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.run_batch_v10_0 import run_batch_async, process_single_job_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.run_learning_v10_0 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext, MainGraphState
 except ImportError:
     pytest.skip("v10.0 modules not available", allow_module_level=True)
 
@@ -649,7 +649,7 @@ class TestErrorRecoveryWorkflows:
             mock_context_class.return_value = mock_context
             
             # Mock failures
-            from core_v10_0 import CircuitBreakerOpenError
+            from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import CircuitBreakerOpenError
             mock_app = MagicMock()
             mock_app.invoke.side_effect = CircuitBreakerOpenError("Circuit open")
             mock_get_graph.return_value = mock_app

@@ -13,7 +13,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import signal
 import time
 import warnings
@@ -35,14 +35,14 @@ except ImportError:
 
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
     chromadb = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -51,7 +51,7 @@ except ImportError:
     cosine_similarity = None
 
 # Import from core.py
-from core import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError, MechanicalFailureError, SemanticFailureError, ResumeSection, ValidationSeverity, ImmutableStagingBuffer, ValidationResult, ThematicAnalysis, MasterResumeIndex, RAGMission, RAGPhase, CircuitBreakerState, CircuitBreakerConfig, ReasoningConfig, ReasoningStrategy, VetoLevel, QAClassification, StrategyBrief, VetoSignal, CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY, DEFAULT_GENERATION_TEMPERATURE, DEFAULT_SYNTHESIS_TEMPERATURE, DEFAULT_MAX_OUTPUT_TOKENS, SAFETY_THRESHOLD, text_utils, fence_data, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning, DuplicateDetector, TextSanitizer, build_crl_context_for_section, format_prompt_with_context, build_crl_context_for_section, format_prompt_with_context, get_rag_phase_prompt, get_specialist_prompt, build_atomic_agent_prompt
     # Models
     HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError, MechanicalFailureError, SemanticFailureError,
     ResumeSection, ValidationSeverity, ImmutableStagingBuffer,
@@ -73,11 +73,6 @@ from core import (
 )
 
 # Import from validation_stack.py
-from validation_stack import (
-    ValidationContext, ValidationRule, ValidationEngine, 
-    ConstraintFailureClassifier, PreFlightValidator,
-    calculate_signal_score
-)
 
 logger = logging.getLogger(__name__)
 
@@ -213,7 +208,7 @@ class OntologyMapperAgent(SwarmAgent):
     """TIER 1: Standardizes messy skills into canonical entities."""
     def __init__(self):
         super().__init__("OntologyMapperAgent")
-        from agent_swarm import get_gemini_service
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.agent_swarm import get_gemini_service
         self.gemini = get_gemini_service()
 
     def normalize_skills(self, raw_skills: List[str]) -> List[str]:
@@ -228,7 +223,7 @@ class OntologyMapperAgent(SwarmAgent):
         """
 
         # Use new atomic builder (incorporates E1, E2, E3, E4)
-        from prompts_RES import build_atomic_agent_prompt
+        from archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES import build_atomic_agent_prompt
         prompt = build_atomic_agent_prompt(
             task_directive="Normalize the provided raw skills list into canonical, standardized skill entities.",
             agent_identity="OntologyMapperAgent (Tier 1 atomic normalizer)",
@@ -299,7 +294,7 @@ class StrategyValidatorAgent(SwarmAgent):
     
     def validate(self, strategy: StrategyBrief) -> VetoSignal:
         # Import inline to avoid circular dependency
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         if strategy.confidence_score < 0.7:
              return VetoSignal(VetoLevel.STRATEGY, self.name, "Strategy confidence too low")
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
@@ -346,7 +341,7 @@ class FormatComplianceAgent(SwarmAgent):
         super().__init__("FormatComplianceAgent")
     
     def check_ats(self, content: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         if "<table>" in content or "invisible" in content:
             return VetoSignal(VetoLevel.QA1_LINGUISTIC, self.name, "ATS Violation: Tables detected")
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
@@ -359,7 +354,7 @@ class BiasScrubberAgent(SwarmAgent):
         self.protected_groups = CONFIG.get('new_agent_configs', {}).get('bias_scrubber', {}).get('protected_groups', ["age", "gender", "race", "disability"])
 
     def scan(self, content: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Expanded basic list + config awareness
         biased_terms = ["ninja", "rockstar", "guru", "guys", "manpower", "chairman", "native english"]
         found_terms = [term for term in biased_terms if f" {term} " in content.lower()]
@@ -377,7 +372,7 @@ class FactualConsistency_Validator(SwarmAgent):
         # --- PRIORITY #3: Raise specific exception ---
         if "99.9% uptime" in content and "99.9% uptime" not in str(master):
             raise SemanticFailureError("Factual inconsistency: Claimed '99.9% uptime' not found in master resume.")
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
 class ThematicAlignment_Validator(SwarmAgent):
@@ -386,7 +381,7 @@ class ThematicAlignment_Validator(SwarmAgent):
         super().__init__("ThematicAlignment_Validator")
     
     def align(self, content: str, strategy: StrategyBrief) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
 class SemanticEntailmentValidator(SwarmAgent):
@@ -396,7 +391,7 @@ class SemanticEntailmentValidator(SwarmAgent):
         self.gemini = get_gemini_service()
     
     def align(self, content: str, strategy: StrategyBrief) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Zero-shot NLI check
         prompt = f"""Task: Semantic Entailment
 Premise (Strategy): Primary focus is {strategy.primary_focus} with differentiators {strategy.differentiators}
@@ -416,7 +411,7 @@ class NarrativeThreadAgent(SwarmAgent):
         super().__init__("NarrativeThreadAgent")
     
     def check_coherence(self, full_draft: Dict[str, str], strategy: StrategyBrief) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Checks if 'primary_focus' from strategy appears in all major sections
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
@@ -427,7 +422,7 @@ class AdversarialReviewerAgent(SwarmAgent):
         self.system_prompt = "You are a skeptical CTO. Find reasons NOT to hire this candidate. Be harsh."
     
     def red_team(self, full_draft: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # This would actually call Gemini with the hostile persona
         return VetoSignal(VetoLevel.NONE, self.name, "PASS (No obvious red flags)")
 
@@ -1272,7 +1267,7 @@ class Governor:
             # (SemanticEntailment would check specific bullets here)
             
             # QA4/5 (Holistic & Adversarial - usually run on full draft, simplified here)
-            from core import ResumeSection
+            from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import ResumeSection
             veto = self.narrative_thread.check_coherence(
                 {ResumeSection.K1_EXECUTIVE_SUMMARY.value: draft}, 
                 context.strategy

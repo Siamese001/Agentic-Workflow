@@ -11,27 +11,7 @@ from typing import Any, Dict, List
 
 import pytest
 
-from core_v10_6 import (
-    CacheManager,
-    CircuitBreaker,
-    CircuitBreakerOpenError,
-    ConfigV10_6,
-    ModelAPIError,
-    StrategyPlan,
-    PydanticSchemaError,
-    ResponseValidator,
-    exponential_backoff_retry,
-)
-from agent_tools_v10_6 import DraftingStrategistTool
-from agent_stacks_v10_6 import (
-    DraftingGuildCoordinator,
-    SpecialistDraftPacket,
-    EvidenceLiaisonPacket,
-    EvidenceClarificationRecord,
-    EvidenceBriefRecord,
-    CritiquePanelPacket,
-    CritiqueFindingRecord,
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_tools_v10_6 import DraftingStrategistTool
 
 
 # ---------------------------------------------------------------------------
@@ -360,7 +340,7 @@ async def test_fix_6_node_timeout(mock_workflow_context, base_state):
 async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
     with patch('agent_stacks_v10_6.PIISanitizerAgent.run', return_value={}) as mock_pii_run, \
          patch('agent_stacks_v10_6.BiasDetectorAgent.run', return_value={"bias_detected": False}) as mock_bias_run:
-        from agent_orchestration_v10_6 import run_sanitize_pii
+        from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_orchestration_v10_6 import run_sanitize_pii
         await run_sanitize_pii(base_state, mock_workflow_context)
     mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", object, success=True, error=None, metadata=ANY)
     mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", object, success=True, error=None, metadata=ANY)

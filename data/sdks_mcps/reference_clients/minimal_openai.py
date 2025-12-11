@@ -4,7 +4,7 @@ Production-ready minimal client for quick integration and testing.
 
 import os
 import json
-from openai import OpenAI
+from data.sdks_mcps.reference_clients.minimal_openai import OpenAI
 
 
 def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:

@@ -85,7 +85,7 @@ def apply_import_mappings():
     for improved maintainability and easier enhancements.
     """
     import os
-    import re
+    import scripts.check_canonical_structure
     
     updated_files = []
     

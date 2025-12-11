@@ -207,7 +207,7 @@ class PineconeAdapter:
             )
             
             # Convert results to Evidence objects
-            from core.models.models import Evidence
+            from archives.legacy_root_folders.core.models.models import Evidence
             evidence_list = []
             
             for match in results.get('matches', []):

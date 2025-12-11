@@ -2,16 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from l2.agents import (
-    StrategyLLMAgent,
-    DraftingGuild,
-    SemanticQAAgent,
-    ConstitutionalSafetyAgent,
-    HYDEQueryAgent,
-    QACouncilAgent,
-)
-from core.models.models import AgentCard, AgentRole  # normalized import
-from core.routing import RoutingPolicy
+from archives.legacy_root_folders.core.models.models import AgentCard, AgentRole
+from archives.legacy_root_folders.core.routing import RoutingPolicy
 from agentic_core.l2_execution.tools.runtime_utils import SandboxConfig
 
 

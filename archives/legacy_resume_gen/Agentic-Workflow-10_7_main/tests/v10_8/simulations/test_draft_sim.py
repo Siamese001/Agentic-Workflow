@@ -2,8 +2,8 @@
 
 import pytest
 
-from simulations.engines.draft_sim import DraftSimulator
-from simulations.models import DraftSimRequest
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_sim import DraftSimulator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import DraftSimRequest
 
 
 @pytest.mark.asyncio

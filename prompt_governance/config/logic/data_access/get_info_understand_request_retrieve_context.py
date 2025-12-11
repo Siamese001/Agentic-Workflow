@@ -25,75 +25,43 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 
 
-from mcp import get_tool
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_tool  # INVALID: Cannot import from path with hyphens
 
 
 try:  # pragma: no cover - optional runtime deps
-    from redis import Redis as RedisType
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import Redis
     from chromadb import Client as ChromaClientType
 except ImportError:  # pragma: no cover - fallback types
     RedisType = Any
     ChromaClientType = Any
 
 
-from .clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
+from runtime.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 
 
-from .config import ConfigV10_7
+from shared.config import ConfigV10_7
 
 
-from .constants import canonical_model_name
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import canonical_model_name  # INVALID: Cannot import from path with hyphens
 
 
-from .exceptions import MCPClientInitializationError
+from shared.exceptions import MCPClientInitializationError
 
 
-from .mcp import MCPClientSpec, MCPClientStub, instantiate_mcp_client, parse_mcp_client_specs
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import MCPClientSpec, MCPClientStub, instantiate_mcp_client, parse_mcp_client_specs  # INVALID: Cannot import from path with hyphens
 
 
-from .models import (
-    ConstitutionalReviewResult,
-    EphemeralState,
-    GeneratedPrompts,
-    WorkflowPhase,
-    HILAmbiguityReport,
-    MemoryState,
-    StrategyPlan,
-)
 
 
-from .services import (
-    ArbitrationEngine,
-    AdvancedMetaLearner,
-    AutonomyEngine,
-    CacheManager,
-    CollaborationEngine,
-    ContextBudgetManager as LegacyContextBudgetManager,
-    CostTracker,
-    EpisodicMemory,
-    FeedbackEntry,
-    FeedbackLogReader,
-    MetricsCollector,
-    PolicyAutoTuner,
-    PromptTemplateManager,
-    PredictiveCacheManager,
-    ProposedRulesLoader,
-    ResponseValidator,
-    SelfCorrectionManager,
-    SemanticValidator,
-    PrecomputeEngine,
-    TuningProfile,
-    WorldModelStore,
-)
 
 
-from context_budget_v10_8 import ContextBudgetConfig as ContextBudgetConfigV10_8
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context_budget_v10_8 import ContextBudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
-from context_budget_v10_8 import ContextBudgetManager as ContextBudgetManagerV10_8
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context_budget_v10_8 import ContextBudgetManager  # INVALID: Cannot import from path with hyphens
 
 
 logger = logging.getLogger("core_v10_7")

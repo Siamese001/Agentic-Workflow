@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import List
 
-from core.models.models import ExecutionProfile
+from archives.legacy_root_folders.core.models.models import ExecutionProfile
 
-from eval.golden_state.datasets import load_golden_inputs, load_golden_cases
-from eval.golden_state.evaluator import evaluate_case_output
-from eval.golden_state.judge import evaluate_output
-from eval.golden_state.models import EvalResult, GoldenOutput
+from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_inputs, load_golden_cases
+from archives.legacy_root_folders.eval.golden_state.evaluator import evaluate_case_output
+from archives.legacy_root_folders.eval.golden_state.judge import evaluate_output
+from archives.legacy_root_folders.eval.golden_state.models import EvalResult, GoldenOutput
 
 
 def _mock_agent_output(input_text: str) -> str:

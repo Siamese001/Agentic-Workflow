@@ -5,7 +5,7 @@
 
 __version__ = "12.0"
 
-from models_LIC import Route, Archetype
+from archives.legacy_lic.Agentic LIC.models_LIC import Route, Archetype
 
 # ============================================================================
 # CONTEXT-AWARE CTA TEMPLATES (v11.9)

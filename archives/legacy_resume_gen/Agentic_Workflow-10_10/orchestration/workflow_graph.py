@@ -11,39 +11,12 @@ from __future__ import annotations
 import asyncio
 from typing import Optional, Callable, Awaitable
 
-from core.models.models import (
-    WorkflowPlanBundle,
-    ExecutionContext,
-    RAGResult,
-    StrategyResult,
-    DraftingResult,
-    QAResult,
-    SafetyResult,
-    L2ResultBundle,
-)
-from runtime.observability import (
-    start_span,
-    end_span,
-    emit_node_event,
-    log_exception,
-)
-from orchestration.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor
-from orchestration.agent_registry import AgentRegistry
-from config.agent_profile import AgentCard
-from l2.execution import (
-    _execute_strategy,
-    _execute_retrieval,
-    _execute_drafting,
-    _execute_qa,
-    _execute_safety,
-)
-from core.routing import route_task_to_agent
+from archives.legacy_resume_gen.Older Microservices Models.v2.engine import Node, Edge, Graph, DAGExecutor
+from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
+from archives.legacy_root_folders.core.routing import route_task_to_agent
 
 # Self-correction surfaces (meta-layer, no L1–L5 violations)
-from meta.self_correction import (
-    evaluate_all_surfaces,
-    aggregate_correction_signals,
-)
 
 
 """

@@ -12,31 +12,20 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import wraps
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Union,
-)
 
-from chromadb.utils import embedding_functions
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
+from shared.reasoning_utils import embedding_functions
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, ValidationError
 
-from telemetry_v10_7 import log_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.telemetry_v10_7 import log_event  # INVALID: Cannot import from path with hyphens
 
-from .config import ConfigV10_7
-from .constants import legacy_model_alias
-from .exceptions import JSONParsingError, PydanticSchemaError
-from .models import ArbitrationReport, GeneratedPrompts, SelfCorrectionReport, StrategyPlan
+from shared.config import ConfigV10_7
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import legacy_model_alias  # INVALID: Cannot import from path with hyphens
+from shared.exceptions import JSONParsingError, PydanticSchemaError
+from shared.models import ArbitrationReport, GeneratedPrompts, SelfCorrectionReport, StrategyPlan
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
-    from .clients import AsyncBaseModelClient
-    from redis import Redis as RedisType
+    from runtime.shared.clients import AsyncBaseModelClient
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import Redis
     from chromadb import Client as ChromaClientType
 else:  # pragma: no cover - fallback aliases for runtime
     AsyncBaseModelClient = Any
@@ -1534,7 +1523,7 @@ class PrecomputeEngine:
             self.logger.warning(f"Embedding precompute failed: {e}")
 
     async def precompute_hyde_document(self, query: str):
-        from agent_tools_v10_7 import HyDETool
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import HyDETool  # INVALID: Cannot import from path with hyphens
         try:
             tool = HyDETool(self.context)
             await tool.run_async({"query": query}, self.context.workflow_id)
@@ -1542,7 +1531,7 @@ class PrecomputeEngine:
             self.logger.warning(f"HyDE precompute failed: {e}")
 
     async def precompute_prompt_plan(self, strategy_json: str, complexity: str):
-        from prompting import PromptEngineerAgent
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.prompting import PromptEngineerAgent  # INVALID: Cannot import from path with hyphens
         try:
             agent = PromptEngineerAgent(self.context)
             await agent._execute_prompt_engineer(

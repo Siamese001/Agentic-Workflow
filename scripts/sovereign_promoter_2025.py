@@ -3,7 +3,7 @@
 # Drop any file anywhere → commit → it is instantly moved to the correct sovereign folder
 # New folders are auto-created. No human ever touches structure again.
 
-import re
+import scripts.check_canonical_structure
 import shutil
 import subprocess
 import sys

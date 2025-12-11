@@ -33,7 +33,7 @@
 import pytest
 import pytest_asyncio
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import json
 import time
 import tempfile
@@ -43,51 +43,13 @@ from unittest.mock import MagicMock, AsyncMock, patch, Mock
 from datetime import datetime
 from typing import Dict, object, List
 
-from core_v10_1 import (
-    WorkflowContext, ConfigV10_1, CacheManager, CostTracker, 
-    FeedbackLogReader, ProposedRulesLoader, MainGraphState, BaseAgent,
-    CostCeilingExceededError, CircuitBreakerOpenError
-)
 
 # Import all classes to be tested
-from agent_stacks_v10_1 import (
-    BaseTool,
-    ToTStrategistAgent,
-    BiasDetectorAgent,
-    PIISanitizerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent
-)
-from agent_tools_v10_1 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAAdversarialReviewerTool,
-    QABiasDetectorTool
-)
-from agent_orchestration_v10_1 import (
-    ReActConductorAgent,
-    QAConductorAgent,
-    get_graph_app
-)
-from run_batch_v10_1 import CircuitBreaker, BatchFeedbackAggregator
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.run_batch_v10_1 import CircuitBreaker, BatchFeedbackAggregator
 
 # Try to import main for E2E tests
 try:
-    from main_v10_1 import run_workflow_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.main_v10_1 import run_workflow_async
     MAIN_AVAILABLE = True
 except ImportError:
     MAIN_AVAILABLE = False
@@ -1446,7 +1408,7 @@ async def test_e2e_retry_recovery(mock_workflow_context):
     mock_workflow_context.config.agent_stacks.max_local_retries = 2
     
     # Test conditional logic
-    from agent_orchestration_v10_1 import get_graph_app
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_orchestration_v10_1 import get_graph_app
     
     # Verify retry counter increments
     initial_retries = state.metadata.retries["bullet_retries"]
@@ -1799,7 +1761,7 @@ def test_functional_bias_detector_finds_issues():
     context.config = MagicMock()
     context.config.agent_stacks.bias_detection_threshold = 0.7
     
-    from agent_stacks_v10_1 import BiasDetectorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_stacks_v10_1 import BiasDetectorAgent
     agent = BiasDetectorAgent(context)
     
     text_with_bias = "Looking for young, energetic candidates"
@@ -1957,10 +1919,10 @@ def test_transformation_pii_redaction_enriches():
 def test_architecture_no_circular_imports():
     """Architecture Test 1: No circular import dependencies."""
     # This test passes if the imports at top of file work
-    from core_v10_1 import WorkflowContext
-    from agent_stacks_v10_1 import PIISanitizerAgent
-    from agent_tools_v10_1 import DraftingStrategistTool
-    from agent_orchestration_v10_1 import ReActConductorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.core_v10_1 import WorkflowContext
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_stacks_v10_1 import PIISanitizerAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_tools_v10_1 import DraftingStrategistTool
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_orchestration_v10_1 import ReActConductorAgent
     
     # Verify hierarchy: core <- stacks <- tools <- orchestration
     assert WorkflowContext is not None

@@ -3,7 +3,7 @@
 """Text counting functions for resume generation."""
 
 
-import re
+import scripts.check_canonical_structure
 from typing import List
 
 

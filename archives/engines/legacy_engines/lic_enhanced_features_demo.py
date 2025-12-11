@@ -13,9 +13,9 @@ import logging
 from typing import Dict, object, Optional
 from datetime import datetime, timedelta
 
-from .orchestrator import OutreachOrchestrator, OrchestratorOutput
+from archives.legacy_root_folders.orchestration.orchestrator import OutreachOrchestrator, OrchestratorOutput
 from .l4.lic_cache_critique import LICCacheCritique
-from .l1.self_correction_injection import SelfCorrectionInjectionProvider
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.self_correction_injection import SelfCorrectionInjectionProvider
 
 logger = logging.getLogger(__name__)
 

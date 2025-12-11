@@ -25,14 +25,6 @@ import uuid
 from datetime import datetime, UTC
 
 
-from .types import (
-    SafetyContext,
-    SafetyFinding,
-    PolicyDecision,
-    Verdict,
-    Severity,
-    SafetyPolicy
-)
 
 
 logger = logging.getLogger(__name__)

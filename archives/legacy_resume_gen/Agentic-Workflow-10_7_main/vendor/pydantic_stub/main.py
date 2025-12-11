@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-import inspect
+import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
 from collections.abc import Mapping
 from typing import Any, Dict, Iterable, List, Tuple, Type, Union, get_args, get_origin
 

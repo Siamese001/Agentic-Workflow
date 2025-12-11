@@ -6,11 +6,11 @@ Coordinates rule evaluation and safety decisions for comprehensive résumé impr
 
 from typing import Tuple
 
-from .decisions import JudgeVerdict, SafetyPipelineTrace, RulesEngineResult
-from .judge_engine import evaluate_with_guard_model
-from .models import PolicyDecision, SafetyContext
-from .routing import resolve_rules_for_context
-from .rules_engine import evaluate_rules
+from archives.legacy_root_folders.infra.control_plane.decisions import JudgeVerdict, SafetyPipelineTrace, RulesEngineResult
+from archives.legacy_root_folders.infra.control_plane.judge_engine import evaluate_with_guard_model
+from shared.models import PolicyDecision, SafetyContext
+from archives.legacy_root_folders.core.routing import resolve_rules_for_context
+from archives.legacy_root_folders.infra.control_plane.rules_engine import evaluate_rules
 
 
 def run_safety_pipeline(

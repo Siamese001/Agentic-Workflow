@@ -1,5 +1,5 @@
-from meta.metacognition.evaluator import evaluate_hypotheses
-from meta.metacognition.models import Hypothesis
+from archives.legacy_root_folders.meta.metacognition.evaluator import evaluate_hypotheses
+from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
 
 
 def test_evaluate_penalizes_no_evidence():

@@ -5,13 +5,13 @@
 # Refactored from validator_RES_v2.py
 
 import logging
-import re
+import scripts.check_canonical_structure
 import json
 import hashlib
 from datetime import datetime
 from typing import Dict, List, Optional, Union
-from models_RES import JDEnforcementRule, JDEnforcementResult
-from config_RES_v2 import CONFIG
+from runtime.compat.models_RES import JDEnforcementRule, JDEnforcementResult
+from runtime.compat.config_RES_v2 import CONFIG
 
 # Mock indicators (from monolithic file)
 mock_indicators = {

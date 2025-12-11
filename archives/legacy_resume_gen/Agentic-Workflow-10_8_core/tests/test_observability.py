@@ -1,12 +1,12 @@
 """Grouped observability and self-correction tests."""
 import pytest
 
-from runtime.observability.utils import CostTracker
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import GraphOrchestrator
-from l3_orchestration import QAOrchestrator
-from l3_orchestration import RAGOrchestrator
+from shared.reasoning_utils import CostTracker
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
 def test_cost_tracker_records_spans_and_cost():
@@ -87,7 +87,7 @@ def test_orchestrators_attach_telemetry_without_behavior_drift(
     assert state_expectation(result)
 import importlib
 
-import telemetry_schema
+# import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.telemetry_schema  # INVALID: Cannot import from path with hyphens
 
 
 def test_metric_event_instantiation():
@@ -141,9 +141,9 @@ def test_module_has_no_side_effects():
     assert exported == expected
 import pytest
 
-from runtime.observability.utils import PolicyAutoTunerStub
-from l3_orchestration import GraphOrchestrator
-from runtime.observability.utils import PredictiveCache
+from shared.reasoning_utils import PolicyAutoTunerStub
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+from shared.reasoning_utils import PredictiveCache
 
 
 def test_predictive_cache_set_get_deterministic():
@@ -191,10 +191,10 @@ import time
 
 import pytest
 
-from runtime.observability.utils import CostTracker
-from runtime.observability.utils import compute_optimization_hint
-from runtime.observability.utils import TELEMETRY_EVENTS, get_events
-from l3_orchestration import GraphOrchestrator
+from shared.reasoning_utils import CostTracker
+from shared.reasoning_utils import compute_optimization_hint
+from shared.reasoning_utils import TELEMETRY_EVENTS, get_events
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.fixture(autouse=True)
@@ -246,12 +246,12 @@ def test_predictive_cache_written():
     assert predictive_cache.get("next_hint") is not None
 import pytest
 
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import GraphOrchestrator
-from l3_orchestration import QAOrchestrator
-from l3_orchestration import RAGOrchestrator
-from self_correction import SelfCorrectionSurface
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
 
 
 def test_qa_orchestrator_sets_arbitration_metadata():
@@ -289,7 +289,7 @@ def test_orchestrators_expose_self_correction_surface(orchestrator_cls, expected
     assert result.safety_patch is not None
 import pytest
 
-from self_correction import SelfCorrectionSurface, should_retry
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface, should_retry
 
 
 def test_should_retry_qa_pending():
@@ -331,15 +331,15 @@ def test_should_retry_other_surfaces_false():
         assert should_retry(surface, state, last_result) is False
 import pytest
 
-from self_correction import ArbitrationEngine
-from self_correction import CORRECTION_JOURNAL
-from self_correction import evaluate_correction
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import GraphOrchestrator
-from l3_orchestration import QAOrchestrator
-from l3_orchestration import RAGOrchestrator
-from self_correction import SelfCorrectionSurface, all_surfaces
+from archives.legacy_root_folders.meta.self_correction import ArbitrationEngine
+from archives.legacy_root_folders.meta.self_correction import CORRECTION_JOURNAL
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface, all_surfaces
 
 
 def test_all_surfaces_export():

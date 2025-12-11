@@ -12,11 +12,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from injection_profiles import DEFAULT_FRAMING_PROFILE
-from l1_reasoning import Reasoner
-from utils_types import PlanObject
-from retrieval import RetrievalConfig
-from l4_memory import get_evidence_view
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_profiles import DEFAULT_FRAMING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import Reasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.retrievers.retrieval import RetrievalConfig
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import get_evidence_view  # INVALID: Cannot import from path with hyphens
 
 
 def _latest_user_message(state: Dict[str, object]) -> str:

@@ -21,54 +21,18 @@ This module tests the new KG components:
 
 
 
-from l4.triplet_store import (
-    TripletStore,
-    TripletQuery,
-    TripletStatus,
-    create_triplet,
-)
 
 
-from l4.entity_resolution import (
-    EntityRegistry,
-    EntityType,
-    create_entity,
-    create_mention,
-)
 
 
-from l1.kg_retrieval_planning import (
-    KGRetrievalPlanner,
-    KGQueryPlan,
-    QueryType,
-    HopDirection,
-    plan_entity_retrieval,
-)
 
 
-from l2.kg_retrieval_executor import (
-    KGRetrievalExecutor,
-    KGRetrievalResult,
-    execute_entity_query,
-)
 
 
-from l2.triplet_extraction_executor import (
-    TripletExtractionExecutor,
-    create_extraction_plan,
-)
 
 
-from l2.invalidation_executor import (
-    InvalidationExecutor,
-    create_invalidation_plan,
-)
 
 
-from orchestration.kg_retrieval_orchestration import (
-    KGFirstRetrievalOrchestrator,
-    create_hybrid_context,
-)
 
 
 class TestTripletStore:
@@ -259,7 +223,7 @@ class TestKGRetrievalExecutor:
         store.add_triplet(create_triplet("user_1", "has_skill", "Python"))
         store.add_triplet(create_triplet("job_1", "requires_skill", "Python"))
 
-        from l2.kg_retrieval_executor import execute_multi_hop_query
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_retrieval_executor import execute_multi_hop_query
 
         result = execute_multi_hop_query(
             store,

@@ -28,7 +28,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from core.models.models import SelfCorrectionSurface, SafetyIssue
+from archives.legacy_root_folders.core.models.models import SelfCorrectionSurface, SafetyIssue
 
 
 # ============================================================================

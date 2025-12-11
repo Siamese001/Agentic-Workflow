@@ -6,4 +6,4 @@ during the canonical structure cleanup.
 """
 
 # Re-export all DAG models from core.models
-from core.models.dag_models import *
+from archives.legacy_root_folders.core.models.dag_models import *

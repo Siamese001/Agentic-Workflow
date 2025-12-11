@@ -13,21 +13,16 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union, Tuple
 
 # Live API clients
-from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
+from archives.legacy_lic.Agentic LIC.llm_clients import GeminiLLMClient
+from archives.legacy_lic.Agentic LIC.retrieval_clients import GoogleSearchClient
 
 # RAG agents (FIXED: import from rag_LIC, not rag_LIC_LIVE)
-from rag_LIC import S2_SupervisorAgent
+from archives.legacy_lic.LIC - Python.rag_LIC import S2_SupervisorAgent
 
 # Core models and utilities
-from models_LIC import (
-    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,
-    GeneratedMessage, ValidationResult, QAReport, Archetype, Route,
-    AgentStatus, ValidationSeverity, FactualGapError, FailureClassifier
-)
-from utils_LIC import CircuitBreaker, AdaptiveTemperatureController
-from config_LIC import CONFIG_REGISTRY
-from validation_LIC import ValidationAgent
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker, AdaptiveTemperatureController
+from archives.legacy_lic.deprecated in v13.config_LIC import CONFIG_REGISTRY
+from archives.legacy_lic.deprecated in v13.validation_LIC import ValidationAgent
 
 # ============================================================================
 # STAGE 1: PROFILE ANALYSIS AGENT

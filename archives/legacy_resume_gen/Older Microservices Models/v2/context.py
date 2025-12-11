@@ -5,11 +5,11 @@
 # Refactored from validator_RES_v2.py
 
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, Optional, Union, Tuple, Callable
-from models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection
-from config_RES_v2 import COVER_LETTER_SIGNATURE_TEMPLATE
-from utils_RES_v2 import text_utils, calculate_signal_score
+from runtime.compat.models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection
+from runtime.compat.config_RES_v2 import COVER_LETTER_SIGNATURE_TEMPLATE
+from runtime.compat.utils_RES_v2 import text_utils, calculate_signal_score
 
 class ValidationContext:
     """

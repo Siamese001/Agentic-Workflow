@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
-from core_v10_7.agents import BaseAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.agents import BaseAgent
 def _build_execution_stack(context: Any, debug_mode: bool = False):
     from agent_stacks_v10_8 import RAGExecutionStack as RAGExecutionStackV10_8
 

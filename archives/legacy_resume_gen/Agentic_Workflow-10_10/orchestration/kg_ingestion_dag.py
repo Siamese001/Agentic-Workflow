@@ -28,24 +28,11 @@ import asyncio
 import logging
 import uuid
 
-from l4.temporal_schemas import (
-    IngestionBatch,
-    TemporalEntity,
-    TemporalTriplet,
-    TemporalEvent,
-)
-from infra.dag_engine.models import Node as DagNode, Edge as DagEdge, Graph as DagGraph
-from infra.dag_engine.executor import DAGExecutor
-from runtime.observability import emit_node_event
+from archives.legacy_root_folders.infra.dag_engine.models import Node, Edge, Graph
+from archives.legacy_root_folders.infra.dag_engine.executor import DAGExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import emit_node_event
 
 # Import Neo4j mirroring functions
-from l2.kg_writer import (
-    insert_entity,
-    insert_triplet,
-    insert_event,
-    batch_process_invalidation,
-    ingest_transcript,
-)
 
 
 logger = logging.getLogger(__name__)
@@ -766,7 +753,7 @@ async def ingest_documents(
     config: Optional[IngestionDAGConfig] = None,
 ) -> IngestionDAGResult:
     """Ingest documents using the unified DAG."""
-    from l4.temporal_schemas import IngestionBatch
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.temporal_schemas import IngestionBatch
     
     # Create ingestion batch
     batch = IngestionBatch(

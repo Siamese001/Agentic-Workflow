@@ -6,7 +6,7 @@ Provides agent-aware node definitions for comprehensive résumé improvement ope
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
 
 class DAGNode(BaseModel):

@@ -6,7 +6,7 @@ Provides efficient model choice caching to optimize résumé improvement perform
 
 from typing import Dict, Tuple
 
-from .models import ModelChoice, RoutingContext
+from shared.models import ModelChoice, RoutingContext
 
 
 _CACHE: Dict[Tuple[str, str, str], ModelChoice] = {}

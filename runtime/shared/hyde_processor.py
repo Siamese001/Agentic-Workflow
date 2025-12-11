@@ -7,7 +7,7 @@ retrieval by query expansion. Essential for sparse profile enhancement.
 """
 
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum

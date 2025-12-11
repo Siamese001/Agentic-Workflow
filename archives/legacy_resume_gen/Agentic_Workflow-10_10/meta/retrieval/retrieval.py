@@ -8,24 +8,8 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from core.models.models import (
-    Evidence,
-    RetrievalConfig,
-    CouncilVote,
-    RAGResult,
-    RetrievalAttemptEvent,
-    RetrievalSuccessEvent,
-    RetrievalFailureEvent,
-)
-from observability import (
-    start_span,
-    end_span,
-    emit_retrieval_attempt,
-    emit_retrieval_success,
-    emit_retrieval_failure,
-)
 
-from meta.retrieval.hybrid_ranker import fuse_and_rank
+from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank
 
 
 def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
@@ -35,7 +19,7 @@ def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]
     Finds exact matches to ensure comprehensive coverage of relevant résumé content.
     """
 
-    from retrievers.bm25 import bm25_search
+    from archives.legacy_root_folders.retrievers.bm25 import bm25_search
 
     return bm25_search(
         query=query,
@@ -52,7 +36,7 @@ def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence
     Finds conceptually similar content to ensure comprehensive résumé alignment with job requirements.
     """
 
-    from retrievers.dense import dense_search
+    from archives.legacy_root_folders.meta.retrieval.retrievers.dense import dense_search
 
     return dense_search(query=query, max_hits=max_hits)
 
@@ -65,7 +49,7 @@ def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidenc
     """
 
     try:  # pragma: no cover - optional Chroma wiring
-        from infra.storage.vector_store_chroma import (
+        from archives.legacy_root_folders.infra.storage.vector_store_chroma import ChromaConfig, init_chroma_client, chroma_hybrid_search
             ChromaConfig as _ChromaConfig,
             init_chroma_client as _init_chroma_client,
             chroma_hybrid_search as _chroma_hybrid_search,

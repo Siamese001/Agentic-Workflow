@@ -3,16 +3,12 @@
 
 __version__ = "11.10"
 
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, object, Tuple
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from models import (
-    ValidationSeverity, ValidationResult, GeneratedMessage, 
-    ResearchContext, MessageClaim, RAGResult
-)
 
 # ============================================================================
 # NEW v11.6: GLOBAL ERROR CODE REGISTRY (GAP 6.1)
@@ -116,7 +112,7 @@ class ConstraintFeasibilityChecker:
         # This function needs access to ConfigRegistry, but to avoid circular
         # imports, we'll use hardcoded fallbacks if the import fails.
         try:
-            from config import CONFIG_REGISTRY
+            from shared.config import CONFIG_REGISTRY
             constraints = CONFIG_REGISTRY.get_route_constraints(route, archetype)
         except ImportError:
             constraints = {"word_target": 200, "word_range": (150, 250), "route": route}
@@ -364,7 +360,7 @@ class ValidationAgent:
         
         # Import dynamically to avoid circular dependency
         try:
-            from rag import ClaimConfidenceScorer, SignalQualityScorer
+#             from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import ClaimConfidenceScorer, SignalQualityScorer  # INVALID: Cannot import from path with hyphens
             self.claim_scorer = ClaimConfidenceScorer()
             self.signal_scorer = SignalQualityScorer()
         except ImportError:

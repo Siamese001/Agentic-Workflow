@@ -9,7 +9,7 @@ Canonicalizes action verbs to approved list and detects forbidden verbs.
 """
 
 
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List
 
 

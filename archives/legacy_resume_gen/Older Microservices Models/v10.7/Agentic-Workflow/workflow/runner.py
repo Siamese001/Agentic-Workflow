@@ -9,8 +9,8 @@ from hashlib import sha1
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional
 
-from core_v10_7 import ConfigV10_7
-from main_v10_7 import run_workflow_async, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import ConfigV10_7
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.main_v10_7 import run_workflow_async, setup_logging  # INVALID: Cannot import from path with hyphens
 
 _DEFAULT_CONFIG = Path("master_config_v10_7.json")
 _DEFAULT_JOB_INPUT = Path("job_input.json")

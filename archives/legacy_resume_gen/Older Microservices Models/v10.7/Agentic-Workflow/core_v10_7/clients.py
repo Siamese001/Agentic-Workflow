@@ -8,19 +8,19 @@ import os
 import random
 from typing import Any, Dict, List, Optional
 
-from mcp import get_tool
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_tool  # INVALID: Cannot import from path with hyphens
 
-from .config import ConfigV10_7
-from .exceptions import ModelAPIError
-from .services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics
+from shared.reasoning_config import ConfigV10_7
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.exceptions import ModelAPIError
+from apps_shared.pipeline.synthesis.use_tools.invoke_pipeline_services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics
 
 try:  # pragma: no cover - optional provider SDKs
 <<<<<<< HEAD
-    import anthropic
+    import data.sdks_mcps.reference_clients.minimal_anthropic
 except ImportError:  # pragma: no cover - provider optional
     anthropic = None
 =======
-    from anthropic import AsyncAnthropic as _AsyncAnthropic
+    from data.sdks_mcps.reference_clients.minimal_anthropic import AsyncAnthropic as _AsyncAnthropic
 except ImportError:  # pragma: no cover - provider optional
     try:  # pragma: no cover - provider optional
         import anthropic as _anthropic_module

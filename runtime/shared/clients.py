@@ -23,7 +23,7 @@ import os
 import threading
 from typing import Optional
 
-from openai import AsyncOpenAI, OpenAI
+from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
 
 
 logger = logging.getLogger(__name__)

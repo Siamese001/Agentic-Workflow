@@ -8,12 +8,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Union, Tuple
 
 # Import dependencies from v3.8 modules
-from models_RES import (
-    ValidationResult, ValidationSeverity, 
-    ThematicAnalysis, ImmutableStagingBuffer
-)
 # Import Validator from v3.8
-from validator_RES_v3_8 import AppTrackerQAValidator
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validator_RES_v3_8 import AppTrackerQAValidator
 import json
 
 logger = logging.getLogger(__name__)

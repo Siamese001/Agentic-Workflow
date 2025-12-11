@@ -11,9 +11,9 @@ This test file is scaffolded for Priority 0; implementation comes later.
 """
 import copy
 
-from l4_memory import ContextBudget
-from l4_memory import MemoryManager
-from utils_types import BudgetConfig
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import ContextBudget  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import MemoryManager  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
 def test_context_budget_prunes_buffers():
@@ -109,11 +109,6 @@ def test_reconcile_state_respects_token_budgets_without_mutation():
     assert state == original
 import copy
 
-from l4_memory import (
-    get_conversational_view,
-    get_prompt_context_view,
-    get_retrieval_view,
-)
 
 
 def test_conversational_view_defaults_and_keys():
@@ -184,8 +179,8 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l4_state import StateAdapter
-from utils_types import Phase, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Phase, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 def test_state_adapter_applies_patch_and_phase():
@@ -221,10 +216,10 @@ Test Suite — State & Memory v10.8
 
 Validates memory budgeting, state validation, and world-model normalization.
 """
-from l4_state import StateAdapter
-from l4_state import validate
-from utils_types import StatePatch
-from l4_memory import normalize_world_facts
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import validate  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import normalize_world_facts  # INVALID: Cannot import from path with hyphens
 
 
 def test_high_volume_messages_pruned_to_budget():
@@ -287,8 +282,8 @@ representation, ensuring new world-model fields coexist with existing
 structures.
 """
 
-from l4_state import StateAdapter
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 def test_state_schema_defaults_include_world_and_metadata():

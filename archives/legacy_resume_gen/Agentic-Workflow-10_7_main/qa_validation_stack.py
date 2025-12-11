@@ -5,23 +5,9 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from agent_tools_v10_7 import (
-    QAAdversarialReviewerTool,
-    QABiasDetectorTool,
-    QAClaimValidatorTool,
-    QAJDSkillsValidatorTool,
-    QAMissedOpportunityTool,
-    QANarrativeThreadTool,
-    QAThematicAlignmentTool,
-    QAToneValidatorTool,
-    QATenureValidatorTool,
-    QASemanticEntailmentTool,
-    QASignalScoreValidatorTool,
-    QAWordCountValidatorTool,
-)
 
-from core_v10_7 import StrategyPlan
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import StrategyPlan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 class QAValidationStack:

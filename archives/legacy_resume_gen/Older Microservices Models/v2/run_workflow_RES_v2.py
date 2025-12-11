@@ -2,7 +2,7 @@
 # Version: 17.00 - V2 Agentic Architecture with Async Governor
 # Smart launcher with async execution support
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import os
 import sys
@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 
 # Import the main components from the refactored modules
 try:
-    from workflow_RES_v2 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v2.workflow_RES_v2 import WorkflowOrchestrator, load_master_resume, __version__
         WorkflowOrchestrator, 
         load_master_resume,
         __version__
     )
-    from config_RES_v2 import CONFIG, OUTPUT_DIR, DATA_DIR
+    from runtime.compat.config_RES_v2 import CONFIG, OUTPUT_DIR, DATA_DIR
 except ImportError as e:
     logger.critical(f"Error: Could not import from refactored modules (workflow_RES_v2.py, config_RES.py)")
     logger.critical(f"Details: {e}")

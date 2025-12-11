@@ -5,19 +5,15 @@ __version__ = "11.10"
 # for the LIC workflow.
 
 import asyncio
-import re
+import scripts.check_canonical_structure
 from collections import defaultdict
 from typing import Dict, List, object, Tuple
 
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from models import (
-    RAGResult, ResearchContext, ProfileAnalysis, Archetype, RAGCritique, 
-    MessageClaim, OutreachMission, SenderGroundingWhitelists, AgentStatus
-)
-from utils import CircuitBreaker
+from runtime.shared.utils import CircuitBreaker
 
 # ============================================================================
 # NEW v11.6: SIGNAL QUALITY SCORER (FEATURE 1.1)

@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import shutil
 import signal
 import time
@@ -16,10 +16,6 @@ from datetime import datetime, timedelta
 import functools
 from functools import partial
 from enum import Enum, auto
-from typing import (
-    Any, Callable, ClassVar, Dict, List, 
-    Optional, Set, Tuple, TypeVar, Union
-)
 
 T = TypeVar('T')
 
@@ -67,7 +63,7 @@ except ImportError:
     logging.warning("Warning: google-generativeai package not installed. Web RAG disabled.")
 
 # sklearn is now required
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -3423,7 +3419,7 @@ class ClerkExtractor:
 
         return metrics
 
-import re
+import scripts.check_canonical_structure
 from typing import List, Dict, object, Optional
 
 
@@ -4782,7 +4778,7 @@ class ImmutableStagingBuffer:
     def data(self) -> Dict:
         return copy.deepcopy(self._data)
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging # Ensure logging is imported
 from typing import Dict, List, Optional, Union, Tuple # Ensure needed types are imported
@@ -4998,7 +4994,7 @@ def calculate_signal_score(text_content, thematic_analysis: ThematicAnalysis):
 
 from collections import defaultdict # Added for error message formatting
 import copy # Added for deepcopy in prepare_validation_data
-import re # Ensure re is imported for validation methods
+import scripts.check_canonical_structure
 from datetime import datetime # Ensure datetime is imported for validation methods
 from typing import Dict, List, Optional, Union, Tuple, Set, Union # Ensure types are imported
 from collections import defaultdict # Added for error message formatting
@@ -7964,14 +7960,14 @@ class HopExecutionError(Exception): pass
 
 class StagingBufferError(Exception): pass
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime

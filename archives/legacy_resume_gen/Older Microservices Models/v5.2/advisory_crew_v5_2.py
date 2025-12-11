@@ -10,45 +10,11 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 
 # Import enhanced execution specialists
-from execution_specialists_v5_2 import (
-    Library_Specialist,
-    Web_Specialist,
-    RAG_Synthesizer,
-    Content_Generator,
-    Gemini_Drafter,
-    Claude_Drafter,
-    Muse_Drafter,
-    ChiefStrategistAgent,
-    StrategyValidatorAgent,
-    RetryPolicyAgent,
-    Meta_Planner,
-    HIL_Feedback_Logger,
-    HIL_EscalationAgent,
-    PromptSelectorAgent,
-    ContextAssemblerAgent,
-    PromptFormatterAgent,
-    Mechanical_Critic,
-    Strategic_Critic,
-    FactualConsistency_Validator,
-    ToneValidator,
-    ThematicAlignment_Validator,
-    PreFlightValidator,
-    Resume_Assembler,
-    CoverLetter_Assembler,
-    AppTracker_Assembler,
-    Auditor_Agent,
-)
 
 # Import v3.8 models and utilities
-from prompts_RES import build_crl_context_for_section
-from models_RES import (
-    ImmutableStagingBuffer, ThematicAnalysis, ValidationResult,
-    MasterResumeIndex, CompetitiveAnalysisConfig,
-    ResumeSection, GovernanceState, AgentSignal, VetoRecord, ExecutionStrategy,
-    ValidationSeverity, GateDecision
-)
-from validation_context import ValidationContext
-from config_RES import CONFIG
+from archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES import build_crl_context_for_section
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
 
 logger = logging.getLogger(__name__)
 

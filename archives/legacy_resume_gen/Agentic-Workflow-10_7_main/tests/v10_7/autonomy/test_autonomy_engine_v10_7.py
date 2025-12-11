@@ -1,9 +1,9 @@
 import logging
-from types import MethodType, SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import MethodType, SimpleNamespace
 
 import pytest
 
-from core_v10_7.services import AutonomyEngine
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.services import AutonomyEngine
 from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
 
 

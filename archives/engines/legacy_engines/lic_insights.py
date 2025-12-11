@@ -5,12 +5,9 @@ Signal quality scoring and claim confidence modeling
 """
 
 from typing import Dict, List, Optional, Union, Tuple
-import re
+import scripts.check_canonical_structure
 from datetime import datetime, timedelta
 
-from .models import (
-    RAGEvidence, ValidationResult, ValidationSeverity
-)
 
 
 class SignalQualityScorer:

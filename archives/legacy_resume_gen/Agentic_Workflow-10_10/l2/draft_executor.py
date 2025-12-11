@@ -5,11 +5,11 @@ Executes model calls to create compelling résumé content aligned with job requ
 """
 
 from typing import Optional
-from runtime.runtime_utils import invoke_model, SandboxConfig
-from core.routing import RoutingPolicy
-from core.models.models import ComplexityLevel
-from config.meta_profile import MetaProfileSnapshot
-from runtime.observability import record_event, record_exception
+from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig
+from archives.legacy_root_folders.core.routing import RoutingPolicy
+from archives.legacy_root_folders.core.models.models import ComplexityLevel
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event, record_exception
 
 class DraftExecutor:
     """

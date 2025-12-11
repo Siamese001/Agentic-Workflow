@@ -6,7 +6,7 @@ import os
 import time
 import json
 from typing import List, Dict, object, Optional
-from openai import OpenAI
+from data.sdks_mcps.reference_clients.minimal_openai import OpenAI
 from openai.types.batches import Batch
 
 

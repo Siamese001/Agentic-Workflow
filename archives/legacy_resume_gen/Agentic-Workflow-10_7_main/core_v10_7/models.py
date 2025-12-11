@@ -17,7 +17,7 @@ import json
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, ConfigDict
 
 
 # ---------------------------------------------------------------------------

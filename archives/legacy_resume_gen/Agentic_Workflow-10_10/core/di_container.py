@@ -10,9 +10,9 @@ from typing import Any, Dict, Optional, TypeVar, Protocol, runtime_checkable
 from dataclasses import dataclass, field
 import logging
 
-from l4.pinecone_adapter import PineconeAdapter
-from l4.manager import StateManager
-from l5.policy import SafetyEngine
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.manager import StateManager
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ def initialize_default_services() -> None:
     
     # Register L4 services
     if not container.get(PineconeAdapter):
-        from l4.pinecone_adapter import PineconeConfig
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeConfig
         pinecone_config = PineconeConfig(
             api_key="dummy-key",
             index_name="test-index"

@@ -21,8 +21,8 @@ class RetrievalConfig:
         }
 from typing import Any, Dict, List
 
-from ranking import bm25_rank, dense_rank, hybrid_rank
-from utils_types import BudgetConfig
+from archives.legacy_root_folders.meta.ranking import bm25_rank, dense_rank, hybrid_rank
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
 def normalize_documents(results: List[Dict[str, object]]) -> List[Dict[str, object]]:

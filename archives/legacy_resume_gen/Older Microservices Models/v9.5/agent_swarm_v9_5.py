@@ -25,7 +25,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from collections import defaultdict
@@ -35,7 +35,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core_v9_5
-from core_v9_5 import (
+from archives.legacy_resume_gen.Older Microservices Models.v9.5.core_v9_5 import (
     # Base
     BaseAgent, get_model_client, CONFIG,
     # Models
@@ -78,7 +78,7 @@ class GraphDatabaseClient:
     def write(self, s: str, r: str, o: str): return True
 
 # --- V7.0 LANGGRAPH IMPORTS ---
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger(__name__)
@@ -1388,8 +1388,8 @@ def get_graph_app(checkpointer: 'RedisSaver', enable_hil: bool = True) -> 'Compi
     """
     Builds and compiles the persistent v9.5 StateGraph.
     """
-    from langgraph.graph import StateGraph, END
-from core_v9_5 import GraphState
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v9.5.core_v9_5 import GraphState
     
     workflow = StateGraph(GraphState)
 

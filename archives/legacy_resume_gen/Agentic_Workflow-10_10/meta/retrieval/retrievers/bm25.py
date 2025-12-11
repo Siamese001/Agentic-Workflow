@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import List
 
-from core.models.models import Evidence, RetrievalConfig
-from retrievers.bm25 import bm25_search as _core_bm25_search, BM25Config
+from archives.legacy_root_folders.core.models.models import Evidence, RetrievalConfig
+from archives.legacy_root_folders.retrievers.bm25 import bm25_search, BM25Config
 
 
 def bm25_search(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:

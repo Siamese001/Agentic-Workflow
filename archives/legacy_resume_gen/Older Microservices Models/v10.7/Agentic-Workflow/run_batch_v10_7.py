@@ -30,25 +30,13 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 # v10.7: Import from new main/core
-from main_v10_7 import setup_logging, load_job_input
-from core_v10_7 import (
-    ConfigV10_7,
-    ContextBudgetManager,
-    CircuitBreaker,
-    CircuitBreakerOpenError,
-    MainGraphState,
-    WorkflowContext,
-    WorkflowError,
-    cleanup_workflow_chroma_collection,
-    create_workflow_context,
-    get_checkpointer,
-)
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.main_v10_7 import setup_logging, load_job_input  # INVALID: Cannot import from path with hyphens
 # v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import get_graph_app  # INVALID: Cannot import from path with hyphens
 
 try:
     # v10.7: Import new meta-learner
-    from run_learning_v10_7 import run_meta_learning
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.run_learning_v10_7 import run_meta_learning  # INVALID: Cannot import from path with hyphens
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False

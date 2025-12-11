@@ -3,7 +3,7 @@
 """Clerk extraction for resume generation HOP-1."""
 
 
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, Tuple
 
 from shared.models import ValidationResult

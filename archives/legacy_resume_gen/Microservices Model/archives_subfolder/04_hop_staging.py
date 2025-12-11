@@ -16,10 +16,10 @@ Its responsibilities are:
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -30,10 +30,6 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ImmutableStagingBuffer, ResumeSection
-)
 
 # --- High-Signal Sanitizer ---
 

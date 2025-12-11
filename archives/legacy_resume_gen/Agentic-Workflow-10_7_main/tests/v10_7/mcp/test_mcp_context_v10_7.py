@@ -1,5 +1,5 @@
-import core_v10_7.context as context_module
-from core_v10_7 import MCPClientSpec, MCPClientStub
+import archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.context
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import MCPClientSpec, MCPClientStub
 
 
 def test_ensure_mcp_clients_converts_optional_failures(monkeypatch, mock_workflow_context):

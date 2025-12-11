@@ -10,12 +10,12 @@ Produces StatePatch outputs only.
 """
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List
 
-from prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL
-from l5_policy import InjectionPattern, SafetyConfig, load_default_safety_config
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import InjectionPattern, SafetyConfig, load_default_safety_config  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class InjectionDetector:

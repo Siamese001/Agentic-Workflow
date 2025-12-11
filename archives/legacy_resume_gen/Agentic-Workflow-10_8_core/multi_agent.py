@@ -133,7 +133,7 @@ def deterministic_vote(candidates: List[Dict[str, object]]) -> Dict[str, object]
     return sorted_candidates[0]
 from typing import Dict, object
 
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class MultiAgentOrchestrator:

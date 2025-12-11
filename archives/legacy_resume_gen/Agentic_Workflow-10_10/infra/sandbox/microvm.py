@@ -5,10 +5,10 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from observability import record_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
 
-from infra.sandbox.models import ToolCallRequest, ToolCallResult
-from infra.sandbox.sandbox_errors import SandboxTimeoutError
+from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult
+from archives.legacy_root_folders.infra.sandbox.sandbox_errors import SandboxTimeoutError
 
 
 @dataclass

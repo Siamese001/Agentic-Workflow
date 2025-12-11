@@ -11,7 +11,7 @@ from datetime import datetime
 # ChromaDB for vector storage
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False

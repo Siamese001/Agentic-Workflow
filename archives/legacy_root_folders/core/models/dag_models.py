@@ -6,8 +6,8 @@ from datetime import datetime, timezone, UTC
 from enum import Enum
 from typing import Any, Dict, List, Optional, TypeVar, Generic
 
-from l4.types import StateSnapshot, StateTransition
-from l5.types import PolicyDecision, Verdict
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import StateSnapshot, StateTransition
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import PolicyDecision, Verdict
 
 
 T = TypeVar("T")

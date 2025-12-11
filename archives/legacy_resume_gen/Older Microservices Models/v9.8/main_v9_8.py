@@ -14,25 +14,22 @@
 # ============================================================================
 # EXTERNAL IMPORTS
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import logging.handlers
 import os
 import sys
 import uuid
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules (v9.8)
-from core_v9_8 import (
-    CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR, COST_TRACKER
-)
 
 # v9.8: Import from the new graph builder
-from agent_swarm_v9_8 import get_graph_app, PIISanitizerAgent
+from archives.legacy_resume_gen.Older Microservices Models.v9.8.agent_swarm_v9_8 import get_graph_app, PIISanitizerAgent
 
 # Import LangGraph + Redis
 from langgraph.checkpoint.redis import RedisSaver
@@ -90,7 +87,7 @@ def load_job_input(filepath: str) -> Dict[str, object]:
 def setup_logging(debug_mode: bool):
     """Configure structured logging."""
     try:
-        from core_v9_8 import CONFIG as LOG_CONFIG
+        from archives.legacy_resume_gen.Older Microservices Models.v9.8.core_v9_8 import CONFIG
     except ImportError:
         print("CRITICAL: core_v9_8.py not found.", file=sys.stderr)
         logging.basicConfig(level=logging.DEBUG if debug_mode else logging.INFO)

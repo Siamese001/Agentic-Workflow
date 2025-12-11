@@ -29,7 +29,7 @@ def test_core_dependencies():
     
     # Pydantic
     try:
-        from pydantic import BaseModel, Field
+        from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
         class TestModel(BaseModel):
             name: str
             value: int = Field(gt=0)
@@ -97,14 +97,14 @@ def test_llm_providers():
     
     # OpenAI
     try:
-        import openai  # type: ignore
+        import data.sdks_mcps.reference_clients.minimal_openai
         record_test_result("openai", "PASS", f"Version: {openai.__version__}, SDK import successful")
     except Exception as e:
         record_test_result("openai", "FAIL", error=str(e))
     
     # Anthropic
     try:
-        import anthropic  # type: ignore
+        import data.sdks_mcps.reference_clients.minimal_anthropic
         record_test_result("anthropic", "PASS", f"Version: {anthropic.__version__}, SDK import successful")
     except Exception as e:
         record_test_result("anthropic", "FAIL", error=str(e))
@@ -123,7 +123,7 @@ def test_vector_databases():
     
     # Redis
     try:
-        import redis  # type: ignore
+        import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
         # Test client creation (won't connect without server, but validates SDK)
         record_test_result("redis", "PASS", f"Version: {redis.__version__}, SDK import successful")
     except Exception as e:
@@ -243,7 +243,7 @@ def test_mcp_sdk():
     """Test MCP SDK."""
     
     try:
-        import mcp  # type: ignore
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp  # INVALID: Cannot import from path with hyphens
         version = getattr(mcp, '__version__', 'unknown')
         record_test_result("mcp", "PASS", f"SDK import successful (version: {version})")
     except Exception as e:
@@ -255,14 +255,14 @@ def test_project_imports():
     
     try:
         # Test cache_redis
-        import infra.storage.cache_redis
+        import archives.legacy_root_folders.infra.storage.cache_redis
         record_test_result("cache_redis (project)", "PASS", "Project module import successful")
     except Exception as e:
         record_test_result("cache_redis (project)", "FAIL", error=str(e))
     
     try:
         # Test vector_store_chroma
-        import infra.storage.vector_store_chroma
+        import archives.legacy_root_folders.infra.storage.vector_store_chroma
         infra.storage.vector_store_chroma  # Test import
         record_test_result("vector_store_chroma (project)", "PASS", "Project module import successful")
     except Exception as e:

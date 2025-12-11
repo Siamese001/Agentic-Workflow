@@ -3,15 +3,7 @@
 import asyncio
 from typing import Any, Dict, List
 
-from simulations.models import (
-    DraftSimRequest,
-    RAGSimRequest,
-    SafetySimRequest,
-    SimulationBatchResult,
-    SimulationResult,
-    StrategySimRequest,
-)
-from simulations.registry import get_simulator
+from runtime.shared.sdk_registry import get_simulator
 
 
 REQUEST_MODEL_MAP = {

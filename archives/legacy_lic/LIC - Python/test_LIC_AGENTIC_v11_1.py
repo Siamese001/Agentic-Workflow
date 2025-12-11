@@ -22,7 +22,7 @@ from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from uuid import uuid4
 
 # Import from main module
-from LIC_AGENTIC_v11_1 import (
+from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_1 import Route, Archetype, EventType, AgentStatus, ValidationSeverity, Event, OutreachMission, ResearchContext, GenerationContext, StagingBuffer, ValidationResult, OutreachState, TelemetryMetric, LICException, ScopeViolationError, ValidationFailureError, CircuitBreakerOpenError, AgentExecutionError, MessageBus, StateStore, SemanticCache, CircuitBreaker, LLMClient, TelemetryService, LoggingService, ValidationService, ProfileAnalysisAgent, ResearchOrchestrator, ScaffoldArchitect, GenerationOrchestrator, StagingBufferAssembler, ValidationAgent, GateAgent, WorkflowOrchestrator, create_orchestrator
     # Enums
     Route, Archetype, EventType, AgentStatus, ValidationSeverity,
     

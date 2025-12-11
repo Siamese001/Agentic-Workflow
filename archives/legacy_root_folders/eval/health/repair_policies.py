@@ -9,7 +9,7 @@ repair actions (retry, downgrade, replan, escalate).
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
-from .failure_detector import FailureSignal
+from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal
 
 
 @dataclass

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from agentic_core.l2_execution.tools.simulation import Engine  # existing Phase-3 simulation harness
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_simulation import Engine  # INVALID: Cannot import from path with hyphens
 
-from .models import SimScenario, SimOutcome
+from shared.models import SimScenario, SimOutcome
 
 
 def run_scenario(scenario: SimScenario) -> SimOutcome:

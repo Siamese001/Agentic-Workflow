@@ -22,7 +22,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional
 
-from core.models.models import ProfileInferenceResult
+from archives.legacy_root_folders.core.models.models import ProfileInferenceResult
 
 # ======================================================================
 # META-PROFILE DATASTRUCTURES

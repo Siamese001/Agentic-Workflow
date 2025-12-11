@@ -7,13 +7,13 @@
 
 __version__ = "13.0"
 
-import re
+import scripts.check_canonical_structure
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Union, Callable, Tuple
 from collections import defaultdict
 
 # Import models needed for CircuitBreaker
-from models_LIC import CircuitState, CircuitBreakerOpenError
+from archives.legacy_lic.Agentic LIC.models_LIC import CircuitState, CircuitBreakerOpenError
 
 # ============================================================================
 # KEPT FOR v13.0: CIRCUIT BREAKER

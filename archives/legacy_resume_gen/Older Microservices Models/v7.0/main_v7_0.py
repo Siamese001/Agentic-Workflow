@@ -13,25 +13,22 @@
 # ============================================================================
 # EXTERNAL IMPORTS
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import logging.handlers
 import os
 import sys
 import uuid
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules (v7.0)
-from core_v7_0 import (
-    CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR
-)
 
 # v7.0: Import from the new graph builder
-from agent_swarm_v7_0 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v7.0.agent_swarm_v7_0 import get_graph_app
 
 # v7.0: Import LangGraph + Redis
 from langgraph.checkpoint.redis import RedisSaver
@@ -111,7 +108,7 @@ def setup_logging(debug_mode: bool):
     """
     # v6.5: Need to re-import core_v6_5 for CONFIG if this file is run directly
     try:
-        from core_v6_5 import CONFIG as LOG_CONFIG
+        from archives.legacy_resume_gen.Older Microservices Models.v6.5.core_v6_5 import CONFIG
     except ImportError:
         print("CRITICAL: core_v6_5.py not found. Logging setup failed.", file=sys.stderr)
         logging.basicConfig(level=logging.DEBUG if debug_mode else logging.INFO)

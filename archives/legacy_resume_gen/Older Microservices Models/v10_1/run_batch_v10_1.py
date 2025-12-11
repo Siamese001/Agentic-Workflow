@@ -16,21 +16,16 @@ import asyncio
 import uuid
 from datetime import datetime
 from typing import Dict, object, List
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 
-from main_v10_1 import setup_logging, load_job_input
-from core_v10_1 import (
-    CONFIG, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.main_v10_1 import setup_logging, load_job_input
 # MODULARITY OVERWRITE: Import from new locations
-from agent_orchestration_v10_1 import get_graph_app
-from agent_stacks_v10_1 import PIISanitizerAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_orchestration_v10_1 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.agent_stacks_v10_1 import PIISanitizerAgent
 from langgraph.checkpoint.redis import RedisSaver
 
 try:
-    from run_learning_v10_1 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v10_1.run_learning_v10_1 import run_meta_learning
     META_LEARNER_AVAILABLE = True
     logging.getLogger("batch_runner_v10_1").info("Meta-learning module loaded successfully.")
 except ImportError:

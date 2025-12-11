@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 
 
 # Import all L1 planners
-from .fusion_planner import FusionPlanner, FusionPlan
-from .grounding_planner import GroundingPlanner, GroundingPlan
-from .persona_planner import PersonaPlanner, PersonaPlan
-from .profile_planner import ProfilePlanner, ProfilePlan
-from .research_planner import ResearchPlanner, ResearchPlan
-from .message_planner import MessagePlanner, MessagePlan
+from archives.engines.legacy_engines.lic_fusion_planner import FusionPlanner, FusionPlan
+from archives.engines.legacy_engines.lic_grounding_planner import GroundingPlanner, GroundingPlan
+from archives.engines.legacy_engines.lic_persona_planner import PersonaPlanner, PersonaPlan
+from archives.engines.legacy_engines.lic_profile_planner import ProfilePlanner, ProfilePlan
+from tests.unit.apps_lic.test_lic_research_planner import ResearchPlanner, ResearchPlan
+from archives.engines.legacy_engines.lic_message_planner import MessagePlanner, MessagePlan
 
 # Import all K executors - Now from agentic_core
 from agentic_core.l2_execution.draft_execution.lic_k1_research import K1ResearchExecutor, ResearchOutput
@@ -343,7 +343,7 @@ class OutreachOrchestrator:
     
     def _execute_l1_message_planning(self, recipient_profile: Dict[str, object], persona_plan: PersonaPlan, grounding_plan: GroundingPlan, fusion_plan: FusionPlan, context: Dict[str, object]) -> MessagePlan:
         """Execute L1 message planning."""
-        from .message_planner import MessageContent
+        from archives.engines.legacy_engines.lic_message_planner import MessageContent
         
         content = MessageContent(
             recipient_name=recipient_profile.get("first_name", ""),

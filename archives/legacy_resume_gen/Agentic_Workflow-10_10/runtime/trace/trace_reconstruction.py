@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from runtime.observability.collectors import get_events
+from archives.legacy_root_folders.runtime.observability.collectors import get_events
 
 
 def get_routing_trace() -> List[Dict[str, object]]:

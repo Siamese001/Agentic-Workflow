@@ -4,12 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core_v10_7 import BaseAgent, BulletPlan, StrategyPlan
-from agent_stacks_v10_8.components.bullet import (
-    AsyncBulletCritiqueAgent,
-    AsyncBulletGeneratorAgent,
-    BulletCoordinatorAgent,
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, BulletPlan, StrategyPlan
 
 
 class BulletExecutionStack(BaseAgent):

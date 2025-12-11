@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from observability import get_all_events
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import get_all_events  # INVALID: Cannot import from path with hyphens
 
 
 def collect_error_events() -> List[Dict[str, object]]:

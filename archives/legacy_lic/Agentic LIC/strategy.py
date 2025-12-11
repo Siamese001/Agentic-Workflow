@@ -4,15 +4,8 @@ import asyncio
 import json
 from typing import Any, Dict, List
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
-from core_v10_7 import (
-    BaseAgent,
-    StrategyPlan,
-    ValidationError,
-    track_metrics,
-    _format_prompt_with_defaults,
-)
 
 
 class QueryComplexityClassifier(BaseAgent):

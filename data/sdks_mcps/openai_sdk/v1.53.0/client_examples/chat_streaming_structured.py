@@ -5,8 +5,8 @@ Production client used for resume extraction and message classification.
 import os
 import json
 from typing import Optional, List, Dict, object
-from pydantic import BaseModel, Field
-from openai import OpenAI
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+from data.sdks_mcps.reference_clients.minimal_openai import OpenAI
 from openai.types.chat import ChatCompletionChunk
 
 

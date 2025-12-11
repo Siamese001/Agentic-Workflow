@@ -1,6 +1,6 @@
 import pytest
 
-from stacks_v10_8.rag_execution import RAGExecutionStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.stacks_v10_8.rag_execution import RAGExecutionStack  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.mark.asyncio

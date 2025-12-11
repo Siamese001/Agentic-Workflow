@@ -30,8 +30,8 @@ import asyncio
 import uuid
 from typing import Dict, object, List, Type, Optional
 
-from pydantic import BaseModel, Field
-from chromadb.utils import embedding_functions
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+from shared.reasoning_utils import embedding_functions
 try:
     from rank_bm25 import BM25Okapi
     BM25_AVAILABLE = True
@@ -43,34 +43,6 @@ except ImportError:
     )
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    WorkflowContext,
-    PydanticSchemaError,
-    # Import all 15 Pydantic output models
-    BaseToolOutput,
-    DraftStrategyOutput,
-    RedTeamOutput,
-    RefineSectionOutput,
-    AddMetricsOutput,
-    QAClaimOutput,
-    QAToneOutput,
-    QAThematicAlignmentOutput,
-    QASemanticEntailmentOutput,
-    QANarrativeThreadOutput,
-    QAJDSkillsOutput,
-    QASignalScoreOutput,
-    QATenureOutput,
-    QAMissedOpportunitiesOutput,
-    QAAdversarialOutput,
-    QABiasOutput,
-    # v10.7: Import new decorator
-    track_metrics,
-    BaseTool,
-    # v10.7: Import centralized prompt formatter
-    _format_prompt_with_defaults,
-    detect_bias,
-    MCPClientStub
-)
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_tools_v10_7")

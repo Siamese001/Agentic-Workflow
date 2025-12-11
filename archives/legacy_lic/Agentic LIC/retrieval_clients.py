@@ -5,7 +5,7 @@ __version__ = "12.0"
 
 import os
 from googleapiclient.discovery import build
-from utils_LIC import CircuitBreaker, CircuitBreakerOpenError
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker, CircuitBreakerOpenError
 
 class GoogleSearchClient:
     """

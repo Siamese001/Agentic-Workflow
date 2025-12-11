@@ -13,20 +13,13 @@ import logging
 import os
 import uuid
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 from datetime import datetime
 from typing import List, Dict, object, Optional
 
 # GAP 4 FIX: Removed global CONFIG import
-from core_v10_1 import (
-    ConfigV10_1, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, META_LOG_READER_SYSTEM_PROMPT,
-    META_PATTERN_FINDER_SYSTEM_PROMPT, META_HYPOTHESIS_GENERATOR_SYSTEM_PROMPT,
-    META_PROPOSAL_DRAFTER_SYSTEM_PROMPT, META_PROPOSAL_CRITIQUE_SYSTEM_PROMPT,
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader
-)
-from main_v10_1 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10_1.main_v10_1 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("meta_learner_v10_1")

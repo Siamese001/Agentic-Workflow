@@ -6,16 +6,9 @@ import asyncio
 import json
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
-from core_v10_7 import (
-    BaseAgent,
-    StrategyPlan,
-    ValidationError,
-    track_metrics,
-    _format_prompt_with_defaults,
-)
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 class QueryComplexityClassifier(BaseAgent):

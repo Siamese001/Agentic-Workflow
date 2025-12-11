@@ -20,11 +20,11 @@
 
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-from core_v9_9 import (
+from archives.legacy_resume_gen.Older Microservices Models.v9.9.core_v9_9 import CONFIG, BaseAgent, get_model_client, MainGraphState, BIAS_DETECTOR_SYSTEM_PROMPT, PII_SCRUBBER_SYSTEM_PROMPT, TOT_STRATEGIST_SYSTEM_PROMPT, PROMPT_ENGINEER_SYSTEM_PROMPT, BULLET_CRITIQUE_SYSTEM_PROMPT, AgentExecutionError, REACT_CONDUCTOR_SYSTEM_PROMPT, TOOL_SELECTOR_SYSTEM_PROMPT, HIL_AMBIGUITY_DETECTOR_PROMPT, HYDE_GENERATION_PROMPT, RERANKING_PROMPT, TOOL_REGISTRY, HIL_MANAGER, AgentReliabilityTracker, JSONParsingError, ModelAPIError
     CONFIG, BaseAgent, get_model_client, MainGraphState,
     BIAS_DETECTOR_SYSTEM_PROMPT, PII_SCRUBBER_SYSTEM_PROMPT,
     TOT_STRATEGIST_SYSTEM_PROMPT, PROMPT_ENGINEER_SYSTEM_PROMPT,
@@ -35,7 +35,7 @@ from core_v9_9 import (
     AgentReliabilityTracker
 , JSONParsingError, ModelAPIError)
 
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 
 logger = logging.getLogger(__name__)
 
@@ -637,7 +637,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
                     self.log_info(f"Ambiguity detected (confidence: {confidence:.2f})")
                     
                     # Create HIL request
-                    from core_v9_9 import HILRequest, AmbiguityType
+                    from archives.legacy_resume_gen.Older Microservices Models.v9.9.core_v9_9 import HILRequest, AmbiguityType
                     request = HILRequest(
                         request_id=f"hil_{datetime.now().timestamp()}",
                         ambiguity_type=AmbiguityType(content_data.get("ambiguity_type", "missing_context")),
@@ -1189,7 +1189,7 @@ def increment_local_retry(state: MainGraphState) -> Dict:
 
 def update_cost_tracking(state: MainGraphState) -> Dict:
     """P2: Update cost tracking in state."""
-    from core_v9_9 import COST_TRACKER
+    from archives.legacy_resume_gen.Older Microservices Models.v9.9.core_v9_9 import COST_TRACKER
     
     summary = COST_TRACKER.get_cost_summary()
     
@@ -1257,7 +1257,7 @@ def get_graph_app(checkpointer: 'RedisSaver', enable_hil: bool = True) -> 'Compi
 
 def register_default_tools():
     """Register default tools in global registry."""
-    from core_v9_9 import ToolDefinition, TOOL_REGISTRY
+    from archives.legacy_resume_gen.Older Microservices Models.v9.9.core_v9_9 import ToolDefinition, TOOL_REGISTRY
     
     # Define tool implementations
     def tool_master_resume_search(query: str, resume: Dict) -> List[Dict]:
