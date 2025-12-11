@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\runtime_ops\\runtime_ops\\synthesis\\use_prompt_tools\\utility_prepare_information\\serialize_execution_params.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "3b40b0406fb6117d",
-  "original_path": "C:\\Git\\Agentic-Workflow\\09_apps\\shared\\api\\fetch_user_preferences.py",
-  "created": "2025-12-07T11:54:46.512048"
-}
