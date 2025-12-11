@@ -1,189 +1,444 @@
-import ast
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: enforce_data_contracts.py
-# Match Score: 0.8718
-# ============================================================
+"""Safety-Enhanced RAG Contracts Enforcement - Enforces RAG contracts with safety-first approach.
 
-"""
-L5 Agentic Core - Plan Layer - enforce_data_contracts
-Implements L1 Cognitive Planning Layer for enforce data contracts operations
+This module provides enhanced contract enforcement with additional safety checks,
+including content filtering, privacy protection, and security validation.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union, Set
 import logging
-from abc import ABC, abstractmethod
+import re
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class EnforceDataContractsPlanType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class SafetyRiskLevel(Enum):
+    """Safety risk levels for content."""
+    SAFE = "safe"
+    LOW_RISK = "low_risk"
+    MEDIUM_RISK = "medium_risk"
+    HIGH_RISK = "high_risk"
+    BLOCKED = "blocked"
+
+
+class ContentType(Enum):
+    """Types of content to check."""
+    TEXT = "text"
+    QUERY = "query"
+    DOCUMENT = "document"
+    RESPONSE = "response"
+    METADATA = "metadata"
+
 
 @dataclass
-class EnforceDataContractsPlanConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class SafetyCheck:
+    """Definition of a safety check."""
+    id: str
+    name: str
+    risk_level: SafetyRiskLevel
+    content_types: List[ContentType]
+    pattern: str  # Regex pattern or function name
+    action: str  # warn, block, sanitize, audit
+    description: str = ""
+
 
 @dataclass
-class EnforceDataContractsPlanResult:
-    """L5 Result structure with full type safety"""
-    success: bool
-    data: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class SafetyViolation:
+    """Record of a safety violation."""
+    check_id: str
+    check_name: str
+    risk_level: SafetyRiskLevel
+    content_type: ContentType
+    detected_content: str
+    sanitized_content: Optional[str] = None
+    timestamp: datetime = field(default_factory=datetime.utcnow)
 
-class EnforceDataContractsPlanProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> EnforceDataContractsPlanResult:
-        """Process data with L5 safety constraints"""
-        ...
+@dataclass
+class SafetyEnforcementResult:
+    """Result of safety contract enforcement."""
+    safe: bool
+    risk_level: SafetyRiskLevel
+    violations: List[SafetyViolation] = field(default_factory=list)
+    sanitized_content: Dict[str, Any] = field(default_factory=dict)
+    blocked_content: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class EnforceDataContractsPlanImpl(EnforceDataContractsPlanProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
+@dataclass
+class SafetyRAGConfig:
+    """Configuration for safety-enhanced RAG enforcement."""
+    enable_content_filtering: bool = True
+    enable_pii_detection: bool = True
+    enable_toxicity_check: bool = True
+    sanitize_blocked_content: bool = True
+    log_violations: bool = True
+    risk_threshold: str = "medium_risk"
+    custom_patterns: Dict[str, str] = field(default_factory=dict)
+    allowed_domains: Set[str] = field(default_factory=set)
+    blocked_keywords: Set[str] = field(default_factory=set)
+    log_level: str = "INFO"
 
-    def __init__(self, constraints: Optional[EnforceDataContractsPlanConstraints] = None):
-        self.constraints = constraints or EnforceDataContractsPlanConstraints()
+
+class SafetyRAGContractsEnforcer:
+    """Main class for safety-enhanced RAG contract enforcement."""
+
+    def __init__(self, config: Optional[SafetyRAGConfig] = None):
+        self.config = config or SafetyRAGConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(self.config.log_level)
+        self._safety_checks = []
+        self._load_safety_checks()
 
-    def process(self, input_data: Dict[str, object]) -> EnforceDataContractsPlanResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
-
-        # L5 Input validation
-        self._validate_input(input_data)
-
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-
-        # Create result with L5 structure
-        result = EnforceDataContractsPlanResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
-        )
-
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
-
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
+    def enforce_safety(self, operation: Dict[str, Any]) -> SafetyEnforcementResult:
+        """Enforce safety contracts on a RAG operation.
+        
+        Args:
+            operation: RAG operation data to validate
+            
+        Returns:
+            SafetyEnforcementResult: Result of safety enforcement
+        """
+        self.logger.info(f"Enforcing safety on RAG operation: {operation.get('type', 'unknown')}")
+        
+        violations = []
+        sanitized_content = {}
+        blocked_content = []
+        warnings = []
+        overall_risk = SafetyRiskLevel.SAFE
+        
         try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+            # Extract content from operation
+            content_map = self._extract_content(operation)
+            
+            # Run safety checks on all content
+            for content_type, content in content_map.items():
+                if not content:
+                    continue
+                
+                for check in self._safety_checks:
+                    if content_type in check.content_types:
+                        violation = self._run_safety_check(check, content, content_type)
+                        
+                        if violation:
+                            violations.append(violation)
+                            
+                            # Update overall risk level
+                            if self._risk_level_greater(violation.risk_level, overall_risk):
+                                overall_risk = violation.risk_level
+                            
+                            # Take action based on check
+                            if check.action == "block":
+                                blocked_content.append(content_type.value)
+                            elif check.action == "sanitize" and violation.sanitized_content:
+                                sanitized_content[content_type.value] = violation.sanitized_content
+                            elif check.action == "warn":
+                                warnings.append(f"Safety warning: {check.name}")
+            
+            # Determine if operation is safe
+            safe = overall_risk in [SafetyRiskLevel.SAFE, SafetyRiskLevel.LOW_RISK]
+            
+            result = SafetyEnforcementResult(
+                safe=safe,
+                risk_level=overall_risk,
+                violations=violations,
+                sanitized_content=sanitized_content,
+                blocked_content=blocked_content,
+                warnings=warnings,
+                metadata={
+                    "enforced_at": datetime.utcnow().isoformat(),
+                    "checks_run": len(self._safety_checks),
+                    "content_types_checked": list(content_map.keys()),
+                    "enforcer": "SafetyRAGContractsEnforcer"
+                }
+            )
+            
+            # Log violations if enabled
+            if self.config.log_violations and violations:
+                self._log_safety_violations(operation, violations)
+            
+            self.logger.info(
+                f"Safety enforcement completed: {overall_risk.value} risk level "
+                f"({len(violations)} violations)"
+            )
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Safety enforcement failed: {str(e)}")
+            return SafetyEnforcementResult(
+                safe=False,
+                risk_level=SafetyRiskLevel.HIGH_RISK,
+                violations=[SafetyViolation(
+                    check_id="system_error",
+                    check_name="System Error",
+                    risk_level=SafetyRiskLevel.HIGH_RISK,
+                    content_type=ContentType.TEXT,
+                    detected_content=str(e)
+                )],
+                metadata={"error": str(e)}
+            )
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
+    def _extract_content(self, operation: Dict[str, Any]) -> Dict[ContentType, str]:
+        """Extract all content from operation for safety checking."""
+        content_map = {}
+        
+        # Extract query
+        if "query" in operation:
+            content_map[ContentType.QUERY] = str(operation["query"])
+        
+        # Extract documents
+        if "documents" in operation:
+            docs = operation["documents"]
+            if isinstance(docs, list):
+                content_map[ContentType.DOCUMENT] = " ".join(str(d) for d in docs)
+            else:
+                content_map[ContentType.DOCUMENT] = str(docs)
+        
+        # Extract response
+        if "response" in operation:
+            content_map[ContentType.RESPONSE] = str(operation["response"])
+        
+        # Extract metadata
+        if "metadata" in operation:
+            content_map[ContentType.METADATA] = str(operation["metadata"])
+        
+        # Extract general text content
+        if "text" in operation:
+            content_map[ContentType.TEXT] = str(operation["text"])
+        
+        return content_map
 
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f"Safety validation error: {e}")
-            return False  # Fail-closed
+    def _load_safety_checks(self) -> None:
+        """Load default safety checks."""
+        # PII detection checks
+        if self.config.enable_pii_detection:
+            self._safety_checks.extend([
+                SafetyCheck(
+                    id="email_detection",
+                    name="Email Address Detection",
+                    risk_level=SafetyRiskLevel.MEDIUM_RISK,
+                    content_types=[ContentType.QUERY, ContentType.DOCUMENT, ContentType.RESPONSE],
+                    pattern=r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+                    action="sanitize",
+                    description="Detects and sanitizes email addresses"
+                ),
+                SafetyCheck(
+                    id="phone_detection",
+                    name="Phone Number Detection",
+                    risk_level=SafetyRiskLevel.MEDIUM_RISK,
+                    content_types=[ContentType.QUERY, ContentType.DOCUMENT, ContentType.RESPONSE],
+                    pattern=r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
+                    action="sanitize",
+                    description="Detects and sanitizes phone numbers"
+                ),
+                SafetyCheck(
+                    id="ssn_detection",
+                    name="Social Security Number Detection",
+                    risk_level=SafetyRiskLevel.HIGH_RISK,
+                    content_types=[ContentType.QUERY, ContentType.DOCUMENT, ContentType.RESPONSE],
+                    pattern=r'\b\d{3}-\d{2}-\d{4}\b',
+                    action="block",
+                    description="Blocks content containing SSN patterns"
+                ),
+                SafetyCheck(
+                    id="credit_card_detection",
+                    name="Credit Card Number Detection",
+                    risk_level=SafetyRiskLevel.HIGH_RISK,
+                    content_types=[ContentType.QUERY, ContentType.DOCUMENT, ContentType.RESPONSE],
+                    pattern=r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b',
+                    action="block",
+                    description="Blocks content containing credit card patterns"
+                )
+            ])
+        
+        # Toxicity checks
+        if self.config.enable_toxicity_check:
+            self._safety_checks.extend([
+                SafetyCheck(
+                    id="hate_speech",
+                    name="Hate Speech Detection",
+                    risk_level=SafetyRiskLevel.HIGH_RISK,
+                    content_types=[ContentType.QUERY, ContentType.RESPONSE],
+                    pattern=r'\b(hate|kill|harm|violence)\b',
+                    action="block",
+                    description="Blocks hate speech content"
+                ),
+                SafetyCheck(
+                    id="inappropriate_content",
+                    name="Inappropriate Content Detection",
+                    risk_level=SafetyRiskLevel.MEDIUM_RISK,
+                    content_types=[ContentType.QUERY, ContentType.RESPONSE],
+                    pattern=r'\b(curse|swear|profanity)\b',
+                    action="warn",
+                    description="Warns about inappropriate content"
+                )
+            ])
+        
+        # Add custom patterns
+        for check_id, pattern in self.config.custom_patterns.items():
+            self._safety_checks.append(SafetyCheck(
+                id=check_id,
+                name=f"Custom Check: {check_id}",
+                risk_level=SafetyRiskLevel.MEDIUM_RISK,
+                content_types=[ContentType.QUERY, ContentType.DOCUMENT, ContentType.RESPONSE],
+                pattern=pattern,
+                action="warn",
+                description="Custom safety check"
+            ))
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
-
-        if not input_data:
-            raise ValueError("Input cannot be empty")
-
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class EnforceDataContractsPlanInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, engine: EnforceDataContractsPlanProcessor):
-        self._processor = engine
-
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
+    def _run_safety_check(self, check: SafetyCheck, content: str, content_type: ContentType) -> Optional[SafetyViolation]:
+        """Run a single safety check on content."""
         try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+            # Check if pattern matches
+            matches = re.findall(check.pattern, content, re.IGNORECASE)
+            
+            if matches:
+                # Determine action based on check configuration
+                sanitized = None
+                if check.action == "sanitize" and self.config.sanitize_blocked_content:
+                    sanitized = self._sanitize_content(content, check.pattern)
+                
+                return SafetyViolation(
+                    check_id=check.id,
+                    check_name=check.name,
+                    risk_level=check.risk_level,
+                    content_type=content_type,
+                    detected_content=str(matches[:3]),  # Limit to first 3 matches
+                    sanitized_content=sanitized
+                )
+        except Exception as e:
+            self.logger.warning(f"Failed to run safety check {check.id}: {str(e)}")
+        
+        return None
+
+    def _sanitize_content(self, content: str, pattern: str) -> str:
+        """Sanitize content by replacing matched patterns."""
+        try:
+            # Replace matches with placeholder
+            sanitized = re.sub(pattern, "[REDACTED]", content, flags=re.IGNORECASE)
+            return sanitized
+        except:
+            return "[SANITIZATION_FAILED]"
+
+    def _risk_level_greater(self, level1: SafetyRiskLevel, level2: SafetyRiskLevel) -> bool:
+        """Check if level1 is higher risk than level2."""
+        risk_order = {
+            SafetyRiskLevel.SAFE: 0,
+            SafetyRiskLevel.LOW_RISK: 1,
+            SafetyRiskLevel.MEDIUM_RISK: 2,
+            SafetyRiskLevel.HIGH_RISK: 3,
+            SafetyRiskLevel.BLOCKED: 4
+        }
+        return risk_order.get(level1, 0) > risk_order.get(level2, 0)
+
+    def _log_safety_violations(self, operation: Dict[str, Any], violations: List[SafetyViolation]) -> None:
+        """Log safety violations for audit."""
+        for violation in violations:
+            log_entry = {
+                "timestamp": violation.timestamp.isoformat(),
+                "operation_id": operation.get("id"),
+                "check_id": violation.check_id,
+                "risk_level": violation.risk_level.value,
+                "content_type": violation.content_type.value,
+                "detected_content": violation.detected_content
             }
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
+            self.logger.warning(f"Safety violation: {log_entry}")
 
-# L5 builder
-class EnforceDataContractsPlanFactory:
-    """L5 builder for creating processors with proper configuration"""
+    def add_safety_check(self, check: SafetyCheck) -> None:
+        """Add a custom safety check.
+        
+        Args:
+            check: Safety check to add
+        """
+        self.logger.info(f"Adding safety check: {check.id}")
+        self._safety_checks.append(check)
 
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> EnforceDataContractsPlanInterface:
-        """Create configured engine"""
-        constraints = EnforceDataContractsPlanConstraints(safety_level=safety_level)
-        engine = EnforceDataContractsPlanImpl(constraints)
-        return EnforceDataContractsPlanInterface(engine)
+    def get_safety_summary(self) -> Dict[str, Any]:
+        """Get summary of safety checks and configuration.
+        
+        Returns:
+            Dict: Safety configuration summary
+        """
+        return {
+            "total_safety_checks": len(self._safety_checks),
+            "content_filtering_enabled": self.config.enable_content_filtering,
+            "pii_detection_enabled": self.config.enable_pii_detection,
+            "toxicity_check_enabled": self.config.enable_toxicity_check,
+            "risk_threshold": self.config.risk_threshold,
+            "blocked_keywords_count": len(self.config.blocked_keywords),
+            "custom_patterns_count": len(self.config.custom_patterns)
+        }
 
-# L5 Main execution point
-def enforce_data_contracts(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - enforce data contracts operations
 
+# Factory function for easy instantiation
+def create_safety_rag_enforcer(
+    enable_content_filtering: bool = True,
+    enable_pii_detection: bool = True,
+    enable_toxicity_check: bool = True,
+    risk_threshold: str = "medium_risk",
+    **kwargs
+) -> SafetyRAGContractsEnforcer:
+    """Create a configured safety RAG contracts enforcer."""
+    config = SafetyRAGConfig(
+        enable_content_filtering=enable_content_filtering,
+        enable_pii_detection=enable_pii_detection,
+        enable_toxicity_check=enable_toxicity_check,
+        risk_threshold=risk_threshold,
+        **kwargs
+    )
+    return SafetyRAGContractsEnforcer(config)
+
+
+# Convenience function for direct usage
+def enforce_rag_safety(
+    operation: Dict[str, Any],
+    enable_content_filtering: bool = True,
+    enable_pii_detection: bool = True,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Enforce safety contracts on a RAG operation.
+    
     Args:
-        input_data: Input data to process
-
+        operation: RAG operation to validate
+        enable_content_filtering: Whether to enable content filtering
+        enable_pii_detection: Whether to enable PII detection
+        config: Optional enforcer configuration overrides
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Safety enforcement result with violations and actions
     """
-    builder = EnforceDataContractsPlanFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = enforce_data_contracts(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f"L5 Unexpected error: {e}")
+    # Create enforcer and execute
+    enforcer_config = SafetyRAGConfig(
+        enable_content_filtering=enable_content_filtering,
+        enable_pii_detection=enable_pii_detection,
+        **config or {}
+    )
+    enforcer = SafetyRAGContractsEnforcer(enforcer_config)
+    result = enforcer.enforce_safety(operation)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "safe": result.safe,
+        "risk_level": result.risk_level.value,
+        "violations": [
+            {
+                "check_id": v.check_id,
+                "check_name": v.check_name,
+                "risk_level": v.risk_level.value,
+                "content_type": v.content_type.value,
+                "detected_content": v.detected_content,
+                "sanitized_content": v.sanitized_content,
+                "timestamp": v.timestamp.isoformat()
+            }
+            for v in result.violations
+        ],
+        "sanitized_content": result.sanitized_content,
+        "blocked_content": result.blocked_content,
+        "warnings": result.warnings,
+        "metadata": result.metadata
+    }

@@ -1,257 +1,478 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: apply_safety.py
-# Match Score: 0.7742
-# ============================================================
+"""Scripts Safety Policy Application - Applies safety policies to script operations.
 
-# ==============================================================
-# AUTO-HYDRATED BY PHASE 3H
-# Donor: object, C:/Git/Agentic-Workflow/06_data/resume_engine_archive/Agentic-Workflow-10_7_main/safety.py
-# Review and refactor as needed. Archive copy preserved.
-# ==============================================================
+This module provides safety policy enforcement for script operations,
+including script validation, permission checks, and security controls.
+Follows the functional component pattern with proper logging.
+"""
 
-"""Safety guard stack agents."""
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Any, Union, Callable
+import logging
+from datetime import datetime
+from enum import Enum
 
-import json
-import scripts.check_canonical_structure
-from typing import Dict, Optional
-
-from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+logger = logging.getLogger(__name__)
 
 
+class PolicyType(Enum):
+    """Types of safety policies."""
+    EXECUTION_POLICY = "execution_policy"
+    RESOURCE_POLICY = "resource_policy"
+    NETWORK_POLICY = "network_policy"
+    FILE_SYSTEM_POLICY = "file_system_policy"
+    PERMISSION_POLICY = "permission_policy"
+    DATA_POLICY = "data_policy"
 
-class PIISanitizerAgent(BaseAgent):
-    """Performs local PII detection using regex heuristics."""
 
-    PII_PATTERNS = {
-        "EMAIL": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
-        "PHONE": re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b"),
-        "NAME": re.compile(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b"),
+class PolicyAction(Enum):
+    """Actions for policy violations."""
+    ALLOW = "allow"
+    DENY = "deny"
+    WARN = "warn"
+    AUDIT = "audit"
+    QUARANTINE = "quarantine"
+
+
+@dataclass
+class SafetyPolicy:
+    """Definition of a safety policy."""
+    id: str
+    name: str
+    policy_type: PolicyType
+    description: str
+    condition: str
+    action: PolicyAction
+    enabled: bool = True
+    priority: int = 0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class PolicyViolation:
+    """Record of a policy violation."""
+    policy_id: str
+    policy_name: str
+    policy_type: PolicyType
+    action: PolicyAction
+    description: str
+    script_content: Optional[str] = None
+    violation_details: Dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+
+
+@dataclass
+class PolicyApplicationResult:
+    """Result of policy application."""
+    allowed: bool
+    applied_policies: List[str] = field(default_factory=list)
+    violations: List[PolicyViolation] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    conditions: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ScriptsSafetyPolicyConfig:
+    """Configuration for scripts safety policy application."""
+    enabled_policies: List[PolicyType] = field(default_factory=lambda: [
+        PolicyType.EXECUTION_POLICY, PolicyType.PERMISSION_POLICY, PolicyType.RESOURCE_POLICY
+    ])
+    strict_mode: bool = False
+    audit_all: bool = True
+    default_action: PolicyAction = PolicyAction.DENY
+    custom_policies: List[SafetyPolicy] = field(default_factory=list)
+    trusted_scripts: List[str] = field(default_factory=list)
+    log_level: str = "INFO"
+
+
+class ScriptsSafetyPolicyApplier:
+    """Main class for applying scripts safety policies."""
+
+    def __init__(self, config: Optional[ScriptsSafetyPolicyConfig] = None):
+        self.config = config or ScriptsSafetyPolicyConfig()
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(self.config.log_level)
+        self._policies = []
+        self._load_default_policies()
+
+    def apply_policy(self, script: Dict[str, Any]) -> PolicyApplicationResult:
+        """Apply safety policies to a script.
+        
+        Args:
+            script: Script information and content
+            
+        Returns:
+            PolicyApplicationResult: Policy application results
+        """
+        self.logger.info(f"Applying safety policies to script: {script.get('id', 'unknown')}")
+        
+        applied_policies = []
+        violations = []
+        warnings = []
+        conditions = []
+        
+        try:
+            script_id = script.get("id", "unknown")
+            script_content = script.get("content", "")
+            
+            # Check if script is trusted
+            if script_id in self.config.trusted_scripts:
+                return PolicyApplicationResult(
+                    allowed=True,
+                    applied_policies=["trusted_script"],
+                    metadata={"trusted": True}
+                )
+            
+            # Apply each enabled policy type
+            for policy_type in self.config.enabled_policies:
+                type_policies = [p for p in self._policies if p.policy_type == policy_type and p.enabled]
+                type_policies.sort(key=lambda x: x.priority, reverse=True)
+                
+                for policy in type_policies:
+                    result = self._evaluate_policy(policy, script)
+                    
+                    if result["applied"]:
+                        applied_policies.append(policy.id)
+                        
+                        if result["violation"]:
+                            violations.append(result["violation"])
+                            
+                            # Take action based on policy
+                            if policy.action == PolicyAction.DENY:
+                                return PolicyApplicationResult(
+                                    allowed=False,
+                                    applied_policies=applied_policies,
+                                    violations=violations,
+                                    metadata={"denied_by": policy.id}
+                                )
+                            elif policy.action == PolicyAction.WARN:
+                                warnings.append(f"Policy warning: {policy.name}")
+                            elif policy.action == PolicyAction.AUDIT:
+                                self._audit_policy_violation(policy, script, result["violation"])
+                    
+                    if result["condition"]:
+                        conditions.append(result["condition"])
+            
+            # Apply custom policies
+            for policy in self.config.custom_policies:
+                if policy.enabled:
+                    result = self._evaluate_policy(policy, script)
+                    if result["applied"]:
+                        applied_policies.append(policy.id)
+                        if result["violation"]:
+                            violations.append(result["violation"])
+            
+            # Determine if script is allowed
+            allowed = not any(v.action == PolicyAction.DENY for v in violations)
+            
+            policy_result = PolicyApplicationResult(
+                allowed=allowed,
+                applied_policies=applied_policies,
+                violations=violations,
+                warnings=warnings,
+                conditions=conditions,
+                metadata={
+                    "applied_at": datetime.utcnow().isoformat(),
+                    "script_id": script_id,
+                    "script_length": len(script_content),
+                    "applier": "ScriptsSafetyPolicyApplier"
+                }
+            )
+            
+            # Log audit information
+            if self.config.audit_all:
+                self._log_policy_application(script, policy_result)
+            
+            self.logger.info(
+                f"Policy application completed: {'allowed' if allowed else 'denied'} "
+                f"({len(applied_policies)} policies applied, {len(violations)} violations)"
+            )
+            
+            return policy_result
+            
+        except Exception as e:
+            self.logger.error(f"Policy application failed: {str(e)}")
+            return PolicyApplicationResult(
+                allowed=False,
+                violations=[PolicyViolation(
+                    policy_id="system_error",
+                    policy_name="System Error",
+                    policy_type=PolicyType.EXECUTION_POLICY,
+                    action=PolicyAction.DENY,
+                    description=f"Policy application failed: {str(e)}"
+                )],
+                metadata={"error": str(e)}
+            )
+
+    def _evaluate_policy(self, policy: SafetyPolicy, script: Dict[str, Any]) -> Dict[str, Any]:
+        """Evaluate a single policy against a script."""
+        try:
+            # Evaluate policy condition
+            condition_met = self._evaluate_condition(policy.condition, script)
+            
+            if condition_met:
+                # Create violation if condition is met
+                violation = PolicyViolation(
+                    policy_id=policy.id,
+                    policy_name=policy.name,
+                    policy_type=policy.policy_type,
+                    action=policy.action,
+                    description=policy.description,
+                    script_content=script.get("content", "")[:100],
+                    violation_details={"condition": policy.condition}
+                )
+                
+                return {
+                    "applied": True,
+                    "violation": violation,
+                    "condition": f"Policy {policy.name} triggered"
+                }
+            
+            return {"applied": False, "violation": None, "condition": None}
+            
+        except Exception as e:
+            self.logger.warning(f"Policy evaluation {policy.id} failed: {str(e)}")
+            return {"applied": False, "violation": None, "condition": None}
+
+    def _evaluate_condition(self, condition: str, script: Dict[str, Any]) -> bool:
+        """Evaluate policy condition."""
+        try:
+            # Simple keyword-based conditions
+            if "dangerous_commands" in condition:
+                dangerous = ["rm -rf", "sudo", "chmod 777", "system(", "exec(", "eval("]
+                content = script.get("content", "")
+                return any(cmd in content for cmd in dangerous)
+            
+            elif "network_access" in condition:
+                network_keywords = ["requests.", "urllib.", "socket.", "http", "ftp", "telnet"]
+                content = script.get("content", "")
+                return any(keyword in content for keyword in network_keywords)
+            
+            elif "file_access" in condition:
+                file_keywords = ["open(", "file(", "os.remove", "shutil.", "pathlib"]
+                content = script.get("content", "")
+                return any(keyword in content for keyword in file_keywords)
+            
+            elif "resource_usage" in condition:
+                resource_keywords = ["memory.", "cpu.", "psutil", "subprocess"]
+                content = script.get("content", "")
+                return any(keyword in content for keyword in resource_keywords)
+            
+            elif "user_input" in condition:
+                input_keywords = ["input(", "raw_input(", "sys.argv", "getopt"]
+                content = script.get("content", "")
+                return any(keyword in content for keyword in input_keywords)
+            
+            elif "script_size" in condition:
+                size_limit = 1000  # Default limit
+                if ">" in condition:
+                    size_limit = int(condition.split(">")[1].strip())
+                return len(script.get("content", "")) > size_limit
+            
+            # Evaluate as Python expression if needed
+            return eval(condition, {"script": script})
+            
+        except:
+            return False
+
+    def _load_default_policies(self) -> None:
+        """Load default safety policies."""
+        # Execution policies
+        self._policies.extend([
+            SafetyPolicy(
+                id="no_dangerous_commands",
+                name="No Dangerous Commands",
+                policy_type=PolicyType.EXECUTION_POLICY,
+                description="Blocks scripts with dangerous system commands",
+                condition="dangerous_commands",
+                action=PolicyAction.DENY,
+                priority=100
+            ),
+            SafetyPolicy(
+                id="no_user_input",
+                name="No User Input",
+                policy_type=PolicyType.EXECUTION_POLICY,
+                description="Warns about scripts that accept user input",
+                condition="user_input",
+                action=PolicyAction.WARN,
+                priority=50
+            ),
+            SafetyPolicy(
+                id="script_size_limit",
+                name="Script Size Limit",
+                policy_type=PolicyType.EXECUTION_POLICY,
+                description="Limits script size to prevent large executions",
+                condition="script_size > 5000",
+                action=PolicyAction.AUDIT,
+                priority=30
+            )
+        ])
+        
+        # Resource policies
+        self._policies.extend([
+            SafetyPolicy(
+                id="resource_monitoring",
+                name="Resource Monitoring",
+                policy_type=PolicyType.RESOURCE_POLICY,
+                description="Monitors resource usage in scripts",
+                condition="resource_usage",
+                action=PolicyAction.AUDIT,
+                priority=40
+            )
+        ])
+        
+        # Network policies
+        self._policies.extend([
+            SafetyPolicy(
+                id="network_access_control",
+                name="Network Access Control",
+                policy_type=PolicyType.NETWORK_POLICY,
+                description="Controls network access in scripts",
+                condition="network_access",
+                action=PolicyAction.WARN,
+                priority=60
+            )
+        ])
+        
+        # File system policies
+        self._policies.extend([
+            SafetyPolicy(
+                id="file_access_control",
+                name="File Access Control",
+                policy_type=PolicyType.FILE_SYSTEM_POLICY,
+                description="Controls file system access in scripts",
+                condition="file_access",
+                action=PolicyAction.AUDIT,
+                priority=50
+            )
+        ])
+
+    def _audit_policy_violation(self, policy: SafetyPolicy, script: Dict[str, Any], violation: PolicyViolation) -> None:
+        """Audit a policy violation."""
+        audit_log = {
+            "timestamp": violation.timestamp.isoformat(),
+            "policy_id": policy.id,
+            "policy_type": policy.policy_type.value,
+            "script_id": script.get("id"),
+            "violation": violation.description
+        }
+        self.logger.warning(f"Policy violation audit: {audit_log}")
+
+    def _log_policy_application(self, script: Dict[str, Any], result: PolicyApplicationResult) -> None:
+        """Log policy application details."""
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "script_id": script.get("id"),
+            "allowed": result.allowed,
+            "policies_applied": len(result.applied_policies),
+            "violations": len(result.violations)
+        }
+        self.logger.info(f"Policy application log: {log_entry}")
+
+    def add_policy(self, policy: SafetyPolicy) -> None:
+        """Add a custom safety policy.
+        
+        Args:
+            policy: Policy to add
+        """
+        self.logger.info(f"Adding safety policy: {policy.id}")
+        self.config.custom_policies.append(policy)
+
+    def remove_policy(self, policy_id: str) -> bool:
+        """Remove a safety policy.
+        
+        Args:
+            policy_id: ID of policy to remove
+            
+        Returns:
+            bool: True if policy was removed
+        """
+        original_length = len(self._policies)
+        self._policies = [p for p in self._policies if p.id != policy_id]
+        self.config.custom_policies = [p for p in self.config.custom_policies if p.id != policy_id]
+        return len(self._policies) < original_length
+
+    def get_policy_summary(self) -> Dict[str, Any]:
+        """Get summary of policy configuration.
+        
+        Returns:
+            Dict: Policy configuration summary
+        """
+        return {
+            "enabled_policies": [p.value for p in self.config.enabled_policies],
+            "total_policies": len(self._policies) + len(self.config.custom_policies),
+            "strict_mode": self.config.strict_mode,
+            "audit_all": self.config.audit_all,
+            "default_action": self.config.default_action.value,
+            "trusted_scripts": len(self.config.trusted_scripts)
+        }
+
+
+# Factory function for easy instantiation
+def create_scripts_safety_policy_applier(
+    enabled_policies: List[str] = None,
+    strict_mode: bool = False,
+    audit_all: bool = True,
+    **kwargs
+) -> ScriptsSafetyPolicyApplier:
+    """Create a configured scripts safety policy applier."""
+    config = ScriptsSafetyPolicyConfig(
+        enabled_policies=[PolicyType(p) for p in (enabled_policies or ["execution_policy", "permission_policy", "resource_policy"])],
+        strict_mode=strict_mode,
+        audit_all=audit_all,
+        **kwargs
+    )
+    return ScriptsSafetyPolicyApplier(config)
+
+
+# Convenience function for direct usage
+def apply_scripts_safety_policy(
+    script: Dict[str, Any],
+    policies: List[str] = None,
+    strict_mode: bool = False,
+    audit_all: bool = True,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Apply safety policies to a script.
+    
+    Args:
+        script: Script information and content
+        policies: List of policy types to apply
+        strict_mode: Whether to use strict mode
+        audit_all: Whether to audit all applications
+        config: Optional applier configuration
+        
+    Returns:
+        Dict: Policy application results
+    """
+    # Create applier and execute
+    applier_config = ScriptsSafetyPolicyConfig(
+        enabled_policies=[PolicyType(p) for p in (policies or ["execution_policy", "permission_policy", "resource_policy"])],
+        strict_mode=strict_mode,
+        audit_all=audit_all,
+        **config or {}
+    )
+    applier = ScriptsSafetyPolicyApplier(applier_config)
+    result = applier.apply_policy(script)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "allowed": result.allowed,
+        "applied_policies": result.applied_policies,
+        "violations": [
+            {
+                "policy_id": v.policy_id,
+                "policy_name": v.policy_name,
+                "policy_type": v.policy_type.value,
+                "action": v.action.value,
+                "description": v.description,
+                "script_content": v.script_content,
+                "violation_details": v.violation_details,
+                "timestamp": v.timestamp.isoformat()
+            }
+            for v in result.violations
+        ],
+        "warnings": result.warnings,
+        "conditions": result.conditions,
+        "metadata": result.metadata
     }
-
-    @track_metrics("run_pii_sanitizer")
-    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
-        self.log_info("Sanitizing PII (local regex processing)...")
-        sanitized_resume = json.loads(json.dumps(resume))
-
-        def sanitize_node(node: object) -> object:
-            if isinstance(node, dict):
-                return {k: sanitize_node(v) for k, v in node.items()}
-            if isinstance(node, list):
-                return [sanitize_node(item) for item in node]
-            if isinstance(node, str):
-                return self._sanitize_text(node)
-            return node
-
-        sanitized = sanitize_node(sanitized_resume)
-        self.log_info("PII sanitization complete.")
-        return sanitized
-
-    def _sanitize_text(self, text: str) -> str:
-        for pii_type, pattern in self.PII_PATTERNS.items():
-            text = pattern.sub(f"[{pii_type}_REDACTED]", text)
-        return text
-
-
-class BiasDetectorAgent(BaseAgent):
-    """Runs local bias detection with dynamic constitution rules."""
-
-    @track_metrics("run_bias_detector")
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
-        self.log_info("Detecting bias (local processing with dynamic rules)...")
-        result = detect_bias(self.context, text, workflow_id)
-
-        if workflow_id:
-            self.log_feedback(
-                workflow_id,
-                "bias_detection",
-                "warning" if result["bias_detected"] else "success",
-                {"patterns_found": len(result.get("patterns", []))},
-            )
-
-        return result
-
-
-class PromptInjectionDetectorAgent(BaseAgent):
-    """Detects prompt-injection attacks."""
-
-    class PIDetectionOutput(BaseModel):
-        injection_detected: bool = Field(..., description="True if an attack was detected")
-        reason: str = Field(..., description="Explanation for the detection")
-        confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the detection")
-
-    @track_metrics("run_pi_detector")
-    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
-        self.log_info("Detecting prompt injection...")
-
-        if not self.config.agent_stacks.enable_prompt_injection_detection:
-            self.log_warning("Prompt injection detection is disabled.")
-            return {
-                "injection_detected": False,
-                "reason": "Detector disabled",
-                "confidence": 0.0,
-            }
-
-        client = self.get_model_client("prompt_injection_model")
-        prompt_template = self.prompt_manager.get_template("prompt_injection_detector")
-
-        prompt = await _format_prompt_with_defaults(
-            prompt_template,
-            {"user_input": user_input},
-            self.budget_manager,
-            client.goal_state,
-            client.top_failures,
-        )
-
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.prompt_injection_model.temperature,
-            response_format="json_object",
-        )
-
-        validated_output, error = self.validator.validate(
-            response["content"],
-            self.PIDetectionOutput,
-        )
-        if error:
-            self.log_error(f"PromptInjectionDetector failed validation: {error}")
-            return {
-                "injection_detected": True,
-                "reason": f"Detector validation failed: {error}",
-                "confidence": 1.0,
-            }
-
-        if validated_output.injection_detected:
-            self.log_warning(
-                f"PROMPT INJECTION DETECTED (Confidence: {validated_output.confidence}): {validated_output.reason}"
-            )
-
-        return validated_output.model_dump()
-
-
-class ConstitutionalReviewerAgent(BaseAgent):
-    """Performs final constitutional review of the output."""
-
-    @track_metrics("run_constitutional_review")
-    async def run_async(
-        self,
-        final_draft: str,
-        workflow_id: str,
-    ) -> ConstitutionalReviewResult:
-        base_result = await self._execute_constitutional_review(
-            final_draft,
-            workflow_id,
-        )
-        return await self._maybe_self_correct(
-            final_draft,
-            workflow_id,
-            base_result,
-        )
-
-    async def _execute_constitutional_review(
-        self,
-        final_draft: str,
-        workflow_id: str,
-        self_heal_hint: Optional[Dict[str, object]] = None,
-    ) -> ConstitutionalReviewResult:
-        self.log_info("Running final constitutional review...")
-
-        if not self.config.agent_stacks.enable_constitutional_review:
-            self.log_warning("Constitutional review is disabled. Passing by default.")
-            return ConstitutionalReviewResult(
-                review_passed=True,
-                violations_found=[],
-                feedback="Review disabled",
-            )
-
-        hint = self_heal_hint or {}
-        client = self.get_model_client("constitutional_review_model")
-        prompt_template = self.prompt_manager.get_template("constitutional_review")
-
-        rules = self.context.rules_loader.get_constitution_rules()
-        constitution_text = json.dumps(rules)
-
-        prompt = await _format_prompt_with_defaults(
-            prompt_template,
-            {"final_draft": final_draft, "constitution": constitution_text},
-            self.budget_manager,
-            client.goal_state,
-            client.top_failures,
-        )
-
-        extra_instruction = hint.get("extra_instruction")
-        if extra_instruction:
-            prompt += f"\nReviewer Hint: {extra_instruction}"
-
-        temperature = hint.get(
-            "temperature",
-            self.config.model_config.constitutional_review_model.temperature,
-        )
-
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            response_format="json_object",
-        )
-
-        validated_output, error = self.validator.validate(
-            response["content"],
-            ConstitutionalReviewResult,
-        )
-        if error:
-            self.log_error(
-                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
-            )
-            return ConstitutionalReviewResult(
-                review_passed=True,
-                violations_found=["VALIDATION_ERROR"],
-                feedback=error,
-            )
-
-        if not validated_output.review_passed:
-            self.log_warning(
-                f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}"
-            )
-
-        return validated_output
-
-    async def _maybe_self_correct(
-        self,
-        final_draft: str,
-        workflow_id: str,
-        base_result: ConstitutionalReviewResult,
-    ) -> ConstitutionalReviewResult:
-        coordinator = getattr(self, "self_correction_manager", None)
-        if not coordinator:
-            return base_result
-        if not coordinator.can_retry(workflow_id, "safety"):
-            return base_result
-        if base_result.review_passed:
-            return base_result
-
-        report = coordinator.start_retry(
-            workflow_id,
-            "safety",
-            issue="constitutional_violation",
-            action="lower_temperature_and_recheck",
-            metadata={"violations": base_result.violations_found},
-        )
-
-        corrected_result = await self._execute_constitutional_review(
-            final_draft,
-            workflow_id,
-            self_heal_hint={
-                "temperature": max(
-                    0.0,
-                    self.config.model_config.constitutional_review_model.temperature - 0.1,
-                ),
-                "extra_instruction": "Re-evaluate violations and confirm if remediation notes resolve them.",
-            },
-        )
-
-        resolved = corrected_result.review_passed
-        coordinator.finalize_retry(report, resolved)
-        if resolved:
-            corrected_result.self_correction = {"safety": report.model_dump()}
-            return corrected_result
-        return base_result

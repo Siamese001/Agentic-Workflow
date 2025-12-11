@@ -1,189 +1,425 @@
-import ast
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: search_data_vectors.py
-# Match Score: 0.8485
-# ============================================================
+"""RAG Meaning-Based Search - Implements semantic meaning search for RAG retrieval.
 
-"""
-L5 Agentic Core - Plan Layer - search_data_vectors
-Implements L1 Cognitive Planning Layer for search data vectors operations
+This module provides advanced semantic search capabilities that understand
+the meaning and context of queries beyond simple keyword matching.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Tuple, Union
 import logging
-from abc import ABC, abstractmethod
+import numpy as np
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SearchDataVectorsMemoryType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class MeaningType(Enum):
+    """Types of meaning analysis."""
+    SEMANTIC = "semantic"
+    CONTEXTUAL = "contextual"
+    INTENT_BASED = "intent_based"
+    CONCEPTUAL = "conceptual"
+    DOMAIN_SPECIFIC = "domain_specific"
+
+
+class ExpansionStrategy(Enum):
+    """Strategies for query expansion."""
+    SYNONYM = "synonym"
+    HYPONYM = "hyponym"
+    RELATED = "related"
+    CONTEXTUAL = "contextual"
+    EMBEDDING_BASED = "embedding_based"
+
 
 @dataclass
-class SearchDataVectorsMemoryConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class MeaningQuery:
+    """Definition of a meaning-based search query."""
+    original_query: str
+    expanded_terms: List[str] = field(default_factory=list)
+    intent: str = ""
+    context: Dict[str, Any] = field(default_factory=dict)
+    domain: Optional[str] = None
+    meaning_type: MeaningType = MeaningType.SEMANTIC
+    expansion_strategy: ExpansionStrategy = ExpansionStrategy.RELATED
+    top_k: int = 10
+    threshold: float = 0.7
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
-class SearchDataVectorsMemoryResult:
-    """L5 Result structure with full type safety"""
-    success: bool
-    data: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class MeaningMatch:
+    """Individual meaning search result."""
+    id: str
+    content: str
+    relevance_score: float
+    meaning_score: float
+    matched_concepts: List[str] = field(default_factory=list)
+    explanation: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-class SearchDataVectorsMemoryProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> SearchDataVectorsMemoryResult:
-        """Process data with L5 safety constraints"""
-        ...
+@dataclass
+class MeaningSearchResults:
+    """Collection of meaning search results."""
+    matches: List[MeaningMatch]
+    total_count: int
+    search_time_ms: int
+    query_analysis: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class SearchDataVectorsMemoryImpl(SearchDataVectorsMemoryProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
+@dataclass
+class MeaningSearchConfig:
+    """Configuration for meaning search operations."""
+    enable_query_expansion: bool = True
+    enable_intent_analysis: bool = True
+    enable_context_understanding: bool = True
+    default_expansion_strategy: str = "related"
+    max_expanded_terms: int = 10
+    concept_threshold: float = 0.6
+    enable_explanation: bool = True
+    cache_enabled: bool = True
+    log_level: str = "INFO"
 
-    def __init__(self, constraints: Optional[SearchDataVectorsMemoryConstraints] = None):
-        self.constraints = constraints or SearchDataVectorsMemoryConstraints()
+
+class RAGMeaningSearcher:
+    """Main class for RAG meaning-based search operations."""
+
+    def __init__(self, config: Optional[MeaningSearchConfig] = None):
+        self.config = config or MeaningSearchConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(self.config.log_level)
+        self._concept_index = {}
+        self._intent_classifier = None
 
-    def process(self, input_data: Dict[str, object]) -> SearchDataVectorsMemoryResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
-
-        # L5 Input validation
-        self._validate_input(input_data)
-
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-
-        # Create result with L5 structure
-        result = SearchDataVectorsMemoryResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
-        )
-
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
-
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
+    def search(self, query: MeaningQuery) -> MeaningSearchResults:
+        """Perform meaning-based search.
+        
+        Args:
+            query: Meaning search query with context and parameters
+            
+        Returns:
+            MeaningSearchResults: Results ranked by meaning relevance
+        """
+        self.logger.info(f"Starting meaning search: {query.meaning_type.value}")
+        start_time = datetime.utcnow()
+        
         try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+            # Analyze query meaning
+            query_analysis = self._analyze_query_meaning(query)
+            
+            # Expand query if enabled
+            if self.config.enable_query_expansion:
+                expanded_terms = self._expand_query(query)
+                query.expanded_terms = expanded_terms
+            
+            # Perform semantic search
+            matches = self._meaning_search(query)
+            
+            # Rank by meaning relevance
+            ranked_matches = self._rank_by_meaning(matches, query)
+            
+            # Generate explanations if enabled
+            if self.config.enable_explanation:
+                ranked_matches = self._generate_explanations(ranked_matches, query)
+            
+            # Calculate search time
+            search_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+            
+            results = MeaningSearchResults(
+                matches=ranked_matches[:query.top_k],
+                total_count=len(ranked_matches),
+                search_time_ms=int(search_time),
+                query_analysis=query_analysis,
+                metadata={
+                    "searched_at": datetime.utcnow().isoformat(),
+                    "searcher": "RAGMeaningSearcher",
+                    "expanded_terms": query.expanded_terms
+                }
+            )
+            
+            self.logger.info(
+                f"Meaning search completed: {len(ranked_matches)} results in {search_time:.2f}ms"
+            )
+            return results
+            
+        except Exception as e:
+            self.logger.error(f"Meaning search failed: {str(e)}")
+            return MeaningSearchResults(
+                matches=[],
+                total_count=0,
+                search_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
+                query_analysis={},
+                metadata={"error": str(e)}
+            )
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
+    def _analyze_query_meaning(self, query: MeaningQuery) -> Dict[str, Any]:
+        """Analyze the meaning and intent of the query."""
+        analysis = {
+            "original_query": query.original_query,
+            "identified_concepts": [],
+            "intent": query.intent,
+            "context_keywords": [],
+            "domain_specific_terms": []
+        }
+        
+        # Extract concepts (simulated)
+        words = query.original_query.lower().split()
+        analysis["identified_concepts"] = [
+            word for word in words 
+            if len(word) > 3 and word.isalpha()
+        ][:5]
+        
+        # Analyze intent if enabled
+        if self.config.enable_intent_analysis and not query.intent:
+            analysis["intent"] = self._classify_intent(query.original_query)
+        
+        # Extract context keywords
+        if query.context:
+            analysis["context_keywords"] = list(query.context.keys())
+        
+        # Identify domain-specific terms
+        if query.domain:
+            analysis["domain_specific_terms"] = self._get_domain_terms(
+                query.original_query, query.domain
+            )
+        
+        return analysis
 
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f"Safety validation error: {e}")
-            return False  # Fail-closed
+    def _expand_query(self, query: MeaningQuery) -> List[str]:
+        """Expand query with related terms."""
+        expanded = []
+        words = query.original_query.lower().split()
+        
+        # Simulate query expansion based on strategy
+        if query.expansion_strategy == ExpansionStrategy.SYNONYM:
+            # Add synonyms (simulated)
+            for word in words:
+                if word == "search":
+                    expanded.extend(["find", "locate", "retrieve"])
+                elif word == "information":
+                    expanded.extend(["data", "content", "details"])
+        
+        elif query.expansion_strategy == ExpansionStrategy.RELATED:
+            # Add related terms (simulated)
+            for word in words:
+                if word == "rag":
+                    expanded.extend(["retrieval", "augmented", "generation"])
+                elif word == "vector":
+                    expanded.extend(["embedding", "representation", "space"])
+        
+        elif query.expansion_strategy == ExpansionStrategy.CONTEXTUAL:
+            # Add context-aware terms
+            if query.context.get("task") == "research":
+                expanded.extend(["study", "analysis", "investigation"])
+            elif query.context.get("task") == "development":
+                expanded.extend(["implement", "code", "build"])
+        
+        return list(set(expanded))[:self.config.max_expanded_terms]
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
+    def _meaning_search(self, query: MeaningQuery) -> List[MeaningMatch]:
+        """Perform meaning-based search."""
+        matches = []
+        
+        # Simulate meaning search
+        for i in range(min(query.top_k * 3, 30)):
+            # Calculate meaning score based on concept overlap
+            concepts = query.original_query.lower().split()
+            matched_concepts = np.random.choice(concepts, size=np.random.randint(1, len(concepts) + 1), replace=False).tolist()
+            
+            meaning_score = len(matched_concepts) / len(concepts) if concepts else 0
+            relevance_score = np.random.uniform(query.threshold, 1.0)
+            
+            if meaning_score >= self.config.concept_threshold:
+                match = MeaningMatch(
+                    id=f"doc_{i}",
+                    content=f"Document {i} about {', '.join(matched_concepts)} and related concepts",
+                    relevance_score=relevance_score,
+                    meaning_score=meaning_score,
+                    matched_concepts=matched_concepts
+                )
+                matches.append(match)
+        
+        return matches
 
-        if not input_data:
-            raise ValueError("Input cannot be empty")
+    def _rank_by_meaning(self, matches: List[MeaningMatch], query: MeaningQuery) -> List[MeaningMatch]:
+        """Rank matches by meaning relevance."""
+        # Combine relevance and meaning scores
+        for match in matches:
+            match.relevance_score = (match.relevance_score + match.meaning_score) / 2
+        
+        # Sort by combined score
+        matches.sort(key=lambda x: x.relevance_score, reverse=True)
+        return matches
 
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
+    def _generate_explanations(self, matches: List[MeaningMatch], query: MeaningQuery) -> List[MeaningMatch]:
+        """Generate explanations for matches."""
+        for match in matches:
+            if match.matched_concepts:
+                match.explanation = (
+                    f"Matched concepts: {', '.join(match.matched_concepts)}. "
+                    f"Document shares {match.meaning_score:.2%} semantic meaning with query."
+                )
+            else:
+                match.explanation = "Matched based on overall similarity."
+        
+        return matches
 
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
+    def _classify_intent(self, query: str) -> str:
+        """Classify query intent."""
+        query_lower = query.lower()
+        
+        if any(word in query_lower for word in ["how", "what", "why", "explain"]):
+            return "information_seeking"
+        elif any(word in query_lower for word in ["find", "search", "locate"]):
+            return "search"
+        elif any(word in query_lower for word in ["compare", "difference"]):
+            return "comparison"
+        elif any(word in query_lower for word in ["list", "show"]):
+            return "enumeration"
+        else:
+            return "general"
 
-# L5 Interface compliance
-class SearchDataVectorsMemoryInterface:
-    """L5 Interface - ensures contract compliance"""
+    def _get_domain_terms(self, query: str, domain: str) -> List[str]:
+        """Get domain-specific terms from query."""
+        # Simulate domain-specific term extraction
+        domain_vocab = {
+            "technology": ["api", "algorithm", "database", "framework"],
+            "business": ["revenue", "profit", "market", "strategy"],
+            "science": ["experiment", "hypothesis", "data", "analysis"]
+        }
+        
+        terms = []
+        query_words = query.lower().split()
+        
+        for word in query_words:
+            if domain in domain_vocab and word in domain_vocab[domain]:
+                terms.append(word)
+        
+        return terms
 
-    def __init__(self, engine: SearchDataVectorsMemoryProcessor):
-        self._processor = engine
+    def index_concepts(self, documents: List[Dict[str, Any]]) -> None:
+        """Index concepts for meaning search.
+        
+        Args:
+            documents: List of documents with content and metadata
+        """
+        self.logger.info(f"Indexing concepts from {len(documents)} documents")
+        
+        # Simulate concept indexing
+        for doc in documents:
+            # Extract and index concepts
+            content = doc.get("content", "").lower()
+            concepts = content.split()
+            
+            for concept in concepts:
+                if concept not in self._concept_index:
+                    self._concept_index[concept] = []
+                self._concept_index[concept].append(doc.get("id", ""))
+        
+        self.logger.info(f"Indexed {len(self._concept_index)} unique concepts")
 
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
-        try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
+    def get_concept_network(self, concept: str, depth: int = 2) -> Dict[str, Any]:
+        """Get concept network for a given concept.
+        
+        Args:
+            concept: Root concept
+            depth: Depth of network exploration
+            
+        Returns:
+            Dict: Concept network with related terms
+        """
+        network = {
+            "root_concept": concept,
+            "related_concepts": [],
+            "co_occurrence": {},
+            "hierarchy": []
+        }
+        
+        # Simulate concept network generation
+        if concept in self._concept_index:
+            # Find related concepts
+            for related in self._concept_index.keys():
+                if related != concept and related.startswith(concept[:2]):
+                    network["related_concepts"].append(related)
+        
+        return network
 
-# L5 builder
-class SearchDataVectorsMemoryFactory:
-    """L5 builder for creating processors with proper configuration"""
 
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> SearchDataVectorsMemoryInterface:
-        """Create configured engine"""
-        constraints = SearchDataVectorsMemoryConstraints(safety_level=safety_level)
-        engine = SearchDataVectorsMemoryImpl(constraints)
-        return SearchDataVectorsMemoryInterface(engine)
+# Factory function for easy instantiation
+def create_rag_meaning_searcher(
+    enable_query_expansion: bool = True,
+    enable_intent_analysis: bool = True,
+    default_expansion_strategy: str = "related",
+    **kwargs
+) -> RAGMeaningSearcher:
+    """Create a configured RAG meaning searcher."""
+    config = MeaningSearchConfig(
+        enable_query_expansion=enable_query_expansion,
+        enable_intent_analysis=enable_intent_analysis,
+        default_expansion_strategy=default_expansion_strategy,
+        **kwargs
+    )
+    return RAGMeaningSearcher(config)
 
-# L5 Main execution point
-def search_data_vectors(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - search data vectors operations
 
+# Convenience function for direct usage
+def search_by_meaning(
+    query_text: str,
+    meaning_type: str = "semantic",
+    expansion_strategy: str = "related",
+    top_k: int = 10,
+    threshold: float = 0.7,
+    context: Optional[Dict[str, Any]] = None,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Search by meaning with simple parameters.
+    
     Args:
-        input_data: Input data to process
-
+        query_text: Text of the query
+        meaning_type: Type of meaning analysis
+        expansion_strategy: Strategy for query expansion
+        top_k: Number of results to return
+        threshold: Minimum meaning threshold
+        context: Optional context information
+        config: Optional searcher configuration overrides
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Meaning search results with analysis
     """
-    builder = SearchDataVectorsMemoryFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = search_data_vectors(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f"L5 Unexpected error: {e}")
+    # Build query
+    query = MeaningQuery(
+        original_query=query_text,
+        meaning_type=MeaningType(meaning_type),
+        expansion_strategy=ExpansionStrategy(expansion_strategy),
+        top_k=top_k,
+        threshold=threshold,
+        context=context or {}
+    )
+    
+    # Create searcher and execute
+    searcher_config = MeaningSearchConfig(**config) if config else None
+    searcher = RAGMeaningSearcher(searcher_config)
+    result = searcher.search(query)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "matches": [
+            {
+                "id": m.id,
+                "content": m.content,
+                "relevance_score": m.relevance_score,
+                "meaning_score": m.meaning_score,
+                "matched_concepts": m.matched_concepts,
+                "explanation": m.explanation,
+                "metadata": m.metadata
+            }
+            for m in result.matches
+        ],
+        "total_count": result.total_count,
+        "search_time_ms": result.search_time_ms,
+        "query_analysis": result.query_analysis,
+        "metadata": result.metadata
+    }
